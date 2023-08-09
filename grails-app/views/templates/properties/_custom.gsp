@@ -33,7 +33,7 @@
         </thead>
     </g:if>
     <tbody>
-        <g:each in="${orphanedProperties.sort{a, b -> a.type.getI10n('name') <=> b.type.getI10n('name') ?: a.getValue() <=> b.getValue() ?: a.id <=> b.id }}" var="prop">
+        <g:each in="${orphanedProperties.sort{a, b -> a.type.getI10n('name').toLowerCase() <=> b.type.getI10n('name').toLowerCase() ?: a.getValue() <=> b.getValue() ?: a.id <=> b.id }}" var="prop">
             %{-- TODO : ERMS-3058 - check if $calledFromSurvey@subscription/_properties.gsp must be applied here --}%
             <g:set var="overwriteEditable" value="${(prop.tenant?.id == contextOrg.id && editable) || (!prop.tenant && editable)}"/>
 

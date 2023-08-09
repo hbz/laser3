@@ -45,8 +45,8 @@
         <div class="item">
             <i class="large internet explorer middle aligned icon"></i>
             <div class="content">
-                <div class="description">Internet Explorer</div>
-                <p>?</p>
+                <div class="description">Microsoft Edge</div>
+                <a href="https://support.microsoft.com/de-de/office/microsoft-editor-pr%C3%BCft-die-grammatik-und-mehr-in-dokumenten-%D0%B5-mails-und-im-internet-91ecbe1b-d021-4e9e-a82e-abc4cd7163d7" target="_blank" class="header">https://support.microsoft.com/de-de/office/microsoft-editor-pr%C3%BCft-die-grammatik-und-mehr-in-dokumenten-%D0%B5-mails-und-im-internet-91ecbe1b-d021-4e9e-a82e-abc4cd7163d7</a>
             </div>
         </div>
         <div class="item">

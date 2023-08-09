@@ -7,7 +7,75 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5222    08.08.2023  rc-3.2  3.2.3       Andreas Bug         Fehlverarbeitung in der englischen Oberfläche behoben
+
+5214    08.08.2023  rc-3.2  3.2.2       Ingrid  Feature     Meine Lizenzübertragungen: Tabelle übersichtlicher
+
+5220    07.08.2023  rc-3.2  3.2.2       Andreas Bug         eigene Adressen konnten nicht hinzugefügt werden
+
+--      03.08.2023  rc-3.2  3.2.2       Andreas Bug         Ausgaben beim PDF-Vertragsexport korrigiert
+
+--      01.08.2023  rc-3.2  3.2.2       Andreas Bug         Exportreiter "Übertrag" hat keine Defaultbelegung mehr
+
+5213    01.08.2023  rc-3.2  3.2.2       Andreas Bug         verschiedene Fehler in der Lizenzverwaltung behoben
+
+5211    31.07.2023  rc-3.2  3.2.2       Andreas Bug         502er durch Umstellung der Query behoben
+
+5210    31.07.2023  rc-3.2  3.2.2       Andreas Bug         falscher Verweis des dauerhaften Bestandstitels aufgelöst
+
+5209    31.07.2023  rc-3.2  3.2.2       Andreas Bug         erneute Umstellung der Kosteneingabemodal-Eventlistener
+
+--      26.07.2023  rc-3.2  3.2.1       Andreas Bug         Falschanzeige des Menüeintrages "Meine Lizenzübertragungen" behoben
+
+5208    26.07.2023  rc-3.2  3.2.1       Andreas Feature     Export einer einzelnen Lizenz in PDF
+
+5201    26.07.2023  rc-3.2  3.2.1       Andreas Bug         Umstrukturierungen in der Paketver- und entknüpfung
+
+5207    25.07.2023  rc-3.2  3.2.1       Andreas Bug         diverse Haken bei der Vererbung behoben
+
+5206    25.07.2023  rc-3.2  3.2.1       Andreas Bug         falschen Aufruf bei Paginierung behoben
+
+5205    21.07.2023  rc-3.2  3.2.1       Andreas Bug         Tooltip für Nichtkonsortialstellen angepasst
+
+5204    21.07.2023  rc-3.2  3.2.1       Andreas Bug         falsche Referenzen korrigiert
+
+5203    21.07.2023  rc-3.2  3.2.1       Andreas Bug         Lizenzverknüpfungen und deren Erzeugung überarbeitet
+
+5202    21.07.2023  rc-3.2  3.2.1       Andreas Bug         Dauerhafter Zugriffs-Flag wurde falsch abgefragt
+
+5178    21.07.2023  rc-3.2  3.2.1       David   Feature     Lizenzverwaltung: Anmerkungen zentral teilbar machen
+
+#### day of release 3.2
+
+5199    20.07.2023  rc-3.2  3.2         Andreas Feature     Auswahloptionen nach vorne gesetzt
+
+5162    20.07.2023  rc-3.2  3.2         Andreas Feature     Export von Anmerkungen jetzt möglich
+
+--      19.07.2023  rc-3.2  3.2         Andreas Feature     Mailtemplatetext angepasst
+
+5197    19.07.2023  rc-3.2  3.2         Andreas Bug         Sortierung der Merkmale nach Typ auf case-insensitive umgestellt
+
+5196    19.07.2023  rc-3.2  3.2         David   Feature     Benutzernamenprüfung bei Login derzeit case-sensitive
+
+5195    19.07.2023  rc-3.2  3.2         Andreas Bug         Fällige Termine setzten sich immer wieder zurück
+
+5190    18.07.2023  rc-3.2  3.2         Ingrid Bug          Modal "Workflow für 'xyz' anlegen: Modal wird jetzt nicht abgeschickt, wenn Titel nicht ausgefüllt
+
+5192    18.07.2023  rc-3.2  3.2         Ingrid Bug          Mouseover bei Tooltip innerhalb des Modals wird jetzt ausgelöst
+
+5191    18.07.2023  rc-3.2  3.2         Andreas Feature     Erweiterungen bei der Paketverknüpfung
+
+5130    18.07.2023  rc-3.2  3.2         Andreas Feature     Bezeichner umgestellt
+
+5092    18.07.2023  rc-3.2  3.2         Andreas Feature     Bezeichner (Teilnehmervertrag) aus Verträgen entfernt und auf Icon umgestellt
+
+5045    18.07.2023  rc-3.2  3.2         Andreas Feature     Wording angepasst
+
+5184    14.07.2023  rc-3.2  3.2         Andreas Bug         Adressen um "Meine"-Flag aufgerüstet, Daten wiederhergestellt
+
 5187    13.07.2023  rc-3.2  3.2         David   Feature     Aufräumen: Lizenzen/Verträge/Elemente kopieren
+
+4545    11.07.2023  rc-3.2  3.2         Ingrid  Feature     Anbieter in die Überschrift aufnehmen für Views, in denen es Sinn macht
 
 5186    11.07.2023  rc-3.2  3.2         Andreas Bug         dauerhafte Titel wurden nicht gekennzeichnet
 
@@ -83,6 +151,8 @@
 
 5142    19.06.2023  rc-3.1  3.1.3       Moe     Bug         Übertrag Teilnehmer
 
+4545    16.06.2023  rc-3.2  3.2         Ingrid  Feature     Bestands-View: Filterergebnis "Stichtag" verbessern
+
 5139    16.06.2023  rc-3.1  3.1.3       Moe     Bug         Titel hinzufügen: Nur 1 oder alle Titel möglich
 
 5143    16.06.2023  rc-3.1  3.1.3       Andreas Bug         Paketzuschnittvererbung: prüfen und Skript erstellen
@@ -93,7 +163,11 @@
 
 5134    16.06.2023  rc-3.1  3.1.3       Andreas Bug         falsche Konfiguration bei der Erstellung der Modale
 
+4725    15.06.2023  dev     3.2         Ingrid  Feature     Überbreite Tabelle in Teilnehmerverwaltung passt jetzt in den View
+
 5137    15.06.2023  rc-3.1  3.1.3       Andreas Bug         Bereinigungsmethoden korrigiert
+
+5125    15.06.2023  dev     3.2         Ingrid Bug          Tooltip taucht im Kosteneingabemodul jetzt an richtiger Stelle auf
 
 5135    15.06.2023  rc-3.1  3.1.3       Andreas Bug         Links mit we:kb-Icon an diversen Stellen angelegt
 

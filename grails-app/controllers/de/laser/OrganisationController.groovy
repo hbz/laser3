@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
+import de.laser.cache.EhcacheWrapper
 import de.laser.ctrl.OrganisationControllerService
 import de.laser.ctrl.UserControllerService
 import de.laser.properties.OrgProperty
@@ -301,6 +302,7 @@ class OrganisationController  {
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
             contactSwitch.addAll(params.list("contactSwitch"))
+            contactSwitch.addAll(params.list("addressSwitch"))
         }
         if(params.fileformat == 'xlsx') {
             SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(availableOrgs, selectedFields, 'institution', ExportClickMeService.FORMAT.XLS, contactSwitch)
@@ -383,6 +385,7 @@ class OrganisationController  {
                 file = params.filename
             }
             contactSwitch.addAll(params.list("contactSwitch"))
+            contactSwitch.addAll(params.list("addressSwitch"))
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
         }
@@ -552,6 +555,7 @@ class OrganisationController  {
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
             contactSwitch.addAll(params.list("contactSwitch"))
+            contactSwitch.addAll(params.list("addressSwitch"))
         }
         if(params.fileformat == 'xlsx') {
             SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(orgListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.XLS, contactSwitch)
@@ -1579,8 +1583,26 @@ class OrganisationController  {
 
         params.org = result.orgInstance
         params.sort = params.sort ?: 'p.last_name, p.first_name'
+        params.tab = params.tab ?: 'contacts'
 
-        List visiblePersons = addressbookService.getVisiblePersons("addressbook",params)
+        EhcacheWrapper cache = contextService.getUserCache("/org/addressbook/${params.id}")
+        switch(params.tab) {
+            case 'contacts':
+                result.personOffset = result.offset
+                result.addressOffset = cache.get('addressOffset') ?: 0
+                break
+            case 'addresses':
+                result.addressOffset = result.offset
+                result.personOffset = cache.get('personOffset') ?: 0
+                break
+        }
+        cache.put('personOffset', result.personOffset)
+        cache.put('addressOffset', result.addressOffset)
+
+        Map<String, Object> configMap = params.clone()
+
+        List visiblePersons = addressbookService.getVisiblePersons("addressbook", configMap+[offset: result.personOffset]),
+        visibleAddresses = addressbookService.getVisibleAddresses("addressbook", configMap+[offset: result.addressOffset])
 
         result.propList =
                 PropertyDefinition.findAllWhere(
@@ -1589,7 +1611,9 @@ class OrganisationController  {
                 )
 
         result.num_visiblePersons = visiblePersons.size()
-        result.visiblePersons = visiblePersons.drop(result.offset).take(result.max)
+        result.visiblePersons = visiblePersons.drop(result.personOffset).take(result.max)
+        result.num_visibleAddresses = visibleAddresses.size()
+        result.addresses = visibleAddresses.drop(result.addressOffset).take(result.max)
 
         if (visiblePersons){
             result.emailAddresses = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
@@ -1913,8 +1937,12 @@ class OrganisationController  {
         }
 
         params.sort = params.sort ?: 'p.last_name, p.first_name'
+        Map adrParams = [:]
+        adrParams.putAll(params)
+        if(params.sort.contains('p.'))
+            adrParams.remove('sort')
 
-        List visiblePersons = addressbookService.getVisiblePersons("myPublicContacts",params)
+        List visiblePersons = addressbookService.getVisiblePersons("myPublicContacts", params)
         result.num_visiblePersons = visiblePersons.size()
         result.visiblePersons = visiblePersons.drop(result.offset).take(result.max)
 
@@ -1925,7 +1953,7 @@ class OrganisationController  {
 
         params.tab = params.tab ?: 'contacts'
 
-        result.addresses = Address.findAllByOrg(params.org)
+        result.addresses = addressbookService.getVisibleAddresses("myPublicContacts", adrParams)
 
         result
     }

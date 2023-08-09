@@ -34,7 +34,6 @@
                     params="${[id: params.id, tab: 'multiYear', isSiteReloaded:false]}"
                     text="${message(code: 'subscription.isMultiYear.label')}" tab="multiYear"/>
 
-
     <g:if test="${controllerName == 'subscription'}">
         <ui:subNavItem controller="${controllerName}" action="${actionName}"
                         params="${[id: params.id, tab: 'customerIdentifiers', isSiteReloaded:false]}"

@@ -208,16 +208,16 @@
             <input type="text" id="pkgName" name="pkgName" value="" readonly/>
         </div>
         <g:if test="${pkgs}">
-            ${message(code: 'subscription.holdingSelection.label')} <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="question circle icon la-popup"></i></span>${subscription.holdingSelection.getI10n('value')}
+            <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')} <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="question circle icon"></i></span>: ${subscription.holdingSelection.getI10n('value')}</label>
             <g:if test="${institution.isCustomerType_Consortium() && auditService.getAuditConfig(subscription, 'holdingSelection')}">
                 <i class="ui thumbtack icon la-popup-tooltip"></i>
             </g:if>
         </g:if>
         <g:else>
             <div class="field">
-                <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')} <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="question circle icon la-popup"></i></span></label>
+                <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')} <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="question circle icon"></i></span></label>
             </div>
-            <div class="two fields">
+            <div class="four fields">
                 <div class="field">
                     <ui:select class="ui dropdown search selection" id="holdingSelection" name="holdingSelection" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" optionKey="id" optionValue="value"/>
                 </div>
@@ -233,6 +233,26 @@
                                 <i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash"></i>
                             </button>
                         </g:else>
+                    </div>
+                </g:if>
+                <div class="field">
+                    <div class="ui checkbox toggle">
+                        <g:checkBox name="createEntitlements"/>
+                        <label><g:message code="subscription.details.link.with_ents"/></label>
+                    </div>
+                </div>
+                <g:if test="${institution.isCustomerType_Consortium()}">
+                    <div class="field">
+                        <div class="ui checkbox toggle">
+                            <g:checkBox name="linkToChildren"/>
+                            <label><g:message code="subscription.details.linkPackage.children.label"/></label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui checkbox toggle">
+                            <g:checkBox name="createEntitlementsForChildren"/>
+                            <label><g:message code="subscription.details.link.with_ents"/></label>
+                        </div>
                     </div>
                 </g:if>
             </div>
@@ -397,6 +417,7 @@
 
     <laser:script file="${this.getGroovyPageFileName()}">
         JSPC.callbacks.modal.onShow.linkPackageModal = function(trigger) {
+            tooltip.init("#linkPackageModal");
             $('#linkPackageModal #pkgName').attr('value', $(trigger).attr('data-packageName'))
             $('#linkPackageModal input[name=addUUID]').attr('value', $(trigger).attr('data-addUUID'))
         }

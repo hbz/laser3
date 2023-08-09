@@ -44,7 +44,7 @@
                               title="${message(code: 'person.name.label')}"/>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('organisation')}">
-        <g:sortableColumn params="${params}" property="pr.org.name"
+        <g:sortableColumn params="${params}" property="pr.org.sortname"
                           title="${message(code: 'person.organisation.label')}"/>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('function')}">
@@ -113,7 +113,7 @@
                                 <div class="la-flexbox">
                                     <i class="icon university la-list-icon"></i>
                                     <g:link controller="organisation" action="addressbook"
-                                            id="${org.id}">${org}</g:link>
+                                            id="${org.id}">${org.name} (${org.sortname})</g:link>
                                 </div>
                         </div>
                     </g:each>

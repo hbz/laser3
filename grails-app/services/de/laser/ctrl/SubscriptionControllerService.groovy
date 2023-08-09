@@ -2119,6 +2119,9 @@ class SubscriptionControllerService {
         else {
             boolean bulkProcessRunning = false
             if(params.addUUID && !bulkProcessRunning) {
+                boolean createEntitlements = params.createEntitlements == 'on',
+                linkToChildren = params.linkToChildren == 'on',
+                createEntitlementsForChildren = params.createEntitlementsForChildren == 'on'
                 String pkgUUID = params.addUUID
                 ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
                 result.source = apiSource.baseUrl
@@ -2159,9 +2162,9 @@ class SubscriptionControllerService {
                                 }
                                 Package pkgToLink = Package.findByGokbId(pkgUUID)
                                 result.packageName = pkgToLink.name
-                                subscriptionService.addToSubscription(result.subscription, pkgToLink, holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
-                                if(auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
-                                    subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
+                                subscriptionService.addToSubscription(result.subscription, pkgToLink, createEntitlements)
+                                if(linkToChildren) {
+                                    subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, createEntitlementsForChildren)
                                 }
                                 //subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                             }
@@ -2173,9 +2176,9 @@ class SubscriptionControllerService {
                     }
                     else {
                         Package pkgToLink = globalSourceSyncService.createOrUpdatePackage(pkgUUID)
-                        subscriptionService.addToSubscription(result.subscription, pkgToLink, holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
-                        if(auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
-                            subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
+                        subscriptionService.addToSubscription(result.subscription, pkgToLink, createEntitlements)
+                        if(linkToChildren) {
+                            subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, createEntitlementsForChildren)
                         }
                         //subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                     }
@@ -2198,10 +2201,30 @@ class SubscriptionControllerService {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         result.package = Package.get(params.package)
         Locale locale = LocaleUtils.getCurrentLocale()
+        boolean unlinkPkg
         if(params.confirmed) {
-            Set<Subscription> subList = [result.subscription]
-            subList.addAll(Subscription.findAllByInstanceOf(result.subscription))
-            if(packageService.unlinkFromSubscription(result.package, subList.id, result.institution, true)){
+            Set<Subscription> subList = []
+            /*
+            continue here:
+            - implement options on frontend -->CHECK
+            - remove audit config in case of unlinking is triggered on behalf of the parent subscription -->CHECK
+            - block triggering in institution subscription if audit is active -->CHECK
+            - detach holding generation from subscription holding selection; this should be triggered independently (decision may be reverted later)
+            - moreover: seek for filter in ERMS-5201; that sequence scan can be avoided when creating permanent titles!
+             */
+            if(params.containsKey('option')) {
+                AuditConfig.removeConfig(result.subscription, 'holdingSelection')
+                subList << result.subscription
+                if(params.option in ['childWithIE', 'childOnlyIE'])
+                    subList.addAll(Subscription.findAllByInstanceOf(result.subscription))
+                unlinkPkg = params.option in ['withIE', 'childWithIE']
+            }
+            else {
+                unlinkPkg = true
+                subList << result.subscription
+                subList.addAll(Subscription.findAllByInstanceOf(result.subscription))
+            }
+            if(packageService.unlinkFromSubscription(result.package, subList.id, result.institution, unlinkPkg)){
                 result.message = messageSource.getMessage('subscription.details.unlink.successfully',null,locale)
                 [result:result,status:STATUS_OK]
             }else {
@@ -3061,9 +3084,23 @@ class SubscriptionControllerService {
             if(!params.singleTitle) {
                 Map checked = cache.get('checked')
                 if(checked) {
-                    //executorService.execute({
-                        //Thread.currentThread().setName("EntitlementEnrichment_${result.subscription.id}")
-                        subscriptionService.bulkAddEntitlements(result.subscription, issueEntitlementCandidates, checked, Boolean.valueOf(params.uploadPriceInfo), false)
+                    Set<Long> childSubIds = [], pkgIds = []
+                    if(params.withChildren == 'on') {
+                        childSubIds.addAll(result.subscription.getDerivedSubscriptions().id)
+                    }
+                    //continue here with test!
+                    pkgIds.addAll(Package.executeQuery('select tipp.pkg.id from TitleInstancePackagePlatform tipp where tipp.gokbId in (:wekbIds)', [wekbIds: checked.keySet()]))
+                    executorService.execute({
+                        Thread.currentThread().setName("EntitlementEnrichment_${result.subscription.id}")
+                        Sql sql = GlobalService.obtainSqlConnection()
+                        subscriptionService.bulkAddEntitlements(result.subscription, issueEntitlementCandidates, checked, Boolean.valueOf(params.uploadPriceInfo), false, sql)
+                        if(params.withChildren == 'on') {
+                            childSubIds.each { Long childSubId ->
+                                pkgIds.each { Long pkgId ->
+                                    packageService.bulkAddHolding(sql, childSubId, pkgId, result.subscription.hasPerpetualAccess, result.subscription.id)
+                                }
+                            }
+                        }
                         //IssueEntitlement.withNewTransaction { TransactionStatus ts ->
                         /*
                         checked.each { k, v ->
@@ -3085,8 +3122,7 @@ class SubscriptionControllerService {
                             }
                         }
                         */
-                        //}
-                    //})
+                    })
 
                     if(params.process && params.process	== "withTitleGroup") {
                         IssueEntitlementGroup issueEntitlementGroup

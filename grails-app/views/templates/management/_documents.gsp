@@ -3,10 +3,8 @@
 <g:if test="${filteredSubscriptions}">
 
     <g:if test="${controllerName == "subscription"}">
-        <div class="ui segment ">
-            <h3 class="ui header"><g:message code="subscriptionsManagement.subscription"
-                                             args="${args.superOrgType}"/></h3>
-
+        <div class="ui segment">
+%{--            <h3 class="ui header"><g:message code="subscriptionsManagement.subscription" args="${args.superOrgType}"/></h3>--}%
             <laser:render template="/templates/documents/table"
                       model="${[instance: subscription, context: 'documents', redirect: actionName, owntp: 'subscription']}"/>
         </div>
@@ -14,6 +12,7 @@
 
     <h2 class="ui header">${message(code: 'subscriptionsManagement.document.info.newDocument')}</h2>
 
+    <div class="ui segments">
     <g:form action="${actionName}" controller="${controllerName}" params="[tab: 'documents']" method="post"
             class="ui segment form newDocument" enctype="multipart/form-data">
         <g:hiddenField id="pspm_id_${params.id}" name="id" value="${params.id}"/>
@@ -22,7 +21,6 @@
 
         <div class="field required">
             <label for="upload_title">${message(code: 'template.addDocument.name')}:</label>
-
             <input type="text" id="upload_title" name="upload_title" value=""/>
         </div>
 
@@ -41,7 +39,6 @@
 
         <div class="field">
             <label for="doctype">${message(code: 'template.addDocument.type')}:</label>
-
             <%
                 List notAvailable = [RDStore.DOC_TYPE_NOTE, RDStore.DOC_TYPE_ANNOUNCEMENT, RDStore.DOC_TYPE_ONIXPL]
                 List documentTypes = RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_TYPE) - notAvailable
@@ -55,7 +52,7 @@
                       value=""/>
         </div>
 
-        <g:if test="${showConsortiaFunctions}">
+        <g:if test="${showConsortiaFunctions && controllerName != "subscription"}">
             <div class="field">
                 <label for="setSharing">${message(code: 'template.addDocument.setSharing')}</label>
                 <g:checkBox name="setSharing" class="ui checkbox"/>
@@ -73,18 +70,16 @@
     <div class="ui segment">
         <h3 class="ui header">
             <g:if test="${controllerName == "subscription"}">
-                ${message(code: 'subscriptionsManagement.subscriber')} <ui:totalNumber
-                    total="${filteredSubscriptions.size()}"/>
+                ${message(code: 'subscriptionsManagement.subscriber')} <ui:totalNumber total="${filteredSubscriptions.size()}"/>
             </g:if><g:else>
-                ${message(code: 'subscriptionsManagement.subscriptions')} <ui:totalNumber
-                        total="${num_sub_rows}"/>
+                ${message(code: 'subscriptionsManagement.subscriptions')} <ui:totalNumber total="${num_sub_rows}"/>
             </g:else>
         </h3>
         <table class="ui celled la-js-responsive-table la-table table">
             <thead>
             <tr>
                 <g:if test="${editable}">
-                    <th>
+                    <th class="center aligned">
                         <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"/>
                     </th>
                 </g:if>
@@ -98,6 +93,7 @@
                     <th>${message(code: 'default.subscription.label')}</th>
                 </g:if>
                 <th>${message(code: 'default.documents.label')}</th>
+                <th>${message(code:'default.actions.label')}</th>
             </tr>
             </thead>
             <tbody>
@@ -110,8 +106,7 @@
                             <%-- This whole construct is necessary for that the form validation works!!! --%>
                             <div class="field">
                                 <div class="ui checkbox">
-                                    <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}"
-                                                checked="false"/>
+                                    <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}" checked="false"/>
                                 </div>
                             </div>
                         </td>
@@ -135,27 +130,34 @@
                             <ui:customerTypeIcon org="${subscr}" />
                         </td>
                     </g:if>
-                    <g:if test="${controllerName == "myInstitution"}">
+                    <g:elseif test="${controllerName == "myInstitution"}">
                         <td>
-                            <g:link controller="subscription" action="show" id="${sub.id}">
-                                ${sub.name} (${sub.type.getI10n('value')})
-                            </g:link>
+                            ${sub.name} <br/>
+                            <span class="${sub.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL ? 'sc_blue' : ''}"> (${sub.type.getI10n('value')}) </span>
                         </td>
-                    </g:if>
+                    </g:elseif>
                     <td>
                         <laser:render template="/templates/documents/table"
                                   model="${[instance: sub, context: 'documents', redirect: actionName, owntp: 'subscription']}"/>
+                    </td>
+                    <td class="x">
+                        <g:link controller="subscription" action="show" id="${sub.id}"
+                                class="ui icon button blue la-modern-button"
+                                role="button"
+                                aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                            <i aria-hidden="true" class="write icon"></i>
+                        </g:link>
                     </td>
                 </tr>
             </g:each>
             </tbody>
         </table>
     </div>
+    </div><!-- .segments -->
 </g:if>
 <g:else>
     <g:if test="${filterSet}">
-        <br/><strong><g:message code="filter.result.empty.object"
-                                args="${[message(code: "subscription.plural")]}"/></strong>
+        <br/><strong><g:message code="filter.result.empty.object" args="${[message(code: "subscription.plural")]}"/></strong>
     </g:if>
     <g:else>
         <br/><strong><g:message code="result.empty.object" args="${[message(code: "subscription.plural")]}"/></strong>

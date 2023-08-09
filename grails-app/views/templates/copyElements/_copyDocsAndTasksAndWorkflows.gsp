@@ -12,13 +12,18 @@
                 allObjects_writeRights: allObjects_writeRights]"/>
     </g:if>
 
+%{--<pre>--}%
+%{--copyObject          : ${copyObject}--}%
+%{--targetObject        : ${targetObject}--}%
+%{--isConsortialObjects : ${isConsortialObjects}--}%
+%{--</pre>--}%
+
     <g:form action="${actionName}" controller="${controllerName}" id="${params.id ?: params.sourceObjectId}" data-confirm-id="copyElements_form"
             params="[workFlowPart: workFlowPart, sourceObjectId: genericOIDService.getOID(sourceObject), targetObjectId: genericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey, copyObject: copyObject]"
             method="post" class="ui form newLicence">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <table class="ui celled table la-js-responsive-table la-table">
             <thead>
-
                 <tr>
                     <th class="six wide">
                         <g:if test="${sourceObject}"><g:link controller="${sourceObject.getClass().getSimpleName().toLowerCase()}" action="show" id="${sourceObject.id}">${sourceObject.dropdownNamingConvention()}</g:link></g:if>
@@ -29,7 +34,7 @@
                         </th>
                     </g:if>
                     <th class="one wide center aligned" data-label="${message(code:'responsive.table.selectElement')}">
-                        <input type="checkbox"  data-action="copy" onClick="JSPC.app.toggleAllCheckboxes(this)" checked />
+                        <input type="checkbox" data-action="copy" onClick="JSPC.app.toggleAllCheckboxes(this)" checked />
                     </th>
                     <g:if test="${!copyObject}">
                                 <th class="six wide">
@@ -47,9 +52,9 @@
             <g:each in="${['notes', 'tasks', 'docs', 'workflows']}" var="tmpl_cfg_tr">
                 <g:if test="${tmpl_cfg_tr == 'docs'}">
                 %{--DOCUMENTS:--}%
-                <tr>
-                    <td  name="copyObject.takeDocs.source">
-                        <div class="la-min-height"><strong><i class="file outline icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</strong></div>
+                <tr data-element="copyObject.takeDocs">
+                    <td data-element="source">
+                        <div class="la-min-height"><strong><i class="file outline icon"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</strong></div>
                         <g:each in="${sourceDocuments}" var="docctx">
                             <g:if test="${(docctx.isDocAFile() && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
                                 <div data-id="${docctx.id}" class="la-element la-min-height">
@@ -100,8 +105,8 @@
                         </g:each>
                     </td>
                     <g:if test="${!copyObject && targetObject}">
-                        <td  name="copyObject.takeDocs.target">
-                            <div class="la-min-height"><strong><i class="file outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</strong><br /></div>
+                        <td data-element="target">
+                            <div class="la-min-height"><strong><i class="file outline icon"></i>&nbsp;${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</strong><br /></div>
                             <g:if test="${targetObject}">
                                     <g:each in="${targetDocuments}" var="docctx">
                                         <g:if test="${(docctx.isDocAFile() && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
@@ -151,13 +156,17 @@
                             </g:each>
                         </td>
                     </g:if>
+                    <g:if test="${!copyObject && !targetObject}">%{-- tmp fixed markup --}%
+                        <td></td>
+                        <td></td>
+                    </g:if>
                 </tr>
                 </g:if>
                 <g:if test="${tmpl_cfg_tr == 'notes'}">
                 %{--ANNOUNCEMENTS:--}%
-                <tr>
-                    <td name="copyObject.takeAnnouncements.source">
-                        <div class="la-min-height"><strong><i class="sticky note outline icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</strong></div>
+                <tr data-element="copyObject.takeAnnouncements">
+                    <td data-element="source">
+                        <div class="la-min-height"><strong><i class="sticky note outline icon"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</strong></div>
                         <g:each in="${sourceDocuments}" var="docctx">
                             <g:if test="${docctx.isDocANote() && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id}">
                                 <div data-id="${docctx.id}" class="la-element la-min-height ">
@@ -206,8 +215,8 @@
                         </g:each>
                     </td>
                         <g:if test="${!copyObject && targetObject}">
-                                    <td  name="copyObject.takeAnnouncements.target">
-                                        <div class="la-min-height"><strong><i class="sticky note outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</strong></div>
+                                    <td data-element="target">
+                                        <div class="la-min-height"><strong><i class="sticky note outline icon"></i>&nbsp;${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</strong></div>
                                         <g:if test="${targetObject}">
                                                 <g:each in="${targetDocuments}" var="docctx">
                                                     <g:if test="${docctx.isDocANote() && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id}">
@@ -272,11 +281,12 @@
                         </g:if>
                 </tr>
                 </g:if>
+
                 <g:if test="${tmpl_cfg_tr == 'tasks'}">
                 %{--TASKS:--}%
-                <tr>
-                    <td name="copyObject.takeTasks.source">
-                        <div class="la-min-height"><strong><i class="calendar check outline icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong></div>
+                <tr data-element="copyObject.takeTasks">
+                    <td data-element="source">
+                        <div class="la-min-height"><strong><i class="calendar check outline icon"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong></div>
                         <g:each in="${sourceTasks}" var="tsk">
                             <div data-id="${tsk?.id}" class="la-element la-min-height">
                                 <label>
@@ -286,6 +296,9 @@
                             </div>
                         </g:each>
                     </td>
+                    <g:if test="${copyObject}">%{-- tmp fixed markup --}%
+                        <td></td>
+                    </g:if>
                     %{--COPY:--}%
                     <td class="center aligned">
                         <div class="la-min-height"></div>
@@ -299,10 +312,12 @@
                             </div>
                         </g:each>
                     </td>
-                    <td></td>
+                    <g:if test="${!copyObject && !(actionName == 'copyMyElements' && targetObject)}">%{-- todo: fix markup --}%
+                        <td></td>
+                    </g:if>
                     <g:if test="${!copyObject && targetObject}">
-                                <td  name="copyObject.takeTasks.target">
-                                    <div class="la-min-height"><strong><i class="calendar check outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong></div>
+                                <td data-element="target">
+                                    <div class="la-min-height"><strong><i class="calendar check outline icon"></i>&nbsp;${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong></div>
                                     <g:each in="${targetTasks}" var="tsk">
                                         <div data-id="${tsk?.id}" class="la-element la-min-height">
                                         <strong>${tsk?.title}</strong> (${message(code: 'task.endDate.label')}
@@ -325,15 +340,18 @@
                                     </g:each>
                                 </td>
                     </g:if>
+                    <g:if test="${!copyObject && !targetObject}">%{-- tmp fixed markup --}%
+                        <td></td>
+                    </g:if>
                 </tr>
                 </g:if>
 
 
                 <g:if test="${tmpl_cfg_tr == 'workflows'}">
                 %{--WORKFLOWS:--}%
-                    <tr>
-                        <td name="copyObject.takeWorkflows.source">
-                            <div class="la-min-height"><strong><i class="tasks icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeWorkflows")}:</strong></div>
+                    <tr data-element="copyObject.takeWorkflows">
+                        <td data-element="source">
+                            <div class="la-min-height"><strong><i class="tasks icon"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeWorkflows")}:</strong></div>
                             <g:each in="${sourceWorkflows}" var="wf">
                                 <div data-id="${wf.id}" class="la-element la-min-height">
                                     <label>
@@ -344,6 +362,9 @@
                                 </div>
                             </g:each>
                         </td>
+                        <g:if test="${copyObject}">%{-- tmp fixed markup --}%
+                            <td></td>
+                        </g:if>
                         %{--COPY:--}%
                         <td class="center aligned">
                             <div class="la-min-height"></div>
@@ -357,10 +378,12 @@
                                 </div>
                             </g:each>
                         </td>
-                        <td></td>
+                        <g:if test="${!copyObject && !(actionName == 'copyMyElements' && targetObject)}">%{-- todo: fix markup --}%
+                            <td></td>
+                        </g:if>
                         <g:if test="${!copyObject && targetObject}">
-                            <td name="copyObject.takeWorkflows.target">
-                                <div class="la-min-height"><strong><i class="tasks icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeWorkflows")}:</strong></div>
+                            <td data-element="target">
+                                <div class="la-min-height"><strong><i class="tasks icon"></i>&nbsp;${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeWorkflows")}:</strong></div>
                                 <g:each in="${targetWorkflows}" var="wf">
                                     <div data-id="${wf.id}" class="la-element la-min-height">
                                         <strong>${wf.title}</strong>
@@ -383,6 +406,9 @@
                                     <g:else><br /></g:else>
                                 </g:each>
                             </td>
+                        </g:if>
+                        <g:if test="${!copyObject && !targetObject}">%{-- tmp fixed markup --}%
+                            <td></td>
                         </g:if>
                     </tr>
                 </g:if>
@@ -444,126 +470,64 @@
             },
 
             init: function (elem) {
-                var ref = JSPC.app.subCopyController.checkboxes
+                let scc = JSPC.app.subCopyController
 
-                ref.$takeDocIds.change( function(event) {
-                    JSPC.app.subCopyController.takeDocIds(this);
-                }).trigger('change')
-
-                ref.$deleteDocIds.change( function(event) {
-                    JSPC.app.subCopyController.deleteDocIds(this);
-                }).trigger('change')
-
-                ref.$takeAnnouncementIds.change( function(event) {
-                    JSPC.app.subCopyController.takeAnnouncementIds(this);
-                }).trigger('change')
-
-                ref.$deleteAnnouncementIds.change( function(event) {
-                    JSPC.app.subCopyController.deleteAnnouncementIds(this);
-                }).trigger('change')
-
-                ref.$takeTaskIds.change( function(event) {
-                    JSPC.app.subCopyController.takeTaskIds(this);
-                }).trigger('change')
-
-                ref.$deleteTaskIds.change( function(event) {
-                    JSPC.app.subCopyController.deleteTaskIds(this);
-                }).trigger('change')
-
-                ref.$takeWorkflowIds.change( function(event) {
-                    JSPC.app.subCopyController.takeWorkflowIds(this);
-                }).trigger('change')
-
-                ref.$deleteWorkflowIds.change( function(event) {
-                    JSPC.app.subCopyController.deleteWorkflowIds(this);
-                }).trigger('change')
+                scc.checkboxes.$takeDocIds.change( function(event) { scc.takeDocIds(this); } ).trigger('change')
+                scc.checkboxes.$deleteDocIds.change( function(event) { scc.deleteDocIds(this); } ).trigger('change')
+                scc.checkboxes.$takeAnnouncementIds.change( function(event) { scc.takeAnnouncementIds(this); } ).trigger('change')
+                scc.checkboxes.$deleteAnnouncementIds.change( function(event) { scc.deleteAnnouncementIds(this); } ).trigger('change')
+                scc.checkboxes.$takeTaskIds.change( function(event) { scc.takeTaskIds(this); } ).trigger('change')
+                scc.checkboxes.$deleteTaskIds.change( function(event) { scc.deleteTaskIds(this); } ).trigger('change')
+                scc.checkboxes.$takeWorkflowIds.change( function(event) { scc.takeWorkflowIds(this); } ).trigger('change')
+                scc.checkboxes.$deleteWorkflowIds.change( function(event) { scc.deleteWorkflowIds(this); } ).trigger('change')
             },
 
             takeDocIds: function(elem) {
-                if (elem.checked) {
-                    $('.table tr td[name="copyObject.takeDocs.source"] div[data-id="' + elem.value + '"]').addClass('willStay');
-                    $('.table tr td[name="copyObject.takeDocs.target"] div.la-element').addClass('willStay');
-                }
-                else {
-                    $('.table tr td[name="copyObject.takeDocs.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
-                    if (JSPC.app.subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeDocIds') < 1) {
-                        $('.table tr td[name="copyObject.takeDocs.target"] div').removeClass('willStay');
-                    }
-                }
+                JSPC.app.subCopyController._handleTake(elem, 'takeDocs', 'takeDocIds')
             },
-
             deleteDocIds: function(elem) {
-                if (elem.checked) {
-                    $('.table tr td[name="copyObject.takeDocs.target"] div[data-id="' + elem.value + '"]').addClass('willBeReplaced');
-                }
-                else {
-                    $('.table tr td[name="copyObject.takeDocs.target"] div[data-id="' + elem.value + '"]').removeClass('willBeReplaced');
-                }
+                JSPC.app.subCopyController._handleDeleted(elem, 'takeDocs')
             },
 
             takeAnnouncementIds: function(elem) {
-                if (elem.checked) {
-                    $('.table tr td[name="copyObject.takeAnnouncements.source"] div[data-id="' + elem.value + '"]').addClass('willStay');
-                    $('.table tr td[name="copyObject.takeAnnouncements.target"] div.la-element').addClass('willStay');
-                }
-                else {
-                    $('.table tr td[name="copyObject.takeAnnouncements.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
-                    if (JSPC.app.subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeAnnouncementIds') < 1) {
-                        $('.table tr td[name="copyObject.takeAnnouncements.target"] div').removeClass('willStay');
-                    }
-                }
+                JSPC.app.subCopyController._handleTake(elem, 'takeAnnouncements', 'takeAnnouncementIds')
             },
-
             deleteAnnouncementIds: function(elem) {
-                if (elem.checked) {
-                    $('.table tr td[name="copyObject.takeAnnouncements.target"] div[data-id="' + elem.value + '"]').addClass('willBeReplaced');
-                }
-                else {
-                    $('.table tr td[name="copyObject.takeAnnouncements.target"] div[data-id="' + elem.value + '"]').removeClass('willBeReplaced');
-                }
+                JSPC.app.subCopyController._handleDeleted(elem, 'takeAnnouncements')
             },
 
             takeTaskIds: function(elem) {
-                if (elem.checked) {
-                    $('.table tr td[name="copyObject.takeTasks.source"] div[data-id="' + elem.value + '"]').addClass('willStay');
-                    $('.table tr td[name="copyObject.takeTasks.target"] div.la-element').addClass('willStay');
-                }
-                else {
-                    $('.table tr td[name="copyObject.takeTasks.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
-                    if (JSPC.app.subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeTaskIds') < 1){
-                        $('.table tr td[name="copyObject.takeTasks.target"] div').removeClass('willStay');
-                    }
-                }
+                JSPC.app.subCopyController._handleTake(elem, 'takeTasks', 'takeTaskIds')
             },
-
             deleteTaskIds: function(elem) {
-                if (elem.checked) {
-                    $('.table tr td[name="copyObject.takeTasks.target"] div[data-id="' + elem.value + '"]').addClass('willBeReplaced');
-                }
-                else {
-                    $('.table tr td[name="copyObject.takeTasks.target"] div[data-id="' + elem.value + '"]').removeClass('willBeReplaced');
-                }
+                JSPC.app.subCopyController._handleDeleted(elem, 'takeTasks')
             },
 
             takeWorkflowIds: function(elem) {
+                JSPC.app.subCopyController._handleTake(elem, 'takeWorkflows', 'takeWorkflowIds')
+            },
+            deleteWorkflowIds: function(elem) {
+                JSPC.app.subCopyController._handleDeleted(elem, 'takeWorkflows')
+            },
+
+            _handleTake: function(elem, identifier, counterId) {
                 if (elem.checked) {
-                    $('.table tr td[name="copyObject.takeWorkflows.source"] div[data-id="' + elem.value + '"]').addClass('willStay');
-                    $('.table tr td[name="copyObject.takeWorkflows.target"] div.la-element').addClass('willStay');
+                    $('.table tr[data-element="copyObject.' + identifier + '"] td[data-element="source"] div.la-element[data-id="' + elem.value + '"]').addClass('willStay');
+                    $('.table tr[data-element="copyObject.' + identifier + '"] td[data-element="target"] div.la-element').addClass('willStay');
                 }
                 else {
-                    $('.table tr td[name="copyObject.takeWorkflows.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
-                    if (JSPC.app.subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeWorkflowIds') < 1){
-                        $('.table tr td[name="copyObject.takeWorkflows.target"] div').removeClass('willStay');
+                    $('.table tr[data-element="copyObject.' + identifier + '"] td[data-element="source"] div.la-element[data-id="' + elem.value + '"]').removeClass('willStay');
+                    if (JSPC.app.subCopyController.getNumberOfCheckedCheckboxes('copyObject.' + counterId) < 1){
+                        $('.table tr[data-element="copyObject.' + identifier + '"] td[data-element="target"] div.la-element').removeClass('willStay');
                     }
                 }
             },
-
-            deleteWorkflowIds: function(elem) {
+            _handleDeleted: function(elem, identifier) {
                 if (elem.checked) {
-                    $('.table tr td[name="copyObject.takeWorkflows.target"] div[data-id="' + elem.value + '"]').addClass('willBeReplaced');
+                    $('.table tr[data-element="copyObject.' + identifier + '"] td[data-element="target"] div.la-element[data-id="' + elem.value + '"]').addClass('willBeReplaced');
                 }
                 else {
-                    $('.table tr td[name="copyObject.takeWorkflows.target"] div[data-id="' + elem.value + '"]').removeClass('willBeReplaced');
+                    $('.table tr[data-element="copyObject.' + identifier + '"] td[data-element="target"] div.la-element[data-id="' + elem.value + '"]').removeClass('willBeReplaced');
                 }
             },
 

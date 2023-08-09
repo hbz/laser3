@@ -3,13 +3,9 @@
 
     <g:if test="${controllerName == "subscription"}">
         <div class="ui segment">
-            <h3 class="ui header"><g:message code="consortium.superSubscriptionType"/></h3>
+%{--            <h3 class="ui header"><g:message code="consortium.superSubscriptionType"/></h3>--}%
 
-            <div class="twelve wide column">
 
-                <div class="la-inline-lists">
-                    <div class="ui card sixteen wide">
-                        <div class="content">
                             <laser:render template="/templates/links/orgLinksAsList"
                                       model="${[roleLinks    : visibleOrgRelations,
                                                 roleObject   : subscription,
@@ -17,8 +13,8 @@
                                                 editmode     : editable,
                                                 showPersons  : false
                                       ]}"/>
-                            <div class="ui la-vertical buttons">
 
+                            <div class="ui la-vertical buttons">
                                 <laser:render template="/templates/links/orgLinksSimpleModal"
                                           model="${[linkType      : subscription.class.name,
                                                     parent        : genericOIDService.getOID(subscription),
@@ -45,24 +41,16 @@
                                                     tmplModalID   : 'modal_add_agency',
                                                     editmode      : editable
                                           ]}"/>
-
-                            </div><!-- la-js-hide-this-card -->
-                        </div>
-                    </div>
-
-                </div>
-            </div>
+                            </div>
         </div>
     </g:if>
     <div class="ui segment">
 
         <h3 class="ui header">
             <g:if test="${controllerName == "subscription"}">
-                ${message(code: 'subscriptionsManagement.subscriber')} <ui:totalNumber
-                    total="${filteredSubscriptions.size()}"/>
+                ${message(code: 'subscriptionsManagement.subscriber')} <ui:totalNumber total="${filteredSubscriptions.size()}"/>
             </g:if><g:else>
-                ${message(code: 'subscriptionsManagement.subscriptions')} <ui:totalNumber
-                        total="${num_sub_rows}"/>
+                ${message(code: 'subscriptionsManagement.subscriptions')} <ui:totalNumber total="${num_sub_rows}"/>
             </g:else>
         </h3>
         <table class="ui celled la-js-responsive-table la-table table">
@@ -83,8 +71,7 @@
             <tbody>
             <g:each in="${filteredSubscriptions}" status="i" var="zeile">
                 <g:set var="sub" value="${zeile instanceof Subscription ? zeile : zeile.sub}"/>
-                <g:set var="subscr"
-                       value="${zeile instanceof Subscription ? zeile.getSubscriber() : zeile.orgs}"/>
+                <g:set var="subscr" value="${zeile instanceof Subscription ? zeile.getSubscriber() : zeile.orgs}"/>
                 <tr>
                     <td>${(offset ?: 0) + i + 1}</td>
                     <g:if test="${controllerName == "subscription"}">
@@ -92,8 +79,7 @@
                             ${subscr.sortname}
                         </td>
                         <td>
-                            <g:link controller="organisation" action="show"
-                                    id="${subscr.id}">${subscr}</g:link>
+                            <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
 
                             <g:if test="${sub.isSlaved}">
                                 <span data-position="top right"
@@ -171,8 +157,7 @@
 </g:if>
 <g:else>
     <g:if test="${filterSet}">
-        <br/><strong><g:message code="filter.result.empty.object"
-                                args="${[message(code: "subscription.plural")]}"/></strong>
+        <br/><strong><g:message code="filter.result.empty.object" args="${[message(code: "subscription.plural")]}"/></strong>
     </g:if>
     <g:else>
         <br/><strong><g:message code="result.empty.object" args="${[message(code: "subscription.plural")]}"/></strong>

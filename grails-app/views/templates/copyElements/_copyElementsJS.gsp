@@ -1,6 +1,8 @@
+<g:if test="${! tmplConfig_propertiesCompare}"> %{-- default --}%
+
 <laser:script file="${this.getGroovyPageFileName()}">
     $(".setDeletionConfirm").click( function() {
-        console.log($('[data-action="delete"]:checked'));
+        //console.log($('[data-action="delete"]:checked'));
         if($('[data-action="delete"]:checked').length === 0){
             $("#copyElementsSubmit").removeClass("js-open-confirm-modal");
             $("#copyElementsSubmit").off("click");
@@ -24,7 +26,9 @@
     }
 </laser:script>
 
-<g:if test="${!copyObject}">
+</g:if>
+<g:else> %{--<g:if test="${!copyObject}">--}% %{-- only used @ _copyPropertiesCompare.gsp --}%
+
     <laser:script file="${this.getGroovyPageFileName()}">
         // ONLY FOR PROPERIES
         JSPC.app.takeProperty = $('input[name="copyObject.takeProperty"]');
@@ -133,4 +137,5 @@
             }
         });
     </laser:script>
-</g:if>
+%{--</g:if>--}%
+</g:else>

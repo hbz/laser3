@@ -148,3 +148,4 @@
         </div>
     </g:form>
 
+    <laser:render template="/templates/copyElements/copyElementsJS" model="${[tmplConfig_propertiesCompare: true]}"/>

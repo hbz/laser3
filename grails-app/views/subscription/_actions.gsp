@@ -7,6 +7,13 @@
     if(showConsortiaFunctions)
         menuArgs = [message(code:'subscription.details.consortiaMembers.label')]
 %>
+<g:if test="${actionName == 'show'}">
+    <ui:exportDropdown>
+        <ui:exportDropdownItem>
+            <g:link class="item" action="show" target="_blank" params="[id: subscription.id, export: 'pdf']">Export PDF</g:link>
+        </ui:exportDropdownItem>
+    </ui:exportDropdown>
+</g:if>
     <g:if test="${actionName in ['index','addEntitlements']}">
         <ui:exportDropdown>
             <%--

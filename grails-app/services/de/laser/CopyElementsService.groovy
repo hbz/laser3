@@ -21,6 +21,7 @@ import de.laser.utils.LocaleUtils
 import de.laser.workflow.WfChecklist
 import grails.gorm.transactions.Transactional
 import grails.web.mvc.FlashScope
+import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.Sql
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.web.servlet.mvc.GrailsWebRequest
@@ -72,9 +73,7 @@ class CopyElementsService {
                 result = ['startDate', 'endDate', 'status', 'licenseCategory', 'openEnded', 'isPublicForApi']
                 break
             case Subscription.class.simpleName:
-                result = ['startDate', 'endDate', 'manualCancellationDate', 'referenceYear', 'status', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess', 'hasPublishComponent']
-                if(obj.packages)
-                    result << 'holdingSelection'
+                result = ['startDate', 'endDate', 'manualCancellationDate', 'referenceYear', 'status', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess', 'hasPublishComponent', 'holdingSelection']
                 break
             case SurveyInfo.class.simpleName:
                 result = ['startDate', 'endDate', 'comment']
@@ -254,7 +253,7 @@ class CopyElementsService {
      * @param targetObject the target object into which the subscribers should be copied
      * @param flash the message container
      */
-    void copySubscriber(List<Subscription> subscriptionToTake, Object targetObject, def flash) {
+    void copySubscriber(List<Subscription> subscriptionToTake, Object targetObject, def flash, boolean isRenewSub = false) {
         Locale locale = LocaleUtils.getCurrentLocale()
         targetObject.refresh()
         List<Subscription> targetChildSubs = subscriptionService.getValidSubChilds(targetObject), memberHoldingsToTransfer = []
@@ -300,7 +299,9 @@ class CopyElementsService {
                 //ERMS-892: insert preceding relation in new data model
                 if (subMember) {
                     try {
-                        Links.construct([source: newSubscription, destination: subMember, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.getOrg()])
+                        //iff copy context is renewal process!!!!!
+                        if(isRenewSub)
+                            Links.construct([source: newSubscription, destination: subMember, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.getOrg()])
 
                         if(Links.findAllByDestinationSubscriptionAndLinkType(targetObject, RDStore.LINKTYPE_LICENSE).size() > 0) {
                             Set<Links> precedingLicenses = Links.findAllByDestinationSubscriptionAndLinkType(subMember, RDStore.LINKTYPE_LICENSE)
@@ -747,7 +748,7 @@ class CopyElementsService {
             if(sourceObject instanceof Subscription){
                 if (params.copyObject?.copySubscriber && isBothObjectsSet(sourceObject, targetObject)) {
                         List<Subscription> toCopySubs = params.list('copyObject.copySubscriber').collect { genericOIDService.resolveOID(it) }
-                        copySubscriber(toCopySubs, targetObject, flash)
+                        copySubscriber(toCopySubs, targetObject, flash, Boolean.valueOf(params.isRenewSub))
                 }
             }
             if(sourceObject instanceof SurveyConfig) {
@@ -859,34 +860,6 @@ class CopyElementsService {
                         if (params.subscription?.takePackageIds) {
                             List<SubscriptionPackage> packagesToTake = params.list('subscription.takePackageIds').collect { genericOIDService.resolveOID(it) }
                             copyPackages(packagesToTake, targetObject, flash)
-                        }
-
-                        if (params.subscription?.takePackageSettings) {
-                            List takePackageNotifications = params.list('subscription.takePackageNotifications'),
-                            takePackageSettingAudit = params.list('subscription.takePackageSettingAudit'),
-                            takePackageNotificationAudit = params.list('subscription.takePackageNotificationAudit')
-                            params.list('subscription.takePackageSettings').each { String val ->
-                                String[] setting = val.split('§')
-                                boolean withNotification = takePackageNotifications.findIndexOf { String notification -> notification.split('§')[1] == setting[1]} > -1,
-                                settingAudit = takePackageSettingAudit.findIndexOf { String settingAudit -> settingAudit.split('§')[1] == setting[1]} > -1,
-                                notificationAudit = takePackageNotificationAudit.findIndexOf { String notificationAudit -> notificationAudit.split('§')[1] == setting[1]} > -1
-                                SubscriptionPackage sourcePackage = genericOIDService.resolveOID(setting[0])
-                                SubscriptionPackage targetPackage = SubscriptionPackage.findBySubscriptionAndPkg(targetObject, sourcePackage.pkg)
-                                if(setting[2] != 'null' && targetPackage) {
-                                    Map<String, Object> configSettings = [subscriptionPackage: targetPackage, settingValue: RefdataValue.get(setting[2]), settingKey: setting[1], withNotification: withNotification]
-                                    PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
-                                    if (newPcc) {
-                                        if (settingAudit && !AuditConfig.getConfig(targetObject, setting[1]))
-                                            AuditConfig.addConfig(targetObject, setting[1])
-                                        else if (!settingAudit && AuditConfig.getConfig(targetObject, setting[1]))
-                                            AuditConfig.removeConfig(targetObject, setting[1])
-                                        if (notificationAudit && !AuditConfig.getConfig(targetObject, setting[1]+PendingChangeConfiguration.NOTIFICATION_SUFFIX))
-                                            AuditConfig.addConfig(targetObject, setting[1]+PendingChangeConfiguration.NOTIFICATION_SUFFIX)
-                                        else if (!notificationAudit && AuditConfig.getConfig(targetObject, setting[1]+PendingChangeConfiguration.NOTIFICATION_SUFFIX))
-                                            AuditConfig.removeConfig(targetObject, setting[1]+PendingChangeConfiguration.NOTIFICATION_SUFFIX)
-                                    }
-                                }
-                            }
                         }
 
                         if (params.subscription?.takeTitleGroups) {
@@ -1009,12 +982,27 @@ class CopyElementsService {
 
     boolean copyWorkflows(Object sourceObject, List<Long> toCopyWorkflows, Object targetObject, def flash) {
         log.debug('toCopyWorkflows: ' + toCopyWorkflows)
+        boolean succuess = true
+
+        GrailsParameterMap gpm = new GrailsParameterMap(WebUtils.retrieveGrailsWebRequest().getCurrentRequest())
 
         toCopyWorkflows.each { wf ->
-            // todo: check
-            WfChecklist newWorkflow = WfChecklist.get(wf)?.instantiate(targetObject)
-            _save(newWorkflow, flash)
+            WfChecklist wfObj = WfChecklist.get(wf)
+            if (wfObj) {
+                gpm.clear()
+                gpm.putAll([
+                        WF_CHECKLIST_title      : wfObj.title + ' (KOPIE)',
+                        WF_CHECKLIST_description: wfObj.description,
+                        sourceId                : wf,
+                        cmd                     : 'instantiate:WF_CHECKLIST:' + wf,
+                        target                  : genericOIDService.getOID(targetObject)
+                ])
+                // todo: check
+                Map<String, Object> result = workflowService.instantiateChecklist(gpm)
+                succuess = succuess && (result.status == WorkflowService.OP_STATUS_DONE)
+            }
         }
+        succuess
     }
 
     /**
@@ -1534,7 +1522,7 @@ class CopyElementsService {
         if (packagesToDelete) {
 
             packagesToDelete.each { subPkg ->
-                OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=?", [subPkg])
+                OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=:sp", [sp: subPkg])
                 PendingChangeConfiguration.executeUpdate("delete from PendingChangeConfiguration pcc where pcc.subscriptionPackage=:sp", [sp: subPkg])
 
                 CostItem.findAllBySubPkg(subPkg).each { costItem ->
@@ -1628,25 +1616,6 @@ class CopyElementsService {
                     }
                      */
                 }
-            }
-        }
-    }
-
-    /**
-     * Transfers the pending change configuration into the target subscription-package
-     * @param configs the configurations to take
-     * @param target the target subscription package to which the configurations should be applied
-     * @return true if the transfer was successful, false otherwise
-     */
-    boolean copyPendingChangeConfiguration(Collection<PendingChangeConfiguration> configs, SubscriptionPackage target) {
-        configs.each { PendingChangeConfiguration config ->
-            Map<String, Object> configSettings = [subscriptionPackage: target, settingValue: config.settingValue, settingKey: config.settingKey, withNotification: config.withNotification]
-            PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
-            if (newPcc) {
-                if (AuditConfig.getConfig(config.subscriptionPackage.subscription, config.settingKey) && !AuditConfig.getConfig(target.subscription, config.settingKey))
-                    AuditConfig.addConfig(target.subscription, config.settingKey)
-                else if (!AuditConfig.getConfig(config.subscriptionPackage.subscription, config.settingKey) && AuditConfig.getConfig(target.subscription, config.settingKey))
-                    AuditConfig.removeConfig(target.subscription, config.settingKey)
             }
         }
     }

@@ -962,6 +962,7 @@ class MyInstitutionController  {
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
             contactSwitch.addAll(params.list("contactSwitch"))
+            contactSwitch.addAll(params.list("addressSwitch"))
         }
 
         if(params.fileformat == 'xlsx') {
@@ -1276,6 +1277,19 @@ class MyInstitutionController  {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
         params.tab = params.tab ?: 'generalProperties'
+        EhcacheWrapper cache = contextService.getUserCache("/subscriptionsManagement/subscriptionFilter/")
+        Set<String> filterFields = ['q', 'identifier', 'referenceYears', 'status', 'filterPropDef', 'filterProp', 'form', 'resource', 'subKinds', 'isPublicForApi', 'hasPerpetualAccess', 'hasPublishComponent', 'holdingSelection', 'subRunTime', 'subRunTimeMultiYear', 'subType', 'consortia']
+        filterFields.each { String subFilterKey ->
+            if(params.containsKey('processOption')) {
+                if(cache.get(subFilterKey))
+                    params.put(subFilterKey, cache.get(subFilterKey))
+            }
+            else {
+                if(params.get(subFilterKey))
+                    cache.put(subFilterKey, params.get(subFilterKey))
+                else cache.remove(subFilterKey)
+            }
+        }
 
         if(!(params.tab in ['notes', 'documents', 'properties'])){
             //Important
@@ -1777,7 +1791,7 @@ class MyInstitutionController  {
         result.user = contextService.getUser()
         result.contextOrg = contextService.getOrg()
         result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
-        result.languages = RefdataCategory.getAllRefdataValues(RDConstants.LANGUAGE_ISO)
+        result.languages = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         List currentSubIds = []
@@ -2645,16 +2659,29 @@ class MyInstitutionController  {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
-        params.sort = params.sort ?: 'pr.org.name'
-
-        List visiblePersons = []
-        Map<String, Object> selectedFields = [:]
+        params.sort = params.sort ?: 'pr.org.sortname'
+        params.tab = params.tab ?: 'contacts'
+        EhcacheWrapper cache = contextService.getUserCache("/myInstitution/addressbook/")
+        switch(params.tab) {
+            case 'contacts':
+                result.personOffset = result.offset
+                result.addressOffset = cache.get('addressOffset') ?: 0
+                break
+            case 'addresses':
+                result.addressOffset = result.offset
+                result.personOffset = cache.get('personOffset') ?: 0
+                break
+        }
+        cache.put('personOffset', result.personOffset)
+        cache.put('addressOffset', result.addressOffset)
+        List visiblePersons = [], visibleAddresses = []
+        Map<String, Object> selectedFields = [:], configMap = params.clone()
         String filename = escapeService.escapeString("${message(code: 'menu.institutions.myAddressbook')}_${DateUtils.getSDF_yyyyMMdd().format(new Date())}")
         if(params.fileformat) {
             if (params.filename) {
                 filename = params.filename
             }
-            Map<String, Object> configMap = [function:[], position: [], sort: 'pr.org.name']
+            configMap = [function:[], position: [], type: [], sort: 'pr.org.sortname']
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('ief:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('ief:', ''), it.value ) }
             selectedFields.each { String key, value ->
@@ -2666,16 +2693,22 @@ class MyInstitutionController  {
                     else if(field[0] == 'position') {
                         configMap.position << field[1]
                     }
+                    else if(field[0] == 'type') {
+                        configMap.type << field[1]
+                    }
                 }
             }
             visiblePersons.addAll(addressbookService.getVisiblePersons("addressbook", configMap))
+            visibleAddresses.addAll(addressbookService.getVisibleAddresses("addressbook", configMap))
             selectedFieldsRaw.clear()
             selectedFields.clear()
             selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
         }
-        else
-            visiblePersons.addAll(addressbookService.getVisiblePersons("addressbook",params))
+        else {
+            visiblePersons.addAll(addressbookService.getVisiblePersons("addressbook", configMap+[offset: result.personOffset]))
+            visibleAddresses.addAll(addressbookService.getVisibleAddresses("addressbook", configMap+[offset: result.addressOffset]))
+        }
 
         Set<String> filterFields = ['org', 'prs', 'filterPropDef', 'filterProp', 'function', 'position', 'showOnlyContactPersonForInstitution', 'showOnlyContactPersonForProviderAgency']
         result.filterSet = params.keySet().any { String selField -> selField in filterFields }
@@ -2687,7 +2720,9 @@ class MyInstitutionController  {
                 )
 
         result.num_visiblePersons = visiblePersons.size()
-        result.visiblePersons = visiblePersons.drop(result.offset).take(result.max)
+        result.visiblePersons = visiblePersons.drop(result.personOffset).take(result.max)
+        result.num_visibleAddresses = visibleAddresses.size()
+        result.addresses = visibleAddresses.drop(result.addressOffset).take(result.max)
 
         if (visiblePersons){
             result.emailAddresses = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
@@ -2709,7 +2744,7 @@ class MyInstitutionController  {
         else */
         if(params.fileformat == 'xlsx') {
 
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportAddresses(visiblePersons, selectedFields, params.exportOnlyContactPersonForInstitution == 'true', params.exportOnlyContactPersonForProviderAgency == 'true', ExportClickMeService.FORMAT.XLS)
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportAddresses(visiblePersons, visibleAddresses, selectedFields, params.exportOnlyContactPersonForInstitution == 'true', params.exportOnlyContactPersonForProviderAgency == 'true', ExportClickMeService.FORMAT.XLS)
 
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -3182,6 +3217,7 @@ class MyInstitutionController  {
                 file = params.filename
             }
             contactSwitch.addAll(params.list("contactSwitch"))
+            contactSwitch.addAll(params.list("addressSwitch"))
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
         }
@@ -3380,6 +3416,7 @@ join sub.orgRelations or_sub where
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
             contactSwitch.addAll(params.list("contactSwitch"))
+            contactSwitch.addAll(params.list("addressSwitch"))
         }
 
         /*if ( params.exportXLS ) {

@@ -41,8 +41,7 @@
     </g:elseif>
 
     <g:if test="${filteredSubscriptions}">
-        <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
-                        max="${max}" total="${num_sub_rows}"/>
+        <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}" max="${max}" total="${num_sub_rows}"/>
     </g:if>
 </g:else>
 
