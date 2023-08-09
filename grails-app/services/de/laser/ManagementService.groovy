@@ -807,94 +807,98 @@ class ManagementService {
                         }
                     }
                     else {
+                        Map<String, Object> changeMap = [:]
+                        if (startDate && !auditService.getAuditConfig(result.subscription, 'startDate')) {
+                            changeMap.startDate = startDate
+                            change << messageSource.getMessage('default.startDate.label', null, locale)
+                        }
+                        if (startDate && auditService.getAuditConfig(result.subscription, 'startDate')) {
+                            noChange << messageSource.getMessage('default.startDate.label', null, locale)
+                        }
+                        if (endDate && !auditService.getAuditConfig(result.subscription, 'endDate')) {
+                            changeMap.endDate = endDate
+                            change << messageSource.getMessage('default.endDate.label', null, locale)
+                        }
+                        if (endDate && auditService.getAuditConfig(result.subscription, 'endDate')) {
+                            noChange << messageSource.getMessage('default.endDate.label', null, locale)
+                        }
+                        if (referenceYear && !auditService.getAuditConfig(result.subscription, 'referenceYear')) {
+                            changeMap.referenceYear = referenceYear
+                            change << messageSource.getMessage('subscription.referenceYear.label', null, locale)
+                        }
+                        if (referenceYear && auditService.getAuditConfig(result.subscription, 'referenceYear')) {
+                            noChange << messageSource.getMessage('subscription.referenceYear.label', null, locale)
+                        }
+                        if (params.process_status && !auditService.getAuditConfig(result.subscription, 'status')) {
+                            changeMap.status = RefdataValue.get(params.process_status)
+                            change << messageSource.getMessage('subscription.status.label', null, locale)
+                        }
+                        if (params.process_status && auditService.getAuditConfig(result.subscription, 'status')) {
+                            noChange << messageSource.getMessage('subscription.status.label', null, locale)
+                        }
+                        if (params.process_kind && !auditService.getAuditConfig(result.subscription, 'kind')) {
+                            changeMap.kind = RefdataValue.get(params.process_kind)
+                            change << messageSource.getMessage('subscription.kind.label', null, locale)
+                        }
+                        if (params.process_kind && auditService.getAuditConfig(result.subscription, 'kind')) {
+                            noChange << messageSource.getMessage('subscription.kind.label', null, locale)
+                        }
+                        if (params.process_form && !auditService.getAuditConfig(result.subscription, 'form')) {
+                            changeMap.form = RefdataValue.get(params.process_form) ?: 'noChange'
+                            change << messageSource.getMessage('subscription.form.label', null, locale)
+                        }
+                        if (params.process_form && auditService.getAuditConfig(result.subscription, 'form')) {
+                            noChange << messageSource.getMessage('subscription.form.label', null, locale)
+                        }
+                        if (params.process_resource && !auditService.getAuditConfig(result.subscription, 'resource')) {
+                            changeMap.resource = RefdataValue.get(params.process_resource) ?: 'noChange'
+                            change << messageSource.getMessage('subscription.resource.label', null, locale)
+                        }
+                        if (params.process_resource && auditService.getAuditConfig(result.subscription, 'resource')) {
+                            noChange << messageSource.getMessage('subscription.resource.label', null, locale)
+                        }
+                        if (params.process_isPublicForApi && !auditService.getAuditConfig(result.subscription, 'isPublicForApi')) {
+                            changeMap.isPublicForApi = RefdataValue.get(params.process_isPublicForApi) == RDStore.YN_YES
+                            change << messageSource.getMessage('subscription.isPublicForApi.label', null, locale)
+                        }
+                        if (params.process_isPublicForApi && auditService.getAuditConfig(result.subscription, 'isPublicForApi')) {
+                            noChange << messageSource.getMessage('subscription.isPublicForApi.label', null, locale)
+                        }
+                        if (params.process_hasPerpetualAccess && !auditService.getAuditConfig(result.subscription, 'hasPerpetualAccess')) {
+                            changeMap.hasPerpetualAccess = RefdataValue.get(params.process_hasPerpetualAccess) == RDStore.YN_YES
+                            //subscription.hasPerpetualAccess = RefdataValue.get(params.process_hasPerpetualAccess)
+                            change << messageSource.getMessage('subscription.hasPerpetualAccess.label', null, locale)
+                        }
+                        if (params.process_hasPerpetuaLAccess && auditService.getAuditConfig(result.subscription, 'hasPerpetualAccess')) {
+                            noChange << messageSource.getMessage('subscription.hasPerpetualAccess.label', null, locale)
+                        }
+                        if (params.process_hasPublishComponent && !auditService.getAuditConfig(result.subscription, 'hasPublishComponent')) {
+                            changeMap.hasPublishComponent = RefdataValue.get(params.process_hasPublishComponent) == RDStore.YN_YES
+                            change << messageSource.getMessage('subscription.hasPublishComponent.label', null, locale)
+                        }
+                        if (params.process_hasPublishComponent && auditService.getAuditConfig(result.subscription, 'hasPublishComponent')) {
+                            noChange << messageSource.getMessage('subscription.hasPublishComponent.label', null, locale)
+                        }
+                        if (params.process_holdingSelection && !auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
+                            changeMap.holdingSelection = RefdataValue.get(params.process_holdingSelection) ?: 'noChange'
+                            change << messageSource.getMessage('subscription.holdingSelection.label', null, locale)
+                        }
+                        if (params.process_holdingSelection && auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
+                            noChange << messageSource.getMessage('subscription.holdingSelection.label', null, locale)
+                        }
+                        if (params.process_isMultiYear && !auditService.getAuditConfig(result.subscription, 'isMultiYear')) {
+                            changeMap.isMultiYear = RefdataValue.get(params.process_isMultiYear) == RDStore.YN_YES
+                            change << messageSource.getMessage('subscription.isMultiYear.label', null, locale)
+                        }
+                        if (params.process_isMultiYear && auditService.getAuditConfig(result.subscription, 'isMultiYear')) {
+                            noChange << messageSource.getMessage('subscription.isMultiYear.label', null, locale)
+                        }
                         subscriptions.each { Subscription subscription ->
                             if (subscription.isEditableBy(result.user)) {
-                                if (startDate && !auditService.getAuditConfig(subscription.instanceOf, 'startDate')) {
-                                    subscription.startDate = startDate
-                                    change << messageSource.getMessage('default.startDate.label', null, locale)
+                                changeMap.each { String key, value ->
+                                    if(changeMap.get(key) != 'noChange')
+                                        subscription[key] = changeMap.get(key)
                                 }
-                                if (startDate && auditService.getAuditConfig(subscription.instanceOf, 'startDate')) {
-                                    noChange << messageSource.getMessage('default.startDate.label', null, locale)
-                                }
-                                if (endDate && !auditService.getAuditConfig(subscription.instanceOf, 'endDate')) {
-                                    subscription.endDate = endDate
-                                    change << messageSource.getMessage('default.endDate.label', null, locale)
-                                }
-                                if (endDate && auditService.getAuditConfig(subscription.instanceOf, 'endDate')) {
-                                    noChange << messageSource.getMessage('default.endDate.label', null, locale)
-                                }
-                                if (referenceYear && !auditService.getAuditConfig(subscription.instanceOf, 'referenceYear')) {
-                                    subscription.referenceYear = referenceYear
-                                    change << messageSource.getMessage('subscription.referenceYear.label', null, locale)
-                                }
-                                if (referenceYear && auditService.getAuditConfig(subscription.instanceOf, 'referenceYear')) {
-                                    noChange << messageSource.getMessage('subscription.referenceYear.label', null, locale)
-                                }
-                                if (params.process_status && !auditService.getAuditConfig(subscription.instanceOf, 'status')) {
-                                    subscription.status = RefdataValue.get(params.process_status) ?: subscription.status
-                                    change << messageSource.getMessage('subscription.status.label', null, locale)
-                                }
-                                if (params.process_status && auditService.getAuditConfig(subscription.instanceOf, 'status')) {
-                                    noChange << messageSource.getMessage('subscription.status.label', null, locale)
-                                }
-                                if (params.process_kind && !auditService.getAuditConfig(subscription.instanceOf, 'kind')) {
-                                    subscription.kind = RefdataValue.get(params.process_kind) ?: subscription.kind
-                                    change << messageSource.getMessage('subscription.kind.label', null, locale)
-                                }
-                                if (params.process_kind && auditService.getAuditConfig(subscription.instanceOf, 'kind')) {
-                                    noChange << messageSource.getMessage('subscription.kind.label', null, locale)
-                                }
-                                if (params.process_form && !auditService.getAuditConfig(subscription.instanceOf, 'form')) {
-                                    subscription.form = RefdataValue.get(params.process_form) ?: subscription.form
-                                    change << messageSource.getMessage('subscription.form.label', null, locale)
-                                }
-                                if (params.process_form && auditService.getAuditConfig(subscription.instanceOf, 'form')) {
-                                    noChange << messageSource.getMessage('subscription.form.label', null, locale)
-                                }
-                                if (params.process_resource && !auditService.getAuditConfig(subscription.instanceOf, 'resource')) {
-                                    subscription.resource = RefdataValue.get(params.process_resource) ?: subscription.resource
-                                    change << messageSource.getMessage('subscription.resource.label', null, locale)
-                                }
-                                if (params.process_resource && auditService.getAuditConfig(subscription.instanceOf, 'resource')) {
-                                    noChange << messageSource.getMessage('subscription.resource.label', null, locale)
-                                }
-                                if (params.process_isPublicForApi && !auditService.getAuditConfig(subscription.instanceOf, 'isPublicForApi')) {
-                                    subscription.isPublicForApi = RefdataValue.get(params.process_isPublicForApi) == RDStore.YN_YES
-                                    change << messageSource.getMessage('subscription.isPublicForApi.label', null, locale)
-                                }
-                                if (params.process_isPublicForApi && auditService.getAuditConfig(subscription.instanceOf, 'isPublicForApi')) {
-                                    noChange << messageSource.getMessage('subscription.isPublicForApi.label', null, locale)
-                                }
-                                if (params.process_hasPerpetualAccess && !auditService.getAuditConfig(subscription.instanceOf, 'hasPerpetualAccess')) {
-                                    subscription.hasPerpetualAccess = RefdataValue.get(params.process_hasPerpetualAccess) == RDStore.YN_YES
-                                    //subscription.hasPerpetualAccess = RefdataValue.get(params.process_hasPerpetualAccess)
-                                    change << messageSource.getMessage('subscription.hasPerpetualAccess.label', null, locale)
-                                }
-                                if (params.process_hasPerpetuaLAccess && auditService.getAuditConfig(subscription.instanceOf, 'hasPerpetualAccess')) {
-                                    noChange << messageSource.getMessage('subscription.hasPerpetualAccess.label', null, locale)
-                                }
-                                if (params.process_hasPublishComponent && !auditService.getAuditConfig(subscription.instanceOf, 'hasPublishComponent')) {
-                                    subscription.hasPublishComponent = RefdataValue.get(params.process_hasPublishComponent) == RDStore.YN_YES
-                                    change << messageSource.getMessage('subscription.hasPublishComponent.label', null, locale)
-                                }
-                                if (params.process_hasPublishComponent && auditService.getAuditConfig(subscription.instanceOf, 'hasPublishComponent')) {
-                                    noChange << messageSource.getMessage('subscription.hasPublishComponent.label', null, locale)
-                                }
-                                if (params.process_holdingSelection && !auditService.getAuditConfig(subscription.instanceOf, 'holdingSelection')) {
-                                    subscription.holdingSelection = RefdataValue.get(params.process_holdingSelection) ?: subscription.holdingSelection
-                                    change << messageSource.getMessage('subscription.holdingSelection.label', null, locale)
-                                }
-                                if (params.process_holdingSelection && auditService.getAuditConfig(subscription.instanceOf, 'holdingSelection')) {
-                                    noChange << messageSource.getMessage('subscription.holdingSelection.label', null, locale)
-                                }
-                                if (params.process_isMultiYear && !auditService.getAuditConfig(subscription.instanceOf, 'isMultiYear')) {
-                                    subscription.isMultiYear = RefdataValue.get(params.process_isMultiYear) == RDStore.YN_YES
-                                    change << messageSource.getMessage('subscription.isMultiYear.label', null, locale)
-                                }
-                                if (params.process_isMultiYear && auditService.getAuditConfig(subscription.instanceOf, 'isMultiYear')) {
-                                    noChange << messageSource.getMessage('subscription.isMultiYear.label', null, locale)
-                                }
-
                                 if (params.process_isAutomaticRenewAnnually && !auditService.getAuditConfig(subscription.instanceOf, 'isAutomaticRenewAnnually') && subscription.isAllowToAutomaticRenewAnnually()) {
                                     subscription.isAutomaticRenewAnnually = RefdataValue.get(params.process_isAutomaticRenewAnnually) == RDStore.YN_YES
                                     change << messageSource.getMessage('subscription.isAutomaticRenewAnnually.label', null, locale)
@@ -903,6 +907,14 @@ class ManagementService {
                                     subscription.save()
                                 }
                             }
+                        }
+                        if(change) {
+                            Object[] affectedFields = [change.join(', ')]
+                            flash.message = messageSource.getMessage('subscriptionsManagement.changeAccepted', affectedFields, locale)
+                        }
+                        if(noChange) {
+                            Object[] affectedFields = [noChange.join(', ')]
+                            flash.error = messageSource.getMessage('subscriptionsManagement.blockingAudit', affectedFields, locale)
                         }
                     }
                 }

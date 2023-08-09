@@ -53,7 +53,7 @@ class WekbStatsService {
     }
 
     Map<String, Object> processData(int days) {
-        log.debug('WekbStatsService.getCurrent(' + days + ')')
+        log.debug('WekbStatsService.processData(' + days + ')')
         Map<String, Object> result = [:]
 
         Date frame = Date.from(LocalDate.now().minusDays(days).atStartOfDay(ZoneId.systemDefault()).toInstant())

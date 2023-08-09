@@ -14,14 +14,14 @@ class MuleJob extends AbstractJob {
     WekbStatsService wekbStatsService
 
     static triggers = {
-    cron name: 'muleTrigger', startDelay:10000, cronExpression: "0 0/15 6-21 * * ?"
-    // cronExpression: "s m h D M W Y"
+        cron name: 'muleTrigger', startDelay:10000, cronExpression: "0 0/15 6-21 * * ?"
+        // cronExpression: "s m h D M W Y"
     }
 
     static List<List> configurationProperties = [ ConfigMapper.MULE_JOB_ACTIVE ]
 
     boolean isAvailable() {
-        !jobIsRunning
+        !jobIsRunning && ConfigMapper.getMuleJobActive()
     }
     boolean isRunning() {
         jobIsRunning

@@ -66,6 +66,13 @@ class RefdataReorderService {
             rdv.save()
         }
 
+        //ddc: order by key (DDC)
+        order = 10
+        RefdataValue.executeQuery('select rdv from RefdataValue rdv join rdv.owner rdc where rdc.desc = :ddc order by rdv.value asc', [ddc: RDConstants.DDC]).eachWithIndex { RefdataValue rdv, int i ->
+            rdv.order = i*order
+            rdv.save()
+        }
+
         //lang_iso: German and English first
         order = 10
         RefdataValue.executeQuery("select rdv from RefdataValue rdv join rdv.owner rdc where rdc.desc = :langIso order by rdv.value asc", [langIso: RDConstants.LANGUAGE_ISO]).eachWithIndex{ RefdataValue rdv, int i ->

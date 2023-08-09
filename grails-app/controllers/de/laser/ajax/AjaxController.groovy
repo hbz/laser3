@@ -1189,6 +1189,7 @@ class AjaxController {
                                     if(m[prop] instanceof RefdataValue) {
                                         if(m[prop].owner.desc == RDConstants.Y_N_U)
                                             m.setProperty(prop, RDStore.YNU_UNKNOWN)
+                                        else m.setProperty(prop, null)
                                     }
                                     else
                                         m.setProperty(prop, null)
