@@ -271,7 +271,7 @@
     %{--<div class="ui very long scrolling container">
         <table class="ui stuck unstackable celled sortable table">--}%
         <div class="">
-            <table class="ui compact celled sortable table la-table la-js-responsive-table">
+            <table class="ui compact monitor stackable celled sortable table la-table la-js-responsive-table">
                 <thead>
                 <tr>
 %{--                    <th scope="col" rowspan="3" class="center aligned">
@@ -353,7 +353,7 @@
                     <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}"
                                       property="renewalSent"
                                       title="${message(code: 'subscription.renewalSent.table.th')}"/>
-                   <th scope="col" rowspan="2" class="center aligned two wide">
+                    <th scope="col" rowspan="2" class="center aligned two wide">
                         ${message(code: 'subscriptionsManagement.documents')}
                     </th>%{-- Documents--}%
 

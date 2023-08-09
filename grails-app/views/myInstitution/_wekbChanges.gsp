@@ -9,30 +9,30 @@
         </div>
         <div class="content">
 
-    <ui:msg class="info" noClose="true">
-        Folgende Ressourcen wurden in den vergangenen <strong>${wekbChanges.query.days}</strong> Tagen
+            <ui:msg class="info" noClose="true">
+                Folgende Ressourcen wurden in den vergangenen <strong>${wekbChanges.query.days}</strong> Tagen
         (seit dem <strong>${wekbChanges.query.changedSince}</strong>) geändert, bzw. neu angelegt.
 
-        <div class="ui four column compact grid">
-            <div class="column">
-                <i class="university icon"></i> ${wekbChanges.org.count} ${message(code: 'default.ProviderAgency.label')} <br/>
-                <i class="cloud icon"></i> ${wekbChanges.platform.count} ${message(code: 'platform.plural')} <br/>
-                <i class="gift icon"></i> ${wekbChanges.package.count} ${message(code: 'package.plural')}
-            </div>
-            <div class="column">
-                Neu: ${wekbChanges.org.created.size()}, Geändert: ${wekbChanges.org.updated.size()}, Meine Objekte: ${wekbChanges.org.my.size()} <br/>
-                Neu: ${wekbChanges.platform.created.size()}, Geändert: ${wekbChanges.platform.updated.size()}, Meine Objekte: ${wekbChanges.platform.my.size()} <br/>
-                Neu: ${wekbChanges.package.created.size()}, Geändert: ${wekbChanges.package.updated.size()}, Meine Objekte: ${wekbChanges.package.my.size()}
-            </div>
-            <div class="column">
-            </div>
-            <div class="column">
-                <a href="#" class="wekbFlyoutTrigger" data-preset="created,all,all">Neue Objekte anzeigen</a> <br/>
-                <a href="#" class="wekbFlyoutTrigger" data-preset="all,all,my">Meine Objekte anzeigen</a> <br/>
-                <a href="#" class="wekbFlyoutTrigger" data-preset="all,all,all">Alle Änderungen anzeigen</a>
-            </div>
-        </div>
-    </ui:msg>
+                <div class="ui four column compact grid">
+                    <div class="column">
+                        <i class="university icon"></i> ${wekbChanges.org.count} ${message(code: 'default.ProviderAgency.label')} <br/>
+                        <i class="cloud icon"></i> ${wekbChanges.platform.count} ${message(code: 'platform.plural')} <br/>
+                        <i class="gift icon"></i> ${wekbChanges.package.count} ${message(code: 'package.plural')}
+                    </div>
+                    <div class="column">
+                        Neu: ${wekbChanges.org.created.size()}, Geändert: ${wekbChanges.org.updated.size()}, Meine Objekte: ${wekbChanges.org.my.size()} <br/>
+                        Neu: ${wekbChanges.platform.created.size()}, Geändert: ${wekbChanges.platform.updated.size()}, Meine Objekte: ${wekbChanges.platform.my.size()} <br/>
+                        Neu: ${wekbChanges.package.created.size()}, Geändert: ${wekbChanges.package.updated.size()}, Meine Objekte: ${wekbChanges.package.my.size()}
+                    </div>
+                    <div class="column">
+                    </div>
+                    <div class="column">
+                        <a href="#" class="wekbFlyoutTrigger" data-preset="created,all,all">Neue Objekte anzeigen</a> <br/>
+                        <a href="#" class="wekbFlyoutTrigger" data-preset="all,all,my">Meine Objekte anzeigen</a> <br/>
+                        <a href="#" class="wekbFlyoutTrigger" data-preset="all,all,all">Alle Änderungen anzeigen</a>
+                    </div>
+                </div>
+            </ui:msg>
 
         </div>
     </div>
@@ -104,9 +104,9 @@
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
 
         tmplConfig = [
-               ['org',      wekbChanges.org,        'default.ProviderAgency.label', 'university',   'menu.my.providers'],
-               ['platform', wekbChanges.platform,   'platform.plural',              'cloud',        'menu.my.platforms'],
-               ['package',  wekbChanges.package,    'package.plural',               'gift',         'menu.my.packages']
+                ['org',      wekbChanges.org,        'default.ProviderAgency.label', 'university',   'menu.my.providers'],
+                ['platform', wekbChanges.platform,   'platform.plural',              'cloud',        'menu.my.platforms'],
+                ['package',  wekbChanges.package,    'package.plural',               'gift',         'menu.my.packages']
         ]
     %>
 
@@ -154,8 +154,8 @@
                          data-xl="${obj.globalUID ? 'laser' : 'notlaser'}"
                          data-xm="${obj.uuid in cfg[1].my ? 'my' : 'notmy'}"
                     >
-                         <div class="column one wide center aligned">${i+1}</div>
-                         <div class="column ten wide">
+                        <div class="column one wide center aligned">${i+1}</div>
+                        <div class="column ten wide">
                             <ui:wekbIconLink type="${cfg[0]}" gokbId="${obj.uuid}" />
                             <g:if test="${obj.globalUID}">
                                 <g:link controller="${cfg[0]}" action="show" target="_blank" params="${[id:obj.globalUID]}">${obj.name}</g:link>
