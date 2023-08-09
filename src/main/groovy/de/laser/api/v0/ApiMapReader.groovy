@@ -119,22 +119,17 @@ class ApiMapReader {
             return null
         }
 
-        List<String> altnames   = []
-        row['altnames'].each { GroovyRowResult altNameRow ->
-            altnames << altNameRow['altname_name']
-        }
-
         result.globalUID         = row['tipp_guid']
         result.gokbId            = row['tipp_gokb_id']
         result.name              = row['tipp_name']
-        result.altnames          = altnames
+        result.altnames          = row['altnames'].collect { GroovyRowResult altNameRow -> altNameRow['altname_name'] }
         result.firstAuthor       = row['tipp_first_author']
         result.firstEditor       = row['tipp_first_editor']
         result.editionStatement  = row['tipp_edition_number']
         result.publisherName     = row['tipp_publisher_name']
         result.hostPlatformURL   = row['tipp_host_platform_url']
         result.dateFirstInPrint  = row['tipp_date_first_in_print'] ? ApiToolkit.formatInternalDate(row['tipp_date_first_in_print']) : null
-        result.dateFirstInOnline = row['tipp_date_first_online'] ? ApiToolkit.formatInternalDate(row['tipp_date_first_online']) : null
+        result.dateFirstOnline   = row['tipp_date_first_online'] ? ApiToolkit.formatInternalDate(row['tipp_date_first_online']) : null
         result.imprint           = row['tipp_imprint']
         result.seriesName        = row['tipp_series_name']
         result.subjectReference  = row['tipp_subject_reference']
@@ -146,6 +141,7 @@ class ApiMapReader {
         result.status           = row['tipp_status']
         result.accessType       = row['tipp_access_type']
         result.openAccess       = row['tipp_open_access']
+        /*
         List<Map<String, Object>> ddcs = [], languages = []
         row['ddcs'].each { GroovyRowResult ddcRow ->
             ddcs << [value: ddcRow['rdv_value'], value_de: ddcRow['rdv_value_de'], value_en: ddcRow['rdv_value_en']]
@@ -153,28 +149,15 @@ class ApiMapReader {
         row['languages'].each { GroovyRowResult langRow ->
             languages << [value: langRow['rdv_value'], value_de: langRow['rdv_value_de'], value_en: langRow['rdv_value_en']]
         }
-        result.ddcs             = ddcs
-        result.languages        = languages
+        */
+        result.ddcs             = row['languages']
+        result.languages        = row['ddcs']
         result.medium           = row['tipp_medium']
 
         // References
-        List<Map<String, Object>> identifiers = []
-        row['ids'].each { idRow ->
-            identifiers << [namespace: idRow['idns_ns'], value: idRow['id_value']]
-        }
-        result.identifiers          = identifiers       // de.laser.Identifier
+        result.identifiers          = row['ids']       // de.laser.Identifier
         //result.platform             = ApiUnsecuredMapReader.getPlatformStubMapWithSQL(row['platform']) // de.laser.Platform
-        List<Map<String, Object>> publishers = []
-        row['publishers'].each { pubRow ->
-            Map<String, Object> pubMap = [roleType: pubRow['rdv_value'],
-                           globalUID: pubRow['org_guid'],
-                           gokbId: pubRow['org_gokb_id'],
-                           name: pubRow['org_name'],
-                           endDate: pubRow['or_end_date'] ? ApiToolkit.formatInternalDate(pubRow['or_end_date']) : null,
-                           startDate: pubRow['or_start_date'] ? ApiToolkit.formatInternalDate(pubRow['or_start_date']) : null]
-            publishers << pubMap
-        }
-        result.publishers           = publishers
+        result.publishers           = row['publishers']
 
         if (ignoreRelation != ApiReader.IGNORE_ALL) {
             if (ignoreRelation != ApiReader.IGNORE_PACKAGE) {

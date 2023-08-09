@@ -30,6 +30,7 @@ class ApiToolkit {
     static final NO_ACCESS_DUE_NOT_PUBLIC   = 'NOT_PUBLIC'
 
     static final DATE_TIME_PATTERN      = "yyyy-MM-dd'T'HH:mm:ss"
+    static final DATE_TIME_PATTERN_SQL  = 'yyyy-MM-dd"T"HH24:MI:SS'
 
     /**
      * Gets all defined API levels
