@@ -49,6 +49,8 @@ isUpdateDashboardTableInDatabase  = false
 
 laserSystemId = 'LAS:eR' // 'LAS:eR-DEV @ Grails5', 'LAS:eR-QA @ Grails5', 'LAS:eR-Productive'
 
+muleJobActive = false
+
 notifications.email.from = 'laser@local'
 notifications.email.genericTemplate = true // if enabled, no customisation in email (else, customized template will be sent)
 notifications.email.replyTo = 'laser@local'

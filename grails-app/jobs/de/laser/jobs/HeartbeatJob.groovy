@@ -48,7 +48,6 @@ class HeartbeatJob extends AbstractJob {
 
             ConfigMapper.setConfig( ConfigMapper.QUARTZ_HEARTBEAT, new Date() )
             SystemActivityProfiler.update()
-            // TODO - wekbStatsService.updateCache()
 
             // org.springframework.messaging.simp.SimpMessageSendingOperations extends org.springframework.messaging.core.MessageSendingOperations
             // +-- org.springframework.messaging.simp.SimpMessagingTemplate
