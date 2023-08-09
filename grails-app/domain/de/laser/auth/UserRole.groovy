@@ -69,14 +69,33 @@ class UserRole implements Serializable, Comparable {
 		hashCode
 	}
 
+	/**
+	 * Does a user exist with the given role?
+	 * @param userId the {@link User} ID to check
+	 * @param roleId the {@link Role} ID to check
+	 * @return whether the given combination exists, i.e. if there is a user who has the given role assigned
+	 */
 	static boolean exists(long userId, long roleId) {
 		UserRole.get(userId, roleId) != null
 	}
 
+	/**
+	 * Gets the user role entry with the given combination of user and role IDs
+	 * @param userId the {@link User} ID
+	 * @param roleId the {@link Role} ID
+	 * @return the user role record matching the two IDs
+	 */
 	static UserRole get(long userId, long roleId) {
 		UserRole.get(User.load(userId), Role.load(roleId))
 	}
 
+	/**
+	 * Gets the user role entry with the given combination of user and role objects
+	 * (= the same as {@link #get(long, long)}, but with objects instead of database IDs)
+	 * @param user the {@link User}
+	 * @param role the {@link Role}
+	 * @return the user role entry linking the two objects
+	 */
 	static UserRole get(User user, Role role) {
 		UserRole.find('from UserRole ur where ur.user=:user and ur.role=:role', [ user: user, role: role ])
 	}
