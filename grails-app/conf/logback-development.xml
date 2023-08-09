@@ -6,21 +6,22 @@
         </encoder>
 
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
-            <evaluator>
+            <evaluator class="ch.qos.logback.classic.boolex.JaninoEventEvaluator">
                 <expression>
                     <!-- logback-development.xml for details -->
                     <!-- hibernate -->
-                    if (message.contains("HHH020003")) return true;
-                    if (message.contains("HHH020008")) return true;
-                    if (message.contains("HHH90000022")) return true;
-                    if (message.contains("HHH90001005")) return true;
+                    if (formattedMessage.contains("HHH020003")) return true;
+                    if (formattedMessage.contains("HHH020008")) return true;
+                    if (formattedMessage.contains("HHH90000022")) return true;
+                    if (formattedMessage.contains("HHH90001005")) return true;
                     <!-- warn -->
-                    if (message.contains("Replaced rule for '")) return true;
-                    if (message.contains("299 Elasticsearch-7.16.3-4e6e4eab2297e949ec994e688dad46290d018022")) return true;
+                    if (formattedMessage.contains("Replaced rule for '")) return true;
+                    if (formattedMessage.contains("299 Elasticsearch-7.16.3-4e6e4eab2297e949ec994e688dad46290d018022")) return true;
                     <!-- info -->
-                    if (message.contains("(for example: not eligible for auto-proxying)")) return true;
-                    if (message.contains("As of Liquibase 4.0, cannot set resource accessor on")) return true;
-                    if (message.contains("Cached entry expired :")) return true;
+                    if (formattedMessage.contains("(for example: not eligible for auto-proxying)")) return true;
+                    if (formattedMessage.contains("As of Liquibase 4.0, cannot set resource accessor on")) return true;
+                    if (formattedMessage.contains("Cached entry expired :")) return true;
+                    <!-- -->
                     return false;
                 </expression>
             </evaluator>
@@ -47,26 +48,26 @@
         </encoder>
 
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
-            <evaluator>
+            <evaluator class="ch.qos.logback.classic.boolex.JaninoEventEvaluator">
                 <expression>
-                    if (message.contains("HHH020003")) return true;
+                    if (formattedMessage.contains("HHH020003")) return true;
                     <!-- WARN: Cache[..] Key[..] A soft-locked cache entry was expired by the underlying cache. If this happens regularly you should consider increasing the cache timeouts and/or capacity limits -->
-                    if (message.contains("HHH020008")) return true;
+                    if (formattedMessage.contains("HHH020008")) return true;
                     <!-- WARN: Hibernate's legacy org.hibernate.Criteria API is deprecated; use the JPA javax.persistence.criteria.CriteriaQuery instead -->
-                    if (message.contains("HHH90000022")) return true;
+                    if (formattedMessage.contains("HHH90000022")) return true;
                     <!-- INFO: Cache[..] Key[..] A soft-locked cache entry was expired by the underlying cache. If this happens regularly you should consider increasing the cache timeouts and/or capacity limits -->
-                    if (message.contains("HHH90001005")) return true;
+                    if (formattedMessage.contains("HHH90001005")) return true;
                     <!-- WARN: Replaced rule for '[..]' and ConfigAttributes [..] with ConfigAttributes [..] -->
-                    if (message.contains("Replaced rule for '")) return true;
+                    if (formattedMessage.contains("Replaced rule for '")) return true;
                     <!-- WARN: request [..] returned 1 warnings: [299 Elasticsearch-7.16.3 ..] -->
-                    if (message.contains("299 Elasticsearch-7.16.3-4e6e4eab2297e949ec994e688dad46290d018022")) return true;
+                    if (formattedMessage.contains("299 Elasticsearch-7.16.3-4e6e4eab2297e949ec994e688dad46290d018022")) return true;
                     <!-- INFO: Bean '[..]' of type [..] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying) -->
-                    if (message.contains("(for example: not eligible for auto-proxying)")) return true;
+                    if (formattedMessage.contains("(for example: not eligible for auto-proxying)")) return true;
                     <!-- INFO: As of Liquibase 4.0, cannot set resource accessor on [..]. Must add it to the Scope -->
-                    if (message.contains("As of Liquibase 4.0, cannot set resource accessor on")) return true;
+                    if (formattedMessage.contains("As of Liquibase 4.0, cannot set resource accessor on")) return true;
                     <!-- INFO: Cached entry expired : [..] -->
-                    if (message.contains("Cached entry expired :")) return true;
-
+                    if (formattedMessage.contains("Cached entry expired :")) return true;
+                    <!-- -->
                     return false;
                 </expression>
             </evaluator>
