@@ -349,7 +349,6 @@ class AjaxHtmlController {
         Map<String, Object> model = [:], result = controlledListService.getProvidersAgencies(params)
         model.orgList = result.results
         model.tmplShowCheckbox = true
-        model.tmplMaxHeight = true
         model.tmplConfigShow = ['sortname', 'name', 'altname', 'isWekbCurated']
         render template: "/templates/filter/orgFilterTable", model: model
     }
