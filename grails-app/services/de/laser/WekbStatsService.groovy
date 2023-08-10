@@ -38,6 +38,10 @@ class WekbStatsService {
         result.package.my   = currentPackageIdList.intersect(result.package.all.collect{ it.uuid })
         result.platform.my  = [] // todo
 
+        result.org.favorites       = [] // todo
+        result.package.favorites   = [] // todo
+        result.platform.favorites  = [] // todo
+
         // TODO
         // PlatformController.show() -> isMyPlatform
         // --- copied from myInstitutionController.currentPlatforms()
