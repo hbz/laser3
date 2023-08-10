@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5224    10.08.2023  rc-3.2  3.2.3       Andreas Feature     Umstellung des Anbieter/Lieferanten-Verknüpfungsmodals
+
 5223    09.08.2023  rc-3.2  3.2.3       Andreas Feature     diverse Optimierungen in der Titelverwaltung
 
 --      09.08.2023  rc-3.2  3.2.3       Andreas Bug         Umstellung des allgemeinen Lizenzendpunktes

@@ -4323,8 +4323,7 @@ class SubscriptionControllerService {
             Set<Long> excludes = [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id]
             if(result.institution.isCustomerType_Consortium())
                 excludes << RDStore.OR_SUBSCRIPTION_CONSORTIA.id
-            // restrict visible for templates/links/orgLinksAsList; done by Andreas Gálffy
-            result.visibleOrgRelations = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType.id in excludes) }
+            result.visibleOrgRelations = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType.id in excludes) }.sort { OrgRole oo -> oo.org.sortname }
         }
         else {
             if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
