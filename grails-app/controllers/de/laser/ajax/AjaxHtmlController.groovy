@@ -1,6 +1,7 @@
 package de.laser.ajax
 
 import de.laser.AlternativeName
+import de.laser.ControlledListService
 import de.laser.CustomerTypeService
 import de.laser.DocContext
 import de.laser.GenericOIDService
@@ -66,6 +67,7 @@ import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.workflow.WfChecklist
 import de.laser.workflow.WfCheckpoint
 import de.laser.workflow.WorkflowHelper
+import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.ss.usermodel.Workbook
 import org.mozilla.universalchardet.UniversalDetector
@@ -87,6 +89,7 @@ class AjaxHtmlController {
     AddressbookService addressbookService
     CacheService cacheService
     ContextService contextService
+    ControlledListService controlledListService
     CustomWkhtmltoxService wkhtmltoxService // custom
     GenericOIDService genericOIDService
     GokbService gokbService
@@ -336,6 +339,19 @@ class AjaxHtmlController {
         Map<String, Object> result = subscriptionControllerService.loadFilterList(params)
         result.noMultiple = params.noMultiple == 'true'
         render template: "/templates/filter/statsFilter", model: result
+    }
+
+    /**
+     * Retrieves a list of provider and agency {@link Org}s for table view
+     * @return the result of {@link de.laser.ControlledListService#getProvidersAgencies(java.util.Map)}
+     */
+    @Secured(['ROLE_USER'])
+    def lookupProvidersAgencies() {
+        Map<String, Object> model = [:], result = controlledListService.getProvidersAgencies(params)
+        model.orgList = result.results
+        model.tmplShowCheckbox = true
+        model.tmplConfigShow = ['sortname', 'name', 'altname', 'isWekbCurated']
+        render template: "/templates/filter/orgFilterTable", model: model
     }
 
     /**
