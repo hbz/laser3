@@ -1,4 +1,4 @@
-<%@page import="de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.PendingChangeConfiguration; de.laser.Platform; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.finance.CostItem; de.laser.Org" %>
+<%@page import="de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.PendingChangeConfiguration; de.laser.Platform; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.finance.CostItem; de.laser.Org; de.laser.IssueEntitlement" %>
 <laser:serviceInjection />
 
 <div class="ui card">
@@ -20,6 +20,8 @@
                             <g:if test="${sp.pkg.contentProvider}">
                                 (${sp.pkg.contentProvider.name})
                             </g:if>
+
+                            (${sp.getIssueEntitlementCountOfPackage()} <g:message code="subscription.packages.currentTitles"/>)
                         </div>
                         <div class="four wide column">
                             <g:if test="${sp.pkg.nominalPlatform}">

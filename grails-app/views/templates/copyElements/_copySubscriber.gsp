@@ -32,10 +32,15 @@
                                 </th>
                             </tr>
                             <tr>
-                                <th>${message(code: 'sidewide.number')}</th>
                                 <th>${message(code: 'default.sortname.label')}</th>
                                 <th>${message(code: 'default.startDate.label')}</th>
                                 <th>${message(code: 'default.endDate.label')}</th>
+                                <th class="la-no-uppercase">
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                          data-content="${message(code: 'subscription.isMultiYear.label')}">
+                                        <i class="map orange icon"></i>
+                                    </span>
+                                </th>
                                 <th>${message(code: 'default.status.label')}</th>
                                 <th class=" center aligned">
                                     <input type="checkbox" data-action="copy" onClick="JSPC.app.toggleAllCheckboxes(this)" checked/>
@@ -45,7 +50,6 @@
                             <tbody>
                             <g:each in="${validSourceSubChilds}" var="sub" status="i">
                                 <tr>
-                                    <td>${i+1}</td>
                                     <g:each in="${sub.getAllSubscribers()}" var="subscriberOrg">
                                         <td class="titleCell">
                                             <g:link controller="subscription" action="show" id="${sub.id}">${subscriberOrg.sortname}</g:link>
@@ -54,6 +58,15 @@
                                         </td>
                                         <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
                                         <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
+                                        <td>
+                                            <g:if test="${sub.isMultiYear}">
+                                                <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                                      data-position="bottom center"
+                                                      data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
+                                                    <i class="map orange icon"></i>
+                                                </span>
+                                            </g:if>
+                                        </td>
                                         <td>${sub.status.getI10n('value')}</td>
                                         <td class=" center aligned">
                                             <g:set var="orgInSurveyRenewal" value="${sub.isOrgInSurveyRenewal()}"/>
@@ -85,23 +98,36 @@
                                 </th>
                             </tr>
                             <tr>
-                                <th>${message(code: 'sidewide.number')}</th>
                                 <th>${message(code: 'default.sortname.label')}</th>
                                 <th>${message(code: 'default.startDate.label')}</th>
                                 <th>${message(code: 'default.endDate.label')}</th>
+                                <th class="la-no-uppercase">
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                          data-content="${message(code: 'subscription.isMultiYear.label')}">
+                                        <i class="map orange icon"></i>
+                                    </span>
+                                </th>
                                 <th>${message(code: 'default.status.label')}</th>
                             </tr>
                             </thead>
                             <tbody>
                             <g:each in="${validTargetSubChilds}" var="sub" status="i">
                                 <tr>
-                                    <td>${i+1}</td>
                                     <g:each in="${sub.refresh().getAllSubscribers()}" var="subscriberOrg">
                                         <td class="titleCell">
                                             <g:link controller="subscription" action="show" id="${sub.id}">${subscriberOrg.sortname}</g:link>
                                         </td>
                                         <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
                                         <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
+                                        <td>
+                                            <g:if test="${sub.isMultiYear}">
+                                                <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                                      data-position="bottom center"
+                                                      data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
+                                                    <i class="map orange icon"></i>
+                                                </span>
+                                            </g:if>
+                                        </td>
                                         <td>${sub.status.getI10n('value')}</td>
                                     </g:each>
                                 </tr>
