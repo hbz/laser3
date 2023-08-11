@@ -613,10 +613,10 @@ class OrganisationController  {
                 'select idns from IdentifierNamespace idns where (idns.nsType = :org or idns.nsType = null) and idns.isFromLaser = true and idns.ns not in (:primaryExcludes) order by idns.name_' + LocaleUtils.getCurrentLang() + ', idns.ns',
                 [org: Org.class.name, primaryExcludes: primaryExcludes])
         if((RDStore.OT_PROVIDER.id in org.getAllOrgTypeIds()) || (RDStore.OT_AGENCY.id in org.getAllOrgTypeIds())) {
-            nsList = nsList - IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS)
+            nsList = nsList - IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS) + IdentifierNamespace.findByNs(IdentifierNamespace.ROR_ID) //ROR_ID is CORE_ORG_NS and not unique
         }
         else {
-            nsList = nsList - IdentifierNamespace.findAllByNsInList([IdentifierNamespace.CROSSREF_FUNDER_ID, IdentifierNamespace.DBPEDIA, IdentifierNamespace.LOC_ID, IdentifierNamespace.ROR_ID, IdentifierNamespace.VIAF, IdentifierNamespace.WIKIDATA_ID])
+            nsList = nsList - IdentifierNamespace.findAllByNsInList([IdentifierNamespace.CROSSREF_FUNDER_ID, IdentifierNamespace.DBPEDIA, IdentifierNamespace.LOC_ID, IdentifierNamespace.VIAF, IdentifierNamespace.WIKIDATA_ID])
             if(org.ids.find { Identifier id -> id.ns == IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID) })
                 nsList = nsList - IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID)
             if(org.ids.find { Identifier id -> id.ns == IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_KR) })
