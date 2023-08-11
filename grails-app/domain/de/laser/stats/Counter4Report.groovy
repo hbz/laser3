@@ -5,8 +5,10 @@ import groovy.util.logging.Slf4j
 
 /**
  * A COUNTER report representation according to the COUNTER format, revision 4 (https://www.projectcounter.org/code-of-practice-sections/usage-reports/)
+ * @deprecated Disused as data is not saved in LAS:eR but retrieved in real-time from the provider
  */
 @Slf4j
+@Deprecated
 class Counter4Report extends AbstractReport {
 
     static final String JOURNAL_REPORT_1        = "JR1"
