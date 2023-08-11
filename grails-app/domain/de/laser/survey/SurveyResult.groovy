@@ -132,7 +132,7 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
 
     /**
      * Retrieves the value of this property, respective to its value type
-     * @return the stringified value of the property
+     * @return the value of the property as string
      * @see {@link AbstractPropertyWithCalculatedLastUpdated}
      */
     def getResult() {

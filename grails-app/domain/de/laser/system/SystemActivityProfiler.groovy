@@ -36,12 +36,21 @@ class SystemActivityProfiler {
         }
     }
 
+    /**
+     * Records an active user for three minutes
+     * @param user the {@link User} whose activity should be recorded
+     */
     static void addActiveUser(User user) {
         if (user) {
             EhcacheWrapper cache = BeanStore.getCacheService().getTTL1800Cache(CACHE_KEY_ACTIVE_USER)
             cache.put(user.id.encodeAsMD5() as String, System.currentTimeMillis())
         }
     }
+
+    /**
+     * Removes a given user from the activity tracker cache
+     * @param user the {@link User} to be removed
+     */
     static void removeActiveUser(User user) {
         if (user) {
             EhcacheWrapper cache = BeanStore.getCacheService().getTTL1800Cache(CACHE_KEY_ACTIVE_USER)
@@ -49,6 +58,11 @@ class SystemActivityProfiler {
         }
     }
 
+    /**
+     * Gets all currently registered users who have been active since the given timespan
+     * @param ms the number of milliseconds since last activity
+     * @return a {@link List} of user hash keys who have been active
+     */
     static List<String> getActiveUsers(long ms) {
         EhcacheWrapper cache = BeanStore.getCacheService().getTTL1800Cache( CACHE_KEY_ACTIVE_USER )
         List result = []
@@ -64,6 +78,11 @@ class SystemActivityProfiler {
         result
     }
 
+    /**
+     * Gets the number of active users in the last ten minutes
+     * @return the number of registered (= cached) sessions
+     * @see #getActiveUsers
+     */
     static int getNumberOfActiveUsers() {
         getActiveUsers( (1000 * 60 * 10) ).size() // 10 minutes
     }
