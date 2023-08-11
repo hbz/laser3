@@ -1,5 +1,9 @@
 package de.laser.survey
 
+/**
+ * This domain class links two surveys with each other. A link may be uni- or bidirectional
+ * @see SurveyInfo
+ */
 class SurveyLinks {
 
     SurveyInfo sourceSurvey

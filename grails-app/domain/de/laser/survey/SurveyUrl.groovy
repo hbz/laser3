@@ -1,5 +1,9 @@
 package de.laser.survey
 
+/**
+ * A URL to a survey, providing further information, which can be commented with remarks
+ * @see SurveyConfig
+ */
 class SurveyUrl {
 
     String url
