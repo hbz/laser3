@@ -7,6 +7,9 @@ import de.laser.storage.RDConstants
 import de.laser.survey.SurveyOrg
 import grails.plugin.asyncmail.AsynchronousMailMessage
 
+/**
+ * This class keeps track of automatised mails sent by the application. It can also be used for scheduled mail sending.
+ */
 class MailReport {
     
     String subject

@@ -1,7 +1,7 @@
 package de.laser.remote
 
 /**
- * Represents an external Elasticsearch-API-Source. Currently in use to retain we:kb API connections which are not used for bulk operations;
+ * Represents an external API-Source. Currently in use to retain we:kb API connections which are not used for bulk operations;
  * the title synchronisation is being done via {@link GlobalRecordSource}s
  */
 class ApiSource {

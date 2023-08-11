@@ -497,6 +497,10 @@ class SurveyConfig {
         return surveyInfo.name + ' - ' + statusString + ' ' +period + ' ' + surveyInfo.type.getI10n('value')
     }
 
+    /**
+     * Gets a sorted list of survey config properties. Sorting is done by the {@link #surveyProperty} ({@link PropertyDefinition}) name
+     * @return a sorted {@link List} of {@link SurveyConfigProperties}
+     */
     List<SurveyConfigProperties> getSortedSurveyConfigProperties() {
        List<SurveyConfigProperties> surveyConfigPropertiesList = []
 
@@ -528,16 +532,31 @@ class SurveyConfig {
 
     }
 
+    /**
+     * Substitution call for {@link #getSortedSurveyConfigProperties()}
+     * @return the list of {@link SurveyConfigProperties} or an empty list, if none are available
+     */
     List<PropertyDefinition> getSortedSurveyProperties() {
         List<SurveyConfigProperties> surveyConfigPropertiesList = this.getSortedSurveyConfigProperties()
         return surveyConfigPropertiesList.size() > 0 ? surveyConfigPropertiesList.surveyProperty : []
     }
 
-
+    /**
+     * Retrieves the property definition groups defined by the given institution for this survey configuration
+     * @param contextOrg the institution whose property groups should be retrieved
+     * @see {@link Subscription#getCalculatedPropDefGroups(de.laser.Org)}
+     * @return the {@link PropertyDefinitionGroup}s for this survey configuration, defined by the given institution
+     */
     Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
         BeanStore.getPropertyService().getCalculatedPropDefGroups(this, contextOrg)
     }
 
+    /**
+     * Called from /templates/survey/_properties.gsp
+     * Retrieves a set of survey config properties defined for the survey config belonging to the given property definition group
+     * @param propertyDefinitionGroup the group to which the survey config properties to retrieve belong
+     * @return a {@link Set} of {@link SurveyConfigProperties} of the given type defined for this survey config
+     */
     LinkedHashSet<SurveyConfigProperties> getSurveyConfigPropertiesByPropDefGroup(PropertyDefinitionGroup propertyDefinitionGroup) {
         LinkedHashSet<SurveyConfigProperties> properties = []
 
@@ -553,6 +572,12 @@ class SurveyConfig {
 
     }
 
+    /**
+     * Called from /templates/survey/_properties_table.gsp
+     * Gets the {@link PropertyDefinition}s in the given property definition group which can be added for the given survey config
+     * @param propertyDefinitionGroup the {@link PropertyDefinitionGroup} whose items should be retrieved
+     * @return a sorted {@link Set} of {@link PropertyDefinition}s
+     */
     LinkedHashSet<PropertyDefinition> getSelectablePropertiesByPropDefGroup(PropertyDefinitionGroup propertyDefinitionGroup) {
         LinkedHashSet<PropertyDefinition> properties = []
 
@@ -568,6 +593,10 @@ class SurveyConfig {
 
     }
 
+    /**
+     * Gets all property definitions which are belonging to a group
+     * @return a {@link List} of {@link PropertyDefinition}s which are belonging to a {@link PropertyDefinitionGroup}, sorted by name
+     */
     List<PropertyDefinition> getPropertiesByPropDefGroups() {
         List<PropertyDefinition> properties = []
 
@@ -591,6 +620,12 @@ class SurveyConfig {
 
     }
 
+    /**
+     * Called from /templates/survey/_properties_table.gsp
+     * Gets all property definitions which are not belonging to any group (= orphaned properties) and have not been assigned
+     * to the survey configuration yet
+     * @return a {@link List} of {@link PropertyDefinition}s which can be assigned to the survey configuration and do not belong to any group, sorted by name
+     */
     List<PropertyDefinition> getOrphanedSelectableProperties() {
         List<PropertyDefinition> propertiesOfPropDefGroups = this.getPropertiesByPropDefGroups()?.flatten()
         List<PropertyDefinition> props = []
@@ -610,6 +645,14 @@ class SurveyConfig {
 
     }
 
+    /**
+     * Called by /templates/survey/_properties.gsp
+     * Gets the survey results (= answers on behalf of the submitting institution) of types of the given
+     * property definition group, submitted by the given institution
+     * @param propertyDefinitionGroup the {@link PropertyDefinitionGroup} whose result types ({@link PropertyDefinition}s) should be retrieved
+     * @param org the institution ({@link Org}) whose results / answers are requested
+     * @return a {@link Set} of {@link SurveyResult} answers, sorted by the name of the type ({@link PropertyDefinition})
+     */
     LinkedHashSet<SurveyResult> getSurveyResultsByPropDefGroupAndOrg(PropertyDefinitionGroup propertyDefinitionGroup, Org org) {
 
         LinkedHashSet<SurveyResult> properties = []
@@ -627,6 +670,13 @@ class SurveyConfig {
 
     }
 
+    /**
+     * Called by /templates/survey/_properties.gsp
+     * Gets all survey config properties which are not belonging to any group. Optionally, a list of survey config
+     * properties may be given to filter the available properties
+     * @param containedProperties a filtering list of {@link SurveyConfigProperties} which excludes selectable properties
+     * @return a {@link Set} of {@link SurveyConfigProperties} belonging to no group, sorted by name of {@link PropertyDefinition}
+     */
     LinkedHashSet<SurveyConfigProperties> getOrphanedSurveyConfigProperties(LinkedHashSet containedProperties) {
         LinkedHashSet<SurveyConfigProperties> properties = []
 
@@ -650,6 +700,11 @@ class SurveyConfig {
 
     }
 
+    /**
+     * Called by /templates/survey/_properties.gsp
+     * Gets all survey config properties which are not publicly visible, i.e. private
+     * @return a {@link Set} of private {@link SurveyConfigProperties}, sorted by name of {@link PropertyDefinition}
+     */
     LinkedHashSet<SurveyConfigProperties> getPrivateSurveyConfigProperties() {
         LinkedHashSet<SurveyConfigProperties> properties = []
 
@@ -665,6 +720,11 @@ class SurveyConfig {
 
     }
 
+    /**
+     * Called from /templates/survey/_properties_table.gsp
+     * Gets the private survey properties of the institution submitting the survey for internal remarks
+     * @return a {@link List} of {@link PropertyDefinition}s defined by the destination institution, sorted by name
+     */
     List<PropertyDefinition> getPrivateSelectableProperties() {
         List<PropertyDefinition> props = []
 
@@ -683,6 +743,14 @@ class SurveyConfig {
 
     }
 
+    /**
+     * Called by /templates/survey/_properties.gsp
+     * Gets the survey results (= answers) submitted by the given institution and belonging to no property definition group.
+     * Optionally, a list of {@link SurveyConfigProperties} may be given to restrict the output to survey results of the given types
+     * @param containedProperties a {@link Set} of {@link SurveyConfigProperties} filtering among the possible {@link SurveyResult}s
+     * @param org the institution ({@link Org}) whose answers should be retrieved
+     * @return a {@link Set}, sorted by the name of the {@link PropertyDefinition}, of {@link SurveyResult}s
+     */
     LinkedHashSet<SurveyResult> getOrphanedSurveyResultsByOrg(LinkedHashSet containedProperties, Org org) {
 
         LinkedHashSet<SurveyResult> properties = []
@@ -710,6 +778,12 @@ class SurveyConfig {
 
     }
 
+    /**
+     * Called by /templates/survey/_properties.gsp
+     * Gets the responses of the institution to survey properties which have been defined by the submitting institutiton itself
+     * @param org the institution ({@link Org}) whose {@link SurveyResult}s should be retrieved
+     * @return a {@link List} of {@link SurveyResult}s which belong to types defined by the submitting institution
+     */
     LinkedHashSet<SurveyResult> getPrivateSurveyResultsByOrg(Org org) {
 
         LinkedHashSet<SurveyResult> properties = []
@@ -726,6 +800,10 @@ class SurveyConfig {
 
     }
 
+    /**
+     * Returns the count of institutions who end their participation on the subscription subject of this survey configuration
+     * @return the number of institutions terminating participation
+     */
     Integer countOrgsWithTermination(){
         Integer countOrgsWithTermination = 0
         List<Org> orgNotInsertedItselfList = SurveyOrg.executeQuery("select surOrg.org from SurveyOrg as surOrg where surOrg.surveyConfig = :surveyConfig and surOrg.orgInsertedItself = false", [surveyConfig: this])

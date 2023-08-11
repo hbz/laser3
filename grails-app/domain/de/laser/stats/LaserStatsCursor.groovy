@@ -7,7 +7,9 @@ import de.laser.exceptions.CreationException
 /**
  * This keeps track for each customer {@link Org}, {@link Platform} and report ID when the latest fetched report is dating.
  * It may refer to {@link StatsMissingPeriod}s; those are (currently unused) container objects to mark for which months there is no data available for which customer/platform/report combination.
+ * @deprecated Disused as data is not saved in LAS:eR but retrieved in real-time from the provider
  */
+@Deprecated
 class LaserStatsCursor {
 
     Platform platform
