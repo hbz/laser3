@@ -25,7 +25,7 @@ import java.util.regex.Pattern
  *     <li>{@link DatabaseInstance}</li>
  *     <li>{@link JournalInstance}</li>
  * </ul>
- * @see TitleInstancePackagePlatform
+ * @deprecated Titles are being stored in {@link TitleInstancePackagePlatform} as the package context is mandatory
  */
 @Deprecated
 class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {

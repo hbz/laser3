@@ -1,5 +1,9 @@
 package de.laser.traces
 
+/**
+ * This class keeps track of accessibility rights for a deleted object
+ * @see DeletedObject
+ */
 class DelCombo {
 
     String accessibleOrg
