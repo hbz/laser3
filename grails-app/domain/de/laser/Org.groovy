@@ -328,29 +328,74 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         result
     }
 
+    /**
+     * Checks if the given organisation is an institution or consortium with customer type BASIC
+     * @see CustomerTypeService
+     * @return true if the customer type, if set at all, is one of {@link CustomerTypeService#ORG_INST_BASIC} or {@link CustomerTypeService#ORG_CONSORTIUM_BASIC}, false otherwise
+     */
     boolean isCustomerType_Basic() {
         this.getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_CONSORTIUM_BASIC ]
     }
+
+    /**
+     * Checks if the given organisation is an institution or consortium with customer type PRO
+     * @see CustomerTypeService
+     * @return true if the customer type, if set at all, is one of {@link CustomerTypeService#ORG_INST_PRO} or {@link CustomerTypeService#ORG_CONSORTIUM_PRO}, false otherwise
+     */
     boolean isCustomerType_Pro() {
         this.getCustomerType() in [CustomerTypeService.ORG_INST_PRO, CustomerTypeService.ORG_CONSORTIUM_PRO ]
     }
 
+    /**
+     * Checks if the given organisation is an institution, either BASIC or PRO
+     * @see CustomerTypeService
+     * @return true if the customer type, if set at all, is one of {@link CustomerTypeService#ORG_INST_BASIC} or {@link CustomerTypeService#ORG_INST_PRO}, false otherwise
+     */
     boolean isCustomerType_Inst() {
         this.getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO ]
     }
+
+    /**
+     * Checks if the given organisation is a consortium, either BASIC or PRO
+     * @see CustomerTypeService
+     * @return true if the customer type, if set at all, is one of {@link CustomerTypeService#ORG_CONSORTIUM_BASIC} or {@link CustomerTypeService#ORG_CONSORTIUM_PRO}, false otherwise
+     */
     boolean isCustomerType_Consortium() {
         this.getCustomerType() in [ CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO ]
     }
 
+    /**
+     * Checks if the given organisation is an institution of type BASIC
+     * @see CustomerTypeService
+     * @return true if the customer type is {@link CustomerTypeService#ORG_INST_BASIC}, false otherwise
+     */
     boolean isCustomerType_Inst_Basic() {
         this.getCustomerType() == CustomerTypeService.ORG_INST_BASIC
     }
+
+    /**
+     * Checks if the given organisation is an institution of type PRO
+     * @see CustomerTypeService
+     * @return true if the customer type is {@link CustomerTypeService#ORG_INST_PRO}, false otherwise
+     */
     boolean isCustomerType_Inst_Pro() {
         this.getCustomerType() == CustomerTypeService.ORG_INST_PRO
     }
+
+    /**
+     * Checks if the given organisation is a consortium of type BASIC
+     * @see CustomerTypeService
+     * @return true if the customer type is {@link CustomerTypeService#ORG_CONSORTIUM_BASIC}, false otherwise
+     */
     boolean isCustomerType_Consortium_Basic() {
         this.getCustomerType() == CustomerTypeService.ORG_CONSORTIUM_BASIC
     }
+
+    /**
+     * Checks if the given organisation is a consortium of type PRO
+     * @see CustomerTypeService
+     * @return true if the customer type is {@link CustomerTypeService#ORG_CONSORTIUM_PRO}, false otherwise
+     */
     boolean isCustomerType_Consortium_Pro() {
         this.getCustomerType() == CustomerTypeService.ORG_CONSORTIUM_PRO
     }
@@ -413,11 +458,13 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * @param name the name to prepare
      * @return the shortened and, if necessary, postfixed shortcode
      */
+    @Deprecated
     String generateShortcode(String name) {
         String candidate = Org.generateShortcodeFunction(name)
         incUntilUnique(candidate)
     }
 
+    @Deprecated
     String incUntilUnique(String name) {
         String result = name
         if ( Org.findByShortcode(result) ) {
@@ -702,6 +749,11 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         }
     }
 
+    /**
+     * Checks if the given institution has at least one enabled administrator. That enables the institution that it
+     * administrates itself autonomously, without external intervention on behalf of a consortium or a superadmin
+     * @return true if there is at least one enabled {@link User} belonging to this institution who has the {@link Role} INST_ADM, false otherwise
+     */
     boolean hasInstAdminEnabled() {
         List<Long> admins = User.executeQuery(
                 'select u.id from User u where u.formalOrg = :fo and u.formalRole = :fr and u.enabled = true',

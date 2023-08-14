@@ -59,15 +59,26 @@ class ReaderNumber {
         org             column:'num_org_fk'
     }
 
+    /**
+     * Constructor method to build a reader number record with defined configuration parameters.
+     * It updates a given record, matching by reference group and temporal unit (one of {@link #dueDate} or {@link #semester}) or creates a new one, if it does not exist
+     * @param configMap the {@link Map} containing the record arguments
+     * @return the new reader number record
+     */
     static ReaderNumber construct(Map configMap) {
         Map<String, Object> rnData = [:]
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-        if (configMap.dueDate)
-            rnData.dueDate = sdf.parse(configMap.dueDate)
         rnData.org = Org.get(configMap.orgid)
         rnData.referenceGroup = RefdataValue.get(configMap.referenceGroup)
-        rnData.semester = RefdataValue.get(configMap.semester)
-        ReaderNumber readerNumber = ReaderNumber.findByOrgAndReferenceGroupAndSemester(rnData.org, rnData.referenceGroup, rnData.semester)
+        ReaderNumber readerNumber
+        if (configMap.dueDate)
+            rnData.dueDate = sdf.parse(configMap.dueDate)
+        else if (configMap.semester)
+            rnData.semester = RefdataValue.get(configMap.semester)
+        if(rnData.containsKey('dueDate'))
+            readerNumber = ReaderNumber.findByOrgAndReferenceGroupAndDueDate(rnData.org, rnData.referenceGroup, rnData.dueDate)
+        else if(rnData.containsKey('semester'))
+            readerNumber = ReaderNumber.findByOrgAndReferenceGroupAndSemester(rnData.org, rnData.referenceGroup, rnData.semester)
         if(!readerNumber)
             readerNumber = new ReaderNumber(rnData)
         readerNumber.value = new BigDecimal(configMap.value)

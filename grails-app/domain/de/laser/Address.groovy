@@ -5,7 +5,7 @@ import de.laser.storage.RDConstants
 import groovy.util.logging.Slf4j
 
 /**
- * A physical address of a {@link Person} or an {@link Org}. Email-addresses and other contact possibilities than the physical address are represented by the {@link Contact} domain
+ * A physical address of an {@link Org}. Email-addresses and other contact possibilities than the physical address are represented by the {@link Contact} domain
  * @see Contact
  */
 @Slf4j

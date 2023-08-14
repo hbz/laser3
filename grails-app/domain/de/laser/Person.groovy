@@ -314,6 +314,7 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
     }
 
     /**
+     * Called from {@link de.laser.ajax.AjaxHtmlController#editPerson()}
      * Retrieves the organisation to which this person is linked to
      * @return the {@link Org} to which this person is linked to
      */

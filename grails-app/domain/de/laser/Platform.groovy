@@ -13,7 +13,7 @@ import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 /**
  * This class represents a platform record. A platform is a portal where providers offer access to titles subscribed via packages.
- * This class is a mirror of the we:kb-implementation of Platform, <a href="https://github.com/hbz/wekb/blob/wekb-dev/server/gokbg3/grails-app/domain/org/gokb/cred/Platform.groovy">cf. with the we:kb-implementation</a>
+ * This class is a mirror of the we:kb-implementation of Platform, <a href="https://github.com/hbz/wekb2/blob/dev/grails-app/domain/wekb/Platform.groovy">cf. with the we:kb-implementation</a>
  */
 class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparable<Platform> {
 
@@ -53,7 +53,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
           altnames   : AlternativeName
   ]
 
-  static transients = ['calculatedPropDefGroups', 'viewName'] // mark read-only accessor methods
+  static transients = ['calculatedPropDefGroups'] // mark read-only accessor methods
 
   static mapping = {
                 id column:'plat_id'
@@ -133,10 +133,6 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
   @Override
   def beforeDelete() {
     super.beforeDeleteHandler()
-  }
-
-  String getViewName() {
-    globalUID.replaceAll("[:-]","_")
   }
 
   /**

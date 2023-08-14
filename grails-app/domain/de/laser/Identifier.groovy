@@ -418,17 +418,6 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         result
     }
 
-    // called from AjaxController.resolveOID2()
-    @Deprecated
-    // front end creation broken
-    static def refdataCreate(value) {
-        // value is String[] arising from  value.split(':');
-        if ( ( value.length == 4 ) && ( value[2] != '' ) && ( value[3] != '' ) )
-            return lookupOrCreateCanonicalIdentifier(value[2],value[3]); // ns, value
-
-        return null;
-    }
-
     /**
      * Gets a list of objects matching to the given identifier value
      * @param object an empty object instance to determine the identifier owner's class

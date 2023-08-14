@@ -1,5 +1,19 @@
 package de.laser
 
+/**
+ * This class keeps track of permanently purchased titles. It holds
+ * <ul>
+ *     <li>the institution ({@link Org}) having subscribed the title</li>
+ *     <li>the issue entitlement being purchased</li>
+ *     <li>the underlying title instance of the sales unit</li>
+ *     <li>the subscription by which the purchase has been concluded</li>
+ * </ul>
+ * Purpose of this linking table is the marking of titles which are already permanently in stock if the given institution
+ * and thus a double purchase should be avoided
+ * @see Subscription
+ * @see IssueEntitlement
+ * @see TitleInstancePackagePlatform
+ */
 class PermanentTitle {
 
     Org owner
