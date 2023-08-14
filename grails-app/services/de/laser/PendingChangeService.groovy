@@ -235,7 +235,7 @@ class PendingChangeService extends AbstractLockableService {
                     Object[] args = [pc.oldValue, pc.newValue]
                     Map<String, Object> change = [event: pc.msgToken, costItem: pc.costItem, changeId: pc.id, args: args, subscription: pc.costItem.sub]
                     if(pc.status == RDStore.PENDING_CHANGE_ACCEPTED) {
-                        if(pc.ts >= time) {
+                        if(pc.actionDate >= time || pc.ts >= time) {
                             //notifications.put(pc.costItem.sub, changes)
                             notifications << change
                         }
@@ -254,9 +254,9 @@ class PendingChangeService extends AbstractLockableService {
                     else if(pc.status == RDStore.PENDING_CHANGE_PENDING)
                         changes = pending.containsKey(previous) ? pending.get(previous) : []
                     if(changes != null) { */
-                        Map change = [event: pc.msgToken, source: genericOIDService.getOID(previous), target: genericOIDService.getOID(pc.subscription), subscription: previous]
+                        Map change = [event: pc.msgToken, source: genericOIDService.getOID(previous), changeId: pc.id, target: genericOIDService.getOID(pc.subscription), subscription: previous]
                         if(pc.status == RDStore.PENDING_CHANGE_ACCEPTED) {
-                            if(pc.ts >= time) {
+                            if(pc.actionDate >= time || pc.ts >= time) {
                                 //notifications.put(previous, changes)
                                 notifications << change
                             }
