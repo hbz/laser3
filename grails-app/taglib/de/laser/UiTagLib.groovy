@@ -2,8 +2,8 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.cache.SessionCacheWrapper
+import de.laser.interfaces.MarkerSupport
 import de.laser.storage.BeanStore
-import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
@@ -359,6 +359,34 @@ class UiTagLib {
 
             // CAUTION: inject default mode
             attrs.params.mode = mode
+        }
+    }
+
+    def markerSwitch = { attrs, body ->
+
+        MarkerSupport obj = (attrs.org ?: attrs.package ?: attrs.platform) as MarkerSupport
+        boolean isFavorite  = obj.isMarkedForUser(contextService.getUser())
+        String tt           = '?'
+        String tt_list      = message(code: 'myInst.marker.wekbchanges')  // 'Beobachtungsliste (' + (attrs.type ?: 'wekb-News') + ')'
+
+        if (attrs.org) {
+            tt = isFavorite ? 'Der Anbieter/Lieferant ist auf der ' + tt_list + '. Anklicken um zu entfernen.'
+                    : 'Anklicken, um den Anbieter/Lieferant auf die ' + tt_list + ' zu setzen.'
+        }
+        else if (attrs.package) {
+            tt = isFavorite ? 'Das Paket ist auf der ' + tt_list + '. Anklicken um zu entfernen.'
+                    : 'Anklicken, um das Paket auf die ' + tt_list + ' zu setzen.'
+        }
+        else if (attrs.platform) {
+            tt = isFavorite ? 'Der Plattform ist auf der ' + tt_list + '. Anklicken um zu entfernen.'
+                    : 'Anklicken, um die Plattform auf die ' + tt_list + ' zu setzen.'
+        }
+
+        if (obj) {
+            out << '<a class="ui icon label la-popup-tooltip la-delay" data-content="' + tt + '" data-position="top right"'
+            out << ' style="margin-left:1em;">'
+            out <<      '<i class="icon purple bookmark' + (isFavorite ? '' : ' outline') + '"></i>'
+            out << '</a>'
         }
     }
 

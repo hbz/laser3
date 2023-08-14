@@ -70,6 +70,9 @@
             <th>${message(code:'default.provider.label')}</th>
             <th>${message(code:'platform.label')}</th>
             <th>${message(code:'myinst.currentPackages.assignedSubscriptions')}</th>
+            <th class="center aligned">
+                <span class="la-popup-tooltip la-delay" data-content="${message(code: 'myInst.marker.wekbchanges')}"><i class="icon bookmark"></i></span>
+            </th>
         </tr>
         </thead>
         <tbody>
@@ -121,6 +124,11 @@
                 </td>
                 <%--<td class="center aligned">
                 </td>--%>
+                <td class="center aligned">
+                    <g:if test="${pkg.isMarkedForUser(contextService.getUser())}">
+                        <i class="icon purple bookmark"></i>
+                    </g:if>
+                </td>
             </tr>
         </g:each>
         </tbody>

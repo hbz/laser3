@@ -1,5 +1,5 @@
 <%@ page import="de.laser.Platform; de.laser.storage.RDStore" %>
-<laser:htmlStart message="menu.my.platforms" />
+<laser:htmlStart message="menu.my.platforms" serviceInjection="true" />
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.my.platforms" class="active" />
@@ -22,6 +22,9 @@
             <th>${message(code:'default.provider.label')}</th>
             <th>${message(code:'accessPoint.plural')}</th>
             <th>${message(code:'myinst.currentPlatforms.assignedSubscriptions')}</th>
+            <th class="center aligned">
+                <span class="la-popup-tooltip la-delay" data-content="${message(code: 'myInst.marker.wekbchanges')}"><i class="icon bookmark"></i></span>
+            </th>
             <th>${message(code:'org.isWekbCurated.label')}</th>
         </tr>
         </thead>
@@ -73,6 +76,11 @@
                                 </li>
                             </g:each>
                         </ul>
+                    </g:if>
+                </td>
+                <td class="center aligned">
+                    <g:if test="${platformInstance.isMarkedForUser(contextService.getUser())}">
+                        <i class="icon purple bookmark"></i>
                     </g:if>
                 </td>
                 <td>

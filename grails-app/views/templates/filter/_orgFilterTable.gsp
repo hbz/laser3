@@ -186,6 +186,12 @@
                 <th></th>
             </g:if>
 
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('marker')}">
+                <th class="center aligned">
+                    <span class="la-popup-tooltip la-delay" data-content="${message(code: 'myInst.marker.wekbchanges')}"><i class="icon bookmark"></i></span>
+                </th>
+            </g:if>
+
             <g:if test="${tmplConfigItem.equalsIgnoreCase('isMyX')}">
                 <th class="center aligned">
                     <g:if test="${actionName == 'listProvider'}">
@@ -926,6 +932,14 @@
                         </div>
                     </g:if>
 
+                </td>
+            </g:if>
+
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('marker')}">
+                <td class="center aligned">
+                    <g:if test="${org.isMarkedForUser(contextService.getUser())}">
+                        <i class="icon purple bookmark"></i>
+                    </g:if>
                 </td>
             </g:if>
 

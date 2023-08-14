@@ -9,13 +9,13 @@
                 <a href="#" id="wekb-menu-trigger" class="ui label"><i class="icon blue la-gokb"></i>&nbsp;We:kb-News</a>
                 <g:if test="${wekbChanges.counts.my > 0}">
                     <a href="#" class="ui icon label la-popup-tooltip la-delay wekb-flyout-trigger" data-preset="all,my"
-                       data-content="Meine Objekte" data-position="top right">
+                       data-content="${message(code: 'menu.my')}" data-position="top right">
                             <i class="icon yellow star"></i> ${wekbChanges.counts.my}
                     </a>
                 </g:if>
                 <g:if test="${wekbChanges.counts.favorites > 0}">
                     <a href="#" class="ui icon label la-popup-tooltip la-delay wekb-flyout-trigger" data-preset="all,favorites"
-                       data-content="Beobachtungsliste" data-position="top right">
+                       data-content="${message(code: 'myInst.marker.wekbchanges')}" data-position="top right">
                             <i class="icon purple bookmark"></i> ${wekbChanges.counts.favorites}
                     </a>
                 </g:if>

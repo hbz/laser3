@@ -1,5 +1,5 @@
 <%@ page import="de.laser.storage.RDConstants; de.laser.utils.DateUtils; de.laser.Org; de.laser.Package; de.laser.Platform; de.laser.RefdataValue; java.text.SimpleDateFormat" %>
-<laser:htmlStart message="package.show.all" />
+<laser:htmlStart message="package.show.all" serviceInjection="true"/>
 
 <ui:breadcrumbs>
     <ui:crumb message="package.show.all" class="active"/>
@@ -43,8 +43,11 @@
                     <th>${message(code: 'package.curatoryGroup.label')}</th>
                     <th>${message(code: 'package.source.automaticUpdates')}</th>
                     <g:sortableColumn property="lastUpdatedDisplay" title="${message(code: 'package.lastUpdated.label')}" params="${params}" defaultOrder="desc"/>
+                    <th class="center aligned">
+                        <span class="la-popup-tooltip la-delay" data-content="${message(code: 'myInst.marker.wekbchanges')}"><i class="icon bookmark"></i></span>
+                    </th>
                     <sec:ifAllGranted roles="ROLE_YODA">
-                        <th class="x">
+                        <th class="x center aligned">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="left center" data-content="${message(code: 'menu.yoda.reloadPackages')}">
                                 <g:link class="ui icon button js-open-confirm-modal"
                                         data-confirm-tokenMsg="${message(code: 'menu.yoda.reloadPackages.confirm')}"
@@ -74,8 +77,7 @@
                         <%--UUID: ${record.uuid} --%>
                         <%--Package: ${Package.findByGokbId(record.uuid)} --%>
                             <g:if test="${pkg}">
-                                <g:link controller="package" action="show"
-                                        id="${pkg.id}">${record.name}</g:link>
+                                <g:link controller="package" action="show" id="${pkg.id}">${record.name}</g:link>
                             </g:if>
                             <g:else>
                                 ${record.name} <a target="_blank"
@@ -141,6 +143,11 @@
                                               date="${DateUtils.parseDateGeneric(record.lastUpdatedDisplay)}"/>
                             </g:if>
                         </td>
+                        <td class="center aligned">
+                            <g:if test="${pkg && pkg.isMarkedForUser(contextService.getUser())}">
+                                <i class="icon purple bookmark"></i>
+                            </g:if>
+                        </td>
                         <sec:ifAllGranted roles="ROLE_YODA">
                             <td class="x">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'menu.yoda.reloadPackage')}">
@@ -148,11 +155,13 @@
                                         <i class="icon cloud download alternate"></i>
                                     </g:link>
                                 </span>
+                                <g:if test="${pkg}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'menu.yoda.retriggerPendingChanges')}">
                                     <g:link controller="yoda" action="matchPackageHoldings" params="${[pkgId: pkg.id]}" class="ui icon button">
                                         <i class="icon wrench"></i>
                                     </g:link>
                                 </span>
+                                </g:if>
 %{--                                <g:link class="ui button" controller="yoda" action="reloadPackage"--}%
 %{--                                        params="${[packageUUID: record.uuid]}"><g:message--}%
 %{--                                        code="menu.yoda.reloadPackage"/></g:link>--}%
