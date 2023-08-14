@@ -158,13 +158,13 @@
                     <g:else>
                         <g:message code="${event}" args="${entry.args}"/>
                     </g:else>
-                    <g:if test="${event == PendingChangeConfiguration.NEW_SUBSCRIPTION}">
+                    <%--<g:if test="${event == PendingChangeConfiguration.NEW_SUBSCRIPTION}">
                         <div class="right aligned wide column">
                             <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[sourceObjectId: entry.source, targetObjectId: entry.target]}">
                                 <g:message code="myinst.copyMyElements"/>
                             </g:link>
                         </div>
-                    </g:if>
+                    </g:if>--%>
                 </div><!-- .column -->
             </div><!-- .row -->
         </g:each>
