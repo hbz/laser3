@@ -1,13 +1,27 @@
 <%@ page import="de.laser.remote.ApiSource" %>
 <laser:serviceInjection />
 
-<g:if test="${tmplView == 'info' && (wekbChanges.org.count + wekbChanges.platform.count + wekbChanges.package.count) > 0}">
+<g:if test="${tmplView == 'info' && wekbChanges.counts.all > 0}">
 
-    <div class="ui accordion" style="margin: 1em 0">
-        <div class="title" style="padding:0 1em;">
-            <a href="#" class="ui label"><i class="icon blue la-gokb"></i>&nbsp;Es gibt Änderungen in der We:kb</a>
+    <div id="wekb-menu" style="margin:1em 0 2em 0">
+        <div style="margin:1em 0;padding:0 1em; text-align:right">
+            <div class="ui labels">
+                <a href="#" id="wekb-menu-trigger" class="ui label"><i class="icon blue la-gokb"></i>&nbsp;We:kb-News</a>
+                <g:if test="${wekbChanges.counts.my > 0}">
+                    <a href="#" class="ui icon label la-popup-tooltip la-delay wekb-flyout-trigger" data-preset="all,my"
+                       data-content="Meine Objekte" data-position="top right">
+                            <i class="icon yellow star"></i> ${wekbChanges.counts.my}
+                    </a>
+                </g:if>
+                <g:if test="${wekbChanges.counts.favorites > 0}">
+                    <a href="#" class="ui icon label la-popup-tooltip la-delay wekb-flyout-trigger" data-preset="all,favorites"
+                       data-content="Beobachtungsliste" data-position="top right">
+                            <i class="icon purple bookmark"></i> ${wekbChanges.counts.favorites}
+                    </a>
+                </g:if>
+            </div>
         </div>
-        <div class="content">
+        <div id="wekb-menu-content" style="display:none">
 
 %{--                Folgende Ressourcen wurden in den vergangenen <strong>${wekbChanges.query.days}</strong> Tagen--}%
 %{--        (seit dem <strong>${wekbChanges.query.changedSince}</strong>) geändert, bzw. neu angelegt.--}%
@@ -15,7 +29,7 @@
             <div class="ui three column grid">
 
                 <div class="column">
-                    <div class="ui fluid card">
+                    <div class="ui fluid card" style="margin-bottom:0">
                         <div class="content">
                             <div class="header">
                                 <a href="#" class="wekb-flyout-trigger" data-preset="org,all">${message(code: 'default.ProviderAgency.label')}%{--: ${wekbChanges.org.count}--}%</a>
@@ -35,10 +49,10 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div><!-- .column -->
 
                 <div class="column">
-                    <div class="ui fluid card">
+                    <div class="ui fluid card" style="margin-bottom:0">
                         <div class="content">
                             <div class="header">
                                 <a href="#" class="wekb-flyout-trigger" data-preset="platform,all">${message(code: 'platform.plural')}%{--: ${wekbChanges.platform.count}--}%</a>
@@ -58,10 +72,10 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div><!-- .column -->
 
                 <div class="column">
-                    <div class="ui fluid card">
+                    <div class="ui fluid card" style="margin-bottom:0">
                         <div class="content">
                             <div class="header">
                                 <a href="#" class="wekb-flyout-trigger" data-preset="package,all">${message(code: 'package.plural')}%{--: ${wekbChanges.package.count}--}%</a>
@@ -81,9 +95,9 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div><!-- .column -->
 
-            </div>
+            </div><!-- .column -->
 
         </div>
     </div>
@@ -92,12 +106,17 @@
 
     <laser:script file="${this.getGroovyPageFileName()}">
 
+        $('#wekb-menu-trigger').on ('click', function () {
+            $('#wekb-menu-content').slideToggle (200);
+        });
+
         if (!JSPC.app.dashboard) { JSPC.app.dashboard = {} }
 
         JSPC.app.dashboard.wekbChanges = {
             preset: {
                 obj: 'all', filter: 'all'
-            }
+            },
+            dataLoaded: false
         }
 
         $('a.wekb-flyout-trigger').on ('click', function(e) {
@@ -108,18 +127,28 @@
 
             $('#globalLoadingIndicator').show()
 
-            $.ajax ({
-                url: "<g:createLink controller="ajaxHtml" action="wekbChangesFlyout"/>"
-            }).done (function (response) {
-                $('#globalLoadingIndicator').hide()
-
-                $('#wekbFlyout').html (response)
+            if (JSPC.app.dashboard.wekbChanges.dataLoaded) {
                 JSPC.app.dashboard.wekbChanges.flyout (preset[0], preset[1])
 
-                $('#wekbFlyout').flyout ('show')
-                r2d2.initDynamicUiStuff ('#wekbFlyout')
-                r2d2.initDynamicXEditableStuff ('#wekbFlyout')
-            })
+                $('#wekbFlyout').flyout('show')
+                $('#globalLoadingIndicator').hide()
+            }
+            else {
+                $.ajax ({
+                    url: "<g:createLink controller="ajaxHtml" action="wekbChangesFlyout"/>"
+                }).done (function (response) {
+                    JSPC.app.dashboard.wekbChanges.dataLoaded = true
+
+                    $('#wekbFlyout').html (response)
+                    JSPC.app.dashboard.wekbChanges.flyout (preset[0], preset[1])
+
+                    $('#wekbFlyout').flyout('show')
+                    $('#globalLoadingIndicator').hide()
+
+                    r2d2.initDynamicUiStuff ('#wekbFlyout')
+                    r2d2.initDynamicXEditableStuff ('#wekbFlyout')
+                })
+            }
 
         });
 
@@ -178,16 +207,9 @@
         ]
     %>
 
-    <g:set var="wekb_count_all"       value="${wekbChanges.org.count + wekbChanges.platform.count + wekbChanges.package.count}" />
-    <g:set var="wekb_count_laser"     value="${wekbChanges.org.laserCount + wekbChanges.platform.laserCount + wekbChanges.package.laserCount}" />
-    <g:set var="wekb_count_my"        value="${wekbChanges.org.my.size() + wekbChanges.platform.my.size() + wekbChanges.package.my.size()}" />
-    <g:set var="wekb_count_favorites" value="${wekbChanges.org.favorites.size() + wekbChanges.platform.favorites.size() + wekbChanges.package.favorites.size()}" /> %{--TODO--}%
-    <g:set var="wekb_count_created"   value="${wekbChanges.org.created.size() + wekbChanges.platform.created.size() + wekbChanges.package.created.size()}" />
-    <g:set var="wekb_count_updated"   value="${wekbChanges.org.updated.size() + wekbChanges.platform.updated.size() + wekbChanges.package.updated.size()}" />
-
-    <div class="filterWrapper" style="margin:2em 1em">
+    <div class="filterWrapper" style="margin:2em">
         <p style="margin:0 2em 2em">
-            Änderungen der letzten <strong>${wekbChanges.query.days}</strong> Tage: <strong>${wekb_count_all}</strong> Datensätze.<br />
+            Änderungen der letzten <strong>${wekbChanges.query.days}</strong> Tage: <strong>${wekbChanges.counts.all}</strong> Datensätze.<br />
             Letzter Datenabgleich: <strong>${wekbChanges.query.call}</strong>
             <span style="float:right">
                 <a href="${apiSource.baseUrl}" target="_blank"><i class="icon large la-gokb"></i></a>
@@ -200,16 +222,16 @@
             <span class="ui button mini" data-obj="all">Alle</span>
         </div>
         <div class="filter" style="margin:0 2em 0.5em; text-align:right;">
-            <span class="ui button mini" data-filter="created">Neue Objekte: ${wekb_count_created}</span>
-            <span class="ui button mini" data-filter="updated">Geänderte Objekte: ${wekb_count_updated}</span>
-            <span class="ui button mini" data-filter="my"><i class="icon star"></i> ${wekb_count_my}</span>
-            <span class="ui button mini" data-filter="favorites"><i class="icon bookmark"></i> ${wekb_count_favorites}</span>
+            <span class="ui button mini" data-filter="created">Neue Objekte: ${wekbChanges.counts.created}</span>
+            <span class="ui button mini" data-filter="updated">Geänderte Objekte: ${wekbChanges.counts.updated}</span>
+            <span class="ui button mini" data-filter="my"><i class="icon star"></i> ${wekbChanges.counts.my}</span>
+            <span class="ui button mini" data-filter="favorites"><i class="icon bookmark"></i> ${wekbChanges.counts.favorites}</span>
             <span class="ui button mini" data-filter="all">Alle</span>
         </div>
     </div>
 
     <g:each in="${tmplConfig}" var="cfg">
-        <div class="dataWrapper" data-obj="${cfg[0]}" style="margin:2em 1em">
+        <div class="dataWrapper" data-obj="${cfg[0]}" style="margin:2em">
             <p class="ui header">
                 <i class="icon grey ${cfg[3]}" style="vertical-align:bottom"></i> ${message(code: "${cfg[2]}")}
             </p>
@@ -219,7 +241,7 @@
                     <div class="three column row"
                          data-f1="${obj.uuid in cfg[1].created ? 'created' : 'updated'}"
                          data-f2="${obj.uuid in cfg[1].my ? 'true' : 'false'}"
-                         data-f3="${obj.globalUID ? 'true' : 'false'}" %{--TODO--}%
+                         data-f3="${obj.uuid in cfg[1].favorites ? 'true' : 'false'}"
                     >
                         <div class="column one wide center aligned">${i+1}</div>
                         <div class="column ten wide">
@@ -230,7 +252,7 @@
                             <g:else>
                                 ${obj.name}
                             </g:else>
-                            <g:if test="${obj.uuid in cfg[1].created}"><span class="ui yellow mini label">NEU</span></g:if>
+                            <g:if test="${obj.uuid in cfg[1].created}"><span class="ui grey mini label">NEU</span></g:if>
                         </div>
                         <div class="column one wide center aligned">
                             <g:if test="${obj.uuid in cfg[1].my}">
@@ -238,6 +260,17 @@
                                     <i class="icon yellow star"></i>
                                 </span>
                             </g:if>
+                            <g:else>
+                                <i class="icon fake"></i>
+                            </g:else>
+                            <g:if test="${obj.uuid in cfg[1].favorites}">
+                                <span class="la-popup-tooltip la-delay" data-content="Beobachtungsliste">
+                                    <i class="icon purple bookmark"></i>
+                                </span>
+                            </g:if>
+                            <g:else>
+                                <i class="icon fake"></i>
+                            </g:else>
                         </div>
                         <div class="column four wide center aligned">${obj.dateCreatedDisplay}</div>
                     </div>
