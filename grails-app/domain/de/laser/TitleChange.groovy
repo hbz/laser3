@@ -5,6 +5,7 @@ import de.laser.exceptions.CreationException
 import groovy.util.logging.Slf4j
 
 @Slf4j
+@Deprecated
 class TitleChange {
 
     TitleInstancePackagePlatform tipp
@@ -47,6 +48,7 @@ class TitleChange {
         newRefVal(nullable: true, blank: false)
     }
 
+    @Deprecated
     static TitleChange construct(Map<String, Object> configMap) throws CreationException {
         TitleChange tic = new TitleChange(tipp: configMap.tipp, event: configMap.event)
         if(configMap.prop in PendingChange.DATE_FIELDS) {
