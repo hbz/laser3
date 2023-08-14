@@ -82,7 +82,7 @@
                                             <g:set var="comment" value="${link.document}"/>
                                             <g:if test="${comment}">
                                                 <div class="item">
-                                                    <p><em>${raw(comment.owner.content)}</em></p>
+                                                    <p><em>${comment.owner.content}</em></p>
                                                 </div>
                                             </g:if>
                                         </div>
