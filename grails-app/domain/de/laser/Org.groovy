@@ -3,8 +3,10 @@ package de.laser
 import de.laser.annotations.RefdataInfo
 import de.laser.auth.*
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
+import de.laser.convenience.Favorite
 import de.laser.finance.CostItem
 import de.laser.interfaces.DeleteFlag
+import de.laser.interfaces.MarkerSupport
 import de.laser.oap.OrgAccessPoint
 import de.laser.properties.OrgProperty
 import de.laser.storage.BeanStore
@@ -38,7 +40,7 @@ import org.apache.commons.lang3.StringUtils
  */
 @Slf4j
 class Org extends AbstractBaseWithCalculatedLastUpdated
-        implements DeleteFlag {
+        implements DeleteFlag, MarkerSupport {
 
     String name
     String shortcode            // Used to generate friendly semantic URLs
@@ -773,5 +775,26 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      */
     Identifier getLeitID() {
         return Identifier.findByOrgAndNs(this, IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID))
+    }
+
+    @Override
+    boolean isMarkedForUser(User user) {
+        Favorite.findByOrgAndTypeAndUser(this, Favorite.TYPE.WEKB_CHANGES, user) ? true : false
+    }
+
+    @Override
+    void setMarker() {
+        User user = BeanStore.getContextService().getUser()
+        if (!isMarkedForUser(user)) {
+            Favorite f = new Favorite(org: this, type: Favorite.TYPE.WEKB_CHANGES, user: user)
+            f.save()
+        }
+    }
+
+    @Override
+    void removeMarker() {
+        Favorite.executeQuery('delete from Favorite where org = :org and user = :user and type = :type', [
+                org: this, type: Favorite.TYPE.WEKB_CHANGES, user: BeanStore.getContextService().getUser()
+        ])
     }
 }

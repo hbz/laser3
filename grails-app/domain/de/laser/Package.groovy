@@ -1,7 +1,11 @@
 package de.laser
 
 import de.laser.annotations.RefdataInfo
+import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
+import de.laser.convenience.Favorite
+import de.laser.interfaces.MarkerSupport
+import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
@@ -20,7 +24,7 @@ import java.util.regex.Pattern
  * @see Platform
  * @see SubscriptionPackage
  */
-class Package extends AbstractBaseWithCalculatedLastUpdated {
+class Package extends AbstractBaseWithCalculatedLastUpdated implements MarkerSupport {
 
     String name
     String sortname
@@ -304,4 +308,24 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         return this.name + ' ('+ TitleInstancePackagePlatform.countByPkgAndStatus(this, RDStore.TIPP_STATUS_CURRENT) +')'
     }
 
+    @Override
+    boolean isMarkedForUser(User user) {
+        Favorite.findByPkgAndTypeAndUser(this, Favorite.TYPE.WEKB_CHANGES, user) ? true : false
+    }
+
+    @Override
+    void setMarker() {
+        User user = BeanStore.getContextService().getUser()
+        if (!isMarkedForUser(user)) {
+            Favorite f = new Favorite(pkg: this, type: Favorite.TYPE.WEKB_CHANGES, user: user)
+            f.save()
+        }
+    }
+
+    @Override
+    void removeMarker() {
+        Favorite.executeQuery('delete from Favorite where pkg = :pkg and user = :user and type = :type', [
+                pkg: this, type: Favorite.TYPE.WEKB_CHANGES, user: BeanStore.getContextService().getUser()
+        ])
+    }
 }
