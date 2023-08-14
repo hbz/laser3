@@ -6,7 +6,9 @@ import org.springframework.dao.DuplicateKeyException
 
 /**
  * Represents a(n) (e)journal instance
+ * @deprecated the central title instance has been removed; titles are stored in {@link de.laser.TitleInstancePackagePlatform}. Kept nonetheless because of an eventual connection of the Global Open Knowledge Base
  */
+@Deprecated
 class JournalInstance extends TitleInstance {
 
     static mapping = {

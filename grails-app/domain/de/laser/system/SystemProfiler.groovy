@@ -6,7 +6,7 @@ import de.laser.utils.AppUtils
 
 /**
  * This class keeps track of the loading times for each page. Recorded is every page which has a longer loading time than 1000 msecs
- * @see de.laser.ajax.AjaxController#notifyProfiler()
+ * @see de.laser.ajax.AjaxOpenController#profiler()
  */
 class SystemProfiler {
 
@@ -52,7 +52,7 @@ class SystemProfiler {
     }
 
     /**
-     * Triggered via {@link de.laser.ajax.AjaxController#notifyProfiler()} where the given action the given delay time is being recorded
+     * Triggered via {@link de.laser.ajax.AjaxOpenController#profiler()} where the given action the given delay time is being recorded
      * @param delta the time deviation from 1000 msecs
      * @param actionUri the action to record the loading time for
      */

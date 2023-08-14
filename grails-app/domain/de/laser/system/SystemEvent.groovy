@@ -183,6 +183,10 @@ class SystemEvent {
         }
     }
 
+    /**
+     * Checks for the defined events whether there exists a explanatory message string in the translation resource file
+     * @return true if there is one for at least one locale (DE, EN), false otherwise
+     */
     static boolean checkDefinedEvents() {
         MessageSource messageSource = BeanStore.getMessageSource()
         boolean valid = true

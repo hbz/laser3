@@ -2,11 +2,16 @@ package de.laser.traces
 
 import de.laser.IssueEntitlement
 import de.laser.License
-import de.laser.OrgRole
 import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
 import de.laser.exceptions.CreationException
 
+/**
+ * This is a placeholder for an object completely removed from the LAS:eR database. It serves for communication to
+ * systems using the API to notify them about a deletion of a certain object. Access rights are being handled via
+ * {@link DelCombo} linking
+ * @see DelCombo
+ */
 class DeletedObject {
 
     Long oldDatabaseID
@@ -74,6 +79,13 @@ class DeletedObject {
                                                      globalUID: 'oldGlobalUID',
                                                      gokbId: 'oldGokbID']
 
+    /**
+     * Sets up a new trace incl. the institutions having read rights
+     * @param delObj the object being deleted, containing parameters
+     * @param delRelations the institutions (global UIDs of {@link de.laser.Org}s) with granted access rights
+     * @return the object trace
+     * @throws CreationException
+     */
     static DeletedObject construct(delObj, Set<String> delRelations) throws CreationException {
         DeletedObject trace = construct(delObj)
         delRelations.each { String globalUID ->
@@ -84,6 +96,24 @@ class DeletedObject {
         trace
     }
 
+    /**
+     * Sets up a new trace, inserting basic information
+     * @param delObj the object parameters being stored, those are:
+     * <ul>
+     *     <li>old database ID</li>
+     *     <li>old object type</li>
+     *     <li>creation date of the deleted object</li>
+     *     <li>date when the object has been last updated</li>
+     * </ul>
+     * Moreover, depending on the object type:
+     * <ul>
+     *     <li>if {@link Subscription} or {@link License}: the {@link de.laser.interfaces.CalculatedType}</li>
+     *     <li>if {@link TitleInstancePackagePlatform}: the we:kb ID</li>
+     *     <li>if {@link IssueEntitlement}: the we:kb ID of the title and of the package and the subscription global UID</li>
+     * </ul>
+     * @return the object trace
+     * @throws CreationException
+     */
     static DeletedObject construct(delObj) throws CreationException {
         DeletedObject trace = new DeletedObject(oldDatabaseID: delObj.id, oldObjectType: delObj.class.name, oldDateCreated: delObj.dateCreated, oldLastUpdated: delObj.lastUpdated)
         nonMandatoryFields.each { String traceField, String mappingField ->

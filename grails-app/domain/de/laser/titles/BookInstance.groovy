@@ -9,7 +9,9 @@ import org.springframework.dao.DuplicateKeyException
 
 /**
  * Represents a(n) (e)book instance, contains fields which apply only for books
+ * @deprecated the central title instance has been removed; titles are stored in {@link de.laser.TitleInstancePackagePlatform}. Kept nonetheless because of an eventual connection of the Global Open Knowledge Base
  */
+@Deprecated
 class BookInstance extends TitleInstance {
 
     Date dateFirstInPrint
