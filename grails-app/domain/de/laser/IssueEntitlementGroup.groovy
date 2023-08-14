@@ -44,6 +44,11 @@ class IssueEntitlementGroup {
         surveyConfig column: 'ig_survey_config_fk'
     }
 
+    /**
+     * Used in various views
+     * Counts the current issue entitlements in the given group
+     * @return the number of {@link IssueEntitlement}s with status Current belonging to this issue entitlement group
+     */
     int countCurrentTitles(){
         items.count {it.ie.status == RDStore.TIPP_STATUS_CURRENT}
     }

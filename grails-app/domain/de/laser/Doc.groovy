@@ -90,6 +90,9 @@ class Doc {
         }
     }
 
+    /**
+     * used where? And should this not be a method actually?
+     */
     def beforeInsert = {
         if (contentType == CONTENT_TYPE_FILE) {
             uuid = java.util.UUID.randomUUID().toString()
@@ -97,6 +100,10 @@ class Doc {
         }
     }
 
+    /**
+     * Gets a map of MIME types and their respective encoding (encode or raw output)
+     * @return a {@link Map} of MIME types and their output way
+     */
     static Map<String, String> getPreviewMimeTypes() {
         String raw      = 'raw'
         String encode   = 'encode'

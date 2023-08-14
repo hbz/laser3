@@ -82,6 +82,9 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
             LEIBNIZ_ID
     ]
 
+    /**
+     * Set of identifiers every provider or agency (i.e. commercial organisation) must have
+     */
     public static final List<String> CORE_PROVIDER_NS = [
             CROSSREF_FUNDER_ID,
             DBPEDIA,
