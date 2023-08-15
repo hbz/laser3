@@ -101,8 +101,8 @@ class Doc {
     }
 
     /**
-     * Gets a map of MIME types and their respective encoding (encode or raw output)
-     * @return a {@link Map} of MIME types and their output way
+     * Gets a map of MIME types and their respective encoding (encoded or raw output) which is then used for preview display
+     * @return a {@link Map} of MIME types and their output method
      */
     static Map<String, String> getPreviewMimeTypes() {
         String raw      = 'raw'

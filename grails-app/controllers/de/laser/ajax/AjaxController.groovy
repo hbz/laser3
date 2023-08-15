@@ -752,7 +752,7 @@ class AjaxController {
      * Inserts a new reference data category. Beware: the inserted reference data category does not survive database resets nor is that available throughout the instances;
      * this has to be considered when running this webapp on multiple instances!
      * If you wish to insert a reference data category which persists and is available on different instances, enter the parameters in RefdataCategory.csv. This resource file is
-     * (currently, as of November 18th, '21) located at /src/main/webapp/setup
+     * (currently, as of August 14th, '23) located at /src/main/webapp/setup
      */
     @Secured(['ROLE_USER'])
     def addRefdataCategory() {
@@ -797,7 +797,7 @@ class AjaxController {
      * Beware: the inserted reference data category does not survive database resets nor is that available throughout the instances;
      * this has to be considered when running this webapp on multiple instances!
      * If you wish to insert a reference data category which persists and is available on different instances, enter the parameters in PropertyDefinition.csv. This resource file is
-     * (currently, as of November 18th, '21) located at /src/main/webapp/setup.
+     * (currently, as of August 14th, '23) located at /src/main/webapp/setup.
      * Note the global usability of this property definition; see {@link MyInstitutionController#managePrivatePropertyDefinitions()} with params.cmd == add for property types which
      * are for an institution's internal usage only
      */
@@ -1836,6 +1836,11 @@ class AjaxController {
     result
   }
 
+    /**
+     * Revokes the given affiliation from the given user to the given institution.
+     * Expected is a structure userId:orgId:roleId
+     * @return redirects to the referer
+     */
     @Transactional
     @Secured(['ROLE_USER'])
     def unsetAffiliation() {
@@ -2096,16 +2101,19 @@ class AjaxController {
         }
     }
 
+    @Deprecated
     @Secured(['ROLE_USER'])
     def dashboardChangesSetAccept() {
         _setDashboardChangesStatus(RDStore.PENDING_CHANGE_ACCEPTED)
     }
 
+    @Deprecated
     @Secured(['ROLE_USER'])
     def dashboardChangesSetReject() {
         _setDashboardChangesStatus(RDStore.PENDING_CHANGE_REJECTED)
     }
 
+    @Deprecated
     @Secured(['ROLE_USER'])
     @Transactional
     private _setDashboardChangesStatus(RefdataValue refdataValue){
@@ -2155,6 +2163,11 @@ class AjaxController {
         render template: '/myInstitution/changesWrapper', model: changes
     }
 
+    /**
+     * Method under development; concept of cost per use is not fully elaborated yet
+     * Generates for the given subsciption and its holding a cost per use calculation, i.e. a cost analysis for the regarded COUNTER report
+     * @return a table view of the cost analysis, depending on the given report(s)
+     */
     @Secured(['ROLE_USER'])
     def generateCostPerUse() {
         Map<String, Object> ctrlResult = subscriptionControllerService.getStatsDataForCostPerUse(params)
