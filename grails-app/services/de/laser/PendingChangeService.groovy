@@ -620,7 +620,7 @@ class PendingChangeService extends AbstractLockableService {
      * @return true if the change could be applied successfully, false otherwise
      * @throws ChangeAcceptException
      */
-    boolean accept(PendingChange pc, subId = null) throws ChangeAcceptException {
+    boolean accept(PendingChange pc) throws ChangeAcceptException {
         log.debug("accept: ${pc.msgToken} for ${pc.pkg}")
         boolean done = false
         def target
@@ -628,8 +628,8 @@ class PendingChangeService extends AbstractLockableService {
             target = genericOIDService.resolveOID(pc.oid)
         else if(pc.costItem)
             target = pc.costItem
-        else if(subId)
-            target = Subscription.get(subId)
+        /*else if(subId)
+            target = Subscription.get(subId)*/
         def parsedNewValue
         if(pc.targetProperty in PendingChange.DATE_FIELDS)
             parsedNewValue = DateUtils.parseDateGeneric(pc.newValue)
@@ -672,7 +672,7 @@ class PendingChangeService extends AbstractLockableService {
             }
         }
         else*/
-        if(done || pc.msgToken == PendingChangeConfiguration.NEW_SUBSCRIPTION) {
+        if(done || pc.msgToken in [PendingChangeConfiguration.NEW_SUBSCRIPTION, PendingChangeConfiguration.SUBSCRIPTION_RENEWED]) {
             pc.status = RDStore.PENDING_CHANGE_ACCEPTED
             pc.actionDate = new Date()
             if(!pc.save()) {
