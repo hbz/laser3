@@ -1,4 +1,4 @@
-<%@ page import="de.laser.convenience.Favorite; de.laser.storage.RDConstants; de.laser.utils.DateUtils; de.laser.Org; de.laser.Package; de.laser.Platform; de.laser.RefdataValue; java.text.SimpleDateFormat" %>
+<%@ page import="de.laser.convenience.Marker; de.laser.storage.RDConstants; de.laser.utils.DateUtils; de.laser.Org; de.laser.Package; de.laser.Platform; de.laser.RefdataValue; java.text.SimpleDateFormat" %>
 <laser:htmlStart message="package.show.all" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -144,7 +144,7 @@
                             </g:if>
                         </td>
                         <td class="center aligned">
-                            <g:if test="${pkg && pkg.isMarked(contextService.getUser(), Favorite.TYPE.WEKB_CHANGES)}">
+                            <g:if test="${pkg && pkg.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
                                 <i class="icon purple bookmark"></i>
                             </g:if>
                         </td>

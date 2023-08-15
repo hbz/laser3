@@ -1,4 +1,4 @@
-<%@ page import="de.laser.convenience.Favorite; de.laser.Platform; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.convenience.Marker; de.laser.Platform; de.laser.storage.RDStore" %>
 <laser:htmlStart message="menu.my.platforms" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -79,7 +79,7 @@
                     </g:if>
                 </td>
                 <td class="center aligned">
-                    <g:if test="${platformInstance.isMarked(contextService.getUser(), Favorite.TYPE.WEKB_CHANGES)}">
+                    <g:if test="${platformInstance.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
                         <i class="icon purple bookmark"></i>
                     </g:if>
                 </td>

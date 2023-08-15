@@ -10,7 +10,7 @@ import de.laser.base.AbstractI10n
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.cache.EhcacheWrapper
 import de.laser.cache.SessionCacheWrapper
-import de.laser.convenience.Favorite
+import de.laser.convenience.Marker
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
@@ -1140,7 +1140,7 @@ class AjaxController {
 
         MarkerSupport obj   = genericOIDService.resolveOID(params.oid) as MarkerSupport
         User user           = contextService.getUser()
-        Favorite.TYPE type  = Favorite.TYPE.WEKB_CHANGES // TODO
+        Marker.TYPE type    = Marker.TYPE.WEKB_CHANGES // TODO
 
         Map attrs = [ type: type, ajax: true ]
 

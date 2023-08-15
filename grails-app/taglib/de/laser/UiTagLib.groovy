@@ -2,7 +2,7 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.cache.SessionCacheWrapper
-import de.laser.convenience.Favorite
+import de.laser.convenience.Marker
 import de.laser.interfaces.MarkerSupport
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
@@ -366,20 +366,20 @@ class UiTagLib {
     def markerSwitch = { attrs, body ->
 
         MarkerSupport obj   = (attrs.org ?: attrs.package ?: attrs.platform) as MarkerSupport
-        boolean isFavorite  = obj.isMarked(contextService.getUser(), Favorite.TYPE.WEKB_CHANGES)
+        boolean isMarked    = obj.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)
         String tt           = '?'
         String tt_list      = message(code: 'myInst.marker.wekbchanges')  // 'Beobachtungsliste (' + (attrs.type ?: 'wekb-News') + ')'
 
         if (attrs.org) {
-            tt = isFavorite ? 'Der Anbieter/Lieferant ist auf der ' + tt_list + '. Anklicken um zu entfernen.'
+            tt = isMarked ? 'Der Anbieter/Lieferant ist auf der ' + tt_list + '. Anklicken um zu entfernen.'
                     : 'Anklicken, um den Anbieter/Lieferant auf die ' + tt_list + ' zu setzen.'
         }
         else if (attrs.package) {
-            tt = isFavorite ? 'Das Paket ist auf der ' + tt_list + '. Anklicken um zu entfernen.'
+            tt = isMarked ? 'Das Paket ist auf der ' + tt_list + '. Anklicken um zu entfernen.'
                     : 'Anklicken, um das Paket auf die ' + tt_list + ' zu setzen.'
         }
         else if (attrs.platform) {
-            tt = isFavorite ? 'Der Plattform ist auf der ' + tt_list + '. Anklicken um zu entfernen.'
+            tt = isMarked ? 'Der Plattform ist auf der ' + tt_list + '. Anklicken um zu entfernen.'
                     : 'Anklicken, um die Plattform auf die ' + tt_list + ' zu setzen.'
         }
 
@@ -387,7 +387,7 @@ class UiTagLib {
             String onClick = ui.remoteJsToggler(
                     controller:     'ajax',
                     action:         'toggleMarker',
-                    data:           '{oid:\'' + genericOIDService.getOID(obj) + '\', type:\'' + Favorite.TYPE.WEKB_CHANGES + '\'}',
+                    data:           '{oid:\'' + genericOIDService.getOID(obj) + '\', type:\'' + Marker.TYPE.WEKB_CHANGES + '\'}',
                     update:         '#marker-' + obj.id,
                     successFunc:    'tooltip.init(\'#marker-' + obj.id + '\')'
             )
@@ -398,7 +398,7 @@ class UiTagLib {
 
             out <<      '<a class="ui icon label la-popup-tooltip la-long-tooltip la-delay" onclick="' + onClick + '" '
             out <<          'data-content="' + tt + '" data-position="top right">'
-            out <<              '<i class="icon purple bookmark' + (isFavorite ? '' : ' outline') + '"></i>'
+            out <<              '<i class="icon purple bookmark' + (isMarked ? '' : ' outline') + '"></i>'
             out <<      '</a>'
 
             if (! attrs.ajax) {

@@ -13,10 +13,10 @@
                             <i class="icon yellow star"></i> ${wekbChanges.counts.my}
                     </a>
                 </g:if>
-                <g:if test="${wekbChanges.counts.favorites > 0}">
-                    <a href="#" class="ui icon label la-popup-tooltip la-delay wekb-flyout-trigger" data-preset="all,favorites"
+                <g:if test="${wekbChanges.counts.marker > 0}">
+                    <a href="#" class="ui icon label la-popup-tooltip la-delay wekb-flyout-trigger" data-preset="all,marker"
                        data-content="${message(code: 'myInst.marker.wekbchanges')}" data-position="top right">
-                            <i class="icon purple bookmark"></i> ${wekbChanges.counts.favorites}
+                            <i class="icon purple bookmark"></i> ${wekbChanges.counts.marker}
                     </a>
                 </g:if>
             </div>
@@ -44,7 +44,7 @@
 %{--                                </div>--}%
 %{--                                <div style="width:50%;min-width:130px;float:left">--}%
                                     <a href="#" class="wekb-flyout-trigger" data-preset="org,my"><i class="icon star"></i>${wekbChanges.org.my.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="org,favorites"><i class="icon bookmark"></i>${wekbChanges.org.my.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="org,marker"><i class="icon bookmark"></i>${wekbChanges.org.my.size()}</a> <br/>
 %{--                                </div>--}%
                             </div>
                         </div>
@@ -67,7 +67,7 @@
 %{--                                </div>--}%
 %{--                                <div style="width:50%;min-width:130px;float:left">--}%
                                     <a href="#" class="wekb-flyout-trigger" data-preset="platform,my"><i class="icon star"></i>${wekbChanges.platform.my.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="platform,favorites"><i class="icon bookmark"></i>${wekbChanges.platform.favorites.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="platform,marker"><i class="icon bookmark"></i>${wekbChanges.platform.marker.size()}</a> <br/>
 %{--                                </div>--}%
                             </div>
                         </div>
@@ -90,7 +90,7 @@
 %{--                                </div>--}%
 %{--                                <div style="width:50%;min-width:130px;float:left">--}%
                                     <a href="#" class="wekb-flyout-trigger" data-preset="package,my"><i class="icon star"></i>${wekbChanges.package.my.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="package,favorites"><i class="icon bookmark"></i>${wekbChanges.package.favorites.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="package,marker"><i class="icon bookmark"></i>${wekbChanges.package.marker.size()}</a> <br/>
 %{--                                </div>--}%
                             </div>
                         </div>
@@ -186,7 +186,7 @@
                 else if (filter == 'my') {
                     $(rows + '[data-f2=true]').show()
                 }
-                else if (filter == 'favorites') {
+                else if (filter == 'marker') {
                     $(rows + '[data-f3=true]').show()
                 }
             }
@@ -225,7 +225,7 @@
             <span class="ui button mini" data-filter="created">Neue Objekte: ${wekbChanges.counts.created}</span>
             <span class="ui button mini" data-filter="updated">Geänderte Objekte: ${wekbChanges.counts.updated}</span>
             <span class="ui button mini" data-filter="my"><i class="icon star"></i> ${wekbChanges.counts.my}</span>
-            <span class="ui button mini" data-filter="favorites"><i class="icon bookmark"></i> ${wekbChanges.counts.favorites}</span>
+            <span class="ui button mini" data-filter="marker"><i class="icon bookmark"></i> ${wekbChanges.counts.marker}</span>
             <span class="ui button mini" data-filter="all">Alle</span>
         </div>
     </div>
@@ -241,7 +241,7 @@
                     <div class="three column row"
                          data-f1="${obj.uuid in cfg[1].created ? 'created' : 'updated'}"
                          data-f2="${obj.uuid in cfg[1].my ? 'true' : 'false'}"
-                         data-f3="${obj.uuid in cfg[1].favorites ? 'true' : 'false'}"
+                         data-f3="${obj.uuid in cfg[1].marker ? 'true' : 'false'}"
                     >
                         <div class="column one wide center aligned">${i+1}</div>
                         <div class="column ten wide">
@@ -263,7 +263,7 @@
                             <g:else>
                                 <i class="icon fake"></i>
                             </g:else>
-                            <g:if test="${obj.uuid in cfg[1].favorites}">
+                            <g:if test="${obj.uuid in cfg[1].marker}">
                                 <span class="la-popup-tooltip la-delay" data-content="Beobachtungsliste">
                                     <i class="icon purple bookmark"></i>
                                 </span>

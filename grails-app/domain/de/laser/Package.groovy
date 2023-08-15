@@ -3,7 +3,7 @@ package de.laser
 import de.laser.annotations.RefdataInfo
 import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
-import de.laser.convenience.Favorite
+import de.laser.convenience.Marker
 import de.laser.interfaces.MarkerSupport
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
@@ -309,22 +309,22 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     }
 
     @Override
-    boolean isMarked(User user, Favorite.TYPE type) {
-        Favorite.findByPkgAndUserAndType(this, user, type) ? true : false
+    boolean isMarked(User user, Marker.TYPE type) {
+        Marker.findByPkgAndUserAndType(this, user, type) ? true : false
     }
 
     @Override
-    void setMarker(User user, Favorite.TYPE type) {
+    void setMarker(User user, Marker.TYPE type) {
         if (!isMarked(user, type)) {
-            Favorite f = new Favorite(pkg: this, user: user, type: type)
-            f.save()
+            Marker m = new Marker(pkg: this, user: user, type: type)
+            m.save()
         }
     }
 
     @Override
-    void removeMarker(User user, Favorite.TYPE type) {
+    void removeMarker(User user, Marker.TYPE type) {
         withTransaction {
-            Favorite.findByPkgAndUserAndType(this, user, type).delete(flush:true)
+            Marker.findByPkgAndUserAndType(this, user, type).delete(flush:true)
         }
     }
 }

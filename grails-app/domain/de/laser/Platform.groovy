@@ -3,7 +3,7 @@ package de.laser
 import de.laser.annotations.RefdataInfo
 import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
-import de.laser.convenience.Favorite
+import de.laser.convenience.Marker
 import de.laser.interfaces.MarkerSupport
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
@@ -206,22 +206,22 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
   }
 
   @Override
-  boolean isMarked(User user, Favorite.TYPE type) {
-    Favorite.findByPltAndUserAndType(this, user, type) ? true : false
+  boolean isMarked(User user, Marker.TYPE type) {
+    Marker.findByPltAndUserAndType(this, user, type) ? true : false
   }
 
   @Override
-  void setMarker(User user, Favorite.TYPE type) {
+  void setMarker(User user, Marker.TYPE type) {
     if (!isMarked(user, type)) {
-      Favorite f = new Favorite(plt: this, user: user, type: type)
-      f.save()
+      Marker m = new Marker(plt: this, user: user, type: type)
+      m.save()
     }
   }
 
   @Override
-  void removeMarker(User user, Favorite.TYPE type) {
+  void removeMarker(User user, Marker.TYPE type) {
     withTransaction {
-      Favorite.findByPltAndUserAndType(this, user, type).delete(flush:true)
+      Marker.findByPltAndUserAndType(this, user, type).delete(flush:true)
     }
   }
 }

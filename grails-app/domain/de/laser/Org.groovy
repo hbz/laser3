@@ -3,7 +3,7 @@ package de.laser
 import de.laser.annotations.RefdataInfo
 import de.laser.auth.*
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
-import de.laser.convenience.Favorite
+import de.laser.convenience.Marker
 import de.laser.finance.CostItem
 import de.laser.interfaces.DeleteFlag
 import de.laser.interfaces.MarkerSupport
@@ -778,22 +778,22 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
 
     @Override
-    boolean isMarked(User user, Favorite.TYPE type) {
-        Favorite.findByOrgAndUserAndType(this, user, type) ? true : false
+    boolean isMarked(User user, Marker.TYPE type) {
+        Marker.findByOrgAndUserAndType(this, user, type) ? true : false
     }
 
     @Override
-    void setMarker(User user, Favorite.TYPE type) {
+    void setMarker(User user, Marker.TYPE type) {
         if (!isMarked(user, type)) {
-            Favorite f = new Favorite(org: this, user: user, type: type)
-            f.save()
+            Marker m = new Marker(org: this, user: user, type: type)
+            m.save()
         }
     }
 
     @Override
-    void removeMarker(User user, Favorite.TYPE type) {
+    void removeMarker(User user, Marker.TYPE type) {
         withTransaction {
-            Favorite.findByOrgAndUserAndType(this, user, type).delete(flush:true)
+            Marker.findByOrgAndUserAndType(this, user, type).delete(flush:true)
         }
     }
 }

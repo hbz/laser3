@@ -1,7 +1,7 @@
 package de.laser
 
 import de.laser.cache.EhcacheWrapper
-import de.laser.convenience.Favorite
+import de.laser.convenience.Marker
 import de.laser.remote.ApiSource
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
@@ -39,9 +39,9 @@ class WekbStatsService {
         result.package.my   = currentPackageIdList.intersect(result.package.all.collect{ it.uuid })
         result.platform.my  = [] // todo
 
-        result.org.favorites       = Favorite.executeQuery('select org.gokbId from Org org, Favorite fav where fav.org = org and fav.user = :user', [user: contextService.getUser()])
-        result.package.favorites   = Favorite.executeQuery('select pkg.gokbId from Package pkg, Favorite fav where fav.pkg = pkg and fav.user = :user', [user: contextService.getUser()])
-        result.platform.favorites  = Favorite.executeQuery('select plt.gokbId from Platform plt, Favorite fav where fav.plt = plt and fav.user = :user', [user: contextService.getUser()])
+        result.org.marker       = Marker.executeQuery('select org.gokbId from Org org, Marker mrk where mrk.org = org and mrk.user = :user', [user: contextService.getUser()])
+        result.package.marker   = Marker.executeQuery('select pkg.gokbId from Package pkg, Marker mrk where mrk.pkg = pkg and mrk.user = :user', [user: contextService.getUser()])
+        result.platform.marker  = Marker.executeQuery('select plt.gokbId from Platform plt, Marker mrk where mrk.plt = plt and mrk.user = :user', [user: contextService.getUser()])
 
         // TODO
         // PlatformController.show() -> isMyPlatform
@@ -51,7 +51,7 @@ class WekbStatsService {
                 all:        result.org.count            + result.platform.count            + result.package.count,
                 inLaser:    result.org.countInLaser     + result.platform.countInLaser     + result.package.countInLaser,
                 my:         result.org.my.size()        + result.platform.my.size()        + result.package.my.size(),
-                favorites:  result.org.favorites.size() + result.platform.favorites.size() + result.package.favorites.size(),
+                marker:     result.org.marker.size()    + result.platform.marker.size()    + result.package.marker.size(),
                 created:    result.org.created.size()   + result.platform.created.size()   + result.package.created.size(),
                 updated:    result.org.updated.size()   + result.platform.updated.size()   + result.package.updated.size()
         ]
