@@ -1218,6 +1218,12 @@ class AjaxHtmlController {
 
     }
 
+    /**
+     * Opens a modal containing a preview of the given document if rights are granted and the file being found.
+     * The preview is being generated according to the MIME type of the requested document; the document key is
+     * expected in structure docUUID:docContextID
+     * @return the template containing a preview of the document (either document viewer or fulltext extract)
+     */
     @Secured(['ROLE_USER'])
     def documentPreview() {
         Map<String, Object> result = [:]
