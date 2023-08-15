@@ -35,17 +35,33 @@ class WekbStatsService {
 
         List<String> currentProviderIdList = orgTypeService.getCurrentOrgsOfProvidersAndAgencies(contextService.getOrg()).collect{ it.gokbId }
 
-        result.org.my       = currentProviderIdList.intersect(result.org.all.collect{ it.uuid })
-        result.package.my   = currentPackageIdList.intersect(result.package.all.collect{ it.uuid })
-        result.platform.my  = [] // todo
+         // todo --
+        List<Long> currentSubscriptionIdList = Subscription.executeQuery(
+                'select distinct s.id from OrgRole oo join oo.sub s where oo.org = :context and oo.roleType in (:roleTypes) and (s.status = :current or (s.status = :expired and s.hasPerpetualAccess = true))'
+                        + (contextService.getOrg().isCustomerType_Consortium() ? ' and s.instanceOf = null' : ''),
+                [context: contextService.getOrg(), roleTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA], current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED]
+        )
+        // println currentSubscriptionIdList.size()
 
-        result.org.marker       = Marker.executeQuery('select org.gokbId from Org org, Marker mrk where mrk.org = org and mrk.user = :user', [user: contextService.getUser()])
-        result.package.marker   = Marker.executeQuery('select pkg.gokbId from Package pkg, Marker mrk where mrk.pkg = pkg and mrk.user = :user', [user: contextService.getUser()])
-        result.platform.marker  = Marker.executeQuery('select plt.gokbId from Platform plt, Marker mrk where mrk.plt = plt and mrk.user = :user', [user: contextService.getUser()])
+        List<Long> currentPlatformIdList = Platform.executeQuery('select distinct p.id from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg, ' +
+                'TitleInstancePackagePlatform tipp join tipp.platform p left join p.org o where tipp.pkg = pkg and s.id in (:subIds) ' +
+                'and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted)) and ((tipp.status is null) or (tipp.status != :tippRemoved)) ',
+                [subIds: currentSubscriptionIdList, pkgDeleted: RDStore.PACKAGE_STATUS_DELETED, tippRemoved: RDStore.TIPP_STATUS_REMOVED]
+        )
+        // println currentPlatformIdList.size()
+        // -- todo
 
-        // TODO
-        // PlatformController.show() -> isMyPlatform
-        // --- copied from myInstitutionController.currentPlatforms()
+        List<String> orgList    = result.org.all.collect{ it.uuid }
+        List<String> pkgList    = result.package.all.collect{ it.uuid }
+        List<String> pltList    = result.platform.all.collect{ it.uuid }
+
+        result.org.my           = currentProviderIdList.intersect(orgList)
+        result.package.my       = currentPackageIdList.intersect(pkgList)
+        result.platform.my      = currentPlatformIdList.intersect(pltList)
+
+        result.org.marker       = Marker.executeQuery('select org.gokbId from Org org, Marker mrk where mrk.org = org and mrk.user = :user', [user: contextService.getUser()]).intersect(orgList)
+        result.package.marker   = Marker.executeQuery('select pkg.gokbId from Package pkg, Marker mrk where mrk.pkg = pkg and mrk.user = :user', [user: contextService.getUser()]).intersect(pkgList)
+        result.platform.marker  = Marker.executeQuery('select plt.gokbId from Platform plt, Marker mrk where mrk.plt = plt and mrk.user = :user', [user: contextService.getUser()]).intersect(pltList)
 
         result.counts = [
                 all:        result.org.count            + result.platform.count            + result.package.count,
