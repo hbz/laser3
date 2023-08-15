@@ -3,8 +3,10 @@ package de.laser
 import de.laser.annotations.RefdataInfo
 import de.laser.auth.*
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
+import de.laser.convenience.Marker
 import de.laser.finance.CostItem
 import de.laser.interfaces.DeleteFlag
+import de.laser.interfaces.MarkerSupport
 import de.laser.oap.OrgAccessPoint
 import de.laser.properties.OrgProperty
 import de.laser.storage.BeanStore
@@ -38,7 +40,7 @@ import org.apache.commons.lang3.StringUtils
  */
 @Slf4j
 class Org extends AbstractBaseWithCalculatedLastUpdated
-        implements DeleteFlag {
+        implements DeleteFlag, MarkerSupport {
 
     String name
     String shortcode            // Used to generate friendly semantic URLs
@@ -825,5 +827,25 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      */
     Identifier getLeitID() {
         return Identifier.findByOrgAndNs(this, IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID))
+    }
+
+    @Override
+    boolean isMarked(User user, Marker.TYPE type) {
+        Marker.findByOrgAndUserAndType(this, user, type) ? true : false
+    }
+
+    @Override
+    void setMarker(User user, Marker.TYPE type) {
+        if (!isMarked(user, type)) {
+            Marker m = new Marker(org: this, user: user, type: type)
+            m.save()
+        }
+    }
+
+    @Override
+    void removeMarker(User user, Marker.TYPE type) {
+        withTransaction {
+            Marker.findByOrgAndUserAndType(this, user, type).delete(flush:true)
+        }
     }
 }

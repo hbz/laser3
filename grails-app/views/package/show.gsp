@@ -29,6 +29,8 @@ making obsolete package/actions
     <laser:render template="/templates/iconObjectIsMine" model="${[isMyPkg: isMyPkg]}"/>
 </ui:h1HeaderWithIcon>
 
+<ui:markerSwitch package="${packageInstance}"/>
+
 <laser:render template="nav"/>
 
 <ui:objectStatus object="${packageInstance}" status="${packageInstance.packageStatus}"/>

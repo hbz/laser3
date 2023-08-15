@@ -91,4 +91,10 @@ class AppUtils {
         catch (Exception e) {}
         info
     }
+
+    // --
+
+    static boolean isPreviewOnly() {
+        getCurrentServer() in [LOCAL, DEV]
+    }
 }
