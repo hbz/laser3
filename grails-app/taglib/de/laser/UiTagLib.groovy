@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.cache.SessionCacheWrapper
+import de.laser.convenience.Favorite
 import de.laser.interfaces.MarkerSupport
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
@@ -364,8 +365,8 @@ class UiTagLib {
 
     def markerSwitch = { attrs, body ->
 
-        MarkerSupport obj = (attrs.org ?: attrs.package ?: attrs.platform) as MarkerSupport
-        boolean isFavorite  = obj.isMarkedForUser(contextService.getUser())
+        MarkerSupport obj   = (attrs.org ?: attrs.package ?: attrs.platform) as MarkerSupport
+        boolean isFavorite  = obj.isMarked(contextService.getUser(), Favorite.TYPE.WEKB_CHANGES)
         String tt           = '?'
         String tt_list      = message(code: 'myInst.marker.wekbchanges')  // 'Beobachtungsliste (' + (attrs.type ?: 'wekb-News') + ')'
 
@@ -383,10 +384,26 @@ class UiTagLib {
         }
 
         if (obj) {
-            out << '<a class="ui icon label la-popup-tooltip la-delay" data-content="' + tt + '" data-position="top right"'
-            out << ' style="margin-left:1em;">'
-            out <<      '<i class="icon purple bookmark' + (isFavorite ? '' : ' outline') + '"></i>'
-            out << '</a>'
+            String onClick = ui.remoteJsToggler(
+                    controller:     'ajax',
+                    action:         'toggleMarker',
+                    data:           '{oid:\'' + genericOIDService.getOID(obj) + '\', type:\'' + Favorite.TYPE.WEKB_CHANGES + '\'}',
+                    update:         '#marker-' + obj.id,
+                    successFunc:    'tooltip.init(\'#marker-' + obj.id + '\')'
+            )
+
+            if (! attrs.ajax) {
+                out << '<span id="marker-' + obj.id + '" style="margin-left:1em;">'
+            }
+
+            out <<      '<a class="ui icon label la-popup-tooltip la-long-tooltip la-delay" onclick="' + onClick + '" '
+            out <<          'data-content="' + tt + '" data-position="top right">'
+            out <<              '<i class="icon purple bookmark' + (isFavorite ? '' : ' outline') + '"></i>'
+            out <<      '</a>'
+
+            if (! attrs.ajax) {
+                out << '</span>'
+            }
         }
     }
 

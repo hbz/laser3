@@ -10,10 +10,11 @@ import de.laser.base.AbstractI10n
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.cache.EhcacheWrapper
 import de.laser.cache.SessionCacheWrapper
+import de.laser.convenience.Favorite
 import de.laser.ctrl.SubscriptionControllerService
-import de.laser.finance.PriceItem
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
+import de.laser.interfaces.MarkerSupport
 import de.laser.interfaces.ShareSupport
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
@@ -31,7 +32,6 @@ import de.laser.utils.SwissKnife
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
-import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.http.HttpStatus
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -1133,6 +1133,35 @@ class AjaxController {
         else {
             redirect(url: request.getHeader('referer'))
         }
+    }
+
+    @Transactional
+    def toggleMarker() {
+
+        MarkerSupport obj   = genericOIDService.resolveOID(params.oid) as MarkerSupport
+        User user           = contextService.getUser()
+        Favorite.TYPE type  = Favorite.TYPE.WEKB_CHANGES // TODO
+
+        Map attrs = [ type: type, ajax: true ]
+
+        if (obj instanceof Org) {
+            attrs.org = obj
+        }
+        else if (obj instanceof Package) {
+            attrs.package = obj
+        }
+        else if (obj instanceof Platform) {
+            attrs.platform = obj
+        }
+
+        if (obj.isMarked(user, type)) {
+            obj.removeMarker(user, type)
+        }
+        else {
+            obj.setMarker(user, type)
+        }
+
+        render ui.markerSwitch(attrs, null)
     }
 
     /**

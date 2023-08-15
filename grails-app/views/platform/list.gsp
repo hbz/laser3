@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Platform; de.laser.Package; de.laser.Org; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.convenience.Favorite; de.laser.Platform; de.laser.Package; de.laser.Org; de.laser.storage.RDStore" %>
 <laser:htmlStart message="platforms.all_platforms.label" serviceInjection="true" />
 
 	<ui:breadcrumbs>
@@ -82,7 +82,7 @@
 								</g:if>
 							</td>
 							<td class="center aligned">
-								<g:if test="${platformInstance && platformInstance.isMarkedForUser(contextService.getUser())}">
+								<g:if test="${platformInstance && platformInstance.isMarked(contextService.getUser(), Favorite.TYPE.WEKB_CHANGES)}">
 									<i class="icon purple bookmark"></i>
 								</g:if>
 							</td>

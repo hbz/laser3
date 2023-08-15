@@ -309,23 +309,22 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     }
 
     @Override
-    boolean isMarkedForUser(User user) {
-        Favorite.findByPkgAndTypeAndUser(this, Favorite.TYPE.WEKB_CHANGES, user) ? true : false
+    boolean isMarked(User user, Favorite.TYPE type) {
+        Favorite.findByPkgAndUserAndType(this, user, type) ? true : false
     }
 
     @Override
-    void setMarker() {
-        User user = BeanStore.getContextService().getUser()
-        if (!isMarkedForUser(user)) {
-            Favorite f = new Favorite(pkg: this, type: Favorite.TYPE.WEKB_CHANGES, user: user)
+    void setMarker(User user, Favorite.TYPE type) {
+        if (!isMarked(user, type)) {
+            Favorite f = new Favorite(pkg: this, user: user, type: type)
             f.save()
         }
     }
 
     @Override
-    void removeMarker() {
-        Favorite.executeQuery('delete from Favorite where pkg = :pkg and user = :user and type = :type', [
-                pkg: this, type: Favorite.TYPE.WEKB_CHANGES, user: BeanStore.getContextService().getUser()
-        ])
+    void removeMarker(User user, Favorite.TYPE type) {
+        withTransaction {
+            Favorite.findByPkgAndUserAndType(this, user, type).delete(flush:true)
+        }
     }
 }

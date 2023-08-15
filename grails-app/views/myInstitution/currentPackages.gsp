@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Package; de.laser.RefdataValue" %>
+<%@ page import="de.laser.convenience.Favorite; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Package; de.laser.RefdataValue" %>
 <laser:htmlStart message="menu.my.packages" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -125,7 +125,7 @@
                 <%--<td class="center aligned">
                 </td>--%>
                 <td class="center aligned">
-                    <g:if test="${pkg.isMarkedForUser(contextService.getUser())}">
+                    <g:if test="${pkg.isMarked(contextService.getUser(), Favorite.TYPE.WEKB_CHANGES)}">
                         <i class="icon purple bookmark"></i>
                     </g:if>
                 </td>

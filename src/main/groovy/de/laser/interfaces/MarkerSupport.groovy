@@ -1,13 +1,14 @@
 package de.laser.interfaces
 
 import de.laser.auth.User
+import de.laser.convenience.Favorite
 
 interface MarkerSupport {
 
-    void setMarker()
+    void setMarker(User user, Favorite.TYPE type)
 
-    void removeMarker()
+    void removeMarker(User user, Favorite.TYPE type)
 
-    boolean isMarkedForUser(User user)
-//    boolean isMarkedForUser(User user, Favorite.TYPE type)
+    boolean isMarked(User user, Favorite.TYPE type)
+
 }

@@ -778,23 +778,22 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
 
     @Override
-    boolean isMarkedForUser(User user) {
-        Favorite.findByOrgAndTypeAndUser(this, Favorite.TYPE.WEKB_CHANGES, user) ? true : false
+    boolean isMarked(User user, Favorite.TYPE type) {
+        Favorite.findByOrgAndUserAndType(this, user, type) ? true : false
     }
 
     @Override
-    void setMarker() {
-        User user = BeanStore.getContextService().getUser()
-        if (!isMarkedForUser(user)) {
-            Favorite f = new Favorite(org: this, type: Favorite.TYPE.WEKB_CHANGES, user: user)
+    void setMarker(User user, Favorite.TYPE type) {
+        if (!isMarked(user, type)) {
+            Favorite f = new Favorite(org: this, user: user, type: type)
             f.save()
         }
     }
 
     @Override
-    void removeMarker() {
-        Favorite.executeQuery('delete from Favorite where org = :org and user = :user and type = :type', [
-                org: this, type: Favorite.TYPE.WEKB_CHANGES, user: BeanStore.getContextService().getUser()
-        ])
+    void removeMarker(User user, Favorite.TYPE type) {
+        withTransaction {
+            Favorite.findByOrgAndUserAndType(this, user, type).delete(flush:true)
+        }
     }
 }

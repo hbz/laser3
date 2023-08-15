@@ -206,23 +206,22 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
   }
 
   @Override
-  boolean isMarkedForUser(User user) {
-    Favorite.findByPltAndTypeAndUser(this, Favorite.TYPE.WEKB_CHANGES, user) ? true : false
+  boolean isMarked(User user, Favorite.TYPE type) {
+    Favorite.findByPltAndUserAndType(this, user, type) ? true : false
   }
 
   @Override
-  void setMarker() {
-    User user = BeanStore.getContextService().getUser()
-    if (!isMarkedForUser(user)) {
-      Favorite f = new Favorite(plt: this, type: Favorite.TYPE.WEKB_CHANGES, user: user)
+  void setMarker(User user, Favorite.TYPE type) {
+    if (!isMarked(user, type)) {
+      Favorite f = new Favorite(plt: this, user: user, type: type)
       f.save()
     }
   }
 
   @Override
-  void removeMarker() {
-    Favorite.executeQuery('delete from Favorite where plt = :plt and user = :user and type = :type', [
-            plt: this, type: Favorite.TYPE.WEKB_CHANGES, user: BeanStore.getContextService().getUser()
-    ])
+  void removeMarker(User user, Favorite.TYPE type) {
+    withTransaction {
+      Favorite.findByPltAndUserAndType(this, user, type).delete(flush:true)
+    }
   }
 }
