@@ -133,7 +133,7 @@ class AjaxHtmlController {
                 resultObj = AlternativeName.construct([org: owner, name: 'Unknown'])
                 field = "name"
                 if(resultObj) {
-                    render template: '/templates/ajax/_newXEditable', model: [wrapper: params.object, ownObj: resultObj, field: field, overwriteEditable: true]
+                    render template: '/templates/ajax/newXEditable', model: [wrapper: params.object, ownObj: resultObj, field: field, overwriteEditable: true]
                 }
                 break
             case "coverage": //TODO
