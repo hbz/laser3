@@ -15,7 +15,7 @@
                 </g:if>
                 <g:if test="${wekbChanges.counts.marker > 0}">
                     <a href="#" class="ui icon label la-popup-tooltip la-delay wekb-flyout-trigger" data-preset="all,marker"
-                       data-content="${message(code: 'myInst.marker.wekbchanges')}" data-position="top right">
+                       data-content="${message(code: 'marker.wekbchanges')}" data-position="top right">
                             <i class="icon purple bookmark"></i> ${wekbChanges.counts.marker}
                     </a>
                 </g:if>

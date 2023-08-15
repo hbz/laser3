@@ -281,4 +281,12 @@ class IconTagLib {
             }
         }
     }
+
+    def markerIcon = { attrs, body ->
+        String tooltip = attrs.type ? message(code: 'marker.' + attrs.type ) : message(code: 'marker.default')
+
+        out << '<span class="la-popup-tooltip la-delay" data-content="' + tooltip + '">'
+        out << '<i class="icon ' + (attrs.color ? attrs.color + ' ' : '') + 'bookmark"></i>'
+        out << '</span>'
+    }
 }
