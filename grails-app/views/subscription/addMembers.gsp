@@ -107,7 +107,6 @@
                             <g:message code="myinst.noSubscriptionOwner"/>
                         </g:else>
                     </div>
-                    <%--
                     <div class="field">
                         <label><g:message code="myinst.addMembers.linkPackages"/></label>
                         <div class="field">
@@ -136,7 +135,6 @@
                             </g:else>
                         </div>
                     </div>
-                    --%>
                     <div class="field">
                         <ui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from" value="" />
                         <ui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to" value="" />
