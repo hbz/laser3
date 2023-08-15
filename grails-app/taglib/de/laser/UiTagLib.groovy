@@ -6,6 +6,7 @@ import de.laser.convenience.Marker
 import de.laser.interfaces.MarkerSupport
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
+import de.laser.utils.AppUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
@@ -364,6 +365,10 @@ class UiTagLib {
     }
 
     def markerSwitch = { attrs, body ->
+
+        if (! AppUtils.isPreviewOnly()) {
+            return
+        }
 
         MarkerSupport obj   = (attrs.org ?: attrs.package ?: attrs.platform) as MarkerSupport
         boolean isMarked    = obj.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)

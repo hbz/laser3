@@ -1,4 +1,4 @@
-<%@ page import="de.laser.convenience.Marker; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Package; de.laser.RefdataValue" %>
+<%@ page import="de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Package; de.laser.RefdataValue" %>
 <laser:htmlStart message="menu.my.packages" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -70,9 +70,11 @@
             <th>${message(code:'default.provider.label')}</th>
             <th>${message(code:'platform.label')}</th>
             <th>${message(code:'myinst.currentPackages.assignedSubscriptions')}</th>
-            <th class="center aligned">
-                <span class="la-popup-tooltip la-delay" data-content="${message(code: 'myInst.marker.wekbchanges')}"><i class="icon bookmark"></i></span>
-            </th>
+            <g:if test="${AppUtils.isPreviewOnly()}">
+                <th class="center aligned">
+                    <span class="la-popup-tooltip la-delay" data-content="${message(code: 'myInst.marker.wekbchanges')}"><i class="icon bookmark"></i></span>
+                </th>
+            </g:if>
         </tr>
         </thead>
         <tbody>
@@ -124,11 +126,13 @@
                 </td>
                 <%--<td class="center aligned">
                 </td>--%>
-                <td class="center aligned">
-                    <g:if test="${pkg.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
-                        <i class="icon purple bookmark"></i>
-                    </g:if>
-                </td>
+                <g:if test="${AppUtils.isPreviewOnly()}">
+                    <td class="center aligned">
+                        <g:if test="${pkg.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
+                            <i class="icon purple bookmark"></i>
+                        </g:if>
+                    </td>
+                </g:if>
             </tr>
         </g:each>
         </tbody>

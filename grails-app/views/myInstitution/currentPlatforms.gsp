@@ -1,4 +1,4 @@
-<%@ page import="de.laser.convenience.Marker; de.laser.Platform; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.Platform; de.laser.storage.RDStore" %>
 <laser:htmlStart message="menu.my.platforms" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -22,9 +22,11 @@
             <th>${message(code:'default.provider.label')}</th>
             <th>${message(code:'accessPoint.plural')}</th>
             <th>${message(code:'myinst.currentPlatforms.assignedSubscriptions')}</th>
-            <th class="center aligned">
-                <span class="la-popup-tooltip la-delay" data-content="${message(code: 'myInst.marker.wekbchanges')}"><i class="icon bookmark"></i></span>
-            </th>
+            <g:if test="${AppUtils.isPreviewOnly()}">
+                <th class="center aligned">
+                    <span class="la-popup-tooltip la-delay" data-content="${message(code: 'myInst.marker.wekbchanges')}"><i class="icon bookmark"></i></span>
+                </th>
+            </g:if>
             <th>${message(code:'org.isWekbCurated.label')}</th>
         </tr>
         </thead>
@@ -78,11 +80,13 @@
                         </ul>
                     </g:if>
                 </td>
-                <td class="center aligned">
-                    <g:if test="${platformInstance.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
-                        <i class="icon purple bookmark"></i>
-                    </g:if>
-                </td>
+                <g:if test="${AppUtils.isPreviewOnly()}">
+                    <td class="center aligned">
+                        <g:if test="${platformInstance.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
+                            <i class="icon purple bookmark"></i>
+                        </g:if>
+                    </td>
+                </g:if>
                 <td>
                     <g:if test="${platformInstance.org}">
                         <div class="la-flexbox">

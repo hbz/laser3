@@ -2,6 +2,7 @@ package de.laser.ctrl
 
 import de.laser.*
 import de.laser.auth.User
+import de.laser.utils.AppUtils
 import de.laser.utils.DateUtils
 import de.laser.helper.Profiler
 import de.laser.storage.RDStore
@@ -146,7 +147,10 @@ class MyInstitutionControllerService {
 
         //int days = result.user.getSetting(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14).getValue()
         //result.wekbChanges = wekbStatsService.getCurrentChanges(days)
-        result.wekbChanges = wekbStatsService.getCurrentChanges()
+
+        if (AppUtils.isPreviewOnly()) {
+            result.wekbChanges = wekbStatsService.getCurrentChanges()
+        }
 
         result.benchMark = prf.stopBenchmark()
         [status: STATUS_OK, result: result]

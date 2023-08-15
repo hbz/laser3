@@ -1,4 +1,4 @@
-<%@ page import="de.laser.convenience.Marker; de.laser.storage.RDConstants; de.laser.utils.DateUtils; de.laser.Org; de.laser.Package; de.laser.Platform; de.laser.RefdataValue; java.text.SimpleDateFormat" %>
+<%@ page import="de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.storage.RDConstants; de.laser.utils.DateUtils; de.laser.Org; de.laser.Package; de.laser.Platform; de.laser.RefdataValue; java.text.SimpleDateFormat" %>
 <laser:htmlStart message="package.show.all" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -43,9 +43,11 @@
                     <th>${message(code: 'package.curatoryGroup.label')}</th>
                     <th>${message(code: 'package.source.automaticUpdates')}</th>
                     <g:sortableColumn property="lastUpdatedDisplay" title="${message(code: 'package.lastUpdated.label')}" params="${params}" defaultOrder="desc"/>
-                    <th class="center aligned">
-                        <span class="la-popup-tooltip la-delay" data-content="${message(code: 'myInst.marker.wekbchanges')}"><i class="icon bookmark"></i></span>
-                    </th>
+                    <g:if test="${AppUtils.isPreviewOnly()}">
+                        <th class="center aligned">
+                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'myInst.marker.wekbchanges')}"><i class="icon bookmark"></i></span>
+                        </th>
+                    </g:if>
                     <sec:ifAllGranted roles="ROLE_YODA">
                         <th class="x center aligned">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="left center" data-content="${message(code: 'menu.yoda.reloadPackages')}">
@@ -143,11 +145,13 @@
                                               date="${DateUtils.parseDateGeneric(record.lastUpdatedDisplay)}"/>
                             </g:if>
                         </td>
-                        <td class="center aligned">
-                            <g:if test="${pkg && pkg.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
-                                <i class="icon purple bookmark"></i>
-                            </g:if>
-                        </td>
+                        <g:if test="${AppUtils.isPreviewOnly()}">
+                            <td class="center aligned">
+                                <g:if test="${pkg && pkg.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
+                                    <i class="icon purple bookmark"></i>
+                                </g:if>
+                            </td>
+                        </g:if>
                         <sec:ifAllGranted roles="ROLE_YODA">
                             <td class="x">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'menu.yoda.reloadPackage')}">
