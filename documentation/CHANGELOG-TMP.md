@@ -7,6 +7,16 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5227    11.08.2023  rc-3.2  3.2.3       Andreas Bug         Zugriffsfehler beim Abhaken einer ausstehenden Änderung
+
+5226    11.08.2023  rc-3.2  3.2.3       Andreas Feature     ROR-IDs können mehrfach vergeben werden
+
+5224    10.08.2023  rc-3.2  3.2.3       Andreas Feature     Umstellung des Anbieter/Lieferanten-Verknüpfungsmodals
+
+5223    09.08.2023  rc-3.2  3.2.3       Andreas Feature     diverse Optimierungen in der Titelverwaltung
+
+--      09.08.2023  rc-3.2  3.2.3       Andreas Bug         Umstellung des allgemeinen Lizenzendpunktes
+
 5222    08.08.2023  rc-3.2  3.2.3       Andreas Bug         Fehlverarbeitung in der englischen Oberfläche behoben
 
 5214    08.08.2023  rc-3.2  3.2.2       Ingrid  Feature     Meine Lizenzübertragungen: Tabelle übersichtlicher
