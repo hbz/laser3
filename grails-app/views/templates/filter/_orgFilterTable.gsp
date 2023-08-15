@@ -195,13 +195,13 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('isMyX')}">
                 <th class="center aligned">
                     <g:if test="${actionName == 'listProvider'}">
-                        <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.providers')}"><i class="icon star"></i></span>
+                        <ui:myXIcon tooltip="${message(code: 'menu.my.providers')}" />
                     </g:if>
                     <g:if test="${actionName == 'listInstitution'}">
-                        <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.insts')}"><i class="icon star"></i></span>
+                        <ui:myXIcon tooltip="${message(code: 'menu.my.insts')}" />
                     </g:if>
                     <g:if test="${actionName == 'listConsortia'}">
-                        <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.consortia')}"><i class="icon star"></i></span>
+                        <ui:myXIcon tooltip="${message(code: 'menu.my.consortia')}" />
                     </g:if>
                 </th>
             </g:if>
@@ -938,7 +938,7 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('marker') && AppUtils.isPreviewOnly()}">
                 <td class="center aligned">
                     <g:if test="${org.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
-                        <ui:markerIcon type="wekbchanges" color="purple" /></i>
+                        <ui:markerIcon type="wekbchanges" color="purple" />
                     </g:if>
                 </td>
             </g:if>

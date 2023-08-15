@@ -44,7 +44,7 @@
 %{--                                </div>--}%
 %{--                                <div style="width:50%;min-width:130px;float:left">--}%
                                     <a href="#" class="wekb-flyout-trigger" data-preset="org,my"><i class="icon star"></i>${wekbChanges.org.my.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="org,marker"><i class="icon bookmark"></i>${wekbChanges.org.my.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="org,marker"><i class="icon bookmark"></i>${wekbChanges.org.marker.size()}</a> <br/>
 %{--                                </div>--}%
                             </div>
                         </div>

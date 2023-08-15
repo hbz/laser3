@@ -83,7 +83,7 @@
                 <g:if test="${AppUtils.isPreviewOnly()}">
                     <td class="center aligned">
                         <g:if test="${platformInstance.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
-                            <ui:markerIcon type="wekbchanges" color="purple" /></i>
+                            <ui:markerIcon type="wekbchanges" color="purple" />
                         </g:if>
                     </td>
                 </g:if>
