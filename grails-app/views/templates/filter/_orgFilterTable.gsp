@@ -1,4 +1,4 @@
-<%@ page import="java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.remote.ApiSource; de.laser.AlternativeName" %>
+<%@ page import="de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.remote.ApiSource; de.laser.AlternativeName" %>
 <laser:serviceInjection/>
 <g:if test="${'surveySubCostItem' in tmplConfigShow}">
     <g:set var="oldCostItem" value="${0.0}"/>
@@ -184,6 +184,12 @@
                     ${message(code: 'surveyCostItems.label')}
                 </th>
                 <th></th>
+            </g:if>
+
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('marker') && AppUtils.isPreviewOnly()}">
+                <th class="center aligned">
+                    <span class="la-popup-tooltip la-delay" data-content="${message(code: 'myInst.marker.wekbchanges')}"><i class="icon bookmark"></i></span>
+                </th>
             </g:if>
 
             <g:if test="${tmplConfigItem.equalsIgnoreCase('isMyX')}">
@@ -930,6 +936,14 @@
                         </div>
                     </g:if>
 
+                </td>
+            </g:if>
+
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('marker') && AppUtils.isPreviewOnly()}">
+                <td class="center aligned">
+                    <g:if test="${org.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
+                        <i class="icon purple bookmark"></i>
+                    </g:if>
                 </td>
             </g:if>
 

@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.cache.EhcacheWrapper
+import de.laser.convenience.Marker
 import de.laser.remote.ApiSource
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
@@ -38,9 +39,22 @@ class WekbStatsService {
         result.package.my   = currentPackageIdList.intersect(result.package.all.collect{ it.uuid })
         result.platform.my  = [] // todo
 
+        result.org.marker       = Marker.executeQuery('select org.gokbId from Org org, Marker mrk where mrk.org = org and mrk.user = :user', [user: contextService.getUser()])
+        result.package.marker   = Marker.executeQuery('select pkg.gokbId from Package pkg, Marker mrk where mrk.pkg = pkg and mrk.user = :user', [user: contextService.getUser()])
+        result.platform.marker  = Marker.executeQuery('select plt.gokbId from Platform plt, Marker mrk where mrk.plt = plt and mrk.user = :user', [user: contextService.getUser()])
+
         // TODO
         // PlatformController.show() -> isMyPlatform
         // --- copied from myInstitutionController.currentPlatforms()
+
+        result.counts = [
+                all:        result.org.count            + result.platform.count            + result.package.count,
+                inLaser:    result.org.countInLaser     + result.platform.countInLaser     + result.package.countInLaser,
+                my:         result.org.my.size()        + result.platform.my.size()        + result.package.my.size(),
+                marker:     result.org.marker.size()    + result.platform.marker.size()    + result.package.marker.size(),
+                created:    result.org.created.size()   + result.platform.created.size()   + result.package.created.size(),
+                updated:    result.org.updated.size()   + result.platform.updated.size()   + result.package.updated.size()
+        ]
 
         result
     }
@@ -65,9 +79,10 @@ class WekbStatsService {
 
         result = [
                 query       : [ days: days, changedSince: DateUtils.getLocalizedSDF_noTime().format(frame), call: DateUtils.getLocalizedSDF_noZ().format(new Date()) ],
-                org         : [ count: 0, laserCount: 0, created: [], updated: [], all: [] ],
-                platform    : [ count: 0, laserCount: 0, created: [], updated: [], all: [] ],
-                package     : [ count: 0, laserCount: 0, created: [], updated: [], all: [] ]
+                counts      : [ : ],
+                org         : [ count: 0, countInLaser: 0, created: [], updated: [], all: [] ],
+                platform    : [ count: 0, countInLaser: 0, created: [], updated: [], all: [] ],
+                package     : [ count: 0, countInLaser: 0, created: [], updated: [], all: [] ]
         ]
 
         Closure process = { Map map, String key ->
@@ -85,7 +100,7 @@ class WekbStatsService {
                     if (key == 'platform')  { it.globalUID = Platform.findByGokbId(it.uuid)?.globalUID }
                     if (key == 'package')   { it.globalUID = Package.findByGokbId(it.uuid)?.globalUID }
 
-                    if (it.globalUID) { result[key].laserCount++ }
+                    if (it.globalUID) { result[key].countInLaser++ }
                     result[key].all << it
                 }
                 result[key].count = result[key].created.size() + result[key].updated.size()

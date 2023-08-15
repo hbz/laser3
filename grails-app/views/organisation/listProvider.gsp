@@ -68,7 +68,7 @@
                       model="[orgList: orgList,
                               currentProviderIdList: currentProviderIdList,
                               tmplShowCheckbox: false,
-                              tmplConfigShow: ['lineNumber', 'sortname', 'name', 'altname', 'platform', 'isMyX', 'isWekbCurated']
+                              tmplConfigShow: ['lineNumber', 'sortname', 'name', 'altname', 'platform', 'isMyX', 'marker', 'isWekbCurated']
                       ]"/>
             </g:if>
             <g:else>
