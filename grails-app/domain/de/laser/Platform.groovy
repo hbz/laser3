@@ -1,7 +1,10 @@
 package de.laser
 
 import de.laser.annotations.RefdataInfo
+import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
+import de.laser.convenience.Marker
+import de.laser.interfaces.MarkerSupport
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
 import de.laser.properties.PlatformProperty
@@ -15,7 +18,7 @@ import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
  * This class represents a platform record. A platform is a portal where providers offer access to titles subscribed via packages.
  * This class is a mirror of the we:kb-implementation of Platform, <a href="https://github.com/hbz/wekb/blob/wekb-dev/server/gokbg3/grails-app/domain/org/gokb/cred/Platform.groovy">cf. with the we:kb-implementation</a>
  */
-class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparable<Platform> {
+class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparable<Platform>, MarkerSupport {
 
   String gokbId
   String name
@@ -202,4 +205,23 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
     name
   }
 
+  @Override
+  boolean isMarked(User user, Marker.TYPE type) {
+    Marker.findByPltAndUserAndType(this, user, type) ? true : false
+  }
+
+  @Override
+  void setMarker(User user, Marker.TYPE type) {
+    if (!isMarked(user, type)) {
+      Marker m = new Marker(plt: this, user: user, type: type)
+      m.save()
+    }
+  }
+
+  @Override
+  void removeMarker(User user, Marker.TYPE type) {
+    withTransaction {
+      Marker.findByPltAndUserAndType(this, user, type).delete(flush:true)
+    }
+  }
 }

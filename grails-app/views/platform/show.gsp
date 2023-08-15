@@ -17,6 +17,8 @@
 
 <ui:h1HeaderWithIcon text="${platformInstance.name}" />
 
+<ui:markerSwitch platform="${platformInstance}"/>
+
 <laser:render template="/templates/meta/identifier" model="${[object: platformInstance, editable: false]}"/>
 
 <ui:messages data="${flash}"/>
