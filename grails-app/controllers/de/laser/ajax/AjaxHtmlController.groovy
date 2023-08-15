@@ -119,6 +119,11 @@ class AjaxHtmlController {
         render result
     }
 
+    /**
+     * Adds a new object stub to an xEditable enumeration.
+     * Currently supported are {@link AlternativeName}s (params.object == "altname") or {@link de.laser.finance.PriceItem}s (params.object == "priceItem")
+     * @return a template fragment for the new xEditable item
+     */
     @Secured(['ROLE_USER'])
     def addObject() {
         def resultObj, owner
@@ -128,7 +133,7 @@ class AjaxHtmlController {
                 resultObj = AlternativeName.construct([org: owner, name: 'Unknown'])
                 field = "name"
                 if(resultObj) {
-                    render view: '/templates/ajax/_newXEditable', model: [wrapper: params.object, ownObj: resultObj, field: field, overwriteEditable: true]
+                    render template: '/templates/ajax/_newXEditable', model: [wrapper: params.object, ownObj: resultObj, field: field, overwriteEditable: true]
                 }
                 break
             case "coverage": //TODO
@@ -198,6 +203,10 @@ class AjaxHtmlController {
         render template: '/myInstitution/surveys', model: result
     }
 
+    /**
+     * Call to render the flyout to display recent changes in the we:kb knowledge base
+     * @return the template fragment for the changes
+     */
     @Secured(['ROLE_USER'])
     def wekbChangesFlyout() {
         log.debug('ajaxHtmlController.wekbChangesFlyout ' + params)
@@ -1066,6 +1075,10 @@ class AjaxHtmlController {
         }
     }
 
+    /**
+     * Call to render the flyout containing the steps of a given workflow
+     * @return the template containing the data for the flyout
+     */
     @Secured(['ROLE_USER'])
     def workflowFlyout() {
         Map<String, Object> result = [
@@ -1101,6 +1114,11 @@ class AjaxHtmlController {
         render template: '/templates/workflow/flyout', model: result
     }
 
+    /**
+     * Opens the modal for a given object, containing workflow details for the given object. Along that, the form
+     * processing parameters are set according to the object type being treated
+     * @return the template fragment for the workflow modal
+     */
     @Secured(['ROLE_USER'])
     def workflowModal() {
         Map<String, Object> result = [
