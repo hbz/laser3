@@ -37,7 +37,6 @@ import java.time.Year
 
 @Transactional
 class SubscriptionService {
-    AccessService accessService
     ComparisonService comparisonService
     ContextService contextService
     EscapeService escapeService
