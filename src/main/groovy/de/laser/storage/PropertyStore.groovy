@@ -11,6 +11,7 @@ class PropertyStore {
 
     // -- Platform Properties
 
+    /*
     public final static PropertyDefinition PLA_COUNTER_REGISTRY_URL    = getPropertyDefinition('COUNTER Registry URL', PropertyDefinition.PLA_PROP)
 
     public final static PropertyDefinition PLA_COUNTER_R3_REPORTS      = getPropertyDefinition('COUNTER R3: Reports supported', PropertyDefinition.PLA_PROP)
@@ -25,12 +26,14 @@ class PropertyStore {
 
     public final static PropertyDefinition PLA_IPV4    = getPropertyDefinition('IPv4: Supported', PropertyDefinition.PLA_PROP)
     public final static PropertyDefinition PLA_IPV6    = getPropertyDefinition('IPv6: Supported', PropertyDefinition.PLA_PROP)
-
+    */
     public final static PropertyDefinition PLA_NATSTAT_SID     = getPropertyDefinition('NatStat Supplier ID', PropertyDefinition.PLA_PROP)
+    /*
     public final static PropertyDefinition PLA_PROXY           = getPropertyDefinition('Proxy: Supported', PropertyDefinition.PLA_PROP)
 
     public final static PropertyDefinition PLA_SHIBBOLETH      = getPropertyDefinition('Shibboleth: Supported', PropertyDefinition.PLA_PROP)
     public final static PropertyDefinition PLA_SHIBBOLETH_EID  = getPropertyDefinition('Shibboleth: SP entityID', PropertyDefinition.PLA_PROP)
+    */
 
     // -- Subscription Properties
 
