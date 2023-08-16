@@ -26,7 +26,7 @@ class PendingChangeController  {
     def accept() {
         log.debug("Accept")
         PendingChange pc = PendingChange.get(params.long('id'))
-        pendingChangeService.accept(pc, params.subId)
+        pendingChangeService.accept(pc)
         redirect(url: request.getHeader('referer'))
     }
 
@@ -54,7 +54,7 @@ class PendingChangeController  {
     def reject() {
         log.debug("Reject")
         PendingChange pc = PendingChange.get(params.long('id'))
-        pendingChangeService.reject(pc, params.subId)
+        pendingChangeService.reject(pc)
         redirect(url: request.getHeader('referer'))
     }
 

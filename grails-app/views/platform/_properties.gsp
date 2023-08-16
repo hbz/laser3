@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Platform; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.Platform; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.CustomerTypeService" %>
 <laser:serviceInjection />
 <!-- _properties -->
 
@@ -48,4 +48,29 @@
     </laser:script>
 
 </div><!-- .card -->
+
+<%-- private properties --%>
+<g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro()}">
+
+        <div class="ui card la-dl-no-table">
+            <div class="content">
+                <h2 class="ui header">${message(code:'subscription.properties.private')} ${contextOrg.name}</h2>
+                <g:set var="propertyWrapper" value="private-property-wrapper-${contextOrg.id}" />
+                <div id="${propertyWrapper}">
+                    <laser:render template="/templates/properties/private" model="${[
+                            prop_desc: PropertyDefinition.PLA_PROP,
+                            ownobj: platform,
+                            propertyWrapper: "${propertyWrapper}",
+                            tenant: contextOrg
+                    ]}"/>
+
+                    <laser:script file="${this.getGroovyPageFileName()}">
+                        c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${contextOrg.id});
+                    </laser:script>
+
+                </div>
+            </div>
+        </div><!--.card-->
+
+</g:if>
 <!-- _properties -->

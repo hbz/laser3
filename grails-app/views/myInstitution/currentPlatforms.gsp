@@ -24,7 +24,7 @@
             <th>${message(code:'myinst.currentPlatforms.assignedSubscriptions')}</th>
             <g:if test="${AppUtils.isPreviewOnly()}">
                 <th class="center aligned">
-                    <span class="la-popup-tooltip la-delay" data-content="${message(code: 'myInst.marker.wekbchanges')}"><i class="icon bookmark"></i></span>
+                    <ui:markerIcon type="wekbchanges" />
                 </th>
             </g:if>
             <th>${message(code:'org.isWekbCurated.label')}</th>
@@ -83,7 +83,7 @@
                 <g:if test="${AppUtils.isPreviewOnly()}">
                     <td class="center aligned">
                         <g:if test="${platformInstance.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
-                            <i class="icon purple bookmark"></i>
+                            <ui:markerIcon type="wekbchanges" color="purple" />
                         </g:if>
                     </td>
                 </g:if>
