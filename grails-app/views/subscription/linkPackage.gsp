@@ -204,56 +204,48 @@
             <label for="pkgName">${message(code: 'package.label')}</label>
             <input type="text" id="pkgName" name="pkgName" value="" readonly/>
         </div>
-        <g:if test="${pkgs}">
-            <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')} <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="question circle icon"></i></span>: ${subscription.holdingSelection.getI10n('value')}</label>
-            <g:if test="${institution.isCustomerType_Consortium() && auditService.getAuditConfig(subscription, 'holdingSelection')}">
-                <i class="ui thumbtack icon la-popup-tooltip"></i>
-            </g:if>
-        </g:if>
-        <g:else>
+        <div class="field">
+            <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')} <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="question circle icon"></i></span></label>
+        </div>
+        <div class="four fields">
             <div class="field">
-                <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')} <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="question circle icon"></i></span></label>
+                <ui:select class="ui dropdown search selection" id="holdingSelection" name="holdingSelection" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" optionKey="id" optionValue="value"/>
             </div>
-            <div class="four fields">
+            <g:if test="${institution.isCustomerType_Consortium()}">
                 <div class="field">
-                    <ui:select class="ui dropdown search selection" id="holdingSelection" name="holdingSelection" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" optionKey="id" optionValue="value"/>
+                    <g:if test="${auditService.getAuditConfig(subscription, 'holdingSelection')}">
+                        <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherited')}" class="ui icon green button la-modern-button la-audit-button la-popup-tooltip la-delay" data-inherited="true">
+                            <i aria-hidden="true" class="icon la-js-editmode-icon thumbtack"></i>
+                        </button>
+                    </g:if>
+                    <g:else>
+                        <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherit')}" class="ui icon blue button la-modern-button la-audit-button la-popup-tooltip la-delay" data-inherited="false">
+                            <i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash"></i>
+                        </button>
+                    </g:else>
                 </div>
-                <g:if test="${institution.isCustomerType_Consortium()}">
-                    <div class="field">
-                        <g:if test="${auditService.getAuditConfig(subscription, 'holdingSelection')}">
-                            <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherited')}" class="ui icon green button la-modern-button la-audit-button la-popup-tooltip la-delay" data-inherited="true">
-                                <i aria-hidden="true" class="icon la-js-editmode-icon thumbtack"></i>
-                            </button>
-                        </g:if>
-                        <g:else>
-                            <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherit')}" class="ui icon blue button la-modern-button la-audit-button la-popup-tooltip la-delay" data-inherited="false">
-                                <i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash"></i>
-                            </button>
-                        </g:else>
-                    </div>
-                </g:if>
-                <div class="field">
-                    <div class="ui checkbox toggle">
-                        <g:checkBox name="createEntitlements"/>
-                        <label><g:message code="subscription.details.link.with_ents"/></label>
-                    </div>
+            </g:if>
+            <div class="field">
+                <div class="ui checkbox toggle">
+                    <g:checkBox name="createEntitlements"/>
+                    <label><g:message code="subscription.details.link.with_ents"/></label>
                 </div>
-                <g:if test="${institution.isCustomerType_Consortium()}">
-                    <div class="field">
-                        <div class="ui checkbox toggle">
-                            <g:checkBox name="linkToChildren"/>
-                            <label><g:message code="subscription.details.linkPackage.children.label"/></label>
-                        </div>
-                    </div>
-                    <div class="field">
-                        <div class="ui checkbox toggle">
-                            <g:checkBox name="createEntitlementsForChildren"/>
-                            <label><g:message code="subscription.details.link.with_ents"/></label>
-                        </div>
-                    </div>
-                </g:if>
             </div>
-        </g:else>
+            <g:if test="${institution.isCustomerType_Consortium()}">
+                <div class="field">
+                    <div class="ui linkToChildren checkbox toggle">
+                        <g:checkBox name="linkToChildren"/>
+                        <label><i data-content="${message(code:'consortium.member.plural')}" data-position="top center" class="users icon la-popup-tooltip la-delay"></i> <g:message code="subscription.details.linkPackage.label"/></label>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui createEntitlementsForChildren checkbox toggle">
+                        <g:checkBox name="createEntitlementsForChildren"/>
+                        <label><i data-content="${message(code:'consortium.member.plural')}" data-position="top center" class="users icon la-popup-tooltip la-delay"></i> <g:message code="subscription.details.link.with_ents"/></label>
+                    </div>
+                </div>
+            </g:if>
+        </div>
     </g:form>
 
         <%--
@@ -439,6 +431,9 @@
     JSPC.app.toggleAlert = function() {
       $('#durationAlert').toggle();
     }
+    JSPC.app.disableChildEnt = function() {
+        $(".checkbox.createEntitlementsForChildren").checkbox('uncheck').checkbox('set disabled');
+    }
 
     $("#inheritHoldingSelection").click(function(e) {
         e.preventDefault();
@@ -461,6 +456,17 @@
             console.log("AJAX error! Please check logs!");
         });
     });
+
+    $(".checkbox.linkToChildren").checkbox({
+        onChecked: function() {
+            $(".checkbox.createEntitlementsForChildren").checkbox('set enabled');
+        },
+        onUnchecked: function() {
+            JSPC.app.disableChildEnt();
+        }
+    });
+
+    JSPC.app.disableChildEnt();
 
       $(".packageLink").click(function(evt) {
           evt.preventDefault();
