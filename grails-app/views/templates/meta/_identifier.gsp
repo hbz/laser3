@@ -8,7 +8,7 @@
     List<IdentifierNamespace> nsList = idData.nsList
 %>
 
-<aside class="ui segment la-metabox accordion">
+<aside class="ui segment la-metabox accordion" id="identifierAccordion">
     <div class="title">
         <div class="ui blue ribbon label">${count}</div>
         <g:message code="default.identifiers.show"/><i class="dropdown icon la-dropdown-accordion"></i>
@@ -50,6 +50,12 @@
         </g:if><%-- hidden if org[type=institution] --%>
     </div>
 </aside>
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    <g:if test="${flash.message?.contains(message(code:'identifier.label'))}">
+        $('#identifierAccordion').accordion('open', 0);
+    </g:if>
+</laser:script>
 
 <div class="la-metabox-spacer"></div>
 <!-- template: meta/identifier -->
