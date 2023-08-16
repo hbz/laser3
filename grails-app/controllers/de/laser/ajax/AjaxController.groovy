@@ -1758,7 +1758,9 @@ class AjaxController {
      */
     @Secured(['ROLE_USER'])
     def deleteIdentifier() {
+        Identifier target = genericOIDService.resolveOID(params.target)
         identifierService.deleteIdentifier(params.owner,params.target)
+        flash.message = message(code: 'identifier.delete.success', args: [target.ns.ns, target.value])
         redirect(url: request.getHeader('referer'))
     }
 
