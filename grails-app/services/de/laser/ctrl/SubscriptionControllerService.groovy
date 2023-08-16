@@ -1249,6 +1249,7 @@ class SubscriptionControllerService {
                     }
                     /*
                     copy package data
+                    */
                     if(params.linkAllPackages) {
                         result.subscription.packages.each { SubscriptionPackage sp ->
                             packagesToProcess << sp.pkg
@@ -1260,7 +1261,6 @@ class SubscriptionControllerService {
                             packagesToProcess << SubscriptionPackage.get(spId).pkg
                         }
                     }
-                    */
                     if(params.generateSlavedLics == "all") {
                         String query = "select l from License l where l.instanceOf in (select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType)"
                         licensesToProcess.addAll(License.executeQuery(query, [subscription:result.subscription, linkType:RDStore.LINKTYPE_LICENSE]))
@@ -1375,7 +1375,7 @@ class SubscriptionControllerService {
                     }
 
                     packagesToProcess.each { Package pkg ->
-                        subscriptionService.addToMemberSubscription(result.subscription, memberSubs, pkg, result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE && auditService.getAuditConfig(result.subscription, 'holdingSelection'))
+                        subscriptionService.addToMemberSubscription(result.subscription, memberSubs, pkg, params.linkWithEntitlements == 'on')
                             /*
                             if()
                                 subscriptionService.addToSubscriptionCurrentStock(memberSub, result.subscription, pkg)

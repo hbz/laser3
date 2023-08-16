@@ -62,7 +62,7 @@
                                 <div>
                                     <g:link controller="subscription" action="index" id="${sourceObject.id}"><strong>${message(code: 'issueEntitlement.countSubscription')}</strong> ${sp.getIssueEntitlementCountOfPackage()}</g:link>
                                 </div>
-                                <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
+                                <g:if test="${contextService.getOrg().isCustomerType_Consortium() && !isRenewSub}">
                                     <div class="ui checkbox childLevel">
                                         <g:checkBox name="subscription.takePackageIdsForChild"
                                                     value="${genericOIDService.getOID(sp)}" data-pkgid="${sp.id}"
