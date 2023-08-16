@@ -57,6 +57,7 @@ import java.text.SimpleDateFormat
  * Object manipulation is done in the general AJAX controller!
  * @see AjaxController
  * @see AjaxHtmlController
+ * @see AjaxOpenController
  */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxJsonController {
@@ -326,6 +327,11 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Called from views/profile/index.gsp
+     * Gets the selectable values for the default result count per page dropdown
+     * @return a {@link Map} containing the default values as value:text pairs
+     */
     @Secured(['ROLE_USER'])
     def getProfilPageSizeList() {
         List result = [
@@ -337,6 +343,13 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Called from subTransfer.gsp and currentSubTransfers.gsp
+     * Gets the list of subscription discount scales registered for the given subscription
+     * @return a {@link List} of {@link Map}s of structure [value: database id, text: name: discount] for dropdown display
+     * @see Subscription
+     * @see SubscriptionDiscountScale
+     */
     @Secured(['ROLE_USER'])
     def getSubscriptionDiscountScaleList() {
         List result = []
@@ -364,7 +377,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of reference data values belonging to the category linked to the property definition
-     * @return a {@link List} of {@link Map}s of structure [value: database id, name: translated name] fpr dropdown display
+     * @return a {@link List} of {@link Map}s of structure [value: database id, name: translated name] for dropdown display
      */
     @Secured(['ROLE_USER'])
     def getPropRdValues() {
@@ -383,7 +396,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of values belonging to the given property definition
-     * @return a {@link List} of {@link Map}s of structure [value: value, name: translated name] fpr dropdown display; value may be: reference data value key, date or integer/free text value
+     * @return a {@link List} of {@link Map}s of structure [value: value, name: translated name] for dropdown display; value may be: reference data value key, date or integer/free text value
      */
     @Secured(['ROLE_USER'])
     def getPropValues() {
@@ -460,6 +473,11 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Gets the list of selectable status for the given property's owner object type
+     * @return a {@link List} of {@link Map}s of structure [value: database id, text: translated name] for dropdown display
+     * @see PropertyDefinition#descr
+     */
     @Secured(['ROLE_USER'])
     def getOwnerStatus() {
         List<Map<String, Object>> result = []
@@ -471,9 +489,9 @@ class AjaxJsonController {
                 switch(propDef.descr) {
                     case PropertyDefinition.SUB_PROP: statusList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
                         break
-                    case PropertyDefinition.ORG_PROP: statusList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.ORG_STATUS)-RDStore.ORG_STATUS_DELETED)
+                    case PropertyDefinition.ORG_PROP: statusList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.ORG_STATUS)-RDStore.ORG_STATUS_REMOVED)
                         break
-                    case PropertyDefinition.PLA_PROP: statusList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.PLATFORM_STATUS)-RDStore.PLATFORM_STATUS_DELETED)
+                    case PropertyDefinition.PLA_PROP: statusList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.PLATFORM_STATUS)-RDStore.PLATFORM_STATUS_REMOVED)
                         break
                     case PropertyDefinition.LIC_PROP: statusList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS))
                         break
@@ -830,6 +848,10 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Removes the given object without reloading the page calling
+     * @return the success flag as JSON map
+     */
     @Secured(['ROLE_USER'])
     def removeObject() {
         int removed = 0

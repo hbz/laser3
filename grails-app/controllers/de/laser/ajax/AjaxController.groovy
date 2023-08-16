@@ -48,6 +48,8 @@ import java.util.regex.Pattern
 
 /**
  * This controller manages AJAX calls which result in object manipulation and / or do not deliver clearly either HTML or JSON.
+ * Methods defined here are accessible only with a registered account; general methods which require no authentication are defined in {@link AjaxOpenController}
+ * @see AjaxOpenController
  */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxController {
