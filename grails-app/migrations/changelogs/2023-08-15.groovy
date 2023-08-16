@@ -7,8 +7,8 @@ databaseChangeLog = {
             change {
                 sql.execute("delete from platform_property where plp_type_fk in (select pd_id from property_definition where pd_tenant_fk is null and pd_description = 'Platform Property' and pd_name != 'NatStat Supplier ID')")
                 int deleted = sql.getUpdateCount()
-                confirm("delete from platform_property where plp_type_fk in (select pd_id from property_definition where pd_tenant_fk is null and pd_description = 'Platform Property' and pd_name = 'NatStat Supplier ID'): ${deleted}")
-                changeSet.setComments("delete from platform_property where plp_type_fk in (select pd_id from property_definition where pd_tenant_fk is null and pd_description = 'Platform Property' and pd_name = 'NatStat Supplier ID'): ${deleted}")
+                confirm("delete from platform_property where plp_type_fk in (select pd_id from property_definition where pd_tenant_fk is null and pd_description = 'Platform Property' and pd_name != 'NatStat Supplier ID'): ${deleted}")
+                changeSet.setComments("delete from platform_property where plp_type_fk in (select pd_id from property_definition where pd_tenant_fk is null and pd_description = 'Platform Property' and pd_name != 'NatStat Supplier ID'): ${deleted}")
             }
             rollback {}
         }
