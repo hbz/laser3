@@ -44,7 +44,7 @@
                     <th>${message(code: 'package.source.automaticUpdates')}</th>
                     <g:sortableColumn property="lastUpdatedDisplay" title="${message(code: 'package.lastUpdated.label')}" params="${params}" defaultOrder="desc"/>
                     <th class="center aligned">
-                        <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.packages')}"><i class="icon star"></i></span>
+                        <ui:myXIcon tooltip="${message(code: 'menu.my.packages')}" />
                     </th>
                     <g:if test="${AppUtils.isPreviewOnly()}">
                         <th class="center aligned">
