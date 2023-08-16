@@ -170,12 +170,12 @@ class SubscriptionService {
     }
 
     /**
-     * ex MyInstitutionController.currentSubscriptions()
-     * Gets the current subscriptions for the given institution
+     * ex {@link MyInstitutionController#currentSubscriptions()}
+     * Gets the current subscription transfers for the given institution
      * @param params the request parameter map
      * @param contextUser the user whose settings should be considered
      * @param contextOrg the institution whose subscriptions should be accessed
-     * @return a result map containing a list of subscriptions and other site parameters
+     * @return a result map containing a list of subscription transfers and other site parameters
      */
     Map<String,Object> getMySubscriptionTransfer(GrailsParameterMap params, User contextUser, Org contextOrg) {
         Map<String,Object> result = [:]

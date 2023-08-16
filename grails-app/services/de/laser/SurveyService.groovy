@@ -820,7 +820,7 @@ class SurveyService {
 
     /**
      * Sends mails to the users of the given institution
-     * @param surveyInfo the survey information to be sent
+     * @param surveyInfo the survey concerned
      * @param org the institution whose users should be notified
      * @param reminderMail is it a reminder about the survey completion?
      */

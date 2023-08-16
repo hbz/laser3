@@ -12,7 +12,7 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.http.HttpStatus
 
 /**
- * This controller manages calls to the API
+ * This controller manages calls to the LAS:eR API
  */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ApiController {
