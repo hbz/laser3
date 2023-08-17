@@ -2922,13 +2922,18 @@ class MyInstitutionController  {
     def currentMarkers() {
         log.debug 'currentMarkers()'
 
+        Marker.TYPE fMarkerType = Marker.TYPE.WEKB_CHANGES
+        if (params.filterMarkerType) {
+            fMarkerType = Marker.TYPE.get(params.filterMarkerType)
+        }
+
         // TODO -- permissions --
 
         Map<String, Object> result = [
                 myMarkedObjects: [
-                        org: markerService.getObjectsByClassAndType(Org.class, Marker.TYPE.WEKB_CHANGES),
-                        pkg: markerService.getObjectsByClassAndType(Package.class, Marker.TYPE.WEKB_CHANGES),
-                        plt: markerService.getObjectsByClassAndType(Platform.class, Marker.TYPE.WEKB_CHANGES)
+                        org: markerService.getObjectsByClassAndType(Org.class, fMarkerType),
+                        pkg: markerService.getObjectsByClassAndType(Package.class, fMarkerType),
+                        plt: markerService.getObjectsByClassAndType(Platform.class, fMarkerType)
                 ],
                 myXMap: markerService.getMyXMap()
         ]
