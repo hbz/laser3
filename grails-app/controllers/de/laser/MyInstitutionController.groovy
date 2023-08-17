@@ -1089,6 +1089,7 @@ class MyInstitutionController  {
      * @see Subscription
      * @see Org
      */
+    @Deprecated
     private def _exportcurrentSubscription(List<Subscription> subscriptions, String format, Org contextOrg) {
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         boolean asCons = contextService.getOrg().isCustomerType_Consortium()
@@ -1720,6 +1721,13 @@ class MyInstitutionController  {
             result
     }
 
+    /**
+     * Opens a list view of the current set of titles which have been subscribed permanently.
+     * The list may be filtered
+     * @return a list of permanent titles with the given status
+     * @see PermanentTitle
+     * @see FilterService#getPermanentTitlesQuery(grails.web.servlet.mvc.GrailsParameterMap, de.laser.Org)
+     */
     @DebugInfo(isInstUser_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
@@ -1953,6 +1961,7 @@ class MyInstitutionController  {
      * @return a list of changes to be accepted or rejected
      * @see PendingChange
      */
+    @Deprecated
     @DebugInfo(isInstUser_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
@@ -2416,6 +2425,15 @@ class MyInstitutionController  {
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Call to participate on a survey linked to the given survey. The survey link is being resolved and the
+     * institution called this link will join as participant on the linked survey. Other members of the institution
+     * concerned will be notified as well
+     * @return redirects to the information of the related survey
+     * @see SurveyLinks
+     * @see SurveyInfo
+     * @see SurveyConfig
+     */
     @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
@@ -2938,6 +2956,11 @@ class MyInstitutionController  {
         }
     }
 
+    /**
+     * Call to open the workflows currently under process. A filter is being used to fetch the workflows; this may either be called or set
+     * @return the (filtered) list of workflows currently under process at the context institution
+     * @see WfChecklist
+     */
     @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO], ctrlService = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
@@ -4422,6 +4445,12 @@ join sub.orgRelations or_sub where
         }
     }
 
+    /**
+     * Call to open a list of current subscription transfers. This view creates an overview of the subscriptions being transferred into the next
+     * phase of subscription; the output may either be rendered in the frontend or exported as a file (Excel, CSV)
+     * @return the (filtered) list of subscription transfers currently running
+     * @see SubscriptionService#getMySubscriptionTransfer(grails.web.servlet.mvc.GrailsParameterMap, de.laser.auth.User, de.laser.Org)
+     */
     @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )

@@ -33,7 +33,6 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class FinanceController  {
 
-    AccessService accessService
     DeletionService deletionService
     EscapeService escapeService
     ExportClickMeService exportClickMeService

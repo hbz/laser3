@@ -193,6 +193,10 @@ class LoginController {
     redirect action: 'auth'
   }
 
+    /**
+     * Triggers the sending of the forgotten username to the given mail address
+     * @return redirects to the login page
+     */
   def getForgottenUsername() {
         if(!params.forgotten_username_mail) {
             flash.error = g.message(code:'menu.user.forgottenUsername.userMissing') as String
@@ -210,6 +214,11 @@ class LoginController {
         redirect action: 'auth'
   }
 
+    /**
+     * Checks if the last requested page before a login warning aims to a valid page
+     * @param savedRequest the request to check
+     * @return true if the saved request call was valid, false otherwise
+     */
     private boolean _fuzzyCheck(DefaultSavedRequest savedRequest) {
 
         if (!savedRequest) {

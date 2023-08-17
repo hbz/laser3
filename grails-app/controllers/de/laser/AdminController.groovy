@@ -138,6 +138,9 @@ class AdminController  {
         result
     }
 
+    /**
+     * Call to test mail sending
+     */
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def testMailSending() {
@@ -243,7 +246,7 @@ class AdminController  {
     }
 
     /**
-     * Shows recorded system events; default count is 100 last entries.
+     * Shows recorded system events; default maximum age is 14 days
      * The record listing may be filtered
      * @see SystemEvent
      */
@@ -264,6 +267,11 @@ class AdminController  {
         result
     }
 
+    /**
+     * Shows recorded access warnings of the last 30 days, if not defined otherwise.
+     * The result contains additional data about the attempted access
+     * @see SystemEvent
+     */
     @Secured(['ROLE_ADMIN'])
     def systemEventsLW() {
         Map<String, Object> result = [:]
@@ -363,6 +371,9 @@ class AdminController  {
         result
     }
 
+    /**
+     * Delivers current information about the executed database changesets
+     */
     @Secured(['ROLE_ADMIN'])
     def databaseInfo() {
 
@@ -1007,6 +1018,10 @@ SELECT * FROM (
         ]
     }
 
+    /**
+     * Call to load the reference data integrity check
+     * @see RefdataService#integrityCheck()
+     */
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def manageRefdataIntegrityCheck() {
@@ -1060,6 +1075,9 @@ SELECT * FROM (
         redirect(action: 'systemMessages')
     }
 
+    /**
+     * Delivers information about the current application health state
+     */
     @Secured(['ROLE_ADMIN'])
     def appInfo() {
         Map<String, Object> result = [
@@ -1137,7 +1155,7 @@ SELECT * FROM (
 
     /**
      * Updates the given email template
-     * @return
+     * @return the updated list view
      */
     @Transactional
     @Secured(['ROLE_ADMIN'])

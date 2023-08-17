@@ -32,7 +32,6 @@ class IssueEntitlementController {
 
     /**
      * Shows the given issue entitlement details
-     * @return
      */
     @DebugInfo(isInstUser_or_ROLEADMIN = [], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
@@ -131,6 +130,7 @@ class IssueEntitlementController {
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
+    @Deprecated
     def delete() {
         IssueEntitlement.withTransaction { TransactionStatus ts ->
             IssueEntitlement issueEntitlementInstance = IssueEntitlement.get(params.id)

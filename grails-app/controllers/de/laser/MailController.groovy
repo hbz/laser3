@@ -9,13 +9,20 @@ import de.laser.survey.SurveyOrg
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.transaction.TransactionStatus
 
+/**
+ * This controller is responsible for the creation and sending of automatised mails. It is currently used only for
+ * the communication of survey related details, but should be used for other communication as well
+ * @see SurveyInfo
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class MailController {
 
     ContextService contextService
     MailSendService mailSendService
-    AccessService accessService
 
+    /**
+     * Call to create a custom mail, attached to the given type of object. Currently, only {@link SurveyInfo}s are being supported
+     */
     @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
@@ -123,6 +130,10 @@ class MailController {
         result
     }
 
+    /**
+     * Sends the given mail. Depending on the object type the mail is attached to, certain procedures are being followed sending the mail
+     * @return redirect back to the referer
+     */
     @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
