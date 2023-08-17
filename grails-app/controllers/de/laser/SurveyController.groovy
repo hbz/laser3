@@ -78,6 +78,9 @@ class SurveyController {
 
     //-----
 
+    /**
+     * Map containing menu alternatives if an unexisting object has been called
+     */
     public static final Map<String, String> CHECK404_ALTERNATIVES = [
             'myInstitution/currentSurveys' : 'currentSurveys.label'
     ]
@@ -1701,10 +1704,11 @@ class SurveyController {
     }
 
 
-/*    *//**
+    /**
      * Opens the survey for the given participants and sends eventual reminders
      * @return the participation view with the counts of execution done
-     *//*
+     */
+    /*
     @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
@@ -1969,6 +1973,10 @@ class SurveyController {
         result
     }
 
+    /**
+     * Generates a summary of the survey in PDF format for the survey participant
+     * @return the PDF document to download
+     */
     @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
@@ -3337,7 +3345,7 @@ class SurveyController {
     }
 
     /**
-     * Call to copy the mail adresses of all participants
+     * Call to copy the mail addresses of all participants
      * @return the modal containing the participant's mail addresses
      */
     @DebugInfo(isInstUser_or_ROLEADMIN = [], wtc = DebugInfo.NOT_TRANSACTIONAL)
@@ -3580,8 +3588,7 @@ class SurveyController {
     }
 
     /**
-     * Call to compare the members of two given subscriptions, used to compare how many members had the given consortial subscription
-     * in each year
+     * Call for the transfer view of the participants in a renewal survey
      * @return a list of members for each subscription
      */
     @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
@@ -4815,7 +4822,7 @@ class SurveyController {
     }
 
     /**
-     * Set link to license or provider
+     * Set link to another survey
      * @return a redirect to the referer
      */
     @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = 1)
@@ -4869,6 +4876,11 @@ class SurveyController {
 
     }
 
+    /**
+     * Adds an information link to the survey; above the pure URL also further comments accompanying the survey
+     * @return a redirect to the referer
+     * @see SurveyUrl
+     */
     @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )

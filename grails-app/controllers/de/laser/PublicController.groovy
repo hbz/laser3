@@ -20,8 +20,8 @@ class PublicController {
     GenericOIDService genericOIDService
     MailService mailService
 
-    /**
-    *
+   /**
+    * Displays the robots.txt preventing crawler access to instances other than the productive one
     */
     @Secured(['permitAll'])
     def robots() {
@@ -187,6 +187,7 @@ class PublicController {
 
     /**
      * Displays the issue entitlement details of the selected title
+     * @see IssueEntitlement
      */
     @Secured(['permitAll'])
     def gascoDetailsIssueEntitlements() {
@@ -248,6 +249,12 @@ class PublicController {
         result
     }
 
+    /**
+     * Call to open the flyout containing the library types and regions participating at the given consortium (= consortial subscription)
+     * @return a list of regions and library types, rendered in the flyout
+     * @see Org#libraryType
+     * @see Org#region
+     */
     @Secured(['permitAll'])
     def gascoFlyout() {
         Map<String, Object> result = [

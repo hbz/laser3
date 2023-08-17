@@ -17,6 +17,9 @@ class TippController  {
 
   //-----
 
+  /**
+   * Map containing menu alternatives if an unexisting object has been called
+   */
   public static final Map<String, String> CHECK404_ALTERNATIVES = [
           'title/list': 'menu.public.all_titles',
           'myInstitution/currentTitles': 'myinst.currentTitles.label'

@@ -1,9 +1,7 @@
 package de.laser
 
-import de.laser.annotations.Check404
 import de.laser.auth.User
 import de.laser.storage.RDStore
-import de.laser.titles.TitleHistoryEvent
 import de.laser.utils.SwissKnife
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -20,6 +18,9 @@ class TitleController  {
 
     //-----
 
+    /**
+     * Map containing menu alternatives if an unexisting object has been called
+     */
     public static final Map<String, String> CHECK404_ALTERNATIVES = [
             'title/list': 'menu.public.all_titles',
             'myInstitution/currentTitles': 'myinst.currentTitles.label'

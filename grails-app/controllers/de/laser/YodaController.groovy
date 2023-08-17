@@ -594,6 +594,11 @@ class YodaController {
         yodaService.getTIPPsWithoutGOKBId()
     }
 
+    /**
+     * Matches the status of the title instance to the issue entitlement holdings. Should be used in case of
+     * preceding errors in the title synchronisation where the
+     * @return
+     */
     @Secured(['ROLE_YODA'])
     def matchTitleStatus() {
         if(!yodaService.bulkOperationRunning) {
@@ -831,8 +836,7 @@ class YodaController {
 
     /**
      * Is one of the dangerous methods: retriggers the change processing on title level and hands eventual differences
-     * to the local holdings; if necessary, pending changes are being generated
-     * @see PendingChange
+     * to the local holdings
      */
     @Secured(['ROLE_YODA'])
     def reloadPackage() {
@@ -855,7 +859,9 @@ class YodaController {
      * Is another one of the dangerous methods: retriggers the change processing on subscription holding level and hands eventual differences
      * to the local holdings; if necessary, pending changes are being generated
      * @see PendingChange
+     * @deprecated use case is not given any more; {@link #reloadPackage()} and {@link #matchTitleStatus()} do the purpose
      */
+    @Deprecated
     @Secured(['ROLE_YODA'])
     def retriggerPendingChanges() {
         if(!globalSourceSyncService.running) {
@@ -1022,6 +1028,9 @@ class YodaController {
         redirect(action: 'manageFTControl')
     }
 
+    /**
+     * Call to trigger an index update
+     */
     @Secured(['ROLE_YODA'])
     def continueIndex() {
         if (params.name) {
@@ -1528,6 +1537,16 @@ class YodaController {
         redirect action: 'dashboard'
     }
 
+    /**
+     * Triggers the marking of perpetual access in the subscriptions by:
+     * <ol>
+     *     <li>registering the subscription ensuring perpetual access in the issue entitlement records</li>
+     *     <li>generating {@link PermanentTitle} records for each issue entitlement where a subscription exists with a perpetual access</li>
+     * </ol>
+     * @see Subscription#hasPerpetualAccess
+     * @see PermanentTitle
+     * @see IssueEntitlement
+     */
     @Secured(['ROLE_YODA'])
     def setPerpetualAccessByIes() {
         Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
@@ -1573,6 +1592,12 @@ class YodaController {
         redirect controller: 'yoda', action: 'index'
     }
 
+    /**
+     * Generates permanent title records for each issue entitlement which has a perpetual access ensured
+     * (step 2 of {@link #setPerpetualAccessByIes()})
+     * @see PermanentTitle
+     * @see Subscription#hasPerpetualAccess
+     */
     @Secured(['ROLE_YODA'])
     def setPermanentTitle() {
         Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
