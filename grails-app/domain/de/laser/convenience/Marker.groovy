@@ -14,6 +14,15 @@ class Marker {
             this.value = value
         }
         public String value
+
+        static TYPE get(String value) {
+            for (TYPE t : TYPE.values()) {
+                if (t.value.equalsIgnoreCase(value)) {
+                    return t
+                }
+            }
+            return null
+        }
     }
 
     TYPE type

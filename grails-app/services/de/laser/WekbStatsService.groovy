@@ -16,7 +16,6 @@ class WekbStatsService {
     CacheService cacheService
     ContextService contextService
     GokbService gokbService
-    OrgTypeService orgTypeService
     MarkerService markerService
 
     static final String CACHE_KEY = 'WekbStatsService/wekbChanges'

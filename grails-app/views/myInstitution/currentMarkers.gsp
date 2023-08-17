@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org;de.laser.Package;de.laser.Platform" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.convenience.Marker; de.laser.Org;de.laser.Package;de.laser.Platform" %>
 
 <laser:htmlStart message="menu.my.markers" serviceInjection="true"/>
 
@@ -7,6 +7,28 @@
 </ui:breadcrumbs>
 
 <ui:h1HeaderWithIcon message="menu.my.markers" type="Marker" floated="true" />
+
+<ui:filter simple="true">
+    <form id="markerFilterForm" class="ui form">
+        <div class="two fields">
+            <div class="field">
+                <label>${message(code:'marker.label')}</label>
+                <g:select class="ui dropdown la-not-clearable" name="filterMarkerType"
+                           required="required"
+                           noSelection="${['' : message(code:'default.select.choose.label')]}"
+                           from="${[Marker.TYPE.WEKB_CHANGES]}"
+                           value="${filterMarkerType}"
+                           optionValue="${{message(code: 'marker.' + it.value)}}"
+                           optionKey="${{it.value}}" />
+
+            </div>
+            <div class="field la-field-right-aligned">
+%{--                <g:link controller="myInstitution" action="currentWorkflows" params="${[filter: 'reset']}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</g:link>--}%
+                <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}" />
+            </div>
+        </div>
+    </form>
+</ui:filter>
 
 <g:each in="${myMarkedObjects}" var="objCat">
     <g:if test="${objCat.value}">
@@ -31,13 +53,17 @@
                             </td>
                             <td>
                                 <i class="icon grey university"></i>
-                                ${message(code:'default.provider.label')} /
-                                ${message(code:'default.agency.label')}
+                                <g:each in="${obj.orgType}" var="ot">
+                                    ${ot.getI10n('value')}
+                                </g:each>
                             </td>
                             <td class="center aligned">
                                 <g:if test="${obj.id in myXMap.currentProviderIdList}">
                                     <ui:myXIcon tooltip="${message(code: 'menu.my.providers')}" color="yellow"/>
                                 </g:if>
+                            </td>
+                            <td>
+                                <ui:markerSwitch org="${obj}"/>
                             </td>
                         </g:if>
                         <g:elseif test="${obj instanceof Package}">
@@ -52,6 +78,9 @@
                                     <ui:myXIcon tooltip="${message(code: 'menu.my.packages')}" color="yellow"/>
                                 </g:if>
                             </td>
+                            <td>
+                                <ui:markerSwitch package="${obj}"/>
+                            </td>
                         </g:elseif>
                         <g:elseif test="${obj instanceof Platform}">
                             <td>
@@ -65,9 +94,10 @@
                                     <ui:myXIcon tooltip="${message(code: 'menu.my.platforms')}" color="yellow"/>
                                 </g:if>
                             </td>
+                            <td>
+                                <ui:markerSwitch platform="${obj}"/>
+                            </td>
                         </g:elseif>
-
-                        <td></td>
                     </tr>
                 </g:each>
             </tbody>
