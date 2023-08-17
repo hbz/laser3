@@ -15,7 +15,7 @@
                 </g:if>
                 <g:if test="${wekbChanges.counts.marker > 0}">
                     <a href="#" class="ui icon label la-popup-tooltip la-delay wekb-flyout-trigger" data-preset="all,marker"
-                       data-content="${message(code: 'marker.wekbchanges')}" data-position="top right">
+                       data-content="${message(code: 'marker.WEKB_CHANGES')}" data-position="top right">
                             <i class="icon purple bookmark"></i> ${wekbChanges.counts.marker}
                     </a>
                 </g:if>
@@ -256,17 +256,13 @@
                         </div>
                         <div class="column one wide center aligned">
                             <g:if test="${obj.uuid in cfg[1].my}">
-                                <span class="la-popup-tooltip la-delay" data-content="${message(code: "${cfg[4]}")}">
-                                    <i class="icon yellow star"></i>
-                                </span>
+                                <ui:myXIcon tooltip="${message(code: "${cfg[4]}")}" color="yellow"/>
                             </g:if>
                             <g:else>
                                 <i class="icon fake"></i>
                             </g:else>
                             <g:if test="${obj.uuid in cfg[1].marker}">
-                                <span class="la-popup-tooltip la-delay" data-content="Beobachtungsliste">
-                                    <i class="icon purple bookmark"></i>
-                                </span>
+                                <ui:markerIcon type="wekbchanges" color="purple" />
                             </g:if>
                             <g:else>
                                 <i class="icon fake"></i>
