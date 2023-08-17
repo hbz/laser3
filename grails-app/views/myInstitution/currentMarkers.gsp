@@ -36,7 +36,17 @@
             <thead>
                 <tr>
                     <th class="one wide">${message(code:'sidewide.number')}</th>
-                    <th class="nine wide"></th>
+                    <th class="nine wide">
+                        <g:if test="${objCat.value.first() instanceof Org}">
+                            ${message(code:'default.provider.label')} / ${message(code:'default.agency.label')}
+                        </g:if>
+                        <g:elseif test="${objCat.value.first() instanceof Package}">
+                            ${message(code:'package.label')}
+                        </g:elseif>
+                        <g:elseif test="${objCat.value.first() instanceof Platform}">
+                            ${message(code:'platform.label')} /
+                        </g:elseif>
+                    </th>
                     <th class="three wide"></th>
                     <th class="one wide center aligned"><ui:myXIcon /></th>
                     <th class="two wide">${message(code:'default.actions.label')}</th>
