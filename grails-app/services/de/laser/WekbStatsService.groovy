@@ -16,7 +16,7 @@ class WekbStatsService {
     CacheService cacheService
     ContextService contextService
     GokbService gokbService
-    OrgTypeService orgTypeService
+    MarkerService markerService
 
     static final String CACHE_KEY = 'WekbStatsService/wekbChanges'
 
@@ -28,40 +28,19 @@ class WekbStatsService {
         }
         Map result = cache.get('changes') as Map
 
-        List<String> currentPackageIdList = SubscriptionPackage.executeQuery(
-                'select distinct sp.pkg.gokbId from SubscriptionPackage sp where sp.subscription in (select oo.sub from OrgRole oo join oo.sub sub where oo.org = :context and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true)))',
-                [context: contextService.getOrg(), current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED]
-        )
-
-        List<String> currentProviderIdList = orgTypeService.getCurrentOrgsOfProvidersAndAgencies(contextService.getOrg()).collect{ it.gokbId }
-
-         // todo --
-        List<Long> currentSubscriptionIdList = Subscription.executeQuery(
-                'select distinct s.id from OrgRole oo join oo.sub s where oo.org = :context and oo.roleType in (:roleTypes) and (s.status = :current or (s.status = :expired and s.hasPerpetualAccess = true))'
-                        + (contextService.getOrg().isCustomerType_Consortium() ? ' and s.instanceOf = null' : ''),
-                [context: contextService.getOrg(), roleTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA], current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED]
-        )
-        // println currentSubscriptionIdList.size()
-
-        List<Long> currentPlatformIdList = Platform.executeQuery('select distinct p.id from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg, ' +
-                'TitleInstancePackagePlatform tipp join tipp.platform p left join p.org o where tipp.pkg = pkg and s.id in (:subIds) ' +
-                'and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted)) and ((tipp.status is null) or (tipp.status != :tippRemoved)) ',
-                [subIds: currentSubscriptionIdList, pkgDeleted: RDStore.PACKAGE_STATUS_DELETED, tippRemoved: RDStore.TIPP_STATUS_REMOVED]
-        )
-        // println currentPlatformIdList.size()
-        // -- todo
-
         List<String> orgList    = result.org.all.collect{ it.uuid }
         List<String> pkgList    = result.package.all.collect{ it.uuid }
         List<String> pltList    = result.platform.all.collect{ it.uuid }
 
-        result.org.my           = currentProviderIdList.intersect(orgList)
-        result.package.my       = currentPackageIdList.intersect(pkgList)
-        result.platform.my      = currentPlatformIdList.intersect(pltList)
+        Map<String, List> myXMap = markerService.getMyXMap()
 
-        result.org.marker       = Marker.executeQuery('select org.gokbId from Org org, Marker mrk where mrk.org = org and mrk.user = :user', [user: contextService.getUser()]).intersect(orgList)
-        result.package.marker   = Marker.executeQuery('select pkg.gokbId from Package pkg, Marker mrk where mrk.pkg = pkg and mrk.user = :user', [user: contextService.getUser()]).intersect(pkgList)
-        result.platform.marker  = Marker.executeQuery('select plt.gokbId from Platform plt, Marker mrk where mrk.plt = plt and mrk.user = :user', [user: contextService.getUser()]).intersect(pltList)
+        result.org.my           = myXMap.currentProviderIdList.intersect(orgList)
+        result.package.my       = myXMap.currentPackageIdList.intersect(pkgList)
+        result.platform.my      = myXMap.currentPlatformIdList.intersect(pltList)
+
+        result.org.marker       = markerService.getObjectsByClassAndType(Org.class, Marker.TYPE.WEKB_CHANGES).collect { it.gokbId }.intersect(orgList)
+        result.package.marker   = markerService.getObjectsByClassAndType(Package.class, Marker.TYPE.WEKB_CHANGES).collect { it.gokbId }.intersect(pkgList)
+        result.platform.marker  = markerService.getObjectsByClassAndType(Platform.class, Marker.TYPE.WEKB_CHANGES).collect { it.gokbId }.intersect(pltList)
 
         result.counts = [
                 all:        result.org.count            + result.platform.count            + result.package.count,

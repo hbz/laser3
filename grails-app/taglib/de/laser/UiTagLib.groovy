@@ -377,7 +377,7 @@ class UiTagLib {
         MarkerSupport obj   = (attrs.org ?: attrs.package ?: attrs.platform) as MarkerSupport
         boolean isMarked    = obj.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)
         String tt           = '?'
-        String tt_list      = message(code: 'marker.wekbchanges')  // 'Beobachtungsliste (' + (attrs.type ?: 'wekb-News') + ')'
+        String tt_list      = message(code: 'marker.WEKB_CHANGES')
 
         if (attrs.org) {
             tt = isMarked ? 'Der Anbieter/Lieferant ist auf der ' + tt_list + '. Anklicken um zu entfernen.'
