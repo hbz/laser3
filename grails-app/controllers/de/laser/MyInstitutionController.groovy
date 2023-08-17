@@ -2915,7 +2915,7 @@ class MyInstitutionController  {
         }
     }
 
-    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO], ctrlService = DebugInfo.IN_BETWEEN)
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
         ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
@@ -2925,7 +2925,7 @@ class MyInstitutionController  {
         // TODO -- permissions --
 
         Map<String, Object> result = [
-                myMarkerObjList: [
+                myMarkedObjects: [
                         org: markerService.getObjectsByClassAndType(Org.class, Marker.TYPE.WEKB_CHANGES),
                         pkg: markerService.getObjectsByClassAndType(Package.class, Marker.TYPE.WEKB_CHANGES),
                         plt: markerService.getObjectsByClassAndType(Platform.class, Marker.TYPE.WEKB_CHANGES)

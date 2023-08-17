@@ -17,17 +17,20 @@ class MarkerService {
         String sql
 
         if (cls == Org.class) {
-            sql = 'select m from Marker m where m.org != null and m.type = :type and m.user = :user'
+            sql = 'where m.org != null'
         }
         else if (cls == Package.class) {
-            sql = 'select m from Marker m where m.pkg != null and m.type = :type and m.user = :user'
+            sql = 'where m.pkg != null'
         }
         else if (cls == Platform.class) {
-            sql = 'select m from Marker m where m.plt != null and m.type = :type and m.user = :user'
+            sql = 'where m.plt != null'
         }
 
         if (sql) {
-            markers = Marker.executeQuery(sql, [type: type, user: contextService.getUser()])
+            markers = Marker.executeQuery(
+                    'select m from Marker m ' + sql + ' and m.type = :type and m.user = :user',
+                    [type: type, user: contextService.getUser()]
+            )
         }
         markers
     }
@@ -37,17 +40,17 @@ class MarkerService {
         String sql
 
         if (cls == Org.class) {
-            sql = 'select obj from Org obj, Marker m where m.org = obj and m.type = :type and m.user = :user order by obj.sortname, obj.name'
+            sql = 'Org obj where m.org = obj and m.type = :type and m.user = :user order by obj.sortname, obj.name'
         }
         else if (cls == Package.class) {
-            sql = 'select obj from Package obj, Marker m where m.pkg = obj and m.type = :type and m.user = :user order by obj.sortname, obj.name'
+            sql = 'Package obj where m.pkg = obj and m.type = :type and m.user = :user order by obj.sortname, obj.name'
         }
         else if (cls == Platform.class) {
-            sql = 'select obj from Platform obj, Marker m where m.plt = obj and m.type = :type and m.user = :user order by obj.normname, obj.name'
+            sql = 'Platform obj where m.plt = obj and m.type = :type and m.user = :user order by obj.normname, obj.name'
         }
 
         if (sql) {
-            objects = Marker.executeQuery(sql, [type: type, user: contextService.getUser()])
+            objects = Marker.executeQuery('select obj from Marker m, ' + sql, [type: type, user: contextService.getUser()])
         }
         objects
     }

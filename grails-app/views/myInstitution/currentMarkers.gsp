@@ -8,7 +8,7 @@
 
 <ui:h1HeaderWithIcon message="menu.my.markers" type="Marker" floated="true" />
 
-<g:each in="${myMarkerObjList}" var="objCat">
+<g:each in="${myMarkedObjects}" var="objCat">
     <g:if test="${objCat.value}">
         <table class="ui celled table la-js-responsive-table la-table">
             <thead>
