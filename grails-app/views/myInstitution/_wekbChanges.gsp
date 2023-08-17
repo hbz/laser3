@@ -262,7 +262,7 @@
                                 <i class="icon fake"></i>
                             </g:else>
                             <g:if test="${obj.uuid in cfg[1].marker}">
-                                <ui:markerIcon type="wekbchanges" color="purple" />
+                                <ui:markerIcon type="WEKB_CHANGES" color="purple" />
                             </g:if>
                             <g:else>
                                 <i class="icon fake"></i>
