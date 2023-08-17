@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService" %>
+<%@ page import="de.laser.utils.AppUtils; de.laser.CustomerTypeService" %>
 <laser:serviceInjection />
 
 %{-- menu: my objects --}%
@@ -38,6 +38,10 @@
 
         <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
             <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.ORG_CONSORTIUM_PRO}" controller="myInstitution" action="currentSubscriptionsTransfer" message="menu.my.currentSubscriptionsTransfer" />
+        </g:if>
+
+        <g:if test="${AppUtils.isPreviewOnly()}">
+            <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentMarkers" message="menu.my.markers" />
         </g:if>
 
         <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />

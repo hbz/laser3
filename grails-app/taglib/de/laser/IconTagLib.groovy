@@ -58,6 +58,9 @@ class IconTagLib {
             case 'journal':
                 icon = 'bordered la-object-journal'
                 break
+            case 'marker':
+                icon = 'bordered inverted purple bookmark la-object-extended'
+                break
             case 'search':
                 icon = 'search'
                 break
@@ -292,7 +295,7 @@ class IconTagLib {
         out << '</span>'
     }
 
-    // <ui:myXIcon tooltip="optional" />
+    // <ui:myXIcon tooltip="optional" color="optional" />
 
     def myXIcon = { attrs, body ->
 
@@ -302,7 +305,7 @@ class IconTagLib {
             out << '<span>'
         }
 
-        out << '<i class="icon star"></i>'
+        out << '<i class="icon ' + (attrs.color ? attrs.color + ' ' : '') + 'star"></i>'
         out << '</span>'
     }
 }
