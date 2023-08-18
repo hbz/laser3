@@ -5,7 +5,7 @@
 
     <div id="wekb-menu" style="margin:1em 0 2em 0">
         <div style="margin:1em 0;padding:0 1em; text-align:right">
-            <div class="ui labels">
+            <div class="ui large labels">
                 <a href="#" id="wekb-menu-trigger" class="ui label"><i class="icon blue la-gokb"></i>&nbsp;We:kb-News</a>
                 <g:if test="${wekbChanges.counts.my > 0}">
                     <a href="#" class="ui icon label la-popup-tooltip la-delay wekb-flyout-trigger" data-preset="all,my"

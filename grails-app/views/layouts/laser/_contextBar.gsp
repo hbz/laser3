@@ -3,7 +3,7 @@
 
 <g:set var="visibilityContextOrgMenu" value="la-show-context-orgMenu" />
 
-<g:if test="${! AppUtils.isPreviewOnly()}">%{-- DEMO --}%
+<g:if test="${true /*! AppUtils.isPreviewOnly()*/ }">
 
 <nav class="ui fixed menu la-contextBar" aria-label="${message(code:'wcag.label.modeNavigation')}">
 
@@ -121,8 +121,8 @@
 
 </nav>%{-- la-contextBar --}%
 
-</g:if>%{-- DEMO --}%
-<g:else>
+</g:if>
+<g:else>%{-- DEMO --}%
 
 <nav class="la-cb-wrapper">
     <div class="ui container three column grid">
@@ -152,7 +152,7 @@
             </g:if>
         </div><!-- .la-cb-context -->
 
-        <div class="three wide column la-cb-info">
+        <div class="two wide column la-cb-info">
 
             <g:if test="${flagContentCache}">
                 <i class="icon hourglass end la-popup-tooltip la-delay" data-content="${message(code:'statusbar.flagContentCache.tooltip')}" data-position="bottom right" data-variation="tiny"></i>
@@ -166,19 +166,19 @@
 
         </div><!-- .la-cb-info -->
 
-        <div class="three wide column la-cb-actions">
+        <div class="two wide column la-cb-options">
 
             %{-- edit mode switcher  --}%
 
             <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription' || controllerName=='license') && actionName=='show' && (editable || contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))}">
                 <div class="item">
                     <g:if test="${contextUser?.getSettingsValue(UserSetting.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES)?.value=='Yes'}">
-                        <button class="ui icon active button la-cb-action-button toggle la-toggle-controls la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right">
+                        <button class="ui icon active button la-cb-option-button toggle la-toggle-controls la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right">
                             <i class="pencil alternate icon"></i>
                         </button>
                     </g:if>
                     <g:else>
-                        <button class="ui icon button la-cb-action-button toggle la-toggle-controls la-popup-tooltip la-delay"  data-content="${message(code:'statusbar.hideButtons.tooltip')}" data-position="bottom right">
+                        <button class="ui icon button la-cb-option-button toggle la-toggle-controls la-popup-tooltip la-delay"  data-content="${message(code:'statusbar.hideButtons.tooltip')}" data-position="bottom right">
                             <i class="pencil alternate slash icon"></i>
                         </button>
                     </g:else>
@@ -190,13 +190,13 @@
             <g:if test="${(params.mode)}">
                 <div class="item">
                     <g:if test="${params.mode=='advanced'}">
-                        <div class="ui icon button la-cb-action-button toggle la-toggle-advanced la-popup-tooltip la-delay"
+                        <div class="ui icon button la-cb-option-button toggle la-toggle-advanced la-popup-tooltip la-delay"
                              data-content="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right">
                             <i class="icon plus square"></i>
                         </div>
                     </g:if>
                     <g:else>
-                        <div class="ui icon button la-cb-action-button toggle la-toggle-advanced la-popup-tooltip la-delay"
+                        <div class="ui icon button la-cb-option-button toggle la-toggle-advanced la-popup-tooltip la-delay"
                              data-content="${message(code:'statusbar.showBasicView.tooltip')}" data-position="bottom right">
                             <i class="icon plus square green slash"></i>
                         </div>
@@ -231,12 +231,12 @@
             <g:if test="${controllerName == 'survey' && (actionName == 'currentSurveysConsortia' || actionName == 'workflowsSurveysConsortia')}">
                 <div class="item">
                     <g:if test="${actionName == 'workflowsSurveysConsortia'}">
-                        <g:link action="currentSurveysConsortia" controller="survey" class="ui button la-cb-action-button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.change.currentSurveysConsortiaView.tooltip')}" data-position="bottom right">
+                        <g:link action="currentSurveysConsortia" controller="survey" class="ui button la-cb-option-button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.change.currentSurveysConsortiaView.tooltip')}" data-position="bottom right">
                             <i class="exchange icon"></i>
                         </g:link>
                     </g:if>
                     <g:else>
-                        <g:link action="workflowsSurveysConsortia" controller="survey" class="ui button la-cb-action-button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.change.workflowsSurveysConsortiaView.tooltip')}" data-position="bottom right">
+                        <g:link action="workflowsSurveysConsortia" controller="survey" class="ui button la-cb-option-button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.change.workflowsSurveysConsortiaView.tooltip')}" data-position="bottom right">
                             <i class="exchange icon"></i>
                         </g:link>
                     </g:else>
@@ -244,11 +244,13 @@
             </g:if>
             <g:if test="${(controllerName=='subscription' && actionName=='show') || (controllerName=='dev' && actionName=='frontend')}">
                 <div class="item">
-                    <button class="ui icon button la-cb-action-button la-help-panel-button"><i class="info circle icon"></i></button>
+                    <button class="ui icon button la-cb-option-button la-help-panel-button"><i class="info circle icon"></i></button>
                 </div>
             </g:if>
 
-        </div><!-- .la-cb-actions -->
+        </div><!-- .la-cb-options -->
+
+        <div class="two wide column la-cb-actions"></div><!-- .la-cb-actions -->
 
     </div><!-- .container .grid -->
 </nav><!-- .la-cb-wrapper -->
@@ -276,23 +278,32 @@
     .la-cb-info {
         text-align: right;
     }
+    .la-cb-options {
+        text-align: right;
+        padding-top: 6px !important;
+        padding-bottom: 5px !important;
+    }
+    .la-cb-option-button {
+        margin-right: 0 !important;
+        margin-left: 2px !important;
+        background-color: #8a8a8a !important;
+    }
+    .la-cb-option-button:hover {
+        cursor: pointer;
+    }
     .la-cb-actions {
         padding-right: 0 !important;
         text-align: right;
         padding-top: 6px !important;
         padding-bottom: 5px !important;
     }
-    .la-cb-action-button {
-        margin-right: 0 !important;
-        margin-left: 2px !important;
-        background-color: #8a8a8a !important;
-    }
-    .la-cb-action-button:hover {
-        cursor: pointer;
-    }
-    .la-cb-info > .item, .la-cb-actions > .item {
+    .la-cb-info > .item, .la-cb-site > .item, .la-cb-actions > .item {
         display: inline-block;
     }
 </style>
+
+%{--<laser:script file="${this.getGroovyPageFileName()}">--}%
+%{--    $('.la-cb-wrapper .la-cb-actions').append($('nav.buttons'));--}%
+%{--</laser:script>--}%
 
 </g:else>

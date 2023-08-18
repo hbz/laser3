@@ -30,6 +30,10 @@
     </form>
 </ui:filter>
 
+<ui:msg class="info" noClose="true">
+    <i class="ui icon hand point right"></i> <strong>Hinweis:</strong> Ihre persönlichen Beobachtungslisten sind für andere Nutzer Ihrer Einrichtung nicht sichtbar.
+</ui:msg>
+
 <g:each in="${myMarkedObjects}" var="objCat">
     <g:if test="${objCat.value}">
         <table class="ui celled table la-js-responsive-table la-table">
