@@ -281,6 +281,46 @@ class IconTagLib {
         }
     }
 
+    // <ui:userInstRoleIcon color="blue" />
+
+    def userInstRoleIcon = {attrs, body ->
+        String icon = 'user slash'
+
+        Role fr = contextService.getUser().formalRole
+        if (fr) {
+            if (fr.authority == Role.INST_USER)   { icon = 'user' }
+            if (fr.authority == Role.INST_EDITOR) { icon = 'user edit' }
+            if (fr.authority == Role.INST_ADM)    { icon = 'user shield' }
+        }
+
+        out << '<i class="' + icon + (attrs.color ? '' + attrs.color : '') + '"></i>'
+    }
+
+    // <ui:customerTypeIcon_tmp />
+
+    def customerTypeIcon_tmp = {attrs, body ->
+        String icon = 'icon circle outline'
+        Org org = contextService.getOrg()
+
+        if (org.isCustomerType_Consortium_Pro()) {
+            icon = 'icon trophy'
+        }
+        else if (org.isCustomerType_Consortium_Basic()) {
+
+        }
+        else if (org.isCustomerType_Inst_Pro()) {
+            icon = 'icon trophy'
+        }
+        else if (org.isCustomerType_Inst()) {
+
+        }
+        else {
+
+        }
+
+        out << '<i class="' + icon + (attrs.color ? '' + attrs.color : '') + '"></i>'
+    }
+
     // <ui:myIcon type="wekbchanges" color="optional" />
 
     def markerIcon = { attrs, body ->
