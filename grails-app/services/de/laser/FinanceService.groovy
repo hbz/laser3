@@ -445,7 +445,14 @@ class FinanceService {
         String reference = params.newReference ? params.newReference.trim() : null
         RefdataValue costItemStatus = params.newCostItemStatus ? (RefdataValue.get(params.long('newCostItemStatus'))) : null    //estimate, commitment, etc
         //block sum
-        NumberFormat format = NumberFormat.getInstance( LocaleUtils.getCurrentLocale() )
+        Locale userInputLocale = LocaleUtils.getCurrentLocale()
+        if(contextService.getUser().getSettingsValue(UserSetting.KEYS.LANGUAGE) == RDStore.LANGUAGE_DE) {
+            userInputLocale = LocaleUtils.getLocaleDE()
+        }
+        else if(contextService.getUser().getSettingsValue(UserSetting.KEYS.LANGUAGE) == RDStore.LANGUAGE_EN) {
+            userInputLocale = LocaleUtils.getLocaleEN()
+        }
+        NumberFormat format = NumberFormat.getInstance( userInputLocale )
         //row 1
         Double costBillingCurrency = params.newCostInBillingCurrency ? format.parse(params.newCostInBillingCurrency).doubleValue() : 0.0 //0.00
         RefdataValue billingCurrency = RefdataValue.get(params.long('newCostCurrency')) //billingCurrency should be not null
