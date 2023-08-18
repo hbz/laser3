@@ -2878,6 +2878,50 @@ join sub.orgRelations or_sub where
 
     }
 
+    /**
+     * ex AjaxController
+     * Processes the inheritance (or clears it) of the identifiers for the given owner object
+     * @param owner the {@link Subscription} or {@link License}
+     * @param identifier the {@link Identifier} to be copied into or removed from the child objects
+     */
+    void inheritIdentifier(owner, Identifier identifier) {
+        if (AuditConfig.getConfig(identifier, AuditConfig.COMPLETE_OBJECT)) {
+            AuditConfig.removeAllConfigs(identifier)
+
+            Identifier.findAllByInstanceOf(identifier).each{ Identifier id ->
+                id.delete()
+            }
+        }
+        else {
+            String memberType
+            if(owner instanceof Subscription)
+                memberType = 'sub'
+            else if(owner instanceof License)
+                memberType = 'lic'
+            if(memberType) {
+                owner.getClass().findAllByInstanceOf(owner).each { member ->
+                    Identifier existingIdentifier = Identifier.executeQuery('select id from Identifier id where id.'+memberType+' = :member and id.instanceOf = :id', [member: member, id: identifier])[0]
+                    if (! existingIdentifier) {
+                        //List<Identifier> matchingProps = Identifier.findAllByOwnerAndTypeAndTenant(member, property.type, contextOrg)
+                        List<Identifier> matchingIds = Identifier.executeQuery('select id from Identifier id where id.'+memberType+' = :member and id.value = :value and id.ns = :ns',[member: member, value: identifier.value, ns: identifier.ns])
+                        // unbound prop found with matching type, set backref
+                        if (matchingIds) {
+                            matchingIds.each { Identifier memberId ->
+                                memberId.instanceOf = identifier
+                                memberId.save()
+                            }
+                        }
+                        else {
+                            // no match found, creating new prop with backref
+                            Identifier.constructWithFactoryResult([value: identifier.value, note: identifier.note, parent: identifier, reference: member, namespace: identifier.ns])
+                        }
+                    }
+                }
+                AuditConfig.addConfig(identifier, AuditConfig.COMPLETE_OBJECT)
+            }
+        }
+    }
+
     //-------------------------------------- cronjob section ----------------------------------------
 
     /**
