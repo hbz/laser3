@@ -1,7 +1,11 @@
 package de.laser
 
 import de.laser.annotations.RefdataInfo
+import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
+import de.laser.convenience.Marker
+import de.laser.interfaces.MarkerSupport
+import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
@@ -20,7 +24,7 @@ import java.util.regex.Pattern
  * @see Platform
  * @see SubscriptionPackage
  */
-class Package extends AbstractBaseWithCalculatedLastUpdated {
+class Package extends AbstractBaseWithCalculatedLastUpdated implements MarkerSupport {
 
     String name
     String sortname
@@ -304,4 +308,23 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         return this.name + ' ('+ TitleInstancePackagePlatform.countByPkgAndStatus(this, RDStore.TIPP_STATUS_CURRENT) +')'
     }
 
+    @Override
+    boolean isMarked(User user, Marker.TYPE type) {
+        Marker.findByPkgAndUserAndType(this, user, type) ? true : false
+    }
+
+    @Override
+    void setMarker(User user, Marker.TYPE type) {
+        if (!isMarked(user, type)) {
+            Marker m = new Marker(pkg: this, user: user, type: type)
+            m.save()
+        }
+    }
+
+    @Override
+    void removeMarker(User user, Marker.TYPE type) {
+        withTransaction {
+            Marker.findByPkgAndUserAndType(this, user, type).delete(flush:true)
+        }
+    }
 }

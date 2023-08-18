@@ -221,18 +221,21 @@
 
 // Fixed Table Header
 .ui.table thead tr:first-child > th,
-.ui.table thead tr:nth-child(2) > th {
+.ui.table thead tr:nth-child(2) > th,
+.ui.table thead tr:nth-child(3) > th {
   position: sticky !important;
   z-index: 2;
 }
 .ui.table.la-ignore-fixed thead tr:first-child > th,
-.ui.table.la-ignore-fixed thead tr:nth-child(2) > th {
+.ui.table.la-ignore-fixed thead tr:nth-child(2) > th,
+.ui.table.la-ignore-fixed thead tr:nth-child(3) > th{
   position: static !important;
   z-index: unset;
 }
 // Table Header
 .ui.table thead tr:first-child > th,
-.ui.table thead tr:nth-child(2) > th {
+.ui.table thead tr:nth-child(2) > th,
+.ui.table thead tr:nth-child(3) > th {
   background-color: #F4F8F9;
 }
 .ui.table thead tr:first-child > th {
@@ -240,6 +243,9 @@
 }
 .ui.table thead tr:nth-child(2) > th {
   top: 118px;
+}
+.ui.table thead tr:nth-child(3) > th {
+  top: 146px;
 }
 // avoiding sticky behavior of calendar table
 .ui.table.day thead tr:first-child > th,

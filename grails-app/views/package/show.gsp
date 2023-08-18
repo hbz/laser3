@@ -28,6 +28,8 @@ making obsolete package/actions
     <g:else>${packageInstance.name}</g:else>
 </ui:h1HeaderWithIcon>
 
+<ui:markerSwitch package="${packageInstance}"/>
+
 <laser:render template="nav"/>
 
 <ui:objectStatus object="${packageInstance}" status="${packageInstance.packageStatus}"/>

@@ -77,4 +77,21 @@ class AjaxTagLib {
         out << ", error:function(XMLHttpRequest,textStatus,errorThrown){jQuery('" + updateOnFailure + "').html(XMLHttpRequest.responseText)}"
         out <<"});"
     }
+
+    def remoteJsToggler = { attrs, body ->
+
+        String href   = g.createLink([controller: attrs.controller, action: attrs.action])
+        String data   = attrs.data ?: '{}'
+        String update = attrs.update
+        String updateOnError = attrs.updateOnError ?: update
+        String successFunc   = attrs.successFunc ?: ''
+        String errorFunc     = attrs.errorFunc ?: ''
+
+        out << "jQuery.ajax({type:'POST'"
+        out << ", data:" + data
+        out << ", url:'" + href + "'"
+        out << ", success:function(data,textStatus){jQuery('" + update + "').html(data);" + successFunc + "}"
+        out << ", error:function(XMLHttpRequest,textStatus,errorThrown){jQuery('" + updateOnError + "').html(XMLHttpRequest.responseText);" + errorFunc + "}"
+        out <<"});"
+    }
 }

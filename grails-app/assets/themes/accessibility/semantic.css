@@ -65275,19 +65275,22 @@ Floated Menu / Item
 }
 
 .ui.table thead tr:first-child > th,
-.ui.table thead tr:nth-child(2) > th {
+.ui.table thead tr:nth-child(2) > th,
+.ui.table thead tr:nth-child(3) > th {
   position: sticky !important;
   z-index: 2;
 }
 
 .ui.table.la-ignore-fixed thead tr:first-child > th,
-.ui.table.la-ignore-fixed thead tr:nth-child(2) > th {
+.ui.table.la-ignore-fixed thead tr:nth-child(2) > th,
+.ui.table.la-ignore-fixed thead tr:nth-child(3) > th {
   position: static !important;
   z-index: unset;
 }
 
 .ui.table thead tr:first-child > th,
-.ui.table thead tr:nth-child(2) > th {
+.ui.table thead tr:nth-child(2) > th,
+.ui.table thead tr:nth-child(3) > th {
   background-color: #F4F8F9;
 }
 
@@ -65297,6 +65300,10 @@ Floated Menu / Item
 
 .ui.table thead tr:nth-child(2) > th {
   top: 118px;
+}
+
+.ui.table thead tr:nth-child(3) > th {
+  top: 146px;
 }
 
 .ui.table.day thead tr:first-child > th,

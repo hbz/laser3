@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Package; de.laser.RefdataValue" %>
+<%@ page import="de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Package; de.laser.RefdataValue" %>
 <laser:htmlStart message="menu.my.packages" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -70,6 +70,11 @@
             <th>${message(code:'default.provider.label')}</th>
             <th>${message(code:'platform.label')}</th>
             <th>${message(code:'myinst.currentPackages.assignedSubscriptions')}</th>
+            <g:if test="${AppUtils.isPreviewOnly()}">
+                <th class="center aligned">
+                    <ui:markerIcon type="WEKB_CHANGES" />
+                </th>
+            </g:if>
         </tr>
         </thead>
         <tbody>
@@ -121,6 +126,13 @@
                 </td>
                 <%--<td class="center aligned">
                 </td>--%>
+                <g:if test="${AppUtils.isPreviewOnly()}">
+                    <td class="center aligned">
+                        <g:if test="${pkg.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
+                            <ui:markerIcon type="WEKB_CHANGES" color="purple" />
+                        </g:if>
+                    </td>
+                </g:if>
             </tr>
         </g:each>
         </tbody>

@@ -1,4 +1,4 @@
-<%@page import="de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.PendingChangeConfiguration; de.laser.Platform; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.finance.CostItem; de.laser.Org" %>
+<%@page import="de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.PendingChangeConfiguration; de.laser.Platform; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.finance.CostItem; de.laser.Org; de.laser.IssueEntitlement" %>
 <laser:serviceInjection />
 
 <div class="ui card">
@@ -13,15 +13,21 @@
             <div class="ui raised segments la-accordion-segments">
                 <div class="ui fluid segment  title">
                     <div class="ui stackable equal width grid">
-                        <div class="six wide column">
+                        <div class="four wide column">
                             <ui:wekbIconLink type="package" gokbId="${sp.pkg.gokbId}"/>
                             <g:link controller="package" action="show" id="${sp.pkg.id}">${sp.pkg.name}</g:link>
-
+                            <br>
+                            ${sp.getIssueEntitlementCountOfPackage()} <g:message code="subscription.packages.currentTitles"/>
+                        </div>
+                        <div class="three wide column">
                             <g:if test="${sp.pkg.contentProvider}">
-                                (${sp.pkg.contentProvider.name})
+                                <i aria-hidden="true" class="handshake outline icon la-popup-tooltip la-delay" data-content="${message(code: 'default.provider.label')}"></i>
+                                <g:if test="${sp.pkg.contentProvider.gokbId}"><ui:wekbIconLink type="org" gokbId="${sp.pkg.contentProvider.gokbId}"/></g:if>
+                                <g:link controller="org" action="show" id="${sp.pkg.contentProvider.id}">${sp.pkg.contentProvider.name}</g:link>
+                                <ui:linkWithIcon href="${sp.pkg.contentProvider.url?.startsWith('http') ? sp.pkg.contentProvider.url : 'http://' + sp.pkg.contentProvider.url}"/>
                             </g:if>
                         </div>
-                        <div class="four wide column">
+                        <div class="three wide column">
                             <g:if test="${sp.pkg.nominalPlatform}">
                                 <i aria-hidden="true" class="grey cloud icon la-popup-tooltip la-delay" data-content="${message(code: 'platform.label')}"></i>
                                 <ui:wekbIconLink type="platform" gokbId="${sp.pkg.nominalPlatform.gokbId}"/>

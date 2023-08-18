@@ -1249,6 +1249,7 @@ class SubscriptionControllerService {
                     }
                     /*
                     copy package data
+                    */
                     if(params.linkAllPackages) {
                         result.subscription.packages.each { SubscriptionPackage sp ->
                             packagesToProcess << sp.pkg
@@ -1260,7 +1261,6 @@ class SubscriptionControllerService {
                             packagesToProcess << SubscriptionPackage.get(spId).pkg
                         }
                     }
-                    */
                     if(params.generateSlavedLics == "all") {
                         String query = "select l from License l where l.instanceOf in (select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType)"
                         licensesToProcess.addAll(License.executeQuery(query, [subscription:result.subscription, linkType:RDStore.LINKTYPE_LICENSE]))
@@ -1375,7 +1375,7 @@ class SubscriptionControllerService {
                     }
 
                     packagesToProcess.each { Package pkg ->
-                        subscriptionService.addToMemberSubscription(result.subscription, memberSubs, pkg, result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE && auditService.getAuditConfig(result.subscription, 'holdingSelection'))
+                        subscriptionService.addToMemberSubscription(result.subscription, memberSubs, pkg, params.linkWithEntitlements == 'on')
                             /*
                             if()
                                 subscriptionService.addToSubscriptionCurrentStock(memberSub, result.subscription, pkg)
@@ -3122,44 +3122,45 @@ class SubscriptionControllerService {
                             }
                         }
                         */
-                    })
 
-                    if(params.process && params.process	== "withTitleGroup") {
-                        IssueEntitlementGroup issueEntitlementGroup
-                        if (params.issueEntitlementGroupNew) {
+                        if(params.process && params.process	== "withTitleGroup") {
+                            IssueEntitlementGroup issueEntitlementGroup
+                            if (params.issueEntitlementGroupNew) {
 
-                            IssueEntitlementGroup.withTransaction {
-                                issueEntitlementGroup = IssueEntitlementGroup.findBySubAndName(result.subscription, params.issueEntitlementGroupNew) ?: new IssueEntitlementGroup(sub: result.subscription, name: params.issueEntitlementGroupNew).save()
+                                IssueEntitlementGroup.withTransaction {
+                                    issueEntitlementGroup = IssueEntitlementGroup.findBySubAndName(result.subscription, params.issueEntitlementGroupNew) ?: new IssueEntitlementGroup(sub: result.subscription, name: params.issueEntitlementGroupNew).save()
+                                }
                             }
-                        }
 
-                        if (params.issueEntitlementGroupID && params.issueEntitlementGroupID != '') {
-                            issueEntitlementGroup = IssueEntitlementGroup.findById(Long.parseLong(params.issueEntitlementGroupID))
-                        }
+                            if (params.issueEntitlementGroupID && params.issueEntitlementGroupID != '') {
+                                issueEntitlementGroup = IssueEntitlementGroup.findById(Long.parseLong(params.issueEntitlementGroupID))
+                            }
 
-                        if (issueEntitlementGroup) {
-                            Object[] keys = checked.keySet().toArray()
-                            keys.each { String gokbUUID ->
-                                IssueEntitlement.withTransaction { TransactionStatus ts ->
-                                    TitleInstancePackagePlatform titleInstancePackagePlatform = TitleInstancePackagePlatform.findByGokbId(gokbUUID)
-                                    if (titleInstancePackagePlatform) {
-                                        IssueEntitlement ie = IssueEntitlement.findBySubscriptionAndTipp(result.subscription, titleInstancePackagePlatform)
+                            if (issueEntitlementGroup) {
+                                issueEntitlementGroup.refresh()
+                                Object[] keys = checked.keySet().toArray()
+                                keys.each { String gokbUUID ->
+                                    IssueEntitlement.withTransaction { TransactionStatus ts ->
+                                        TitleInstancePackagePlatform titleInstancePackagePlatform = TitleInstancePackagePlatform.findByGokbId(gokbUUID)
+                                        if (titleInstancePackagePlatform) {
+                                            IssueEntitlement ie = IssueEntitlement.findBySubscriptionAndTipp(result.subscription, titleInstancePackagePlatform)
 
-                                        if (issueEntitlementGroup && !IssueEntitlementGroupItem.findByIe(ie)) {
-                                            IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
-                                                    ie: ie,
-                                                    ieGroup: issueEntitlementGroup)
+                                            if (issueEntitlementGroup && !IssueEntitlementGroupItem.findByIe(ie)) {
+                                                IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
+                                                        ie: ie,
+                                                        ieGroup: issueEntitlementGroup)
 
-                                            if (!issueEntitlementGroupItem.save()) {
-                                                log.error("Problem saving IssueEntitlementGroupItem by Survey ${issueEntitlementGroupItem.errors}")
+                                                if (!issueEntitlementGroupItem.save()) {
+                                                    log.error("Problem saving IssueEntitlementGroupItem by manual adding ${issueEntitlementGroupItem.getErrors().getAllErrors().toListString()}")
+                                                }
                                             }
                                         }
                                     }
-                                }
 
+                                }
                             }
                         }
-                    }
+                    })
                     cache.put('checked',[:])
                 }
                 else {
@@ -4323,8 +4324,7 @@ class SubscriptionControllerService {
             Set<Long> excludes = [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id]
             if(result.institution.isCustomerType_Consortium())
                 excludes << RDStore.OR_SUBSCRIPTION_CONSORTIA.id
-            // restrict visible for templates/links/orgLinksAsList; done by Andreas Gálffy
-            result.visibleOrgRelations = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType.id in excludes) }
+            result.visibleOrgRelations = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType.id in excludes) }.sort { OrgRole oo -> oo.org.sortname }
         }
         else {
             if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {

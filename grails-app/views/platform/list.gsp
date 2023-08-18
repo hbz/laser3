@@ -1,5 +1,5 @@
-<%@ page import="de.laser.Platform; de.laser.Package; de.laser.Org; de.laser.storage.RDStore" %>
-<laser:htmlStart message="platforms.all_platforms.label" />
+<%@ page import="de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.Platform; de.laser.Package; de.laser.Org; de.laser.storage.RDStore" %>
+<laser:htmlStart message="platforms.all_platforms.label" serviceInjection="true" />
 
 	<ui:breadcrumbs>
 		<ui:crumb message="platforms.all_platforms.label" class="active" />
@@ -21,8 +21,13 @@
 						<th>${message(code:'default.url.label')}</th> <%-- needs we:kb rework to make the property sortable --%>
 						<g:sortableColumn property="providerName" title="${message(code:'default.provider.label')}" />
 						<th class="center aligned">
-							<span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.platforms')}"><i class="icon star"></i></span>
+							<ui:myXIcon tooltip="${message(code: 'menu.my.platforms')}" />
 						</th>
+						<g:if test="${AppUtils.isPreviewOnly()}">
+							<th class="center aligned">
+								<ui:markerIcon type="WEKB_CHANGES" />
+							</th>
+						</g:if>
 						<th>${message(code:'org.isWekbCurated.label')}</th>
 					</tr>
 					</thead>
@@ -78,6 +83,13 @@
 									</span>
 								</g:if>
 							</td>
+							<g:if test="${AppUtils.isPreviewOnly()}">
+								<td class="center aligned">
+									<g:if test="${platformInstance && platformInstance.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
+										<ui:markerIcon type="WEKB_CHANGES" color="purple" />
+									</g:if>
+								</td>
+							</g:if>
 							<td>
 								<g:if test="${platformInstance}">
 									<ui:wekbButtonLink type="platform" gokbId="${platformInstance.gokbId}" />

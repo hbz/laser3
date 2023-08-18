@@ -70,7 +70,8 @@ class RDStore {
     public final static RefdataValue IE_ACCESS_CURRENT                      = getRefdataValue('Current', RDConstants.IE_ACCESS_STATUS)
 
     public final static RefdataValue LANGUAGE_DE            = getRefdataValue('de', RDConstants.LANGUAGE)
-    
+    public final static RefdataValue LANGUAGE_EN            = getRefdataValue('en', RDConstants.LANGUAGE)
+
     public final static RefdataValue LICENSE_TYPE_ACTUAL    = getRefdataValue('Actual', RDConstants.LICENSE_TYPE)
 
     public final static RefdataValue LICENSE_NO_STATUS      = getRefdataValue('Status not defined', RDConstants.LICENSE_STATUS)

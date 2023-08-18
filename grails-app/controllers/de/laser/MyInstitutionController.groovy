@@ -4,6 +4,7 @@ package de.laser
 import de.laser.annotations.DebugInfo
 import de.laser.cache.EhcacheWrapper
 import de.laser.cache.SessionCacheWrapper
+import de.laser.convenience.Marker
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.UserControllerService
 import de.laser.custom.CustomWkhtmltoxService
@@ -86,6 +87,7 @@ class MyInstitutionController  {
     InstitutionsService institutionsService
     LinksGenerationService linksGenerationService
     ManagementService managementService
+    MarkerService markerService
     MyInstitutionControllerService myInstitutionControllerService
     OrganisationService organisationService
     OrgTypeService orgTypeService
@@ -2911,6 +2913,32 @@ class MyInstitutionController  {
 
             result
         }
+    }
+
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
+    @Secured(closure = {
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+    })
+    def currentMarkers() {
+        log.debug 'currentMarkers()'
+
+        Marker.TYPE fMarkerType = Marker.TYPE.WEKB_CHANGES
+        if (params.filterMarkerType) {
+            fMarkerType = Marker.TYPE.get(params.filterMarkerType)
+        }
+
+        // TODO -- permissions --
+
+        Map<String, Object> result = [
+                myMarkedObjects: [
+                        org: markerService.getObjectsByClassAndType(Org.class, fMarkerType),
+                        pkg: markerService.getObjectsByClassAndType(Package.class, fMarkerType),
+                        plt: markerService.getObjectsByClassAndType(Platform.class, fMarkerType)
+                ],
+                myXMap:             markerService.getMyXMap(),
+                filterMarkerType:   fMarkerType.value
+        ]
+        result
     }
 
     @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO], ctrlService = DebugInfo.IN_BETWEEN)

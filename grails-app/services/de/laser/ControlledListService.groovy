@@ -51,7 +51,7 @@ class ControlledListService {
                     filter.put("query",params.query)
                     filterString += " and genfunc_filter_matcher(oo.org.name,:query) = true "
                 }
-                List providers = Org.executeQuery("select distinct concat('"+Org.class.name+":',oo.org.id), oo.org.name from OrgRole oo where oo.sub.id in (:subscriptions) and oo.roleType in (:providerAgency)"+filterString+"order by oo.org.name asc",filter)
+                List providers = Org.executeQuery("select distinct concat('"+Org.class.name+":',oo.org.id), oo.org.sortname from OrgRole oo where oo.sub.id in (:subscriptions) and oo.roleType in (:providerAgency)"+filterString+"order by oo.org.sortname asc",filter)
                 providers.each { p ->
                     result.results.add([name:p[1],value:p[0]])
                 }
@@ -62,11 +62,14 @@ class ControlledListService {
             LinkedHashMap filter = [providerTypes:providerAgency, current: RDStore.ORG_STATUS_CURRENT]
             if(params.query && params.query.length() > 0) {
                 filter.put("query",params.query)
-                queryString += " and genfunc_filter_matcher(o.name,:query) = true "
+                queryString += " and (genfunc_filter_matcher(o.name,:query) = true or genfunc_filter_matcher(o.sortname,:query) = true or exists(select alt from o.altnames alt where genfunc_filter_matcher(alt.name,:query) = true)) "
             }
-            Set providers = Org.executeQuery(queryString+" order by o.name asc",filter)
+            Set providers = Org.executeQuery(queryString+" order by o.sortname asc",filter)
             providers.each { p ->
-                result.results.add([name:p.name,value:genericOIDService.getOID(p)])
+                if(params.tableView)
+                    result.results.add(p)
+                else
+                    result.results.add([name:p.name,value:genericOIDService.getOID(p)])
             }
         }
         result

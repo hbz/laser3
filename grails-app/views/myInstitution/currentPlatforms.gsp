@@ -1,5 +1,5 @@
-<%@ page import="de.laser.Platform; de.laser.storage.RDStore" %>
-<laser:htmlStart message="menu.my.platforms" />
+<%@ page import="de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.Platform; de.laser.storage.RDStore" %>
+<laser:htmlStart message="menu.my.platforms" serviceInjection="true" />
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.my.platforms" class="active" />
@@ -22,6 +22,11 @@
             <th>${message(code:'default.provider.label')}</th>
             <th>${message(code:'accessPoint.plural')}</th>
             <th>${message(code:'myinst.currentPlatforms.assignedSubscriptions')}</th>
+            <g:if test="${AppUtils.isPreviewOnly()}">
+                <th class="center aligned">
+                    <ui:markerIcon type="WEKB_CHANGES" />
+                </th>
+            </g:if>
             <th>${message(code:'org.isWekbCurated.label')}</th>
         </tr>
         </thead>
@@ -75,6 +80,13 @@
                         </ul>
                     </g:if>
                 </td>
+                <g:if test="${AppUtils.isPreviewOnly()}">
+                    <td class="center aligned">
+                        <g:if test="${platformInstance.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
+                            <ui:markerIcon type="WEKB_CHANGES" color="purple" />
+                        </g:if>
+                    </td>
+                </g:if>
                 <td>
                     <g:if test="${platformInstance.org}">
                         <div class="la-flexbox">

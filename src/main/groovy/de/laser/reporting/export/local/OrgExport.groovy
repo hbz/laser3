@@ -79,6 +79,7 @@ class OrgExport extends BaseDetailsExport {
     List<Object> getDetailedObject(Object obj, Map<String, Object> fields) {
 
         ApplicationTagLib g = BeanStore.getApplicationTagLib()
+        ContextService contextService = BeanStore.getContextService()
         MessageSource messageSource = BeanStore.getMessageSource()
 
         Org org = obj as Org
@@ -175,16 +176,22 @@ class OrgExport extends BaseDetailsExport {
                         coList.addAll( personList )
                     }
                     if (RDStore.REPORTING_CONTACT_TYPE_ADDRESSES.id in f.value) {
-                        String sql = "select distinct type from Address addr join addr.type type join addr.org org where org = :org order by type.value_" + LocaleUtils.getCurrentLang()
-                        List<RefdataValue> addressTypes = Address.executeQuery( sql, [org: org] )
+//                        String sql = "select distinct type from Address addr join addr.type type join addr.org org where org = :org order by type.value_" + LocaleUtils.getCurrentLang()
+//                        List<RefdataValue> addressTypes = Address.executeQuery( sql, [org: org] )
+
+                        String sql = "select distinct type from Address addr join addr.type type join addr.org org where org = :org and (addr.tenant is null or addr.tenant = :ctxOrg) order by type.value_" + LocaleUtils.getCurrentLang()
+                        List<RefdataValue> addressTypes = Address.executeQuery( sql, [org: org, ctxOrg: contextService.getOrg()] )
                         List addressList = []
 
                         String pob = messageSource.getMessage('address.pob.label',null, LocaleUtils.getCurrentLocale())
 
                         addressTypes.each { at ->
-                            List<Address> addresses = Address.executeQuery(
-                                    "select distinct addr from Address addr join addr.org org join addr.type addrType where org = :org and addrType = :at", [org: org, at: at]
-                            )
+//                            List<Address> addresses = Address.executeQuery(
+//                                    "select distinct addr from Address addr join addr.org org join addr.type addrType where org = :org and addrType = :at", [org: org, at: at]
+//                            )
+
+                            String sql2 = "select distinct addr from Address addr join addr.org org join addr.type addrType where org = :org and addrType = :at and (addr.tenant is null or addr.tenant = :ctxOrg)"
+                            List<Address> addresses = Address.executeQuery(sql2, [org: org, at: at, ctxOrg: contextService.getOrg()])
                             addresses.each{ addr ->
                                 String a1 = [
                                         addr.name,

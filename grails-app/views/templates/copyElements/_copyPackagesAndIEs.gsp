@@ -48,7 +48,6 @@
             </thead>
             <tbody class="top aligned">
             <tr data-element="subscription.takePackages">
-                <g:set var="excludes" value="${[PendingChangeConfiguration.PACKAGE_PROP, PendingChangeConfiguration.PACKAGE_DELETED]}"/>
                 <td data-element="source">
                     <strong>${message(code: 'subscription.packages.label')}: ${sourceObject.packages?.size()}</strong>
                     <g:each in="${sourceObject.packages?.sort { it.pkg.name.toLowerCase() }}" var="sp">
@@ -63,6 +62,14 @@
                                 <div>
                                     <g:link controller="subscription" action="index" id="${sourceObject.id}"><strong>${message(code: 'issueEntitlement.countSubscription')}</strong> ${sp.getIssueEntitlementCountOfPackage()}</g:link>
                                 </div>
+                                <g:if test="${contextService.getOrg().isCustomerType_Consortium() && !isRenewSub}">
+                                    <div class="ui checkbox childLevel">
+                                        <g:checkBox name="subscription.takePackageIdsForChild"
+                                                    value="${genericOIDService.getOID(sp)}" data-pkgid="${sp.id}"
+                                                    data-action="copy" checked="${true}"/>
+                                    </div>
+                                    <g:message code="subscription.packages.takeForInstitutions"/>
+                                </g:if>
                             </div>
                             %{--COPY:--}%
 
@@ -281,11 +288,13 @@
                 if (elem.checked) {
                     $source.addClass('willStay');
                     $target.addClass('willStay');
+                    $('.table tr[data-element="subscription.' + identifier + '"] td[data-element="source"] div.la-copyPack-item[data-oid="' + elem.value + '"] .childLevel').checkbox('check');
                 } else {
                     $source.removeClass('willStay');
                     if (JSPC.app.subCopyController.getNumberOfCheckedCheckboxes('subscription.' + counterId) < 1) {
                         $target.removeClass('willStay');
                     }
+                    $('.table tr[data-element="subscription.' + identifier + '"] td[data-element="source"] div.la-copyPack-item[data-oid="' + elem.value + '"] .childLevel').checkbox('uncheck');
                 }
             },
             _handleDeleted: function(elem, identifier) {

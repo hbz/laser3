@@ -858,8 +858,9 @@ class CopyElementsService {
                             deletePackages(packagesToDelete, targetObject, flash)
                         }
                         if (params.subscription?.takePackageIds) {
-                            List<SubscriptionPackage> packagesToTake = params.list('subscription.takePackageIds').collect { genericOIDService.resolveOID(it) }
-                            copyPackages(packagesToTake, targetObject, flash)
+                            List<SubscriptionPackage> packagesToTake = params.list('subscription.takePackageIds').collect { genericOIDService.resolveOID(it) },
+                            packagesToTakeForChildren = params.list('subscription.takePackageIdsForChild').collect { genericOIDService.resolveOID(it) }
+                            copyPackages(packagesToTake, packagesToTakeForChildren, targetObject, flash)
                         }
 
                         if (params.subscription?.takeTitleGroups) {
@@ -1548,7 +1549,7 @@ class CopyElementsService {
      * @param flash the message container
      * @return true if the linking was successful, false otherwise
      */
-    boolean copyPackages(List<SubscriptionPackage> packagesToTake, Object targetObject, def flash) {
+    boolean copyPackages(List<SubscriptionPackage> packagesToTake, List<SubscriptionPackage> packagesToTakeForChildren, Object targetObject, def flash) {
         Locale locale = LocaleUtils.getCurrentLocale()
         packagesToTake.each { SubscriptionPackage subscriptionPackage ->
             if (!SubscriptionPackage.findByPkgAndSubscription(subscriptionPackage.pkg, targetObject)) {
@@ -1574,6 +1575,14 @@ class CopyElementsService {
                     Sql sql = GlobalService.obtainSqlConnection()
                     //List subscriptionHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where tipp_pkg_fk = :pkgId and ie_subscription_fk = :source", [pkgId: newSubscriptionPackage.pkg.id, source: subscriptionPackage.subscription.id])
                     packageService.bulkAddHolding(sql, targetObject.id, newSubscriptionPackage.pkg.id, targetObject.hasPerpetualAccess, null, subscriptionPackage.subscription.id)
+                    if(subscriptionPackage in packagesToTakeForChildren) {
+                        Subscription.findAllByInstanceOf(targetObject).each { Subscription child ->
+                            if(!SubscriptionPackage.findByPkgAndSubscription(subscriptionPackage.pkg, child)) {
+                                SubscriptionPackage childSp = new SubscriptionPackage(pkg: subscriptionPackage.pkg, subscription: child).save()
+                                packageService.bulkAddHolding(sql, child.id, childSp.pkg.id, child.hasPerpetualAccess, targetObject.id)
+                            }
+                        }
+                    }
                     /*
                     List<IssueEntitlement> targetIEs = subscriptionService.getIssueEntitlements(targetObject)
                             //.findAll { it.tipp.id == ie.tipp.id && it.status != RDStore.TIPP_STATUS_REMOVED }

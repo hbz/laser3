@@ -58,6 +58,9 @@ class IconTagLib {
             case 'journal':
                 icon = 'bordered la-object-journal'
                 break
+            case 'marker':
+                icon = 'bordered inverted purple bookmark la-object-extended'
+                break
             case 'search':
                 icon = 'search'
                 break
@@ -280,5 +283,29 @@ class IconTagLib {
                 out << markup
             }
         }
+    }
+
+    // <ui:myIcon type="wekbchanges" color="optional" />
+
+    def markerIcon = { attrs, body ->
+        String tooltip = attrs.type ? message(code: 'marker.' + attrs.type ) : message(code: 'marker.label')
+
+        out << '<span class="la-popup-tooltip la-delay" data-content="' + tooltip + '">'
+        out << '<i class="icon ' + (attrs.color ? attrs.color + ' ' : '') + 'bookmark"></i>'
+        out << '</span>'
+    }
+
+    // <ui:myXIcon tooltip="optional" color="optional" />
+
+    def myXIcon = { attrs, body ->
+
+        if (attrs.tooltip) {
+            out << '<span class="la-popup-tooltip la-delay" data-content="' + attrs.tooltip + '">'
+        } else {
+            out << '<span>'
+        }
+
+        out << '<i class="icon ' + (attrs.color ? attrs.color + ' ' : '') + 'star"></i>'
+        out << '</span>'
     }
 }

@@ -10,10 +10,11 @@ import de.laser.base.AbstractI10n
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.cache.EhcacheWrapper
 import de.laser.cache.SessionCacheWrapper
+import de.laser.convenience.Marker
 import de.laser.ctrl.SubscriptionControllerService
-import de.laser.finance.PriceItem
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
+import de.laser.interfaces.MarkerSupport
 import de.laser.interfaces.ShareSupport
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
@@ -31,7 +32,6 @@ import de.laser.utils.SwissKnife
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
-import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.http.HttpStatus
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -63,6 +63,7 @@ class AjaxController {
     PendingChangeService pendingChangeService
     PropertyService propertyService
     SubscriptionControllerService subscriptionControllerService
+    SubscriptionService subscriptionService
     UserService userService
 
     def refdata_config = [
@@ -586,9 +587,9 @@ class AjaxController {
         def owner  = genericOIDService.resolveOID(params.parent)
         RefdataValue rel = RefdataValue.get(params.orm_orgRole)
 
-        def orgIds = params.list('orm_orgOid')
-        orgIds.each{ oid ->
-            Org org_to_link = (Org) genericOIDService.resolveOID(oid)
+        def orgIds = params.list('selectedOrgs')
+        orgIds.each{ orgId ->
+            Org org_to_link = Org.get(orgId)
             boolean duplicateOrgRole = false
 
             if(params.recip_prop == 'sub') {
@@ -601,7 +602,7 @@ class AjaxController {
                 duplicateOrgRole = OrgRole.findAllByLicAndRoleTypeAndOrg(owner, rel, org_to_link) ? true : false
             }
             else if(params.recip_prop == 'title') {
-                duplicateOrgRole = OrgRole.findAllByTitleAndRoleTypeAndOrg(owner, rel, org_to_link) ? true : false
+                duplicateOrgRole = OrgRole.findAllByTippAndRoleTypeAndOrg(owner, rel, org_to_link) ? true : false
             }
 
             if(! duplicateOrgRole) {
@@ -1135,6 +1136,35 @@ class AjaxController {
         }
     }
 
+    @Transactional
+    def toggleMarker() {
+
+        MarkerSupport obj   = genericOIDService.resolveOID(params.oid) as MarkerSupport
+        User user           = contextService.getUser()
+        Marker.TYPE type    = Marker.TYPE.WEKB_CHANGES // TODO
+
+        Map attrs = [ type: type, ajax: true ]
+
+        if (obj instanceof Org) {
+            attrs.org = obj
+        }
+        else if (obj instanceof Package) {
+            attrs.package = obj
+        }
+        else if (obj instanceof Platform) {
+            attrs.platform = obj
+        }
+
+        if (obj.isMarked(user, type)) {
+            obj.removeMarker(user, type)
+        }
+        else {
+            obj.setMarker(user, type)
+        }
+
+        render ui.markerSwitch(attrs, null)
+    }
+
     /**
      * Switches between the member subscription visiblity; is applicable for administrative subscriptions only. A SUBCRIBER_CONS_HIDDEN cannot see nor access the given subscription
      * @see de.laser.interfaces.CalculatedType#TYPE_ADMINISTRATIVE
@@ -1232,48 +1262,11 @@ class AjaxController {
      * whether the changes should be automatically applied or only after confirmation
      */
     @Secured(['ROLE_USER'])
-    @Transactional
     def toggleIdentifierAuditConfig() {
         def owner = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
         if(formService.validateToken(params)) {
             Identifier identifier  = Identifier.get(params.id)
-
-            Org contextOrg = contextService.getOrg()
-            if (AuditConfig.getConfig(identifier, AuditConfig.COMPLETE_OBJECT)) {
-                AuditConfig.removeAllConfigs(identifier)
-
-                Identifier.findAllByInstanceOf(identifier).each{ Identifier id ->
-                    id.delete()
-                }
-            }
-            else {
-                String memberType
-                    if(owner instanceof Subscription)
-                        memberType = 'sub'
-                    else if(owner instanceof License)
-                        memberType = 'lic'
-                if(memberType) {
-                    owner.getClass().findAllByInstanceOf(owner).each { member ->
-                        Identifier existingIdentifier = Identifier.executeQuery('select id from Identifier id where id.'+memberType+' = :member and id.instanceOf = :id', [member: member, id: identifier])[0]
-                        if (! existingIdentifier) {
-                            //List<Identifier> matchingProps = Identifier.findAllByOwnerAndTypeAndTenant(member, property.type, contextOrg)
-                            List<Identifier> matchingIds = Identifier.executeQuery('select id from Identifier id where id.'+memberType+' = :member and id.value = :value and id.ns = :ns',[member: member, value: identifier.value, ns: identifier.ns])
-                            // unbound prop found with matching type, set backref
-                            if (matchingIds) {
-                                matchingIds.each { Identifier memberId ->
-                                    memberId.instanceOf = identifier
-                                    memberId.save()
-                                }
-                            }
-                            else {
-                                // no match found, creating new prop with backref
-                                Identifier.constructWithFactoryResult([value: identifier.value, note: identifier.note, parent: identifier, reference: member, namespace: identifier.ns])
-                            }
-                        }
-                    }
-                    AuditConfig.addConfig(identifier, AuditConfig.COMPLETE_OBJECT)
-                }
-            }
+            subscriptionService.inheritIdentifier(owner, identifier)
         }
         render template: "/templates/meta/identifierList", model: identifierService.prepareIDsForTable(owner)
     }
@@ -1718,7 +1711,10 @@ class AjaxController {
 
         if (owner && namespace && value) {
             FactoryResult fr = Identifier.constructWithFactoryResult([value: value, reference: owner, note: params.note.trim(), namespace: namespace])
-
+            if(Boolean.valueOf(params.auditNewIdentifier)) {
+                Identifier parentIdentifier = fr.result as Identifier
+                subscriptionService.inheritIdentifier(owner, parentIdentifier)
+            }
             fr.setFlashScopeByStatus(flash)
         }
         redirect(url: request.getHeader('referer'))
@@ -1729,7 +1725,9 @@ class AjaxController {
      */
     @Secured(['ROLE_USER'])
     def deleteIdentifier() {
+        Identifier target = genericOIDService.resolveOID(params.target)
         identifierService.deleteIdentifier(params.owner,params.target)
+        flash.message = message(code: 'identifier.delete.success', args: [target.ns.ns, target.value])
         redirect(url: request.getHeader('referer'))
     }
 

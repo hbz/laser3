@@ -143,7 +143,7 @@
                     <g:elseif test="${event in PendingChangeConfiguration.COST_ITEM_CHANGES}">
                         <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:entry.subscription.id]}">${entry.subscription.name} (${entry.subscription.status.getI10n("value")})</g:link>
                     </g:elseif>
-                    <g:elseif test="${event == PendingChangeConfiguration.NEW_SUBSCRIPTION}">
+                    <g:elseif test="${event in [PendingChangeConfiguration.NEW_SUBSCRIPTION, PendingChangeConfiguration.SUBSCRIPTION_RENEWED]}">
                         <div class="right aligned wide column">
                             <g:link controller="subscription" action="show" id="${entry.subscription.id}">
                                 ${entry.subscription.name}
@@ -158,13 +158,13 @@
                     <g:else>
                         <g:message code="${event}" args="${entry.args}"/>
                     </g:else>
-                    <g:if test="${event == PendingChangeConfiguration.NEW_SUBSCRIPTION}">
+                    <%--<g:if test="${event == PendingChangeConfiguration.NEW_SUBSCRIPTION}">
                         <div class="right aligned wide column">
                             <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[sourceObjectId: entry.source, targetObjectId: entry.target]}">
                                 <g:message code="myinst.copyMyElements"/>
                             </g:link>
                         </div>
-                    </g:if>
+                    </g:if>--%>
                 </div><!-- .column -->
             </div><!-- .row -->
         </g:each>

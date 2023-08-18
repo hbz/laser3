@@ -64,6 +64,8 @@ class SystemEvent {
             'GSSS_OAI_WARNING'              : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.WARNING],
             'LIC_UPDATE_SERVICE_PROCESSING' : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'LOGIN_WARNING'                 : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.WARNING],
+            'MULE_START'                    : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
+            'MULE_COMPLETE'                 : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'REMOVE_TITLE_JOB_START'        : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'REMOVE_TITLE_JOB_COMPLETE'     : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'STATS_SYNC_JOB_START'          : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
