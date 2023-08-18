@@ -144,9 +144,15 @@
                             String value
                             if(idSuffix != 'bulk') {
                                 if(costItem) {
-                                    value = costItem.currencyRate.toString().replace('.', ',')
+                                    if(contextService.getUser().getSettingsValue(UserSetting.KEYS.LANGUAGE,null).value == 'de')
+                                        value = costItem.currencyRate.toString().replace('.', ',')
+                                    else value = costItem.currencyRate.toString()
                                 }
-                                else value = '1,0'
+                                else {
+                                    if(contextService.getUser().getSettingsValue(UserSetting.KEYS.LANGUAGE,null).value == 'de')
+                                        value = '1,0'
+                                    else value = '1.0'
+                                }
                             }
                         %>
                         <input title="${g.message(code:'financials.addNew.currencyRate')}" type="text" class="calc la-82Percent"
