@@ -63,6 +63,7 @@ class AjaxController {
     PendingChangeService pendingChangeService
     PropertyService propertyService
     SubscriptionControllerService subscriptionControllerService
+    SubscriptionService subscriptionService
     UserService userService
 
     def refdata_config = [
@@ -1261,48 +1262,11 @@ class AjaxController {
      * whether the changes should be automatically applied or only after confirmation
      */
     @Secured(['ROLE_USER'])
-    @Transactional
     def toggleIdentifierAuditConfig() {
         def owner = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
         if(formService.validateToken(params)) {
             Identifier identifier  = Identifier.get(params.id)
-
-            Org contextOrg = contextService.getOrg()
-            if (AuditConfig.getConfig(identifier, AuditConfig.COMPLETE_OBJECT)) {
-                AuditConfig.removeAllConfigs(identifier)
-
-                Identifier.findAllByInstanceOf(identifier).each{ Identifier id ->
-                    id.delete()
-                }
-            }
-            else {
-                String memberType
-                    if(owner instanceof Subscription)
-                        memberType = 'sub'
-                    else if(owner instanceof License)
-                        memberType = 'lic'
-                if(memberType) {
-                    owner.getClass().findAllByInstanceOf(owner).each { member ->
-                        Identifier existingIdentifier = Identifier.executeQuery('select id from Identifier id where id.'+memberType+' = :member and id.instanceOf = :id', [member: member, id: identifier])[0]
-                        if (! existingIdentifier) {
-                            //List<Identifier> matchingProps = Identifier.findAllByOwnerAndTypeAndTenant(member, property.type, contextOrg)
-                            List<Identifier> matchingIds = Identifier.executeQuery('select id from Identifier id where id.'+memberType+' = :member and id.value = :value and id.ns = :ns',[member: member, value: identifier.value, ns: identifier.ns])
-                            // unbound prop found with matching type, set backref
-                            if (matchingIds) {
-                                matchingIds.each { Identifier memberId ->
-                                    memberId.instanceOf = identifier
-                                    memberId.save()
-                                }
-                            }
-                            else {
-                                // no match found, creating new prop with backref
-                                Identifier.constructWithFactoryResult([value: identifier.value, note: identifier.note, parent: identifier, reference: member, namespace: identifier.ns])
-                            }
-                        }
-                    }
-                    AuditConfig.addConfig(identifier, AuditConfig.COMPLETE_OBJECT)
-                }
-            }
+            subscriptionService.inheritIdentifier(owner, identifier)
         }
         render template: "/templates/meta/identifierList", model: identifierService.prepareIDsForTable(owner)
     }
@@ -1747,7 +1711,10 @@ class AjaxController {
 
         if (owner && namespace && value) {
             FactoryResult fr = Identifier.constructWithFactoryResult([value: value, reference: owner, note: params.note.trim(), namespace: namespace])
-
+            if(Boolean.valueOf(params.auditNewIdentifier)) {
+                Identifier parentIdentifier = fr.result as Identifier
+                subscriptionService.inheritIdentifier(owner, parentIdentifier)
+            }
             fr.setFlashScopeByStatus(flash)
         }
         redirect(url: request.getHeader('referer'))
