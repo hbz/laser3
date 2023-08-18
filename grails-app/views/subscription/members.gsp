@@ -171,7 +171,7 @@
                                 </span>
                             </g:if>
 
-                            <ui:customerTypeIcon org="${subscr}" />
+                            <ui:instProIcon org="${subscr}" />
 
                             <div class="ui list">
                                 <g:each in="${Person.getPublicByOrgAndFunc(subscr, 'General contact person')}" var="gcp">

@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.auth.Role
+import de.laser.auth.User
 import de.laser.storage.RDStore
 import de.laser.titles.BookInstance
 import de.laser.titles.DatabaseInstance
@@ -232,7 +233,7 @@ class IconTagLib {
         out << '</span>'
     }
 
-    def customerTypeIcon = { attrs, body ->
+    def instProIcon = { attrs, body ->
         if (attrs.org && attrs.org.isCustomerType_Inst_Pro()) {
             out << '<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="' + attrs.org.getCustomerTypeI10n() + '">'
             if (attrs.cssClass) {
@@ -281,44 +282,74 @@ class IconTagLib {
         }
     }
 
-    // <ui:userInstRoleIcon color="blue" />
+    // <ui:userInstRoleIcon user="${contextService.getUser()}" color="blue" />
 
-    def userInstRoleIcon = {attrs, body ->
+    def userAffiliationIcon = {attrs, body ->
         String icon = 'user slash'
+        String color = 'grey'
+        String text = '?'
 
-        Role fr = contextService.getUser().formalRole
+        Role fr = (attrs.user as User).formalRole
         if (fr) {
-            if (fr.authority == Role.INST_USER)   { icon = 'user' }
-            if (fr.authority == Role.INST_EDITOR) { icon = 'user edit' }
-            if (fr.authority == Role.INST_ADM)    { icon = 'user shield' }
+            if (fr.authority == Role.INST_USER) {
+                icon = 'user'
+                text = message(code: 'cv.roles.INST_USER')
+            }
+            else if (fr.authority == Role.INST_EDITOR) {
+                icon = 'user edit'
+                text = message(code: 'cv.roles.INST_EDITOR')
+            }
+            else if (fr.authority == Role.INST_ADM) {
+                icon = 'user shield'
+                text = message(code: 'cv.roles.INST_ADM')
+            }
         }
 
-        out << '<i class="' + icon + (attrs.color ? '' + attrs.color : '') + '"></i>'
-    }
-
-    // <ui:customerTypeIcon_tmp />
-
-    def customerTypeIcon_tmp = {attrs, body ->
-        String icon = 'icon circle outline'
-        Org org = contextService.getOrg()
-
-        if (org.isCustomerType_Consortium_Pro()) {
-            icon = 'icon trophy'
-        }
-        else if (org.isCustomerType_Consortium_Basic()) {
-
-        }
-        else if (org.isCustomerType_Inst_Pro()) {
-            icon = 'icon trophy'
-        }
-        else if (org.isCustomerType_Inst()) {
-
+        if (attrs.label && attrs.label.equalsIgnoreCase('true')) {
+            out << '<div class="ui label">'
+            out << '<i class="icon ' + icon + ' ' + color + '"></i> ' + text
+            out << '</div>'
         }
         else {
+            out << '<i class="icon ' + icon + ' ' + color + '"></i>'
+        }
+    }
 
+    // <ui:customerTypeIcon org="${contextService.getOrg()}" />
+
+    def customerTypeIcon = {attrs, body ->
+        String icon  = 'circle outline'
+        String color = 'grey'
+        String text  = '?'
+        Org org = attrs.org as Org
+
+        if (org.isCustomerType_Consortium_Pro()) {
+            icon  = 'trophy'
+            color = 'teal'
+            text  = Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_PRO).getI10n('authority')
+        }
+        else if (org.isCustomerType_Consortium_Basic()) {
+            color = 'teal'
+            text  = Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_BASIC).getI10n('authority')
+        }
+        else if (org.isCustomerType_Inst_Pro()) {
+            icon  = 'trophy'
+            color = 'blue'
+            text  = Role.findByAuthority(CustomerTypeService.ORG_INST_PRO).getI10n('authority')
+        }
+        else if (org.isCustomerType_Inst()) {
+            color = 'blue'
+            text  = Role.findByAuthority(CustomerTypeService.ORG_INST_BASIC).getI10n('authority')
         }
 
-        out << '<i class="' + icon + (attrs.color ? '' + attrs.color : '') + '"></i>'
+        if (attrs.label && attrs.label.equalsIgnoreCase('true')) {
+            out << '<div class="ui label ' + color + '">'
+            out << '<i class="icon ' + icon + '"></i> ' + text
+            out << '</div>'
+        }
+        else {
+            out << '<i class="icon ' + icon + '"></i> '
+        }
     }
 
     // <ui:myIcon type="wekbchanges" color="optional" />

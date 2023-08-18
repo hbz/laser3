@@ -124,54 +124,35 @@
 </g:if>
 <g:else>%{-- DEMO --}%
 
-    <nav class="la-cb-wrapper">
+    <nav class="la-cb-wrapper" aria-label="${message(code:'wcag.label.modeNavigation')}">
         <div class="ui container three column grid">
 
             <div class="ten wide column la-cb-context">
-
-                <g:if test="${contextUser}">
-                    <%
-                        String icon = 'user slash'
-                        Role fr = contextService.getUser().formalRole
-                        if (fr) {
-                            if (fr.authority == Role.INST_USER)   { icon = 'user' }
-                            if (fr.authority == Role.INST_EDITOR) { icon = 'user edit' }
-                            if (fr.authority == Role.INST_ADM)    { icon = 'user shield' }
-                        }
-                        println '<i class="icon blue ' + icon + '"></i>'
-                    %>
-                    &nbsp;
-                    &nbsp;
-                </g:if>
-
-                <g:if test="${contextOrg}">
-                    ${contextOrg.name}
-                    <g:if test="${currentServer == AppUtils.LOCAL}">
-                        - ${contextOrg.getCustomerTypeI10n()}
-                    %{--                    - ${contextUser.formalRole?.getI10n('authority')}--}%
-                    </g:if>
-                </g:if>
-
+                ${contextOrg?.name}
+                &nbsp; / &nbsp;
+                <ui:customerTypeIcon org="${contextOrg}" label="false"/>
+                &nbsp; / &nbsp;
+                <ui:userAffiliationIcon user="${contextUser}" label="false"/>
             </div><!-- .la-cb-context -->
 
             <div class="two wide column la-cb-info">
+                <g:set var="infoIconClass" value="circular icon la-popup-tooltip la-delay" />
 
                 <g:if test="${flagContentCache}">
-                    <i class="icon hourglass end la-popup-tooltip la-delay" data-content="${message(code:'statusbar.flagContentCache.tooltip')}" data-position="bottom right" data-variation="tiny"></i>
+                    <i class="${infoIconClass} orange hourglass end" data-content="${message(code:'statusbar.flagContentCache.tooltip')}" data-position="bottom right" data-variation="tiny"></i>
                 </g:if>
                 <g:if test="${flagContentGokb}">
-                    <i class="icon cloud la-popup-tooltip la-delay" data-content="${message(code:'statusbar.flagContentGokb.tooltip')}" data-position="bottom right" data-variation="tiny"></i>
+                    <i class="${infoIconClass} blue cloud" data-content="${message(code:'statusbar.flagContentGokb.tooltip')}" data-position="bottom right" data-variation="tiny"></i>
                 </g:if>
                 <g:if test="${flagContentElasticsearch}">
-                    <i class="icon cloud la-popup-tooltip la-delay" data-content="${message(code:'statusbar.flagContentElasticsearch.tooltip')}" data-position="bottom right" data-variation="tiny"></i>
+                    <i class="${infoIconClass} teal cloud" data-content="${message(code:'statusbar.flagContentElasticsearch.tooltip')}" data-position="bottom right" data-variation="tiny"></i>
                 </g:if>
 
             </div><!-- .la-cb-info -->
 
             <div class="two wide column la-cb-options">
 
-            %{-- edit mode switcher  --}%
-
+                %{-- edit mode switcher  --}%
                 <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription' || controllerName=='license') && actionName=='show' && (editable || contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))}">
                     <div class="item">
                         <g:if test="${contextUser?.getSettingsValue(UserSetting.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES)?.value=='Yes'}">
@@ -187,8 +168,7 @@
                     </div>
                 </g:if>
 
-            %{-- advanced mode switcher  --}%
-
+                %{-- advanced mode switcher  --}%
                 <g:if test="${(params.mode)}">
                     <div class="item">
                         <g:if test="${params.mode=='advanced'}">
@@ -228,8 +208,7 @@
                     </laser:script>
                 </g:if>
 
-            %{-- survey stuff  --}%
-
+                %{-- survey stuff  --}%
                 <g:if test="${controllerName == 'survey' && (actionName == 'currentSurveysConsortia' || actionName == 'workflowsSurveysConsortia')}">
                     <div class="item">
                         <g:if test="${actionName == 'workflowsSurveysConsortia'}">
@@ -244,6 +223,7 @@
                         </g:else>
                     </div>
                 </g:if>
+
                 <g:if test="${(controllerName=='subscription' && actionName=='show') || (controllerName=='dev' && actionName=='frontend')}">
                     <div class="item">
                         <button class="ui icon button la-cb-option-button la-help-panel-button"><i class="info circle icon"></i></button>
@@ -267,43 +247,57 @@
         padding: 0 !important;
         background-color: #d3dae3;
     }
-    .la-cb-wrapper >.container {
+    .la-cb-wrapper > .container {
         margin: 0;
     }
+    .la-cb-wrapper > .container > .column {
+        /*padding-top: 0.5rem !important;*/
+        /*padding-bottom: 0.5rem !important;*/
+    }
+
     .la-cb-context {
         font-family: "Lato", system-ui, -apple-system, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
         font-weight: bold;
-        font-size: 85%;
+        font-size: 90%;
         color: #767676;
+        padding-left: 0 !important;
     }
     .la-cb-info {
     }
     .la-cb-options {
-        padding-top: 6px !important;
-        padding-bottom: 5px !important;
     }
     .la-cb-option-button {
         margin-right: 0 !important;
         margin-left: 2px !important;
-        background-color: #8a8a8a !important;
+        background-color: rgba(0,0,0, 0.1) !important;
     }
     .la-cb-option-button:hover {
         cursor: pointer;
+        background-color: rgba(0,0,0, 0.2) !important;
+    }
+
+    .la-cb-option-button i.icon {
+        color: #004678 !important;
     }
     .la-cb-actions {
-        padding-top: 6px !important;
-        padding-bottom: 5px !important;
+        padding-right: 0 !important;
     }
     .la-cb-info, .la-cb-options, .la-cb-actions {
         text-align: right;
+        padding-top: 5px !important;
+        padding-bottom: 5px !important;
     }
     .la-cb-info > .item, .la-cb-options > .item, .la-cb-actions > .item {
         display: inline-block;
     }
+
+    main.ui.container.main {
+        margin-top: 115px !important;
+    }
     </style>
 
-%{--<laser:script file="${this.getGroovyPageFileName()}">--}%
-%{--    $('.la-cb-wrapper .la-cb-actions').append($('nav.buttons'));--}%
-%{--</laser:script>--}%
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('.la-cb-wrapper .la-cb-actions').append($('nav.buttons'));
+</laser:script>
 
 </g:else>
