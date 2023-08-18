@@ -18,12 +18,14 @@ import java.text.SimpleDateFormat
 class TaskController  {
 
     ContextService contextService
-    TaskService taskService
 
 	//-----
 
 	static allowedMethods = [create: 'POST', edit: 'POST', delete: 'POST']
 
+	/**
+	 * Map containing menu alternatives if an unexisting object has been called
+	 */
 	public static final Map<String, String> CHECK404_ALTERNATIVES = [
 			'myInstitution/tasks' : 'menu.institutions.tasks'
 	]

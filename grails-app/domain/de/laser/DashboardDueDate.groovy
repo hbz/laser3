@@ -59,7 +59,6 @@ class DashboardDueDate {
 
             Date date = DashboardDueDate.getDate(obj, responsibleUser)
 
-            //was date != this.dueDateObject; now, comparison makes technically sense. TODO Moe: check if intention is met!
             if(date != this.dueDateObject.date){
                 this.dueDateObject.isDone = false
                 this.isHidden = false

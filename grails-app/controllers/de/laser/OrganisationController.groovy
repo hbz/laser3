@@ -39,7 +39,6 @@ import java.text.SimpleDateFormat
 class OrganisationController  {
 
     AccessPointService accessPointService
-    AccessService accessService
     AddressbookService addressbookService
     ContextService contextService
     DeletionService deletionService
@@ -60,6 +59,9 @@ class OrganisationController  {
 
     //-----
 
+    /**
+     * Map containing menu alternatives if an unexisting object has been called
+     */
     public static final Map<String, String> CHECK404_ALTERNATIVES = [
             'list' : 'menu.public.all_orgs',                // todo: check perms
             'listConsortia' : 'menu.public.all_cons',       // todo: check perms
@@ -83,10 +85,10 @@ class OrganisationController  {
      * returns are possible:
      * @return one of:
      * <ul>
-     *     <li>general: general settings such as GASCO display, customer type or properties</li>
      *     <li>api: API usage related settings such API level, key and password</li>
+     *     <li>ezb: permissions to the Elektronische Zeitschriftenbibliothek (EZB) harvest access</li>
      *     <li>natstat: permissions to the Nationaler Statistikserver harvest access</li>
-     *     <li>oamonitor: permissions to the Open Access harvest access</li>
+     *     <li>oamonitor: permissions to the Open Access Monitor harvest access</li>
      * </ul>
      */
     @DebugInfo(isInstAdm_or_ROLEADMIN = ['FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC'])
@@ -1218,6 +1220,11 @@ class OrganisationController  {
         result
     }
 
+    /**
+     * Call to open the workflows related to the given organisation. If submitted, the workflow is being updated
+     * @return the workflow checklist view
+     * @see de.laser.workflow.WfChecklist
+     */
     @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)

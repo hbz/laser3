@@ -25,6 +25,9 @@ class PlatformController  {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
+    /**
+     * Map containing menu alternatives if an unexisting object has been called
+     */
     public static final Map<String, String> CHECK404_ALTERNATIVES = [
             'list' : 'platforms.all_platforms.label',
             'myInstitution/currentPlatforms' : 'menu.my.platforms'
@@ -299,7 +302,7 @@ class PlatformController  {
     /**
      * Call for linking the platform to an access point.
      * Is a non-modal duplicate of {@link #dynamicApLink()} -
-     * @deprecated use {@link #dynamicApLink} instead
+     * @deprecated use {@link #dynamicApLink()} instead
      */
     @Deprecated
     @DebugInfo(isInstEditor_or_ROLEADMIN = [])
