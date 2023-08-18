@@ -95,9 +95,9 @@
 <br>
 <br>
 
-<ui:modal id="linkToIssueEntitlementGroup" message="issueEntitlementGroup.entitlementsRenew.selected.add"
+<ui:modal id="linkToIssueEntitlementGroup" message="subscription.details.addEntitlements.add_selectedToIssueEntitlementGroup"
           refreshModal="true"
-          msgSave="${g.message(code: 'subscription.details.addEntitlements.add_selectedToIssueEntitlementGroup')}">
+          msgSave="${g.message(code: 'subscription.details.addEntitlements.add_withGroup.confirm')}">
 
     <g:form action="processAddEntitlements" class="ui form">
         <input type="hidden" name="id" value="${subscription.id}"/>
@@ -105,7 +105,7 @@
         <g:hiddenField name="uploadPriceInfo" value="${uploadPriceInfo}"/>
         <g:hiddenField name="process" value="withTitleGroup"/>
 
-        <div class="ui three fields">
+        <div class="ui two fields">
 
             <g:if test="${subscription.ieGroups}">
                 <div class="field">
@@ -124,12 +124,9 @@
                 </div>
             </g:if>
 
-            <div class="field"></div>
-
             <div class="field">
                 <label for="issueEntitlementGroup">${message(code: 'issueEntitlementGroup.entitlementsRenew.selected.new')}:</label>
-                <input type="text" name="issueEntitlementGroupNew"
-                       value="Phase ${IssueEntitlementGroup.findAllBySubAndNameIlike(subscription, 'Phase').size() + 1}">
+                <input type="text" name="issueEntitlementGroupNew" value="">
             </div>
 
         </div>
