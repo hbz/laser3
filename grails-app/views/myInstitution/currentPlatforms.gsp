@@ -24,7 +24,7 @@
             <th>${message(code:'myinst.currentPlatforms.assignedSubscriptions')}</th>
             <g:if test="${AppUtils.isPreviewOnly()}">
                 <th class="center aligned">
-                    <ui:markerIcon type="wekbchanges" />
+                    <ui:markerIcon type="WEKB_CHANGES" />
                 </th>
             </g:if>
             <th>${message(code:'org.isWekbCurated.label')}</th>
@@ -83,7 +83,7 @@
                 <g:if test="${AppUtils.isPreviewOnly()}">
                     <td class="center aligned">
                         <g:if test="${platformInstance.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
-                            <ui:markerIcon type="wekbchanges" color="purple" />
+                            <ui:markerIcon type="WEKB_CHANGES" color="purple" />
                         </g:if>
                     </td>
                 </g:if>
