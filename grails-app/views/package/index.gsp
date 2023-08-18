@@ -45,7 +45,7 @@
                     <g:sortableColumn property="lastUpdatedDisplay" title="${message(code: 'package.lastUpdated.label')}" params="${params}" defaultOrder="desc"/>
                     <g:if test="${AppUtils.isPreviewOnly()}">
                         <th class="center aligned">
-                            <ui:markerIcon type="wekbchanges" />
+                            <ui:markerIcon type="WEKB_CHANGES" />
                         </th>
                     </g:if>
                     <sec:ifAllGranted roles="ROLE_YODA">
@@ -148,7 +148,7 @@
                         <g:if test="${AppUtils.isPreviewOnly()}">
                             <td class="center aligned">
                                 <g:if test="${pkg && pkg.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
-                                    <ui:markerIcon type="wekbchanges" color="purple" />
+                                    <ui:markerIcon type="WEKB_CHANGES" color="purple" />
                                 </g:if>
                             </td>
                         </g:if>

@@ -95,6 +95,6 @@ class AppUtils {
     // --
 
     static boolean isPreviewOnly() {
-        getCurrentServer() in [LOCAL, DEV]
+        BeanStore.getContextService().getUser().isYoda() || (getCurrentServer() in [LOCAL, DEV])
     }
 }

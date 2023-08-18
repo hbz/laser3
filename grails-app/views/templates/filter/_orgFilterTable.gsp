@@ -188,7 +188,7 @@
 
             <g:if test="${tmplConfigItem.equalsIgnoreCase('marker') && AppUtils.isPreviewOnly()}">
                 <th class="center aligned">
-                    <ui:markerIcon type="wekbchanges" />
+                    <ui:markerIcon type="WEKB_CHANGES" />
                 </th>
             </g:if>
 
@@ -938,7 +938,7 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('marker') && AppUtils.isPreviewOnly()}">
                 <td class="center aligned">
                     <g:if test="${org.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
-                        <ui:markerIcon type="wekbchanges" color="purple" />
+                        <ui:markerIcon type="WEKB_CHANGES" color="purple" />
                     </g:if>
                 </td>
             </g:if>
