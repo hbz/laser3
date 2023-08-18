@@ -13,7 +13,6 @@ import grails.plugin.springsecurity.annotation.Secured
 class PendingChangeController  {
 
     ContextService contextService
-    GenericOIDService genericOIDService
     PendingChangeService pendingChangeService
 
     /**

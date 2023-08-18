@@ -112,6 +112,9 @@ class ServerCodesController {
         render view:'unavailable', model: result
     }
 
+    /**
+     * Fallback for every other failure showing status 404
+     */
     def fallback() {
         log.debug 'ServerCodesController.fallback: ' + request.getRequestURL()
 

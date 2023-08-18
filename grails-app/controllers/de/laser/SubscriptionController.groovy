@@ -33,7 +33,6 @@ import java.time.Year
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SubscriptionController {
 
-    AccessPointService accessPointService
     ContextService contextService
     CopyElementsService copyElementsService
     CustomWkhtmltoxService wkhtmltoxService
@@ -53,6 +52,9 @@ class SubscriptionController {
 
     //-----
 
+    /**
+     * Map containing menu alternatives if an unexisting object has been called
+     */
     public static final Map<String, String> CHECK404_ALTERNATIVES = [
             'myInstitution/currentSubscriptions' : 'myinst.currentSubscriptions.label'
     ]
@@ -113,6 +115,10 @@ class SubscriptionController {
         }
     }
 
+    /**
+     * Call to open the subscription transfer steps to this subscription
+     * @return the listing of the transfer steps for this subscription
+     */
     @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)

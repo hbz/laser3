@@ -28,6 +28,9 @@ class UserController {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: ['GET', 'POST']]
 
+    /**
+     * Map containing menu alternatives if an unexisting object has been called
+     */
     public static final Map<String, String> CHECK404_ALTERNATIVES = [ 'list' : 'menu.institutions.users' ]
 
     //-----

@@ -13,14 +13,12 @@ import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import grails.converters.JSON
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.springframework.context.MessageSource
 
 import javax.servlet.ServletOutputStream
-import java.nio.charset.Charset
 import java.text.SimpleDateFormat
 import java.util.concurrent.ExecutorService
 
@@ -31,7 +29,6 @@ import java.util.concurrent.ExecutorService
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class PackageController {
 
-    AccessService accessService
     AddressbookService addressbookService
     AuditService auditService
     ContextService contextService
@@ -46,13 +43,15 @@ class PackageController {
     PackageService packageService
     SubscriptionService subscriptionService
     ExportClickMeService exportClickMeService
-    //TaskService taskService
     YodaService yodaService
 
     //-----
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
+    /**
+     * Map containing menu alternatives if an unexisting object has been called
+     */
     public static final Map<String, String> CHECK404_ALTERNATIVES = [
             'index' : 'package.show.all',
             'list' : 'myinst.packages',
@@ -337,8 +336,12 @@ class PackageController {
     /**
      * Call to show all current titles in the package. The entitlement holding may be shown directly as HTML
      * or exported as KBART (<a href="https://www.niso.org/standards-committees/kbart">Knowledge Base and related tools</a>) file, CSV file or Excel worksheet
+     * KBART files may take time to be prepared; therefor the download is not triggered by this method because te loading would generate a 502 timeout. Instead, a
+     * file is being prepared and written to the file storage and a download link is being generated which delivers the file after its full generation
      * @return a HTML table showing the holding or the holding rendered as KBART or Excel worksheet
      * @see TitleInstancePackagePlatform
+     * @see GlobalService#obtainFileStorageLocation()
+     * @see #downloadKBART()
      */
     @Secured(['ROLE_USER'])
     @Check404()
@@ -452,6 +455,13 @@ class PackageController {
         }
     }
 
+    /**
+     * This helper method calls a prepared output file to download. Because of bulk holdings (> 1000000 titles),
+     * their generation takes too much time before the server generates a timeout. Therefor, the files have to be
+     * prepared asynchronously
+     * @return a downloadable file stream, providing a previously generated file
+     * @see #current()
+     */
     @Secured(['ROLE_USER'])
     def downloadKBART() {
         byte[] output = []
