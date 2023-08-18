@@ -40,6 +40,12 @@
                             <label for="note">${message(code:'default.note.label')}</label>
                             <input name="note" id="note" type="text" class="ui" />
                         </div>
+                        <g:if test="${institution.isCustomerType_Consortium()}">
+                            <input name="auditNewIdentifier" id="auditNewIdentifier" type="hidden" value="false"/>
+                            <button id="auditNewIdentifierToggle" data-content="${message(code: 'property.audit.off.tooltip')}" class="ui icon blue button la-modern-button la-audit-button la-popup-tooltip la-delay">
+                                <i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash"></i>
+                            </button>
+                        </g:if>
                         <div class="right aligned field">
                             <label>&nbsp;</label>
                             <button type="submit" class="ui button">${message(code:'default.button.add.label')}</button>
@@ -55,6 +61,24 @@
     <g:if test="${flash.message?.contains(message(code:'identifier.label'))}">
         $('#identifierAccordion').accordion('open', 0);
     </g:if>
+
+    $("#auditNewIdentifierToggle").click(function(e) {
+        e.preventDefault();
+        let inputVal = $("#auditNewIdentifier").val();
+        let button = $(this);
+        let icon = $(this).find('i');
+        button.toggleClass('blue').toggleClass('green');
+        if(inputVal === 'true') {
+            $("#auditNewIdentifier").val('false');
+            icon.addClass('la-thumbtack slash').removeClass('thumbtack');
+            button.attr('data-content', "${message(code: 'property.audit.off.tooltip')}");
+        }
+        else {
+            $("#auditNewIdentifier").val('true');
+            icon.removeClass('la-thumbtack slash').addClass('thumbtack');
+            button.attr('data-content', "${message(code: 'property.audit.on.tooltip')}");
+        }
+    });
 </laser:script>
 
 <div class="la-metabox-spacer"></div>
