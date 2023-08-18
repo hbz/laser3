@@ -5,7 +5,7 @@
 
     <div id="wekb-menu" style="margin:1em 0 2em 0">
         <div style="margin:1em 0;padding:0 1em; text-align:right">
-            <div class="ui labels">
+            <div class="ui large labels">
                 <a href="#" id="wekb-menu-trigger" class="ui label"><i class="icon blue la-gokb"></i>&nbsp;We:kb-News</a>
                 <g:if test="${wekbChanges.counts.my > 0}">
                     <a href="#" class="ui icon label la-popup-tooltip la-delay wekb-flyout-trigger" data-preset="all,my"
@@ -262,7 +262,7 @@
                                 <i class="icon fake"></i>
                             </g:else>
                             <g:if test="${obj.uuid in cfg[1].marker}">
-                                <ui:markerIcon type="wekbchanges" color="purple" />
+                                <ui:markerIcon type="WEKB_CHANGES" color="purple" />
                             </g:if>
                             <g:else>
                                 <i class="icon fake"></i>

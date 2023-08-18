@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      18.08.2023  rc-3.2  3.2.3       Andreas Bug         Trennung von privaten und öffentlichen Adressen in der API-Ausgabe
+
 5233    16.08.2023  rc-3.2  3.2.3       Andreas Feature     Identifikatorenpanel klappt nicht mehr zu bei Änderungen
 
 5232    15.08.2023  rc-3.2  3.2.3       Andreas Feature     Entfernen allgemeiner Plattformmerkmale, private Plattformmerkmale können hinzugefügt werden

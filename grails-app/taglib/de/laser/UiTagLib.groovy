@@ -380,15 +380,15 @@ class UiTagLib {
         String tt_list      = message(code: 'marker.WEKB_CHANGES')
 
         if (attrs.org) {
-            tt = isMarked ? 'Der Anbieter/Lieferant ist auf der ' + tt_list + '. Anklicken um zu entfernen.'
+            tt = isMarked ? 'Der Anbieter/Lieferant ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
                     : 'Anklicken, um den Anbieter/Lieferant auf die ' + tt_list + ' zu setzen.'
         }
         else if (attrs.package) {
-            tt = isMarked ? 'Das Paket ist auf der ' + tt_list + '. Anklicken um zu entfernen.'
+            tt = isMarked ? 'Das Paket ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
                     : 'Anklicken, um das Paket auf die ' + tt_list + ' zu setzen.'
         }
         else if (attrs.platform) {
-            tt = isMarked ? 'Der Plattform ist auf der ' + tt_list + '. Anklicken um zu entfernen.'
+            tt = isMarked ? 'Der Plattform ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
                     : 'Anklicken, um die Plattform auf die ' + tt_list + ' zu setzen.'
         }
 

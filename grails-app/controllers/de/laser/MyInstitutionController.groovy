@@ -2978,7 +2978,8 @@ class MyInstitutionController  {
                         pkg: markerService.getObjectsByClassAndType(Package.class, fMarkerType),
                         plt: markerService.getObjectsByClassAndType(Platform.class, fMarkerType)
                 ],
-                myXMap: markerService.getMyXMap()
+                myXMap:             markerService.getMyXMap(),
+                filterMarkerType:   fMarkerType.value
         ]
         result
     }
