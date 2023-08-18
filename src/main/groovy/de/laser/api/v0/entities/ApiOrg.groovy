@@ -1,5 +1,6 @@
 package de.laser.api.v0.entities
 
+import de.laser.Address
 import de.laser.Combo
 import de.laser.DeletionService
 import de.laser.Identifier
@@ -145,8 +146,22 @@ class ApiOrg {
         result.status         = org.status?.value
 
         // References
+        String adrQuery
+        Map<String, Object> queryParams = [org:org]
+        //tmp fix until API v3.0: if Backoffice calls, only private addresses are being given; else if hbz Digitale Inhalte calls, only public addresses are being given; otherwise only public and tenant == context
+        if(context.globalUID == 'org:1d72afe7-67cb-4676-add0-51d3ae66b1b3') {
+            adrQuery = "select a from Address a where a.org = :org and a.tenant = :context"
+            queryParams.context = context
+        }
+        else if(context.globalUID == 'org:e6be24ff-98e4-474d-9ef8-f0eafd843d17') {
+            adrQuery = "select a from Address a where a.org = :org and a.tenant = null"
+        }
+        else {
+            adrQuery = "select a from Address a where a.org = :org and (a.tenant = :context or a.tenant = null)"
+            queryParams.context = context
+        }
 
-        result.addresses    = ApiCollectionReader.getAddressCollection(org.addresses, ApiReader.NO_CONSTRAINT) // de.laser.Address
+        result.addresses    = ApiCollectionReader.getAddressCollection(Address.executeQuery(adrQuery, queryParams), ApiReader.NO_CONSTRAINT) // de.laser.Address
         result.contacts     = ApiCollectionReader.getContactCollection(org.contacts, ApiReader.NO_CONSTRAINT)  // de.laser.Contact
         result.identifiers  = ApiCollectionReader.getIdentifierCollection(org.ids) // de.laser.Identifier
         result.persons      = ApiCollectionReader.getPrsLinkCollection(
