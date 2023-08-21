@@ -22,7 +22,6 @@ class FinanceControllerService {
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1
 
-    AccessService accessService
     ContextService contextService
     FinanceService financeService
     LinksGenerationService linksGenerationService

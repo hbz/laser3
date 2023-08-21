@@ -22,7 +22,6 @@ class OrganisationControllerService {
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1
 
-    AccessService accessService
     ContextService contextService
     DocstoreService docstoreService
     FormService formService
@@ -152,6 +151,12 @@ class OrganisationControllerService {
 
     //--------------------------------------------- workflows -------------------------------------------------
 
+    /**
+     * Gets the workflows linked to the given organisation
+     * @param controller the controller instance
+     * @param params the request parameter map
+     * @return OK if the retrieval was successful, ERROR otherwise
+     */
     Map<String,Object> workflows(OrganisationController controller, GrailsParameterMap params) {
         Map<String, Object> result = getResultGenericsAndCheckAccess(controller, params)
 

@@ -29,6 +29,12 @@ class LicenseControllerService {
 
     //--------------------------------------------- workflows -------------------------------------------------
 
+    /**
+     * Gets the workflows linked to the given license
+     * @param controller the controller instance
+     * @param params the request parameter map
+     * @return OK if the retrieval was successful, ERROR otherwise
+     */
     Map<String,Object> workflows(LicenseController controller, GrailsParameterMap params) {
         Map<String, Object> result = getResultGenericsAndCheckAccess(controller, params, AccessService.CHECK_VIEW)
 
