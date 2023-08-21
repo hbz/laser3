@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.CalculatedType;" %>
+<%@ page import="de.laser.utils.AppUtils; de.laser.interfaces.CalculatedType;" %>
 <laser:serviceInjection />
 <g:if test="${isMyPlatform || isMyPkg || isMyOrg}">
 
@@ -13,6 +13,8 @@
     <i class="icon circular star la-objectIsMine la-popup-tooltip la-delay" data-content="${message(code: 'license.relationship.org')}" data-position="left center" data-variation="tiny" ></i>
   </g:if>
 </div>
+
+<g:if test="${! AppUtils.isPreviewOnly()}">
 <laser:script file="${this.getGroovyPageFileName()}">
   $(document).ready(function() {
     $('.la-objectIsMine').visibility({
@@ -22,5 +24,6 @@
     })
   })
 </laser:script>
+</g:if>
 
 </g:if>
