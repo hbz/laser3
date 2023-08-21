@@ -230,6 +230,10 @@ class BootStrapService {
         updateRolePerms(orgConsortiumProRole,    [CustomerTypeService.ORG_CONSORTIUM_PRO, CustomerTypeService.ORG_CONSORTIUM_BASIC])
     }
 
+    /**
+     * Removes the MailSentDisabled system settings and ensures the existence of MaintenanceMode and SystemInsight system settings.
+     * @see SystemSetting
+     */
     void setupSystemSettings() {
 
         SystemSetting mailSent = SystemSetting.findByName('MailSentDisabled')
