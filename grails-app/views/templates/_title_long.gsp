@@ -66,7 +66,7 @@
                data-content="${message(code: 'default.status.label')}"></i>
 
             <div class="content">
-                ${showCompact ? '' : message(code: 'default.status.label') + ':'} ${ie.tipp.status.getI10n('value')}
+                ${showCompact ? '' : message(code: 'default.status.label') + ':'} ${ie.status.getI10n('value')}
             </div>
         </div>
     </g:if>
