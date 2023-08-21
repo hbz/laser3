@@ -12,14 +12,24 @@ import org.apache.http.HttpStatus
 import java.lang.annotation.Annotation
 import java.lang.reflect.Method
 
+/**
+ * This interceptor class handles general checks before any controller call
+ */
 @Slf4j
 class GlobalInterceptor implements grails.artefact.Interceptor {
 
+    /**
+     * defines which controller calls should be caught up, in this case every controller
+     */
     GlobalInterceptor() {
         matchAll()
 //                .excludes(uri: CustomWebSocketMessageBrokerConfig.WS_STOMP + '/**') // websockets
     }
 
+    /**
+     * Performs global checks in order to determine whether the call is valid or not
+     * @return true if the request is valid, false otherwise
+     */
     boolean before() {
         response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate")
         response.setHeader("Pragma", "no-cache")
@@ -32,10 +42,18 @@ class GlobalInterceptor implements grails.artefact.Interceptor {
         _handleCheck404(params) // true | false
     }
 
+    /**
+     * Dummy method stub implementing abstract methods
+     * @return true
+     */
     boolean after() {
         true
     }
 
+    /**
+     * Checks if - in case an ID has been submitted - it is a global UID and the requested global UID points to a valid object
+     * @param params the request parameter map; if found, the requested object is being passed into the parameter map
+     */
     private void _handleGlobalUID(GrailsParameterMap params) {
 
         if (params.id && params.id.contains(':')) {
@@ -65,6 +83,10 @@ class GlobalInterceptor implements grails.artefact.Interceptor {
         }
     }
 
+    /**
+     * Checks if - in case an ID has been submitted - it is a we:kb ID and the requested we:kb ID points to a valid object
+     * @param params the request parameter map; if found, the requested object is being passed into the parameter map
+     */
     private void _handleWekbID(GrailsParameterMap params) {
 
         if (params.id && params.id ==~ /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/) {
@@ -102,12 +124,20 @@ class GlobalInterceptor implements grails.artefact.Interceptor {
         }
     }
 
+    /**
+     * Sets the debug mode flag
+     * @param params the request parameter map in which also the result is being set
+     */
     private void _handleDebugMode(GrailsParameterMap params) {
         if (params.debug) {
             AppUtils.setDebugMode(params.debug)
         }
     }
 
+    /**
+     * Checks if - in case an ID has been submitted - it is a database ID and if an object may be retrieved with it
+     * @param params the request parameter map; if found, the requested object is being passed into the parameter map
+     */
     private boolean _handleCheck404(GrailsParameterMap params) {
 
         if (params.containsKey('id')) {
