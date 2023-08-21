@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5238    21.08.2023  rc-3.2  3.2.4       David   Bug         Nutzer ohne Rolle anlegen unterbinden
+
 5240    21.08.2023  rc-3.2  3.2.4       Andreas Bug         Dauerhafte Titel wurden nicht mit entknüpft
 
 5147    18.08.2023  rc-3.2  3.2.3       Andreas Bug         Titel wurden nicht mit zu Titelgruppe hinzugefügt
