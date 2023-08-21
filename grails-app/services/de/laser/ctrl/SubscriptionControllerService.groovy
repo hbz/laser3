@@ -70,7 +70,6 @@ class SubscriptionControllerService {
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1
 
-    AccessService accessService
     AddressbookService addressbookService
     AuditService auditService
     ContextService contextService
@@ -571,21 +570,29 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Calculates a cost per use for the holding subscribed based on the given statistics data and filter configuration.
+     * The method is under development as for the moment, the concept how cost per use should be calculated is not finalised yet.
+     * The concept underlying the current implementation is as follows:
+     * cf. https://www.o-bib.de/bib/article/view/5521/7935
+     * legacy COUNTER 4 metric types: https://www.niso.org/schemas/sushi/counterElements4_1.xsd
+     * There are calculated:
+     * price/download -> metrics ft_epub, ft_html, ft_pdf, ft_ps, ft_total, sectioned_html, data_set, audio, video, image, multimedia, podcast (COUNTER 4) resp. Total_XYZ_Requests (COUNTER 5)
+     * price/search -> metrics search_reg, search_fed (COUNTER 4) resp. Searches_Regular, Searches_Platform (COUNTER 5)
+     * price/click -> metrics result_click (COUNTER 4) resp. ??? (COUNTER 5)
+     * price/view -> metrics record_view, toc, abstract, reference (COUNTER 4) resp. XYZ_Investigations (COUNTER 5)
+     * Questions:
+     * <ol>
+     *     <li>use all clicks or unique clicks? -> use for each metric a separate cost per use?</li>
+     *     <li>the 100% encompasses everything. If I select several metrics, how should I calculate cost per use? Distribute equally?</li>
+     * </ol>
+     * response: I need to take the 100% of all clicks as well (i.e. of all metrics); the cost per use has thus to be calculated by the amount of clicks. So all clicks of all metrics altogether give the complete sum.
+     * @param statsData the usage data loaded for the given customer institution and matched to the holding subscribed
+     * @param config whose cost item elements should be used for the calculation – that of the consortium or that of the institution?
+     * @return a {@link Map} containing the sum for each metric and cost considered for the calculation
+     */
     Map<String, Object> calculateCostPerUse(Map<String, Object> statsData, String config) {
         Map<String, BigDecimal> costPerMetric = [:]
-        /*
-        cf. https://www.o-bib.de/bib/article/view/5521/7935
-        legacy COUNTER 4 metric types: https://www.niso.org/schemas/sushi/counterElements4_1.xsd
-        There are calculated:
-        price/download -> metrics ft_epub, ft_html, ft_pdf, ft_ps, ft_total, sectioned_html, data_set, audio, video, image, multimedia, podcast (COUNTER 4) resp. Total_XYZ_Requests (COUNTER 5)
-        price/search -> metrics search_reg, search_fed (COUNTER 4) resp. Searches_Regular, Searches_Platform (COUNTER 5)
-        price/click -> metrics result_click (COUNTER 4) resp. ??? (COUNTER 5)
-        price/view -> metrics record_view, toc, abstract, reference (COUNTER 4) resp. XYZ_Investigations (COUNTER 5)
-        Questions:
-        1. use all clicks or unique clicks? -> use for each metric a separate cost per use
-        2. the 100% encompasses everything. If I select several metrics, how should I calculate cost per use? Distribute equally?
-           response: I need to take the 100% of all clicks as well (i.e. of all metrics); the cost per use has thus to be calculated by the amount of clicks. So all clicks of all metrics altogether give the complete sum.
-         */
         Set<CostItem> costItems = []
         if(config == "own") {
             Set<RefdataValue> elementsToUse = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :institution and ciec.useForCostPerUse = true', [institution: statsData.contextOrg])
@@ -749,6 +756,15 @@ class SubscriptionControllerService {
         dateRangeParams+[monthsInRing: monthsInRing]
     }
 
+    /**
+     * Assembles a set of titles currently contained in the given subscriptions' holding. Either the full objects are
+     * being queried or a map of identifiers for identifier matching without needing further queries or loops
+     * @param params the filter parameter map
+     * @param refSubs the {@link Subscription}s whose entitlements should be queried
+     * @param namespaces the {@link IdentifierNamespace}s
+     * @param fetchWhat
+     * @return
+     */
     Set fetchTitles(GrailsParameterMap params, Set<Subscription> refSubs, Set<IdentifierNamespace> namespaces, String fetchWhat) {
         Set result = []
         String query
@@ -3692,6 +3708,12 @@ class SubscriptionControllerService {
         else [result:null,status:STATUS_ERROR]
     }
 
+    /**
+     * Creates or removes the given {@link SubscriptionDiscountScale} entry
+     * @param controller unused
+     * @param params the parameter map containing the command and the new discount scale data
+     * @return OK if the update was successful, ERROR if permissions are missing
+     */
     Map<String,Object> manageDiscountScale(SubscriptionController controller, GrailsParameterMap params) {
         Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         if(!result)
@@ -3725,6 +3747,13 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Opens a list of potential subscriptions eligible as discount scale copy targets. If submitted,
+     * a copy is being processed before reloading the list
+     * @param controller unused
+     * @param params the parameter map containing the data to process; either for the subscription filter or copy instructions
+     * @return OK if the process and / or load was successful, ERROR on insufficient permissions
+     */
     Map<String, Object> copyDiscountScales(SubscriptionController controller, GrailsParameterMap params) {
         Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         if (!result)
