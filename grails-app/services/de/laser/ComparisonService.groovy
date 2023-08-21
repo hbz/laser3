@@ -14,8 +14,7 @@ class ComparisonService {
   GenericOIDService genericOIDService
 
   /**
-   * Builds into the grouped properties return map the given group key and binding for the given object.
-   *
+   * Builds into the grouped properties return map the given group key and binding for the given object
    * @param groupedProperties the return map groupedProperties. Please check if it is really necessary to reassign again and again the whole map.
    * @param groupKey the group key to bind into the return object
    * @param groupBinding the visibility settings for the given group
@@ -177,6 +176,7 @@ class ComparisonService {
     result
   }
 
+  @Deprecated
   Map compareAllPropertiesOnlyDiff(Collection<AbstractPropertyWithCalculatedLastUpdated> props, boolean compareValue, boolean compareNote) {
 
     Map result = [:]
@@ -206,7 +206,9 @@ class ComparisonService {
    *
    * @param lists the unified list of {@link IssueEntitlement}s
    * @return the {@link Map} containing each {@link TitleInstancePackagePlatform} with the {@link Subscription}s containing the entitlements
+   * @deprecated currently the only call is commented out
    */
+  @Deprecated
     Map buildTIPPComparisonMap(List<IssueEntitlement> lists) {
       Map<TitleInstancePackagePlatform, Set<Long>> result = [:]
       lists.each { ie ->
