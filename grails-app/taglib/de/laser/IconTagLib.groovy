@@ -282,7 +282,7 @@ class IconTagLib {
         }
     }
 
-    // <ui:userInstRoleIcon user="${contextService.getUser()}" color="blue" />
+    // <ui:userInstRoleIcon user="${contextService.getUser()}" config="none|display|label" />
 
     def userAffiliationIcon = {attrs, body ->
         String icon = 'user slash'
@@ -305,7 +305,12 @@ class IconTagLib {
             }
         }
 
-        if (attrs.label && attrs.label.equalsIgnoreCase('true')) {
+        if (attrs.config && attrs.config.equalsIgnoreCase('display')) {
+            out << '<div data-display="' + text + '">'
+            out << '<i class="icon ' + icon + ' ' + color + '"></i>'
+            out << '</div>'
+        }
+        else if (attrs.config && attrs.config.equalsIgnoreCase('label')) {
             out << '<div class="ui label">'
             out << '<i class="icon ' + icon + ' ' + color + '"></i> ' + text
             out << '</div>'
@@ -315,7 +320,7 @@ class IconTagLib {
         }
     }
 
-    // <ui:customerTypeIcon org="${contextService.getOrg()}" />
+    // <ui:customerTypeIcon org="${contextService.getOrg()}" config="none|display|label" />
 
     def customerTypeIcon = {attrs, body ->
         String icon  = 'circle outline'
@@ -342,7 +347,12 @@ class IconTagLib {
             text  = Role.findByAuthority(CustomerTypeService.ORG_INST_BASIC).getI10n('authority')
         }
 
-        if (attrs.label && attrs.label.equalsIgnoreCase('true')) {
+        if (attrs.config && attrs.config.equalsIgnoreCase('display')) {
+            out << '<div data-display="' + text + '">'
+            out << '<i class="icon ' + icon + '"></i>'
+            out << '</div>'
+        }
+        else if (attrs.config && attrs.config.equalsIgnoreCase('label')) {
             out << '<div class="ui label ' + color + '">'
             out << '<i class="icon ' + icon + '"></i> ' + text
             out << '</div>'
@@ -350,6 +360,19 @@ class IconTagLib {
         else {
             out << '<i class="icon ' + icon + '"></i> '
         }
+    }
+
+    // <ui:contextBarInfoIcon config="none|display" text="optional" icon="optional" color="optional" />
+
+    def contextBarInfoIcon = { attrs, body ->
+
+        if (attrs.config && attrs.config.equalsIgnoreCase('display')) {
+            out << '<span class="ui label" data-display="' + attrs.text + '">'
+        } else {
+            out << '<span class="ui label">'
+        }
+        out << '<i class="icon ' + (attrs.icon ? attrs.icon + ' ' : '') + (attrs.color ? attrs.color + ' ' : '') + '"></i>'
+        out << '</span>'
     }
 
     // <ui:myIcon type="wekbchanges" color="optional" />
@@ -371,7 +394,6 @@ class IconTagLib {
         } else {
             out << '<span>'
         }
-
         out << '<i class="icon ' + (attrs.color ? attrs.color + ' ' : '') + 'star"></i>'
         out << '</span>'
     }
