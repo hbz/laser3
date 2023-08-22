@@ -417,7 +417,8 @@
                                                       from="${availableOrgs}"
                                                       optionKey="id"
                                                       optionValue="${{(it.sortname ?: '') + ' (' + it.name + ')'}}"
-                                                      class="ui fluid search dropdown"/>
+                                                      noSelection="${['': message(code: 'default.select.choose.label')]}"
+                                                      class="ui fluid search dropdown la-not-clearable"/>
                                         </div>
                                         <div class="field">
                                             <label for="formalRole">Role</label>
@@ -426,7 +427,7 @@
                                                       optionKey="id"
                                                       optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
                                                       value="${Role.findByAuthority('INST_USER').id}"
-                                                      class="ui fluid dropdown"/>
+                                                      class="ui fluid dropdown la-not-clearable"/>
                                         </div>
 
                                         <div class="field">

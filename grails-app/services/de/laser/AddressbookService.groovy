@@ -70,9 +70,9 @@ class AddressbookService {
     }
 
     /**
-     * Retrieves for the given page the visible persons. If it is for the addressbook page
+     * Retrieves for the given page the visible persons. If it is for the address book page
      * (coming from {@link MyInstitutionController#addressbook()} or {@link OrganisationController#addressbook}),
-     * then the list is restricted to the private contacts of the context institution. Otherwise, if an addressbook
+     * then the list is restricted to the private contacts of the context institution. Otherwise, if an address book
      * page of a foreign institution has been called (coming then from {@link OrganisationController#myPublicContacts()}),
      * all public contacts are being returned, whoever is tenant of the given contact. The result may be filtered by
      * the given parameter map
@@ -155,6 +155,17 @@ class AddressbookService {
         result
     }
 
+    /**
+     * Retrieves for the given page the visible addresses; is an adapted copy of {@link #getVisiblePersons(java.lang.String, java.util.Map)}. If it is for the address book page
+     * (coming from {@link MyInstitutionController#addressbook()} or {@link OrganisationController#addressbook}),
+     * then the list is restricted to the private addresses of the context institution. Otherwise, if an address book
+     * page of a foreign institution has been called (coming then from {@link OrganisationController#myPublicContacts()}),
+     * all public addresses are being returned, whoever is tenant of the given address record. The result may be filtered by
+     * the given parameter map
+     * @param fromSite the page for which the list is being returned
+     * @param params a parameter map to filter the results
+     * @return an eventually filtered list of person contacts
+     */
     List getVisibleAddresses(String fromSite, Map params) {
         List qParts = []
         Map qParams = [:]

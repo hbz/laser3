@@ -79,10 +79,22 @@ class ContextService {
 
     // -- Cache --
 
+    /**
+     * Retrieves the user cache with the given prefix for the context user
+     * @param cacheKeyPrefix the cache entry to retrieve
+     * @return the {@link EhcacheWrapper} matching to the given prefix
+     * @see {@link User}
+     */
     EhcacheWrapper getUserCache(String cacheKeyPrefix) {
         cacheService.getSharedUserCache(getUser(), cacheKeyPrefix)
     }
 
+    /**
+     * Retrieves the organisation cache with the given prefix for the context institution
+     * @param cacheKeyPrefix the cache entry to retrieve
+     * @return the {@link EhcacheWrapper} matching to the given prefix
+     * @see {@link Org}
+     */
     EhcacheWrapper getSharedOrgCache(String cacheKeyPrefix) {
         cacheService.getSharedOrgCache(getOrg(), cacheKeyPrefix)
     }
@@ -97,18 +109,46 @@ class ContextService {
 
     // -- Formal checks @ user.formalOrg
 
+    /**
+     * Checks if the context user belongs to an institution with the given customer types or is a superadmin
+     * @param orgPerms the customer types to verify
+     * @return true if the given permissions are granted, false otherwise
+     * @see CustomerTypeService
+     */
     boolean isInstUser_or_ROLEADMIN(String orgPerms = null) {
         _hasInstRoleAndPerm_or_ROLEADMIN('INST_USER', orgPerms)
     }
+
+    /**
+     * Checks if the context user belongs as an editor to an institution with the given customer types or is a superadmin
+     * @param orgPerms the customer types to verify
+     * @return true if the given permissions are granted, false otherwise
+     * @see CustomerTypeService
+     */
     boolean isInstEditor_or_ROLEADMIN(String orgPerms = null) {
         _hasInstRoleAndPerm_or_ROLEADMIN('INST_EDITOR', orgPerms)
     }
+
+    /**
+     * Checks if the context user belongs as a local administrator to an institution with the given customer types or is a superadmin
+     * @param orgPerms the customer types to verify
+     * @return true if the given permissions are granted, false otherwise
+     * @see CustomerTypeService
+     */
     boolean isInstAdm_or_ROLEADMIN(String orgPerms = null) {
         _hasInstRoleAndPerm_or_ROLEADMIN('INST_ADM', orgPerms)
     }
 
     // -- private
 
+    /**
+     * Checks if the context user is either a superadmin or has the given role at the context institution and if this institution is of the given customer type
+     * @param instUserRole the user role type to check
+     * @param orgPerms the customer type to check
+     * @return true if the user role and institution customer type match or superadministration role has been granted, false otherwise
+     * @see User
+     * @see CustomerTypeService
+     */
     private boolean _hasInstRoleAndPerm_or_ROLEADMIN(String instUserRole, String orgPerms) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
@@ -121,6 +161,14 @@ class ContextService {
         check
     }
 
+    /**
+     * Checks if the context organisation is an institution at all and if it is of the given customer type.
+     * If no customer type is being submitted, this check returns true (= substitution call)
+     * @param orgPerms the customer type(s) to check
+     * @return true if the context institution has the given customer type or no customer type has been submitted, false otherwise
+     * @see OrgSetting
+     * @see CustomerTypeService
+     */
     @ShouldBePrivate_DoNotUse
     boolean _hasPerm(String orgPerms) {
         boolean check = false
@@ -142,12 +190,18 @@ class ContextService {
 
     /**
      * Replacement call for the abandoned ROLE_ORG_COM_EDITOR
+     * @return true if editor rights are granted or the context institution is a consortium, false otherwise
      */
     // TODO
     boolean is_ORG_COM_EDITOR_or_ROLEADMIN() {
         isInstEditor_or_ROLEADMIN() && _hasPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     }
 
+    /**
+     * Checks if the context user is an editor or a superadmin and if so, whether the context organisation is a consortium or an institution looking at its own data
+     * @param inContextOrg are we in the context organisation?
+     * @return true if the context organisation is a consortium or an institution looking at its own data, false otherwise
+     */
     // TODO
     boolean is_INST_EDITOR_or_ROLEADMIN_with_PERMS_BASIC(boolean inContextOrg) {
         boolean check = false
@@ -157,6 +211,14 @@ class ContextService {
         check
     }
 
+    /**
+     * Checks if the context organisation is the given consortium type and the context user has the given role at that consortium
+     * @param orgPerms the customer types to check
+     * @param instUserRole the user role type to check
+     * @return true if the context user is a superadmin or if the context user belongs with the given rights to the context organisation and that is a consortium, false otherwise
+     * @see User
+     * @see Org
+     */
     // TODO
     boolean hasPermAsInstRoleAsConsortium_or_ROLEADMIN(String orgPerms, String instUserRole) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
