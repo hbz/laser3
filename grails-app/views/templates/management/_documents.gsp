@@ -127,7 +127,7 @@
                                 </span>
                             </g:if>
 
-                            <ui:instProIcon org="${subscr}" />
+                            <ui:customerTypeProIcon org="${subscr}" />
                         </td>
                     </g:if>
                     <g:elseif test="${controllerName == "myInstitution"}">

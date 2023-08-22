@@ -233,7 +233,7 @@ class IconTagLib {
         out << '</span>'
     }
 
-    def instProIcon = { attrs, body ->
+    def customerTypeProIcon = { attrs, body ->
         if (attrs.org && attrs.org.isCustomerType_Inst_Pro()) {
             out << '<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="' + attrs.org.getCustomerTypeI10n() + '">'
             if (attrs.cssClass) {

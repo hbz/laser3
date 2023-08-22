@@ -257,7 +257,7 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
                 <th scope="row" class="la-th-column la-main-object">
                     <div class="la-flexbox">
-                        <ui:instProIcon org="${org}" cssClass="la-list-icon" />
+                        <ui:customerTypeProIcon org="${org}" cssClass="la-list-icon" />
                         <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
                             ${fieldValue(bean: org, field: "name")}
                         </g:if>
