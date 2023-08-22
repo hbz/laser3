@@ -150,8 +150,8 @@ class ApiMapReader {
             languages << [value: langRow['rdv_value'], value_de: langRow['rdv_value_de'], value_en: langRow['rdv_value_en']]
         }
         */
-        result.ddcs             = row['languages']
-        result.languages        = row['ddcs']
+        result.ddcs             = row['ddcs']
+        result.languages        = row['languages']
         result.medium           = row['tipp_medium']
 
         // References
