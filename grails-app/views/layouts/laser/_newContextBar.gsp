@@ -45,12 +45,12 @@
                 </div>
             </g:elseif>
 
-        %{-- child x indicator --}%
+        %{-- child indicator --}%
 
             <g:if test="${controllerName == 'subscription' && subscription}">
                 <g:if test="${subscription.instanceOf && contextService.getOrg().id == subscription.getConsortia()?.id}">
                     <div class="item la-cb-info">
-                        <ui:contextBarInfoIcon config="display" text="Kindlizenz" icon="child" color="orange" />
+                        <ui:contextBarInfoIcon config="display" text="Sie sehen eine Kindlizenz" icon="child" color="brown" />
                     </div>
                 </g:if>
             </g:if>
@@ -58,7 +58,7 @@
             <g:if test="${controllerName == 'license' && license}">
                 <g:if test="${license.instanceOf && contextService.getOrg().id == license.getLicensingConsortium()?.id}">
                     <div class="item la-cb-info">
-                        <ui:contextBarInfoIcon config="display" text="Einrichtungsvertrag" icon="child" color="green" />
+                        <ui:contextBarInfoIcon config="display" text="Sie sehen einen Einrichtungsvertrag" icon="child" color="brown" />
                     </div>
                 </g:if>
             </g:if>
@@ -81,19 +81,33 @@
                 </div>
             </g:if>
 
+        %{-- marker --}%
+
+        <g:if test="${controllerName == 'organisation'}">
+            <g:if test="${isProviderOrAgency}">
+                <ui:markerSwitch org="${orgInstance}"/>
+            </g:if>
+        </g:if>
+        <g:elseif test="${controllerName == 'package'}">
+            <ui:markerSwitch package="${packageInstance}"/>
+        </g:elseif>
+        <g:elseif test="${controllerName == 'platform'}">
+            <ui:markerSwitch platform="${platformInstance}"/>
+        </g:elseif>
+
         %{-- edit mode switcher  --}%
 
             <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription' || controllerName=='license') && actionName=='show' && (editable || contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))}">
                 <div class="item la-cb-action">
                     <g:if test="${contextUser?.getSettingsValue(UserSetting.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES)?.value=='Yes'}">
                         <button class="ui icon toggle active la-toggle-advanced blue button la-modern-button la-popup-tooltip la-delay"
-                                data-content="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right">
+                                data-content="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom center">
                             <i class="pencil alternate icon"></i>
                         </button>
                     </g:if>
                     <g:else>
                         <button class="ui icon toggle inactive la-toggle-advanced blue button la-modern-button la-popup-tooltip la-delay"
-                                data-content="${message(code:'statusbar.hideButtons.tooltip')}" data-position="bottom right">
+                                data-content="${message(code:'statusbar.hideButtons.tooltip')}" data-position="bottom center">
                             <i class="pencil alternate slash icon"></i>
                         </button>
                     </g:else>
@@ -106,14 +120,14 @@
                 <div class="item la-cb-action">
                     <g:if test="${params.mode=='advanced'}">
                         <div class="ui icon toggle active la-toggle-advanced blue button la-modern-button la-popup-tooltip la-delay"
-                             data-content="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right"
+                             data-content="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom center"
                              data-reload="<g:createLink action="${actionName}" params="${params + ['mode':'basic']}" />">
                             <i class="icon plus square"></i>
                         </div>
                     </g:if>
                     <g:else>
                         <div class="ui icon toggle inactive la-toggle-advanced blue button la-modern-button la-popup-tooltip la-delay"
-                             data-content="${message(code:'statusbar.showBasicView.tooltip')}" data-position="bottom right"
+                             data-content="${message(code:'statusbar.showBasicView.tooltip')}" data-position="bottom center"
                              data-reload="<g:createLink action="${actionName}" params="${params + ['mode':'advanced']}" />">
                             <i class="icon plus square green slash"></i>
                         </div>
@@ -127,13 +141,13 @@
                 <div class="item la-cb-action">
                     <g:if test="${actionName == 'workflowsSurveysConsortia'}">
                         <g:link action="currentSurveysConsortia" controller="survey" class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
-                                data-content="${message(code:'statusbar.change.currentSurveysConsortiaView.tooltip')}" data-position="bottom right">
+                                data-content="${message(code:'statusbar.change.currentSurveysConsortiaView.tooltip')}" data-position="bottom center">
                             <i class="exchange icon"></i>
                         </g:link>
                     </g:if>
                     <g:else>
                         <g:link action="workflowsSurveysConsortia" controller="survey" class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
-                                data-content="${message(code:'statusbar.change.workflowsSurveysConsortiaView.tooltip')}" data-position="bottom right">
+                                data-content="${message(code:'statusbar.change.workflowsSurveysConsortiaView.tooltip')}" data-position="bottom center">
                             <i class="exchange icon"></i>
                         </g:link>
                     </g:else>
@@ -170,10 +184,6 @@
     margin: 0 !important;
 }
 
-.la-cb-info.item + .la-cb-action.item {
-    margin-left: 2em !important;
-}
-
 .la-cb-action.item {
     margin: 0 0 0 1px !important;
     border-right: none !important;
@@ -195,6 +205,11 @@
 }
 .la-cb-action.item > .button:hover > .icon {
     color: #000 !important;
+}
+
+.la-cb-info.item + .la-cb-action.item,
+.la-cb-info.item + .la-cb-action-ext.item {
+    margin-left: 2em !important;
 }
 
 .la-cb-action-ext.item {
@@ -240,6 +255,9 @@
     color: #fff !important;
 }
 
+.la-contextBar.ui.menu {
+    box-shadow: none !important;
+}
 .la-contextBar.ui.menu .la-context-org {
     flex: 0 0 500px;
 }

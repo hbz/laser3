@@ -401,17 +401,30 @@ class UiTagLib {
                     successFunc:    'tooltip.init(\'#marker-' + obj.id + '\')'
             )
 
+//            if (! attrs.ajax) {
+//                out << '<span id="marker-' + obj.id + '" style="margin-left:1em;">'
+//            }
+//
+//            out <<      '<a class="ui icon label la-popup-tooltip la-long-tooltip la-delay" onclick="' + onClick + '" '
+//            out <<          'data-content="' + tt + '" data-position="top right">'
+//            out <<              '<i class="icon purple bookmark' + (isMarked ? '' : ' outline') + '"></i>'
+//            out <<      '</a>'
+//
+//            if (! attrs.ajax) {
+//                out << '</span>'
+//            }
+
             if (! attrs.ajax) {
-                out << '<span id="marker-' + obj.id + '" style="margin-left:1em;">'
+                out << '<div class="item la-cb-action" id="marker-' + obj.id + '">'
             }
 
-            out <<      '<a class="ui icon label la-popup-tooltip la-long-tooltip la-delay" onclick="' + onClick + '" '
+            out <<      '<div class="ui icon button ' + (isMarked ? 'active' : ' inactive ') + ' la-popup-tooltip la-long-tooltip la-delay" onclick="' + onClick + '" '
             out <<          'data-content="' + tt + '" data-position="top right">'
             out <<              '<i class="icon purple bookmark' + (isMarked ? '' : ' outline') + '"></i>'
-            out <<      '</a>'
+            out <<      '</div>'
 
             if (! attrs.ajax) {
-                out << '</span>'
+                out << '</div>'
             }
         }
     }
