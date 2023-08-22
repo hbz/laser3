@@ -45,6 +45,24 @@
                 </div>
             </g:elseif>
 
+        %{-- child x indicator --}%
+
+            <g:if test="${controllerName == 'subscription' && subscription}">
+                <g:if test="${subscription.instanceOf && contextService.getOrg().id == subscription.getConsortia()?.id}">
+                    <div class="item la-cb-info">
+                        <ui:contextBarInfoIcon config="display" text="Kindlizenz" icon="child" color="orange" />
+                    </div>
+                </g:if>
+            </g:if>
+
+            <g:if test="${controllerName == 'license' && license}">
+                <g:if test="${license.instanceOf && contextService.getOrg().id == license.getLicensingConsortium()?.id}">
+                    <div class="item la-cb-info">
+                        <ui:contextBarInfoIcon config="display" text="Einrichtungsvertrag" icon="child" color="green" />
+                    </div>
+                </g:if>
+            </g:if>
+
         %{-- content indicator --}%
 
             <g:if test="${flagContentCache}">
@@ -152,6 +170,10 @@
     margin: 0 !important;
 }
 
+.la-cb-info.item + .la-cb-action.item {
+    margin-left: 2em !important;
+}
+
 .la-cb-action.item {
     margin: 0 0 0 1px !important;
     border-right: none !important;
@@ -222,7 +244,7 @@
     flex: 0 0 500px;
 }
 .la-contextBar.ui.menu .item::before {
-    width: 0px !important;
+    width: 0 !important;
 }
 </style>
 
