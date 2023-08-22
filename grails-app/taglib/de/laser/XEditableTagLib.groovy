@@ -221,9 +221,6 @@ class XEditableTagLib {
                 out << "data-type=\"select\" data-name=\"${field}\" " +
                         "data-source=\"${data_link}\" data-url=\"${update_link}\" ${emptyText}>"
 
-                // Here we can register different ways of presenting object references. The most pressing need to be
-                // outputting a a containing an icon for refdata fields.
-
                 out << _renderObjectValue(owner[field])
                 out << '</a></span>'
             }
@@ -272,11 +269,11 @@ class XEditableTagLib {
 
                 String dataValue = ""
                 if (owner[field]) {
-                    dataValue = " data-value=\"${RefdataValue.class.name}:${owner[field].id}\" "
+                    dataValue = " data-value=\"${Role.class.name}:${owner[field].id}\" "
                 }
 
                 // Output an editable link
-                out << '<a href="#" id="' + id + '" class="xEditableManyToOne" '
+                out << '<a href="#" id="' + id + '" class="xEditableRole" '
                 out << 'data-onblur="ignore" ' + dataValue + ' data-type="select" '
                 out << 'data-pk="' + oid + '" data-name="' + field + '" '
                 out << 'data-source="' + data_link + '" data-url="' + update_link + '" ' + emptyText + '>'

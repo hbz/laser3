@@ -54,7 +54,7 @@
                                       optionKey="id"
                                       optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
                                       value="${Role.findByAuthority('INST_EDITOR').id}"
-                                      class="ui fluid dropdown"/>
+                                      class="ui fluid dropdown la-not-clearable"/>
                         </div>
                     </div>
 
