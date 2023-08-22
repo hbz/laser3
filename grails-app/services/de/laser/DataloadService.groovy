@@ -50,6 +50,11 @@ class DataloadService {
     boolean update_running = false
     Future activeFuture
 
+    /**
+     * Triggers the given index update
+     * @param indexName the ES index tp be updated
+     * @return false if a job is already running, true otherwise
+     */
     def updateFTIndex(String indexName) {
         if (indexName) {
             updateFTIndices(indexName)
@@ -127,6 +132,27 @@ class DataloadService {
         true
     }
 
+    /**
+     * Performs the index updates; either for each domain class mapped or for a given one.
+     * Currently supported by this implementation are:
+     * <ul>
+     *     <li>{@link Org}</li>
+     *     <li>{@link TitleInstancePackagePlatform}</li>
+     *     <li>{@link de.laser.Package}</li>
+     *     <li>{@link Platform}</li>
+     *     <li>{@link License}</li>
+     *     <li>{@link Subscription}</li>
+     *     <li>{@link SurveyConfig}</li>
+     *     <li>{@link SurveyOrg}</li>
+     *     <li>{@link Task}</li>
+     *     <li>{@link DocContext}</li>
+     *     <li>{@link IssueEntitlement}</li>
+     *     <li>{@link SubscriptionProperty}</li>
+     *     <li>{@link LicenseProperty}</li>
+     * </ul>
+     * See the mappings at aggr_es_indices configuration setting
+     * @param domainClass the domain class to update, if a certain index is being called
+     */
     private void _doFTUpdateUpdateESCalls(Class domainClass = null) {
 
         if (!domainClass || domainClass == Org.class) {
@@ -1215,6 +1241,10 @@ class DataloadService {
         return true
     }
 
+    /**
+     * Retrieves the last running time point when the index update ran
+     * @return a formatted string with the time instant and running time of last run
+     */
     String getLastFTIndexUpdateInfo() {
         String info = '?'
 
