@@ -370,7 +370,7 @@ class ApiCollectionReader {
         identifierMap = idRows.collectEntries { GroovyRowResult row -> [row['id_tipp_fk'], slurper.parseText(row['identifiers'].toString())] },
         coverageMap = coverageRows.collectEntries { GroovyRowResult row -> [row['tc_tipp_fk'], slurper.parseText(row['coverages'].toString())] },
         ddcMap = ddcRows.collectEntries { GroovyRowResult row -> [row['ddc_tipp_fk'], slurper.parseText(row['ddcs'].toString())] },
-        languageMap = langRows.collectEntries { GroovyRowResult row -> [row['ddc_tipp_fk'], slurper.parseText(row['languages'].toString())] },
+        languageMap = langRows.collectEntries { GroovyRowResult row -> [row['lang_tipp_fk'], slurper.parseText(row['languages'].toString())] },
         //platformMap = ExportService.preprocessRows(platformsOfSubscription, 'plat_id'),
         publisherMap = titlePublishers.collectEntries { GroovyRowResult row -> [row['or_tipp_fk'], slurper.parseText(row['publishers'].toString())] }
         Map<Long, List<GroovyRowResult>> altNameMap = ExportService.preprocessRows(altNameRows, 'altname_tipp_fk')
