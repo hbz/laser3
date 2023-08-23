@@ -27,7 +27,7 @@
 
             <div id="la-cb-info-display"></div>
 
-        %{-- isMyObject indicator --}%
+        %{-- my object indicator --}%
 
             <g:if test="${isMyPlatform}">
                 <div class="item la-cb-info">
@@ -50,7 +50,7 @@
             <g:if test="${controllerName == 'subscription' && subscription}">
                 <g:if test="${subscription.instanceOf && contextService.getOrg().id == subscription.getConsortia()?.id}">
                     <div class="item la-cb-info">
-                        <ui:contextBarInfoIcon config="display" text="Sie sehen eine Kindlizenz" icon="child" color="brown" />
+                        <ui:contextBarInfoIcon config="display" text="Sie sehen eine Kindlizenz" icon="child" color="orange" />
                     </div>
                 </g:if>
             </g:if>
@@ -58,7 +58,7 @@
             <g:if test="${controllerName == 'license' && license}">
                 <g:if test="${license.instanceOf && contextService.getOrg().id == license.getLicensingConsortium()?.id}">
                     <div class="item la-cb-info">
-                        <ui:contextBarInfoIcon config="display" text="Sie sehen einen Einrichtungsvertrag" icon="child" color="brown" />
+                        <ui:contextBarInfoIcon config="display" text="Sie sehen einen Einrichtungsvertrag" icon="child" color="green" />
                     </div>
                 </g:if>
             </g:if>
@@ -180,6 +180,9 @@
     border: 1px solid #e3eaf3 !important;
     background-color: #e3eaf3 !important;
 }
+.la-cb-info.item > .label:hover {
+    cursor: help;
+}
 .la-cb-info.item > .label > .icon {
     margin: 0 !important;
 }
@@ -231,27 +234,31 @@
     /*color: #004678 !important;*/
     color: #fff !important;
 }
-/* -- overrides -- */
 
-.la-contextBar .ui.button.toggle.active,
-.la-contextBar .ui.buttons .button.toggle.active,
-.la-contextBar .ui.toggle.buttons .active.button {
-    background-color: #98b500 !important;
-}
-.la-contextBar .ui.button.toggle.inactive,
-.la-contextBar .ui.buttons .button.toggle.inactive,
-.la-contextBar .ui.toggle.buttons .inactive.button {
-    background-color: #D95F3D !important;
-}
+/* -- todo; ignore -- */
 
-.la-contextBar .ui.button.toggle.active > .icon,
-.la-contextBar .ui.buttons .button.toggle.active > .icon,
-.la-contextBar .ui.toggle.buttons .active.button > .icon {
+
+.la-contextBar .la-cb-action.item .button.purple.active {
+    background-color: #2185d0 !important;
+}
+.la-contextBar .la-cb-action.item .button.purple.active .icon {
     color: #fff !important;
 }
-.la-contextBar .ui.button.toggle.inactive > .icon,
-.la-contextBar .ui.buttons .button.toggle.inactive > .icon,
-.la-contextBar .ui.toggle.buttons .inactive.button > .icon {
+.la-contextBar .la-cb-action.item .button.purple.inactive {
+}
+.la-contextBar .la-cb-action.item .button.purple.inactive .icon {
+    color: #2185d0 !important;
+}
+
+/* -- overrides -- */
+
+.la-contextBar .la-cb-action.item .button.la-toggle-advanced.active {
+    background-color: #98b500 !important;
+}
+.la-contextBar .la-cb-action.item .button.la-toggle-advanced.inactive {
+    background-color: #D95F3D !important;
+}
+.la-contextBar .la-cb-action.item .button.toggle .icon {
     color: #fff !important;
 }
 
@@ -323,6 +330,6 @@
             $item.append(this)
             $(this).addClass('icon')
         })
-        $('.la-context-org, .la-advanced-view').fadeIn(50);
+        $('.la-context-org, .la-advanced-view').fadeIn(100);
     }, 100);
 </laser:script>
