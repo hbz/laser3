@@ -157,7 +157,7 @@ deckSaver = {
             deckSaver.disableXeditable('.xEditableValue');
             deckSaver.disableXeditable('.xEditableDatepicker');
             deckSaver.disableXeditable('.xEditableManyToOne');
-            deckSaver.enableXeditable('.xEditableBoolean');
+            deckSaver.disableXeditable('.xEditableBoolean');
 
             $('.la-action-info').css('text-align', 'right').text(JSPC.dict.get('default.informations', JSPC.currLanguage))
 
