@@ -1,10 +1,10 @@
+<div class="ui flyout la-help-panel" style="padding:50px 0 10px 0;overflow:scroll">
 
-<div class="ui right segment sidebar la-help-panel">
-    <div style="position: fixed; height:90px"></div>
-    <h1 class="ui header">Erklärung der Icons
-    </h1>
+    <h1 class="ui header">Erklärung der Icons</h1>
 
-    <table class="ui la-ignore-fixed table">
+    <div class="content">
+
+    <table class="ui la-ignore-fixed compact table">
         <thead>
         <tr>
             <th>Icon</th>
@@ -17,9 +17,8 @@
                 <i class="circular la-subscription icon" aria-hidden="true"></i>
             </td>
             <td>
-                Icon und Farbe symbolisiert die Lizenzen
+                Lizenz-Symbol
             </td>
-
         </tr>
         <tr>
             <td>
@@ -109,5 +108,7 @@
 
         </tbody>
     </table>
+
+    </div>
 
 </div>

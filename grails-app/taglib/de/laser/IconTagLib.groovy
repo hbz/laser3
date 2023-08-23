@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.auth.Role
+import de.laser.auth.User
 import de.laser.storage.RDStore
 import de.laser.titles.BookInstance
 import de.laser.titles.DatabaseInstance
@@ -232,7 +233,7 @@ class IconTagLib {
         out << '</span>'
     }
 
-    def customerTypeIcon = { attrs, body ->
+    def customerTypeProIcon = { attrs, body ->
         if (attrs.org && attrs.org.isCustomerType_Inst_Pro()) {
             out << '<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="' + attrs.org.getCustomerTypeI10n() + '">'
             if (attrs.cssClass) {
@@ -281,6 +282,99 @@ class IconTagLib {
         }
     }
 
+    // <ui:userInstRoleIcon user="${contextService.getUser()}" config="none|display|label" />
+
+    def userAffiliationIcon = {attrs, body ->
+        String icon = 'user slash'
+        String color = 'grey'
+        String text = '?'
+
+        Role fr = (attrs.user as User).formalRole
+        if (fr) {
+            if (fr.authority == Role.INST_USER) {
+                icon = 'user'
+                text = message(code: 'cv.roles.INST_USER')
+            }
+            else if (fr.authority == Role.INST_EDITOR) {
+                icon = 'user edit'
+                text = message(code: 'cv.roles.INST_EDITOR')
+            }
+            else if (fr.authority == Role.INST_ADM) {
+                icon = 'user shield'
+                text = message(code: 'cv.roles.INST_ADM')
+            }
+        }
+
+        if (attrs.config && attrs.config.equalsIgnoreCase('display')) {
+            out << '<div data-display="' + text + '">'
+            out << '<i class="icon ' + icon + ' ' + color + '"></i>'
+            out << '</div>'
+        }
+        else if (attrs.config && attrs.config.equalsIgnoreCase('label')) {
+            out << '<div class="ui label">'
+            out << '<i class="icon ' + icon + ' ' + color + '"></i> ' + text
+            out << '</div>'
+        }
+        else {
+            out << '<i class="icon ' + icon + ' ' + color + '"></i>'
+        }
+    }
+
+    // <ui:customerTypeIcon org="${contextService.getOrg()}" config="none|display|label" />
+
+    def customerTypeIcon = {attrs, body ->
+        String icon  = 'circle outline'
+        String color = 'grey'
+        String text  = '?'
+        Org org = attrs.org as Org
+
+        if (org.isCustomerType_Consortium_Pro()) {
+            icon  = 'trophy'
+            color = 'teal'
+            text  = Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_PRO).getI10n('authority')
+        }
+        else if (org.isCustomerType_Consortium_Basic()) {
+            color = 'teal'
+            text  = Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_BASIC).getI10n('authority')
+        }
+        else if (org.isCustomerType_Inst_Pro()) {
+            icon  = 'trophy'
+            color = 'blue'
+            text  = Role.findByAuthority(CustomerTypeService.ORG_INST_PRO).getI10n('authority')
+        }
+        else if (org.isCustomerType_Inst()) {
+            color = 'blue'
+            text  = Role.findByAuthority(CustomerTypeService.ORG_INST_BASIC).getI10n('authority')
+        }
+
+        if (attrs.config && attrs.config.equalsIgnoreCase('display')) {
+            out << '<div data-display="' + text + '">'
+            out << '<i class="icon ' + icon + '"></i>'
+            out << '</div>'
+        }
+        else if (attrs.config && attrs.config.equalsIgnoreCase('label')) {
+            out << '<div class="ui label ' + color + '">'
+            out << '<i class="icon ' + icon + '"></i> ' + text
+            out << '</div>'
+        }
+        else {
+            out << '<i class="icon ' + icon + '"></i> '
+        }
+    }
+
+    // <ui:contextBarInfoIcon config="none|display" text="optional" icon="optional" color="optional" />
+
+    def contextBarInfoIcon = { attrs, body ->
+
+        if (attrs.config && attrs.config.equalsIgnoreCase('display')) {
+            out << '<span class="ui label" data-display="' + attrs.text + '">'
+        } else {
+            out << '<span class="ui label">'
+        }
+        out << '<i class="icon ' + (attrs.icon ? attrs.icon + ' ' : '') + (attrs.color ? attrs.color + ' ' : '') + '"></i>'
+        out << '</span>'
+    }
+
     // <ui:myIcon type="wekbchanges" color="optional" />
 
     def markerIcon = { attrs, body ->
@@ -300,7 +394,6 @@ class IconTagLib {
         } else {
             out << '<span>'
         }
-
         out << '<i class="icon ' + (attrs.color ? attrs.color + ' ' : '') + 'star"></i>'
         out << '</span>'
     }

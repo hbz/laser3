@@ -12,7 +12,7 @@
                     <p>
                         <strong>
                             <g:link controller="organisation" action="show" id="${chosenOrg.id}">${chosenOrg.name}</g:link>
-                            <ui:customerTypeIcon org="${chosenOrg}" />
+                            <ui:customerTypeProIcon org="${chosenOrg}" />
                         </strong>
                     </p>
                     ${chosenOrg.libraryType?.getI10n('value')}
@@ -101,7 +101,7 @@
                         </span>
                     </g:if>
 
-                    <ui:customerTypeIcon org="${subscr}" />
+                    <ui:customerTypeProIcon org="${subscr}" />
                 </td>
                 <th scope="row" class="la-th-column">
 
