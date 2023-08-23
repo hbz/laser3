@@ -52,6 +52,9 @@ class ExportClickMeService {
 
     MessageSource messageSource
 
+    /**
+     * The currently supported formats: Excel, character- or tab-separated values, Portable Document Format (Adobe PDF)
+     */
     static enum FORMAT {
         XLS, CSV, TSV, PDF
     }
@@ -1643,6 +1646,7 @@ class ExportClickMeService {
     }
 
     /**
+     * Generic call from views
      * Gets the cost item fields for the given institution
      * @return the configuration map for the cost item export for UI
      */
@@ -1903,6 +1907,10 @@ class ExportClickMeService {
         fields
     }
 
+    /**
+     * Gets the address fields
+     * @return the configuration map for the address export
+     */
     Map<String, Object> getExportAddressFields() {
 
         Map<String, Object> exportFields = [contact:[:], address:[:]]
@@ -1961,6 +1969,11 @@ class ExportClickMeService {
         exportFields
     }
 
+    /**
+     * Generic call from views
+     * Gets the address fields for the UI
+     * @return the configuration map for the address export for UI
+     */
     Map<String, Object> getExportAddressFieldsForUI() {
 
         Map<String, Object> fields = EXPORT_ADDRESS_CONFIG as Map, filterFields = EXPORT_ADDRESS_FILTER as Map
@@ -2269,7 +2282,8 @@ class ExportClickMeService {
      * Exports the selected fields of the given renewal result
      * @param renewalResult the result to export
      * @param selectedFields the fields which should appear
-     * @return an Excel worksheet containing the export
+     * @param format the {@link FORMAT} to be exported
+     * @return the output in the desired format
      */
     def exportRenewalResult(Map renewalResult, Map<String, Object> selectedFields, FORMAT format) {
         Locale locale = LocaleUtils.getCurrentLocale()
@@ -2393,7 +2407,9 @@ class ExportClickMeService {
      * @param selectedFields the fields which should appear
      * @param subscription the subscription as reference for the fields
      * @param institution the institution as reference for the fields
-     * @return an Excel worksheet containing the export
+     * @param contactSwitch which set of contacts should be considered (public or private)?
+     * @param format the {@link FORMAT} to be exported
+     * @return the output in the desired format
      */
     def exportSubscriptionMembers(Collection result, Map<String, Object> selectedFields, Subscription subscription, Org institution, Set<String> contactSwitch, FORMAT format) {
        Locale locale = LocaleUtils.getCurrentLocale()
@@ -2472,7 +2488,9 @@ class ExportClickMeService {
      * @param result the subscription set to export
      * @param selectedFields the fields which should appear
      * @param institution the institution as reference
-     * @return an Excel worksheet containing the export
+     * @param format the {@link FORMAT} to be exported
+     * @param showTransferFields should the subscription transfer fields be included in the export?
+     * @return the output in the desired format
      */
     def exportSubscriptions(ArrayList<Subscription> result, Map<String, Object> selectedFields, Org institution, FORMAT format, boolean showTransferFields = false) {
         Locale locale = LocaleUtils.getCurrentLocale()
@@ -2546,7 +2564,8 @@ class ExportClickMeService {
      * @param result the subscription set to export
      * @param selectedFields the fields which should appear
      * @param institution the institution as reference
-     * @return an Excel worksheet containing the export
+     * @param format the {@link FORMAT} to be exported
+     * @return the output in the desired format
      */
     def exportLicenses(ArrayList<License> result, Map<String, Object> selectedFields, Org institution, FORMAT format) {
         Locale locale = LocaleUtils.getCurrentLocale()
@@ -2587,7 +2606,8 @@ class ExportClickMeService {
      * Exports the given fields from the given cost items
      * @param result the cost item set to export
      * @param selectedFields the fields which should appear
-     * @return an Excel worksheet containing the export
+     * @param format the {@link FORMAT} to be exported
+     * @return the output in the desired format
      */
     def exportCostItems(Map result, Map<String, Object> selectedFields, FORMAT format) {
         Locale locale = LocaleUtils.getCurrentLocale()
@@ -2635,7 +2655,10 @@ class ExportClickMeService {
      * @param result the organisation set to export
      * @param selectedFields the fields which should appear in the export
      * @param config the organisation type to be exported
-     * @return an Excel worksheet containing the output
+     * @param format the {@link FORMAT} to be exported
+     * @param contactSources which type of contacts should be taken? (public or private)
+     * @param configMap filter parameters for further queries
+     * @return the output in the desired format
      */
     def exportOrgs(List<Org> result, Map<String, Object> selectedFields, String config, FORMAT format, Set<String> contactSources = [], Map<String, Object> configMap = [:]) {
         Locale locale = LocaleUtils.getCurrentLocale()
@@ -2699,6 +2722,16 @@ class ExportClickMeService {
         }
     }
 
+    /**
+     * Exports the given fields from the given person contacts or addresses in the given format
+     * @param visiblePersons the contact set to export
+     * @param visibleAddresses the address set to export
+     * @param selectedFields the fields to be exported
+     * @param withInstData should data from institutions be included?
+     * @param withProvData should data from providers be included?
+     * @param format the {@link FORMAT} to be exported
+     * @return the output, rendered in the desired format
+     */
     def exportAddresses(List visiblePersons, List visibleAddresses, Map<String, Object> selectedFields, withInstData, withProvData, FORMAT format) {
         Locale locale = LocaleUtils.getCurrentLocale()
         Map<String, Object> configFields = getExportAddressFields(), selectedExportContactFields = [:], selectedExportAddressFields = [:], sheetData = [:]
@@ -2945,7 +2978,8 @@ class ExportClickMeService {
      * Exports the given fields from the given issue entitlements
      * @param result the issue entitlements set to export
      * @param selectedFields the fields which should appear
-     * @return an Excel worksheet containing the export
+     * @param format the {@link FORMAT} to be exported
+     * @return the output in the desired format
      */
     def exportIssueEntitlements(ArrayList<Long> result, Map<String, Object> selectedFields, FORMAT format) {
         Locale locale = LocaleUtils.getCurrentLocale()
@@ -3010,7 +3044,8 @@ class ExportClickMeService {
      * Exports the given fields from the given titles
      * @param result the titles set to export
      * @param selectedFields the fields which should appear
-     * @return an Excel worksheet containing the export
+     * @param format the {@link FORMAT} to be exported
+     * @return the output in the desired format
      */
     def exportTipps(Collection result, Map<String, Object> selectedFields, FORMAT format) {
         Locale locale = LocaleUtils.getCurrentLocale()
@@ -3145,6 +3180,8 @@ class ExportClickMeService {
      * @param onlySubscription should only subscription-related parameters appear?
      * @param multiYearTermTwoSurvey should two years running times appear?
      * @param multiYearTermThreeSurvey should three years running times appear?
+     * @param multiYearTermFourSurvey should four years running times appear?
+     * @param multiYearTermFiveSurvey should five years running times appear?
      * @param format the format to use for export
      */
     private void _setRenewalRow(Map participantResult, Map<String, Object> selectedFields, List renewalData, boolean onlySubscription, PropertyDefinition multiYearTermTwoSurvey, PropertyDefinition multiYearTermThreeSurvey, PropertyDefinition multiYearTermFourSurvey, PropertyDefinition multiYearTermFiveSurvey, FORMAT format){
@@ -3294,6 +3331,8 @@ class ExportClickMeService {
      * @param localizedName the localised name of the property name
      * @param selectedCostItemElements the cost item elements to export
      * @param selectedCostItemFields the fields which should appear in the cost item export
+     * @param format the {@link FORMAT} to be exported
+     * @param contactSources which set of contacts should be considered (public or private)?
      */
     private void _setSubRow(def result, Map<String, Object> selectedFields, List exportData, String localizedName, Map selectedCostItemElements, Map selectedCostItemFields, FORMAT format, Set<String> contactSources = []){
         List row = []
@@ -3555,6 +3594,7 @@ class ExportClickMeService {
      * @param selectedFields the fields which should appear
      * @param exportData the list containing the export rows
      * @param localizedName the localised name of the property name
+     * @param format the {@link FORMAT} to use for export
      */
     private void _setLicRow(def result, Map<String, Object> selectedFields, List exportData, String localizedName, FORMAT format){
         List row = []
@@ -3644,6 +3684,7 @@ class ExportClickMeService {
      * @param costItem the cost item to be exported
      * @param selectedFields the fields which should appear
      * @param exportData the list containing the rows to export
+     * @param format the {@link FORMAT} to be exported
      */
     private void _setCostItemRow(CostItem costItem, Map<String, Object> selectedFields, List exportData, FORMAT format){
         List row = []
@@ -3692,6 +3733,10 @@ class ExportClickMeService {
      * @param result the organisation to export
      * @param selectedFields the fields which should appear
      * @param exportData the list containing the export rows
+     * @param wekbRecords a {@link Map} of provider records coming from we:kb (empty if no provider records are exported)
+     * @param format the {@link FORMAT} to be exported
+     * @param contactSources which type of contacts should be considered (public or private)?
+     * @param configMap filter parameters for further queries
      */
     private void _setOrgRow(Org result, Map<String, Object> selectedFields, List exportData, Map wekbRecords, FORMAT format, Set<String> contactSources = [], Map<String, Object> configMap = [:]){
         List row = []
@@ -3808,6 +3853,8 @@ class ExportClickMeService {
      * @param selectedFields the fields which should appear
      * @param exportData the list containing the rows
      * @param selectedCostItemFields the cost item fields which should appear in export
+     * @param format the {@link FORMAT} to be exported
+     * @param contactSources which set of contacts should be considered?
      */
     private void _setSurveyEvaluationRow(Map participantResult, Map<String, Object> selectedFields, List exportData, Map selectedCostItemFields, FORMAT format, Set<String> contactSources = []){
         List row = []
@@ -3880,6 +3927,7 @@ class ExportClickMeService {
      * @param result the issue entitlement to export
      * @param selectedFields the fields which should appear
      * @param exportData the list containing the export rows
+     * @param format the {@link FORMAT} to be exported
      */
     private void _setIeRow(def result, Map<String, Object> selectedFields, List exportData, FORMAT format){
         List row = []
@@ -3998,6 +4046,7 @@ class ExportClickMeService {
      * @param result the title to export
      * @param selectedFields the fields which should appear
      * @param exportData the list containing the export rows
+     * @param format the {@link FORMAT} to be exported
      */
     private void _setTippRow(def result, Map<String, Object> selectedFields, List exportData, FORMAT format){
         List row = []
@@ -4144,6 +4193,14 @@ class ExportClickMeService {
         return fieldValue
     }
 
+    /**
+     * Renders the given value in a table cell in the given format. Lists are being escaped in the
+     * appropriate way according to the format
+     * @param format the {@link FORMAT} in which the cell should be rendered
+     * @param value the value to be rendered
+     * @param style the cell style for an Excel cell
+     * @return the value rendered in a cell; either a {@link Map} or the value itself
+     */
     def createTableCell(FORMAT format, def value, String style = null) {
         if(format == FORMAT.XLS)
             [field: value, style: style]
@@ -4164,7 +4221,8 @@ class ExportClickMeService {
      * @param selectedExportFields the fields which should appear
      * @param locale the locale to use for message constants
      * @param sheetNameAddition an addition submitted to the sheet name
-     * @return the updated export worksheet
+     * @param format the {@link FORMAT} to be exported
+     * @return the updated output in the desired format
      */
     private Map _exportAccessPoints(List<Org> orgList, Map sheetData, LinkedHashMap selectedExportFields, Locale locale, String sheetNameAddition, FORMAT format) {
 
@@ -4223,6 +4281,15 @@ class ExportClickMeService {
         return sheetData
     }
 
+    /**
+     * Enriches the organisation row by the given additional field in the given format
+     * @param org the {@link Org} to be exported
+     * @param row the export row for the organisation and which will be filled by this method
+     * @param fieldKey the field to be fetched for the organisation
+     * @param format the {@link FORMAT} to be used for the export
+     * @param subscription unused
+     * @param contactSwitch which set of contacts should be used (public or private)? Defaults to public
+     */
     private void _setOrgFurtherInformation(Org org, List row, String fieldKey, FORMAT format, Subscription subscription = null, String contactSwitch = 'public'){
 
         boolean isPublic = contactSwitch == 'public'
@@ -4509,6 +4576,16 @@ class ExportClickMeService {
         }
     }
 
+    /**
+     * Builds the header row for the given export configuration
+     * @param selectedExportFields the fields to be exported
+     * @param locale the {@link Locale} to be used for the export
+     * @param selectedCostItemFields the cost item fields to appear in the export; every field will appear for each cost item element selected
+     * @param maxCostItemsElements the count of cost item elements figuring in the export
+     * @param contactSources the set of contacts to be exported (public or private)
+     * @param selectedCostElements the cost item elements to be included in the export; for each cost item element, an own field column is being generated
+     * @return a {@link List} of column headers
+     */
     private List _exportTitles(Map<String, Object> selectedExportFields, Locale locale, Map selectedCostItemFields = null, Integer maxCostItemsElements = null, Set<String> contactSources = [], Map selectedCostElements = [:]){
         List titles = []
 
@@ -4688,6 +4765,13 @@ class ExportClickMeService {
         return addr
     }
 
+    /**
+     * Convenience method, the current implementation should be refactored by library.
+     * Exports the notes for the given object, owned by the given institution
+     * @param objInstance the object of which the notes are subject
+     * @param contextOrg the institution ({@link Org}) whose notes of the given object should be exported
+     * @return a {@link Map} containing the object's notes, owned by the institution, of structure: [baseItems: notes directly attached to the object, sharedItems: items coming from a possible parent (if a parent exist at all)]
+     */
     private Map<String, Object> _getNotesForObject(objInstance, Org contextOrg) {
         List<DocContext> baseItems = [], sharedItems = []
         docstoreService.getNotes(objInstance, contextOrg).each { DocContext dc ->
@@ -4731,6 +4815,11 @@ class ExportClickMeService {
         [baseItems: baseItems, sharedItems: sharedItems]
     }
 
+    /**
+     * Helper method to retrieve text in nested HTML
+     * @param childNodes the child nodes to process
+     * @return the text nodes as a {@link List}
+     */
     private List<String> _getRecursiveNodeText(childNodes) {
         List<String> result = []
         childNodes.each { node ->

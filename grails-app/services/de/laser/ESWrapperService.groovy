@@ -37,7 +37,6 @@ class ESWrapperService {
 
     /**
      * Initialises the ElasticSearch connection and mapping parameters
-     * @return
      */
     @javax.annotation.PostConstruct
     def init() {
@@ -54,7 +53,7 @@ class ESWrapperService {
 
     /**
      * Establishes the REST client connection to the ElasticSearch host
-     * @return
+     * @return the {@link RestHighLevelClient} connection
      */
     RestHighLevelClient getNewClient(boolean onlyWithActiveConnection = false) {
         RestHighLevelClient client = new RestHighLevelClient(
@@ -69,6 +68,10 @@ class ESWrapperService {
         client
     }
 
+    /**
+     * Gets the URL of the ES index
+     * @return the URL of the host as string
+     */
     // TMP
     String getUrl() {
         (new HttpHost(ES_Host, 9200, "http")).toString()
@@ -90,6 +93,11 @@ class ESWrapperService {
         _parseResource("${File.separator}elasticsearch${File.separator}es_mapping.json")
     }
 
+    /**
+     * Gets the domain class behind the given index name
+     * @param indexName the index whose domain class should be retrieved
+     * @return the domain class as {@link Class} representation
+     */
     Class getDomainClassByIndex(String indexName) {
         String domain = ES_Indices.find {it.value == indexName}.key
         if (domain) {
