@@ -475,6 +475,14 @@ class ExportService {
 		}
 	}
 
+	/**
+	 * Exports the given list of contacts in the given format
+	 * @param format the format to use for the export (Excel or CSV)
+	 * @param visiblePersons the list of {@link Person}s to export
+	 * @return either an Excel workbook or a character-separated list containing the export
+	 * @deprecated all exports should be made configurable by modal; move this export to {@link ExportClickMeService#exportAddresses(java.util.List, java.util.List, java.util.Map, java.lang.Object, java.lang.Object, de.laser.ExportClickMeService.FORMAT)}
+	 */
+	@Deprecated
 	def exportAddressbook(String format, List visiblePersons) {
 		Locale locale = LocaleUtils.getCurrentLocale()
 		Map<String, String> columnHeaders = [
@@ -1906,18 +1914,21 @@ class ExportService {
 		result
 	}
 
+	/**
+	 * Assembles the rows containing the usages for each database according to the given report type
+	 * @param requestResponse the response data from the provider's SUSHI API
+	 * @param reportType the report type to be exported
+	 * @return a {@link Map} containing the export rows for each database, in structure:
+	 * [
+	 	databaseName: {
+	 		metric1: [date1: count, date2: count ... dateN: count]
+	 		metric2: [date1: count, date2: count ... dateN: count]
+	 		...
+	 		metricN: [date1: count, date2: count ... dateN: count]
+	 	  }
+	 	]
+	 */
 	Map<String, Object> prepareDataWithDatabases(Map requestResponse, String reportType) {
-		/*
-		generates structure
-		[
-			databaseName: {
-				metric1: [date1: count, date2: count ... dateN: count]
-				metric2: [date1: count, date2: count ... dateN: count]
-				...
-				metricN: [date1: count, date2: count ... dateN: count]
-			}
-		]
-		 */
 		Map<String, Object> databaseRows = [:]
 		//mini example: https://connect.liblynx.com/sushi/r5/reports/dr?customer_id=2246867&requestor_id=facd706b-cf11-42f9-8d92-a874e594a218&begin_date=2023-01&end_date=2023-12
 		//take https://laser-dev.hbz-nrw.de/subscription/membersSubscriptionsManagement/59727?tab=customerIdentifiers&isSiteReloaded=false as base for customer identifiers!
@@ -2055,6 +2066,12 @@ class ExportService {
 		databaseRows
 	}
 
+	/**
+	 * Sets generic parameters for the upcoming call: revision and SUSHI URL to use.
+     * If the suffix "reports" is not contained by the root URL coming from we:kb, it will be suffixed
+	 * @param platformRecord the we:kb platform record map containing the SUSHI API data
+	 * @return a {@link Map} containing the revision (either counter4 or counter5) and statsUrl wth the URL to call
+	 */
 	Map<String, String> prepareSushiCall(Map platformRecord) {
 		String revision = null, statsUrl = null
 		if(platformRecord.counterR5SushiApiSupported == "Yes") {
@@ -2080,6 +2097,11 @@ class ExportService {
 		[revision: revision, statsUrl: statsUrl]
 	}
 
+	/**
+	 * Builds the SUSHI request and fetches the data from the provider's SUSHI API server
+	 * @param configMap the map containing the request parameters
+	 * @return a {@link Map}
+	 */
 	Map<String, Object> getReports(Map configMap) {
 		Map<String, Object> result = [:]
 		ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
@@ -2181,6 +2203,13 @@ class ExportService {
 		result
 	}
 
+	/**
+	 * Assembles the identifiers of the given report item in order to enable more performant title match
+	 * @param reportItem the report item whose identifiers should be collected
+	 * @param revision the COUNTER revision of the report item
+	 * @return a {@link Map} with unified identifiers
+	 * @see AbstractReport
+	 */
 	Map<String, String> buildIdentifierMap(reportItem, String revision) {
 		Map<String, String> identifierMap = [:]
 		if(revision == AbstractReport.COUNTER_4) {
@@ -2981,6 +3010,13 @@ class ExportService {
 		joined
 	}
 
+	/**
+	 * Concatenates the set of identifiers belonging to the given namespace to a character-separated list
+	 * @param ids the set of identifiers to output
+	 * @param namespace the namespace whose identifiers should be concatenated
+	 * @param separator the character to use for separation
+	 * @return the concatenated string of identifiers
+	 */
 	String joinIdentifiersSQL(List<String> ids, String separator) {
 		String joined = ' '
 		if(ids)
