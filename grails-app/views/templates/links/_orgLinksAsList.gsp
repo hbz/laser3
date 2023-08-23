@@ -118,9 +118,9 @@
                                                     <g:each in="${Contact.findAllByPrsAndContentType(
                                                     func,
                                                     RDStore.CCT_EMAIL
-                                            )}" var="email">
+                                            )}" var="contact">
                                                         <laser:render template="/templates/cpa/contact" model="${[
-                                                            contact             : email,
+                                                            contact             : contact,
                                                             tmplShowDeleteButton: false,
                                                             overwriteEditable   : false
                                                     ]}" />
@@ -161,12 +161,12 @@
                                                         <div class="ui header">
                                                             ${func}
                                                         </div>
-                                                        <g:each in="${Contact.findAllByPrsAndContentType(
+                                                        <g:each in="${Contact.findAllByPrsAndContentTypeInList(
                                                                 func,
-                                                                RDStore.CCT_EMAIL
-                                                        )}" var="email">
+                                                                [RDStore.CCT_EMAIL, RDStore.CCT_URL]
+                                                        )}" var="contact">
                                                             <laser:render template="/templates/cpa/contact" model="${[
-                                                                    contact             : email,
+                                                                    contact             : contact,
                                                                     tmplShowDeleteButton: false,
                                                                     overwriteEditable   : false
                                                             ]}" />
@@ -191,12 +191,12 @@
                                                         <div class="ui header">
                                                             ${func}
                                                         </div>
-                                                        <g:each in="${Contact.findAllByPrsAndContentType(
+                                                        <g:each in="${Contact.findAllByPrsAndContentTypeInList(
                                                                 func,
-                                                                RDStore.CCT_EMAIL
-                                                        )}" var="email">
+                                                                [RDStore.CCT_EMAIL, RDStore.CCT_URL]
+                                                        )}" var="contact">
                                                             <laser:render template="/templates/cpa/contact" model="${[
-                                                                    contact             : email,
+                                                                    contact             : contact,
                                                                     tmplShowDeleteButton: false,
                                                                     overwriteEditable   : false
                                                             ]}" />
@@ -224,9 +224,9 @@
                                                         <g:each in="${Contact.findAllByPrsAndContentType(
                                                                 func,
                                                                 RDStore.CCT_EMAIL
-                                                        )}" var="email">
+                                                        )}" var="contact">
                                                             <laser:render template="/templates/cpa/contact" model="${[
-                                                                    contact             : email,
+                                                                    contact             : contact,
                                                                     tmplShowDeleteButton: false,
                                                                     overwriteEditable   : false
                                                             ]}" />
@@ -247,12 +247,12 @@
                                                     <div class="ui header">
                                                         ${resp}
                                                     </div>
-                                                    <g:each in="${Contact.findAllByPrsAndContentType(
+                                                    <g:each in="${Contact.findAllByPrsAndContentTypeInList(
                                                             resp,
-                                                            RDStore.CCT_EMAIL
-                                                    )}" var="email">
+                                                            [RDStore.CCT_EMAIL, RDStore.CCT_URL]
+                                                    )}" var="contact">
                                                         <laser:render template="/templates/cpa/contact" model="${[
-                                                                contact             : email,
+                                                                contact             : contact,
                                                                 tmplShowDeleteButton: false,
                                                                 overwriteEditable   : false
                                                         ]}" />
@@ -299,12 +299,12 @@
                                                     <div class="ui header">
                                                         ${func}
                                                     </div>
-                                                    <g:each in="${Contact.findAllByPrsAndContentType(
+                                                    <g:each in="${Contact.findAllByPrsAndContentTypeInList(
                                                             func,
-                                                            RDStore.CCT_EMAIL
-                                                    )}" var="email">
+                                                            [RDStore.CCT_EMAIL, RDStore.CCT_URL]
+                                                    )}" var="contact">
                                                         <laser:render template="/templates/cpa/contact" model="${[
-                                                                contact             : email,
+                                                                contact             : contact,
                                                                 tmplShowDeleteButton: false,
                                                                 overwriteEditable   : false
                                                         ]}" />
@@ -325,12 +325,12 @@
                                                         <div class="ui header">
                                                             ${func}
                                                         </div>
-                                                        <g:each in="${Contact.findAllByPrsAndContentType(
+                                                        <g:each in="${Contact.findAllByPrsAndContentTypeInList(
                                                                 func,
-                                                                RDStore.CCT_EMAIL
-                                                        )}" var="email">
+                                                                [RDStore.CCT_EMAIL, RDStore.CCT_URL]
+                                                        )}" var="contact">
                                                             <laser:render template="/templates/cpa/contact" model="${[
-                                                                    contact             : email,
+                                                                    contact             : contact,
                                                                     tmplShowDeleteButton: false,
                                                                     overwriteEditable   : false
                                                             ]}" />
@@ -350,12 +350,12 @@
                                                         <div class="ui header">
                                                             ${func}
                                                         </div>
-                                                        <g:each in="${Contact.findAllByPrsAndContentType(
+                                                        <g:each in="${Contact.findAllByPrsAndContentTypeInList(
                                                                 func,
-                                                                RDStore.CCT_EMAIL
-                                                        )}" var="email">
+                                                                [RDStore.CCT_EMAIL, RDStore.CCT_URL]
+                                                        )}" var="contact">
                                                             <laser:render template="/templates/cpa/contact" model="${[
-                                                                    contact             : email,
+                                                                    contact             : contact,
                                                                     tmplShowDeleteButton: false,
                                                                     overwriteEditable   : false
                                                             ]}" />
@@ -375,12 +375,12 @@
                                                         <div class="ui header">
                                                             ${func}
                                                         </div>
-                                                        <g:each in="${Contact.findAllByPrsAndContentType(
+                                                        <g:each in="${Contact.findAllByPrsAndContentTypeInList(
                                                                 func,
-                                                                RDStore.CCT_EMAIL
-                                                        )}" var="email">
+                                                                [RDStore.CCT_EMAIL, RDStore.CCT_URL]
+                                                        )}" var="contact">
                                                             <laser:render template="/templates/cpa/contact" model="${[
-                                                                    contact             : email,
+                                                                    contact             : contact,
                                                                     tmplShowDeleteButton: false,
                                                                     overwriteEditable   : false
                                                             ]}" />
@@ -401,12 +401,12 @@
                                                     <div class="ui header">
                                                         ${resp}
                                                     </div>
-                                                    <g:each in="${Contact.findAllByPrsAndContentType(
-                                                    resp,
-                                                    RDStore.CCT_EMAIL
-                                                    )}" var="email">
+                                                    <g:each in="${Contact.findAllByPrsAndContentTypeInList(
+                                                            resp,
+                                                            [RDStore.CCT_EMAIL, RDStore.CCT_URL]
+                                                    )}" var="contact">
                                                         <laser:render template="/templates/cpa/contact" model="${[
-                                                                contact             : email,
+                                                                contact             : contact,
                                                                 tmplShowDeleteButton: false,
                                                                 overwriteEditable   : false
                                                         ]}" />
