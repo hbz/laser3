@@ -29,9 +29,9 @@
 <ui:anualRings object="${orgInstance}" controller="organisation" action="show" navNext="${navNextOrg}"
                navPrev="${navPrevOrg}"/>
 
-<g:if test="${isProviderOrAgency}">
-    <ui:markerSwitch org="${orgInstance}"/>
-</g:if>
+%{--<g:if test="${isProviderOrAgency}">--}%
+%{--    <ui:markerSwitch org="${orgInstance}"/>--}%
+%{--</g:if>--}%
 
 <g:if test="${missing.size() > 0}">
     <div class="ui icon message warning">

@@ -54,7 +54,7 @@
 
 
 %{-- help sidebar --}%
-<laser:render template="/templates/help/help_subscription_show"/>
+<laser:render template="/templates/help/subscription_show"/>
 <section id="example">
     %{-- COLORS  --}%
     <laser:render template="frontend_colors" />

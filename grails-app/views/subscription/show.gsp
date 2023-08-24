@@ -2,7 +2,7 @@
 <laser:htmlStart message="subscription.details.label" serviceInjection="true"/>
 
 %{-- help sidebar --}%
-<laser:render template="/templates/help/help_subscription_show"/>
+<laser:render template="/templates/help/subscription_show"/>
 <ui:debugInfo>
     <div style="padding: 1em 0;">
         <p>sub.type: ${subscription.type}</p>

@@ -75,7 +75,7 @@ class LinkTagLib {
         }
 
         out << '<a href="' + href + '" target="_blank" aria-label="' + label + '" '
-        out << 'class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay" '
+        out << 'class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay" '
         out << 'data-position="top right" data-content="' + label + '" '
 //        out << 'data-content="' + message(code: 'org.isWekbCurated.header.label') + '" '
 //        out << 'aria-label="' + message(code: 'org.isWekbCurated.header.label') + '" '
