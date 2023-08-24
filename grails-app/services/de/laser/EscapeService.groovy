@@ -82,7 +82,6 @@ class EscapeService {
      * Generates a normalised sort name from the given input
      * @param name the name to normalise
      * @return the normalised sort name string
-     * @see IssueEntitlement#generateSortTitle()
      * @see TitleInstancePackagePlatform#generateSortTitle()
      * @see Package#generateSortName(java.lang.String)
      */
@@ -100,6 +99,11 @@ class EscapeService {
         sortname
     }
 
+    /**
+     * Converts the given stream of characters into their representation in ASCII
+     * @param s the string to convert
+     * @return the string whose special character letters have been converted
+     */
     String asciify(String s) {
         char[] c = s.toCharArray()
         StringBuffer b = new StringBuffer()
@@ -109,6 +113,11 @@ class EscapeService {
         return b.toString()
     }
 
+    /**
+     * Selects to the given special char its closest ASCII char
+     * @param c the character to transform
+     * @return the ASCII representation of the char
+     */
     char translateChar(char c) {
         switch(c) {
             case '\u00C0':
