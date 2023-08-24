@@ -9,15 +9,10 @@
         <button class="ui button big la-menue-button la-modern-button" style="display:none"><i class="bars icon"></i></button>
 
         <div class="ui sub header item la-context-org" style="display: none">
-            <div class="item la-cb-context">
-                <ui:customerTypeIcon org="${contextOrg}" config="display"/>
-            </div>
+            <ui:contextBarCustomerTypeIcon org="${contextOrg}" />
             &nbsp; / &nbsp;
-            <div class="item la-cb-context">
-                <ui:userAffiliationIcon user="${contextUser}" config="display"/>
-            </div>
+            <ui:contextBarUserAffiliationIcon user="${contextUser}" />
             &nbsp; / &nbsp;
-
             <div id="la-cb-context-display" data-display="${contextOrg?.name}">
                 ${contextOrg?.name}
             </div>
@@ -30,66 +25,93 @@
         %{-- my object indicator --}%
 
             <g:if test="${isMyPlatform}">
-                <div class="item la-cb-info">
-                    <ui:contextBarInfoIcon config="display" text="${message(code: 'license.relationship.platform')}" icon="star" color="yellow" />
-                </div>
+                <ui:contextBarInfoIcon display="${message(code: 'license.relationship.platform')}" icon="star" color="yellow" />
             </g:if>
             <g:elseif test="${isMyPkg}">
-                <div class="item la-cb-info">
-                    <ui:contextBarInfoIcon config="display" text="${message(code: 'license.relationship.pkg')}" icon="star" color="violet" />
-                </div>
+                <ui:contextBarInfoIcon display="${message(code: 'license.relationship.pkg')}" icon="star" color="violet" />
             </g:elseif>
             <g:elseif test="${isMyOrg}">
-                <div class="item la-cb-info">
-                    <ui:contextBarInfoIcon config="display" text="${message(code: 'license.relationship.org')}" icon="star" color="teal" />
-                </div>
+                <ui:contextBarInfoIcon display="${message(code: 'license.relationship.org')}" icon="star" color="teal" />
             </g:elseif>
 
         %{-- child indicator --}%
 
             <g:if test="${controllerName == 'subscription' && subscription}">
                 <g:if test="${subscription.instanceOf && contextService.getOrg().id == subscription.getConsortia()?.id}">
-                    <div class="item la-cb-info">
-                        <ui:contextBarInfoIcon config="display" text="Sie sehen eine Kindlizenz" icon="child" color="orange" />
-                    </div>
+                    <ui:contextBarInfoIcon display="Sie sehen eine Kindlizenz" icon="child" color="orange" />
                 </g:if>
             </g:if>
 
             <g:if test="${controllerName == 'license' && license}">
                 <g:if test="${license.instanceOf && contextService.getOrg().id == license.getLicensingConsortium()?.id}">
-                    <div class="item la-cb-info">
-                        <ui:contextBarInfoIcon config="display" text="Sie sehen einen Einrichtungsvertrag" icon="child" color="green" />
-                    </div>
+                    <ui:contextBarInfoIcon display="Sie sehen einen Einrichtungsvertrag" icon="child" color="green" />
                 </g:if>
             </g:if>
 
         %{-- content indicator --}%
 
             <g:if test="${flagContentCache}">
-                <div class="item la-cb-info">
-                    <ui:contextBarInfoIcon config="display" text="${message(code: 'statusbar.flagContentCache.tooltip')}" icon="hourglass" color="orange" />
-                </div>
+                <ui:contextBarInfoIcon display="${message(code: 'statusbar.flagContentCache.tooltip')}" icon="hourglass" color="blue" />
             </g:if>
             <g:if test="${flagContentGokb}">
-                <div class="item la-cb-info">
-                    <ui:contextBarInfoIcon config="display" text="${message(code: 'statusbar.flagContentGokb.tooltip')}" icon="cloud" color="blue" />
-                </div>
+                <ui:contextBarInfoIcon display="${message(code: 'statusbar.flagContentGokb.tooltip')}" icon="cloud" color="blue" />
             </g:if>
             <g:if test="${flagContentElasticsearch}">
-                <div class="item la-cb-info">
-                    <ui:contextBarInfoIcon config="display" text="${message(code: 'statusbar.flagContentElasticsearch.tooltip')}" icon="cloud" color="blue" />
-                </div>
+                <ui:contextBarInfoIcon display="${message(code: 'statusbar.flagContentElasticsearch.tooltip')}" icon="cloud" color="blue" />
             </g:if>
 
             %{-- help panel --}%
 
             <g:if test="${(controllerName=='subscription' && actionName=='show') || (controllerName=='dev' && actionName=='frontend')}">
                 <div class="item la-cb-action">
-                    <button class="ui icon button blue la-modern-button la-help-panel-button"><i class="question circle icon"></i></button>
+                    <button class="ui icon button la-help-panel-button"><i class="question circle icon"></i></button>
                 </div>
             </g:if>
 
-            %{-- marker --}%
+            %{-- edit mode switcher  --}%
+
+            <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription' || controllerName=='license') && actionName=='show' && (editable || contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))}">
+                <g:if test="${contextUser?.getSettingsValue(UserSetting.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES)?.value=='Yes'}">
+                    <ui:contextBarToggleAction status="active" icon="pencil alternate" tooltip="${message(code:'statusbar.showButtons.tooltip')}" />
+                </g:if>
+                <g:else>
+                    <ui:contextBarToggleAction status="inactive" icon="pencil alternate slash" tooltip="${message(code:'statusbar.hideButtons.tooltip')}" />
+                </g:else>
+            </g:if>
+
+        %{-- advanced mode switcher  --}%
+
+            <g:if test="${(params.mode)}">
+                <g:if test="${params.mode=='advanced'}">
+                    <ui:contextBarToggleAction status="active" icon="plus square" tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}"
+                                               reload="${g.createLink(action: actionName, params: params + ['mode':'basic'])}" />
+                </g:if>
+                <g:else>
+                    <ui:contextBarToggleAction status="inactive" icon="plus square slash" tooltip="${message(code:'statusbar.showBasicView.tooltip')}"
+                                               reload="${g.createLink(action: actionName, params: params + ['mode':'advanced'])}" />
+                </g:else>
+            </g:if>
+
+        %{-- survey stuff  --}%
+
+            <g:if test="${controllerName == 'survey' && (actionName == 'currentSurveysConsortia' || actionName == 'workflowsSurveysConsortia')}">
+                <div class="item la-cb-action">
+                    <g:if test="${actionName == 'workflowsSurveysConsortia'}">
+                        <g:link action="currentSurveysConsortia" controller="survey" class="ui icon button la-popup-tooltip la-delay"
+                                data-content="${message(code:'statusbar.change.currentSurveysConsortiaView.tooltip')}" data-position="bottom center">
+                            <i class="exchange icon"></i>
+                        </g:link>
+                    </g:if>
+                    <g:else>
+                        <g:link action="workflowsSurveysConsortia" controller="survey" class="ui icon button la-popup-tooltip la-delay"
+                                data-content="${message(code:'statusbar.change.workflowsSurveysConsortiaView.tooltip')}" data-position="bottom center">
+                            <i class="exchange icon"></i>
+                        </g:link>
+                    </g:else>
+                </div>
+            </g:if>
+
+        %{-- marker --}%
 
             <g:if test="${controllerName == 'organisation'}">
                 <g:if test="${isProviderOrAgency}">
@@ -103,143 +125,105 @@
                 <ui:markerSwitch platform="${platformInstance}"/>
             </g:elseif>
 
-            %{-- edit mode switcher  --}%
-
-            <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription' || controllerName=='license') && actionName=='show' && (editable || contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))}">
-                <div class="item la-cb-action">
-                    <g:if test="${contextUser?.getSettingsValue(UserSetting.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES)?.value=='Yes'}">
-                        <button class="ui icon toggle active la-toggle-advanced blue button la-modern-button la-popup-tooltip la-delay"
-                                data-content="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom center">
-                            <i class="pencil alternate icon"></i>
-                        </button>
-                    </g:if>
-                    <g:else>
-                        <button class="ui icon toggle inactive la-toggle-advanced blue button la-modern-button la-popup-tooltip la-delay"
-                                data-content="${message(code:'statusbar.hideButtons.tooltip')}" data-position="bottom center">
-                            <i class="pencil alternate slash icon"></i>
-                        </button>
-                    </g:else>
-                </div>
-            </g:if>
-
-        %{-- advanced mode switcher  --}%
-
-            <g:if test="${(params.mode)}">
-                <div class="item la-cb-action">
-                    <g:if test="${params.mode=='advanced'}">
-                        <div class="ui icon toggle active la-toggle-advanced blue button la-modern-button la-popup-tooltip la-delay"
-                             data-content="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom center"
-                             data-reload="<g:createLink action="${actionName}" params="${params + ['mode':'basic']}" />">
-                            <i class="icon plus square"></i>
-                        </div>
-                    </g:if>
-                    <g:else>
-                        <div class="ui icon toggle inactive la-toggle-advanced blue button la-modern-button la-popup-tooltip la-delay"
-                             data-content="${message(code:'statusbar.showBasicView.tooltip')}" data-position="bottom center"
-                             data-reload="<g:createLink action="${actionName}" params="${params + ['mode':'advanced']}" />">
-                            <i class="icon plus square green slash"></i>
-                        </div>
-                    </g:else>
-                </div>
-            </g:if>
-
-        %{-- survey stuff  --}%
-
-            <g:if test="${controllerName == 'survey' && (actionName == 'currentSurveysConsortia' || actionName == 'workflowsSurveysConsortia')}">
-                <div class="item la-cb-action">
-                    <g:if test="${actionName == 'workflowsSurveysConsortia'}">
-                        <g:link action="currentSurveysConsortia" controller="survey" class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
-                                data-content="${message(code:'statusbar.change.currentSurveysConsortiaView.tooltip')}" data-position="bottom center">
-                            <i class="exchange icon"></i>
-                        </g:link>
-                    </g:if>
-                    <g:else>
-                        <g:link action="workflowsSurveysConsortia" controller="survey" class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
-                                data-content="${message(code:'statusbar.change.workflowsSurveysConsortiaView.tooltip')}" data-position="bottom center">
-                            <i class="exchange icon"></i>
-                        </g:link>
-                    </g:else>
-                </div>
-            </g:if>
-
         </div>%{-- la-advanced-view --}%
 
     </div>
 
 </nav>%{-- la-contextBar --}%
 
+
+
+%{-- stable --}%
 <style>
-#la-cb-info-display {
-    font-size: 0.87em;
-    font-weight: bold;
-    color: grey;
-    margin-right: 1em;
-}
-.la-cb-info.item {
-    margin: 0 1em 0 0 !important;
-}
-.la-cb-info.item > .label {
-    margin: 0 !important;
-    border: 1px solid #e3eaf3 !important;
-    background-color: #e3eaf3 !important;
-}
-.la-cb-info.item > .label:hover {
-    cursor: help;
-}
-.la-cb-info.item > .label > .icon {
-    margin: 0 !important;
-}
 
-.la-cb-action.item {
-    margin: 0 0 0 1px !important;
-    border-right: none !important;
-}
-.la-cb-action.item > .button {
-    height: 40px !important;
-    width: 42px !important;
-    border-radius: 0 !important;
-    background-color: rgba(0,0,0, 0.1) !important;
-    /*background-color: #004678  !important;*/
-}
-.la-cb-action.item > .button:hover {
-    background-color: rgba(0,0,0, 0.2) !important;
-    /*background-color: #003668 !important;*/
-}
-.la-cb-action.item > .button > .icon {
-    color: #004678 !important;
-    /*color: #fff !important;*/
-}
-.la-cb-action.item > .button:hover > .icon {
-    color: #000 !important;
-}
+    .la-contextBar.ui.menu {
+        box-shadow: none !important;
+    }
+    .la-contextBar.ui.menu .item::before {
+        width: 0 !important;
+    }
 
-.la-cb-info.item + .la-cb-action.item,
-.la-cb-info.item + .la-cb-action-ext.item {
-    margin-left: 2em !important;
-}
+    #la-cb-info-display {
+        font-size: 0.87em;
+        font-weight: bold;
+        color: grey;
+        margin-right: 1em;
+    }
 
-.la-cb-action-ext.item {
-    margin: 0 0 0 1px !important;
-    border-right: none !important;
-}
-.la-cb-action-ext.item > .button {
-    height: 40px !important;
-    width: 42px !important;
-    border-radius: 0 !important;
-    /*background-color: rgba(0,0,0, 0.1) !important;*/
-    background-color: #004678  !important;
-}
-.la-cb-action-ext.item > .button:hover {
-    /*background-color: rgba(0,0,0, 0.2) !important;*/
-    background-color: #003668 !important;
-}
-.la-cb-action-ext.item > .button > .icon {
-    /*color: #004678 !important;*/
-    color: #fff !important;
-}
+    .la-cb-info.item {
+        margin: 0 1em 0 0 !important;
+    }
+    .la-cb-info.item > .label {
+        margin: 0 !important;
+        background-color: #e3eaf3 !important;
+    }
+    .la-cb-info.item > .label:hover {
+        cursor: help;
+    }
+    .la-cb-info.item > .label > .icon {
+        margin: 0 !important;
+    }
 
-/* -- todo; ignore -- */
+    .la-cb-info.item + .la-cb-action.item,
+    .la-cb-info.item + .la-cb-action-ext.item {
+        margin-left: 2em !important;
+    }
 
+    .la-cb-action.item,
+    .la-cb-action-ext.item {
+        margin: 0 0 0 1px !important;
+        border-right: none !important;
+    }
+
+    .la-cb-action.item > .button {
+        background-color: rgba(0,0,0, 0.1) !important;
+        /*background-color: #004678  !important;*/
+    }
+    .la-cb-action.item > .button:hover {
+        background-color: rgba(0,0,0, 0.2) !important;
+        /*background-color: #003668 !important;*/
+    }
+    .la-cb-action.item > .button > .icon {
+        color: #004678 !important;
+        /*color: #fff !important;*/
+    }
+    .la-cb-action.item > .button:hover > .icon {
+        color: #000 !important;
+    }
+
+    /* -- overrides -- */
+
+    .la-contextBar .la-cb-action.item .button.la-toggle-advanced.active {
+        background-color: #98b500 !important;
+    }
+    .la-contextBar .la-cb-action.item .button.la-toggle-advanced.inactive {
+        background-color: #D95F3D !important;
+    }
+    .la-contextBar .la-cb-action.item .button.toggle .icon {
+        color: #fff !important;
+    }
+
+</style>
+
+%{-- unstable --}%
+<style>
+
+    .la-contextBar.ui.menu .la-context-org {
+        flex: 0 0 500px;
+    }
+
+    .la-cb-info.item > .label {
+        border: 1px solid #e3eaf3 !important;
+    }
+
+    .la-cb-action.item > .button,
+    .la-cb-action-ext.item > .button {
+        height: 40px !important;
+        width: 42px !important;
+        border-radius: 0 !important;
+    }
+
+/* -- todo -- */
 
 .la-contextBar .la-cb-action.item .button.purple.active {
     background-color: #2185d0 !important;
@@ -253,27 +237,8 @@
     color: #2185d0 !important;
 }
 
-/* -- overrides -- */
 
-.la-contextBar .la-cb-action.item .button.la-toggle-advanced.active {
-    background-color: #98b500 !important;
-}
-.la-contextBar .la-cb-action.item .button.la-toggle-advanced.inactive {
-    background-color: #D95F3D !important;
-}
-.la-contextBar .la-cb-action.item .button.toggle .icon {
-    color: #fff !important;
-}
 
-.la-contextBar.ui.menu {
-    box-shadow: none !important;
-}
-.la-contextBar.ui.menu .la-context-org {
-    flex: 0 0 500px;
-}
-.la-contextBar.ui.menu .item::before {
-    width: 0 !important;
-}
 </style>
 
 <laser:script file="${this.getGroovyPageFileName()}">

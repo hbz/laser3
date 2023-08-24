@@ -77,7 +77,7 @@
                                 </g:if>
                             </td>
                             <td>
-                                <ui:markerSwitch org="${obj}"/>
+                                <ui:markerSwitch org="${obj}" simple="true"/>
                             </td>
                         </g:if>
                         <g:elseif test="${obj instanceof Package}">
@@ -93,7 +93,7 @@
                                 </g:if>
                             </td>
                             <td>
-                                <ui:markerSwitch package="${obj}"/>
+                                <ui:markerSwitch package="${obj}" simple="true"/>
                             </td>
                         </g:elseif>
                         <g:elseif test="${obj instanceof Platform}">
@@ -109,7 +109,7 @@
                                 </g:if>
                             </td>
                             <td>
-                                <ui:markerSwitch platform="${obj}"/>
+                                <ui:markerSwitch platform="${obj}" simple="true"/>
                             </td>
                         </g:elseif>
                     </tr>

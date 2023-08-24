@@ -1147,6 +1147,8 @@ class AjaxController {
 
         Map attrs = [ type: type, ajax: true ]
 
+        if (params.simple) { attrs.simple = true }
+
         if (obj instanceof Org) {
             attrs.org = obj
         }
