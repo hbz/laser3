@@ -26,7 +26,7 @@ class IconTagLib {
                 icon = 'bordered inverted teal address book la-object-extended'
                 break
             case 'admin':
-                icon = 'la-object trophy'
+                icon = 'la-object wrench'
                 break
             case 'affiliation':
                 Role fr = contextService.getUser().formalRole

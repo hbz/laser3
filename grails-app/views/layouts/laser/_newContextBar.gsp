@@ -11,7 +11,7 @@
         <div class="ui sub header item la-context-org" style="display: none">
             <ui:contextBarCustomerTypeIcon org="${contextOrg}" />
             &nbsp; / &nbsp;
-            <ui:contextBarUserAffiliationIcon user="${contextUser}" />
+            <ui:contextBarUserAffiliationIcon user="${contextUser}" showGlobalRole="true" />
             &nbsp; / &nbsp;
             <div id="la-cb-context-display" data-display="${contextOrg?.name}">
                 ${contextOrg?.name}
@@ -22,7 +22,7 @@
 
             <div id="la-cb-info-display"></div>
 
-        %{-- my object indicator --}%
+            %{-- my object indicator --}%
 
             <g:if test="${isMyPlatform}">
                 <ui:contextBarInfoIcon display="${message(code: 'license.relationship.platform')}" icon="star" color="yellow" />
@@ -34,7 +34,7 @@
                 <ui:contextBarInfoIcon display="${message(code: 'license.relationship.org')}" icon="star" color="teal" />
             </g:elseif>
 
-        %{-- child indicator --}%
+            %{-- child indicator --}%
 
             <g:if test="${controllerName == 'subscription' && subscription}">
                 <g:if test="${subscription.instanceOf && contextService.getOrg().id == subscription.getConsortia()?.id}">
@@ -48,7 +48,7 @@
                 </g:if>
             </g:if>
 
-        %{-- content indicator --}%
+            %{-- content indicator --}%
 
             <g:if test="${flagContentCache}">
                 <ui:contextBarInfoIcon display="${message(code: 'statusbar.flagContentCache.tooltip')}" icon="hourglass" color="blue" />
@@ -79,7 +79,7 @@
                 </g:else>
             </g:if>
 
-        %{-- advanced mode switcher  --}%
+            %{-- advanced mode switcher  --}%
 
             <g:if test="${(params.mode)}">
                 <g:if test="${params.mode=='advanced'}">
@@ -92,7 +92,7 @@
                 </g:else>
             </g:if>
 
-        %{-- survey stuff  --}%
+            %{-- survey stuff  --}%
 
             <g:if test="${controllerName == 'survey' && (actionName == 'currentSurveysConsortia' || actionName == 'workflowsSurveysConsortia')}">
                 <div class="item la-cb-action">
@@ -111,7 +111,7 @@
                 </div>
             </g:if>
 
-        %{-- marker --}%
+            %{-- marker --}%
 
             <g:if test="${controllerName == 'organisation'}">
                 <g:if test="${isProviderOrAgency}">
@@ -127,7 +127,7 @@
 
         </div>%{-- la-advanced-view --}%
 
-    </div>
+    </div>%{-- container --}%
 
 </nav>%{-- la-contextBar --}%
 
