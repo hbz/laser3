@@ -13,14 +13,17 @@ class ContextBarTagLib {
 
     static namespace = 'ui'
 
-    // <ui:contextBarUserAffiliationIcon user="${contextService.getUser()}" />
+    // <ui:contextBarUserAffiliationIcon user="${contextService.getUser()}" showGlobalRole="true|false" />
 
     def contextBarUserAffiliationIcon = {attrs, body ->
         String icon = 'user slash'
         String color = 'grey'
         String text = '?'
+        String globalRoleIcon = ''
 
-        Role fr = (attrs.user as User).formalRole
+        User user = attrs.user as User
+        Role fr = user.formalRole
+
         if (fr) {
             if (fr.authority == Role.INST_USER) {
                 icon = 'user'
@@ -36,9 +39,23 @@ class ContextBarTagLib {
             }
         }
 
+        if (attrs.showGlobalRole?.equalsIgnoreCase('true')) {
+            if (user.isYoda()) {
+                text = text + ' + [YODA]'
+                globalRoleIcon = '<i class="icon tools"></i>'
+            }
+            else if (user.isAdmin()) {
+                text = text + ' + [ADMIN]'
+                globalRoleIcon = '<i class="icon wrench"></i>'
+            }
+        }
+
         out << '<div class="item la-cb-context">'
         out <<     '<span data-display="' + text + '">'
         out <<         '<i class="icon ' + icon + ' ' + color + '"></i>'
+        if (globalRoleIcon) {
+            out << globalRoleIcon
+        }
         out <<     '</span>'
         out << '</div>'
     }
