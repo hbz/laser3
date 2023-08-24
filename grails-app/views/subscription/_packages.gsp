@@ -17,7 +17,7 @@
                             <ui:wekbIconLink type="package" gokbId="${sp.pkg.gokbId}"/>
                             <g:link controller="package" action="show" id="${sp.pkg.id}">${sp.pkg.name}</g:link>
                             <br>
-                            ${sp.getIssueEntitlementCountOfPackage()} <g:message code="subscription.packages.currentTitles"/>
+                            ${sp.getCurrentIssueEntitlementCountOfPackage()} <g:message code="subscription.packages.currentTitles"/>
                         </div>
                         <div class="three wide column">
                             <g:if test="${sp.pkg.contentProvider}">

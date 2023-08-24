@@ -258,8 +258,7 @@ class DeletionService {
         List subPkgs        = new ArrayList(sub.packages)
         List pendingChanges = new ArrayList(PendingChange.findAllBySubscription(sub))
 
-        List ies            = IssueEntitlement.where { subscription == sub }.findAll()
-                            // = new ArrayList(sub.issueEntitlements)
+        List ies = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription = :sub order by ie.id', [sub: sub])
 
         Org contextOrg = contextService.getOrg()
         List nonDeletedCosts = new ArrayList(sub.costItems.findAll { CostItem ci -> ci.costItemStatus != RDStore.COST_ITEM_DELETED && ci.owner == contextOrg })
@@ -401,6 +400,7 @@ class DeletionService {
 
                     // issue entitlements
                     // sub.issueEntitlements.clear()
+                    /*
                     ies.each { tmp ->
 
                         tmp.coverages?.each{ coverage ->
@@ -408,6 +408,12 @@ class DeletionService {
                         }
                         tmp.delete()
                     }
+                    */
+                    String ieSubClause = '(select ie from IssueEntitlement ie where ie.subscription = :sub)'
+                    PriceItem.executeUpdate('delete from PriceItem pi where pi.issueEntitlement in '+ieSubClause, [sub: sub])
+                    IssueEntitlementChange.executeUpdate('delete from IssueEntitlementChange iec where iec.subscription = :sub', [sub: sub])
+                    PermanentTitle.executeUpdate('delete from PermanentTitle pt where pt.subscription = :sub', [sub: sub])
+                    IssueEntitlement.executeUpdate('delete from IssueEntitlement ie where ie.subscription = :sub', [sub: sub])
 
                     //cost items
                     sub.costItems.clear()
