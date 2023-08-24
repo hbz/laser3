@@ -475,6 +475,14 @@ class ExportService {
 		}
 	}
 
+	/**
+	 * Exports the given list of contacts in the given format
+	 * @param format the format to use for the export (Excel or CSV)
+	 * @param visiblePersons the list of {@link Person}s to export
+	 * @return either an Excel workbook or a character-separated list containing the export
+	 * @deprecated all exports should be made configurable by modal; move this export to {@link ExportClickMeService#exportAddresses(java.util.List, java.util.List, java.util.Map, java.lang.Object, java.lang.Object, de.laser.ExportClickMeService.FORMAT)}
+	 */
+	@Deprecated
 	def exportAddressbook(String format, List visiblePersons) {
 		Locale locale = LocaleUtils.getCurrentLocale()
 		Map<String, String> columnHeaders = [
@@ -1906,18 +1914,21 @@ class ExportService {
 		result
 	}
 
+	/**
+	 * Assembles the rows containing the usages for each database according to the given report type
+	 * @param requestResponse the response data from the provider's SUSHI API
+	 * @param reportType the report type to be exported
+	 * @return a {@link Map} containing the export rows for each database, in structure:
+	 * [
+	 	databaseName: {
+	 		metric1: [date1: count, date2: count ... dateN: count]
+	 		metric2: [date1: count, date2: count ... dateN: count]
+	 		...
+	 		metricN: [date1: count, date2: count ... dateN: count]
+	 	  }
+	 	]
+	 */
 	Map<String, Object> prepareDataWithDatabases(Map requestResponse, String reportType) {
-		/*
-		generates structure
-		[
-			databaseName: {
-				metric1: [date1: count, date2: count ... dateN: count]
-				metric2: [date1: count, date2: count ... dateN: count]
-				...
-				metricN: [date1: count, date2: count ... dateN: count]
-			}
-		]
-		 */
 		Map<String, Object> databaseRows = [:]
 		//mini example: https://connect.liblynx.com/sushi/r5/reports/dr?customer_id=2246867&requestor_id=facd706b-cf11-42f9-8d92-a874e594a218&begin_date=2023-01&end_date=2023-12
 		//take https://laser-dev.hbz-nrw.de/subscription/membersSubscriptionsManagement/59727?tab=customerIdentifiers&isSiteReloaded=false as base for customer identifiers!
@@ -2055,6 +2066,12 @@ class ExportService {
 		databaseRows
 	}
 
+	/**
+	 * Sets generic parameters for the upcoming call: revision and SUSHI URL to use.
+     * If the suffix "reports" is not contained by the root URL coming from we:kb, it will be suffixed
+	 * @param platformRecord the we:kb platform record map containing the SUSHI API data
+	 * @return a {@link Map} containing the revision (either counter4 or counter5) and statsUrl wth the URL to call
+	 */
 	Map<String, String> prepareSushiCall(Map platformRecord) {
 		String revision = null, statsUrl = null
 		if(platformRecord.counterR5SushiApiSupported == "Yes") {
@@ -2080,6 +2097,11 @@ class ExportService {
 		[revision: revision, statsUrl: statsUrl]
 	}
 
+	/**
+	 * Builds the SUSHI request and fetches the data from the provider's SUSHI API server
+	 * @param configMap the map containing the request parameters
+	 * @return a {@link Map}
+	 */
 	Map<String, Object> getReports(Map configMap) {
 		Map<String, Object> result = [:]
 		ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
@@ -2181,6 +2203,13 @@ class ExportService {
 		result
 	}
 
+	/**
+	 * Assembles the identifiers of the given report item in order to enable more performant title match
+	 * @param reportItem the report item whose identifiers should be collected
+	 * @param revision the COUNTER revision of the report item
+	 * @return a {@link Map} with unified identifiers
+	 * @see AbstractReport
+	 */
 	Map<String, String> buildIdentifierMap(reportItem, String revision) {
 		Map<String, String> identifierMap = [:]
 		if(revision == AbstractReport.COUNTER_4) {
@@ -2981,6 +3010,13 @@ class ExportService {
 		joined
 	}
 
+	/**
+	 * Concatenates the set of identifiers belonging to the given namespace to a character-separated list
+	 * @param ids the set of identifiers to output
+	 * @param namespace the namespace whose identifiers should be concatenated
+	 * @param separator the character to use for separation
+	 * @return the concatenated string of identifiers
+	 */
 	String joinIdentifiersSQL(List<String> ids, String separator) {
 		String joined = ' '
 		if(ids)
@@ -3696,6 +3732,13 @@ class ExportService {
 		row
 	}
 
+	/**
+	 * Creates a table cell in the given format. If the format is an Excel table, a style may be submitted as well
+	 * @param format the format to use for the export (excel or kbart)
+	 * @param data the data for the cell
+	 * @param style styling parameter for an Excel sheet cell
+	 * @return the table cell in the appropriate format; either as {@link Map} in structure [field: data, style: style]
+	 */
 	def createCell(String format, data, String style = null) {
 		if(format == 'excel')
 			[field: data, style: style]
@@ -3706,6 +3749,25 @@ class ExportService {
 		}
 	}
 
+	/**
+	 * Retrieves the title holding data for a given package, using native SQL. Data is being retrieved depending on the given context:
+	 * are we regarding the holding of a certain subscription (then, IssueEntitlement is the base class) or the sales unit of a package
+	 * (where TitleInstancePackagePlatform is the base class holding). In addition, usage statistics data may be retrieved as well, for that purpose,
+	 * the SUSHI API of the provider is being contacted; the matching of the usage reports to the titles is done in this method as well
+	 * @param configMap the map containing the request and filter parameters
+	 * @param entitlementInstance the base class of the titles, depending on the context: if we regard from the subscription's holding, then {@link IssueEntitlement}; if the sales unit is being regarded, then {@link TitleInstancePackagePlatform}
+	 * @param sql the SQL connection to the database
+	 * @param showStatsInMonthRings if submitted: which months of the usage report(s) should be included in the export?
+	 * @param subscriber the subscriber institution ({@link Org}) whose data / usage statistics should be requested
+	 * @return a {@link Map} containing the following data to be exported:
+	 * [titles: titles,
+	 * 	coverageMap: coverageMap,
+	 * 	priceItemMap: priceItemMap,
+	 * 	identifierMap: identifierMap,
+	 * 	reportMap: reportMap,
+	 *  coreTitleIdentifierNamespaces: coreTitleIdentifierNamespaces,
+	 *  otherTitleIdentifierNamespaces: otherTitleIdentifierNamespaces]
+	 */
 	Map<String, Object> getTitleData(Map configMap, String entitlementInstance, Sql sql, List showStatsInMonthRings = [], Org subscriber = null) {
 		Map<String, Object> queryData = filterService.prepareTitleSQLQuery(configMap, entitlementInstance, sql)
 		List<GroovyRowResult> titles = sql.rows(queryData.query+queryData.join+' where '+queryData.where+queryData.order, queryData.params),
@@ -4004,6 +4066,14 @@ class ExportService {
 		result
 	}
 
+	/**
+	 * Helper method to order rows of an auxiliary table to a map for that the values belonging to a title record may be fetched more easily
+	 * @param rows the rows of the auxiliary table
+	 * @param tippKey the primary key of the {@link TitleInstancePackagePlatform}
+	 * @return a {@link Map} containing the SQL row result with the primary key as map key
+	 * @deprecated to be refactored by json_agg(json_build_object()) method chain in the SQL query for that the database does the collection more performantly
+	 */
+	@Deprecated
 	static Map<Long, List<GroovyRowResult>> preprocessRows(List<GroovyRowResult> rows, String tippKey) {
 		Map<Long, List<GroovyRowResult>> result = [:]
 		rows.each { GroovyRowResult row ->
@@ -4016,6 +4086,14 @@ class ExportService {
 		result
 	}
 
+	/**
+	 * Helper method to order rows of the price item table to a map for that the values belonging to a title record may be fetched more easily
+	 * @param priceItemRows the rows of the {@link PriceItem} table
+	 * @param tippKey the primary key of the {@link TitleInstancePackagePlatform}
+	 * @return a {@link Map} containing the SQL row result with the primary key as map key
+	 * @deprecated to be refactored by json_agg(json_build_object()) method chain in the SQL query for that the database does the collection more performantly
+	 */
+	@Deprecated
 	static Map<Long, Map<String, GroovyRowResult>> preprocessPriceItemRows(List<GroovyRowResult> priceItemRows, String tippKey) {
 		Map<Long, Map<String, GroovyRowResult>> priceItems = [:]
 		priceItemRows.each { GroovyRowResult piRow ->
@@ -4030,6 +4108,13 @@ class ExportService {
 		priceItems
 	}
 
+	/**
+	 * Helper method to order rows of the identifier table to a map for that the values belonging to a title record may be fetched more easily
+	 * @param rows the rows of the {@link Identifier} table
+	 * @return a {@link Map} containing the SQL row result, grouped by namespaces, with the primary key as map key
+	 * @deprecated to be refactored by json_agg(json_build_object()) method chain in the SQL query for that the database does the collection more performantly
+	 */
+	@Deprecated
 	static Map<Long, Map<String, List<String>>> preprocessIdentifierRows(List<GroovyRowResult> rows) {
 		Map<Long, Map<String, List<String>>> identifiers = [:]
 		rows.each { GroovyRowResult row ->
