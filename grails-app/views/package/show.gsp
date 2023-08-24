@@ -486,7 +486,7 @@ making obsolete package/actions
                         </div>
                     </div>
                     <g:if test="${gascoContacts}">
-                        <div class="ui card ">
+                        <div class="ui card">
                             <div class="content">
                                 <h2 class="ui header">${message(code: 'gasco.contacts.plural')}</h2>
                                 <table class="ui compact table">

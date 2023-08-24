@@ -33,7 +33,7 @@
             <br><br><br>
         </g:if>
 
-        <div class="ui card ">
+        <div class="ui card">
             <div class="content">
 
                 <g:if test="${contextService.getOrg().isCustomerType_Consortium_Pro() && surveyOrg}">

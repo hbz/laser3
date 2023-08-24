@@ -96,7 +96,7 @@
                         <td>${sub.name}</td>
                     </g:if>
                     <td>
-                        <div class="ui card ">
+                        <div class="ui card">
                             <div class="content">
                                 <laser:render template="/templates/links/orgLinksAsList"
                                           model="${[roleLinks    : sub.orgRelations?.findAll {

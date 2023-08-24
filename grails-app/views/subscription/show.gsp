@@ -393,7 +393,7 @@
     <aside class="five wide column la-sidekick">
         <div class="ui one cards">
             <div id="container-provider">
-                <div class="ui card ">
+                <div class="ui card">
                     <div class="content">
                         <h2 class="ui header">${message(code: 'subscription.organisations.label')}</h2>
                         <laser:render template="/templates/links/orgLinksAsList"
