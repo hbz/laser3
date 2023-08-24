@@ -119,6 +119,14 @@ class SubscriptionPackage implements Comparable {
   }
 
   /**
+   * Counts the issue entitlements with status current of this subscription in the given package which have not been marked as deleted
+   * @return the count of {@link IssueEntitlement}s of the holding which is not marked as deleted
+   */
+  int getCurrentIssueEntitlementCountOfPackage(){
+    IssueEntitlement.executeQuery('select count(ie.id) from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg and ie.subscription = :sub and ie.status = :current', [sub: this.subscription, pkg: this.pkg, current: RDStore.TIPP_STATUS_CURRENT])[0]
+  }
+
+  /**
    * Gets the counts of the titles in the holding and the package and outputs them as a formatted HTML snippet.
    * The counts mean:
    * <ul>

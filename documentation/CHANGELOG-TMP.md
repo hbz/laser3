@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5249    24.08.2023  rc-3.2  3.2.4       Andreas Feature     Performanzverbesserung beim Löschen von Bestandstitel
+
 5245    22.08.2023  rc-3.2  3.2.4       Andreas Bug         URL-Kontakte wurden in Karte unterschlagen
 
 5244    21.08.2023  rc-3.2  3.2.4       Andreas Bug         Platform Reports mit mehreren Plattformen / Schnittstelle wurden inkorrekt verarbeitet
