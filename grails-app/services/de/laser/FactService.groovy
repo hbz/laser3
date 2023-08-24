@@ -13,8 +13,11 @@ import java.time.YearMonth
 
 /**
  * This service manages the Nationaler Statistikserver usage report workflows
+ * @deprecated replaced by the LAS:eR internal usage report workflows;
+ * @see ExportService#generateReport(grails.web.servlet.mvc.GrailsParameterMap)
  */
 @Transactional
+@Deprecated
 class FactService {
 
     ContextService contextService

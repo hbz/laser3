@@ -1853,15 +1853,26 @@ class FilterService {
         result
     }
 
+    /**
+     * Prepares the SQL query for title retrieval, assembling the columns necessary, departing from the given type of entitlement (= which table and set of columns to fetch)
+     * currently existing config parameters:
+     * configMap.sub
+     * configMap.ieStatus
+     * configMap.tippIds
+     * as defined in filterService.getTippQuery(), filterServie.getIssueEntitlementQuery()
+     * as defined in myInstitutionController.currentTitles()
+     * @param configMap the filter parameters
+     * @param entitlementInstance the type of object (i.e. table) to fetch
+     * @param sql the SQL connection; needed for generation of arrays
+     * @return a {@link Map} containing the following data:
+     * [query: query,
+     *  join: join,
+     *  where: where,
+     *  order: orderClause,
+     *  params: params,
+     *  subJoin: subJoin]
+     */
     Map<String, Object> prepareTitleSQLQuery(Map configMap, String entitlementInstance, Sql sql) {
-        /*
-        currently existing config parameters:
-        configMap.sub
-        configMap.ieStatus
-        configMap.tippIds
-        as defined in filterService.getTippQuery(), filterServie.getIssueEntitlementQuery()
-        as defined in myInstitutionController.currentTitles()
-         */
         String query = "", join = "", subJoin = "", where = "", orderClause = "", refdata_value_col = configMap.format == 'kbart' ? 'rdv_value' : I10nTranslation.getRefdataValueColumn(LocaleUtils.getCurrentLocale())
         Map<String, Object> params = [:]
         Connection connection = sql.dataSource.getConnection()
@@ -2165,6 +2176,13 @@ class FilterService {
         [query: query, join: join, where: where, order: orderClause, params: params, subJoin: subJoin]
     }
 
+    /**
+     * Helper method for a shorthand of parameter list reading.
+     * Note that also lists are being delivered with only one entry
+     * @param params the parameter map
+     * @param key the key to be read from the map
+     * @return a list containing the parameter values
+     */
     List listReaderWrapper(Map params, String key) {
         if(params instanceof GrailsParameterMap)
             return params.list(key)
