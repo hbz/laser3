@@ -51,9 +51,6 @@
     }
 %>
 
-
-
-
 <div class="ui la-search segment">
     <g:form action="index" controller="search" method="post" class="ui form" >
 
@@ -341,8 +338,7 @@
                                         <i class="circular icon la-${object.typTitle?.toLowerCase()}"></i>
                                     </span>
 
-                                    <g:link controller="title" action="show"
-                                            id="${object.dbId}">${object.name}</g:link>
+                                    <g:link controller="title" action="show" id="${object.dbId}">${object.name}</g:link>
                                 </td>
                                 <td>
                                     <strong><g:message code="default.identifiers.label"/></strong>:
@@ -364,8 +360,7 @@
                                         <i class="circular icon la-${object.typTitle?.toLowerCase()}"></i>
                                     </span>
 
-                                    <g:link controller="title" action="show"
-                                            id="${object.dbId}">${object.name}</g:link>
+                                    <g:link controller="title" action="show" id="${object.dbId}">${object.name}</g:link>
                                 </td>
                                 <td>
                                     <strong><g:message code="default.identifiers.label"/></strong>:
@@ -387,8 +382,7 @@
                                         <i class="circular icon la-${object.typTitle?.toLowerCase()}"></i>
                                     </span>
 
-                                    <g:link controller="title" action="show"
-                                            id="${object.dbId}">${object.name}</g:link>
+                                    <g:link controller="title" action="show" id="${object.dbId}">${object.name}</g:link>
                                 </td>
                                 <td>
                                     <strong><g:message code="default.identifiers.label"/></strong>:

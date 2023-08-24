@@ -45,7 +45,7 @@
 
                 <div class="la-inline-lists">
                     <div class="ui two doubling stackable cards">
-                        <div class="ui card ">
+                        <div class="ui card">
                             <div class="content">
                                 <dl>
                                     <dt class="control-label">${message(code: 'license.startDate.label')}</dt>
@@ -76,7 +76,7 @@
                                 </dl>
                             </div>
                         </div>
-                        <div class="ui card ">
+                        <div class="ui card">
                             <div class="content">
                                 <dl>
                                     <dt><label class="control-label">${message(code:'license.status.label')}</label></dt>
@@ -100,7 +100,6 @@
                                 <g:if test="${license.instanceOf && institution.id == license.getLicensingConsortium().id}">
                                     <dl>
                                         <dt class="control-label">${message(code:'license.linktoLicense')}</dt>
-
                                         <g:link controller="license" action="show" id="${license.instanceOf.id}">${license.instanceOf}</g:link>
                                     </dl>
                                     <%--<dl>
@@ -139,7 +138,7 @@
                 <div class="ui one cards">
 
                     <div id="container-provider">
-                        <div class="ui card ">
+                        <div class="ui card">
                             <div class="content">
                                 <h2 class="ui header">${message(code: 'license.details.tmplEntity')}</h2>
                                 <laser:render template="/templates/links/orgLinksAsList"

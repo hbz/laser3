@@ -81,21 +81,29 @@
                 </div>
             </g:if>
 
-        %{-- marker --}%
+            %{-- help panel --}%
 
-        <g:if test="${controllerName == 'organisation'}">
-            <g:if test="${isProviderOrAgency}">
-                <ui:markerSwitch org="${orgInstance}"/>
+            <g:if test="${(controllerName=='subscription' && actionName=='show') || (controllerName=='dev' && actionName=='frontend')}">
+                <div class="item la-cb-action">
+                    <button class="ui icon button blue la-modern-button la-help-panel-button"><i class="question circle icon"></i></button>
+                </div>
             </g:if>
-        </g:if>
-        <g:elseif test="${controllerName == 'package'}">
-            <ui:markerSwitch package="${packageInstance}"/>
-        </g:elseif>
-        <g:elseif test="${controllerName == 'platform'}">
-            <ui:markerSwitch platform="${platformInstance}"/>
-        </g:elseif>
 
-        %{-- edit mode switcher  --}%
+            %{-- marker --}%
+
+            <g:if test="${controllerName == 'organisation'}">
+                <g:if test="${isProviderOrAgency}">
+                    <ui:markerSwitch org="${orgInstance}"/>
+                </g:if>
+            </g:if>
+            <g:elseif test="${controllerName == 'package'}">
+                <ui:markerSwitch package="${packageInstance}"/>
+            </g:elseif>
+            <g:elseif test="${controllerName == 'platform'}">
+                <ui:markerSwitch platform="${platformInstance}"/>
+            </g:elseif>
+
+            %{-- edit mode switcher  --}%
 
             <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription' || controllerName=='license') && actionName=='show' && (editable || contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))}">
                 <div class="item la-cb-action">
@@ -151,11 +159,6 @@
                             <i class="exchange icon"></i>
                         </g:link>
                     </g:else>
-                </div>
-            </g:if>
-            <g:if test="${(controllerName=='subscription' && actionName=='show') || (controllerName=='dev' && actionName=='frontend')}">
-                <div class="item la-cb-action">
-                    <button class="ui icon button blue la-modern-button la-help-panel-button"><i class="info circle icon"></i></button>
                 </div>
             </g:if>
 
