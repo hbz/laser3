@@ -16,7 +16,6 @@ import java.nio.file.Path
 @Transactional
 class InstitutionsService {
 
-    AccessService accessService
     ContextService contextService
 
     static final CUSTOM_PROPERTIES_COPY_HARD        = 'CUSTOM_PROPERTIES_COPY_HARD'

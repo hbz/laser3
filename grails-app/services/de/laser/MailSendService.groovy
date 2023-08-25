@@ -45,6 +45,12 @@ class MailSendService {
         messageSource = BeanStore.getMessageSource()
     }
 
+    /**
+     * Builds a notification mail about the given survey
+     * @param surveyInfo the survey about which a notification should be sent
+     * @param reminderMail is it a reminder mail?
+     * @return a {@link Map} containing the details of the mail to be sent
+     */
     Map mailSendConfigBySurvey(SurveyInfo surveyInfo, boolean reminderMail) {
         Map<String, Object> result = [:]
         result.mailFrom = fromMail
@@ -68,6 +74,16 @@ class MailSendService {
         result
     }
 
+    /**
+     * Sends survey notifications to the selected mail addresses about the given survey.
+     * The mail header and body are user-defined and the addressees are some or all of the participant institutions of the given survey
+     * @param surveyInfo the survey whose participants should be notified
+     * @param reminderMail is this a reminder mail?
+     * @param parameterMap the request parameter map, containing also the mail header and body which are being submitted via form
+     * @return a ${link Map} containing the details of and about the mail to be send
+     * @see #mailSendConfigBySurvey(de.laser.survey.SurveyInfo, boolean)
+     * @see SurveyInfo
+     */
     Map mailSendProcessBySurvey(SurveyInfo surveyInfo, boolean reminderMail, GrailsParameterMap parameterMap) {
         Map<String, Object> result = [:]
 
@@ -462,6 +478,7 @@ class MailSendService {
     /**
      * Sends a mail to a given user. The system announcement is being included in a mail template
      * @param user the {@link User} to be notified
+     * @param systemAnnouncement the {@link SystemAnnouncement} to be broadcasted
      * @throws Exception
      */
     void sendSystemAnnouncementMail(User user, SystemAnnouncement systemAnnouncement) throws Exception {
@@ -536,6 +553,10 @@ class MailSendService {
         }
     }
 
+    /**
+     * Helper method to fetch the {@link FlashScope} for the current request
+     * @return the current {@link FlashScope} registered to this request
+     */
     FlashScope getCurrentFlashScope() {
         GrailsWebRequest grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
         HttpServletRequest request = grailsWebRequest.getCurrentRequest()

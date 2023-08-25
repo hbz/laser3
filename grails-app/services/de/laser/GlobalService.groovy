@@ -30,6 +30,13 @@ class GlobalService {
         session.clear()
     }
 
+    /**
+     * Inspired by PHP's <a href="https://www.php.net/manual/en/function.isset">isset()</a> method, this
+     * method checks if a request parameter key is defined and contains a value in the request parameter map
+     * @param params the parameter map for the current request
+     * @param key the key to check in the parameter map
+     * @return true if the key exists in the map and a not null value is defined, false otherwise
+     */
     static boolean isset(GrailsParameterMap params, String key) {
         if(params.get(key) instanceof String[])
             params.list(key).size() > 0
@@ -42,6 +49,12 @@ class GlobalService {
         else params.get(key)?.trim()?.length() > 0
     }
 
+    /**
+     * Gets the file storage location for temporary export files. The path is defined
+     * in the local config and defaults to /usage
+     * If there is no directory at the specified path, it will be created
+     * @return a path to the temporary export save location
+     */
     static String obtainFileStorageLocation() {
         String dir = ConfigMapper.getStatsReportSaveLocation() ?: '/usage'
         File folder = new File(dir)
@@ -61,6 +74,12 @@ class GlobalService {
         new Sql(dataSource)
     }
 
+    /**
+     * Returns an SQL connection object for performing queries in native SQL instead of HQL.
+     * The connection is being established with the storage database.
+     * Implemented static because of usage in static context
+     * @return a connection to the storage database
+     */
     static Sql obtainStorageSqlConnection() {
         DataSource dataSource = BeanStore.getStorageDataSource()
         new Sql(dataSource)

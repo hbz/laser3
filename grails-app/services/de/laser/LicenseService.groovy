@@ -11,7 +11,6 @@ import grails.gorm.transactions.Transactional
 @Transactional
 class LicenseService {
 
-    AccessService accessService
     ContextService contextService
 
     /**

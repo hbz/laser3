@@ -2335,7 +2335,7 @@ class SurveyController {
                                     )
 
                                     if (surveyResult.save()) {
-                                        log.debug( surveyResult.toString() )
+                                        //log.debug( surveyResult.toString() )
                                     } else {
                                         log.error("Not create surveyResult: "+ surveyResult)
                                     }
@@ -2402,7 +2402,7 @@ class SurveyController {
                                             surveyConfig: config
                                     )
                                     if (surveyResult.save()) {
-                                        log.debug(surveyResult.toString())
+                                        //log.debug(surveyResult.toString())
                                     } else {
                                         log.error("Not create surveyResult: " + surveyResult)
                                     }
