@@ -4412,11 +4412,20 @@ class ExportClickMeService {
                 Long id = Long.parseLong(fieldKey.split("\\.")[1])
                 List<Identifier> identifierList = Identifier.executeQuery("select ident from Identifier ident where ident.org = :org and ident.ns.id in (:namespaces) and ident.value != :unknown and ident.value != ''", [org: org, namespaces: [id], unknown: IdentifierNamespace.UNKNOWN])
                 if (identifierList) {
-                    row.add(createTableCell(format, identifierList.value.join(";")))
+                    row.add(createTableCell(format, identifierList.value.join('\n')))
+                    List idNotes = []
+                    identifierList.each { Identifier ident ->
+                        if(ident.note)
+                            idNotes << ident.note
+                        else idNotes << ' '
+                    }
+                    row.add(createTableCell(format, idNotes.join('\n')))
                 } else {
+                    row.add(createTableCell(format, ' '))
                     row.add(createTableCell(format, ' '))
                 }
             } else {
+                row.add(createTableCell(format, ' '))
                 row.add(createTableCell(format, ' '))
             }
         } else if (fieldKey.startsWith('participantCustomerIdentifiers.') || fieldKey.startsWith('providerCustomerIdentifiers.')) {
@@ -4673,6 +4682,10 @@ class ExportClickMeService {
                             titles << "${cie.getI10n('value')} (${colHeaderMap.get(titleSuffix)})"
                         }
                     }
+                }
+                else if(fieldKey.contains('participantIdentifiers.')) {
+                    titles << fields.label
+                    titles << "${fields.label} ${messageSource.getMessage('default.notes.plural', null, locale)}"
                 }
                 else {
                     String label = (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label)

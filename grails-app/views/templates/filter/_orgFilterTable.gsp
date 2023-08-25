@@ -851,6 +851,11 @@
 
                                 ${(costItem.billingCurrency?.getI10n('value')?.split('-')).first()}
 
+                                <br />
+                                <g:if test="${costItem.startDate || costItem.endDate}">
+                                    (${costItem.startDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.startDate) : ''} - ${costItem.endDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.endDate) : ''})
+                                </g:if>
+
                                 <g:set var="sumOldCostItem"
                                        value="${sumOldCostItem + costItem.costInBillingCurrency?:0}"/>
                                 <g:set var="sumOldCostItemAfterTax"

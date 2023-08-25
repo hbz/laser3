@@ -123,7 +123,7 @@ class CostItem extends AbstractBase
         sub             column: 'ci_sub_fk',        index: 'ci_sub_idx'
         owner           column: 'ci_owner',         index: 'ci_owner_idx'
         subPkg          column: 'ci_sub_pkg_fk'
-        issueEntitlement    column: 'ci_e_fk'
+        issueEntitlement    column: 'ci_e_fk',      index: 'ci_e_idx' //the index is needed for deletion checks of issue entitlements where each foreign key is being checked
         surveyOrg       column: 'ci_surorg_fk'
         order           column: 'ci_ord_fk'
         invoice         column: 'ci_inv_fk'

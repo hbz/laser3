@@ -127,7 +127,12 @@
                         <i aria-hidden="true" class="write icon"></i></g:link>
                 </td>
                 <td>
-                    <g:link action="linkMemberLicensesToSubs" id="${lic.id}"><ui:totalNumber total="${row.subs ?: 0}"/></g:link>
+                    <g:if test="${row.subs > 0}">
+                        <g:link action="linkedSubs" id="${lic.id}"><ui:totalNumber total="${row.subs}"/></g:link>
+                    </g:if>
+                    <g:else>
+                        <g:link action="linkMemberLicensesToSubs" id="${lic.id}"><ui:totalNumber total="${row.subs}"/></g:link>
+                    </g:else>
                 </td>
             </tr>
         </g:each>
