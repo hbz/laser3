@@ -77,7 +77,7 @@
                                 </g:if>
                             </td>
                             <td>
-                                <ui:markerSwitch org="${obj}" simple="true"/>
+                                <ui:cbItemMarkerAction org="${obj}" simple="true"/>
                             </td>
                         </g:if>
                         <g:elseif test="${obj instanceof Package}">
@@ -93,7 +93,7 @@
                                 </g:if>
                             </td>
                             <td>
-                                <ui:markerSwitch package="${obj}" simple="true"/>
+                                <ui:cbItemMarkerAction package="${obj}" simple="true"/>
                             </td>
                         </g:elseif>
                         <g:elseif test="${obj instanceof Platform}">
@@ -109,7 +109,7 @@
                                 </g:if>
                             </td>
                             <td>
-                                <ui:markerSwitch platform="${obj}" simple="true"/>
+                                <ui:cbItemMarkerAction platform="${obj}" simple="true"/>
                             </td>
                         </g:elseif>
                     </tr>

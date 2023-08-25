@@ -13,57 +13,10 @@ class ContextBarTagLib {
 
     static namespace = 'ui'
 
-    // <ui:contextBarUserAffiliationIcon user="${contextService.getUser()}" showGlobalRole="true|false" />
+    // <ui:cbItemCustomerType org="${contextService.getOrg()}" />
 
-    def contextBarUserAffiliationIcon = {attrs, body ->
-        String icon = 'user slash'
-        String color = 'grey'
-        String text = '?'
-        String globalRoleIcon = ''
-
-        User user = attrs.user as User
-        Role fr = user.formalRole
-
-        if (fr) {
-            if (fr.authority == Role.INST_USER) {
-                icon = 'user'
-                text = message(code: 'cv.roles.INST_USER')
-            }
-            else if (fr.authority == Role.INST_EDITOR) {
-                icon = 'user edit'
-                text = message(code: 'cv.roles.INST_EDITOR')
-            }
-            else if (fr.authority == Role.INST_ADM) {
-                icon = 'user shield'
-                text = message(code: 'cv.roles.INST_ADM')
-            }
-        }
-
-        if (attrs.showGlobalRole?.equalsIgnoreCase('true')) {
-            if (user.isYoda()) {
-                text = text + ' + [YODA]'
-                globalRoleIcon = '<i class="icon tools"></i>'
-            }
-            else if (user.isAdmin()) {
-                text = text + ' + [ADMIN]'
-                globalRoleIcon = '<i class="icon wrench"></i>'
-            }
-        }
-
-        out << '<div class="item la-cb-context">'
-        out <<     '<span data-display="' + text + '">'
-        out <<         '<i class="icon ' + icon + ' ' + color + '"></i>'
-        if (globalRoleIcon) {
-            out << globalRoleIcon
-        }
-        out <<     '</span>'
-        out << '</div>'
-    }
-
-    // <ui:contextBarCustomerTypeIcon org="${contextService.getOrg()}" />
-
-    def contextBarCustomerTypeIcon = {attrs, body ->
-        String icon  = 'dot circle'
+    def cbItemCustomerType = {attrs, body ->
+        String icon  = 'circle'
         String color = 'grey'
         String text  = '?'
         Org org = attrs.org as Org
@@ -88,15 +41,74 @@ class ContextBarTagLib {
         }
 
         out << '<div class="item la-cb-context">'
-        out <<     '<span data-display="' + text + '">'
+        out <<     '<span class="ui label" data-display="' + text + '">'
         out <<         '<i class="icon ' + icon + ' ' + color + '"></i>'
         out <<     '</span>'
         out << '</div>'
     }
 
-    // <ui:contextBarInfoIcon icon="icon" display="optional" color="optional" />
+    // <ui:cbItemUserAffiliation user="${contextService.getUser()}" showGlobalRole="true|false" />
 
-    def contextBarInfoIcon = { attrs, body ->
+    def cbItemUserAffiliation = {attrs, body ->
+        String icon = 'user slash'
+        String color = 'grey'
+        String text = '?'
+
+        User user = attrs.user as User
+        Role fr = user.formalRole
+
+        if (fr) {
+            if (fr.authority == Role.INST_USER) {
+                icon = 'user'
+                text = message(code: 'cv.roles.INST_USER')
+            }
+            else if (fr.authority == Role.INST_EDITOR) {
+                icon = 'user edit'
+                text = message(code: 'cv.roles.INST_EDITOR')
+            }
+            else if (fr.authority == Role.INST_ADM) {
+                icon = 'user shield'
+                text = message(code: 'cv.roles.INST_ADM')
+            }
+        }
+
+        out << '<div class="item la-cb-context">'
+        out <<     '<span class="ui label" data-display="' + text + '">'
+        out <<         '<i class="icon ' + icon + ' ' + color + '"></i>'
+        out <<     '</span>'
+        out << '</div>'
+    }
+
+    // <ui:cbItemUserSysRole user="${contextService.getUser()}" showGlobalRole="true|false" />
+
+    def cbItemUserSysRole = {attrs, body ->
+        String icon = ''
+        String color = 'grey'
+        String text = '?'
+
+        User user = attrs.user as User
+
+        if (user.isYoda()) {
+            text = 'Systemberechtigung: YODA'
+            icon = 'tools'
+        }
+        else if (user.isAdmin()) {
+            text = 'Systemberechtigung: ADMIN'
+            icon = 'wrench'
+        }
+
+        if (icon) {
+            out << '<div class="item la-cb-context">'
+            out <<     '<span class="ui label" data-display="' + text + '">'
+            out <<         '<i class="icon ' + icon + ' ' + color + '"></i>'
+            out <<     '</span>'
+            out << '</div>'
+        }
+    }
+
+    // <ui:cbItemInfo icon="icon" display="optional" color="optional" />
+
+    def cbItemInfo = { attrs, body ->
 
         String openSpan = '<span class="ui label">'
         if (attrs.display) {
@@ -110,9 +122,27 @@ class ContextBarTagLib {
         out << '</div>'
     }
 
-    // <ui:markerSwitch org="optional" package="optional" platform="optional" simple="true|false" />
+    // <cbItemToggleAction status="" tooltip="" icon="" />
+    def cbItemToggleAction = { attrs, body ->
 
-    def markerSwitch = { attrs, body ->
+        String status = attrs.status ?: ''
+        String tooltip = attrs.tooltip ?: ''
+        String icon = attrs.icon ?: ''
+
+        out << '<div class="item la-cb-action">'
+        out <<     '<button class="ui icon button ' + status + ' toggle la-toggle-advanced la-popup-tooltip la-delay" ' // toggle -> JS
+        if (attrs.reload) {
+            out <<      'data-reload="' + attrs.reload + '" '
+        }
+        out <<          'data-content="' + tooltip + '" data-position="bottom center">'
+        out <<              '<i class="icon ' + icon + '"></i>'
+        out <<     '</button>'
+        out << '</div>'
+    }
+
+    // <ui:cbItemMarkerAction org="optional" package="optional" platform="optional" simple="true|false" />
+
+    def cbItemMarkerAction = { attrs, body ->
 
         if (! AppUtils.isPreviewOnly()) {
             return
@@ -181,21 +211,4 @@ class ContextBarTagLib {
         }
     }
 
-    // <contextBarToggleAction status="" tooltip="" icon="" />
-    def contextBarToggleAction = { attrs, body ->
-
-        String status = attrs.status ?: ''
-        String tooltip = attrs.tooltip ?: ''
-        String icon = attrs.icon ?: ''
-
-        out << '<div class="item la-cb-action">'
-        out <<     '<button class="ui icon button ' + status + ' toggle la-toggle-advanced la-popup-tooltip la-delay" ' // toggle -> JS
-        if (attrs.reload) {
-            out <<      'data-reload="' + attrs.reload + '" '
-        }
-        out <<          'data-content="' + tooltip + '" data-position="bottom center">'
-        out <<              '<i class="icon ' + icon + '"></i>'
-        out <<     '</button>'
-        out << '</div>'
-    }
 }
