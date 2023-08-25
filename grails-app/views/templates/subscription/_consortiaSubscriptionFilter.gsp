@@ -224,8 +224,10 @@
             JSPC.app.subStatus = "FETCH_ALL";
         }
     }
-    <g:if test="${'onlyMemberSubs' in tableConfig && params.selSubscription}">
-        $("#selSubscription").dropdown('set value',[<g:each in="${params.selSubscription.split(',')}" var="sub" status="i">'${sub}'<g:if test="${i < params.selSubscription.split(',').size()-1}">,</g:if></g:each>]);
+    <g:if test="${'onlyMemberSubs' in tableConfig}">
+        <g:if test="${params.selSubscription}">
+            $("#selSubscription").dropdown('set selected',[<g:each in="${params.selSubscription.split(',')}" var="sub" status="i">'${sub}'<g:if test="${i < params.selSubscription.split(',').size()-1}">,</g:if></g:each>]);
+        </g:if>
         $("#selSubscription").dropdown({
             apiSettings: {
                 url: "${createLink([controller:"ajaxJson", action:"lookupSubscriptions"])}?status="+ JSPC.app.subStatus +"&query={query}&ltype=${de.laser.interfaces.CalculatedType.TYPE_CONSORTIAL}",
