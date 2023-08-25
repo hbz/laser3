@@ -1166,7 +1166,7 @@ class AjaxController {
             obj.setMarker(user, type)
         }
 
-        render ui.markerSwitch(attrs, null)
+        render ui.cbItemMarkerAction(attrs, null)
     }
 
     /**

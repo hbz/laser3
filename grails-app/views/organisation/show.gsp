@@ -30,7 +30,7 @@
                navPrev="${navPrevOrg}"/>
 
 %{--<g:if test="${isProviderOrAgency}">--}%
-%{--    <ui:markerSwitch org="${orgInstance}"/>--}%
+%{--    <ui:cbItemMarkerAction org="${orgInstance}"/>--}%
 %{--</g:if>--}%
 
 <g:if test="${missing.size() > 0}">
