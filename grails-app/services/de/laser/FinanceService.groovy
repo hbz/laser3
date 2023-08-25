@@ -539,7 +539,8 @@ class FinanceService {
 
     /**
      * Retrieves the cost item data for the given subscription type and returns a map grouping the cost items per view
-     * @param subscription - the subscription for which the financial data is retrieved. Its type determines the views displayed on return.
+     * @param params the request parameter map containing filter data for the costs
+     * @param configMap a map containing result generics and general view configuration
      * @return a LinkedHashMap with the cost items for each tab to display
      */
     Map getCostItemsForSubscription(GrailsParameterMap params,Map configMap) throws FinancialDataException {
@@ -634,7 +635,9 @@ class FinanceService {
     }
 
     /**
-     * Retrieves the cost item data according to the given parameter and configuration maps and returns a map grouping the cost items per view.
+     * Retrieves the cost item data according to the given parameter and configuration maps and returns a map grouping the cost items per view
+     * @param params the request parameter map containing filter data for the costs
+     * @param configMap a map containing result generics and general view configuration
      * @return a {@link Map} with the cost items for each tab to display
      * @see CostItem
      */
@@ -976,7 +979,6 @@ class FinanceService {
     /**
      * Replaced the client-side calculation of the sums.
      * Calculates to a given key the sums (local and for each currency) and assigns the resulting map to a given key
-     * @param key the key for which the sum is being calculated
      * @param costItems a list of cost items to count
      * @return a map with the following structure:
      * {

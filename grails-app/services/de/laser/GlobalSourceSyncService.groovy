@@ -28,6 +28,13 @@ import java.util.concurrent.ExecutorService
 /**
  * Implements the synchronisation workflow with the we:kb. It is currently used for title data and provider (organisation) data
  * and triggers the subscription holding notifications
+ * For the reference: the following record type constants hold:
+ * <ol start="0">
+ *  <li>{@link #RECTYPE_PACKAGE}</li>
+ *  <li>{@link #RECTYPE_PLATFORM}</li>
+ *  <li>{@link #RECTYPE_ORG}</li>
+ *  <li>{@link #RECTYPE_TIPP}</li>
+ * </ol>
  */
 @Transactional
 class GlobalSourceSyncService extends AbstractLockableService {
@@ -207,6 +214,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
     /**
      * Updates the data for a single package, using the global update mechanism
+     * @param packageUUID the UUID of the package to be updated
      */
     void doSingleSync(String packageUUID) {
         running = true
@@ -294,7 +302,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
     /**
      * Reloads all data of the given component type from the connected we:kb instance connected by {@link GlobalRecordSource}
-     * @param componentType the component type (one of Org, TitleInstancePackagePlatform) to update
+     * @param componentType the component type (one of Org, Package, Platform, TitleInstancePackagePlatform) to update
      */
     void reloadData(String componentType) {
         running = true
@@ -333,7 +341,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
     /**
      * Reloads a concrete property from the we:kb instance. Depending on the property to load, the domain objects having this property both in ElasticSearch index and in LAS:eR are being updated
-     * @param dataToLoad the property to update for every object (one of identifier, ddc, language or editionStatement)
+     * @param dataToLoad the property to update for every object (one of identifier, abbreviatedName, sortTitle, ddc, accessType, openAccess, language, editionStatement or titleNamespace)
      */
     void updateData(String dataToLoad) {
         running = true
@@ -557,6 +565,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param componentType the object type (TitleInstancePackagePlatform or Org) to update
      * @param changedSince the timestamp from which new records should be loaded
      * @param pkgFilter an optional package filter to restrict the data to be loaded
+     * @param permanentlyDeletedTitles a set of keys of permanently deleted titles in order to clear them in LAS:eR too
      * @throws SyncException if an error occurs during the update process
      */
     void processScrollPage(Map<String, Object> result, String componentType, String changedSince, String pkgFilter = null, Set<String> permanentlyDeletedTitles = []) throws SyncException {
@@ -718,6 +727,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * Updates the records on the given page
      * @param rawRecords the scroll page (JSON result) containing the updated entries
      * @param offset the total record counter offset which has to be added to the entry loop counter
+     * @param permanentlyDeletedTitles a set of keys of permanently deleted titles in order to delete the LAS:eR records as well
      */
     void updateRecords(List<Map> rawRecords, int offset, Set<String> permanentlyDeletedTitles = []) {
         //necessary filter for DEV database
@@ -929,8 +939,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
     /**
      * This records the package changes so that subscription holders may decide whether they apply them or not except price changes which are auto-applied
-     * @param packagesToTrack the packages to be tracked
+     * @deprecated changes are always being processed directly to the issue entitlements whenever a change occurs; notification is being taken care by {@link WekbStatsService}
      */
+    @Deprecated
     Map<String, Set<TitleChange>> trackPackageHistory() {
         Map<String, Set<TitleChange>> result = [:]
         //Package.withSession { Session sess ->
@@ -980,7 +991,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param packageChanges the changes recorded for the package
      * @see PendingChangeConfiguration
      * @see TitleChange
+     * @deprecated unused since all the changes are being handled directly to the issue entitlements
      */
+    @Deprecated
     void autoAcceptPendingChanges(Org contextOrg, SubscriptionPackage subPkg, Set<TitleChange> packageChanges) {
         //get for each subscription package the tokens which should be accepted
         String query = 'select pcc.settingKey from PendingChangeConfiguration pcc join pcc.subscriptionPackage sp where pcc.settingValue = :accept and sp = :sp '
@@ -1039,15 +1052,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
     }
 
     /**
-     * Looks up for a given UUID if a local record exists or not. If no {@link Package} record exists, it will be
+     * Looks up for a given UUID if a local record exists or not. If no {@link de.laser.Package} record exists, it will be
      * created with the given remote record data, otherwise, the local record is going to be updated. The {@link TitleInstancePackagePlatform records}
-     * in the {@link Package} will be checked for differences and if there are such, the according fields updated. Same counts for the {@link TIPPCoverage} records
-     * in the {@link TitleInstancePackagePlatform}s. If {@link Subscription}s are linked to the {@link Package}, the {@link IssueEntitlement}s (just as their
-     * {@link IssueEntitlementCoverage}s) are going to be notified; it is up to the respective subscription tenants to accept the changes or not.
-     * Replaces the method GokbDiffEngine.diff and the onNewTipp, onUpdatedTipp and onUnchangedTipp closures
-     *
-     * @param packageData A UUID pointing to record extract for a given package
-     * @return
+     * in the {@link de.laser.Package} will be checked for differences and if there are such, the according fields updated. Same counts for the {@link TIPPCoverage} records
+     * in the {@link TitleInstancePackagePlatform}s
+     * @param packageData A UUID pointing to record extract or the record itself for a given package
+     * @return the updated package record
      */
     Package createOrUpdatePackage(packageInput) throws SyncException {
         Map packageJSON, packageRecord
@@ -1216,9 +1226,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
     /**
      * Was formerly in the {@link Org} domain class; deployed for better maintainability
-     * Checks for a given UUID if the provider exists, otherwise, it will be created.
+     * Checks for a given UUID if the provider exists, otherwise, it will be created
      *
-     * @param providerUUID the GOKb UUID of the given provider {@link Org}
+     * @param providerUUID the GOKb UUID or JSON record of the given provider {@link Org}
+     * @return the updated provider record
      * @throws SyncException
      */
     Org createOrUpdateOrg(Map<String,Object> providerJSON) throws SyncException {
@@ -1342,9 +1353,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
     /**
      * Was complicatedly included in the Org domain class, has been deployed externally for better maintainability
      * Retrieves an {@link Org} instance as title publisher, if the given {@link Org} instance does not exist, it will be created.
-     * The TIPP given with it will be linked with the provider data retrieved.
+     * The TIPP given with it will be linked with the provider data retrieved
      *
-     * @param publisherParams a {@link Map} containing the OAI PMH extract of the title publisher
+     * @param publisherParams a {@link Map} containing the JSON record of the title publisher
      * @param tipp the title to check against
      * @throws SyncException
      */
@@ -1365,8 +1376,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
     /**
      * Checks for a given provider uuid if there is a link with the package for the given uuid
-     * @param providerUUID the provider UUID
-     * @param pkg the package to check against
+     * @param provider the provider {@link Org}
+     * @param pkg the {@link de.laser.Package} to check against
      */
     void createOrUpdatePackageProvider(Org provider, Package pkg) {
         setupOrgRole([org: provider, pkg: pkg, roleTypeCheckup: [RDStore.OR_PROVIDER,RDStore.OR_CONTENT_PROVIDER], definiteRoleType: RDStore.OR_PROVIDER])
@@ -1440,9 +1451,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
     }
 
     /**
-     * Updates a {@link Platform} with the given parameters. If it does not exist, it will be created.
+     * Updates a {@link Platform} with the given parameters. If it does not exist, it will be created
      *
-     * @param platformUUID the platform UUID
+     * @param platformInput the platform record, either a UUID or a JSON object
+     * @return the updated platform record
      * @throws SyncException
      */
     Platform createOrUpdatePlatform(platformInput) throws SyncException {
@@ -1522,7 +1534,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param pkgA the old package (as {@link Package} which is already persisted)
      * @param pkgB the new package (as unprocessed {@link Map}
      * @return a {@link Set} of {@link Map}s with the differences
+     * @deprecated unused because the notification of the changes done in the we:kb are being processed in {@link WekbStatsService}
      */
+    @Deprecated
     Set<Map<String,Object>> getPkgPropDiff(Package pkgA, Map<String,Object> pkgB) {
         log.info("processing package prop diffs; the respective GOKb UUIDs are: ${pkgA.gokbId} (LAS:eR) vs. ${pkgB.uuid} (remote)")
         Set<Map<String,Object>> result = []
@@ -1554,19 +1568,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
     }
 
     /**
-     * Updates the given record with the data of the updated one. That data which does not differ in
-     * title and holding level (price items do count here as well!) is automatically applied; the other differences
-     * are being recorded and looped separately. The diff records are being then processed to create pending changes
-     * for that the issue entitlement holders may decide whether they (auto-)apply them on their holdings or not
+     * Updates the given record with the data of the updated one. The new title data is automatically handed to the
+     * issue entitlements derived from the title instances of the sales unit
      * @param tippA the existing title record (in the app)
      * @param tippB the updated title record (ex we:kb)
-     * @return a map of structure
-     * [
-     *     event: {"add", "update", "delete", "remove"},
-     *     target: title,
-     *     diffs: result of {@link #getTippDiff(java.lang.Object, java.lang.Object)}
-     * ]
-     * reflecting those differences in each title record which are not applied automatically on the derived issue entitlements
      */
     void processTippDiffs(TitleInstancePackagePlatform tippA, Map tippB) {
         //ex updatedTippClosure / tippUnchangedClosure
@@ -1783,7 +1788,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
     }
 
     /**
-     * Replaces the onNewTipp closure.
      * Creates a new {@link TitleInstancePackagePlatform} with its respective {@link TIPPCoverage} statements
      * @param pkg the {@link Package} which contains the new title
      * @param tippData the {@link Map} which contains the we:kb record of the title
@@ -1938,7 +1942,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param listB the new statements (a {@link List} of remote records, kept in {@link Map}s)
      * @param instanceType the container class (may be coverage or price)
      * @return a {@link Set} of {@link Map}s reflecting the differences between the statements
-     * @deprecated issue entitlements should not have sub list objects reflecting the title ones; there are very few cases in which they are needed actually. Should be deleted without replacal
+     * @deprecated issue entitlements should not have sub list objects reflecting the title ones; there are very few cases in which they are needed actually. Should be deleted without replacement
      */
     @Deprecated
     Set<Map<String,Object>> getSubListDiffs(TitleInstancePackagePlatform tippA, listB, String instanceType) {
@@ -2268,6 +2272,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
         result
     }
 
+    /**
+     * Retrieves the title keys from the we:kb knowledge base which have been permanently deleted there.
+     * If submitted, deletions from a certain time only are being regarded
+     * @param changedFrom the time from when deletions should be fetched
+     * @return a {@link Set} of UUIDs pointing to deleted titles
+     */
     Set<String> getPermanentlyDeletedTitles(String changedFrom = null) {
         Set<String> result = []
         Map<String, Object> queryParams = [componentType: 'deletedkbcomponent', status: Constants.PERMANENTLY_DELETED, max: MAX_TIPP_COUNT_PER_PAGE, sort: 'lastUpdated']

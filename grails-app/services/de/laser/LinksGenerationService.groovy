@@ -160,9 +160,8 @@ class LinksGenerationService {
     }
 
     /**
-     * Gets all linked subscriptions for the given subscription list
+     * Gets all linked subscriptions for the given subscription list for dropdown display
      * @param ownerSubscriptions the subscriptions whose links should be retrieved
-     * @param user the user to check the access rights to the target objects
      * @return a list of subscriptions linked to the given list
      */
     List<Subscription> getAllLinkedSubscriptionsForDropdown(Set<Long> ownerSubscriptions) {
@@ -185,7 +184,12 @@ class LinksGenerationService {
         result
     }
 
-
+    /**
+     * Builds a set of subscriptions ordered in a succession chain
+     * @param startingPoint the object from where to depart
+     * @param position the direction to take
+     * @return a {@link Set} of objects preceding of following the given one
+     */
     Set getSuccessionChain(startingPoint, String position) {
         Set chain = []
         Set first = _getRecursiveNext([startingPoint].toSet(),position)
@@ -202,7 +206,12 @@ class LinksGenerationService {
         else chain
     }
 
-
+    /**
+     * Gets the respective neighboring subscriptions from the given starting point
+     * @param points the set of objects following or preceding the given subscription
+     * @param position the direction where to go from the starting point
+     * @return a {@link Set} of {@link Subscription}s directly following or preceding the given one
+     */
     private Set<Subscription> _getRecursiveNext(Set points, String position) {
         String pair
         if(position == 'sourceSubscription')
@@ -404,6 +413,11 @@ class LinksGenerationService {
         else false
     }
 
+    /**
+     * Gets the organisations connected to the given organisation
+     * @param org the {@link Org} whose connections should be retrieved
+     * @return a {@link Set} of connections from or to this {@link Org}
+     */
     Set<Combo> getOrgLinks(Org org) {
         Combo.executeQuery('select c from Combo c where (c.fromOrg = :context or c.toOrg = :context) and c.type = :follows', [follows: RDStore.COMBO_TYPE_FOLLOWS, context: org])
     }
