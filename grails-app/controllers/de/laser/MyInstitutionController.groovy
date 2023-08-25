@@ -2497,7 +2497,7 @@ class MyInstitutionController  {
                                         )
 
                                         if (surveyResult.save()) {
-                                            log.debug(surveyResult.toString())
+                                            //log.debug(surveyResult.toString())
                                         } else {
                                             log.error("Not create surveyResult: " + surveyResult)
                                             flash.error = message(code: 'surveyLinks.participateToSurvey.fail')
