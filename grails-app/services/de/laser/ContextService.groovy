@@ -47,7 +47,7 @@ class ContextService {
             try {
                 context = GrailsHibernateUtil.unwrapIfProxy(getUser()?.formalOrg) as Org
 
-                log.debug 'setting ' + RCH_LASER_CONTEXT_ORG + ' for request .. ' + context
+//                log.debug 'setting ' + RCH_LASER_CONTEXT_ORG + ' for request .. ' + context
                 ra.setAttribute(RCH_LASER_CONTEXT_ORG, context, RequestAttributes.SCOPE_REQUEST)
 
 //                ra.getAttributeNames(RequestAttributes.SCOPE_REQUEST)
