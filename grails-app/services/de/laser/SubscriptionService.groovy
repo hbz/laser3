@@ -824,7 +824,7 @@ join sub.orgRelations or_sub where
      */
     Integer countCurrentIssueEntitlements(Subscription subscription) {
         Integer countIes = subscription ?
-                IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :ieStatus",
+                IssueEntitlement.executeQuery("select count(*) from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :ieStatus",
                         [sub: subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0]
                 : 0
         countIes
@@ -847,7 +847,7 @@ join sub.orgRelations or_sub where
 
         Integer countTitles = 0
         if(subscriptions.size() > 0) {
-            countTitles = PermanentTitle.executeQuery("select count(pi) from PermanentTitle as pi where pi.subscription in (:subs) and pi.issueEntitlement.status = :ieStatus",[subs: subscriptions, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0]
+            countTitles = PermanentTitle.executeQuery("select count(*) from PermanentTitle as pi where pi.subscription in (:subs) and pi.issueEntitlement.status = :ieStatus",[subs: subscriptions, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0]
         }
 
         return countTitles

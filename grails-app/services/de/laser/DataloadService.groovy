@@ -287,7 +287,7 @@ class DataloadService {
 
                 //result.titleCountCurrent = pkg.getCurrentTipps().size() ?: 0
                 result.titleCountCurrent = TitleInstancePackagePlatform.executeQuery(
-                        'select count(id) from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status = :status',
+                        'select count(*) from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status = :status',
                         [pkg: pkg, status: RDStore.TIPP_STATUS_CURRENT]
                 )
 
@@ -333,7 +333,7 @@ class DataloadService {
 
                 //result.titleCountCurrent = plat.getCurrentTipps().size() ?: 0
                 result.titleCountCurrent = TitleInstancePackagePlatform.executeQuery(
-                        'select count(id) from TitleInstancePackagePlatform tipp where tipp.platform = :plat and tipp.status = :status',
+                        'select count(*) from TitleInstancePackagePlatform tipp where tipp.platform = :plat and tipp.status = :status',
                         [plat: plat, status: RDStore.TIPP_STATUS_CURRENT]
                 )
 
