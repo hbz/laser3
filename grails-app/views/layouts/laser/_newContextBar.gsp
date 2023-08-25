@@ -9,10 +9,10 @@
         <button class="ui button big la-menue-button la-modern-button" style="display:none"><i class="bars icon"></i></button>
 
         <div class="ui sub header item la-context-org" style="display: none">
-            <ui:contextBarCustomerTypeIcon org="${contextOrg}" />
-            &nbsp; / &nbsp;
-            <ui:contextBarUserAffiliationIcon user="${contextUser}" showGlobalRole="true" />
-            &nbsp; / &nbsp;
+            <ui:cbItemCustomerType org="${contextOrg}" />
+            <ui:cbItemUserAffiliation user="${contextUser}" />
+            <ui:cbItemUserSysRole user="${contextUser}" />
+
             <div id="la-cb-context-display" data-display="${contextOrg?.name}">
                 ${contextOrg?.name}
             </div>
@@ -25,39 +25,39 @@
             %{-- my object indicator --}%
 
             <g:if test="${isMyPlatform}">
-                <ui:contextBarInfoIcon display="${message(code: 'license.relationship.platform')}" icon="star" color="yellow" />
+                <ui:cbItemInfo display="${message(code: 'license.relationship.platform')}" icon="star" color="yellow" />
             </g:if>
             <g:elseif test="${isMyPkg}">
-                <ui:contextBarInfoIcon display="${message(code: 'license.relationship.pkg')}" icon="star" color="violet" />
+                <ui:cbItemInfo display="${message(code: 'license.relationship.pkg')}" icon="star" color="violet" />
             </g:elseif>
             <g:elseif test="${isMyOrg}">
-                <ui:contextBarInfoIcon display="${message(code: 'license.relationship.org')}" icon="star" color="teal" />
+                <ui:cbItemInfo display="${message(code: 'license.relationship.org')}" icon="star" color="teal" />
             </g:elseif>
 
             %{-- child indicator --}%
 
             <g:if test="${controllerName == 'subscription' && subscription}">
                 <g:if test="${subscription.instanceOf && contextService.getOrg().id == subscription.getConsortia()?.id}">
-                    <ui:contextBarInfoIcon display="Sie sehen eine Kindlizenz" icon="child" color="orange" />
+                    <ui:cbItemInfo display="Sie sehen eine Kindlizenz" icon="child" color="orange" />
                 </g:if>
             </g:if>
 
             <g:if test="${controllerName == 'license' && license}">
                 <g:if test="${license.instanceOf && contextService.getOrg().id == license.getLicensingConsortium()?.id}">
-                    <ui:contextBarInfoIcon display="Sie sehen einen Einrichtungsvertrag" icon="child" color="green" />
+                    <ui:cbItemInfo display="Sie sehen einen Einrichtungsvertrag" icon="child" color="green" />
                 </g:if>
             </g:if>
 
             %{-- content indicator --}%
 
             <g:if test="${flagContentCache}">
-                <ui:contextBarInfoIcon display="${message(code: 'statusbar.flagContentCache.tooltip')}" icon="hourglass" color="blue" />
+                <ui:cbItemInfo display="${message(code: 'statusbar.flagContentCache.tooltip')}" icon="hourglass" color="blue" />
             </g:if>
             <g:if test="${flagContentGokb}">
-                <ui:contextBarInfoIcon display="${message(code: 'statusbar.flagContentGokb.tooltip')}" icon="cloud" color="blue" />
+                <ui:cbItemInfo display="${message(code: 'statusbar.flagContentGokb.tooltip')}" icon="cloud" color="blue" />
             </g:if>
             <g:if test="${flagContentElasticsearch}">
-                <ui:contextBarInfoIcon display="${message(code: 'statusbar.flagContentElasticsearch.tooltip')}" icon="cloud" color="blue" />
+                <ui:cbItemInfo display="${message(code: 'statusbar.flagContentElasticsearch.tooltip')}" icon="cloud" color="blue" />
             </g:if>
 
             %{-- help panel --}%
@@ -72,10 +72,10 @@
 
             <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription' || controllerName=='license') && actionName=='show' && (editable || contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))}">
                 <g:if test="${contextUser?.getSettingsValue(UserSetting.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES)?.value=='Yes'}">
-                    <ui:contextBarToggleAction status="active" icon="pencil alternate" tooltip="${message(code:'statusbar.showButtons.tooltip')}" />
+                    <ui:cbItemToggleAction status="active" icon="pencil alternate" tooltip="${message(code:'statusbar.showButtons.tooltip')}" />
                 </g:if>
                 <g:else>
-                    <ui:contextBarToggleAction status="inactive" icon="pencil alternate slash" tooltip="${message(code:'statusbar.hideButtons.tooltip')}" />
+                    <ui:cbItemToggleAction status="inactive" icon="pencil alternate slash" tooltip="${message(code:'statusbar.hideButtons.tooltip')}" />
                 </g:else>
             </g:if>
 
@@ -83,11 +83,11 @@
 
             <g:if test="${(params.mode)}">
                 <g:if test="${params.mode=='advanced'}">
-                    <ui:contextBarToggleAction status="active" icon="plus square" tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}"
+                    <ui:cbItemToggleAction status="active" icon="plus square" tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}"
                                                reload="${g.createLink(action: actionName, params: params + ['mode':'basic'])}" />
                 </g:if>
                 <g:else>
-                    <ui:contextBarToggleAction status="inactive" icon="plus square slash" tooltip="${message(code:'statusbar.showBasicView.tooltip')}"
+                    <ui:cbItemToggleAction status="inactive" icon="plus square slash" tooltip="${message(code:'statusbar.showBasicView.tooltip')}"
                                                reload="${g.createLink(action: actionName, params: params + ['mode':'advanced'])}" />
                 </g:else>
             </g:if>
@@ -115,14 +115,14 @@
 
             <g:if test="${controllerName == 'organisation'}">
                 <g:if test="${isProviderOrAgency}">
-                    <ui:markerSwitch org="${orgInstance}"/>
+                    <ui:cbItemMarkerAction org="${orgInstance}"/>
                 </g:if>
             </g:if>
             <g:elseif test="${controllerName == 'package'}">
-                <ui:markerSwitch package="${packageInstance}"/>
+                <ui:cbItemMarkerAction package="${packageInstance}"/>
             </g:elseif>
             <g:elseif test="${controllerName == 'platform'}">
-                <ui:markerSwitch platform="${platformInstance}"/>
+                <ui:cbItemMarkerAction platform="${platformInstance}"/>
             </g:elseif>
 
         </div>%{-- la-advanced-view --}%
@@ -139,6 +139,7 @@
     .la-contextBar.ui.menu {
         box-shadow: none !important;
     }
+
     .la-contextBar.ui.menu .item::before {
         width: 0 !important;
     }
@@ -150,16 +151,20 @@
         margin-right: 1em;
     }
 
+    .la-cb-context.item,
     .la-cb-info.item {
         margin: 0 1em 0 0 !important;
     }
+    .la-cb-context.item > .label,
     .la-cb-info.item > .label {
         margin: 0 !important;
         background-color: #e3eaf3 !important;
     }
+    .la-cb-context.item > .label:hover,
     .la-cb-info.item > .label:hover {
         cursor: help;
     }
+    .la-cb-context.item > .label > .icon,
     .la-cb-info.item > .label > .icon {
         margin: 0 !important;
     }
@@ -209,7 +214,7 @@
 <style>
 
     .la-contextBar.ui.menu .la-context-org {
-        flex: 0 0 500px;
+        flex: 0 0 550px;
     }
 
     .la-cb-info.item > .label {
