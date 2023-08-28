@@ -1671,7 +1671,7 @@ class FilterService {
                 base_qry += " and "
             }
 
-            base_qry += " tipp.status.id = :status "
+            base_qry += " tipp.status.id in (:status) "
             qry_params.status = status
 
         } else if (params.notStatus != '' && params.notStatus != null){
