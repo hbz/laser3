@@ -86,10 +86,10 @@ class TitleController  {
 
         List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
 
-        result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.status = :status", [status: RDStore.TIPP_STATUS_CURRENT])[0]
-        result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.status = :status", [status: RDStore.TIPP_STATUS_EXPECTED])[0]
-        result.expiredTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.status = :status", [status: RDStore.TIPP_STATUS_RETIRED])[0]
-        result.deletedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.status = :status", [status: RDStore.TIPP_STATUS_DELETED])[0]
+        result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.status = :status", [status: RDStore.TIPP_STATUS_CURRENT])[0]
+        result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.status = :status", [status: RDStore.TIPP_STATUS_EXPECTED])[0]
+        result.expiredTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.status = :status", [status: RDStore.TIPP_STATUS_RETIRED])[0]
+        result.deletedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.status = :status", [status: RDStore.TIPP_STATUS_DELETED])[0]
 
         result.allTippsCounts = result.currentTippsCounts + result.plannedTippsCounts +  result.expiredTippsCounts + result.deletedTippsCounts
 

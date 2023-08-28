@@ -1441,7 +1441,7 @@ class SurveyService {
      */
     boolean hasParticipantPerpetualAccessToTitle2(List<Long> subscriptionIDs, TitleInstancePackagePlatform tipp){
         if(subscriptionIDs){
-            Integer countIes = IssueEntitlement.executeQuery('select count(ie.id) from IssueEntitlement ie join ie.tipp tipp where ' +
+            Integer countIes = IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie join ie.tipp tipp where ' +
                     'ie.perpetualAccessBySub is not null and ' +
                     'tipp.hostPlatformURL = :hostPlatformURL and ' +
                     'tipp.status != :tippStatus and ' +
@@ -1462,7 +1462,7 @@ class SurveyService {
     }
 
     boolean hasParticipantPerpetualAccessToTitle3(Org org, TitleInstancePackagePlatform tipp){
-            Integer countPermanentTitles = PermanentTitle.executeQuery('select count(pt.id) from PermanentTitle pt join pt.tipp tipp where ' +
+            Integer countPermanentTitles = PermanentTitle.executeQuery('select count(*) from PermanentTitle pt join pt.tipp tipp where ' +
                     '(tipp = :tipp or tipp.hostPlatformURL = :hostPlatformURL) and ' +
                     'tipp.status != :tippStatus AND ' +
                     'pt.owner = :org',
@@ -1704,7 +1704,7 @@ class SurveyService {
             subIds.addAll(subscriptions.id)
             Sql sql = GlobalService.obtainSqlConnection()
             Connection connection = sql.dataSource.getConnection()
-            /*def titles = sql.rows("select count(tipp.tipp_id) from issue_entitlement ie join title_instance_package_platform tipp on tipp.tipp_id = ie.ie_tipp_fk " +
+            /*def titles = sql.rows("select count(*) from issue_entitlement ie join title_instance_package_platform tipp on tipp.tipp_id = ie.ie_tipp_fk " +
                     "where ie.ie_subscription_fk = any(:subs)  " +
                     "and tipp.tipp_status_rv_fk = :tippStatus and ie.ie_status_rv_fk = :tippStatus " +
                     "and tipp.tipp_host_platform_url in " +
@@ -1712,7 +1712,7 @@ class SurveyService {
                     " where ie2.ie_perpetual_access_by_sub_fk = any(:subs)" +
                     " and tipp2.tipp_status_rv_fk = :tippStatus and ie2.ie_status_rv_fk = :tippStatus) group by tipp.tipp_id", [subs: connection.createArrayOf('bigint', subIds.toArray()), tippStatus: RDStore.TIPP_STATUS_CURRENT.id])*/
 
-            def titles = sql.rows("select count(tipp2.tipp_host_platform_url) from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
+            def titles = sql.rows("select count(*) from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
                     " where ie2.ie_subscription_fk = any(:subs) and ie2.ie_perpetual_access_by_sub_fk = any(:subs)" +
                     " and ie2.ie_status_rv_fk = :tippStatus group by tipp2.tipp_host_platform_url", [subs: connection.createArrayOf('bigint', subIds.toArray()), tippStatus: RDStore.TIPP_STATUS_CURRENT.id])
 
