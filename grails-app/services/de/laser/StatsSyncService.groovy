@@ -153,6 +153,10 @@ class StatsSyncService {
      * Starts the internal statistics synchronisation process, i.e. loading usage data directly from the providers
      * and puts the process on a new thread
      * @param incremental should only new data being loaded or a full data reload done?
+     * @params platformUUID fetch usage data for the given {@link Platform} UUID
+     * @params the SUSHI API URL of the platform
+     * @params which COUNTER version is being offered by the API - counter4 or counter5?
+     * @deprecated disused because usage data is not persisted in LAS:eR any more
      */
     void doFetch(boolean incremental, String platformUUID = '', String source = '', String revision = '') {
         log.debug("fetching data from providers started")
@@ -207,6 +211,10 @@ class StatsSyncService {
      * Performs the loading of the SUSHI sources from the we:kb instance and loads the data from the SUSHI endpoints defined there.
      * Both COUNTER 4 and COUNTER 5 are being processed here
      * @param incremental should only newest data being fetched or a full data reload done?
+     * @params platformUUID fetch usage data for the given {@link Platform} UUID
+     * @params the SUSHI API URL of the platform
+     * @params which COUNTER version is being offered by the API - counter4 or counter5?
+     * @deprecated disused because usage data is not persisted in LAS:eR any more
      */
     @Deprecated
     void internalDoFetch(boolean incremental, String platformUUID = '', String source = '', String revision = '') {
@@ -604,7 +612,17 @@ class StatsSyncService {
 
     /**
      * Internal
+     * Processes the retrieved usage data and saved it to the local database.
+     * Method is defined for COUNTER Revision 4
+     * @param reportData the request response from the provider's server
+     * @param c4asPlatform the {@link Platform} to which data has been retrieved
+     * @param customerUID the customer UID for which data has been retrieved
+     * @param namespaces set of identifier namespace keys
+     * @param sql the connection to the main database - currently unused
+     * @param statsSql the connection to the storage database
+     * @deprecated unused since usage data is not being mirrored locally
      */
+    @Deprecated
     void processCounter4ReportData(Map<String, Object> reportData, Platform c4asPlatform, String customerUID, Set<Long> namespaces, Sql sql, Sql statsSql) {
         if (reportData.reportID in Counter4Report.COUNTER_4_PLATFORM_REPORTS) {
             int[] resultCount = statsSql.withBatch("insert into counter4report (c4r_version, c4r_platform_guid, c4r_publisher, c4r_report_institution_guid, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count) " +
@@ -763,6 +781,19 @@ class StatsSyncService {
         }
     }
 
+    /**
+     * Internal
+     * Processes the retrieved usage data and saved it to the local database.
+     * Method is defined for COUNTER Revision 5
+     * @param reportData the request response from the provider's server
+     * @param c5asPlatform the {@link Platform} to which data has been retrieved
+     * @param customerUID the customer UID for which data has been retrieved
+     * @param namespaces set of identifier namespace keys
+     * @param sql the connection to the main database - currently unused
+     * @param statsSql the connection to the storage database
+     * @deprecated unused since usage data is not being mirrored locally
+     */
+    @Deprecated
     void processCounter5ReportData(Map<String, Object> reportData, Platform c5asPlatform, String customerUID, Set<Long> namespaces, Sql sql, Sql statsSql) {
         //Connection sqlConn = sql.getDataSource().getConnection()
         if (reportData.reportID in Counter5Report.COUNTER_5_PLATFORM_REPORTS) {
@@ -928,6 +959,7 @@ class StatsSyncService {
      * @param sql the SQL connection to use
      * @param result the request response containing details of the error circumstances
      */
+    @Deprecated
     void notifyError(Sql sql, Map result) {
 //        Map<String, Object> event = SystemEvent.DEFINED_EVENTS.STATS_SYNC_JOB_WARNING
 //        sql.executeInsert('insert into system_event (se_category, se_created, se_payload, se_relevance, se_token) values (:cat, now(), :error, :rel, :token)', [cat: event.category.value, error: new JSON(result).toString(false), rel: event.relevance.value, token: 'STATS_SYNC_JOB_WARNING'])
@@ -950,7 +982,9 @@ class StatsSyncService {
      * @param endTime the end of reporting time span
      * @param keyPair the customer number-requestor ID/API key pair used to authentify the customer
      * @return a map containing the request status - success or error on failure
+     * @deprecated unused because data is not being stored locally
      */
+    @Deprecated
     Map<String, Object> performCounter4Request(String statsUrl, String reportID, Calendar now, Calendar startTime, Calendar endTime, Map keyPair) {
         StreamingMarkupBuilder requestBuilder = new StreamingMarkupBuilder()
         def requestBody = requestBuilder.bind {
@@ -1027,7 +1061,9 @@ class StatsSyncService {
      * @param url the URL from where usage should be retrieved
      * @param reportId the report which should be fetched
      * @return a map containing the request status - success or error on failure
+     * @deprecated unused since data is not being stored locally
      */
+    @Deprecated
     Map<String, Object> performCounter5Request(String url, String reportId) {
         Map<String, Object> report = fetchJSONData(url)
         if(report.header) {
@@ -1941,6 +1977,7 @@ class StatsSyncService {
     }
 
     /**
+     * Nationaler Statistikserver
      * Checks if the given XML body contains usage data for the given title
      * @param xml the XML response
      * @param titleId the title to check
@@ -1971,6 +2008,7 @@ class StatsSyncService {
     }
 
     /**
+     * Nationaler Statistikserver
      * Increments the activity histogram by a completed process
      */
     static synchronized void incrementActivityHistogram() {

@@ -286,6 +286,7 @@ class StatusUpdateService extends AbstractLockableService {
      * Triggered from the Yoda menu
      * Sets the status of every subscription without start date to null as of ERMS-847
      */
+    @Deprecated
     boolean startDateCheck() {
         def subsWithoutStartDate = Subscription.findAllByStartDateIsNullAndStatus(RDStore.SUBSCRIPTION_CURRENT).collect { it.id }
         if(subsWithoutStartDate) {
@@ -391,7 +392,9 @@ class StatusUpdateService extends AbstractLockableService {
      * @param tippa the old TIPP (as {@link TitleInstancePackagePlatform} or {@link IssueEntitlement})
      * @param tippb the new TIPP (as {@link Map} or {@link TitleInstancePackagePlatform}
      * @return a {@link Set} of {@link Map}s with the differences
+     * @deprecated unused since all changes should be applied directly to the issue entitlements
      */
+    @Deprecated
     Set<Map<String,Object>> getTippDiff(IssueEntitlement iea, TitleInstancePackagePlatform tippb) {
             log.info("processing diffs; the respective objects are: ${iea.id} (TitleInstancePackagePlatform) pointing to ${tippb.id} (TIPP)")
         Set<Map<String, Object>> result = []
@@ -432,7 +435,9 @@ class StatusUpdateService extends AbstractLockableService {
      * @param listB the new statements (a {@link List} of remote records, kept in {@link Map}s)
      * @param instanceType the container class (may be coverage or price)
      * @return a {@link Set} of {@link Map}s reflecting the differences between the statements
+     * @deprecated unused because changes should be passed directly to the linked entitlements
      */
+    @Deprecated
     Set<Map<String,Object>> getSubListDiffs(IssueEntitlement ieA, listB, String instanceType) {
         Set subDiffs = []
         Set listA
