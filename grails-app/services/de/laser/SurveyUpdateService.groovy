@@ -26,8 +26,10 @@ class SurveyUpdateService extends AbstractLockableService {
     /**
      * Cronjob-triggered.
      * Runs through all surveys having status "Ready" and "Started" and checks their dates:
-     * - if state = ready, then check if start date is reached, if so: update to started, else do nothing
-     * - else if state = started, then check if end date is reached, if so: update to completed, else do nothing
+     * <ul>
+     *  <li>if state = ready, then check if start date is reached, if so: update to started, else do nothing</li>
+     *  <li>else if state = started, then check if end date is reached, if so: update to completed, else do nothing</li>
+     * </ul>
      * @return true if the execution was successful, false otherwise
      */
     boolean surveyCheck() {
