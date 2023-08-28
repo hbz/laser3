@@ -1869,7 +1869,7 @@ class SubscriptionControllerService {
             }
 
             result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(subscriberSub, result.surveyConfig)
-            result.countAllTipps = result.subscription.packages ? TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.status = :status and pkg in (:pkgs)", [pkgs: result.subscription.packages.pkg, status: RDStore.TIPP_STATUS_CURRENT])[0] : 0
+            result.countAllTipps = result.subscription.packages ? TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.status = :status and pkg in (:pkgs)", [pkgs: result.subscription.packages.pkg, status: RDStore.TIPP_STATUS_CURRENT])[0] : 0
 
             result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(result.subscription, false)
 
@@ -2359,7 +2359,7 @@ class SubscriptionControllerService {
                 Map configMap = params.clone()
                 configMap.forCount = true
                 Map query2 = filterService.getIssueEntitlementQuery(configMap, result.subscription)
-                result.num_ies = IssueEntitlement.executeQuery("select count(ie.id) " + query2.query, query2.queryParams)[0]
+                result.num_ies = IssueEntitlement.executeQuery("select count(*) " + query2.query, query2.queryParams)[0]
             }
             result.num_ies_rows = entitlements.size()
             if(entitlements && !params.containsKey('fileformat')) {
@@ -2400,11 +2400,11 @@ class SubscriptionControllerService {
             result.considerInBatch = ["sort", "order", "offset", "max", "status", "pkgfilter", "asAt", "series_name", "subject_reference", "ddc", "language", "yearsFirstOnline", "identifier", "title_types", "publishers", "coverageDepth", "inTitleGroups"]
 
 
-            result.currentIECounts = IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status = :status and ie.status != :ieStatus", [sub: result.subscription, status: RDStore.TIPP_STATUS_CURRENT, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
-            result.plannedIECounts = IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status = :status and ie.status != :ieStatus", [sub: result.subscription, status: RDStore.TIPP_STATUS_EXPECTED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
-            result.expiredIECounts = IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status = :status and ie.status != :ieStatus", [sub: result.subscription, status: RDStore.TIPP_STATUS_RETIRED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
-            result.deletedIECounts = IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status = :status and ie.status != :ieStatus", [sub: result.subscription, status: RDStore.TIPP_STATUS_DELETED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
-            result.allIECounts = IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status in (:status) and ie.status != :ieStatus", [sub: result.subscription, status: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED], ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+            result.currentIECounts = IssueEntitlement.executeQuery("select count(*) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status = :status and ie.status != :ieStatus", [sub: result.subscription, status: RDStore.TIPP_STATUS_CURRENT, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+            result.plannedIECounts = IssueEntitlement.executeQuery("select count(*) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status = :status and ie.status != :ieStatus", [sub: result.subscription, status: RDStore.TIPP_STATUS_EXPECTED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+            result.expiredIECounts = IssueEntitlement.executeQuery("select count(*) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status = :status and ie.status != :ieStatus", [sub: result.subscription, status: RDStore.TIPP_STATUS_RETIRED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+            result.deletedIECounts = IssueEntitlement.executeQuery("select count(*) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status = :status and ie.status != :ieStatus", [sub: result.subscription, status: RDStore.TIPP_STATUS_DELETED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+            result.allIECounts = IssueEntitlement.executeQuery("select count(*) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status in (:status) and ie.status != :ieStatus", [sub: result.subscription, status: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED], ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
 
 
             [result:result,status:STATUS_OK]
@@ -2634,7 +2634,7 @@ class SubscriptionControllerService {
                 packages << Package.get(params.pkgfilter)
             else packages = result.subscription.packages?.pkg
 
-            result.countAllTitles = TitleInstancePackagePlatform.executeQuery('''select count(tipp.id) from TitleInstancePackagePlatform as tipp where 
+            result.countAllTitles = TitleInstancePackagePlatform.executeQuery('''select count(*) from TitleInstancePackagePlatform as tipp where 
                                     tipp.pkg in (:pkgs) and 
                                     tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = :subscription ) and 
                                     ( not exists ( select ie from IssueEntitlement ie where ie.subscription = :subscription and ie.tipp.id = tipp.id and ie.status = :issueEntitlementStatus ) ) ''',
@@ -4284,7 +4284,7 @@ class SubscriptionControllerService {
                 result.auditConfigs = auditService.getAllAuditConfigs(result.subscription.instanceOf)
             else result.auditConfigs = auditService.getAllAuditConfigs(result.subscription)
 
-            result.currentTitlesCounts = IssueEntitlement.executeQuery("select count(ie.id) from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :status ", [sub: result.subscription, status: RDStore.TIPP_STATUS_CURRENT])[0]
+            result.currentTitlesCounts = IssueEntitlement.executeQuery("select count(*) from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :status ", [sub: result.subscription, status: RDStore.TIPP_STATUS_CURRENT])[0]
 
             if ((result.contextOrg as Org).isCustomerType_Consortium()) {
                 if(result.subscription.instanceOf){
@@ -4302,7 +4302,7 @@ class SubscriptionControllerService {
                     int ownCount = ownCostCounts ? ownCostCounts[0] : 0
                     result.currentCostItemCounts = "${ownCount}/${subscrCount}"
                 }
-                result.currentMembersCounts =  Subscription.executeQuery('select count(s) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',[parent: result.subscription, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])[0]
+                result.currentMembersCounts =  Subscription.executeQuery('select count(*) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',[parent: result.subscription, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])[0]
             }else{
                 result.currentSurveysCounts = SurveyConfig.executeQuery("from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
                         [sub: result.subscription.instanceOf,
