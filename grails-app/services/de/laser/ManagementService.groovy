@@ -39,7 +39,6 @@ class ManagementService {
     static final int STATUS_ERROR = 1
 
     AuditService auditService
-    AccessService accessService
     AddressbookService addressbookService
     ContextService contextService
     FormService formService

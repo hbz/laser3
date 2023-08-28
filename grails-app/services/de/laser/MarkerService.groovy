@@ -5,13 +5,22 @@ import de.laser.interfaces.MarkerSupport
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
 
-
+/**
+ * This service handles the we:kb bookmarks of a given user
+ * @see Marker
+ */
 @Transactional
 class MarkerService {
 
     ContextService contextService
     OrgTypeService orgTypeService
 
+    /**
+     * Gets the bookmarks for the given class of the given type
+     * @param cls the class for which to fetch markers - one of {@link Org}, {@link Package} or {@link Platform}
+     * @param type
+     * @return
+     */
     List<Marker> getMarkersByClassAndType(Class cls, Marker.TYPE type) {
         List<Marker> markers = []
         String sql
@@ -35,6 +44,12 @@ class MarkerService {
         markers
     }
 
+    /**
+     * Gets all objects belonging to the given class which have been bookmarked by the given type
+     * @param cls the class of objects to fetch - one of {@link Org}, {@link Package}, {@link Platform}
+     * @param type the type of marker to fetch - one of {@link Marker.TYPE}
+     * @return a {@link List} of {@link MarkerSupport} bookmarks
+     */
     List<MarkerSupport> getObjectsByClassAndType(Class cls, Marker.TYPE type) {
         List<MarkerSupport> objects = []
         String sql
@@ -55,6 +70,10 @@ class MarkerService {
         objects
     }
 
+    /**
+     * Builds a map of currently subscribed packages and platforms
+     * @return a {@link Map} of {@link de.laser.Package} IDs and {@link Platform} IDs to which there exists a link from a {@link Subscription} (= are subscribed by the context institution)
+     */
     Map<String, List> getMyXMap() {
         Map<String, List> result = [:]
 
