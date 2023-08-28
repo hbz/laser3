@@ -1165,13 +1165,15 @@ join sub.orgRelations or_sub where
     }
 
     /**
-     * Substitution call for {@link #addEntitlement(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, boolean, java.lang.Object)}
+     * Adds the selected issue entitlement to the given subscription; if submitted, the holding may be enriched with individually negotiated data
      * @param sub the subscription to which the title should be added
      * @param gokbId the we:kb ID of the title
      * @param issueEntitlementOverwrite eventually cached imported local data
      * @param withPriceData should price data be added as well?
      * @param set ie in issueEntitlementGroup
      * @return true if the adding was successful, false otherwise
+     * @throws EntitlementCreationException
+     * @see de.laser.ctrl.SubscriptionControllerService#addEntitlements(de.laser.SubscriptionController, grails.web.servlet.mvc.GrailsParameterMap)
      */
     boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, pickAndChoosePerpetualAccess, issueEntitlementGroup) throws EntitlementCreationException {
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(gokbId)
@@ -1396,12 +1398,14 @@ join sub.orgRelations or_sub where
     }
 
     /**
-     * Adds the given set of issue entitlements to the given subscription. The entitlement data may come directly from the package or be overwritten by individually negotiated content
+     * Adds the given set of issue entitlements to the given subscription. The entitlement data may come directly from the package or be overwritten by individually negotiated content.
+     * Because of the amount of data, the insert is done by native SQL
      * @param target the {@link Subscription} to which the entitlements should be attached
      * @param issueEntitlementOverwrites the {@link Map} containing the data to submit for each issue entitlement
      * @param checkMap the {@link Map} containing identifiers of titles which have been selected for the enrichment
      * @param withPriceData should price data be added as well?
      * @param pickAndChoosePerpetualAccess are the given titles purchased perpetually?
+     * @param sql the SQL connection to the database
      */
     void bulkAddEntitlements(Subscription sub, Map<String, Object> issueEntitlementOverwrites, Map<String, String> checkMap, withPriceData, pickAndChoosePerpetualAccess, Sql sql) {
         Object[] keys = checkMap.keySet().toArray()
@@ -1758,7 +1762,7 @@ join sub.orgRelations or_sub where
     }
 
     /**
-     * (Un-)links the given subscription to the given license
+     * (Un-)links the given subscription to/from the given license
      * @param sub the subscription to be linked
      * @param newLicense the license to link
      * @param unlink should the link being created or dissolved?
@@ -2926,10 +2930,12 @@ join sub.orgRelations or_sub where
 
     /**
      * Cronjob-triggered.
-     * Processes subscriptions which have been marked with holdings to be freezed after their end time and sets all pending change
+     * Processes subscriptions which have been marked with holdings to be frozen after their end time and sets all pending change
      * configurations to reject
      * @return true if the execution was successful, false otherwise
+     * @deprecated is implicitlely done by {@link GlobalSourceSyncService#updateRecords(java.util.List, int, java.util.Set)} where only subscriptions are being considered whose end date has not been reached yet and {@link Subscription#holdingSelection} is set to Entire
      */
+    @Deprecated
     boolean freezeSubscriptionHoldings() {
         boolean done, doneChild
         Date now = new Date()
