@@ -1655,7 +1655,7 @@ class MyInstitutionController  {
                 result.providers = Org.executeQuery('select org.id,org.name from TitleInstancePackagePlatform tipp join tipp.pkg pkg join pkg.orgs oo join oo.org org where tipp.id in (select tipp.id '+qryString+') group by org.id order by org.name asc',qryParams)
                 result.hostplatforms = Platform.executeQuery('select plat.id,plat.name from TitleInstancePackagePlatform tipp join tipp.platform plat where tipp.id in (select tipp.id '+qryString+') group by plat.id order by plat.name asc',qryParams)
             }
-            result.num_ti_rows = TitleInstancePackagePlatform.executeQuery('select count(tipp) from IssueEntitlement ie join ie.tipp tipp where ie.id in (select ie.id ' + query + ') and ie.status != :ieStatus ',[ieStatus: RDStore.TIPP_STATUS_REMOVED]+queryMap)[0]
+            result.num_ti_rows = TitleInstancePackagePlatform.executeQuery('select count(*) from IssueEntitlement ie join ie.tipp tipp where ie.id in (select ie.id ' + query + ') and ie.status != :ieStatus ',[ieStatus: RDStore.TIPP_STATUS_REMOVED]+queryMap)[0]
             result.titles = allTitles
 
             result.filterSet = params.filterSet || defaultSet
@@ -1790,11 +1790,11 @@ class MyInstitutionController  {
         Set filteredIDs = result.tippIDs.drop(result.offset).take(result.max)
         result.titles = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:tippIDs) '+orderClause, [tippIDs: filteredIDs])
 
-        result.currentTippCounts = PermanentTitle.executeQuery("select count(pt) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: result.institution, status: RDStore.TIPP_STATUS_CURRENT, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
-        result.plannedTippCounts = PermanentTitle.executeQuery("select count(pt) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: result.institution, status: RDStore.TIPP_STATUS_EXPECTED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
-        result.expiredTippCounts = PermanentTitle.executeQuery("select count(pt) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: result.institutionn, status: RDStore.TIPP_STATUS_RETIRED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
-        result.deletedTippCounts = PermanentTitle.executeQuery("select count(pt) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: result.institution, status: RDStore.TIPP_STATUS_DELETED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
-        result.allTippCounts = PermanentTitle.executeQuery("select count(pt) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status in (:status) and pt.issueEntitlement.status != :ieStatus", [org: result.institution, status: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED], ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        result.currentTippCounts = PermanentTitle.executeQuery("select count(*) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: result.institution, status: RDStore.TIPP_STATUS_CURRENT, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        result.plannedTippCounts = PermanentTitle.executeQuery("select count(*) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: result.institution, status: RDStore.TIPP_STATUS_EXPECTED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        result.expiredTippCounts = PermanentTitle.executeQuery("select count(*) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: result.institutionn, status: RDStore.TIPP_STATUS_RETIRED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        result.deletedTippCounts = PermanentTitle.executeQuery("select count(*) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: result.institution, status: RDStore.TIPP_STATUS_DELETED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        result.allTippCounts = PermanentTitle.executeQuery("select count(*) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status in (:status) and pt.issueEntitlement.status != :ieStatus", [org: result.institution, status: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED], ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
 
         //for tipp_ieFilter
         params.institution = result.institution

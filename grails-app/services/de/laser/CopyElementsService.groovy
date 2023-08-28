@@ -385,7 +385,7 @@ class CopyElementsService {
                         }
                     }
                 }
-                if (IssueEntitlement.executeQuery('select count(ie.id) from IssueEntitlement ie where ie.subscription = :member', [member: subMember])[0] > 0 && IssueEntitlement.executeQuery('select count(ie.id) from IssueEntitlement ie where ie.subscription = :target', [target: targetObject])[0] > 0) {
+                if (IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.subscription = :member', [member: subMember])[0] > 0 && IssueEntitlement.executeQuery('select count(ie.id) from IssueEntitlement ie where ie.subscription = :target', [target: targetObject])[0] > 0) {
                     memberHoldingsToTransfer << newSubscription
                     //Sql sql = GlobalService.obtainSqlConnection()
                     //List sourceHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where ie_subscription_fk = :source and ie_status_rv_fk = :current", [source: subMember.id, current: RDStore.TIPP_STATUS_CURRENT.id])
