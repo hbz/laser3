@@ -1,9 +1,5 @@
 package de.laser
 
-import de.laser.api.v0.ApiToolkit
-import de.laser.auth.Role
-import de.laser.auth.User
-import de.laser.config.ConfigMapper
 import de.laser.properties.PropertyDefinition
 import de.laser.remote.ApiSource
 import de.laser.storage.RDStore
@@ -201,16 +197,6 @@ class OrganisationService {
     }
 
     /**
-     * Dumps the errors occurred during creation as an outputable string
-     * @return the error list as a string joined by HTML line breaks for frontend display
-     */
-    String dumpErrors() {
-        String out = errors.join('<br>')
-        errors = []
-        out
-    }
-
-    /**
      * Helper method to group reader numbers by their key property which is a temporal unit
      * @param readerNumbers the {@link List} of {@link ReaderNumber}s to group
      * @param keyProp may be a dueDate or semester; a temporal unit to group the reader numbers by
@@ -241,6 +227,12 @@ class OrganisationService {
         Platform.executeQuery('select p from Platform p join p.org o where p.gokbId in (:uuids) and p.org is not null order by o.name, o.sortname, p.name', [uuids: uuids])
     }
 
+    /**
+     * Gets a (filtered) map of provider records from the we:kb
+     * @param params the request parameters
+     * @param result a result generics map, containing also configuration params for the request
+     * @return a {@link Map} of structure [providerUUID: providerRecord] containing the request results
+     */
     Map<String, Map> getWekbOrgRecords(GrailsParameterMap params, Map result) {
         Map<String, Object> queryParams = [componentType: "Org"]
         if (params.curatoryGroup || params.providerRole) {

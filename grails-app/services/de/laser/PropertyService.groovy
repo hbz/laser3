@@ -599,6 +599,15 @@ class PropertyService {
         result
     }
 
+    /**
+     * Gets the objects to which the given property definition (= type) may be attached to. Two lists are being returned;
+     * one of them contains the objects for which a property of the given type has been defined, the other all those where
+     * no property has been defined
+     * @param propDef the {@link PropertyDefinition} to be looked for
+     * @param contextOrg the institution ({@link Org}) whose objects and properties should be retrieved
+     * @param params the request parameter map containing eventual filter data
+     * @return a {@link Map} containing the two result lists and other response data
+     */
      Map<String, Object> getAvailableProperties(PropertyDefinition propDef, Org contextOrg, GrailsParameterMap params) {
          Set filteredObjs = [], objectsWithoutProp = []
          Map<String,Object> parameterMap = [type:propDef,ctx:contextOrg], orgFilterParams = [:], result = [:]

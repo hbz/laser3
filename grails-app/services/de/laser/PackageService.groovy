@@ -203,6 +203,11 @@ class PackageService {
         count
     }
 
+    /**
+     * Clears title records which have been marked as removed.
+     * The method is going to be locked while execution because the query may take time to complete
+     * @return true if a cleanup could be performed, false
+     */
     boolean clearRemovedTitles() {
         if(!titleCleanupRunning) {
             titleCleanupRunning = true
@@ -217,6 +222,11 @@ class PackageService {
         else return false
     }
 
+    /**
+     * Sets some generally valid parameters for the response; those are the context user / institution, customer type and package to be retrieved and whether this package is being subscribed (= is my package)
+     * @param params the request parameter map
+     * @return a {@link Map} containing general result data
+     */
     Map<String, Object> getResultGenerics(Map params) {
         Map<String, Object> result = [user: contextService.getUser(), contextOrg: contextService.getOrg(), packageInstance: Package.get(params.id)]
         result.contextCustomerType = result.contextOrg.getCustomerType()
