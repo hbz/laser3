@@ -1,11 +1,16 @@
 package de.laser
 
-import de.laser.auth.User
 import de.laser.workflow.*
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.transaction.TransactionStatus
 
+/**
+ * This service handles workflow-related requests such as creating, updating entire lists
+ * and creating, altering or deleting checkpoints on them
+ * @see WfChecklist
+ * @see WfCheckpoint
+ */
 @Transactional
 class WorkflowService {
 
