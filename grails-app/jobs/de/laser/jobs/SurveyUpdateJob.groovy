@@ -4,6 +4,9 @@ import de.laser.SurveyUpdateService
 import de.laser.base.AbstractJob
 import groovy.util.logging.Slf4j
 
+/**
+ * Fires at 11:00 PM (23:00) and triggers the survey starting and mail sending
+ */
 @Slf4j
 class SurveyUpdateJob extends AbstractJob {
 

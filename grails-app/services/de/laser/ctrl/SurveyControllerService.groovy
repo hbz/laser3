@@ -31,7 +31,6 @@ class SurveyControllerService {
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1
 
-    AccessService accessService
     ContextService contextService
     DocstoreService docstoreService
     SubscriptionService subscriptionService
