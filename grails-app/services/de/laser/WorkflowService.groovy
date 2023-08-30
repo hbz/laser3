@@ -1,11 +1,16 @@
 package de.laser
 
-import de.laser.auth.User
 import de.laser.workflow.*
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.transaction.TransactionStatus
 
+/**
+ * This service handles workflow-related requests such as creating, updating entire lists
+ * and creating, altering or deleting checkpoints on them
+ * @see WfChecklist
+ * @see WfCheckpoint
+ */
 @Transactional
 class WorkflowService {
 
@@ -15,10 +20,22 @@ class WorkflowService {
     public static final String OP_STATUS_DONE  = 'OP_STATUS_DONE'
     public static final String OP_STATUS_ERROR = 'OP_STATUS_ERROR'
 
+    /**
+     * Constructs a new ParamsHelper instance with the given key and parameter map
+     * @param cmpKey the key to extract
+     * @param params the request parameter map
+     * @return the new {@link ParamsHelper} instance
+     */
     ParamsHelper getNewParamsHelper(String cmpKey, GrailsParameterMap params) {
         new ParamsHelper(cmpKey, params)
     }
 
+    /**
+     * Reloads the workflow list. If a command has been submitted, the list is updated before being returned
+     * @param result the result map containing generics
+     * @param params the request parameter map
+     * @return the updated result set
+     */
     def executeCmdAndUpdateResult(Map<String, Object> result, GrailsParameterMap params) {
 
         if (params.cmd) {
@@ -51,6 +68,11 @@ class WorkflowService {
         result.checklistCount = result.checklists.size()
     }
 
+    /**
+     * Executes the given command on the workflow list and returns the updated list
+     * @param params the request parameter map
+     * @return a {@link Map} containing the current workflow
+     */
     Map<String, Object> executeCmd(GrailsParameterMap params) {
         log.debug('executeCmd() ' + params)
 
@@ -120,6 +142,11 @@ class WorkflowService {
         result
     }
 
+    /**
+     * Deletes the given checkpoint
+     * @param cmd the command as array [command, key, workflow checkpoint]
+     * @return the deletion result with the new empty position
+     */
     Map<String, Object> deleteCheckpoint(String[] cmd) {
         log.debug('deleteCheckpoint() ' + cmd)
 
@@ -139,6 +166,11 @@ class WorkflowService {
         result
     }
 
+    /**
+     * Moves the given checkpoint up or down by one
+     * @param cmd the command in structure [command (moveUp or moveDown), key, workflow point]
+     * @return the movement result status: {@link #OP_STATUS_DONE} if successful, {@link #OP_STATUS_ERROR} on failure
+     */
     Map<String, Object> moveCheckpoint(String[] cmd) {
         log.debug('moveCheckpoint() ' + cmd)
 
@@ -171,6 +203,11 @@ class WorkflowService {
         result
     }
 
+    /**
+     * Creates a new checklist with the given parameters
+     * @param params the request parameter map, containing the data for the new workflow checklist
+     * @return a {@link Map} containing the creation result
+     */
     Map<String, Object> createChecklist(GrailsParameterMap params) {
         log.debug( 'createChecklist() ' + params )
 
@@ -240,6 +277,11 @@ class WorkflowService {
         result
     }
 
+    /**
+     * Creates a new checkpoint for the given list with the given parameters
+     * @param params the request parameter map
+     * @return a {@link Map} containing the creation result
+     */
     Map<String, Object> createCheckpoint(GrailsParameterMap params) {
         log.debug( 'createCheckpoint() ' + params )
 
@@ -262,6 +304,11 @@ class WorkflowService {
         result
     }
 
+    /**
+     * Creates a new checklist, prefilling values from another checklist
+     * @param params the request parameter map
+     * @return a {@link Map} containing the creation result
+     */
     Map<String, Object> instantiateChecklist(GrailsParameterMap params) {
         log.debug('instantiateChecklist() ' + params)
 
@@ -331,6 +378,11 @@ class WorkflowService {
         result
     }
 
+    /**
+     * Deletes the given checklist
+     * @param cmd the command to be executed, in structure [command, key, list]
+     * @return a {@link Map} confirming the deletion for [command, key]
+     */
     Map<String, Object> deleteChecklist(String[] cmd) {
         log.debug('deleteChecklist() ' + cmd)
 
@@ -361,11 +413,22 @@ class WorkflowService {
         result
     }
 
+    /**
+     * Sorts the given checklists by their date of last update and returns the updated list
+     * @param wfList the {@link List} of {@link WfChecklist} to sort
+     * @return the sorted list
+     */
     List<WfChecklist> sortByLastUpdated(List<WfChecklist> wfList) {
 //        println wfList.collect{ it.id + '_' + it.getInfo().lastUpdated }.take(5)
         wfList.sort{ a,b -> b.getInfo().lastUpdated <=> a.getInfo().lastUpdated }
     }
 
+    /**
+     * Retrieves the current workflows for the given object (one of {@link Subscription}, {@link License}, {@link Org}) and institution
+     * @param obj the object of which workflows should be returned
+     * @param owner the institution ({@link Org}) who defined the workflows to be returned
+     * @return a {@link List} of {@link WfChecklist} workflows attached to the given object
+     */
     List<WfChecklist> getWorkflows(def obj, Org owner) {
         if (obj instanceof Subscription) {
             WfChecklist.executeQuery('select wf from WfChecklist wf where wf.subscription = :sub and wf.owner = :ctxOrg', [sub: obj, ctxOrg: owner])
@@ -381,6 +444,12 @@ class WorkflowService {
         }
     }
 
+    /**
+     * Retrieves the count of the workflows for the given object (one of {@link Subscription}, {@link License}, {@link Org}) and institution
+     * @param obj the object of which workflows should be returned
+     * @param owner the institution ({@link Org}) who defined the workflows to be returned
+     * @return the number of {@link WfChecklist} workflows attached to the given object
+     */
     int getWorkflowCount(def obj, Org owner) {
         if (obj instanceof Subscription) {
             WfChecklist.executeQuery('select count(wf) from WfChecklist wf where wf.subscription = :sub and wf.owner = :ctxOrg', [sub: obj, ctxOrg: owner])[0]
@@ -396,6 +465,12 @@ class WorkflowService {
         }
     }
 
+    /**
+     * Checks if the current user has reading rights
+     * @return true if the context user belongs to a PRO customer consortium or is a superadmin, false otherwise
+     * @see CustomerTypeService#ORG_CONSORTIUM_PRO
+     * @see ContextService#isInstAdm_or_ROLEADMIN()
+     */
     boolean hasUserPerm_read() {
         Org ctxOrg = contextService.getOrg()
         if (ctxOrg && ctxOrg.isCustomerType_Pro() && contextService.isInstUser_or_ROLEADMIN()) {
@@ -404,6 +479,12 @@ class WorkflowService {
         false
     }
 
+    /**
+     * Checks if the current user has editing rights
+     * @return true if the context user is at least {@link de.laser.auth.Role#INST_EDITOR} at a PRO customer consortium or is a superadmin, false otherwise
+     * @see CustomerTypeService#ORG_CONSORTIUM_PRO
+     * @see ContextService#isInstAdm_or_ROLEADMIN()
+     */
     boolean hasUserPerm_edit() {
         Org ctxOrg = contextService.getOrg()
         if (ctxOrg && ctxOrg.isCustomerType_Pro() && contextService.isInstEditor_or_ROLEADMIN()) {

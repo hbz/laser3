@@ -10,6 +10,12 @@ import grails.gorm.transactions.Transactional
 import java.time.LocalDate
 import java.time.ZoneId
 
+/**
+ * This service keeps track of the changes performed in the <a href="https://wekb.hbz-nrw.de">we:kb knowledge base</a>. It replaces the entirely
+ * functionality of {@link PendingChange}s for {@link TitleInstancePackagePlatform}s (not for cost items and subscriptions!) just as the immediate
+ * successors {@link TitleChange}s and {@link IssueEntitlementChange}s. Periodically, via a Cronjob, the last changes are being retrieved from the we:kb
+ * using the {@link ApiSource} to fetch the data which is then being cached
+ */
 @Transactional
 class WekbStatsService {
 
@@ -20,6 +26,20 @@ class WekbStatsService {
 
     static final String CACHE_KEY = 'WekbStatsService/wekbChanges'
 
+    /**
+     * Gets the current changes from the cache and assembles them in a map of counts being recently performed. Also the count
+     * of bookmarked objects are being put in the map. The map containis the counts of:
+     * <ul>
+     *     <li>in we:kb altogether</li>
+     *     <li>in LAS:eR altogether</li>
+     *     <li>subscribed</li>
+     *     <li>bookmarked</li>
+     *     <li>newly created</li>
+     *     <li>updated</li>
+     * </ul>
+     * objects. The following objects are being traced: {@link Org} (provider), {@link de.laser.Package} and {@link Platform}
+     * @return a {@link Map} containing the counts: [all: all, inLaser: in LAS:eR, my: subscribed, marker: bookmarked, created: newly created, updated: updated objects]
+     */
     Map getCurrentChanges() {
         EhcacheWrapper cache = cacheService.getTTL1800Cache(CACHE_KEY)
 
@@ -54,6 +74,10 @@ class WekbStatsService {
         result
     }
 
+    /**
+     * Triggered by Cronjob: {@link de.laser.jobs.MuleJob}
+     * Triggers the update of the cache of the recent changes performed in the we:kb
+     */
     void updateCache() {
         EhcacheWrapper cache = cacheService.getTTL1800Cache(CACHE_KEY)
 
@@ -61,6 +85,25 @@ class WekbStatsService {
         cache.put('changes', result)
     }
 
+    /**
+     * Fetches the changes of the last given amount of days and assembles the counts of:
+     * <ul>
+     *     <li>providers ({@link Org})</li>
+     *     <li>{@link de.laser.Package}s</li>
+     *     <li>{@link Platform}</li>
+     * </ul>
+     * Counted are for each class:
+     * <ul>
+     *     <li>overall object count in we:kb</li>
+     *     <li>overall object count in LAS:eR</li>
+     *     <li>created objects</li>
+     *     <li>updated objects</li>
+     *     <li>all modified objects</li>
+     * </ul>
+     * The map being returned reflects this structure
+     * @param days days to count backwards - from when should changes being considered?
+     * @return a {@link Map} containing the counts of objects
+     */
     Map<String, Object> processData(int days) {
         log.debug('WekbStatsService.processData(' + days + ')')
         Map<String, Object> result = [:]

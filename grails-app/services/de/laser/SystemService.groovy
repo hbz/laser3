@@ -59,6 +59,11 @@ class SystemService {
         return checks
     }
 
+    /**
+     * Gets the system status message
+     * @param messageId the message ID to display
+     * @return a {@link Map} with the status, state of maintenance and the messages themselves
+     */
     Map getStatusMessage(long messageId = 0) {
         Map result = [ status: 'error' ]
 
@@ -78,6 +83,10 @@ class SystemService {
         result
     }
 
+    /**
+     * Sends system status / events mails to registered email addresses. The email registry is a setting in the
+     * local configuration file; see the configuration setting at {@link ConfigMapper#SYSTEM_INSIGHT_EMAILS)}
+     */
     void sendSystemInsightMails() {
         if (SystemSetting.findByName('SystemInsight').value != 'true') {
             log.info '---> Sending system insight mails .. ignored'

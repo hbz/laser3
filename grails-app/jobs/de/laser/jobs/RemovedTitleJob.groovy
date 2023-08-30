@@ -3,6 +3,9 @@ package de.laser.jobs
 import de.laser.base.AbstractJob
 import groovy.util.logging.Slf4j
 
+/**
+ * This job triggers at 21:00 every day and clears titles marked as removed
+ */
 @Slf4j
 class RemovedTitleJob extends AbstractJob {
 

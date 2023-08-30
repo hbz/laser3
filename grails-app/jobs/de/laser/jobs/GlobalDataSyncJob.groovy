@@ -5,6 +5,10 @@ import de.laser.config.ConfigMapper
 import de.laser.base.AbstractJob
 import groovy.util.logging.Slf4j
 
+/**
+ * This job triggers the overnight title and package data synchronisation with the we:kb knowledge base.
+ * It is scheduled for 00:01 AM (i.e. one minute after midnight) every day
+ */
 @Slf4j
 class GlobalDataSyncJob extends AbstractJob {
 

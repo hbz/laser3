@@ -1,16 +1,18 @@
 package de.laser.jobs
 
-import de.laser.SystemService
 import de.laser.WekbStatsService
 import de.laser.base.AbstractJob
 import de.laser.config.ConfigMapper
 import de.laser.system.SystemEvent
 import groovy.util.logging.Slf4j
 
+/**
+ * This job retrieves between 06:00 and 21:00 every 15 minutes the last changes in the we:kb
+ */
 @Slf4j
 class MuleJob extends AbstractJob {
 
-    SystemService systemService
+    //SystemService systemService
     WekbStatsService wekbStatsService
 
     static triggers = {

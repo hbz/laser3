@@ -5,11 +5,19 @@ import de.laser.SubscriptionService
 import de.laser.base.AbstractJob
 import groovy.util.logging.Slf4j
 
+/**
+ * Firing at 03:00 AM, this job triggers the check of subscriptions and licenses reaching date limits and updates their status
+ * accordingly:
+ * <ol>
+ *     <li>Expected reaching their start date to Current</li>
+ *     <li>Current or Expected reaching their end date to Expired</li>
+ * </ol>
+ * @see StatusUpdateService
+ */
 @Slf4j
 class StatusUpdateJob extends AbstractJob {
 
     StatusUpdateService statusUpdateService
-    SubscriptionService subscriptionService
 
     static triggers = {
        cron name:'StatusUpdateTrigger', cronExpression: "0 0 3 * * ?" //Fire at 03:00 every day

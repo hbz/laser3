@@ -1423,6 +1423,12 @@ class SurveyService {
         result
     }
 
+    /**
+     * Substitution call to ${@link #hasParticipantPerpetualAccessToTitle2(java.util.List, de.laser.TitleInstancePackagePlatform)}
+     * @param subscriptions the list of subscriptions eligible for the perpetual purchase
+     * @param tipp the title to be checked
+     * @return true if one of the given subscriptions grant access, false otherwise
+     */
     boolean hasParticipantPerpetualAccessToTitle(List<Subscription> subscriptions, TitleInstancePackagePlatform tipp) {
         if(subscriptions){
             List<Long> subscriptionIDs = subscriptions.id
@@ -1461,6 +1467,12 @@ class SurveyService {
         }
     }
 
+    /**
+     * Checks if the given institution ({@link Org}) has perpetual access to the given title
+     * @param org the institution whose access to check
+     * @param tipp the title to which perpetual access may be granted
+     * @return true if there is perpetual access (= at least one record in {@link PermanentTitle} for the given institution and title, false otherwise
+     */
     boolean hasParticipantPerpetualAccessToTitle3(Org org, TitleInstancePackagePlatform tipp){
             Integer countPermanentTitles = PermanentTitle.executeQuery('select count(*) from PermanentTitle pt join pt.tipp tipp where ' +
                     '(tipp = :tipp or tipp.hostPlatformURL = :hostPlatformURL) and ' +
@@ -1478,6 +1490,12 @@ class SurveyService {
             }
     }
 
+    /**
+     * Lists the institution's subscriptions via which it has purchased perpetual access to the given title
+     * @param org the institution ({@link Org}) whose subscriptions should be listed
+     * @param tipp the title subject of the perpetual access
+     * @return a {@link List} of {@link PermanentTitle} records containing the subscription(s) granting perpetual access to the given title
+     */
     List<PermanentTitle> listParticipantPerpetualAccessToTitle(Org org, TitleInstancePackagePlatform tipp){
         List<PermanentTitle> permanentTitles = PermanentTitle.executeQuery('select pt from PermanentTitle pt join pt.tipp tipp where ' +
                 '(tipp = :tipp or tipp.hostPlatformURL = :hostPlatformURL) and ' +
@@ -1503,6 +1521,11 @@ class SurveyService {
         return hasParticipantPerpetualAccessToTitle2(subscriptionIDs, tipp)
     }
 
+    /**
+     * Gets a list of subscription IDs of the given institution
+     * @param org the institution ({@link Org}) whose subscriptions should be retrieved
+     * @return a {@link List} of {@link Subscription} IDs which are subscribed by the given institution
+     */
     List<Long> subscriptionsOfOrg(Org org){
         String base_qry = ''
         Map qry_params = [:]
@@ -1525,7 +1548,6 @@ class SurveyService {
 
         return subscriptionIDs
     }
-
 
     /**
      * Called from views
@@ -1564,6 +1586,13 @@ class SurveyService {
         }
     }
 
+    /**
+     *
+     * @param surveyConfig
+     * @param participants
+     * @param contextOrg
+     * @return
+     */
     def exportPropertiesChanged(SurveyConfig surveyConfig, def participants, Org contextOrg) {
         Locale locale = LocaleUtils.getCurrentLocale()
         Map sheetData = [:]
@@ -1615,6 +1644,7 @@ class SurveyService {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
+    @Deprecated
     void transferPerpetualAccessTitlesOfOldSubs(List<Long> entitlementsToTake, Subscription participantSub) {
         Sql sql = GlobalService.obtainSqlConnection()
         Connection connection = sql.dataSource.getConnection()
@@ -1646,6 +1676,7 @@ class SurveyService {
         }
     }
 
+    @Deprecated
     List<IssueEntitlement> getPerpetualAccessIesBySub(Subscription subscription) {
         Set<Subscription> subscriptions = linksGenerationService.getSuccessionChain(subscription, 'sourceSubscription')
         subscriptions << subscription
@@ -1670,6 +1701,7 @@ class SurveyService {
         return issueEntitlements
     }
 
+    @Deprecated
     List<Long> getPerpetualAccessIeIDsBySub(Subscription subscription) {
         Set<Subscription> subscriptions = linksGenerationService.getSuccessionChain(subscription, 'sourceSubscription')
         subscriptions << subscription
@@ -1694,6 +1726,12 @@ class SurveyService {
         return issueEntitlementIds
     }
 
+    /**
+     * Counts the titles perpetually purchased via the given subscription. Regarded is the time span of all year rings, i.e.
+     * subscriptions preceding the given one are counted as well
+     * @param subscription the {@link Subscription} whose perpetually accessible titles should be counted
+     * @return the count of {@link IssueEntitlement}s to which perpetual access have been granted over all years of the given subscription
+     */
     Integer countPerpetualAccessTitlesBySub(Subscription subscription) {
         Integer count = 0
         Set<Subscription> subscriptions = linksGenerationService.getSuccessionChain(subscription, 'sourceSubscription')
@@ -1721,6 +1759,12 @@ class SurveyService {
         return count
     }
 
+    /**
+     * Counts the titles in the group attached to the given survey and subscription
+     * @param subscription the {@link Subscription} to whose titles the issue entitlement group has been defined
+     * @param surveyConfig the {@link SurveyConfig} for which the issue entitlement group has been defined
+     * @return the count of {@link IssueEntitlement}s belonging to the given {@link IssueEntitlementGroup}
+     */
     Integer countIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         Integer countIes = issueEntitlementGroup ?
@@ -1730,6 +1774,12 @@ class SurveyService {
         countIes
     }
 
+    /**
+     * Calculates the sum of list prices of titles in the group attached to the given survey and subscription
+     * @param subscription the {@link Subscription} to whose titles the issue entitlement group has been defined
+     * @param surveyConfig the {@link SurveyConfig} for which the issue entitlement group has been defined
+     * @return the sum of {@link de.laser.finance.PriceItem#listPrice}s of the titles belonging to the given {@link IssueEntitlementGroup}
+     */
     BigDecimal sumListPriceIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         BigDecimal sumListPrice = issueEntitlementGroup ?
@@ -1739,6 +1789,13 @@ class SurveyService {
         sumListPrice
     }
 
+    /**
+     * Calculates the sum of list prices of titles in the group attached to the given survey and subscription.
+     * Regarded are only titles with status = Current
+     * @param subscription the {@link Subscription} to whose titles the issue entitlement group has been defined
+     * @param surveyConfig the {@link SurveyConfig} for which the issue entitlement group has been defined
+     * @return the sum of {@link de.laser.finance.PriceItem#listPrice}s of the titles belonging to the given {@link IssueEntitlementGroup}
+     */
     BigDecimal sumListPriceCurrentIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         BigDecimal sumListPrice = issueEntitlementGroup ?
@@ -1748,6 +1805,12 @@ class SurveyService {
         sumListPrice
     }
 
+    /**
+     * Gets the titles in the group attached to the given survey and subscription
+     * @param subscription the {@link Subscription} to whose titles the issue entitlement group has been defined
+     * @param surveyConfig the {@link SurveyConfig} for which the issue entitlement group has been defined
+     * @return a {@link List} of {@link IssueEntitlement}s belonging to the given {@link IssueEntitlementGroup}
+     */
     List<IssueEntitlement> issueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         List<IssueEntitlement> ies = issueEntitlementGroup ?
@@ -1757,11 +1820,24 @@ class SurveyService {
         ies
     }
 
+    /**
+     * Called from _evaluationParticipantsView.gsp
+     * Generates a notification mail containing the details of the survey for the participants in the given {@link SurveyInfo}
+     * @param surveyInfo the survey data containing the general parameters of the survey and the participants
+     * @param reminder unused
+     * @return the mail text as string with HTML markup
+     */
     String surveyMailHtmlAsString(SurveyInfo surveyInfo, boolean reminder = false) {
         Locale language = new Locale("de")
         groovyPageRenderer.render view: '/mailTemplates/html/notificationSurveyForMailClient', model: [language: language, survey: surveyInfo, reminder: false]
     }
 
+    /**
+     * Generates a notification mail containing the details of the survey for the participants in the given {@link SurveyInfo}
+     * @param surveyInfo the survey data containing the general parameters of the survey and the participants
+     * @param reminder is the mail a reminder to participate at the given survey?
+     * @return the mail text as plain string
+     */
     String surveyMailTextAsString(SurveyInfo surveyInfo, boolean reminder = false) {
         Locale language = new Locale("de")
         groovyPageRenderer.render view: '/mailTemplates/text/notificationSurvey', model: [language: language, survey: surveyInfo, reminder: reminder]
