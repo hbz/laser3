@@ -8,6 +8,10 @@ import de.laser.base.AbstractJob
 import groovy.util.logging.Slf4j
 //import org.springframework.messaging.simp.SimpMessagingTemplate
 
+/**
+ * Records every five minutes the current system activity
+ * @see SystemActivityProfiler
+ */
 @Slf4j
 class HeartbeatJob extends AbstractJob {
 

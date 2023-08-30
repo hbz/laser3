@@ -18,7 +18,6 @@ import org.springframework.dao.DataIntegrityViolationException
 @Transactional
 class AccessPointControllerService {
 
-    AccessService accessService
     ContextService contextService
     MessageSource messageSource
 

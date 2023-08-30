@@ -855,6 +855,16 @@ class SubscriptionControllerService {
         result
     }
 
+    /**
+     * Determines to the given report the matching {@link TitleInstancePackagePlatform}. First, matching is attempted against
+     * the online identifier or e-ISBN; an attempt is also made with stripped parenthesis. If that fails, another attempt is
+     * made with the print identifier, again, with stripped parenthesis as well; if that fails, too, further attempts are made with
+     * DOI and the proprietary identifier of the provider
+     * @param titles the {@link Map} of titles, grouped by [namespace: [identifier value: title]]
+     * @param propIdNamespace the proprietary {@link IdentifierNamespace} of the platform resp. the provider
+     * @param report the COUNTER report result
+     * @return the matching {@link TitleInstancePackagePlatform} or null, if no match has been found
+     */
     TitleInstancePackagePlatform matchReport(Map<String, Map<String, TitleInstancePackagePlatform>> titles, IdentifierNamespace propIdNamespace, Map report) {
         TitleInstancePackagePlatform tipp = null
         if(report.onlineIdentifier || report.isbn) {
@@ -893,6 +903,18 @@ class SubscriptionControllerService {
         GrailsHibernateUtil.unwrapIfProxy(tipp) as TitleInstancePackagePlatform
     }
 
+    /**
+     * Retrieves a set of available COUNTER reports for the given platforms. If a valid SUSHI API URL
+     * has been registered for the platform, the /reports endpoint will be queried for the respective list of supported
+     * reports. That does not work for platforms supporting COUNTER 4 only; then, the full set of reports will be
+     * returned. In order to determine the COUNTER revision supported and the SUSHI API URL, the we:kb is being queried
+     * to fetch the SUSHI configuration data
+     * @param subscribedPlatforms the platforms which are linked from the subscription to which usage data should be retrieved
+     * @param configMap the request parameter map
+     * @return a {@link SortedSet} of supported reports
+     * @see Subscription
+     * @see Platform
+     */
     SortedSet getAvailableReports(Set<Platform> subscribedPlatforms, Map<String, Object> configMap) {
         SortedSet<String> allAvailableReports = new TreeSet<String>()
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
@@ -956,6 +978,12 @@ class SubscriptionControllerService {
         allAvailableReports
     }
 
+    /**
+     * Loads the additional filter lists for the requested report. Note that only the COUNTER 5 Master Reports support
+     * accessType and accessMethod filters; the Standard Views have those implicitly set
+     * @param params the request parameter map
+     * @return a {@link Map} containing sets of metricTypes, accessTypes (for Master Reports) and accessMethods (for Master Reports)
+     */
     Map<String, Object> loadFilterList(GrailsParameterMap params) {
         SortedSet metricTypes = new TreeSet<String>(), accessTypes = new TreeSet<String>(), accessMethods = new TreeSet<String>()
         try {
@@ -3693,9 +3721,9 @@ class SubscriptionControllerService {
     }
 
     /**
-     *
-     * @param params
-     * @return
+     * Clears and removes the given {@link IssueEntitlementGroup}
+     * @param params the request parameter map
+     * @return OK if the removal succeeded, ERROR otherwise or if the issue entitlement group could not be found
      */
     Map<String,Object> removeEntitlementGroup(GrailsParameterMap params) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.get(params.titleGroup)
