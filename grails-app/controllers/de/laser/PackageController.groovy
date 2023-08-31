@@ -107,9 +107,11 @@ class PackageController {
 
         if (params.ddc) {
             result.filterSet = true
+            Set<String> selDDC = []
             params.list("ddc").each { String key ->
-                queryParams.ddc = RefdataValue.get(key).value
+                selDDC << RefdataValue.get(key).value
             }
+            queryParams.ddc = selDDC
         }
 
         //you rarely encounter it; ^ is the XOR operator in Java - if both options are set, we mean all curatory group types
