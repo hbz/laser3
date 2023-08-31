@@ -12,7 +12,7 @@ a11yMenu = {
         // for Main Menu
         $('#mainMenue .dropdown').dropdown({
             action: function (text, value, element) {
-                element.click()
+                //element.click()
             },
             selectOnKeydown        : false,
             on: 'hover',
