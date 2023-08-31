@@ -189,6 +189,7 @@ class ExportClickMeService {
             participantContacts : [
                     label: 'Contacts',
                     message: 'org.contacts.label',
+                    subTabs: [],
                     fields: [:]
             ],
             participantAddresses : [
@@ -526,6 +527,7 @@ class ExportClickMeService {
             consortiumContacts : [
                     label: 'Contacts',
                     message: 'org.contacts.label',
+                    subTabs: [],
                     fields: [:]
             ],
             consortiumAddresses : [
@@ -683,6 +685,7 @@ class ExportClickMeService {
             participantContacts : [
                     label: 'Contacts',
                     message: 'org.contacts.label',
+                    subTabs: [],
                     fields: [:]
             ],
             participantAddresses : [
@@ -730,6 +733,7 @@ class ExportClickMeService {
             providerContacts : [
                     label: 'Contacts',
                     message: 'org.contacts.label',
+                    subTabs: [],
                     fields: [:]
             ],
             providerAddresses : [
@@ -1198,12 +1202,12 @@ class ExportClickMeService {
             exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
         }
         SortedSet<RefdataValue> contactTypes = new TreeSet<RefdataValue>(), addressTypes = new TreeSet<RefdataValue>()
-        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: institution]))
-        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: institution]))
-        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: institution]))
+        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: institution]))
+        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: institution]))
+        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: institution]))
         addressTypes.addAll(RefdataCategory.getAllRefdataValues(RDConstants.ADDRESS_TYPE))
         contactTypes.each { RefdataValue contactType ->
-            exportFields.put("participantContact."+contactType.value, [field: null, label: contactType.getI10n('value')])
+            exportFields.put("participantContact."+contactType.owner.desc+"."+contactType.value, [field: null, label: contactType.getI10n('value')])
         }
         addressTypes.each { RefdataValue addressType ->
             exportFields.put("participantAddress."+addressType.value, [field: null, label: addressType.getI10n('value')])
@@ -1295,16 +1299,22 @@ class ExportClickMeService {
             }
         }
 
-        SortedSet<RefdataValue> contactTypes = new TreeSet<RefdataValue>(), addressTypes = new TreeSet<RefdataValue>()
-        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: institution]))
-        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: institution]))
-        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: institution]))
+        Set<RefdataValue> contactTypes = []
+        SortedSet<RefdataValue> addressTypes = new TreeSet<RefdataValue>()
+        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true) order by pr.functionType.'+LocaleUtils.getLocalizedAttributeName('value'), [ctx: institution]))
+        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true) order by pr.positionType.'+LocaleUtils.getLocalizedAttributeName('value'), [ctx: institution]))
+        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true) order by pr.responsibilityType.'+LocaleUtils.getLocalizedAttributeName('value'), [ctx: institution]))
         addressTypes.addAll(RefdataCategory.getAllRefdataValues(RDConstants.ADDRESS_TYPE))
+        RefdataCategory funcType = RefdataCategory.getByDesc(RDConstants.PERSON_FUNCTION), posType = RefdataCategory.getByDesc(RDConstants.PERSON_POSITION), respType = RefdataCategory.getByDesc(RDConstants.PERSON_RESPONSIBILITY)
+        List<Map> subTabs = [[view: funcType.desc, label: funcType.getI10n('desc')], [view: posType.desc, label: posType.getI10n('desc')], [view: respType.desc, label: respType.getI10n('desc')]]
+        String subTabActive = funcType.desc
 
         fields.participantContacts.fields.clear()
+        fields.participantContacts.subTabs = subTabs
+        fields.participantContacts.subTabActive = subTabActive
         fields.participantAddresses.fields.clear()
         contactTypes.each { RefdataValue contactType ->
-            fields.participantContacts.fields.put("participantContact.${contactType.value}", [field: null, label: contactType.getI10n('value')])
+            fields.participantContacts.fields.put("participantContact.${contactType.owner.desc}.${contactType.value}", [field: null, label: contactType.getI10n('value')])
         }
         addressTypes.each { RefdataValue addressType ->
             fields.participantAddresses.fields.put("participantAddress.${addressType.value}", [field: null, label: addressType.getI10n('value')])
@@ -1697,9 +1707,9 @@ class ExportClickMeService {
         Map<String, Object> exportFields = [:], contextParams = [ctx: contextOrg]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
         SortedSet<RefdataValue> contactTypes = new TreeSet<RefdataValue>(), addressTypes = new TreeSet<RefdataValue>()
-        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: contextOrg]))
-        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: contextOrg]))
-        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
         addressTypes.addAll(RefdataCategory.getAllRefdataValues(RDConstants.ADDRESS_TYPE))
 
         switch(config) {
@@ -1718,7 +1728,7 @@ class ExportClickMeService {
                     exportFields.put("consortiumProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant?.id == contextOrg.id)])
                 }
                 contactTypes.each { RefdataValue contactType ->
-                    exportFields.put("consortiumContact."+contactType.value, [field: null, label: contactType.getI10n('value')])
+                    exportFields.put("consortiumContact."+contactType.owner.desc+"."+contactType.value, [field: null, label: contactType.getI10n('value')])
                 }
                 addressTypes.each { RefdataValue addressType ->
                     exportFields.put("consortiumAddress."+addressType.value, [field: null, label: addressType.getI10n('value')])
@@ -1743,7 +1753,7 @@ class ExportClickMeService {
                     exportFields.put("participantProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant?.id == contextOrg.id)])
                 }
                 contactTypes.each { RefdataValue contactType ->
-                    exportFields.put("participantContact."+contactType.value, [field: null, label: contactType.getI10n('value')])
+                    exportFields.put("participantContact."+contactType.owner.desc+"."+contactType.value, [field: null, label: contactType.getI10n('value')])
                 }
                 addressTypes.each { RefdataValue addressType ->
                     exportFields.put("participantAddress."+addressType.value, [field: null, label: addressType.getI10n('value')])
@@ -1769,7 +1779,7 @@ class ExportClickMeService {
                     exportFields.put("participantProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant?.id == contextOrg.id)])
                 }
                 contactTypes.each { RefdataValue contactType ->
-                    exportFields.put("participantContact."+contactType.value, [field: null, label: contactType.getI10n('value')])
+                    exportFields.put("participantContact."+contactType.owner.desc+"."+contactType.value, [field: null, label: contactType.getI10n('value')])
                 }
                 addressTypes.each { RefdataValue addressType ->
                     exportFields.put("participantAddress."+addressType.value, [field: null, label: addressType.getI10n('value')])
@@ -1794,7 +1804,7 @@ class ExportClickMeService {
                     exportFields.put("providerProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant?.id == contextOrg.id)])
                 }
                 contactTypes.each { RefdataValue contactType ->
-                    exportFields.put("providerContact."+contactType.value, [field: null, label: contactType.getI10n('value')])
+                    exportFields.put("providerContact."+contactType.owner.desc+"."+contactType.value, [field: null, label: contactType.getI10n('value')])
                 }
                 addressTypes.each { RefdataValue addressType ->
                     exportFields.put("providerAddress."+addressType.value, [field: null, label: addressType.getI10n('value')])
@@ -1816,11 +1826,15 @@ class ExportClickMeService {
         Org contextOrg = contextService.getOrg()
         Map<String, Object> fields, contextParams = [ctx: contextOrg]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
-        SortedSet<RefdataValue> contactTypes = new TreeSet<RefdataValue>(), addressTypes = new TreeSet<RefdataValue>()
-        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: contextOrg]))
-        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: contextOrg]))
-        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: contextOrg]))
+        Set<RefdataValue> contactTypes = []
+        SortedSet<RefdataValue> addressTypes = new TreeSet<RefdataValue>()
+        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true) order by pr.functionType.'+ LocaleUtils.getLocalizedAttributeName('value'), [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true) order by pr.positionType.'+ LocaleUtils.getLocalizedAttributeName('value'), [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true) order by pr.responsibilityType.'+ LocaleUtils.getLocalizedAttributeName('value'), [ctx: contextOrg]))
         addressTypes.addAll(RefdataCategory.getAllRefdataValues(RDConstants.ADDRESS_TYPE))
+        RefdataCategory funcType = RefdataCategory.getByDesc(RDConstants.PERSON_FUNCTION), posType = RefdataCategory.getByDesc(RDConstants.PERSON_POSITION), respType = RefdataCategory.getByDesc(RDConstants.PERSON_RESPONSIBILITY)
+        List<Map> subTabs = [[view: funcType.desc, label: funcType.getI10n('desc')], [view: posType.desc, label: posType.getI10n('desc')], [view: respType.desc, label: respType.getI10n('desc')]]
+        String subTabActive = funcType.desc
 
         switch(orgType) {
             case 'consortium': fields = EXPORT_CONSORTIA_CONFIG as Map
@@ -1837,9 +1851,11 @@ class ExportClickMeService {
                         fields.consortiumProperties.fields << ["consortiumProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: false]]
                 }
                 fields.consortiumContacts.fields.clear()
+                fields.consortiumContacts.subTabs = subTabs
+                fields.consortiumContacts.subTabActive = subTabActive
                 fields.consortiumAddresses.fields.clear()
                 contactTypes.each { RefdataValue contactType ->
-                    fields.consortiumContacts.fields.put("consortiumContact.${contactType.value}", [field: null, label: contactType.getI10n('value')])
+                    fields.consortiumContacts.fields.put("consortiumContact.${contactType.owner.desc}.${contactType.value}", [field: null, label: contactType.getI10n('value')])
                 }
                 addressTypes.each { RefdataValue addressType ->
                     fields.consortiumAddresses.fields.put("consortiumAddress.${addressType.value}", [field: null, label: addressType.getI10n('value')])
@@ -1865,9 +1881,11 @@ class ExportClickMeService {
                         fields.participantProperties.fields << ["participantProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: false]]
                 }
                 fields.participantContacts.fields.clear()
+                fields.participantContacts.subTabs = subTabs
+                fields.participantContacts.subTabActive = subTabActive
                 fields.participantAddresses.fields.clear()
                 contactTypes.each { RefdataValue contactType ->
-                    fields.participantContacts.fields.put("participantContact.${contactType.value}", [field: null, label: contactType.getI10n('value')])
+                    fields.participantContacts.fields.put("participantContact.${contactType.owner.desc}.${contactType.value}", [field: null, label: contactType.getI10n('value')])
                 }
                 addressTypes.each { RefdataValue addressType ->
                     fields.participantAddresses.fields.put("participantAddress.${addressType.value}", [field: null, label: addressType.getI10n('value')])
@@ -1892,8 +1910,10 @@ class ExportClickMeService {
                         fields.providerProperties.fields << ["providerProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: false]]
                 }
                 fields.providerContacts.fields.clear()
+                fields.providerContacts.subTabs = subTabs
+                fields.providerContacts.subTabActive = subTabActive
                 contactTypes.each { RefdataValue contactType ->
-                    fields.providerContacts.fields.put("providerContact.${contactType.value}",[field: null, label: contactType.getI10n('value')])
+                    fields.providerContacts.fields.put("providerContact.${contactType.owner.desc}.${contactType.value}",[field: null, label: contactType.getI10n('value')])
                 }
                 fields.providerAddresses.fields.clear()
                 addressTypes.each { RefdataValue addressType ->
@@ -4301,7 +4321,7 @@ class ExportClickMeService {
                     tenantFilter = ' and p.tenant = :ctx'
                     queryParams.ctx = contextService.getOrg()
                 }
-                RefdataValue contactType = RefdataValue.getByCategoriesDescAndValue([RDConstants.PERSON_POSITION, RDConstants.PERSON_FUNCTION, RDConstants.PERSON_RESPONSIBILITY], fieldKey.split('\\.')[1])
+                RefdataValue contactType = RefdataValue.getByCategoriesDescAndValue([RDConstants.PERSON_POSITION, RDConstants.PERSON_FUNCTION, RDConstants.PERSON_RESPONSIBILITY], fieldKey.split('\\.')[3])
                 switch(contactType.owner.desc) {
                     case RDConstants.PERSON_FUNCTION: contactTypeFilter = 'pr.functionType = :functionType'
                         queryParams.functionType = contactType
@@ -4606,7 +4626,7 @@ class ExportClickMeService {
         selectedExportFields.each { String fieldKey, Map fields ->
             if(!fields.separateSheet) {
                 if (fieldKey.contains('Contact.')) {
-                    RefdataValue contactType = RefdataValue.findByValue(fieldKey.split('\\.')[1])
+                    RefdataValue contactType = RefdataValue.findByValue(fieldKey.split('\\.')[3])
                     if(contactSources) {
                         contactSources.each { String contactSwitch ->
                             titles << "${contactType.getI10n('value')} ${messageSource.getMessage("org.export.column.${contactSwitch}", null, locale)}"

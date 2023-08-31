@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5258    31.08.2023  dev     3.3         Andreas Feature     optische Trennung des Kontaktexports
+
 --      31.08.2023  rc-3.2  3.2.4       Andreas Bug         DDC-Filter funktionierte bei "Alle Pakete" nicht
 
 5260    31.08.2023  rc-3.2  3.2.4       Andreas Bug         Kritischen Ladefehler bei Plattformabfrage behoben
