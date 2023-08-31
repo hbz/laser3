@@ -5,6 +5,9 @@ import de.laser.Package
 import de.laser.Platform
 import de.laser.auth.User
 
+/**
+ * A class to mark watched objects from the we:kb - like {@link Marker}
+ */
 class Favorite {
 
     static enum TYPE {
