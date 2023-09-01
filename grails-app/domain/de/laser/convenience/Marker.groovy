@@ -5,6 +5,9 @@ import de.laser.Package
 import de.laser.Platform
 import de.laser.auth.User
 
+/**
+ * A class to bookmark objects coming from the we:kb knowledge base in order to monitor the changes performed there
+ */
 class Marker {
 
     static enum TYPE {

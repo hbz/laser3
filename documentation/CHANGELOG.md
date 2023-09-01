@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      31.08.2023  rc-3.2  3.2.4       Andreas Bug         DDC-Filter funktionierte bei "Alle Pakete" nicht
+
+5260    31.08.2023  rc-3.2  3.2.4       Andreas Bug         Kritischen Ladefehler bei Plattformabfrage behoben
+
 --      29.08.2023  rc-3.2  3.2.4       Andreas Bug         Ausgabefehler im Organisationsendpunkt der API behoben (API v2.7)
 
 5256    28.08.2023  rc-3.2  3.2.4       Andreas Bug         500er bei Auflistung aller Title behoben

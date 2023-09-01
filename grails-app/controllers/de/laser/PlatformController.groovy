@@ -63,7 +63,7 @@ class PlatformController  {
 
         if(params.q) {
             result.filterSet = true
-            queryParams.q = params.q
+            queryParams.name = params.q
         }
 
         if(params.provider) {
@@ -128,26 +128,23 @@ class PlatformController  {
             instanceFilter += " and s.instanceOf = null "
         }
 
-        Set<Long> idsCurrentSubscriptions = Subscription.executeQuery(
-                'select s.id from OrgRole oo join oo.sub s where oo.org = :contextOrg and oo.roleType in (:roleTypes) and (s.status = :current or (s.status = :expired and s.hasPerpetualAccess = true))' + instanceFilter,
-                subscriptionParams
-        )
+        String subscriptionQuery = 'select s.id from OrgRole oo join oo.sub s where oo.org = :contextOrg and oo.roleType in (:roleTypes) and (s.status = :current or (s.status = :expired and s.hasPerpetualAccess = true))' + instanceFilter
 
-        if (idsCurrentSubscriptions) {
+        //if (subscriptionQuery) {
             String qry3 =
                     "select distinct p, s, p.normname from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg, " +
                     "TitleInstancePackagePlatform tipp join tipp.platform p left join p.org o " +
-                    "where tipp.pkg = pkg and s.id in (:subIds) and p.gokbId in (:wekbIds) " +
+                    "where tipp.pkg = pkg and s in (${subscriptionQuery}) and p.gokbId in (:wekbIds) " +
                     "and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted)) " +
                     "and ((tipp.status is null) or (tipp.status != :tippRemoved)) " +
                     "group by p, s order by p.normname asc"
 
             Map qryParams3 = [
-                    subIds     : idsCurrentSubscriptions,
                     pkgDeleted : RDStore.PACKAGE_STATUS_DELETED,
                     tippRemoved: RDStore.TIPP_STATUS_REMOVED,
                     wekbIds    : wekbResultMap.records.collect { Map hit -> hit.uuid }
             ]
+            qryParams3.putAll(subscriptionParams)
 
             List platformSubscriptionList = []
             List platformInstanceList = []
@@ -175,7 +172,7 @@ class PlatformController  {
 
             result.myPlatformsUuids = platformInstanceList.collect{ it.gokbId }
             result.myPlatformIds    = platformInstanceList.collect{ it.id }
-        }
+        //}
         // ? ---
 
         if (params.isMyX) {

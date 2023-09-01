@@ -52,7 +52,7 @@ class Invoice {
   }
 
     /**
-     * Use {@link de.laser.ControlledListService#getInvoiceNumbers(java.util.Map)} instead
+     * @deprecated use {@link de.laser.ControlledListService#getInvoiceNumbers(java.util.Map)} instead
      */
     @Deprecated
     @Transient
