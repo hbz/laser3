@@ -13,7 +13,7 @@ import javax.persistence.Transient
  * </ul>
  * and a source type ({@link #type}):
  * <ul>
- *     <li>OAI (deprecated)</li>
+ *     <li><s>OAI</s> (deprecated)</li>
  *     <li>JSON</li>
  * </ul>
  */
