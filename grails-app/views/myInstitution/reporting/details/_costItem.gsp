@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.finance.CostItem" %>
 <laser:serviceInjection />
 
 <laser:render template="/myInstitution/reporting/details/top" />
@@ -50,7 +50,12 @@
                     <td>${costItem.costItemElement?.getI10n('value')}</td>
                     <td>${costItem.costTitle}</td>
                     <td>
-                        ${costItem.taxKey?.taxRate}%
+                        <g:if test="${costItem.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
+                            ${RDStore.TAX_TYPE_REVERSE_CHARGE.getI10n('value')}
+                        </g:if>
+                        <g:else>
+                            ${costItem.taxKey?.taxRate}%
+                        </g:else>
                     </td>
                     <td>
                         <g:if test="${costItem.costInBillingCurrency}">
