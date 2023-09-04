@@ -42540,6 +42540,18 @@ i.icon.la-basket-shopping.slash {
   font-family: 'icomoon';
 }
 
+i.icon.la-tab.slash {
+  font-family: 'icomoon';
+}
+
+i.icon.la-tab {
+  font-family: 'icomoon';
+}
+
+i.icon.la-bookmark.slash {
+  font-family: 'icomoon';
+}
+
 i.icon.hand.pointer.outline.slash:before {
   content: "\e901";
 }
@@ -42685,6 +42697,18 @@ i.icon.la-phone:before {
 
 i.icon.la-basket-shopping.slash:before {
   content: "\e91d";
+}
+
+i.icon.la-tab.slash:before {
+  content: "\e91e";
+}
+
+i.icon.la-tab:before {
+  content: "\e91f";
+}
+
+i.icon.la-bookmark.slash:before {
+  content: "\e921";
 }
 
 /*******************************
