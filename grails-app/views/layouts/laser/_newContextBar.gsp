@@ -99,13 +99,13 @@
                     <g:if test="${actionName == 'workflowsSurveysConsortia'}">
                         <g:link action="currentSurveysConsortia" controller="survey" class="ui icon button la-popup-tooltip la-delay"
                                 data-content="${message(code:'statusbar.change.currentSurveysConsortiaView.tooltip')}" data-position="bottom center">
-                            <i class="exchange icon"></i>
+                            <i class="la-tab icon"></i>
                         </g:link>
                     </g:if>
                     <g:else>
                         <g:link action="workflowsSurveysConsortia" controller="survey" class="ui icon button la-popup-tooltip la-delay"
                                 data-content="${message(code:'statusbar.change.workflowsSurveysConsortiaView.tooltip')}" data-position="bottom center">
-                            <i class="exchange icon"></i>
+                            <i class="la-tab slash icon"></i>
                         </g:link>
                     </g:else>
                 </div>
