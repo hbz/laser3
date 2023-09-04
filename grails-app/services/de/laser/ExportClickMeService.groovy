@@ -82,19 +82,19 @@ class ExportClickMeService {
                             label: 'Participant',
                             message: 'surveyParticipants.label',
                             fields: [
-                            'participant.funderType'        : [field: 'participant.funderType', label: 'Funder Type', message: 'org.funderType.label'],
-                            'participant.funderHskType'     : [field: 'participant.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
-                            'participant.libraryType'       : [field: 'participant.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
-                            'participantContact.General contact person'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
-                            'participantContact.Functional Contact Billing Adress'   : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
-                            'participant.postAdress'        : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
-                            'participant.billingAdress'     : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
-                            'participant.eInvoice'          : [field: 'participant.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
-                            'participant.eInvoicePortal'    : [field: 'participant.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
-                            'participant.linkResolverBaseURL'    : [field: 'participant.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
-                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
-                            'participant.uuid'              : [field: 'participant.globalUID', label: 'Laser-UUID',  message: null],
-                                    ]
+                                'participant.funderType'        : [field: 'participant.funderType', label: 'Funder Type', message: 'org.funderType.label'],
+                                'participant.funderHskType'     : [field: 'participant.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
+                                'participant.libraryType'       : [field: 'participant.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
+                                'participantContact.person.function.General contact person'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
+                                'participantContact.person.function.Functional Contact Billing Adress'   : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
+                                'participant.postAdress'        : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
+                                'participant.billingAdress'     : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
+                                'participant.eInvoice'          : [field: 'participant.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
+                                'participant.eInvoicePortal'    : [field: 'participant.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
+                                'participant.linkResolverBaseURL'    : [field: 'participant.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
+                                'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
+                                'participant.uuid'              : [field: 'participant.globalUID', label: 'Laser-UUID',  message: null],
+                            ]
                     ],
                     participantAccessPoints : [
                             label: 'Participants Access Points',
@@ -594,8 +594,8 @@ class ExportClickMeService {
                             'participant.funderType'        : [field: 'sub.subscriber.funderType', label: 'Funder Type', message: 'org.funderType.label'],
                             'participant.funderHskType'     : [field: 'sub.subscriber.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
                             'participant.libraryType'       : [field: 'sub.subscriber.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
-                            'participantContact.General contact person'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
-                            'participantContact.Functional Contact Billing Adress'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
+                            'participantContact.person.function.General contact person'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
+                            'participantContact.person.function.Functional Contact Billing Adress'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
                             'participant.postAdress'        : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
                             'participant.billingAdress'     : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
                             'participant.eInvoice'          : [field: 'sub.subscriber.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
@@ -2085,7 +2085,7 @@ class ExportClickMeService {
         contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: contextOrg]))
         contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: contextOrg]))
         contactTypes.each { RefdataValue contactType ->
-            exportFields.put("participantContact."+contactType.value, [field: null, label: contactType.getI10n('value')])
+            exportFields.put("participantContact."+contactType.owner.desc+"."+contactType.value, [field: null, label: contactType.getI10n('value')])
         }
 
         def removeSurveyProperties = exportFields.keySet().findAll { it.startsWith('surveyProperty.') }
@@ -2126,7 +2126,7 @@ class ExportClickMeService {
         contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: contextOrg]))
         contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: contextOrg]))
         contactTypes.each { RefdataValue contactType ->
-            fields.participant.fields.put("participantContact.${contactType.value}", [field: null, label: contactType.getI10n('value')])
+            fields.participant.fields.put("participantContact.${contactType.owner.desc}.${contactType.value}", [field: null, label: contactType.getI10n('value')])
         }
 
         def removeSurveyProperties = fields.survey.fields.keySet().findAll { it.startsWith('surveyProperty.') }
@@ -3307,9 +3307,9 @@ class ExportClickMeService {
                     }else {
                         row.add(createTableCell(format, participantPropertyMultiYearComment))
                     }
-                }else if (fieldKey == 'participantContact.General contact person') {
+                }else if (fieldKey == 'participantContact.person.function.General contact person') {
                     _setOrgFurtherInformation(participantResult.participant, row, fieldKey, format)
-                }else if (fieldKey == 'participantContact.Functional Contact Billing Adress') {
+                }else if (fieldKey == 'participantContact.person.function.Functional Contact Billing Adress') {
                     _setOrgFurtherInformation(participantResult.participant, row, fieldKey, format)
                 }else if (fieldKey == 'participant.billingAdress') {
                     _setOrgFurtherInformation(participantResult.participant, row, fieldKey, format)
@@ -3716,9 +3716,9 @@ class ExportClickMeService {
             Map mapSelecetedFields = selectedFields.get(fieldKey)
             String field = mapSelecetedFields.field
             if(!mapSelecetedFields.separateSheet) {
-                if (fieldKey == 'participantContact.General contact person') {
+                if (fieldKey == 'participantContact.person.function.General contact person') {
                     _setOrgFurtherInformation(org, row, fieldKey, format)
-                }else if (fieldKey == 'participantContact.Functional Contact Billing Adress') {
+                }else if (fieldKey == 'participantContact.person.function.Functional Contact Billing Adress') {
                     _setOrgFurtherInformation(org, row, fieldKey, format)
                 }
                 else if (fieldKey == 'participant.billingAdress') {
