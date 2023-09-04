@@ -144,10 +144,25 @@ class ApiStubReader {
         return null
     }
 
+    /**
+     * Requests access to the given trace of deleted object.
+     * Is a substitution call for {@link #requestDeletedObjectStub(de.laser.traces.DeletedObject, de.laser.Org, boolean)}
+     * with the isInvoiceTool flag set to false per default. Returns the deleted object in case of success
+     * @param deletedObject the {@link DeletedObject} trace being requested
+     * @param context the institution ({@link Org}) requesting access
+     * @return MAP | Constants.HTTP_FORBIDDEN
+     */
     static requestDeletedObjectStub(DeletedObject deletedObject, Org context) {
         requestDeletedObjectStub(deletedObject, context, false)
     }
 
+    /**
+     * Requests access to the given trace of deleted object. Returns the deleted object in case of success
+     * @param delObj the {@link DeletedObject} trace being requested
+     * @param context the institution ({@link Org}) requesting access
+     * @param isInvoiceTool
+     * @return MAP | Constants.HTTP_FORBIDDEN
+     */
     static requestDeletedObjectStub(DeletedObject delObj, Org context, boolean isInvoiceTool) {
         Map<String, Object> result = [:]
         if(!delObj) {

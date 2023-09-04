@@ -153,7 +153,6 @@ class ApiCostItem {
      * @param isInvoiceTool is the hbz invoice tool doing the request?
      * @return Map<String, Object>
      */
-
     static Map<String, Object> getCostItemMap(CostItem costItem, Org context, boolean isInvoiceTool){
         Map<String, Object> result = [:]
 

@@ -221,10 +221,20 @@ class SystemEvent {
         result.unique().sort()
     }
 
+    /**
+     * Gets the last system event record of the given token
+     * @param token the token of which the last record should be retrieved
+     * @return the most recent system event record of the given token
+     */
     static SystemEvent getLastByToken(String token) {
         find('from SystemEvent se where se.token = :token order by se.created desc', [token: token])
     }
 
+    /**
+     * Changes the current system event record to the given new token and sets the given payload
+     * @param token the new token for this record
+     * @param payload the new JSON payload
+     */
     void changeTo(String token, def payload) {
         withTransaction {
             if (DEFINED_EVENTS.containsKey(token)) {
