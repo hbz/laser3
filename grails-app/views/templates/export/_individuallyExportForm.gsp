@@ -167,13 +167,13 @@
                         <div class="field">
                             <div class="ui checkbox">
                                 <label for="public"><g:message code="org.publicContacts.label"/></label>
-                                <input type="checkbox" name="contactSwitch" id="public" value="public" checked="checked"/>
+                                <input type="checkbox" name="contactSwitch" id="public" value="publicContact" checked="checked"/>
                             </div>
                         </div>
                         <div class="field">
                             <div class="ui checkbox">
                                 <label for="private"><g:message code="org.privateContacts.label"/></label>
-                                <input type=checkbox name="contactSwitch" id="private" value="private"/>
+                                <input type=checkbox name="contactSwitch" id="private" value="privateContact"/>
                             </div>
                         </div>
                     </div>
@@ -186,13 +186,13 @@
                         <div class="field">
                             <div class="ui checkbox">
                                 <label for="publicAddress"><g:message code="org.publicAddresses.label"/></label>
-                                <input type="checkbox" name="addressSwitch" id="publicAddress" value="public" checked="checked"/>
+                                <input type="checkbox" name="addressSwitch" id="publicAddress" value="publicAddress" checked="checked"/>
                             </div>
                         </div>
                         <div class="field">
                             <div class="ui checkbox">
                                 <label for="privateAddress"><g:message code="org.privateAddresses.label"/></label>
-                                <input type=checkbox name="addressSwitch" id="privateAddress" value="private"/>
+                                <input type=checkbox name="addressSwitch" id="privateAddress" value="privateAddress"/>
                             </div>
                         </div>
                     </div>

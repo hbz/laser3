@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5264    05.09.2023  rc-3.2  3.2.4       Andreas Feature     Erweiterung der Exportkonfigurationen in der Umfrage, Bugfixes
+
 5262    04.09.2023  rc-3.2  3.2.4       Andreas Bug         falsche Anzeige eines Steuersatzes bei Reverse Charge behoben
 
 5258    31.08.2023  dev     3.3         Andreas Feature     optische Trennung des Kontaktexports
