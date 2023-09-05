@@ -157,9 +157,9 @@
                                         <g:if test="${prop.isIntegerType()}">
                                             <input type="number" name="propValue${i}" class="memberProperty" placeholder="${message(code:'default.value.label')}"/>
                                         </g:if>
-                                        <g:if test="${prop.isBigDecimalType()}">
+                                        <g:elseif test="${prop.isBigDecimalType()}">
                                             <input type="number" name="propValue${i}" class="memberProperty" step="0.001" placeholder="${message(code:'default.value.label')}"/>
-                                        </g:if>
+                                        </g:elseif>
                                         <g:elseif test="${prop.isDateType()}">
                                             <input type="date" name="propValue${i}" class="memberProperty" placeholder="${message(code:'default.value.label')}"/>
                                         </g:elseif>
