@@ -5,7 +5,6 @@ import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.LicenseProperty
-import de.laser.interfaces.CalculatedType
 import de.laser.remote.ApiSource
 import de.laser.storage.PropertyStore
 import de.laser.utils.DateUtils
