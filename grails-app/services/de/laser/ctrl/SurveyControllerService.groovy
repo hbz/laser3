@@ -503,7 +503,7 @@ class SurveyControllerService {
                         if(surveyResult && subscriptionProperty){
                             String surveyValue = surveyResult.getValue()
                             String subValue = subscriptionProperty.getValue()
-                            if (surveyValue != subValue) {
+                            if (surveyValue && surveyValue != subValue) {
                                 Map changedMap = [:]
                                 //changedMap.surveyResult = surveyResult
                                 //changedMap.subscriptionProperty = subscriptionProperty
