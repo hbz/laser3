@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      05.09.2023  rc-3.2  3.2.4       Moe     Bug         Merkmalsänderungen in Umfrage werden falsch angezeigt
+
 5265    05.09.2023  rc-3.2  3.2.4       Moe     Feature     Umfrage-Export Renewal: Kosten auch bei MJL und Bereits Teilnehmer anzeigen
 
 5264    05.09.2023  rc-3.2  3.2.4       Andreas Feature     Erweiterung der Exportkonfigurationen in der Umfrage, Bugfixes
