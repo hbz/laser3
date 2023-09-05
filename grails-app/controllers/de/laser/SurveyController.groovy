@@ -1468,7 +1468,7 @@ class SurveyController {
                             if (surveyResult && subscriptionProperty) {
                                 String surveyValue = surveyResult.getValue()
                                 String subValue = subscriptionProperty.getValue()
-                                if (surveyValue != subValue) {
+                                if (surveyValue && surveyValue != subValue) {
                                     Map changedMap = [:]
                                     changedMap.participant = surveyOrg.org
 
@@ -1526,7 +1526,7 @@ class SurveyController {
                         if (surveyResult && subscriptionProperty) {
                             String surveyValue = surveyResult.getValue()
                             String subValue = subscriptionProperty.getValue()
-                            if (surveyValue != subValue) {
+                            if (surveyValue && surveyValue != subValue) {
                                 Map changedMap = [:]
                                 changedMap.participant = surveyOrg.org
 
@@ -2327,7 +2327,7 @@ class SurveyController {
                                     )
 
                                     if (surveyResult.save()) {
-                                        log.debug( surveyResult.toString() )
+                                        //log.debug( surveyResult.toString() )
                                     } else {
                                         log.error("Not create surveyResult: "+ surveyResult)
                                     }
@@ -2394,7 +2394,7 @@ class SurveyController {
                                             surveyConfig: config
                                     )
                                     if (surveyResult.save()) {
-                                        log.debug(surveyResult.toString())
+                                        //log.debug(surveyResult.toString())
                                     } else {
                                         log.error("Not create surveyResult: " + surveyResult)
                                     }
@@ -2830,6 +2830,7 @@ class SurveyController {
 
             String filename
             Map<String, Object> selectedFields = [:]
+            Set<String> contactSwitch = []
             if(params.fileformat) {
                 Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
                 selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
@@ -2839,12 +2840,14 @@ class SurveyController {
                 else {
                     filename = message + "_" + ctrlResult.result.surveyConfig.getSurveyName() + "_${datetoday}"
                 }
+                contactSwitch.addAll(params.list("contactSwitch"))
+                contactSwitch.addAll(params.list("addressSwitch"))
             }
 
 
             if (params.fileformat == 'xlsx') {
                 try {
-                    SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportRenewalResult(ctrlResult.result, selectedFields, ExportClickMeService.FORMAT.XLS)
+                    SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportRenewalResult(ctrlResult.result, selectedFields, ExportClickMeService.FORMAT.XLS, contactSwitch)
                     // Write the output to a file
 
                     response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
@@ -2866,7 +2869,7 @@ class SurveyController {
                 response.contentType = "text/csv"
                 ServletOutputStream out = response.outputStream
                 out.withWriter { writer ->
-                    writer.write((String) exportClickMeService.exportRenewalResult(ctrlResult.result, selectedFields, ExportClickMeService.FORMAT.CSV))
+                    writer.write((String) exportClickMeService.exportRenewalResult(ctrlResult.result, selectedFields, ExportClickMeService.FORMAT.CSV, contactSwitch))
                 }
                 out.close()
             }

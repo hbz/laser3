@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.OrgRole; grails.converters.JSON;de.laser.storage.RDStore" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.OrgRole; grails.converters.JSON;de.laser.storage.RDStore;de.laser.finance.CostItem" %>
 <laser:htmlStart message="myinst.financeImport.post.title" serviceInjection="true"/>
 
         <ui:breadcrumbs>
@@ -41,7 +41,7 @@
                                     <li><g:message code="default.currency.label"/>: ${ci.billingCurrency?.value}</li>
                                     <li><g:message code="myinst.financeImport.element"/>: ${ci.costItemElement?.getI10n('value')}</li>
                                     <li><g:message code="myinst.financeImport.elementSign"/>: ${ci.costItemElementConfiguration?.getI10n('value')}</li>
-                                    <li><g:message code="myinst.financeImport.taxType"/> (<g:message code="myinst.financeImport.taxRate"/>): ${ci.taxKey?.taxType?.getI10n('value')} (${ci.taxKey?.taxRate} %)</li>
+                                    <li><g:message code="myinst.financeImport.taxType"/> (<g:message code="myinst.financeImport.taxRate"/>): ${ci.taxKey?.taxType?.getI10n('value')} <g:if test="${ci.taxKey != CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">(${ci.taxKey?.taxRate} %)</g:if></li>
                                     <li><g:message code="myinst.financeImport.invoiceTotal"/>: ${ci.costInBillingCurrency}</li>
                                     <li><g:message code="myinst.financeImport.value"/>: ${ci.costInLocalCurrency}</li>
                                     <li><g:message code="myinst.financeImport.exchangeRate"/>: ${ci.currencyRate}</li>

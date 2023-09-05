@@ -756,7 +756,14 @@
 
                                     ${(costItem.billingCurrency?.getI10n('value').split('-')).first()}
                                 </td>
-                                <td>${costItem.taxKey ? costItem.taxKey.taxType?.getI10n("value") + " (" + costItem.taxKey.taxRate + "%)" : ''}</td>
+                                <td>
+                                    <g:if test="${costItem.taxKey == de.laser.finance.CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
+                                        ${RDStore.TAX_TYPE_REVERSE_CHARGE.getI10n("value")}
+                                    </g:if>
+                                    <g:elseif test="${costItem.taxKey}">
+                                        ${costItem.taxKey.taxType?.getI10n("value") + " (" + costItem.taxKey.taxRate + "%)"}
+                                    </g:elseif>
+                                </td>
                                 <td>
                                     <strong>
                                         <g:formatNumber
@@ -816,7 +823,14 @@
 
                                         ${(costItemSurvey.billingCurrency?.getI10n('value').split('-')).first()}
                                     </td>
-                                    <td>${costItemSurvey.taxKey ? costItemSurvey.taxKey.taxType?.getI10n("value") + " (" + costItemSurvey.taxKey.taxRate + "%)" : ''}</td>
+                                    <td>
+                                        <g:if test="${costItemSurvey.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
+                                            ${RDStore.TAX_TYPE_REVERSE_CHARGE.getI10n("value")}
+                                        </g:if>
+                                        <g:elseif test="${costItemSurvey.taxKey}">
+                                            ${costItemSurvey.taxKey.taxType?.getI10n("value") + " (" + costItemSurvey.taxKey.taxRate + "%)"}
+                                        </g:elseif>
+                                    </td>
                                     <td>
                                         <strong>
                                             <g:formatNumber
@@ -928,7 +942,14 @@
 
                                 ${(costItemSurvey.billingCurrency?.getI10n('value').split('-')).first()}
                             </td>
-                            <td>${costItemSurvey.taxKey ? costItemSurvey.taxKey.taxType?.getI10n("value") + " (" + costItemSurvey.taxKey.taxRate + "%)" : ''}</td>
+                            <td>
+                                <g:if test="${costItemSurvey.taxKey == de.laser.finance.CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
+                                    ${RDStore.TAX_TYPE_REVERSE_CHARGE.getI10n("value")}
+                                </g:if>
+                                <g:elseif test="${costItemSurvey.taxKey}">
+                                    ${costItemSurvey.taxKey.taxType?.getI10n("value") + " (" + costItemSurvey.taxKey.taxRate + "%)"}
+                                </g:elseif>
+                            </td>
                             <td>
                                 <strong>
                                     <g:formatNumber

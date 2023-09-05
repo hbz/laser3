@@ -12,9 +12,9 @@
 %>
 
     <%-- if commanded by Micha, that the notice gets moved into the form: ui.form info.msg has display:none, contact Ingrid in that case! --%>
-    <g:if test="${formFields.keySet().contains('participantAccessPoints')}">
+   %{-- <g:if test="${formFields.keySet().contains('participantAccessPoints')}">
         <ui:msg icon="ui exclamation icon" class="warning" message="exportClickMe.exportCSV.noAccessPoints" noClose="true"/>
-    </g:if>
+    </g:if>--}%
     <div class="ui form">
 
         <div class="ui top attached stackable tabular la-tab-with-js la-overflowX-auto menu">
@@ -167,13 +167,13 @@
                         <div class="field">
                             <div class="ui checkbox">
                                 <label for="public"><g:message code="org.publicContacts.label"/></label>
-                                <input type="checkbox" name="contactSwitch" id="public" value="public" checked="checked"/>
+                                <input type="checkbox" name="contactSwitch" id="public" value="publicContact" checked="checked"/>
                             </div>
                         </div>
                         <div class="field">
                             <div class="ui checkbox">
                                 <label for="private"><g:message code="org.privateContacts.label"/></label>
-                                <input type=checkbox name="contactSwitch" id="private" value="private"/>
+                                <input type=checkbox name="contactSwitch" id="private" value="privateContact"/>
                             </div>
                         </div>
                     </div>
@@ -186,13 +186,13 @@
                         <div class="field">
                             <div class="ui checkbox">
                                 <label for="publicAddress"><g:message code="org.publicAddresses.label"/></label>
-                                <input type="checkbox" name="addressSwitch" id="publicAddress" value="public" checked="checked"/>
+                                <input type="checkbox" name="addressSwitch" id="publicAddress" value="publicAddress" checked="checked"/>
                             </div>
                         </div>
                         <div class="field">
                             <div class="ui checkbox">
                                 <label for="privateAddress"><g:message code="org.privateAddresses.label"/></label>
-                                <input type=checkbox name="addressSwitch" id="privateAddress" value="private"/>
+                                <input type=checkbox name="addressSwitch" id="privateAddress" value="privateAddress"/>
                             </div>
                         </div>
                     </div>
@@ -326,7 +326,10 @@
             </div>
 
             <div id="fileformat-query-csv" class="wide four field">
-                <label>${message(code: 'default.export.cfg.csv')}</label>
+                <label>${message(code: 'default.export.cfg.csv')}
+                    <span data-tooltip="${message(code: 'exportClickMe.exportCSV.noAccessPoints')}">
+                    <i class="question circle icon"></i>
+                </span></label>
                 <p>
                     ${message(code: 'default.export.cfg.csv.fieldSeparator')}: <span class="ui circular label">${csvFieldSeparator}</span> <br />
                 </p>

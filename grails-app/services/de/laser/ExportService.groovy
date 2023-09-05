@@ -1340,7 +1340,14 @@ class ExportService {
 					case Counter5Report.PLATFORM_MASTER_REPORT:
 					case Counter5Report.PLATFORM_USAGE:
 						data = [:]
-						for(def reportItem: requestResponse.items) {
+						List reportItems = []
+						if(requestResponse.items.size() > 1) {
+							reportItems.addAll(requestResponse.items.findAll{ Map itemCand -> itemCand.Platform == platform.name })
+						}
+						else {
+							reportItems.addAll(requestResponse.items)
+						}
+						for(def reportItem: reportItems) {
 							for(Map performance: reportItem.Performance) {
 								Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
 								for(Map instance: performance.Instance) {

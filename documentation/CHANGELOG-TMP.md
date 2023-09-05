@@ -7,6 +7,40 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5266    05.09.2023  rc-3.2  3.2.4       Andreas Bug         fehlerhafte Erzeugung der individuellen Merkmale behoben
+
+--      05.09.2023  rc-3.2  3.2.4       Moe     Bug         Merkmalsänderungen in Umfrage werden falsch angezeigt
+
+5265    05.09.2023  rc-3.2  3.2.4       Moe     Feature     Umfrage-Export Renewal: Kosten auch bei MJL und Bereits Teilnehmer anzeigen
+
+5264    05.09.2023  rc-3.2  3.2.4       Andreas Feature     Erweiterung der Exportkonfigurationen in der Umfrage, Bugfixes
+
+5262    04.09.2023  rc-3.2  3.2.4       Andreas Bug         falsche Anzeige eines Steuersatzes bei Reverse Charge behoben
+
+--      31.08.2023  rc-3.2  3.2.4       Andreas Bug         DDC-Filter funktionierte bei "Alle Pakete" nicht
+
+5260    31.08.2023  rc-3.2  3.2.4       Andreas Bug         Kritischen Ladefehler bei Plattformabfrage behoben
+
+--      29.08.2023  rc-3.2  3.2.4       Andreas Bug         Ausgabefehler im Organisationsendpunkt der API behoben (API v2.7)
+
+5256    28.08.2023  rc-3.2  3.2.4       Andreas Bug         500er bei Auflistung aller Title behoben
+
+5253    25.08.2023  rc-3.2  3.2.4       Andreas Feature     Erweiterung des Exports um Anmerkungsspalte für Identifikatoren
+
+5252    24.08.2023  rc-3.2  3.2.4       Andreas Feature     Umstellung eines Links in der Verwaltung der Lizenzen eines Vertrages
+
+5249    24.08.2023  rc-3.2  3.2.4       Andreas Feature     Performanzverbesserung beim Löschen von Bestandstitel
+
+5251    23.08.2023  rc-3.2  3.2.4       David   Bug         "Inhalte editierbar"-Funktion arbeitet fehlerhaft
+
+5245    22.08.2023  rc-3.2  3.2.4       Andreas Bug         URL-Kontakte wurden in Karte unterschlagen
+
+5244    21.08.2023  rc-3.2  3.2.4       Andreas Bug         Platform Reports mit mehreren Plattformen / Schnittstelle wurden inkorrekt verarbeitet
+
+5238    21.08.2023  rc-3.2  3.2.4       David   Bug         Nutzer ohne Rolle anlegen unterbinden
+
+5240    21.08.2023  rc-3.2  3.2.4       Andreas Bug         Dauerhafte Titel wurden nicht mit entknüpft
+
 5147    18.08.2023  rc-3.2  3.2.3       Andreas Bug         Titel wurden nicht mit zu Titelgruppe hinzugefügt
 
 --      18.08.2023  rc-3.2  3.2.3       Andreas Bug         Trennung von privaten und öffentlichen Adressen in der API-Ausgabe

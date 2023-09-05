@@ -8,6 +8,7 @@ import de.laser.finance.CostItem
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.properties.PropertyDefinition
 import de.laser.storage.RDStore
+import de.laser.utils.DateUtils
 
 /**
  * This class reflects - as a property like {@link de.laser.properties.SubscriptionProperty} - the survey participant's answer to a survey.
@@ -146,7 +147,7 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
             return decValue.toString()
         }
         else if (type.isDateType()) {
-            return dateValue ? dateValue.getDateString() : ""
+            return dateValue ? DateUtils.getLocalizedSDF_noTime().format(dateValue) : ""
         }
         else if (type.isURLType()) {
             return urlValue.toString()
@@ -156,26 +157,26 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
         }
     }
 
-    /**
+ /*   *//**
      * calls {@link #toString()}
-     */
+     *//*
     String getValue() {
         return toString()
     }
 
-    /**
+    *//**
      * Same as {@link #getResult()} just with different checks
      * @return the stringified value
-     */
+     *//*
     @Override
     String toString(){
         if (stringValue)      { return stringValue }
         if (intValue != null) { return intValue.toString() }
         if (decValue != null) { return decValue.toString() }
         if (refValue)         { return refValue.toString() }
-        if (dateValue)        { return dateValue.getDateString() }
+        if (dateValue)        { return dateValue.toString() }
         if (urlValue)         { return urlValue.toString() }
-    }
+    }*/
 
     @Override
     def beforeInsert() {

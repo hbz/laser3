@@ -193,24 +193,24 @@ class MyInstitutionController  {
         Map<String, Object> subscriptionParams = [contextOrg:result.contextOrg, roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA], current:RDStore.SUBSCRIPTION_CURRENT, expired:RDStore.SUBSCRIPTION_EXPIRED]
         if(result.contextOrg.isCustomerType_Consortium())
             instanceFilter += " and s.instanceOf = null "
-        Set<Long> idsCurrentSubscriptions = Subscription.executeQuery('select s.id from OrgRole oo join oo.sub s where oo.org = :contextOrg and oo.roleType in (:roleTypes) and (s.status = :current or (s.status = :expired and s.hasPerpetualAccess = true))'+instanceFilter,subscriptionParams)
+        String subscriptionQuery = 'select s from OrgRole oo join oo.sub s where oo.org = :contextOrg and oo.roleType in (:roleTypes) and (s.status = :current or (s.status = :expired and s.hasPerpetualAccess = true))'+instanceFilter
 
         result.subscriptionMap = [:]
         result.platformInstanceList = []
 
-        if (idsCurrentSubscriptions) {
+        //if (subscriptionQuery) {
             String qry3 = "select distinct p, s, ${params.sort ?: 'p.normname'} from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg, " +
                     "TitleInstancePackagePlatform tipp join tipp.platform p left join p.org o " +
-                    "where tipp.pkg = pkg and s.id in (:subIds) and p.gokbId in (:wekbIds)"
+                    "where tipp.pkg = pkg and s in (${subscriptionQuery}) and p.gokbId in (:wekbIds)"
 
             qry3 += " and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
             qry3 += " and ((tipp.status is null) or (tipp.status != :tippRemoved))"
 
             Map qryParams3 = [
-                    subIds         : idsCurrentSubscriptions,
                     pkgDeleted     : RDStore.PACKAGE_STATUS_DELETED,
                     tippRemoved    : RDStore.TIPP_STATUS_REMOVED
             ]
+            qryParams3.putAll(subscriptionParams)
 
             Map<String, Object> queryParams = [componentType: "Platform"]
 
@@ -301,7 +301,7 @@ class MyInstitutionController  {
                     result.subscriptionMap.get(key).add(s)
                 }
             }
-        }
+        //}
 
         if (params.isMyX) {
             List xFilter = params.list('isMyX')
@@ -1635,7 +1635,7 @@ class MyInstitutionController  {
                 result.providers = Org.executeQuery('select org.id,org.name from TitleInstancePackagePlatform tipp join tipp.pkg pkg join pkg.orgs oo join oo.org org where tipp.id in (select tipp.id '+qryString+') group by org.id order by org.name asc',qryParams)
                 result.hostplatforms = Platform.executeQuery('select plat.id,plat.name from TitleInstancePackagePlatform tipp join tipp.platform plat where tipp.id in (select tipp.id '+qryString+') group by plat.id order by plat.name asc',qryParams)
             }
-            result.num_ti_rows = TitleInstancePackagePlatform.executeQuery('select count(tipp) from IssueEntitlement ie join ie.tipp tipp where ie.id in (select ie.id ' + query + ') and ie.status != :ieStatus ',[ieStatus: RDStore.TIPP_STATUS_REMOVED]+queryMap)[0]
+            result.num_ti_rows = TitleInstancePackagePlatform.executeQuery('select count(*) from IssueEntitlement ie join ie.tipp tipp where ie.id in (select ie.id ' + query + ') and ie.status != :ieStatus ',[ieStatus: RDStore.TIPP_STATUS_REMOVED]+queryMap)[0]
             result.titles = allTitles
 
             result.filterSet = params.filterSet || defaultSet
@@ -1763,11 +1763,11 @@ class MyInstitutionController  {
         Set filteredIDs = result.tippIDs.drop(result.offset).take(result.max)
         result.titles = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:tippIDs) '+orderClause, [tippIDs: filteredIDs])
 
-        result.currentTippCounts = PermanentTitle.executeQuery("select count(pt) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: result.institution, status: RDStore.TIPP_STATUS_CURRENT, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
-        result.plannedTippCounts = PermanentTitle.executeQuery("select count(pt) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: result.institution, status: RDStore.TIPP_STATUS_EXPECTED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
-        result.expiredTippCounts = PermanentTitle.executeQuery("select count(pt) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: result.institutionn, status: RDStore.TIPP_STATUS_RETIRED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
-        result.deletedTippCounts = PermanentTitle.executeQuery("select count(pt) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: result.institution, status: RDStore.TIPP_STATUS_DELETED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
-        result.allTippCounts = PermanentTitle.executeQuery("select count(pt) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status in (:status) and pt.issueEntitlement.status != :ieStatus", [org: result.institution, status: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED], ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        result.currentTippCounts = PermanentTitle.executeQuery("select count(*) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: result.institution, status: RDStore.TIPP_STATUS_CURRENT, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        result.plannedTippCounts = PermanentTitle.executeQuery("select count(*) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: result.institution, status: RDStore.TIPP_STATUS_EXPECTED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        result.expiredTippCounts = PermanentTitle.executeQuery("select count(*) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: result.institutionn, status: RDStore.TIPP_STATUS_RETIRED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        result.deletedTippCounts = PermanentTitle.executeQuery("select count(*) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: result.institution, status: RDStore.TIPP_STATUS_DELETED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        result.allTippCounts = PermanentTitle.executeQuery("select count(*) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status in (:status) and pt.issueEntitlement.status != :ieStatus", [org: result.institution, status: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED], ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
 
         //for tipp_ieFilter
         params.institution = result.institution
@@ -2454,7 +2454,7 @@ class MyInstitutionController  {
                                         )
 
                                         if (surveyResult.save()) {
-                                            log.debug(surveyResult.toString())
+                                            //log.debug(surveyResult.toString())
                                         } else {
                                             log.error("Not create surveyResult: " + surveyResult)
                                             flash.error = message(code: 'surveyLinks.participateToSurvey.fail')
