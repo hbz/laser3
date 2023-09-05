@@ -1471,7 +1471,7 @@ class SurveyController {
                             if (surveyResult && subscriptionProperty) {
                                 String surveyValue = surveyResult.getValue()
                                 String subValue = subscriptionProperty.getValue()
-                                if (surveyValue != subValue) {
+                                if (surveyValue && surveyValue != subValue) {
                                     Map changedMap = [:]
                                     changedMap.participant = surveyOrg.org
 
@@ -1529,7 +1529,7 @@ class SurveyController {
                         if (surveyResult && subscriptionProperty) {
                             String surveyValue = surveyResult.getValue()
                             String subValue = subscriptionProperty.getValue()
-                            if (surveyValue != subValue) {
+                            if (surveyValue && surveyValue != subValue) {
                                 Map changedMap = [:]
                                 changedMap.participant = surveyOrg.org
 
