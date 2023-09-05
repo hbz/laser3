@@ -3,6 +3,7 @@ package de.laser
 import de.laser.base.AbstractCoverage
 import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
+import de.laser.interfaces.CalculatedType
 import de.laser.properties.LicenseProperty
 import de.laser.remote.ApiSource
 import de.laser.storage.PropertyStore
@@ -2363,8 +2364,24 @@ class ExportClickMeService {
 
 
         renewalResult.orgsWithMultiYearTermSub.sort{it.getSubscriber().sortname}.each { sub ->
+            Set<Subscription> subscriptions = sub._getCalculatedSuccessor()
 
-            _setRenewalRow([participant: sub.getSubscriber(), sub: sub, multiYearTermTwoSurvey: renewalResult.multiYearTermTwoSurvey, multiYearTermThreeSurvey: renewalResult.multiYearTermThreeSurvey, multiYearTermFourSurvey: renewalResult.multiYearTermFourSurvey, multiYearTermFiveSurvey: renewalResult.multiYearTermFiveSurvey, properties: renewalResult.properties], selectedExportFields, renewalData, true, renewalResult.multiYearTermTwoSurvey, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermFourSurvey, renewalResult.multiYearTermFiveSurvey, format, contactSources)
+            subscriptions = subscriptions.findAll { Subscription s -> s._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION}
+
+            Subscription successorSub = null
+            if(subscriptions.size() == 1){
+                successorSub = subscriptions[0]
+            }
+            else if(subscriptions.size() > 1){
+                successorSub = null
+            }
+            CostItem costItem
+            if(successorSub){
+                costItem = CostItem.findBySubAndCostItemStatusNotEqualAndCostItemElement(successorSub, RDStore.COST_ITEM_DELETED, RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE)
+            }
+
+
+            _setRenewalRow([participant: sub.getSubscriber(), sub: sub, multiYearTermTwoSurvey: renewalResult.multiYearTermTwoSurvey, multiYearTermThreeSurvey: renewalResult.multiYearTermThreeSurvey, multiYearTermFourSurvey: renewalResult.multiYearTermFourSurvey, multiYearTermFiveSurvey: renewalResult.multiYearTermFiveSurvey, properties: renewalResult.properties, costItem: costItem], selectedExportFields, renewalData, true, renewalResult.multiYearTermTwoSurvey, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermFourSurvey, renewalResult.multiYearTermFiveSurvey, format, contactSources)
 
         }
 
@@ -2375,8 +2392,12 @@ class ExportClickMeService {
 
 
         renewalResult.orgsWithParticipationInParentSuccessor.each { sub ->
+            CostItem costItem
+            if(sub){
+                costItem = CostItem.findBySubAndCostItemStatusNotEqualAndCostItemElement(sub, RDStore.COST_ITEM_DELETED, RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE)
+            }
             sub.getAllSubscribers().sort{it.sortname}.each{ subscriberOrg ->
-                _setRenewalRow([participant: subscriberOrg, sub: sub, multiYearTermTwoSurvey: renewalResult.multiYearTermTwoSurvey, multiYearTermThreeSurvey: renewalResult.multiYearTermThreeSurvey, multiYearTermFourSurvey: renewalResult.multiYearTermFourSurvey, multiYearTermFiveSurvey: renewalResult.multiYearTermFiveSurvey, properties: renewalResult.properties], selectedExportFields, renewalData, true, renewalResult.multiYearTermTwoSurvey, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermFourSurvey, renewalResult.multiYearTermFiveSurvey, format, contactSources)
+                _setRenewalRow([participant: subscriberOrg, sub: sub, multiYearTermTwoSurvey: renewalResult.multiYearTermTwoSurvey, multiYearTermThreeSurvey: renewalResult.multiYearTermThreeSurvey, multiYearTermFourSurvey: renewalResult.multiYearTermFourSurvey, multiYearTermFiveSurvey: renewalResult.multiYearTermFiveSurvey, properties: renewalResult.properties, costItem: costItem], selectedExportFields, renewalData, true, renewalResult.multiYearTermTwoSurvey, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermFourSurvey, renewalResult.multiYearTermFiveSurvey, format, contactSources)
             }
         }
 
@@ -3338,7 +3359,39 @@ class ExportClickMeService {
                     _setOrgFurtherInformation(participantResult.participant, row, fieldKey, format)
                 }else {
                     if (onlySubscription) {
-                        if (fieldKey.startsWith('subscription.') || fieldKey.startsWith('participant.')) {
+                        if (fieldKey == 'survey.costBeforeTax') {
+                            if(participantResult.costItem) {
+                                def fieldValue = _getFieldValue(participantResult.costItem, 'costInBillingCurrency', sdf)
+                                row.add(createTableCell(format, fieldValue))
+                            }
+                            else{
+                                row.add(createTableCell(format, ' '))
+                            }
+                        } else if (fieldKey == 'survey.costAfterTax') {
+                            if(participantResult.costItem) {
+                                def fieldValue = _getFieldValue(participantResult.costItem, 'costInBillingCurrencyAfterTax', sdf)
+                                row.add(createTableCell(format, fieldValue))
+                            }
+                            else{
+                                row.add(createTableCell(format, ' '))
+                            }
+                        }else if (fieldKey == 'survey.costTax') {
+                            if(participantResult.costItem) {
+                                def fieldValue = _getFieldValue(participantResult.costItem, 'taxKey.taxRate', sdf)
+                                row.add(createTableCell(format, fieldValue))
+                            }
+                            else{
+                                row.add(createTableCell(format, ' '))
+                            }
+                        }else if (fieldKey == 'survey.currency') {
+                            if(participantResult.costItem) {
+                                def fieldValue = _getFieldValue(participantResult.costItem, 'billingCurrency', sdf)
+                                row.add(createTableCell(format, fieldValue))
+                            }
+                            else{
+                                row.add(createTableCell(format, ' '))
+                            }
+                        }else if (fieldKey.startsWith('subscription.') || fieldKey.startsWith('participant.')) {
                             def fieldValue = _getFieldValue(participantResult, field, sdf)
                             row.add(createTableCell(format, fieldValue))
                         } else {
