@@ -84,7 +84,15 @@
         </div>
 
         <div class="three fields">
-            <div class="field"></div>
+            <div class="field">
+                <label>${message(code:'subscription.hasPerpetualAccess.label')}</label>
+                <ui:select class="ui fluid dropdown" name="hasPerpetualAccess"
+                           from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                           optionKey="id"
+                           optionValue="value"
+                           value="${params.hasPerpetualAccess}"
+                           noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
             <div class="field"></div>
             <div class="field">
                 <label for="isMyX">
