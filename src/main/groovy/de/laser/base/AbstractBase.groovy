@@ -3,18 +3,24 @@ package de.laser.base
 import groovy.util.logging.Slf4j
 
 /**
+ *  This base class contains principal methods common to all classes which implement globalUID storage for an
+ *  eventual data exchange.
+ *
+ *  implementation guide for implementing classes:
  *  class Test extends AbstractBase
  *
  *  static mapping     = { globalUID column:'test_guid' .. }
  *  static constraints = { globalUID(nullable:true, blank:false, unique:true, maxSize:255) .. }
  *
  */
-
 @Slf4j
 abstract class AbstractBase {
 
     String globalUID
 
+    /**
+     * Sets the global UID of the object. The global UID is in the structure className:UUID
+     */
     void setGlobalUID() {
 
         if (! globalUID) {
@@ -25,6 +31,9 @@ abstract class AbstractBase {
         }
     }
 
+    /**
+     * Before the object is being persisted, the global UID is being created if not called manually before
+     */
     protected void beforeInsertHandler() {
 
         log.debug("beforeInsertHandler()")
@@ -34,6 +43,10 @@ abstract class AbstractBase {
         }
     }
 
+    /**
+     * Before each update, set the global UID if it does not exist and output the changes to be persisted
+     * @return a {@link Map} reflecting the changes done on the object
+     */
     protected Map<String, Object> beforeUpdateHandler() {
 
         if (! globalUID) {
@@ -52,6 +65,9 @@ abstract class AbstractBase {
         return changes
     }
 
+    /**
+     * Empty delete handler
+     */
     protected void beforeDeleteHandler() {
 
         log.debug("beforeDeleteHandler()")

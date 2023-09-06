@@ -1,16 +1,18 @@
 package de.laser.base
 
-import de.laser.traces.DeletedObject
 import de.laser.storage.BeanStore
 import de.laser.interfaces.CalculatedLastUpdated
 import groovy.util.logging.Slf4j
 
 /**
+ *  Abstract base class, extending the functionality of {@link AbstractBase} with automatic timestamp update
+ *  for incremental harvesters using the LAS:eR API
+ *
+ *  implementation guide for implementing classes:
  *  class Test extends AbstractBaseWithCalculatedLastUpdated
  *
  *  static mapping     = { globalUID column:'test_guid' .. }
  *  static constraints = { globalUID(nullable:true, blank:false, unique:true, maxSize:255) .. }
- *
  */
 @Slf4j
 abstract class AbstractBaseWithCalculatedLastUpdated extends AbstractBase
