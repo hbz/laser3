@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5268    06.09.2023  rc-3.2  3.2.5       Andreas Bug         irreführende Verknüpfung von Objekten behoben
+
 5266    05.09.2023  rc-3.2  3.2.4       Andreas Bug         fehlerhafte Erzeugung der individuellen Merkmale behoben
 
 --      05.09.2023  rc-3.2  3.2.4       Moe     Bug         Merkmalsänderungen in Umfrage werden falsch angezeigt
