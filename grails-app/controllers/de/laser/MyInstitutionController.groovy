@@ -187,26 +187,26 @@ class MyInstitutionController  {
         result.contextOrg = contextService.getOrg()
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        String instanceFilter = ""
-        Map<String, Object> subscriptionParams = [contextOrg:result.contextOrg, roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA], current:RDStore.SUBSCRIPTION_CURRENT, expired:RDStore.SUBSCRIPTION_EXPIRED]
+        String instanceFilter = "", perpetualFilter = ""
+        boolean withPerpetualAccess = params.hasPerpetualAccess == RDStore.YN_YES.id.toString()
+        if(withPerpetualAccess)
+            perpetualFilter = " or s2.hasPerpetualAccess = true "
+
+        Map<String, Object> subscriptionParams = [contextOrg:result.contextOrg, roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA], current:RDStore.SUBSCRIPTION_CURRENT]
         if(result.contextOrg.isCustomerType_Consortium())
-            instanceFilter += " and s.instanceOf = null "
-        String subscriptionQuery = 'select s from OrgRole oo join oo.sub s where oo.org = :contextOrg and oo.roleType in (:roleTypes) and (s.status = :current or (s.status = :expired and s.hasPerpetualAccess = true))'+instanceFilter
+            instanceFilter += " and s2.instanceOf = null "
+        String subscriptionQuery = 'select s2 from OrgRole oo join oo.sub s2 where oo.org = :contextOrg and oo.roleType in (:roleTypes) and (s2.status = :current'+perpetualFilter+')'+instanceFilter
 
         result.subscriptionMap = [:]
         result.platformInstanceList = []
 
         //if (subscriptionQuery) {
-            String qry3 = "select distinct p, s, ${params.sort ?: 'p.normname'} from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg, " +
-                    "TitleInstancePackagePlatform tipp join tipp.platform p left join p.org o " +
-                    "where tipp.pkg = pkg and s in (${subscriptionQuery}) and p.gokbId in (:wekbIds)"
-
-            qry3 += " and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
-            qry3 += " and ((tipp.status is null) or (tipp.status != :tippRemoved))"
+            String qry3 = "select distinct p, s, ${params.sort ?: 'p.normname'} from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg " +
+                    "join pkg.nominalPlatform p left join p.org o " +
+                    "where s in (${subscriptionQuery}) and p.gokbId in (:wekbIds) and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
 
             Map qryParams3 = [
-                    pkgDeleted     : RDStore.PACKAGE_STATUS_DELETED,
-                    tippRemoved    : RDStore.TIPP_STATUS_REMOVED
+                    pkgDeleted     : RDStore.PACKAGE_STATUS_DELETED
             ]
             qryParams3.putAll(subscriptionParams)
 
@@ -295,7 +295,7 @@ class MyInstitutionController  {
                     result.platformInstanceList.add(pl)
                 }
 
-                if (s.status.value == RDStore.SUBSCRIPTION_CURRENT.value) {
+                if (s.status.value == RDStore.SUBSCRIPTION_CURRENT.value || (withPerpetualAccess && s.hasPerpetualAccess)) {
                     result.subscriptionMap.get(key).add(s)
                 }
             }
