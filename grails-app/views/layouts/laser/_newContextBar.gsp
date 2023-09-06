@@ -122,7 +122,9 @@
                 <ui:cbItemMarkerAction package="${packageInstance}"/>
             </g:elseif>
             <g:elseif test="${controllerName == 'platform'}">
-                <ui:cbItemMarkerAction platform="${platformInstance}"/>
+                <g:if test="${platformInstance}">
+                    <ui:cbItemMarkerAction platform="${platformInstance}"/>
+                </g:if>
             </g:elseif>
 
         </div>%{-- la-advanced-view --}%
