@@ -2372,7 +2372,7 @@ license.structure,Frame License,Rahmenvertrag mit Einzelverträgen,Frame license
 license.structure,Individual Licenses,Einzellizenzverträge,Individual licenses,,
 link.type,follows,Vorgänger|Nachfolger,Preceding|Follower,,
 link.type,is condition for,Bedingung für|Bedingung von,Condition for|Condition of,,
-link.type,references,Referenz|Referenz,Reference|Reference,,
+link.type,references,Referenz für|Referenz von,Reference for|Reference of,,
 link.type,license,Vertrag|Lizenz,License|Subscription,,
 mail.template.language,English,Englisch,English,,
 mail.template.language,German,Deutsch,German,,

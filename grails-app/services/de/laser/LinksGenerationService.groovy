@@ -243,12 +243,12 @@ class LinksGenerationService {
                 configMap.linkType = genericOIDService.resolveOID(linkTypeString)
                 configMap.commentContent = params["linkComment_${configMap.link.id}"].trim()
                 if(perspectiveIndex == 0) {
-                    configMap.source = genericOIDService.resolveOID(params.context)
-                    configMap.destination = genericOIDService.resolveOID(params["pair_${configMap.link.id}"])
-                }
-                else if(perspectiveIndex == 1) {
                     configMap.source = genericOIDService.resolveOID(params["pair_${configMap.link.id}"])
                     configMap.destination = genericOIDService.resolveOID(params.context)
+                }
+                else if(perspectiveIndex == 1) {
+                    configMap.source = genericOIDService.resolveOID(params.context)
+                    configMap.destination = genericOIDService.resolveOID(params["pair_${configMap.link.id}"])
                 }
             }
             else if(!params["linkType_${configMap.link.id}"]) {
