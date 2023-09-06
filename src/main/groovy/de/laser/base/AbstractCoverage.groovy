@@ -29,6 +29,13 @@ abstract class AbstractCoverage {
             'endVolume'
     ]
 
+    /**
+     * Locates in the given list the equivalent to the current coverage statement.
+     * Matching is done on the properties defined in {@link #equivalencyProperties} in the order defined in the set.
+     * The first match is being returned
+     * @param list a {@link List} of statements in which an equivalent should be found
+     * @return an equivalent coverage statement or null if none found
+     */
     AbstractCoverage findEquivalent(Collection<AbstractCoverage> list) {
         AbstractCoverage equivalent
         for (String k : equivalencyProperties) {
