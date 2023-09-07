@@ -1099,7 +1099,7 @@ class SurveyController {
             }
             CostItem.withTransaction { TransactionStatus ts ->
                 List<CostItem> surveyCostItems = CostItem.executeQuery('select costItem from CostItem costItem join costItem.surveyOrg surOrg where surOrg.surveyConfig = :survConfig and surOrg.org.id in (:orgIDs) and costItem.costItemStatus != :status', [survConfig:  result.surveyConfig, orgIDs: selectedMembers.collect{Long.parseLong(it)}, status: RDStore.COST_ITEM_DELETED])
-                surveyCostItems.each { surveyCostItem ->
+                surveyCostItems.each { CostItem surveyCostItem ->
                     if(params.deleteCostItems == "true") {
                         surveyCostItem.delete()
                     }
@@ -1129,6 +1129,8 @@ class SurveyController {
                         //Not specified default to GDP
                         //surveyCostItem.costInLocalCurrency = cost_local_currency ?: surveyCostItem.costInLocalCurrency
                         surveyCostItem.billingSumRounding = billingSumRounding != surveyCostItem.billingSumRounding ? billingSumRounding : surveyCostItem.billingSumRounding
+                        if(surveyCostItem.billingSumRounding)
+                            surveyCostItem.costInBillingCurrency = Math.round(surveyCostItem.costInBillingCurrency)
                         surveyCostItem.finalCostRounding = finalCostRounding != surveyCostItem.finalCostRounding ? finalCostRounding : surveyCostItem.finalCostRounding
 
                         //println( params.newFinalCostRounding)
@@ -3417,11 +3419,16 @@ class SurveyController {
             //RefdataValue cost_tax_type         = params.newCostTaxType ?          (RefdataValue.get(params.long('newCostTaxType'))) : null           //on invoice, self declared, etc
 
             NumberFormat format = NumberFormat.getInstance(LocaleUtils.getCurrentLocale())
-            def cost_billing_currency = params.newCostInBillingCurrency ? format.parse(params.newCostInBillingCurrency).doubleValue() : 0.00
+            boolean billingSumRounding = params.newBillingSumRounding ? true : false, finalCostRounding = params.newFinalCostRounding ? true : false
+            Double cost_billing_currency = params.newCostInBillingCurrency ? format.parse(params.newCostInBillingCurrency).doubleValue() : 0.00
             //def cost_currency_rate = params.newCostCurrencyRate ? params.double('newCostCurrencyRate', 1.00) : 1.00
             //def cost_local_currency = params.newCostInLocalCurrency ? format.parse(params.newCostInLocalCurrency).doubleValue() : 0.00
 
-            def cost_billing_currency_after_tax = params.newCostInBillingCurrencyAfterTax ? format.parse(params.newCostInBillingCurrencyAfterTax).doubleValue() : cost_billing_currency
+            Double cost_billing_currency_after_tax = params.newCostInBillingCurrencyAfterTax ? format.parse(params.newCostInBillingCurrencyAfterTax).doubleValue() : cost_billing_currency
+            if(billingSumRounding)
+                cost_billing_currency = Math.round(cost_billing_currency)
+            if(finalCostRounding)
+                cost_billing_currency_after_tax = Math.round(cost_billing_currency_after_tax)
             //def cost_local_currency_after_tax = params.newCostInLocalCurrencyAfterTax ? format.parse(params.newCostInLocalCurrencyAfterTax).doubleValue() : cost_local_currency
             //moved to TAX_TYPES
             //def new_tax_rate                      = params.newTaxRate ? params.int( 'newTaxRate' ) : 0
@@ -3518,8 +3525,8 @@ class SurveyController {
                         newCostItem.costInBillingCurrency = cost_billing_currency as Double
                         //newCostItem.costInLocalCurrency = cost_local_currency as Double
 
-                        newCostItem.billingSumRounding = params.newBillingSumRounding ? true : false
-                        newCostItem.finalCostRounding = params.newFinalCostRounding ? true : false
+                        newCostItem.billingSumRounding = billingSumRounding
+                        newCostItem.finalCostRounding = finalCostRounding
                         newCostItem.costInBillingCurrencyAfterTax = cost_billing_currency_after_tax as Double
                         //newCostItem.costInLocalCurrencyAfterTax = cost_local_currency_after_tax as Double
                         //newCostItem.currencyRate = cost_currency_rate as Double

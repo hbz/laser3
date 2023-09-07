@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5270    07.09.2023  rc-3.2  3.2.5       Andreas Bug         diverse Bugs bei der Bereinigung von Titel behoben
+
+5269    07.09.2023  rc-3.2  3.2.5       Andreas Bug         inkonsistente Kostenausschüttung korrigiert
+
 5268    06.09.2023  rc-3.2  3.2.5       Andreas Bug         irreführende Verknüpfung von Objekten behoben
 
 5266    05.09.2023  rc-3.2  3.2.4       Andreas Bug         fehlerhafte Erzeugung der individuellen Merkmale behoben
