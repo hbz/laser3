@@ -50,7 +50,15 @@ class TippController  {
     result.contextOrg = contextService.getOrg()
     result.participantPerpetualAccessToTitle = []
 
-    result.participantPerpetualAccessToTitle = surveyService.listParticipantPerpetualAccessToTitle(result.contextOrg, tipp)
+    result.subscription = params.sub ? Subscription.get(params.sub) : null
+    Org org
+    if(result.subscription){
+      org = result.subscription.getSubscriber()
+    }else{
+      org = result.contextOrg
+    }
+
+    result.participantPerpetualAccessToTitle = surveyService.listParticipantPerpetualAccessToTitle(org, tipp)
 
     result
   }

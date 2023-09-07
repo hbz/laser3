@@ -3,12 +3,22 @@
 <div class="la-icon-list">
 <ui:listIcon type="${tipp.titleType}"/>
 <g:if test="${ie}">
-    <g:link controller="issueEntitlement" id="${ie.id}"
-            action="show"><strong>${ie.tipp.name}</strong>
-    </g:link>
+    <g:if test="${controllerName == 'issueEntitlement' && actionName == 'show'}">
+        <strong>${ie.tipp.name}</strong>
+    </g:if>
+    <g:else>
+        <g:link controller="issueEntitlement" id="${ie.id}"
+                action="show"><strong>${ie.tipp.name}</strong>
+        </g:link>
+    </g:else>
 </g:if>
 <g:else>
-    <g:link controller="tipp" id="${tipp.id}" action="show"><strong>${tipp.name}</strong></g:link>
+    <g:if test="${controllerName == 'tipp' && actionName == 'show'}">
+        <strong>${tipp.name}</strong>
+    </g:if>
+    <g:else>
+        <g:link controller="tipp" id="${tipp.id}" action="show" params="${[sub: sub]}"></g:link>
+    </g:else>
 </g:else>
 
 <g:if test="${tipp.hostPlatformURL}">
