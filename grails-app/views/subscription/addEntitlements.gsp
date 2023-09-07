@@ -193,7 +193,7 @@
         <g:each in="${tipps}" var="tipp">
 
             <g:set var="participantPerpetualAccessToTitle"
-                   value="${surveyService.hasParticipantPerpetualAccessToTitle3(institution, tipp)}"/>
+                   value="${surveyService.listParticipantPerpetualAccessToTitle(institution, tipp)}"/>
 
             <div class="ui raised segments la-accordion-segments">
 
@@ -201,15 +201,15 @@
 
                     <div class="ui stackable equal width grid la-js-checkItem" data-gokbId="${tipp.gokbId}"
                          data-tippId="${tipp.id}" data-index="${counter}">
-                        <g:if test="${participantPerpetualAccessToTitle}">
+                        <g:if test="${participantPerpetualAccessToTitle.size() > 0}">
                             <span class="ui mini left corner label la-perpetualAccess la-popup-tooltip la-delay"
-                                  data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')}"
+                                  data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitle.collect{it.getPermanentTitleInfo(contextOrg)}.join(',')}"
                                   data-position="left center" data-variation="tiny">
                                 <i class="star icon"></i>
                             </span>
                         </g:if>
                         <div class="one wide column">
-                            <g:if test="${editable && !participantPerpetualAccessToTitle}">
+                            <g:if test="${editable && participantPerpetualAccessToTitle.size() == 0}">
                                 <input type="checkbox" name="bulkflag"
                                        class="bulkcheck la-js-notOpenAccordion" ${checkedCache ? checkedCache[tipp.gokbId] : ''}>
                             </g:if>
@@ -226,7 +226,7 @@
                                 <laser:render
                                         template="/templates/title_short_accordion"
                                         model="${[tipp       : tipp,
-                                                  showPackage: true, showPlattform: true, showEmptyFields: false]}"/>
+                                                  showPackage: true, showPlattform: true, showEmptyFields: false, sub: subscription.id]}"/>
                                 <!-- END TEMPLATE -->
 
                             </div>
@@ -281,7 +281,7 @@
                                 <div class="ui icon blue button la-modern-button">
                                     <i class="ui angle double down icon"></i>
                                 </div>
-                                <g:if test="${editable && !participantPerpetualAccessToTitle}">
+                                <g:if test="${editable && participantPerpetualAccessToTitle.size() == 0}">
                                     <g:if test="${!blockSubmit}">
                                         <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay"
                                                 action="processAddEntitlements"

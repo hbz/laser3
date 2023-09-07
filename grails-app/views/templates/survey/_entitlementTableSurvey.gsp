@@ -57,7 +57,7 @@
                                 <laser:render
                                         template="/templates/title_short_accordion"
                                         model="${[ie         : ie, tipp: ie.tipp,
-                                                  showPackage: true, showPlattform: true, showEmptyFields: false]}"/>
+                                                  showPackage: true, showPlattform: true, showEmptyFields: false, sub: subscriberSub.id]}"/>
                                 <!-- END TEMPLATE -->
 
                             </div>

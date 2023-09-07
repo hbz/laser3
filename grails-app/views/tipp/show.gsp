@@ -28,16 +28,21 @@
                         <div class="item">
                             <div class="sixteen wide column">
                                 <i class="icon clipboard outline la-list-icon"></i>
-                                <g:link controller="subscription"
-                                        action="index"
-                                        id="${pt.subscription.id}">${pt.subscription.dropdownNamingConvention(contextOrg)}</g:link>
-                                &nbsp;
-                                <br/>
-                                <br/>
-                                <g:link controller="issueEntitlement"
-                                        action="show"
-                                        id="${pt.issueEntitlement.id}">${message(code: 'myinst.currentTitles.full_ie')}</g:link>
-                                <br/>
+                                <g:if test="${pt.subscription.getConsortia() != contextOrg}">
+                                    ${pt.getPermanentTitleInfo(contextOrg)}
+                                </g:if><g:else>
+                                    <g:link controller="subscription"
+                                            action="index"
+                                            id="${pt.subscription.id}">${pt.subscription.dropdownNamingConvention(contextOrg)}</g:link>
+                                    &nbsp;
+                                    <br/>
+                                    <br/>
+                                    <g:link controller="issueEntitlement"
+                                            action="show"
+                                            id="${pt.issueEntitlement.id}">${message(code: 'myinst.currentTitles.full_ie')}</g:link>
+                                    <br/>
+                                </g:else>
+
                             </div>
                         </div>
                     </g:each>

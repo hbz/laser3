@@ -6,7 +6,7 @@
         </g:link>
     </g:if>
     <g:else>
-        <g:link controller="tipp" id="${tipp.id}" action="show"><strong>${tipp.name}</strong></g:link>
+        <g:link controller="tipp" id="${tipp.id}" action="show" params="[sub: sub]"><strong>${tipp.name}</strong></g:link>
     </g:else>
 
     <g:if test="${tipp.hostPlatformURL}">
