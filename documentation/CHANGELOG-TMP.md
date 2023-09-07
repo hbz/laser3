@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5270    07.09.2023  rc-3.2  3.2.5       Andreas Bug         diverse Bugs bei der Bereinigung von Titel behoben
+
+5269    07.09.2023  rc-3.2  3.2.5       Andreas Bug         inkonsistente Kostenausschüttung korrigiert
+
 5267    07.09.2023  rc-3.2  3.2.5       Moe     Feature     Umfrage: Paketübertrag für Teilnehmer
 
 5235    07.09.2023  rc-3.2  3.2.5       Moe     Bug         Lizenzpaket: Bloomsbury Titel via KBART hinzufügen 
