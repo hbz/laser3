@@ -3647,6 +3647,104 @@ class SurveyController {
     }
 
     /**
+     * Call to copy the packages of subscription
+     * @return a list of each participant's packages
+     */
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    Map<String,Object> copySubPackagesAndIes() {
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        if (!result.editable) {
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
+        }
+
+        result.parentSubscription = result.surveyConfig.subscription
+        result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
+
+        result.targetSubscription =  result.parentSuccessorSubscription
+        result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
+
+        result.participantsList = []
+
+        result.parentSuccessortParticipantsList = []
+
+        result.parentSuccessorSubChilds.each { sub ->
+            Map newMap = [:]
+            Org org = sub.getSubscriber()
+            newMap.id = org.id
+            newMap.sortname = org.sortname
+            newMap.name = org.name
+            newMap.newSub = sub
+            newMap.oldSub = sub._getCalculatedPreviousForSurvey()
+
+            result.participantsList << newMap
+
+        }
+
+        result.participantsList = result.participantsList.sort{it.sortname}
+
+        result.validPackages = result.parentSuccessorSubscription ? Package.executeQuery('select sp from SubscriptionPackage sp where sp.subscription = :subscription', [subscription: result.parentSuccessorSubscription]) : []
+
+
+        result
+
+    }
+
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    Map<String,Object> proccessCopySubPackagesAndIes() {
+        Map<String, Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        if (!result.editable) {
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
+        }
+
+        result.parentSubscription = result.surveyConfig.subscription
+        result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
+
+        result.targetSubscription = result.parentSuccessorSubscription
+        result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
+
+        Set<Subscription> subscriptions
+        if(params.containsKey("membersListToggler")) {
+            subscriptions =  result.parentSuccessorSubChilds
+        }
+        else subscriptions = Subscription.findAllByIdInList(params.list("selectedSubs"))
+        List selectedPackageKeys = params.list("selectedPackages")
+        Set<Package> pkgsToProcess = []
+        if(selectedPackageKeys.contains('all') && result.parentSuccessorSubscription) {
+            pkgsToProcess.addAll(Package.executeQuery('select sp.pkg from SubscriptionPackage sp where sp.subscription = :subscription', [subscription: result.parentSuccessorSubscription]))
+        }
+        else {
+            selectedPackageKeys.each { String pkgKey ->
+                pkgsToProcess.add(Package.get(pkgKey))
+            }
+        }
+        pkgsToProcess.each { Package pkg ->
+            subscriptions.each { Subscription selectedSub ->
+                if(selectedSub.isEditableBy(result.user)) {
+                    SubscriptionPackage sp = SubscriptionPackage.findBySubscriptionAndPkg(selectedSub, pkg)
+                    if(params.processOption =~ /^link/) {
+                        if(!sp) {
+                            if(result.parentSuccessorSubscription) {
+                                subscriptionService.addToSubscriptionCurrentStock(selectedSub, result.parentSuccessorSubscription, pkg, params.processOption == 'linkwithIE')
+                            }
+                            else {
+                                subscriptionService.addToSubscription(selectedSub, pkg, params.processOption == 'linkwithIE')
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        redirect(action: 'copySubPackagesAndIes', id: params.id, params: [surveyConfigID: result.surveyConfig.id, targetSubscriptionId: result.targetSubscription.id])
+
+    }
+
+        /**
      * Call to copy the survey cost items
      * @return a list of each participant's survey costs
      */
