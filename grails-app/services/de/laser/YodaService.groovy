@@ -312,19 +312,20 @@ class YodaService {
     void matchPackageHoldings(Long pkgId) {
         Sql sql = GlobalService.obtainSqlConnection()
         sql.withTransaction {
-            List subscriptionPackagesConcerned = sql.rows("select sp_sub_fk, sp_pkg_fk, sub_has_perpetual_access " +
+            List subscriptionPackagesConcerned = sql.rows("select sp_sub_fk, sp_pkg_fk, sub_has_perpetual_access, sub_holding_selection_rv_fk " +
                     "from subscription_package join subscription on sp_sub_fk = sub_id " +
-                    "where sub_holding_selection_rv_fk = :entire and sp_pkg_fk = :pkgId",
-            [pkgId: pkgId, entire: RDStore.SUBSCRIPTION_HOLDING_ENTIRE.id])
+                    "where sp_pkg_fk = :pkgId",
+            [pkgId: pkgId])
             subscriptionPackagesConcerned.eachWithIndex { GroovyRowResult row, int ax ->
                 Set<Long> subIds = [row['sp_sub_fk']]
                 List inheritingSubs = sql.rows("select sub_id from subscription join audit_config on auc_reference_id = sub_parent_sub_fk where auc_reference_field = 'holdingSelection' and sub_parent_sub_fk = :parent", [parent: row['sp_sub_fk']])
                 subIds.addAll(inheritingSubs.collect { GroovyRowResult inherit -> inherit['sub_id'] })
-                boolean perpetualAccess = row['sub_has_perpetual_access']
+                boolean perpetualAccess = row['sub_has_perpetual_access'], entire = row['sub_holding_selection_rv_fk'] == RDStore.SUBSCRIPTION_HOLDING_ENTIRE.id
                 subIds.each { Long subId ->
                     log.debug("now processing package ${subId}:${pkgId}")
-                    packageService.bulkAddHolding(sql, subId, pkgId, perpetualAccess)
-                    sql.executeUpdate('update issue_entitlement set ie_status_rv_fk = tipp_status_rv_fk from title_instance_package_platform where ie_tipp_fk = tipp_id and ie_subscription_fk = :subId and ie_status_rv_fk != tipp_status_rv_fk', [subId: subId])
+                    if(entire)
+                        packageService.bulkAddHolding(sql, subId, pkgId, perpetualAccess)
+                    log.debug("${sql.executeUpdate('update issue_entitlement set ie_status_rv_fk = tipp_status_rv_fk from title_instance_package_platform where ie_tipp_fk = tipp_id and ie_subscription_fk = :subId and ie_status_rv_fk != tipp_status_rv_fk and ie_status_rv_fk != :removed', [subId: subId, removed: RDStore.TIPP_STATUS_REMOVED.id])} rows updated")
                 }
             }
         }

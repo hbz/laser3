@@ -2247,14 +2247,6 @@ class SubscriptionControllerService {
         boolean unlinkPkg
         if(params.confirmed) {
             Set<Subscription> subList = []
-            /*
-            continue here:
-            - implement options on frontend -->CHECK
-            - remove audit config in case of unlinking is triggered on behalf of the parent subscription -->CHECK
-            - block triggering in institution subscription if audit is active -->CHECK
-            - detach holding generation from subscription holding selection; this should be triggered independently (decision may be reverted later)
-            - moreover: seek for filter in ERMS-5201; that sequence scan can be avoided when creating permanent titles!
-             */
             if(params.containsKey('option')) {
                 AuditConfig.removeConfig(result.subscription, 'holdingSelection')
                 subList << result.subscription

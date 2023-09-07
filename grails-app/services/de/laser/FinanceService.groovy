@@ -237,6 +237,8 @@ class FinanceService {
         Map<String,Object> result = financeControllerService.getResultGenerics(params)
         result.putAll(financeControllerService.getEditVars(result.institution))
         List<Long> selectedCostItems = []
+        Boolean billingSumRounding = params.newBillingSumRounding == 'on'
+        Boolean finalCostRounding = params.newFinalCostRounding == 'on'
         if(params.containsKey('costItemListToggler')) {
             if(result.subscription)
                 selectedCostItems = getCostItemsForSubscription(params, result).get(params.view).ids
@@ -262,8 +264,14 @@ class FinanceService {
                     if(ci.sub) {
                         CostItem lastYearEquivalent = CostItem.executeQuery('select ci from CostItem ci where ci.sub = (select l.destinationSubscription from Links l where l.linkType = :follows and l.sourceSubscription = :currentYearSub) and ci.costItemElement = :element and ci.costItemStatus != :deleted', [follows: RDStore.LINKTYPE_FOLLOWS, currentYearSub: ci.sub, element: ci.costItemElement, deleted: RDStore.COST_ITEM_DELETED])[0]
                         if(lastYearEquivalent) {
+                            ci.billingSumRounding = billingSumRounding != ci.billingSumRounding ? billingSumRounding : ci.billingSumRounding
+                            ci.finalCostRounding = finalCostRounding != ci.finalCostRounding ? finalCostRounding : ci.finalCostRounding
                             ci.costInBillingCurrency = Math.floor(Math.abs(lastYearEquivalent.costInBillingCurrency * percentage))
                             ci.costInLocalCurrency = Math.floor(Math.abs(lastYearEquivalent.costInLocalCurrency * percentage))
+                            if (ci.billingSumRounding) {
+                                ci.costInBillingCurrency = Math.round(ci.costInBillingCurrency)
+                                ci.costInLocalCurrency = Math.round(ci.costInLocalCurrency)
+                            }
                             ci.save()
                         }
                         else {
@@ -276,8 +284,6 @@ class FinanceService {
             }
             else {
                 Map<String, Object> configMap = setupConfigMap(params, result.institution)
-                Boolean billingSumRounding = params.newBillingSumRounding == 'on'
-                Boolean finalCostRounding = params.newFinalCostRounding == 'on'
                 List<CostItem> costItems = CostItem.findAllByIdInList(selectedCostItems)
                 costItems.each { CostItem costItem ->
                     if(costItem && costItem.costItemStatus != RDStore.COST_ITEM_DELETED){
@@ -291,25 +297,39 @@ class FinanceService {
                         int taxRate = 0 //fallback
                         if(costItem.taxKey)
                             taxRate = costItem.taxKey.taxRate
+                        costItem.billingSumRounding = billingSumRounding != costItem.billingSumRounding ? billingSumRounding : costItem.billingSumRounding
+                        costItem.finalCostRounding = finalCostRounding != costItem.finalCostRounding ? finalCostRounding : costItem.finalCostRounding
+                        if(configMap.currencyRate) {
+                            costItem.currencyRate = configMap.currencyRate
+                            if(!configMap.containsKey('costLocalCurrency')) {
+                                costItem.costInLocalCurrency = configMap.currencyRate * costItem.costInBillingCurrency
+                                costItem.costInLocalCurrencyAfterTax = costItem.costInLocalCurrency * (1.0 + (0.01 * taxRate))
+                            }
+                        }
                         if(configMap.costBillingCurrency) {
                             costItem.costInBillingCurrency = configMap.costBillingCurrency
                             costItem.costInBillingCurrencyAfterTax = configMap.costBillingCurrency * (1.0 + (0.01 * taxRate))
-                            costItem.costInLocalCurrency = costItem.currencyRate * configMap.costBillingCurrency
-                            costItem.costInLocalCurrencyAfterTax = costItem.costInLocalCurrency * (1.0 + (0.01 * taxRate))
+                            if(!configMap.containsKey('costLocalCurrency')) {
+                                costItem.costInLocalCurrency = costItem.currencyRate * configMap.costBillingCurrency
+                                costItem.costInLocalCurrencyAfterTax = costItem.costInLocalCurrency * (1.0 + (0.01 * taxRate))
+                            }
                         }
                         costItem.billingCurrency = configMap.billingCurrency ?: costItem.billingCurrency
                         if(configMap.costLocalCurrency) {
                             costItem.costInLocalCurrency = configMap.costLocalCurrency
                             costItem.costInLocalCurrencyAfterTax = costItem.costInLocalCurrency * (1.0 + (0.01 * taxRate))
-                            costItem.costInBillingCurrency = configMap.costLocalCurrency / costItem.currencyRate
-                            costItem.costInBillingCurrencyAfterTax = configMap.costBillingCurrency * (1.0 + (0.01 * taxRate))
+                            if(!configMap.containsKey('costBillingCurrency')) {
+                                costItem.costInBillingCurrency = configMap.costLocalCurrency / costItem.currencyRate
+                                costItem.costInBillingCurrencyAfterTax = configMap.costBillingCurrency * (1.0 + (0.01 * taxRate))
+                            }
                         }
-                        costItem.billingSumRounding = billingSumRounding != costItem.billingSumRounding ? billingSumRounding : costItem.billingSumRounding
-                        costItem.finalCostRounding = finalCostRounding != costItem.finalCostRounding ? finalCostRounding : costItem.finalCostRounding
-                        if(configMap.currencyRate) {
-                            costItem.currencyRate = configMap.currencyRate
-                            costItem.costInLocalCurrency = configMap.currencyRate * costItem.costInBillingCurrency
-                            costItem.costInLocalCurrencyAfterTax = costItem.costInLocalCurrency * (1.0 + (0.01 * taxRate))
+                        if (costItem.billingSumRounding) {
+                            costItem.costInBillingCurrency = Math.round(costItem.costInBillingCurrency)
+                            costItem.costInLocalCurrency = Math.round(costItem.costInLocalCurrency)
+                        }
+                        if (costItem.finalCostRounding) {
+                            costItem.costInBillingCurrencyAfterTax = Math.round(costItem.costInBillingCurrencyAfterTax)
+                            costItem.costInLocalCurrencyAfterTax = Math.round(costItem.costInLocalCurrencyAfterTax)
                         }
                         if(configMap.isVisibleForSubscriber != null) {
                             costItem.isVisibleForSubscriber = result.subscription?._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE ? false : configMap.isVisibleForSubscriber

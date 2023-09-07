@@ -463,7 +463,7 @@
                                                         <laser:render
                                                                 template="/templates/title_short_accordion"
                                                                 model="${[ie         : ie, tipp: ie.tipp,
-                                                                          showPackage: true, showPlattform: true, showEmptyFields: false]}"/>
+                                                                          showPackage: true, showPlattform: true, showEmptyFields: false, sub: subscription.id]}"/>
                                                         <!-- END TEMPLATE -->
 
                                                     </div>
