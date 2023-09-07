@@ -50,7 +50,7 @@
                                 <laser:render
                                         template="/templates/title_short_accordion"
                                         model="${[tipp: tipp,
-                                                  showPackage: true, showPlattform: true, showEmptyFields: false]}"/>
+                                                  showPackage: true, showPlattform: true, showEmptyFields: false, sub: subscriberSub.id]}"/>
                                 <!-- END TEMPLATE -->
 
                             </div>

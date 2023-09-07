@@ -11,6 +11,10 @@
 
 5269    07.09.2023  rc-3.2  3.2.5       Andreas Bug         inkonsistente Kostenausschüttung korrigiert
 
+5267    07.09.2023  rc-3.2  3.2.5       Moe     Feature     Umfrage: Paketübertrag für Teilnehmer
+
+5235    07.09.2023  rc-3.2  3.2.5       Moe     Bug         Lizenzpaket: Bloomsbury Titel via KBART hinzufügen 
+
 5268    06.09.2023  rc-3.2  3.2.5       Andreas Bug         irreführende Verknüpfung von Objekten behoben
 
 5266    05.09.2023  rc-3.2  3.2.4       Andreas Bug         fehlerhafte Erzeugung der individuellen Merkmale behoben

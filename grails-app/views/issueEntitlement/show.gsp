@@ -87,7 +87,7 @@
             <!-- START TEMPLATE -->
             <laser:render template="/templates/title_long"
                       model="${[ie         : issueEntitlementInstance, tipp: issueEntitlementInstance.tipp,
-                                showPackage: true, showPlattform: true, showCompact: false, showEmptyFields: true]}"/>
+                                showPackage: true, showPlattform: true, showCompact: false, showEmptyFields: true, sub: issueEntitlementInstance.subscription.id]}"/>
             <!-- END TEMPLATE -->
 
             <br/>
