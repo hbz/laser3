@@ -412,6 +412,7 @@ class DeletionService {
                     String ieSubClause = '(select ie from IssueEntitlement ie where ie.subscription = :sub)'
                     PriceItem.executeUpdate('delete from PriceItem pi where pi.issueEntitlement in '+ieSubClause, [sub: sub])
                     IssueEntitlementChange.executeUpdate('delete from IssueEntitlementChange iec where iec.subscription = :sub', [sub: sub])
+                    IssueEntitlementCoverage.executeUpdate('delete from IssueEntitlementCoverage iec where iec.issueEntitlement in '+ieSubClause, [sub: sub])
                     PermanentTitle.executeUpdate('delete from PermanentTitle pt where pt.subscription = :sub', [sub: sub])
                     IssueEntitlement.executeUpdate('delete from IssueEntitlement ie where ie.subscription = :sub', [sub: sub])
 

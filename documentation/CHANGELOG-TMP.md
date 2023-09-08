@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5271    08.09.2023  rc-3.2  3.2.5       Andreas Bug         diverse Denk- und Programmierfehler bei der Titelverwaltung behoben
+
 5270    07.09.2023  rc-3.2  3.2.5       Andreas Bug         diverse Bugs bei der Bereinigung von Titel behoben
 
 5269    07.09.2023  rc-3.2  3.2.5       Andreas Bug         inkonsistente Kostenausschüttung korrigiert

@@ -919,7 +919,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         Date now = new Date()
         newTitles.each { TitleInstancePackagePlatform tipp ->
-            Set<Subscription> subsConcerned = Subscription.executeQuery('select s from Subscription s join s.packages sp where s.startDate is not null and s.startDate <= :now and s.endDate is not null and s.endDate >= :now and s.holdingSelection = :entire and sp.pkg = :pkg', [now: now, entire: RDStore.SUBSCRIPTION_HOLDING_ENTIRE, pkg: tipp.pkg])
+            Set<Subscription> subsConcerned = Subscription.executeQuery('select s from Subscription s join s.packages sp where s.endDate is not null and s.endDate >= :now and s.holdingSelection = :entire and sp.pkg = :pkg', [now: now, entire: RDStore.SUBSCRIPTION_HOLDING_ENTIRE, pkg: tipp.pkg])
             //we may need to switch to native sql ...
             subsConcerned.each { Subscription s ->
                 IssueEntitlement.construct([subscription: s, tipp: tipp])
