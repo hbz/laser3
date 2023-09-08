@@ -201,7 +201,7 @@ class ContextBarTagLib {
 
                 out <<      '<div class="ui icon button purple ' + (isMarked ? 'active' : ' inactive ') + ' la-popup-tooltip la-long-tooltip la-delay" onclick="' + onClick + '" '
                 out <<          'data-content="' + tt + '" data-position="top right">'
-                out <<              '<i class="icon bookmark' + (isMarked ? '' : ' outline') + '"></i>'
+                out <<              '<i class="icon ' + (isMarked ? 'bookmark' : ' la-bookmark slash' ) + '"></i>'
                 out <<      '</div>'
 
                 if (! attrs.ajax) {
