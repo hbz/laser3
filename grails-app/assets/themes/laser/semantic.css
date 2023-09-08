@@ -60076,10 +60076,17 @@ Floated Menu / Item
   width: 0;
 }
 
+@media only screen and (min-width: 320px) and (max-width: 1496px) {
+  .ui.menu.la-contextBar .ui.container {
+    width: 100%;
+  }
+}
+
 .ui.menu.la-contextBar {
   top: 50px;
   z-index: 101;
   background-color: #d3dae3;
+  box-shadow: none;
 }
 
 .ui.menu.la-contextBar .item {
@@ -60087,9 +60094,12 @@ Floated Menu / Item
   padding: 0;
 }
 
+.ui.menu.la-contextBar .item::before {
+  width: 0;
+}
+
 .ui.menu.la-contextBar .la-context-org {
   font-size: 0.87em;
-  flex: 0 0 200px;
 }
 
 .ui.menu.la-contextBar .ui.sub.header.item {

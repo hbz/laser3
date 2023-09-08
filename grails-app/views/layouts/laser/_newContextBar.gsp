@@ -138,13 +138,6 @@
 %{-- stable --}%
 <style>
 
-    .la-contextBar.ui.menu {
-        box-shadow: none !important;
-    }
-
-    .la-contextBar.ui.menu .item::before {
-        width: 0 !important;
-    }
 
     #la-cb-info-display {
         font-size: 0.87em;
@@ -215,9 +208,6 @@
 %{-- unstable --}%
 <style>
 
-    .la-contextBar.ui.menu .la-context-org {
-        flex: 0 0 550px;
-    }
 
     .la-cb-info.item > .label {
         border: 1px solid #e3eaf3 !important;
