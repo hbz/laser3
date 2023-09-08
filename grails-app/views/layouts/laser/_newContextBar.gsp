@@ -119,7 +119,9 @@
                 </g:if>
             </g:if>
             <g:elseif test="${controllerName == 'package'}">
-                <ui:cbItemMarkerAction package="${packageInstance}"/>
+                <g:if test="${packageInstance}">
+                    <ui:cbItemMarkerAction package="${packageInstance}"/>
+                </g:if>
             </g:elseif>
             <g:elseif test="${controllerName == 'platform'}">
                 <g:if test="${platformInstance}">
