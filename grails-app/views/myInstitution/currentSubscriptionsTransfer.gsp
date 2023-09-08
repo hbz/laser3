@@ -487,8 +487,9 @@
                                                                 target="_blank"><i class="download small icon"></i></g:link>
 
                                                     <%-- 2 --%>
+                                                        ${s}
                                                         <laser:render template="/templates/documents/modal"
-                                                                      model="[s: s, owntp: 'subscription', docctx: docctx, doc: docctx.owner]"/>
+                                                                      model="[ownobj: s, owntp: 'subscription', docctx: docctx, doc: docctx.owner]"/>
                                                         <button type="button"
                                                                 class="ui icon blue tiny button la-modern-button"
                                                                 data-ui="modal"
@@ -686,7 +687,7 @@
 
                                                     <%-- 2 --%>
                                                         <laser:render template="/templates/documents/modal"
-                                                                      model="[s: s, owntp: 'subscription', docctx: docctx, doc: docctx.owner]"/>
+                                                                      model="[ownobj: s, owntp: 'subscription', docctx: docctx, doc: docctx.owner]"/>
                                                         <button type="button"
                                                                 class="ui icon blue tiny button la-modern-button"
                                                                 data-ui="modal"

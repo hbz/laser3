@@ -232,7 +232,7 @@
 
                                             <%-- 2 --%>
                                                 <laser:render template="/templates/documents/modal"
-                                                              model="[s: subscription, owntp: 'subscription', docctx: docctx, doc: docctx.owner]"/>
+                                                              model="[ownobj: subscription, owntp: 'subscription', docctx: docctx, doc: docctx.owner]"/>
                                                 <button type="button" class="ui icon blue button la-modern-button"
                                                         data-ui="modal"
                                                         data-href="#modalEditDocument_${docctx.id}"
@@ -310,7 +310,7 @@
 
                                             <%-- 2 --%>
                                                 <laser:render template="/templates/documents/modal"
-                                                              model="[s: subscription, owntp: 'subscription', docctx: docctx, doc: docctx.owner]"/>
+                                                              model="[ownobj: subscription, owntp: 'subscription', docctx: docctx, doc: docctx.owner]"/>
                                                 <button type="button" class="ui icon blue button la-modern-button"
                                                         data-ui="modal"
                                                         data-href="#modalEditDocument_${docctx.id}"
