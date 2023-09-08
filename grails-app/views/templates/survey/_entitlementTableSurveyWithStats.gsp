@@ -50,7 +50,9 @@
                         </g:if>
 
                         <g:if test="${participantPerpetualAccessToTitle}">
-                            <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')}" data-position="left center" data-variation="tiny">
+                            <g:set var="participantPerpetualAccessToTitleList"
+                                   value="${surveyService.listParticipantPerpetualAccessToTitle(subscriber, tipp)}"/>
+                            <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitleList.collect{it.getPermanentTitleInfo(contextOrg)}.join(',')}" data-position="left center" data-variation="tiny">
                                 <i class="icon redo alternate red"></i>
                             </div>
                         </g:if>
