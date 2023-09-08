@@ -431,7 +431,9 @@
                                     <div class="ui raised segments la-accordion-segments">
                                         <div class="ui fluid segment title" data-ajaxTippId="${ie.tipp.id}" data-ajaxIeId="${ie ? ie.id : null}">
                                             <div class="ui stackable equal width grid">
-                                                <g:if test="${surveyService.hasParticipantPerpetualAccessToTitle3(subscription.getSubscriber(), ie.tipp)}">
+                                                <g:set var="participantPerpetualAccessToTitle"
+                                                       value="${surveyService.listParticipantPerpetualAccessToTitle(subscription.getSubscriber(), ie.tipp)}"/>
+                                                <g:if test="${participantPerpetualAccessToTitle.size() > 0}">
                                                     <g:if test="${ie.perpetualAccessBySub && ie.perpetualAccessBySub != subscription}">
                                                         <g:link controller="subscription" action="index" id="${ie.perpetualAccessBySub.id}">
                                                             <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip la-delay"
@@ -443,7 +445,7 @@
                                                     </g:if>
                                                     <g:else>
                                                         <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip la-delay"
-                                                              data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')}"
+                                                              data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitle.collect{it.getPermanentTitleInfo(contextOrg)}.join(',')}""
                                                               data-position="left center" data-variation="tiny">
                                                             <i class="star icon"></i>
                                                         </span>
