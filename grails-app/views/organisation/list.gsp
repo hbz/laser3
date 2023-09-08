@@ -1,4 +1,4 @@
-<%@ page import="de.laser.*" %>
+<%@ page import="de.laser.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:htmlStart message="menu.public.all_orgs" serviceInjection="true"/>
 
         <g:set var="entityName" value="${message(code: 'org.label')}" />
