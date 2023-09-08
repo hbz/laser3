@@ -62,6 +62,38 @@
 
         </div>
 
+        <g:if test="${surveyConfig.subSurveyUseForTransfer}">
+            <div class="${(actionName == 'copySubPackagesAndIes') ? 'active' : ''} step">
+
+                <div class="content">
+                    <div class="title">
+                        <g:link controller="survey" action="copySubPackagesAndIes"
+                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]">
+                            ${message(code: 'copySubPackagesAndIes.label')}
+                        </g:link>
+                    </div>
+
+                    <div class="description">
+                        <i class="gift icon"></i>${message(code: 'copySubPackagesAndIes.label')}
+                    </div>
+                </div>
+            &nbsp;&nbsp;
+                <g:if test="${transferWorkflow && transferWorkflow.transferSubPackagesAndIes == 'true'}">
+                    <g:link controller="survey" action="setSurveyTransferConfig"
+                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferSubPackagesAndIes: false]">
+                        <i class="check bordered large green icon"></i>
+                    </g:link>
+                </g:if>
+                <g:else>
+                    <g:link controller="survey" action="setSurveyTransferConfig"
+                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferSubPackagesAndIes: true]">
+                        <i class="close bordered large red icon"></i>
+                    </g:link>
+                </g:else>
+
+            </div>
+        </g:if>
+
         <div class="${(actionName == 'copyProperties' && params.tab == 'surveyProperties') ? 'active' : ''} step">
 
             <div class="content">
@@ -180,38 +212,6 @@
             </g:else>
 
         </div>
-
-        <g:if test="${surveyConfig.subSurveyUseForTransfer}">
-            <div class="${(actionName == 'copySubPackagesAndIes') ? 'active' : ''} step">
-
-                <div class="content">
-                    <div class="title">
-                        <g:link controller="survey" action="copySubPackagesAndIes"
-                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]">
-                            ${message(code: 'copySubPackagesAndIes.label')}
-                        </g:link>
-                    </div>
-
-                    <div class="description">
-                        <i class="gift icon"></i>${message(code: 'copySubPackagesAndIes.label')}
-                    </div>
-                </div>
-            &nbsp;&nbsp;
-                <g:if test="${transferWorkflow && transferWorkflow.transferSubPackagesAndIes == 'true'}">
-                    <g:link controller="survey" action="setSurveyTransferConfig"
-                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferSubPackagesAndIes: false]">
-                        <i class="check bordered large green icon"></i>
-                    </g:link>
-                </g:if>
-                <g:else>
-                    <g:link controller="survey" action="setSurveyTransferConfig"
-                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferSubPackagesAndIes: true]">
-                        <i class="close bordered large red icon"></i>
-                    </g:link>
-                </g:else>
-
-            </div>
-        </g:if>
 
     </div>
 
@@ -459,17 +459,5 @@
     });
     </laser:script>
 
-    <g:form action="setSurveyCompleted" method="post" class="ui form"
-            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
-
-        <div class="ui right floated compact segment">
-            <div class="ui checkbox">
-                <input type="checkbox" onchange="this.form.submit()"
-                       name="surveyCompleted" ${surveyInfo.status.id == RDStore.SURVEY_COMPLETED.id ? 'checked' : ''}>
-                <label><g:message code="surveyInfo.status.completed"/></label>
-            </div>
-        </div>
-
-    </g:form>
 </g:else>
 <laser:htmlEnd/>
