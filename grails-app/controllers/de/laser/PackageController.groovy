@@ -696,14 +696,10 @@ class PackageController {
 
         if (result.subscription) {
             Locale locale = LocaleUtils.getCurrentLocale()
-            Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
-            Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
             boolean bulkProcessRunning = false
-            threadArray.each { Thread thread ->
-                if (thread.name == 'PackageSync_' + result.subscription.id && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription, result.pkg)) {
-                    result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running', null, locale)
-                    bulkProcessRunning = true
-                }
+            if (subscriptionService.checkThreadRunning('PackageSync_' + result.subscription.id) && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription, result.pkg)) {
+                result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running', null, locale)
+                bulkProcessRunning = true
             }
             if(params.holdingSelection) {
                 RefdataValue holdingSelection = RefdataValue.get(params.holdingSelection)

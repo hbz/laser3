@@ -31,6 +31,16 @@
 </g:if>
 <g:else>
 
+    <g:if test="${isLinkingRunning}">
+        <div class="ui icon warning message">
+            <i class="info icon"></i>
+            <div class="content">
+                <div class="header">Info</div>
+
+                <p>${message(code: 'subscriptionsManagement.isLinkingRunning.info')}</p>
+            </div>
+        </div>
+    </g:if>
     <div class="ui tablet stackable steps">
 
         <div class="${(actionName == 'compareMembersOfTwoSubs') ? 'active' : ''} step">
