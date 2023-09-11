@@ -5,6 +5,7 @@ import com.opencsv.CSVReader
 import com.opencsv.CSVReaderBuilder
 import com.opencsv.ICSVParser
 import de.laser.auth.*
+import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
 import de.laser.properties.PropertyDefinition
@@ -83,6 +84,9 @@ class BootStrapService {
 
             // Here we go ..
 
+            log.debug("clearCaches ..")
+            clearCaches()
+
             log.debug("updatePsqlRoutines ..")
             updatePsqlRoutines()
 
@@ -133,6 +137,14 @@ class BootStrapService {
      * Destructor method
      */
     void destroy() {}
+
+    void clearCaches() {
+        EhcacheWrapper cache = cacheService.getTTL1800Cache(WekbStatsService.CACHE_KEY)
+        if (cache.get('data')) {
+            log.debug('- ' + WekbStatsService.CACHE_KEY)
+            cache.remove('data')
+        }
+    }
 
     /**
      * Sets - if not exists - one or more system users with global roles and a fallback anonymous user if all users have been deleted. The system users are

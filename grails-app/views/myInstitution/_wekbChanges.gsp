@@ -236,14 +236,13 @@
                 <i class="icon grey ${cfg[3]}" style="vertical-align:bottom"></i> ${message(code: "${cfg[2]}")}
             </p>
 
-            <div class="ui vertically divided very compact grid">
-                <g:each in="${cfg[1].all}" var="obj" status="i">
+            <div class="ui vertically divided very compact grid" style="margin-top: 1.5em;">
+                <g:each in="${cfg[1].all}" var="obj">
                     <div class="three column row"
                          data-f1="${obj.uuid in cfg[1].created ? 'created' : 'updated'}"
                          data-f2="${obj.uuid in cfg[1].my ? 'true' : 'false'}"
                          data-f3="${obj.uuid in cfg[1].marker ? 'true' : 'false'}"
                     >
-                        <div class="column one wide center aligned">${i+1}</div>
                         <div class="column ten wide">
                             <ui:wekbIconLink type="${cfg[0]}" gokbId="${obj.uuid}" />
                             <g:if test="${obj.globalUID}">
@@ -254,7 +253,7 @@
                             </g:else>
                             <g:if test="${obj.uuid in cfg[1].created}"><span class="ui grey mini label">NEU</span></g:if>
                         </div>
-                        <div class="column one wide center aligned">
+                        <div class="column two wide center aligned">
                             <g:if test="${obj.uuid in cfg[1].my}">
                                 <ui:myXIcon tooltip="${message(code: "${cfg[4]}")}" color="yellow"/>
                             </g:if>
@@ -268,7 +267,8 @@
                                 <i class="icon fake"></i>
                             </g:else>
                         </div>
-                        <div class="column four wide center aligned">${obj.dateCreatedDisplay}</div>
+                        <div class="column four wide center aligned">${obj.lastUpdatedDisplay}</div>
+%{--                        <div class="column four wide center aligned">${obj.dateCreatedDisplay}</div>--}%
                     </div>
                 </g:each>
             </div>
