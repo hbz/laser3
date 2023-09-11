@@ -1381,10 +1381,13 @@ class FilterService {
         }
 
         if (params.hasPerpetualAccess && !params.hasPerpetualAccessBySubs) {
+            //may become a performance bottleneck; keep under observation!
+            String permanentTitleQuery = "select pt from PermanentTitle pt where pt.tipp = ie.tipp and pt.owner in (:subscribers)"
+            qry_params.subscribers = subscriptions.collect { Subscription s -> s.getSubscriber() }
             if(params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) {
-                base_qry += "and ie.perpetualAccessBySub is not null "
+                base_qry += "and exists(${permanentTitleQuery}) "
             }else{
-                base_qry += "and ie.perpetualAccessBySub is null "
+                base_qry += "and not exists(${permanentTitleQuery}) "
             }
             filterSet = true
         }

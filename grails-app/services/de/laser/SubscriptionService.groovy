@@ -2926,6 +2926,21 @@ join sub.orgRelations or_sub where
         }
     }
 
+    //-------------------------------------- helper section ----------------------------------------
+
+
+    boolean checkThreadRunning(String threadName) {
+        boolean threadRunning = false
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
+        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
+        threadArray.each { Thread thread ->
+            if (thread.name == threadName) {
+                threadRunning = true
+            }
+        }
+        threadRunning
+    }
+
     //-------------------------------------- cronjob section ----------------------------------------
 
     /**

@@ -323,6 +323,10 @@
                         </a>
                     </th> %{--Discount Scale--}%
 
+                    <th class="la-smaller-table-head center aligned">
+                        Reminder
+                    </th>
+
                     <th colspan="2" class="la-smaller-table-head center aligned">
                         Renewal
                     </th>
@@ -350,6 +354,11 @@
 
                     <g:sortableColumn scope="col" rowspan="2" params="${params}" property="offerAccepted"
                                       title="${message(code: 'subscription.offerAccepted.table.th')}"/>%{--Accepted--}%
+
+                    <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}"
+                                      property="reminderSent"
+                                      title="${message(code: 'subscription.reminderSent.table.th')}"/>
+
                     <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}"
                                       property="renewalSent"
                                       title="${message(code: 'subscription.renewalSent.table.th')}"/>
@@ -367,6 +376,10 @@
                     <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}"
                                       property="offerRequestedDate"
                                       title="${message(code: 'subscription.offerRequestedDate.table.th')}"/>
+
+                    <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}"
+                                      property="reminderSentDate"
+                                      title="${message(code: 'subscription.reminderSentDate.table.th')}"/>
 
                     <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}"
                                       property="renewalSentDate"
@@ -474,8 +487,9 @@
                                                                 target="_blank"><i class="download small icon"></i></g:link>
 
                                                     <%-- 2 --%>
+                                                        ${s}
                                                         <laser:render template="/templates/documents/modal"
-                                                                      model="[s: s, owntp: 'subscription', docctx: docctx, doc: docctx.owner]"/>
+                                                                      model="[ownobj: s, owntp: 'subscription', docctx: docctx, doc: docctx.owner]"/>
                                                         <button type="button"
                                                                 class="ui icon blue tiny button la-modern-button"
                                                                 data-ui="modal"
@@ -612,6 +626,11 @@
 
                         </td>
 
+                        <td class="${s.reminderSent ? 'positive' : 'negative'}">
+                            <ui:xEditableBoolean owner="${s}" field="reminderSent"/>
+                            <br/>
+                            <ui:xEditable owner="${s}" field="reminderSentDate" type="date"/>
+                        </td>
 
                         <td class="${s.renewalSent ? 'positive' : 'negative'}">
                             <ui:xEditableBoolean owner="${s}" field="renewalSent"/>
@@ -668,7 +687,7 @@
 
                                                     <%-- 2 --%>
                                                         <laser:render template="/templates/documents/modal"
-                                                                      model="[s: s, owntp: 'subscription', docctx: docctx, doc: docctx.owner]"/>
+                                                                      model="[ownobj: s, owntp: 'subscription', docctx: docctx, doc: docctx.owner]"/>
                                                         <button type="button"
                                                                 class="ui icon blue tiny button la-modern-button"
                                                                 data-ui="modal"

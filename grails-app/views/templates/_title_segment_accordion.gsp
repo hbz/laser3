@@ -1,16 +1,23 @@
 <div class="ui fluid segment title" data-ajaxTippId="${tipp.id}" data-ajaxIeId="${ie ? ie.id : null}">
     <div class="ui stackable equal width grid">
 
-        <g:if test="${perpetualAccessBySub || permanentTitle}">
-            <g:if test="${perpetualAccessBySub && perpetualAccessBySub != subscription}">
-                <g:link controller="subscription" action="index" id="${perpetualAccessBySub.id}">
+        <g:if test="${(ie && ie.perpetualAccessBySub) || permanentTitle}">
+            <g:if test="${ie && ie.perpetualAccessBySub && ie.perpetualAccessBySub != subscription}">
+                <g:link controller="subscription" action="index" id="${ieperpetualAccessBySub.id}">
                     <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip la-delay"
-                          data-content="${message(code: 'subscription.start.with')} ${perpetualAccessBySub.dropdownNamingConvention()}"
+                          data-content="${message(code: 'subscription.start.with')} ${ie.perpetualAccessBySub.dropdownNamingConvention()}"
                           data-position="left center" data-variation="tiny">
                         <i class="star blue icon"></i>
                     </span>
                 </g:link>
             </g:if>
+            <g:elseif test="${permanentTitle}">
+                <span class="ui mini left corner label la-perpetualAccess la-popup-tooltip la-delay"
+                      data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${permanentTitle.getPermanentTitleInfo(contextOrg)}"
+                      data-position="left center" data-variation="tiny">
+                    <i class="star icon"></i>
+                </span>
+            </g:elseif>
             <g:else>
                 <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip la-delay"
                       data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')}"
