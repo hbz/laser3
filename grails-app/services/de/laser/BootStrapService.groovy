@@ -84,8 +84,8 @@ class BootStrapService {
 
             // Here we go ..
 
-            log.debug("clearCaches ..")
-            clearCaches()
+//            log.debug("clearCaches ..")
+//            clearCaches()
 
             log.debug("updatePsqlRoutines ..")
             updatePsqlRoutines()
@@ -138,13 +138,8 @@ class BootStrapService {
      */
     void destroy() {}
 
-    void clearCaches() {
-        EhcacheWrapper cache = cacheService.getTTL1800Cache(WekbStatsService.CACHE_KEY)
-        if (cache.get('data')) {
-            log.debug('- ' + WekbStatsService.CACHE_KEY)
-            cache.remove('data')
-        }
-    }
+//    void clearCaches() {
+//    }
 
     /**
      * Sets - if not exists - one or more system users with global roles and a fallback anonymous user if all users have been deleted. The system users are
