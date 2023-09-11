@@ -5,7 +5,6 @@ import com.opencsv.CSVReader
 import com.opencsv.CSVReaderBuilder
 import com.opencsv.ICSVParser
 import de.laser.auth.*
-import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
 import de.laser.properties.PropertyDefinition
