@@ -23,17 +23,26 @@
   }
 }
 // Light Grey Sub Menu
+@media only screen and (min-width: @mobileBreakpoint  ) and (max-width:@laser-breakpoint   ) {
+  .ui.menu.la-contextBar .ui.container {
+    width: 100%;
+  }
+}
+
 .ui.menu.la-contextBar {
   top: 50px;
   z-index:101;
   background-color: @laDecorationColor;
+  box-shadow: none;
   .item {
+    &::before {
+      width: 0;
+    }
     color: @grey;
     padding:0;
   }
   .la-context-org {
     font-size: 0.87em;
-    flex: 0 0 200px;
   }
   .ui.sub.header.item {
     border-left: none!important;
