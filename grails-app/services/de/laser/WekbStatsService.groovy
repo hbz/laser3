@@ -43,10 +43,10 @@ class WekbStatsService {
     Map getCurrentChanges() {
         EhcacheWrapper cache = cacheService.getTTL1800Cache(CACHE_KEY)
 
-        if (! cache.get('changes')) {
+        if (! cache.get('data')) {
             updateCache()
         }
-        Map result = cache.get('changes') as Map
+        Map result = cache.get('data') as Map
 
         List<String> orgList    = result.org.all.collect{ it.uuid }
         List<String> pkgList    = result.package.all.collect{ it.uuid }
@@ -82,7 +82,7 @@ class WekbStatsService {
         EhcacheWrapper cache = cacheService.getTTL1800Cache(CACHE_KEY)
 
         Map<String, Object> result = processData(14)
-        cache.put('changes', result)
+        cache.put('data', result)
     }
 
     /**
@@ -113,7 +113,7 @@ class WekbStatsService {
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         //log.debug('WekbStatsService.getCurrent() > ' + cs)
 
-        Map base = [changedSince: cs, sort: 'sortname', order: 'asc', stubOnly: true, max: 10000]
+        Map base = [changedSince: cs, sort: 'lastUpdatedDisplay', order: 'desc', stubOnly: true, max: 10000]
 
         result = [
                 query       : [ days: days, changedSince: DateUtils.getLocalizedSDF_noTime().format(frame), call: DateUtils.getLocalizedSDF_noZ().format(new Date()) ],
@@ -125,7 +125,8 @@ class WekbStatsService {
 
         Closure process = { Map map, String key ->
             if (map.result) {
-                map.result.sort { it.lastUpdatedDisplay }.each {
+//                map.result.sort { it.lastUpdatedDisplay }.each {
+                map.result.sort { it.sortname }.each {
                     it.dateCreatedDisplay = DateUtils.getLocalizedSDF_noZ().format(DateUtils.parseDateGeneric(it.dateCreatedDisplay))
                     it.lastUpdatedDisplay = DateUtils.getLocalizedSDF_noZ().format(DateUtils.parseDateGeneric(it.lastUpdatedDisplay))
                     if (it.lastUpdatedDisplay == it.dateCreatedDisplay) {
