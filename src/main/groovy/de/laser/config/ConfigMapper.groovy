@@ -4,6 +4,10 @@ import grails.util.Holders
 import groovy.util.logging.Slf4j
 import org.springframework.core.env.Environment
 
+/**
+ * Maps the configuration settings defined in the project configuration file (laser3_config) to configuration variables
+ * to which may be referred in the application code
+ */
 @Slf4j
 class ConfigMapper {
 

@@ -135,6 +135,10 @@ class Links {
             (License) GrailsHibernateUtil.unwrapIfProxy(destinationLicense)
     }
 
+    /**
+     * Debug control method to check the linking entry
+     * @return the relation in format source -> relation -> destination
+     */
     @Override
     String toString() {
         String source = null, destination = null
