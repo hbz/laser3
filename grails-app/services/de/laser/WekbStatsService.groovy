@@ -81,7 +81,7 @@ class WekbStatsService {
     void updateCache() {
         EhcacheWrapper cache = cacheService.getTTL1800Cache(CACHE_KEY)
 
-        Map<String, Object> result = processData(14)
+        Map<String, Object> result = processData()
         cache.put('data', result)
     }
 
@@ -104,8 +104,8 @@ class WekbStatsService {
      * @param days days to count backwards - from when should changes being considered?
      * @return a {@link Map} containing the counts of objects
      */
-    Map<String, Object> processData(int days) {
-        log.debug('WekbStatsService.processData(' + days + ')')
+    Map<String, Object> processData(int days = 14) {
+        log.debug('WekbStatsService.processData(' + days + ' days)')
         Map<String, Object> result = [:]
 
         Date frame = Date.from(LocalDate.now().minusDays(days).atStartOfDay(ZoneId.systemDefault()).toInstant())
