@@ -243,12 +243,12 @@ class LinksGenerationService {
                 configMap.linkType = genericOIDService.resolveOID(linkTypeString)
                 configMap.commentContent = params["linkComment_${configMap.link.id}"].trim()
                 if(perspectiveIndex == 0) {
-                    configMap.source = genericOIDService.resolveOID(params["pair_${configMap.link.id}"])
-                    configMap.destination = genericOIDService.resolveOID(params.context)
-                }
-                else if(perspectiveIndex == 1) {
                     configMap.source = genericOIDService.resolveOID(params.context)
                     configMap.destination = genericOIDService.resolveOID(params["pair_${configMap.link.id}"])
+                }
+                else if(perspectiveIndex == 1) {
+                    configMap.source = genericOIDService.resolveOID(params["pair_${configMap.link.id}"])
+                    configMap.destination = genericOIDService.resolveOID(params.context)
                 }
             }
             else if(!params["linkType_${configMap.link.id}"]) {
@@ -263,12 +263,12 @@ class LinksGenerationService {
                 configMap.linkType = genericOIDService.resolveOID(linkTypeString)
                 configMap.commentContent = params.linkComment_new
                 if(perspectiveIndex == 0) {
-                    configMap.source = genericOIDService.resolveOID(params.context)
-                    configMap.destination = genericOIDService.resolveOID(params.pair_new)
-                }
-                else if(perspectiveIndex == 1) {
                     configMap.source = genericOIDService.resolveOID(params.pair_new)
                     configMap.destination = genericOIDService.resolveOID(params.context)
+                }
+                else if(perspectiveIndex == 1) {
+                    configMap.source = genericOIDService.resolveOID(params.context)
+                    configMap.destination = genericOIDService.resolveOID(params.pair_new)
                 }
                 def currentObject = genericOIDService.resolveOID(params.context)
                 List childInstances = currentObject.getClass().findAllByInstanceOf(currentObject)
@@ -333,6 +333,9 @@ class LinksGenerationService {
         if(link) {
             link.linkType = (RefdataValue) configMap.linkType
             link.setSourceAndDestination(configMap.source, configMap.destination)
+            //needed for that the update gets processed if only source and destination are being inverted
+            link.lastUpdated = new Date()
+            link.save()
             if(linkComment) {
                 if(configMap.commentContent.length() > 0) {
                     linkComment.content = configMap.commentContent
@@ -365,8 +368,8 @@ class LinksGenerationService {
                 }
             }
         }
-        else if(link && link.errors) {
-            log.error(link.errors.toString())
+        else if(link && link.getErrors()) {
+            log.error(link.getErrors().getAllErrors().toListString())
             result.error = messageSource.getMessage('default.linking.savingError',null, locale)
             [result:result,status:STATUS_ERROR]
         }
