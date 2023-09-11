@@ -1549,14 +1549,10 @@ class YodaController {
      */
     @Secured(['ROLE_YODA'])
     def setPerpetualAccessByIes() {
-        Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
-        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
-        threadArray.each { Thread thread ->
-            if (thread.name == 'setPerpetualAccessByIes') {
-                flash.error = 'setPerpetualAccessByIes process still running!'
-                redirect controller: 'yoda', action: 'index'
-                return
-            }
+        if (subscriptionService.checkThreadRunning('setPerpetualAccessByIes')) {
+            flash.error = 'setPerpetualAccessByIes process still running!'
+            redirect controller: 'yoda', action: 'index'
+            return
         }
         executorService.execute({
             Thread.currentThread().setName("setPerpetualAccessByIes")
@@ -1600,14 +1596,10 @@ class YodaController {
      */
     @Secured(['ROLE_YODA'])
     def setPermanentTitle() {
-        Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
-        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
-        threadArray.each { Thread thread ->
-            if (thread.name == 'setPermanentTitle') {
-                flash.error = 'setPermanentTitle process still running!'
-                redirect controller: 'yoda', action: 'index'
-                return
-            }
+        if (subscriptionService.checkThreadRunning('setPermanentTitle')) {
+            flash.error = 'setPermanentTitle process still running!'
+            redirect controller: 'yoda', action: 'index'
+            return
         }
         executorService.execute({
             Thread.currentThread().setName("setPermanentTitle")

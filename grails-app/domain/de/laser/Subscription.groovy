@@ -125,6 +125,8 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     Date renewalSentDate
     boolean participantTransferWithSurvey = false
     SubscriptionDiscountScale discountScale
+    boolean reminderSent = false
+    Date reminderSentDate
 
     Subscription instanceOf
     // If a subscription is administrative, subscription members will not see it resp. there is a toggle which en-/disables visibility
@@ -213,6 +215,8 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         renewalSentDate column:'sub_renewal_sent_date'
         participantTransferWithSurvey column:'sub_participant_transfer_with_survey'
         discountScale column: 'sub_discount_scale_fk'
+        reminderSent column: 'sub_reminder_sent'
+        reminderSentDate column: 'sub_reminder_sent_date'
 
         noticePeriod    column:'sub_notice_period'
         isMultiYear column: 'sub_is_multi_year'
@@ -262,6 +266,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         priceIncreaseInfo (nullable:true, blank:true)
         renewalSentDate (nullable:true)
         discountScale (nullable: true)
+        reminderSentDate (nullable: true)
     }
 
     @Override

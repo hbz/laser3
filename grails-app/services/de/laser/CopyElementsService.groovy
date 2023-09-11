@@ -291,6 +291,7 @@ class CopyElementsService {
                         resource: targetObject.resource ?: null,
                         form: targetObject.form ?: null,
                         isPublicForApi: targetObject.isPublicForApi,
+                        holdingSelection: targetObject.holdingSelection ?: null,
                         hasPerpetualAccess: targetObject.hasPerpetualAccess,
                         hasPublishComponent: targetObject.hasPublishComponent,
                         administrative: subMember.administrative
@@ -826,14 +827,7 @@ class CopyElementsService {
         Object targetObject = params.targetObjectId ? genericOIDService.resolveOID(params.targetObjectId) : null
 
         if (formService.validateToken(params)) {
-            boolean bulkOperationRunning = false
-            Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
-            Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
-            threadArray.each {
-                if (it.name == 'PackageTransfer_'+targetObject?.id) {
-                    bulkOperationRunning = true
-                }
-            }
+            boolean bulkOperationRunning = subscriptionService.checkThreadRunning('PackageTransfer_'+targetObject?.id)
             if (params.subscription?.deletePackageSettings && isBothObjectsSet(sourceObject, targetObject)) {
                 List<SubscriptionPackage> packageSettingsToDelete = params.list('subscription.deletePackageSettings').collect {
                     genericOIDService.resolveOID(it)

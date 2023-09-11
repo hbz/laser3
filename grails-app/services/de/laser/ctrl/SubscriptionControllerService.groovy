@@ -1325,9 +1325,8 @@ class SubscriptionControllerService {
                     List<Subscription> memberSubs = []
                     members.each { Org cm ->
                         log.debug("Generating separate slaved instances for members")
-                        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-                        Date startDate = params.valid_from ? sdf.parse(params.valid_from) : null
-                        Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
+                        Date startDate = params.valid_from ? DateUtils.parseDateGeneric(params.valid_from) : null
+                        Date endDate = params.valid_to ? DateUtils.parseDateGeneric(params.valid_to) : null
                         Subscription memberSub = new Subscription(
                                 type: result.subscription.type ?: null,
                                 kind: result.subscription.kind ?: null,
@@ -1417,17 +1416,20 @@ class SubscriptionControllerService {
                                 //}
                     }
 
-                    packagesToProcess.each { Package pkg ->
-                        subscriptionService.addToMemberSubscription(result.subscription, memberSubs, pkg, params.linkWithEntitlements == 'on')
+                    result.subscription.syncAllShares(synShareTargetList)
+
+                    executorService.execute({
+                        Thread.currentThread().setName("PackageTransfer_"+result.subscription.id)
+                        packagesToProcess.each { Package pkg ->
+                            subscriptionService.addToMemberSubscription(result.subscription, memberSubs, pkg, params.linkWithEntitlements == 'on')
                             /*
                             if()
                                 subscriptionService.addToSubscriptionCurrentStock(memberSub, result.subscription, pkg)
                             else
                                 subscriptionService.addToSubscription(memberSub, pkg, false)
                             */
-                    }
-
-                    result.subscription.syncAllShares(synShareTargetList)
+                        }
+                    })
                 } else {
                     [result:result,status:STATUS_ERROR]
                 }
@@ -2006,13 +2008,9 @@ class SubscriptionControllerService {
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
-            Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
-            Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
-            threadArray.each { Thread thread ->
-                if (thread.name == 'PackageTransfer_'+result.subscription.id && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,Package.findByGokbId(params.addUUID))) {
-                    result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null, LocaleUtils.getCurrentLocale())
-                    result.bulkProcessRunning = true
-                }
+            if(subscriptionService.checkThreadRunning('PackageTransfer_'+result.subscription.id) && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,Package.findByGokbId(params.addUUID))) {
+                result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null, LocaleUtils.getCurrentLocale())
+                result.bulkProcessRunning = true
             }
             if (result.subscription.packages) {
                 result.pkgs = []
@@ -3234,13 +3232,9 @@ class SubscriptionControllerService {
             [result: null, status: STATUS_ERROR]
         }
         else {
-            Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
-            Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
-            threadArray.each { Thread thread ->
-                if (thread.name == 'PackageTransfer_' + result.subscription.id) {
-                    result.errMess = 'subscription.packages.resetToSubEnd.threadRunning'
-                    [result: result, status: STATUS_ERROR]
-                }
+            if (subscriptionService.checkThreadRunning('PackageTransfer_' + result.subscription.id)) {
+                result.errMess = 'subscription.packages.resetToSubEnd.threadRunning'
+                [result: result, status: STATUS_ERROR]
             }
             executorService.execute({
                 Thread.currentThread().setName("PackageTransfer_${result.subscription.id}")

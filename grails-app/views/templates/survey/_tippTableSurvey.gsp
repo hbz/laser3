@@ -26,8 +26,10 @@
 
                     <div class="ui stackable equal width grid la-js-checkItem" data-gokbId="${tipp.gokbId}" data-tippId="${tipp.id}" data-index="${counter}">
                         <g:if test="${participantPerpetualAccessToTitle}">
+                            <g:set var="participantPerpetualAccessToTitleList"
+                                   value="${surveyService.listParticipantPerpetualAccessToTitle(subscriber, tipp)}"/>
                             <span class="ui mini left corner label la-perpetualAccess la-popup-tooltip la-delay"
-                                  data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')}"
+                                  data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitleList.collect{it.getPermanentTitleInfo(contextOrg)}.join(',')}"
                                   data-position="left center" data-variation="tiny">
                                 <i class="star icon"></i>
                             </span>

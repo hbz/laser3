@@ -3701,6 +3701,7 @@ class SurveyController {
 
         result.validPackages = result.parentSuccessorSubscription ? Package.executeQuery('select sp from SubscriptionPackage sp where sp.subscription = :subscription', [subscription: result.parentSuccessorSubscription]) : []
 
+        result.isLinkingRunning = subscriptionService.checkThreadRunning('PackageTransfer_'+result.parentSuccessorSubscription.id)
 
         result
 
@@ -3722,37 +3723,46 @@ class SurveyController {
         result.targetSubscription = result.parentSuccessorSubscription
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
-        Set<Subscription> subscriptions
-        if(params.containsKey("membersListToggler")) {
-            subscriptions =  result.parentSuccessorSubChilds
-        }
-        else subscriptions = Subscription.findAllByIdInList(params.list("selectedSubs"))
-        List selectedPackageKeys = params.list("selectedPackages")
-        Set<Package> pkgsToProcess = []
-        if(selectedPackageKeys.contains('all') && result.parentSuccessorSubscription) {
-            pkgsToProcess.addAll(Package.executeQuery('select sp.pkg from SubscriptionPackage sp where sp.subscription = :subscription', [subscription: result.parentSuccessorSubscription]))
-        }
-        else {
-            selectedPackageKeys.each { String pkgKey ->
-                pkgsToProcess.add(Package.get(pkgKey))
+        if(!subscriptionService.checkThreadRunning('PackageTransfer_'+result.parentSuccessorSubscription.id)) {
+            String processOption = params.processOption
+            Set<Subscription> subscriptions, permittedSubs = []
+            if(params.containsKey("membersListToggler")) {
+                subscriptions =  result.parentSuccessorSubChilds
             }
-        }
-        pkgsToProcess.each { Package pkg ->
+            else subscriptions = Subscription.findAllByIdInList(params.list("selectedSubs"))
             subscriptions.each { Subscription selectedSub ->
                 if(selectedSub.isEditableBy(result.user)) {
-                    SubscriptionPackage sp = SubscriptionPackage.findBySubscriptionAndPkg(selectedSub, pkg)
-                    if(params.processOption =~ /^link/) {
-                        if(!sp) {
-                            if(result.parentSuccessorSubscription) {
-                                subscriptionService.addToSubscriptionCurrentStock(selectedSub, result.parentSuccessorSubscription, pkg, params.processOption == 'linkwithIE')
-                            }
-                            else {
-                                subscriptionService.addToSubscription(selectedSub, pkg, params.processOption == 'linkwithIE')
+                    permittedSubs << selectedSub
+                }
+            }
+            List selectedPackageKeys = params.list("selectedPackages")
+            Set<Package> pkgsToProcess = []
+            if(selectedPackageKeys.contains('all') && result.parentSuccessorSubscription) {
+                pkgsToProcess.addAll(Package.executeQuery('select sp.pkg from SubscriptionPackage sp where sp.subscription = :subscription', [subscription: result.parentSuccessorSubscription]))
+            }
+            else {
+                selectedPackageKeys.each { String pkgKey ->
+                    pkgsToProcess.add(Package.get(pkgKey))
+                }
+            }
+            executorService.execute({
+                Thread.currentThread().setName('PackageTransfer_'+result.parentSuccessorSubscription.id)
+                pkgsToProcess.each { Package pkg ->
+                    permittedSubs.each { Subscription selectedSub ->
+                        SubscriptionPackage sp = SubscriptionPackage.findBySubscriptionAndPkg(selectedSub, pkg)
+                        if(processOption =~ /^link/) {
+                            if(!sp) {
+                                if(result.parentSuccessorSubscription) {
+                                    subscriptionService.addToSubscriptionCurrentStock(selectedSub, result.parentSuccessorSubscription, pkg, processOption == 'linkwithIE')
+                                }
+                                else {
+                                    subscriptionService.addToSubscription(selectedSub, pkg, processOption == 'linkwithIE')
+                                }
                             }
                         }
                     }
                 }
-            }
+            })
         }
         redirect(action: 'copySubPackagesAndIes', id: params.id, params: [surveyConfigID: result.surveyConfig.id, targetSubscriptionId: result.targetSubscription.id])
 
@@ -4444,15 +4454,7 @@ class SurveyController {
             }
         }
 
-        boolean bulkProcessRunning = false
-        Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
-        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
-        threadArray.each {
-            if (it.name == 'PackageTransfer_'+result.parentSuccessorSubscription.id) {
-                bulkProcessRunning = true
-            }
-        }
-        if(!bulkProcessRunning) {
+        if(!subscriptionService.checkThreadRunning('PackageTransfer_'+result.parentSuccessorSubscription.id)) {
             boolean withEntitlements = params.linkWithEntitlements == 'on'
             executorService.execute({
                 Thread.currentThread().setName('PackageTransfer_'+result.parentSuccessorSubscription.id)
