@@ -135,4 +135,18 @@ class Links {
             (License) GrailsHibernateUtil.unwrapIfProxy(destinationLicense)
     }
 
+    @Override
+    String toString() {
+        String source = null, destination = null
+        if(sourceSubscription)
+            source = "source: ${sourceSubscription}"
+        else if(sourceLicense)
+            source = "source: ${sourceLicense}"
+        if(destinationSubscription)
+            destination = "destination: ${destinationSubscription}"
+        else if(destinationLicense)
+            destination = "destination: ${destinationLicense}"
+        "${source} -> ${linkType.value} -> ${destination}"
+    }
+
 }
