@@ -15,9 +15,7 @@
                         <label for="search">${message(code: 'default.search.label')}</label>
 
                         <div class="ui input">
-                            <input type="text" id="search" name="q"
-                                   placeholder="${message(code: 'default.search.ph')}"
-                                   value="${params.q}"/>
+                            <input type="text" id="search" name="q" placeholder="${message(code: 'default.search.ph')}" value="${params.q}"/>
                         </div>
                     </div>
                     <div class="field">
@@ -31,7 +29,6 @@
                                 %>
 
                                 <g:each in="${subkinds}" var="subKind">
-
                                         <g:if test="${subKind.value == RDStore.SUBSCRIPTION_KIND_NATIONAL.value}">
                                             <div class="inline field js-nationallicence">
                                         </g:if>
@@ -65,9 +62,7 @@
                             <g:select from="${allConsortia}" id="consortial" class="ui fluid search selection dropdown"
                                 optionKey="${{ Org.class.name + ':' + it.id }}"
                                 optionValue="${{ it.getName() }}"
-                                name="consortia"
-                                      noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                value="${params.consortia}"/>
+                                name="consortia" noSelection="${['' : message(code:'default.select.choose.label')]}" value="${params.consortia}"/>
                         </fieldset>
 
                     </div>
@@ -222,7 +217,15 @@
             <i class="info icon"></i>
             <div class="content"></div>
         </div>
-        <div class="content"></div>
+        <div class="content">
+            <div class="filter" style="margin:0 0 1em 0; text-align:right;">
+                <span class="ui button mini" onclick="JSPC.app.gasco.ui.zoomIn()">+</span>
+                <span class="ui button mini" onclick="JSPC.app.gasco.ui.zoomOut()">-</span>
+                <span class="ui button mini" onclick="JSPC.app.gasco.ui.toggleLabel()">#</span>
+                <span class="ui button mini" onclick="JSPC.app.gasco.ui.toggleLegend()">#</span>
+            </div>
+            <div class="charts"></div>
+        </div>
     </div>
 
     <laser:script file="${this.getGroovyPageFileName()}">
@@ -248,20 +251,75 @@
                         data: []
                     }
                 ]
+            },
+            current: {
+                config: {
+                    showLabel: true,
+                    showLegend: true,
+                    radius: 75
+                },
+                charts: {}
+            },
+            ui: {
+                $flyout: $('#gascoFlyout'),
+                $title:  $('#gascoFlyout > .header > .content'),
+                $charts: $('#gascoFlyout > .content > .charts'),
+
+                toggleLabel: function() {
+                    JSPC.app.gasco.current.config.showLabel = !(JSPC.app.gasco.current.config.showLabel)
+                    for (const cc of Object.values(JSPC.app.gasco.current.charts)) {
+                        cc.getModel().getSeries().forEach( function(s) {
+                            s.option.label.show = JSPC.app.gasco.current.config.showLabel
+                        })
+                        cc.resize()
+                    }
+                },
+                toggleLegend: function() {
+                    JSPC.app.gasco.current.config.showLegend = !(JSPC.app.gasco.current.config.showLegend)
+                    for (const cc of Object.values(JSPC.app.gasco.current.charts)) {
+                        cc.setOption({ legend: {show: JSPC.app.gasco.current.config.showLegend} })
+                        cc.resize()
+                    }
+                },
+                zoomIn: function (){
+                    let r = JSPC.app.gasco.current.config.radius
+                    if (r < 90) {
+                        for (const cc of Object.values(JSPC.app.gasco.current.charts)) {
+                            cc.getModel().getSeries().forEach( function(s) {
+                                s.option.radius[1] = (r + 5) + '%'
+                                cc.resize()
+                            })
+                        }
+                        JSPC.app.gasco.current.config.radius = r + 5
+                    }
+                },
+                zoomOut: function (){
+                    let r = JSPC.app.gasco.current.config.radius
+                    if (r > 30) {
+                        for (const cc of Object.values(JSPC.app.gasco.current.charts)) {
+                            cc.getModel().getSeries().forEach( function(s) {
+                                s.option.radius[1] = (r - 5) + '%'
+                                cc.resize()
+                            })
+                        }
+                        JSPC.app.gasco.current.config.radius = r - 5
+                    }
+                },
             }
         };
 
         $('a.flyoutLink').on ('click', function(e) {
             e.preventDefault();
             $('html').css ('cursor', 'auto');
-            $(this).removeClass('blue');
+            $(this).removeClass ('blue');
 
-            $('#gascoFlyout').flyout ({
+            JSPC.app.gasco.ui.$flyout.flyout ({
                 onHide: function (e) {
-                    $('a.flyoutLink').addClass('blue');
+                    $('a.flyoutLink').addClass ('blue');
                 },
                 onHidden: function (e) {
-                    $('#gascoFlyout > .content').empty(); %{-- after animation --}%
+                    JSPC.app.gasco.ui.$charts.empty(); %{-- after animation --}%
+                    JSPC.app.gasco.current.charts = {};
                 }
             });
 
@@ -272,20 +330,22 @@
                     key: $(this).attr ('data-key')
                 }
             }).done (function (data) {
-                $('#gascoFlyout > .header > .content').html (data.title);
+                JSPC.app.gasco.ui.$title.html (data.title);
 
                 data.data.forEach (function (dd) {
-                    $('#gascoFlyout > .content').append ('<p class="ui header chartHeader">' + dd.title + '</p>');
-                    $('#gascoFlyout > .content').append ('<div class="chartWrapper" id="chartWrapper-' + dd.key + '"></div>');
+                    JSPC.app.gasco.ui.$charts.append ('<p class="ui header chartHeader">' + dd.title + '</p>');
+                    JSPC.app.gasco.ui.$charts.append ('<div class="chartWrapper" id="chartWrapper-' + dd.key + '"></div>');
 
                     let chartCfg = Object.assign ({}, JSPC.app.gasco.defaultConfig);
                     chartCfg.series[0].data = dd.data;
 
                     let echart = echarts.init ( $('#chartWrapper-' + dd.key)[0] );
                     echart.setOption (chartCfg);
+                    JSPC.app.gasco.current.charts[dd.key] = echart;
                 });
 
-                $('#gascoFlyout').flyout ('show');
+                JSPC.app.gasco.ui.$flyout.flyout ('show');
+                console.log(JSPC.app.gasco.current.charts);
             })
         });
     </laser:script>
