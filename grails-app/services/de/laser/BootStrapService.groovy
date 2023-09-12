@@ -83,6 +83,9 @@ class BootStrapService {
 
             // Here we go ..
 
+//            log.debug("clearCaches ..")
+//            clearCaches()
+
             log.debug("updatePsqlRoutines ..")
             updatePsqlRoutines()
 
@@ -133,6 +136,9 @@ class BootStrapService {
      * Destructor method
      */
     void destroy() {}
+
+//    void clearCaches() {
+//    }
 
     /**
      * Sets - if not exists - one or more system users with global roles and a fallback anonymous user if all users have been deleted. The system users are

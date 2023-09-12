@@ -258,11 +258,11 @@
         <script data-type="fixed">
             $(document).ready(function() {
                 system.profiler("${ Profiler.generateKey( webRequest )}");
+                $('.ui.flyout').prependTo('body');
 
                 <g:if test="${currentServer == AppUtils.LOCAL}">
                 console.log(JSPC);
                 why.info(false);
-                
                 </g:if>
 
                 JSPC.app.workaround_targetBlank = function(e) { e.stopPropagation() }
