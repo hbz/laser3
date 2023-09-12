@@ -26,11 +26,13 @@ deckSaver = {
         },
         icon : null
     },
+
     go: function() {
         console.log('deckSaver.go()')
         deckSaver.init();
         deckSaver.toggleEditableElements();
     },
+
     init: function() {
         deckSaver.configs.toggleButton = $(".ui.toggle.button")
         deckSaver.configs.toggleIcon = $(".ui.toggle.button .icon")
@@ -64,27 +66,28 @@ deckSaver = {
             })
         });
     },
+
     removeClone: function () {
         $('.la-clone').remove();
     },
+
     removePopupFromClone: function () {
         var clone = $('.la-clone');
         var clonePopup = $(clone).popup('get popup');
         $(clonePopup).each(function () {
             $(this).remove();
         })
-
     },
+
     enableXeditable: function (cssClass) {
         var selection = $(cssClass).not('.ui.modal' + ' ' + cssClass);
         selection.editable('option', 'disabled', false);
-
     },
+
     disableXeditable: function (cssClass) {
 
         var selection = $(cssClass).not('.ui.modal' + ' ' + cssClass);
         selection.editable('option', 'disabled', true);
-
     },
     toggleEditableElements: function () {
 
