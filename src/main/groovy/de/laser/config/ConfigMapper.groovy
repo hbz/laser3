@@ -5,7 +5,7 @@ import groovy.util.logging.Slf4j
 import org.springframework.core.env.Environment
 
 /**
- * Maps the configuration settings defined in the project configuration file (laser3_config) to configuration variables
+ * Maps the configuration settings defined in the local configuration file to configuration variables
  * to which may be referred in the application code
  */
 @Slf4j

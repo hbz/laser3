@@ -3,8 +3,7 @@ package de.laser.config
 import groovy.transform.CompileStatic
 
 /**
- * Contains default configuration settings.
- * They may be overridden in the local config file laser3_config (located at {user dir}/.grails) or /opt/laser/.grails
+ * Contains default configuration settings. May be overridden in the local configuration file
  */
 @CompileStatic
 class ConfigDefaults {
