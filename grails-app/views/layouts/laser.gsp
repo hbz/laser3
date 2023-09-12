@@ -222,18 +222,11 @@
 
         <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show'}">
             <laser:script file="${this.getGroovyPageFileName()}">
-                <g:if test="${editable} || ${contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
-                    <g:if test="${user?.getSettingsValue(UserSetting.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES)?.value == 'Yes'}">
-                        deckSaver.configs.editMode  = true;
-                    </g:if>
-                    <g:else>
-                        deckSaver.configs.editMode  = false;
-                    </g:else>
-                </g:if>
-                <g:else>
-                    deckSaver.configs.editMode  = false;
-                </g:else>
-
+                <%
+                    boolean isDeckSaverEditMode = contextUser.getSettingsValue(UserSetting.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES).value == 'Yes' &&
+                                                  (editable || contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))
+                %>
+                deckSaver.configs.editMode = ${isDeckSaverEditMode};
                 deckSaver.configs.ajaxUrl = '<g:createLink controller="ajax" action="toggleEditMode"/>';
                 deckSaver.go();
             </laser:script>

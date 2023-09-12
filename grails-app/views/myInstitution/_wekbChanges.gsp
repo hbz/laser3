@@ -238,13 +238,15 @@
 
             <div class="ui vertically divided very compact grid" style="margin-top: 1.5em;">
                 <g:each in="${cfg[1].all}" var="obj">
-                    <div class="three column row"
+                    <div class="row"
                          data-f1="${obj.uuid in cfg[1].created ? 'created' : 'updated'}"
                          data-f2="${obj.uuid in cfg[1].my ? 'true' : 'false'}"
                          data-f3="${obj.uuid in cfg[1].marker ? 'true' : 'false'}"
                     >
-                        <div class="column ten wide">
+                        <div class="column one wide center aligned">
                             <ui:wekbIconLink type="${cfg[0]}" gokbId="${obj.uuid}" />
+                        </div>
+                        <div class="column nine wide">
                             <g:if test="${obj.globalUID}">
                                 <g:link controller="${cfg[0]}" action="show" target="_blank" params="${[id:obj.globalUID]}">${obj.name}</g:link>
                             </g:if>
