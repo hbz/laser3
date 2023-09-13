@@ -4194,14 +4194,13 @@ class SubscriptionControllerService {
      * @return a map of structure [sub: subscription, orgs: subscriber] containing the query results
      */
     List<Map> getFilteredSubscribers(GrailsParameterMap params, Subscription parentSub) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW),
-        orgParams = [:]
-        orgParams.putAll(params)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+        params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
+        GrailsParameterMap orgParams = params.clone()
         orgParams.remove("sort")
         orgParams.remove("order")
         params.remove("max")
         params.remove("offset")
-        params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         String sort = " order by o.sortname "
         if(params.sort) {
             sort = " order by ${params.sort} "
@@ -4213,7 +4212,7 @@ class SubscriptionControllerService {
             fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)
         }
         fsq.query = fsq.query.replaceFirst("select o from ", "select o.id from ")
-        List<Long> filteredOrgIds = Org.executeQuery(fsq.query, fsq.queryParams, params+[id:parentSub.id])
+        List<Long> filteredOrgIds = Org.executeQuery(fsq.query, fsq.queryParams, orgParams+[id:parentSub.id])
         Set rows = Subscription.executeQuery("select sub,o from OrgRole oo join oo.sub sub join oo.org o where sub.instanceOf = :parent"+sort,[parent:parentSub])
         List<Map> filteredSubChilds = []
         rows.each { row ->

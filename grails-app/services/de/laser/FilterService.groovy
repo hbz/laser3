@@ -191,7 +191,7 @@ class FilterService {
      * @param org the consortium to which the institutions are linked
      * @return the map containing the query and the prepared query parameters
      */
-    Map<String, Object> getOrgComboQuery(Map params, Org org) {
+    Map<String, Object> getOrgComboQuery(GrailsParameterMap params, Org org) {
         Map<String, Object> result = [:]
         ArrayList<String> query = ["(o.status is null or o.status != :orgStatus)"]
         Map<String, Object> queryParams = ["orgStatus" : RDStore.ORG_STATUS_DELETED]

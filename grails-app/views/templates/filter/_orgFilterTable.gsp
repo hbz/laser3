@@ -232,11 +232,11 @@
             <td>
                 <g:if test="${controllerName in ["survey"] && actionName == "surveyCostItems"}">
                     <g:if test="${CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg, RDStore.COST_ITEM_DELETED)}">
-                        <g:checkBox id="selectedOrgs_${org.id}" name="selectedOrgs" value="${org.id}" checked="false"/>
+                        <g:checkBox id="selectedOrgs_${org.id}" class="orgSelector" name="selectedOrgs" value="${org.id}" checked="false"/>
                     </g:if>
                 </g:if>
                 <g:else>
-                    <g:checkBox id="selectedOrgs_${org.id}" name="selectedOrgs" value="${org.id}" checked="false"/>
+                    <g:checkBox id="selectedOrgs_${org.id}" class="orgSelector" name="selectedOrgs" value="${org.id}" checked="false"/>
                 </g:else>
             </td>
         </g:if>
@@ -1024,6 +1024,7 @@
             } else {
                 $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', false)
             }
+            updateMailAddressList();
         })
         <g:if test="${tmplConfigShow?.contains('addSubMembers')}">
 
@@ -1038,8 +1039,20 @@
             }
 
         }
-
         </g:if>
+
+        $('.orgSelector').change(function() {
+            updateMailAddressList();
+        });
+
+        function updateMailAddressList() {
+            let selIds = [];
+            $('.orgSelector:checked').each(function(i) {
+                selIds.push($(this).val());
+            });
+            $('#copyMailAddresses').attr('data-orgIdList', selIds.join(','));
+        }
+
     </laser:script>
 
 </g:if>
