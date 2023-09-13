@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5279    13.09.2023  rc-3.2  3.2.5       Andreas Bug         Dauerhafte Titel wurden nicht verzeichnet
+
 --      12.09.2023  rc-3.2  3.2.5       Andreas Bug         fehlende Blockade bei hart kodierten Namensräumen eingefügt
 
 5217    08.09.2023  rc-3.2  3.2.5       Moe     Bug         Anlegen von Dokumenten beim Übertrag und Lizenzübertragung fehlerhaft

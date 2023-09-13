@@ -1244,10 +1244,10 @@ class SubscriptionControllerService {
                     List<Subscription> synShareTargetList = []
                     List<License> licensesToProcess = []
                     Set<Package> packagesToProcess = []
+                    /*
                     result.subscription.packages.each { SubscriptionPackage sp ->
                         packagesToProcess << sp.pkg
                     }
-                    /*
                     copy package data
                     */
                     if(params.linkAllPackages) {
@@ -1375,18 +1375,20 @@ class SubscriptionControllerService {
 
                     result.subscription.syncAllShares(synShareTargetList)
 
-                    executorService.execute({
-                        Thread.currentThread().setName("PackageTransfer_"+result.subscription.id)
-                        packagesToProcess.each { Package pkg ->
-                            subscriptionService.addToMemberSubscription(result.subscription, memberSubs, pkg, params.linkWithEntitlements == 'on')
-                            /*
-                            if()
-                                subscriptionService.addToSubscriptionCurrentStock(memberSub, result.subscription, pkg)
-                            else
-                                subscriptionService.addToSubscription(memberSub, pkg, false)
-                            */
-                        }
-                    })
+                    if(packagesToProcess) {
+                        executorService.execute({
+                            Thread.currentThread().setName("PackageTransfer_"+result.subscription.id)
+                            packagesToProcess.each { Package pkg ->
+                                subscriptionService.addToMemberSubscription(result.subscription, memberSubs, pkg, params.linkWithEntitlements == 'on')
+                                /*
+                                if()
+                                    subscriptionService.addToSubscriptionCurrentStock(memberSub, result.subscription, pkg)
+                                else
+                                    subscriptionService.addToSubscription(memberSub, pkg, false)
+                                */
+                            }
+                        })
+                    }
                 } else {
                     [result:result,status:STATUS_ERROR]
                 }
