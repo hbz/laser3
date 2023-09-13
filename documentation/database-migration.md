@@ -9,7 +9,7 @@
 
     buildscript {
         dependencies {
-            classpath "org.grails.plugins:database-migration:4.2.0"
+            classpath "org.grails.plugins:database-migration:4.2.1"
         }
     }
 
@@ -22,7 +22,7 @@
     }
 
     dependencies {
-        implementation 'org.grails.plugins:database-migration:4.2.0', {
+        implementation 'org.grails.plugins:database-migration:4.2.1', {
             exclude module: 'spring-boot-cli'
         }
         implementation 'org.liquibase:liquibase-core:4.19.0'
