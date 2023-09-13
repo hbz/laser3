@@ -3,11 +3,14 @@ package de.laser.convenience
 import de.laser.Org
 import de.laser.Package
 import de.laser.Platform
+import de.laser.annotations.UnderDevelopment
 import de.laser.auth.User
 
 /**
  * A class to mark watched objects from the we:kb - like {@link Marker}
  */
+@Deprecated
+@UnderDevelopment
 class Favorite {
 
     static enum TYPE {
