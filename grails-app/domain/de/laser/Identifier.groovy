@@ -174,7 +174,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
                 ns.save()
             }
             else {
-                if(ns.name_de != name_de && name_de != null) {
+                if(ns.name_de != name_de && name_de != null && !ns.isHardData) {
                     ns.name_de = name_de
                     ns.save()
                 }
