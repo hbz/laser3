@@ -168,18 +168,6 @@ class ManagementService {
         }
     }
 
-    /**
-     * Unsets the given customer number
-     * @param id the customer number ID to unser
-     * @return true if the unsetting was successful, false otherwise
-     */
-    boolean deleteCustomerIdentifier(Long id) {
-        CustomerIdentifier ci = CustomerIdentifier.get(id)
-        ci.value = null
-        ci.requestorKey = null
-        ci.save()
-    }
-
     //--------------------------------------------- general subscriptions management section -------------------------------------------------
 
     /**
