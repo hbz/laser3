@@ -184,7 +184,7 @@
                                         <g:each in="${Contact.findAllByPrsAndContentType( person, RDStore.CCT_EMAIL )}" var="prsContact">
                                             <div class="description js-copyTriggerParent">
                                                 <i class="ui icon envelope outline la-list-icon js-copyTrigger"></i>
-                                                <span class="la-popup-tooltip la-delay" data-position="right center " data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
+                                                <span class="la-popup-tooltip la-delay" data-position="right center" data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
                                                     <a class="la-break-all js-copyTopic" href="mailto:${prsContact?.content}" >${prsContact?.content}</a>
                                                 </span>
                                             </div>
@@ -219,10 +219,10 @@
         </div>
         <div class="content">
             <div class="filter" style="margin:0 0 1em 0; text-align:right;">
-                <span class="ui button mini" onclick="JSPC.app.gasco.ui.zoomIn()">+</span>
-                <span class="ui button mini" onclick="JSPC.app.gasco.ui.zoomOut()">-</span>
-                <span class="ui button mini" onclick="JSPC.app.gasco.ui.toggleLabel()">#</span>
-                <span class="ui button mini" onclick="JSPC.app.gasco.ui.toggleLegend()">#</span>
+                <span class="ui button mini la-popup-tooltip la-delay" data-content="Vergrößern" onclick="JSPC.app.gasco.ui.zoomIn()">+</span>
+                <span class="ui button mini la-popup-tooltip la-delay" data-content="Verkleinern" onclick="JSPC.app.gasco.ui.zoomOut()">-</span>
+                <span class="ui button mini la-popup-tooltip la-delay" data-content="Labels ein-/ausblenden" onclick="JSPC.app.gasco.ui.toggleLabel()">Labels</span>
+                <span class="ui button mini la-popup-tooltip la-delay" data-content="Legende ein-/ausblenden" onclick="JSPC.app.gasco.ui.toggleLegend()">Legende</span>
             </div>
             <div class="charts"></div>
         </div>
@@ -266,45 +266,38 @@
                 $charts: $('#gascoFlyout > .content > .charts'),
 
                 toggleLabel: function() {
-                    JSPC.app.gasco.current.config.showLabel = !(JSPC.app.gasco.current.config.showLabel)
-                    for (const cc of Object.values(JSPC.app.gasco.current.charts)) {
-                        cc.getModel().getSeries().forEach( function(s) {
-                            s.option.label.show = JSPC.app.gasco.current.config.showLabel
-                        })
-                        cc.resize()
-                    }
+                    JSPC.app.gasco.current.config.showLabel = !(JSPC.app.gasco.current.config.showLabel);
+                    JSPC.app.gasco.ui.commit();
                 },
                 toggleLegend: function() {
-                    JSPC.app.gasco.current.config.showLegend = !(JSPC.app.gasco.current.config.showLegend)
-                    for (const cc of Object.values(JSPC.app.gasco.current.charts)) {
-                        cc.setOption({ legend: {show: JSPC.app.gasco.current.config.showLegend} })
-                        cc.resize()
-                    }
+                    JSPC.app.gasco.current.config.showLegend = !(JSPC.app.gasco.current.config.showLegend);
+                    JSPC.app.gasco.ui.commit();
                 },
                 zoomIn: function (){
-                    let r = JSPC.app.gasco.current.config.radius
+                    let r = JSPC.app.gasco.current.config.radius;
                     if (r < 90) {
-                        for (const cc of Object.values(JSPC.app.gasco.current.charts)) {
-                            cc.getModel().getSeries().forEach( function(s) {
-                                s.option.radius[1] = (r + 5) + '%'
-                                cc.resize()
-                            })
-                        }
-                        JSPC.app.gasco.current.config.radius = r + 5
+                        JSPC.app.gasco.current.config.radius = r + 5;
+                        JSPC.app.gasco.ui.commit();
                     }
                 },
                 zoomOut: function (){
-                    let r = JSPC.app.gasco.current.config.radius
+                    let r = JSPC.app.gasco.current.config.radius;
                     if (r > 30) {
-                        for (const cc of Object.values(JSPC.app.gasco.current.charts)) {
-                            cc.getModel().getSeries().forEach( function(s) {
-                                s.option.radius[1] = (r - 5) + '%'
-                                cc.resize()
-                            })
-                        }
-                        JSPC.app.gasco.current.config.radius = r - 5
+                        JSPC.app.gasco.current.config.radius = r - 5;
+                        JSPC.app.gasco.ui.commit();
                     }
                 },
+
+                commit: function() {
+                    for (const cc of Object.values(JSPC.app.gasco.current.charts)) {
+                        cc.setOption({ legend: {show: JSPC.app.gasco.current.config.showLegend} })
+                        cc.getModel().getSeries().forEach( function(s) {
+                            s.option.label.show = JSPC.app.gasco.current.config.showLabel;
+                            s.option.radius[1] = JSPC.app.gasco.current.config.radius + '%';
+                        })
+                        cc.resize();
+                    }
+                }
             }
         };
 
@@ -343,11 +336,12 @@
                     echart.setOption (chartCfg);
                     JSPC.app.gasco.current.charts[dd.key] = echart;
                 });
-
+                JSPC.app.gasco.ui.commit();
                 JSPC.app.gasco.ui.$flyout.flyout ('show');
-                console.log(JSPC.app.gasco.current.charts);
             })
         });
+
+%{--        tooltip.init('#gascoFlyout');--}%
     </laser:script>
 
     </g:if>%{-- {subscriptions} --}%
