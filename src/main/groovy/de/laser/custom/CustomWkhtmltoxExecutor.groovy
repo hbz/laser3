@@ -4,6 +4,9 @@ import groovy.util.logging.Commons
 import org.grails.plugins.wkhtmltopdf.WkhtmltoxException
 import org.grails.plugins.wkhtmltopdf.WkhtmltoxWrapper
 
+/**
+ * Class to implement the Wkhtmltox execution for PDF generation of a prepared file
+ */
 @Commons
 class CustomWkhtmltoxExecutor /* extends WkhtmltoxExecutor */ {
 
@@ -11,6 +14,12 @@ class CustomWkhtmltoxExecutor /* extends WkhtmltoxExecutor */ {
     String xvfbRunner
     WkhtmltoxWrapper wrapper
 
+    /**
+     * Constructor to configure the binary paths of the output generators
+     * @param binaryPath the path to the Wkhtmltox binary
+     * @param xvfbRunner the path to the xvfbRunner binary
+     * @param wrapper the wrapper instance performing the output generation
+     */
     CustomWkhtmltoxExecutor(String binaryPath, String xvfbRunner, WkhtmltoxWrapper wrapper) {
 
         if (!(new File(binaryPath)).exists()) {
@@ -31,6 +40,11 @@ class CustomWkhtmltoxExecutor /* extends WkhtmltoxExecutor */ {
         this.wrapper = wrapper
     }
 
+    /**
+     * Generates a PDF file from the given HTML page
+     * @param html the page with HTML markup, passed as string
+     * @return a byte array containing the PDF file
+     */
     byte[] generatePdf(String html) {
         def stderr
         try {

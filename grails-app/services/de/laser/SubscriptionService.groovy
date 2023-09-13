@@ -1743,6 +1743,12 @@ join sub.orgRelations or_sub where
                 [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE])
     }
 
+    /**
+     * Called from views
+     * Checks if statistics are provided by at least one of the given platforms
+     * @param subscribedPlatforms the {@link Platform}s to verify
+     * @return true if at least one of the platforms provides usage statistics data, false if none
+     */
     boolean areStatsAvailable(Collection<Platform> subscribedPlatforms) {
         ApiSource wekbSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         boolean result = false
@@ -1759,6 +1765,18 @@ join sub.orgRelations or_sub where
             }
         }
         result
+    }
+
+    /**
+     * Unsets the given customer number
+     * @param id the customer number ID to unser
+     * @return true if the unsetting was successful, false otherwise
+     */
+    boolean deleteCustomerIdentifier(Long id) {
+        CustomerIdentifier ci = CustomerIdentifier.get(id)
+        ci.value = null
+        ci.requestorKey = null
+        ci.save()
     }
 
     /**

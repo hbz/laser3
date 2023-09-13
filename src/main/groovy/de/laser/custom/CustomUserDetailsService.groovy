@@ -14,6 +14,9 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 
 import groovy.util.logging.Slf4j
 
+/**
+ * Mapping class for the custom user details management to the common Grails user details management
+ */
 @Slf4j
 class CustomUserDetailsService implements GrailsUserDetailsService {
 
@@ -21,6 +24,13 @@ class CustomUserDetailsService implements GrailsUserDetailsService {
 
     GrailsApplication grailsApplication
 
+    /**
+     * Fetches for the user matching the given name the details; roles may be fetched in addition
+     * @param username the name to which the user including details should be retrieved
+     * @param loadRoles should the roles be fetched as well?
+     * @return the {@link UserDetails} for the given username
+     * @throws UsernameNotFoundException
+     */
     @Transactional(readOnly=true, noRollbackFor=[IllegalArgumentException, UsernameNotFoundException])
     UserDetails loadUserByUsername(String username, boolean loadRoles) throws UsernameNotFoundException {
 
@@ -51,10 +61,23 @@ class CustomUserDetailsService implements GrailsUserDetailsService {
         createUserDetails user, authorities
     }
 
+    /**
+     *
+     * @param username the username identifying the user whose data is required.
+     * @return
+     * @throws UsernameNotFoundException
+     */
     UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         loadUserByUsername username, true
     }
 
+    /**
+     * Collects the rights of the given user
+     * @param user the user whose authorities should be returned
+     * @param username unused
+     * @param loadRoles dummy flag; if set to false, an empty list is being returned to fill up a gap
+     * @return a {@link Collection} of {@link GrantedAuthority} rights granted to the given user
+     */
     protected Collection<GrantedAuthority> loadAuthorities(user, String username, boolean loadRoles) {
         if (!loadRoles) {
             return []
@@ -85,6 +108,12 @@ class CustomUserDetailsService implements GrailsUserDetailsService {
         authorities ?: [NO_ROLE]
     }
 
+    /**
+     * Maps the basic user data and the rights to a UserDetails representation
+     * @param user the basic user object
+     * @param authorities the institution to which the user belongs to resp. the rights the user has
+     * @return the {@link UserDetails} of the given user
+     */
     protected UserDetails createUserDetails(user, Collection<GrantedAuthority> authorities) {
 
         def conf = SpringSecurityUtils.securityConfig
