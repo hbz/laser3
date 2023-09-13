@@ -191,7 +191,7 @@ class FilterService {
      * @param org the consortium to which the institutions are linked
      * @return the map containing the query and the prepared query parameters
      */
-    Map<String, Object> getOrgComboQuery(GrailsParameterMap params, Org org) {
+    Map<String, Object> getOrgComboQuery(Map params, Org org) {
         Map<String, Object> result = [:]
         ArrayList<String> query = ["(o.status is null or o.status != :orgStatus)"]
         Map<String, Object> queryParams = ["orgStatus" : RDStore.ORG_STATUS_DELETED]
@@ -212,7 +212,7 @@ class FilterService {
         }
         if (params.region?.size() > 0) {
             query << "o.region.id in (:region)"
-            List<String> selRegions = params.list("region")
+            List<String> selRegions = listReaderWrapper(params,"region")
             List<Long> regions = []
             selRegions.each { String sel ->
                 regions << Long.parseLong(sel)
@@ -221,7 +221,7 @@ class FilterService {
         }
         if (params.country?.size() > 0) {
             query << "o.country.id in (:country)"
-            List<String> selCountries = params.list("country")
+            List<String> selCountries = listReaderWrapper(params, "country")
             List<Long> countries = []
             selCountries.each { String sel ->
                 countries << Long.parseLong(sel)
@@ -231,12 +231,12 @@ class FilterService {
 
         if (params.subjectGroup?.size() > 0) {
             query << "exists (select osg from OrgSubjectGroup as osg where osg.org.id = o.id and osg.subjectGroup.id in (:subjectGroup))"
-            queryParams << [subjectGroup : params.list("subjectGroup").collect {Long.parseLong(it)}]
+            queryParams << [subjectGroup : listReaderWrapper(params, "subjectGroup").collect {Long.parseLong(it)}]
         }
 
         if (params.libraryNetwork?.size() > 0) {
             query << "o.libraryNetwork.id in (:libraryNetwork)"
-            List<String> selLibraryNetworks = params.list("libraryNetwork")
+            List<String> selLibraryNetworks = listReaderWrapper(params, "libraryNetwork")
             List<Long> libraryNetworks = []
             selLibraryNetworks.each { String sel ->
                 libraryNetworks << Long.parseLong(sel)
@@ -246,7 +246,7 @@ class FilterService {
 
         if (params.libraryType?.size() > 0) {
             query << "o.libraryType.id in (:libraryType)"
-            List<String> selLibraryTypes = params.list("libraryType")
+            List<String> selLibraryTypes = listReaderWrapper(params, "libraryType")
             List<Long> libraryTypes = []
             selLibraryTypes.each { String sel ->
                 libraryTypes << Long.parseLong(sel)
@@ -295,9 +295,9 @@ class FilterService {
             query << subQuery
         }
 
-        if (params.filterPvd && params.filterPvd != "" && params.list('filterPvd')) {
+        if (params.filterPvd && params.filterPvd != "" && listReaderWrapper(params, 'filterPvd')) {
             String subQuery = " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and exists (select orgRole from OrgRole orgRole where orgRole.sub = sub and orgRole.org.id in (:filterPvd)) "
-            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg(), filterPvd : params.list('filterPvd').collect { Long.parseLong(it) }]
+            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg(), filterPvd : listReaderWrapper(params, 'filterPvd').collect { Long.parseLong(it) }]
 
             if (params.subStatus) {
                 subQuery +=  " and (sub.status = :subStatus" // ( closed in line 213; needed to prevent consortia members without any subscriptions because or would lift up the other restrictions)
@@ -342,7 +342,7 @@ class FilterService {
         }
         if (params.customerIDNamespace?.size() > 0) {
             List<String> customerIDClause = []
-            List<String> fields = params.list('customerIDNamespace')
+            List<String> fields = listReaderWrapper(params, 'customerIDNamespace')
             fields.each { String field ->
                 customerIDClause << "id.${field} != null"
             }
