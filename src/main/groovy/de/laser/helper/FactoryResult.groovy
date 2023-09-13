@@ -5,7 +5,9 @@ import de.laser.utils.LocaleUtils
 import grails.web.mvc.FlashScope
 import org.springframework.context.MessageSource
 
-
+/**
+ * Class to output a factory result. Currently only {@link de.laser.Identifier} uses this class
+ */
 class FactoryResult {
     Object result = null
     List existingDuplicates = []
@@ -26,6 +28,10 @@ class FactoryResult {
 //        new FactoryResult(result, null, STATUS_OK)
 //    }
 
+    /**
+     * Sets the flash message output according to the creation status
+     * @param flash the flash message container
+     */
     void setFlashScopeByStatus(FlashScope flash) {
         MessageSource messageSource = BeanStore.getMessageSource()
         Locale locale = LocaleUtils.getCurrentLocale()

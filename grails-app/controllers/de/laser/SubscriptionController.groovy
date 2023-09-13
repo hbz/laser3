@@ -186,7 +186,25 @@ class SubscriptionController {
         result.platformInstanceRecords = [:]
         result.platforms = subscribedPlatforms
         result.platformsJSON = subscribedPlatforms.globalUID as JSON
+        result.keyPairs = []
+        if(!params.containsKey('tab'))
+            params.tab = subscribedPlatforms[0].id.toString()
         subscribedPlatforms.each { Platform platformInstance ->
+            if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_LOCAL]) {
+                //create dummies for that they may be xEdited - OBSERVE BEHAVIOR for eventual performance loss!
+                CustomerIdentifier keyPair = CustomerIdentifier.findByPlatformAndCustomer(platformInstance, result.subscription.getSubscriber())
+                if(!keyPair) {
+                    keyPair = new CustomerIdentifier(platform: platformInstance,
+                            customer: result.subscription.getSubscriber(),
+                            type: RDStore.CUSTOMER_IDENTIFIER_TYPE_DEFAULT,
+                            owner: contextService.getOrg(),
+                            isPublic: true)
+                    if(!keyPair.save()) {
+                        log.warn(keyPair.errors.getAllErrors().toListString())
+                    }
+                }
+                result.keyPairs << keyPair
+            }
             Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
             if (queryResult.error && queryResult.error == 404) {
                 result.wekbServerUnavailable = message(code: 'wekb.error.404')
@@ -206,7 +224,10 @@ class SubscriptionController {
                     else {
                         CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriber(), platformInstance)
                         if(!ci?.value) {
-                            result.error = 'noCustomerId'
+                            if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_LOCAL])
+                                result.error = 'noCustomerId.local'
+                            else
+                                result.error = 'noCustomerId'
                         }
                     }
                 }
@@ -719,14 +740,14 @@ class SubscriptionController {
 
     /**
      * Call to unset the given customer identifier
-     * @return the customer identifier tabs view
+     * @return redirects to the referer
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)
+        ctx.contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     def deleteCustomerIdentifier() {
-        managementService.deleteCustomerIdentifier(params.long("deleteCI"))
+        subscriptionService.deleteCustomerIdentifier(params.long("deleteCI"))
         redirect(url: request.getHeader("referer"))
     }
 
