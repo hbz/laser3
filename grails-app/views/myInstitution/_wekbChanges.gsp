@@ -216,24 +216,28 @@
             </span>
         </p>
         <div class="filter" style="margin:0 2em 0.5em; text-align:right;">
-            <span class="ui button mini" data-obj="org">${message(code: 'default.ProviderAgency.label')}: ${wekbChanges.org.count}</span>
-            <span class="ui button mini" data-obj="platform">${message(code: 'platform.plural')}: ${wekbChanges.platform.count}</span>
-            <span class="ui button mini" data-obj="package">${message(code: 'package.plural')}: ${wekbChanges.package.count}</span>
-            <span class="ui button mini la-popup-tooltip la-long-tooltip la-delay" data-obj="all"
-                  data-content="Alle anzeigen: ${message(code: 'default.ProviderAgency.label')}, ${message(code: 'platform.plural')}, ${message(code: 'package.plural')}">Alle</span>
+            <div class="ui buttons mini">
+                <span class="ui button" data-obj="org">${message(code: 'default.ProviderAgency.label')}: ${wekbChanges.org.count}</span>
+                <span class="ui button" data-obj="platform">${message(code: 'platform.plural')}: ${wekbChanges.platform.count}</span>
+                <span class="ui button" data-obj="package">${message(code: 'package.plural')}: ${wekbChanges.package.count}</span>
+                <span class="ui button la-popup-tooltip la-long-tooltip la-delay" data-obj="all"
+                      data-content="Alle anzeigen: ${message(code: 'default.ProviderAgency.label')}, ${message(code: 'platform.plural')}, ${message(code: 'package.plural')}">Alle</span>
+            </div>
         </div>
         <div class="filter" style="margin:0 2em 0.5em; text-align:right;">
-            <span class="ui button mini" data-filter="created">Neue Objekte: ${wekbChanges.counts.created}</span>
-            <span class="ui button mini" data-filter="updated">Geänderte Objekte: ${wekbChanges.counts.updated}</span>
-            <span class="ui button mini" data-filter="my"><i class="icon star"></i> ${wekbChanges.counts.my}</span>
-            <span class="ui button mini" data-filter="marker"><i class="icon bookmark"></i> ${wekbChanges.counts.marker}</span>
-            <span class="ui button mini la-popup-tooltip la-long-tooltip la-delay" data-filter="all"
-                  data-content="Alle anzeigen: Neue Objekte, Geänderte Objekte, Meine Objekte, Meine Beobachtungsliste">Alle</span>
+            <div class="ui buttons mini">
+                <span class="ui button" data-filter="created">Neue Objekte: ${wekbChanges.counts.created}</span>
+                <span class="ui button" data-filter="updated">Geänderte Objekte: ${wekbChanges.counts.updated}</span>
+                <span class="ui button" data-filter="my"><i class="icon star"></i> ${wekbChanges.counts.my}</span>
+                <span class="ui button" data-filter="marker"><i class="icon bookmark"></i> ${wekbChanges.counts.marker}</span>
+                <span class="ui button la-popup-tooltip la-long-tooltip la-delay" data-filter="all"
+                      data-content="Alle anzeigen: Neue Objekte, Geänderte Objekte, Meine Objekte, Meine Beobachtungsliste">Alle</span>
+            </div>
         </div>
     </div>
 
     <style>
-        .filterWrapper > .filter > .button.active { background-color: #1b1c1d; }
+        .filterWrapper > .filter .button.active { background-color: #839c00; }
     </style>
 
     <g:each in="${tmplConfig}" var="cfg">
