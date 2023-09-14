@@ -268,35 +268,57 @@
     };
     JSPC.app.initLaToggle();
 
-    var $cbContextDisplay = $('#la-cb-context-display')
-    var $cbInfoDisplay = $('#la-cb-info-display')
 
-    $('.la-cb-context.item > *[data-display]').hover(
-        function() {
-            $cbContextDisplay.addClass('active').text($(this).attr('data-display'))
-        },
-        function() {
-            $cbContextDisplay.removeClass('active')
-            setTimeout( function(){ $('#la-cb-context-display:not(.active)').text($cbContextDisplay.attr('data-display')); }, 750);
-        }
-    );
-        $('.la-cb-info.item > .label[data-display]').hover(
-        function() {
-            $cbInfoDisplay.addClass('active').text($(this).attr('data-display') + ' (INFO) ')
-        },
-        function() {
-            $cbInfoDisplay.removeClass('active')
-            setTimeout( function(){ $('#la-cb-info-display:not(.active)').text(''); }, 750);
-        }
-    );
+    JSPC.app.contextBar = {
 
-    setTimeout( function(){
-        $('nav.buttons > .button').each( function() {
-            let $item = $('<div class="item la-cb-action-ext"></div>')
-            $('.la-advanced-view').append($item)
-            $item.append(this)
-            $(this).addClass('icon')
-        })
-        $('.la-context-org, .la-advanced-view').fadeIn(100);
-    }, 100);
+        $cbContextDisplay:  $('#la-cb-context-display'),
+        $cbInfoDisplay:     $('#la-cb-info-display'),
+
+        init: function() {
+            $('.la-cb-context.item > *[data-display]').hover(
+                function() {
+                    JSPC.app.contextBar.$cbContextDisplay.addClass('active').text($(this).attr('data-display'));
+                },
+                function() {
+                    JSPC.app.contextBar.$cbContextDisplay.removeClass('active');
+                    setTimeout( function(){
+                        $('#la-cb-context-display:not(.active)').text(JSPC.app.contextBar.$cbContextDisplay.attr('data-display'));
+                    }, 750);
+                }
+            );
+            $('.la-cb-info.item > .label[data-display]').hover(
+                function() {
+                    JSPC.app.contextBar.$cbInfoDisplay.addClass('active').text($(this).attr('data-display') + ' (INFO) ');
+                },
+                function() {
+                    JSPC.app.contextBar.$cbInfoDisplay.removeClass('active');
+                    setTimeout( function(){ $('#la-cb-info-display:not(.active)').text(''); }, 750);
+                }
+            );
+
+            setTimeout( function(){
+                $('main > nav.buttons > .button').each ( function() {
+                    let $item = $('<div class="item la-cb-action-ext"></div>');
+                    $('.la-advanced-view').append($item);
+                    $item.append(this);
+                    $(this).addClass('icon');
+                })
+                $('main > nav.buttons').each ( function() {
+                    let $new = $('<div class="actionExtModalWrapper"></div>');
+                    $(this).contents().each ( function() {
+                        $new.append($(this));
+                    })
+                    $(this).replaceWith($new);
+                })
+
+                $('.la-context-org, .la-advanced-view').fadeIn(150);
+            }, 100);
+        }
+    }
+
+    JSPC.app.contextBar.init();
 </laser:script>
+
+<style>
+    main > nav.buttons > .button { display: none; }
+</style>
