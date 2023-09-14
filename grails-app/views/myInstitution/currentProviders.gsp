@@ -42,7 +42,7 @@
             </ui:exportDropdown>
             <ui:actionsDropdown>
 
-                <ui:actionsDropdownItem data-ui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
+                <ui:actionsDropdownItem data-ui="modal" id="copyMailAddresses" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
 
             </ui:actionsDropdown>
 
@@ -68,8 +68,8 @@
         <g:if test="${orgList}">
         <laser:render template="/templates/filter/orgFilterTable"
                   model="[orgList: orgList,
-                          tmplShowCheckbox: false,
-                          tmplConfigShow: ['lineNumber', 'sortname', 'name', 'altname', /*'numberOfSubscriptions',*/ 'currentSubscriptions', 'marker', 'isWekbCurated']
+                          tmplShowCheckbox: true,
+                          tmplConfigShow: ['sortname', 'name', 'altname', /*'numberOfSubscriptions',*/ 'currentSubscriptions', 'marker', 'isWekbCurated']
                   ]"/>
         </g:if>
         <g:else>

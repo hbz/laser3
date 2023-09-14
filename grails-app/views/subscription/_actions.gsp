@@ -204,7 +204,7 @@
             <g:if test="${actionName == 'members'}">
                 <g:if test="${subscriptionService.getValidSubChilds(subscription)}">
                     <div class="divider"></div>
-                    <ui:actionsDropdownItem data-ui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
+                    <ui:actionsDropdownItem data-ui="modal" id="copyMailAddresses" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
                 </g:if>
             </g:if>
             <g:elseif test="${actionName == 'show'}">

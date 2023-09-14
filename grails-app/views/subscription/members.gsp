@@ -113,20 +113,22 @@
     </ui:debugInfo>
 
     <g:if test="${filteredSubChilds}">
-        <table class="ui celled monitor stackable la-js-responsive-table la-table table">
+        <table class="ui celled monitor sortable stackable la-js-responsive-table la-table table">
             <thead>
             <tr>
-                <th>${message(code:'sidewide.number')}</th>
+                <th>
+                    <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
+                </th>
                 <th>${message(code:'default.sortname.label')}</th>
-                <th>${message(code:'subscriptionDetails.members.members')}</th>
+                <g:sortableColumn params="${params}" property="o.sortname" title="${message(code:'subscriptionDetails.members.members')}"/>
                 <th class="center aligned">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                           data-content="${message(code: 'default.previous.label')}">
                         <i class="arrow left icon"></i>
                     </span>
                 </th>
-                <th>${message(code:'default.startDate.label')}</th>
-                <th>${message(code:'default.endDate.label')}</th>
+                <g:sortableColumn params="${params}" property="sub.startDate" title="${message(code:'default.startDate.label')}"/>
+                <g:sortableColumn params="${params}" property="sub.endDate" title="${message(code:'default.endDate.label')}"/>
                 <th class="center aligned">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                           data-content="${message(code: 'default.next.label')}">
@@ -157,8 +159,10 @@
             <g:each in="${filteredSubChilds}" status="i" var="row">
                 <g:set var="sub" value="${row.sub}"/>
                 <tr>
-                    <td>${i + 1}</td>
                     <g:set var="subscr" value="${row.orgs}" />
+                    <td>
+                        <g:checkBox class="orgSelector" name="selectedOrgs" value="${subscr.id}" checked="false"/>
+                    </td>
                     <%--<g:each in="${filteredSubscribers}" var="subscr">--%>
                         <td>
                             ${subscr.sortname}</td>
@@ -329,6 +333,29 @@
                 <br /><strong><g:message code="subscription.details.nomembers.label" args="${args.memberType}"/></strong>
                 </g:else>
             </g:else>
+
+    <laser:script file="${this.getGroovyPageFileName()}">
+        $('#orgListToggler').click(function () {
+            if ($(this).prop('checked')) {
+                $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', true)
+            } else {
+                $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', false)
+            }
+            updateMailAddressList();
+        })
+
+        $('.orgSelector').change(function() {
+            updateMailAddressList();
+        });
+
+        function updateMailAddressList() {
+            let selIds = [];
+            $('.orgSelector:checked').each(function(i) {
+                selIds.push($(this).val());
+            });
+            $('#copyMailAddresses').attr('data-orgIdList', selIds.join(','));
+        }
+    </laser:script>
 
 <laser:htmlEnd />
 

@@ -34,7 +34,7 @@
                 --%>
             </g:if>
             <g:if test="${actionName in ['manageMembers']}">
-                <ui:actionsDropdownItem data-ui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
+                <ui:actionsDropdownItem data-ui="modal" id="copyMailAddresses" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
             </g:if>
         </ui:actionsDropdown>
     </g:if>

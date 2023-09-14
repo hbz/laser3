@@ -72,11 +72,12 @@ class DropdownTagLib {
         else {
             out << '<a href="' + href + '" class="item"'
             if (attrs.id) { // e.g. binding js events
-                out << ' id="' + attrs.id + '">'
+                out << ' id="' + attrs.id + '"'
             }
             if (attrs.'data-ui') { // e.g. binding modals
-                out << ' data-ui="' + attrs.'data-ui' + '">'
+                out << ' data-ui="' + attrs.'data-ui' + '"'
             }
+            out << '>'
             out << linkBody + '</a>'
         }
     }

@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5276    13.09.2023  dev     3.3         Andreas Feature     zu kopierende Mailadressen sind jetzt auswählbar
+
 5279    13.09.2023  rc-3.2  3.2.5       Andreas Bug         Dauerhafte Titel wurden nicht verzeichnet
 
 5263    13.09.2023  dev     3.3         Andreas Feature     Eingabe von Kundennummern ist jetzt auch in der Lizenz möglich
