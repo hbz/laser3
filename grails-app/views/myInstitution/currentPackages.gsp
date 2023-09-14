@@ -88,7 +88,7 @@
                 </th>
 
                 <td>
-                    ${packageService.getCurrentTippIDs(pkg).size()}
+                    ${packageService.getCountOfCurrentTippIDs(pkg)}
                 </td>
 
                 <td>
