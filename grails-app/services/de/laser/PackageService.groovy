@@ -81,8 +81,8 @@ class PackageService {
      * @param pkg the package whose titles should be retrieved
      * @return a set of database IDs
      */
-    Set<Long> getCurrentTippIDs(de.laser.Package pkg) {
-        TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp where tipp.status = :current and tipp.pkg = :pkg',[current: RDStore.TIPP_STATUS_CURRENT, pkg: pkg])
+    Long getCountOfCurrentTippIDs(de.laser.Package pkg) {
+        TitleInstancePackagePlatform.executeQuery('select count(*) from TitleInstancePackagePlatform tipp where tipp.status = :current and tipp.pkg = :pkg',[current: RDStore.TIPP_STATUS_CURRENT, pkg: pkg])[0]
     }
 
     /**
