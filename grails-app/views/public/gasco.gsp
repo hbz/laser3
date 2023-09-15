@@ -355,8 +355,16 @@
     </g:if>%{-- {subscriptions} --}%
 
 <style>
+#gascoFlyout .filter .button {
+    color: #54575b;
+    background-color: #d3dae3;
+}
+#gascoFlyout .filter .button:hover {
+    background-color: #c3cad3;
+}
 #gascoFlyout .filter .button.active {
-    background-color: #839c00;
+    color: #ffffff;
+    background-color: #004678;
 }
 #gascoFlyout .chartHeader {
     text-align: center;

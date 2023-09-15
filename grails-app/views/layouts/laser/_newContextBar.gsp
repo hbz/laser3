@@ -139,8 +139,6 @@
 
 %{-- stable --}%
 <style>
-
-
     #la-cb-info-display {
         font-size: 0.87em;
         font-weight: bold;
@@ -204,13 +202,10 @@
     .la-contextBar .la-cb-action.item .button.toggle .icon {
         color: #fff !important;
     }
-
 </style>
 
 %{-- unstable --}%
 <style>
-
-
     .la-cb-info.item > .label {
         border: 1px solid #e3eaf3 !important;
     }
@@ -235,9 +230,6 @@
 .la-contextBar .la-cb-action.item .button.purple.inactive .icon {
     color: #2185d0 !important;
 }
-
-
-
 </style>
 
 <laser:script file="${this.getGroovyPageFileName()}">

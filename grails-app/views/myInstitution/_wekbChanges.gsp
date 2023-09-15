@@ -237,7 +237,17 @@
     </div>
 
     <style>
-        .filterWrapper > .filter .button.active { background-color: #839c00; }
+        .filterWrapper > .filter .button {
+            color: #54575b;
+            background-color: #d3dae3;
+        }
+        .filterWrapper > .filter .button:hover {
+            background-color: #c3cad3;
+        }
+        .filterWrapper > .filter .button.active {
+            color: #ffffff;
+            background-color: #004678;
+        }
     </style>
 
     <g:each in="${tmplConfig}" var="cfg">
