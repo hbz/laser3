@@ -25,9 +25,9 @@ class CostConfigurationController {
     /**
      * Gets the current list of an institution's cost configurations
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC_ADMINISTRATION])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.isInstUser_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC_ADMINISTRATION )
     })
     Map<String, Object> index() {
         Map<String, Object> result = [:]

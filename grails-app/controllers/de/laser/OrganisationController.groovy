@@ -1203,9 +1203,9 @@ class OrganisationController  {
      * @return the task table view
      * @see Task
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO_ADMINISTRATION])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO_ADMINISTRATION)
     })
     @Check404(domain=Org)
     def tasks() {
@@ -1225,9 +1225,9 @@ class OrganisationController  {
      * @return the workflow checklist view
      * @see de.laser.workflow.WfChecklist
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO_ADMINISTRATION])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO_ADMINISTRATION)
     })
     @Check404()
     def workflows() {
@@ -1244,9 +1244,9 @@ class OrganisationController  {
      * @see Doc
      * @see DocContext
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC_ADMINISTRATION])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC_ADMINISTRATION)
     })
     @Check404(domain=Org)
     def documents() {
@@ -1575,9 +1575,9 @@ class OrganisationController  {
      * Call to list the public contacts of the given organisation
      * @return a table view of public contacts
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC_ADMINISTRATION])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC_ADMINISTRATION)
     })
     @Check404(domain=Org)
     def addressbook() {
