@@ -1,4 +1,4 @@
-<laser:htmlStart message="default.notes.label" />
+<laser:htmlStart message="default.notes.label" serviceInjection="true" />
 
         <laser:render template="breadcrumb"
               model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
@@ -11,7 +11,7 @@
                 <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
         </ui:h1HeaderWithIcon>
 
-        <laser:render template="nav" model="${[orgInstance:orgInstance,inContextOrg:inContextOrg]}"/>
+        <laser:render template="${ypsService.getNavTemplatePath()}" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
 
         <ui:messages data="${flash}" />
 

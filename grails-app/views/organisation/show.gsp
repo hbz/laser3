@@ -51,7 +51,7 @@
     </div>
 </g:if>
 
-<laser:render debug="true" template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, isProviderOrAgency: isProviderOrAgency]}"/>
+<laser:render template="${ypsService.getNavTemplatePath()}" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, isProviderOrAgency: isProviderOrAgency]}"/>
 
 <ui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
 

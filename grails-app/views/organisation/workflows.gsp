@@ -11,7 +11,7 @@
         <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
     </ui:h1HeaderWithIcon>
 
-    <laser:render template="nav" />
+    <laser:render template="${ypsService.getNavTemplatePath()}" />
     <ui:messages data="${flash}" />
 
     <laser:render template="/templates/workflow/table" model="${[target:orgInstance, workflows:workflows, checklists:checklists]}"/>

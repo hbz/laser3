@@ -16,7 +16,7 @@
 
 <ui:messages data="${flash}"/>
 
-<laser:render template="/organisation/nav"/>
+<laser:render template="${ypsService.getNavTemplatePath()}"/>
 
 <div class="ui top attached stackable tabular la-tab-with-js menu">
     <a class="${params.tab == 'contacts' ? 'active' : ''} item" data-tab="contacts">

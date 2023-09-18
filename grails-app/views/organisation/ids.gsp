@@ -25,7 +25,7 @@
     <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
 </ui:h1HeaderWithIcon>
 
-<laser:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
+<laser:render template="${ypsService.getNavTemplatePath()}" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
 
 <ui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
 
