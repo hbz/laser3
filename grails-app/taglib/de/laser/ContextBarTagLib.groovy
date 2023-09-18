@@ -39,6 +39,11 @@ class ContextBarTagLib {
             color = 'blue'
             text  = Role.findByAuthority(CustomerTypeService.ORG_INST_BASIC).getI10n('authority')
         }
+        else if (org.isCustomerType_Administration()) {
+            icon = 'ghost'
+            color = 'pink'
+            text  = Role.findByAuthority(CustomerTypeService.ORG_ADMINISTRATION).getI10n('authority')
+        }
 
         out << '<div class="item la-cb-context">'
         out <<     '<span class="ui label" data-display="' + text + '">'
