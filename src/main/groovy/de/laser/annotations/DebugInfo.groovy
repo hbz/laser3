@@ -20,7 +20,7 @@ import java.lang.annotation.Target
     String[] isInstEditor_or_ROLEADMIN()    default ['']            // [orgPerms]
     String[] isInstAdm_or_ROLEADMIN()       default ['']            // [orgPerms]
 
-    String[] hasPermAsInstRoleAsConsortium_or_ROLEADMIN() default ['','']   // [orgPerms, instUserRole]
+//    String[] hasPermAsInstRoleAsConsortium_or_ROLEADMIN() default ['','']   // [orgPerms, instUserRole]
 
     // legacy
 

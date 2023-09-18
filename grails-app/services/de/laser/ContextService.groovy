@@ -220,17 +220,17 @@ class ContextService {
      * @see Org
      */
     // TODO
-    boolean hasPermAsInstRoleAsConsortium_or_ROLEADMIN(String orgPerms, String instUserRole) {
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-            return true
-        }
-        if (getUser() && getOrg() && instUserRole) {
-            if (getOrg().getAllOrgTypeIds().contains( RDStore.OT_CONSORTIUM.id )) {
-                if (userService.hasAffiliation_or_ROLEADMIN(getUser(), getOrg(), instUserRole)) {
-                    return _hasPerm(orgPerms)
-                }
-            }
-        }
-        return false
-    }
+//    boolean hasPermAsInstRoleAsConsortium_or_ROLEADMIN(String orgPerms, String instUserRole) {
+//        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+//            return true
+//        }
+//        if (getUser() && getOrg() && instUserRole) {
+//            if (getOrg().getAllOrgTypeIds().contains( RDStore.OT_CONSORTIUM.id )) {
+//                if (userService.hasAffiliation_or_ROLEADMIN(getUser(), getOrg(), instUserRole)) {
+//                    return _hasPerm(orgPerms)
+//                }
+//            }
+//        }
+//        return false
+//    }
 }

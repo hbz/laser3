@@ -482,13 +482,13 @@ class YodaController {
                                 mInfo.debug.affil       = 'INST_ADM'
                                 mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }
-                            if (da.hasPermAsInstRoleAsConsortium_or_ROLEADMIN() != (['',''] as String[])) {
-                                mInfo.debug.test        = 'hasPermAsInstRoleAsConsortium_or_ROLEADMIN()' //  + da.hasPermAsInstRoleAsConsortium_or_ROLEADMIN().toList()
-                                mInfo.debug.perm        = da.hasPermAsInstRoleAsConsortium_or_ROLEADMIN().toList()[0]
-                                mInfo.debug.affil       = da.hasPermAsInstRoleAsConsortium_or_ROLEADMIN().toList()[1]
-                                mInfo.debug.type        = 'Consortium'
-                                mInfo.debug.specRole    = 'ROLE_ADMIN'
-                            }
+//                            if (da.hasPermAsInstRoleAsConsortium_or_ROLEADMIN() != (['',''] as String[])) {
+//                                mInfo.debug.test        = 'hasPermAsInstRoleAsConsortium_or_ROLEADMIN()' //  + da.hasPermAsInstRoleAsConsortium_or_ROLEADMIN().toList()
+//                                mInfo.debug.perm        = da.hasPermAsInstRoleAsConsortium_or_ROLEADMIN().toList()[0]
+//                                mInfo.debug.affil       = da.hasPermAsInstRoleAsConsortium_or_ROLEADMIN().toList()[1]
+//                                mInfo.debug.type        = 'Consortium'
+//                                mInfo.debug.specRole    = 'ROLE_ADMIN'
+//                            }
 
                             if (da.ctrlService()) {
                                 mInfo.ctrlService = da.ctrlService()
