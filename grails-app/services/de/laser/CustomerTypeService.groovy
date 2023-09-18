@@ -31,12 +31,16 @@ class CustomerTypeService {
 
     public static final String ORG_ADMINISTRATION       = 'ORG_ADMINISTRATION'
 
-//    public static final String PERMS_BASIC                      = 'ORG_INST_BASIC,ORG_CONSORTIUM_BASIC'
-    public static final String PERMS_PRO                        = 'ORG_INST_PRO,ORG_CONSORTIUM_PRO'
-    public static final String PERMS_PRO_ORG_ADMINISTRATION     = 'ORG_INST_PRO,ORG_CONSORTIUM_PRO,ORG_ADMINISTRATION'
+    // perm lists
 
-    public static final String PERMS_INST_PRO_CONSORTIUM_BASIC                    = 'ORG_INST_PRO,ORG_CONSORTIUM_BASIC'
-    public static final String PERMS_INST_PRO_CONSORTIUM_BASIC_ORG_ADMINISTRATION = 'ORG_INST_PRO,ORG_CONSORTIUM_BASIC,ORG_ADMINISTRATION'
+    public static final String PERMS_PRO                        = 'ORG_INST_PRO,ORG_CONSORTIUM_PRO'
+    public static final String PERMS_INST_PRO_CONSORTIUM_BASIC  = 'ORG_INST_PRO,ORG_CONSORTIUM_BASIC'
+
+    // + administration
+
+    public static final String PERMS_PRO_ADMINISTRATION                             = 'ORG_INST_PRO,ORG_CONSORTIUM_PRO,ORG_ADMINISTRATION'
+    public static final String PERMS_INST_PRO_CONSORTIUM_BASIC_ORG_ADMINISTRATION   = 'ORG_INST_PRO,ORG_CONSORTIUM_BASIC,ORG_ADMINISTRATION'
+    public static final String PERMS_CONSORTIUM_BASIC_ORG_ADMINISTRATION            = 'ORG_CONSORTIUM_BASIC,ORG_ADMINISTRATION'
 
     // -- string parsing --
 
