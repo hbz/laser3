@@ -2115,4 +2115,15 @@ class SubscriptionController {
 
     //--------------------------------------------- helper section -------------------------------------------------
 
+    /**
+     * Gets the filter for titles and issue entitlements
+     * Is here because the template uses controllerName
+     */
+    @Secured(['ROLE_USER'])
+    def getTippIeFilter() {
+        Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+
+        //<laser:render template="/templates/filter/tipp_ieFilter"/>
+        render template: '/templates/filter/tipp_ieFilter', model: result
+    }
 }

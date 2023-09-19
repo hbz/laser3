@@ -201,9 +201,8 @@
 <div class="ui bottom attached tab active segment">
    <div class="ui grid">
        <div class="row">
-           <div class="column">
-                <laser:render template="/templates/filter/tipp_ieFilter"/>
-            </div>
+           <div class="column" id="filterWrapper">
+           </div>
         </div><!--.row-->
     </div><!--.grid-->
 <div id="downloadWrapper"></div>
@@ -441,7 +440,7 @@
                                                     </g:if>
                                                     <g:else>
                                                         <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip la-delay"
-                                                              data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitle.collect{it.getPermanentTitleInfo(contextOrg)}.join(',')}""
+                                                              data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitle.collect{it.getPermanentTitleInfo(contextOrg)}.join(',')}"
                                                               data-position="left center" data-variation="tiny">
                                                             <i class="star icon"></i>
                                                         </span>
@@ -855,5 +854,19 @@
             r2d2.initDynamicXEditableStuff(wrapper);
         });
     });
+
+    JSPC.app.loadFilter = function() {
+        $.ajax({
+            url: "<g:createLink action="getTippIeFilter"/>",
+            data: {
+                id: "${subscription.id}"
+            }
+        }).done(function(response){
+            $("#filterWrapper").html(response);
+            r2d2.initDynamicUiStuff("#filterWrapper");
+        });
+    }
+
+    JSPC.app.loadFilter();
 </laser:script>
 <laser:htmlEnd/>

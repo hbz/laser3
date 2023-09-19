@@ -2419,13 +2419,33 @@ class SubscriptionControllerService {
             }
             result.considerInBatch = ["sort", "order", "offset", "max", "status", "pkgfilter", "asAt", "series_name", "subject_reference", "ddc", "language", "yearsFirstOnline", "identifier", "title_types", "publishers", "coverageDepth", "inTitleGroups"]
 
-
+            /*
             result.currentIECounts = IssueEntitlement.executeQuery("select count(*) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status = :status and ie.status != :ieStatus", [sub: result.subscription, status: RDStore.TIPP_STATUS_CURRENT, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
             result.plannedIECounts = IssueEntitlement.executeQuery("select count(*) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status = :status and ie.status != :ieStatus", [sub: result.subscription, status: RDStore.TIPP_STATUS_EXPECTED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
             result.expiredIECounts = IssueEntitlement.executeQuery("select count(*) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status = :status and ie.status != :ieStatus", [sub: result.subscription, status: RDStore.TIPP_STATUS_RETIRED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
             result.deletedIECounts = IssueEntitlement.executeQuery("select count(*) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status = :status and ie.status != :ieStatus", [sub: result.subscription, status: RDStore.TIPP_STATUS_DELETED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
             result.allIECounts = IssueEntitlement.executeQuery("select count(*) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status in (:status) and ie.status != :ieStatus", [sub: result.subscription, status: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED], ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+            */
+            List counts = IssueEntitlement.executeQuery('select new map(count(*) as count, status as status) from IssueEntitlement as ie where ie.subscription = :sub and ie.status != :ieStatus group by status', [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_REMOVED])
+            result.allIECounts = 0
+            result.currentIECounts = 0
+            result.plannedIECounts = 0
+            result.expiredIECounts = 0
+            result.deletedIECounts = 0
 
+            counts.each { row ->
+                switch (row['status']) {
+                    case RDStore.TIPP_STATUS_CURRENT: result.currentIECounts = row['count']
+                        break
+                    case RDStore.TIPP_STATUS_EXPECTED: result.plannedIECounts = row['count']
+                        break
+                    case RDStore.TIPP_STATUS_RETIRED: result.expiredIECounts = row['count']
+                        break
+                    case RDStore.TIPP_STATUS_DELETED: result.deletedIECounts = row['count']
+                        break
+                }
+                result.allIECounts += row['count']
+            }
 
             [result:result,status:STATUS_OK]
         }
@@ -2655,10 +2675,9 @@ class SubscriptionControllerService {
             else packages = result.subscription.packages?.pkg
 
             result.countAllTitles = TitleInstancePackagePlatform.executeQuery('''select count(*) from TitleInstancePackagePlatform as tipp where 
-                                    tipp.pkg in (:pkgs) and 
                                     tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = :subscription ) and 
                                     ( not exists ( select ie from IssueEntitlement ie where ie.subscription = :subscription and ie.tipp.id = tipp.id and ie.status = :issueEntitlementStatus ) ) ''',
-            [pkgs: result.subscription.packages?.pkg, subscription: result.subscription, issueEntitlementStatus: ie_current])[0]
+            [subscription: result.subscription, issueEntitlementStatus: ie_current])[0]
 
             params.tab = params.tab ?: 'allTipps'
 
@@ -2696,12 +2715,18 @@ class SubscriptionControllerService {
                 if (params.kbartPreselect && !params.pagination) {
                     Sql sql = GlobalService.obtainSqlConnection()
 
-                    String identifierMapQuery = "select id_value, tipp_gokb_id, tipp_host_platform_url from identifier join title_instance_package_platform on tipp_id = id_tipp_fk where tipp_pkg_fk = any(:pkgIds) and id_ns_fk = any(:idns)"
-                    Map<String, String> titleIdentifierMap = [:]
+                    String identifierMapQuery = "select id_value, tipp_gokb_id, tipp_host_platform_url from identifier join title_instance_package_platform on tipp_id = id_tipp_fk where tipp_pkg_fk = any(:pkgIds) and id_ns_fk = any(:idns)",
+                    perpetualAccessQuery = "select tipp_host_platform_url, tipp_id from permanent_title join title_instance_package_platform on pt_tipp_fk = tipp_id where pt_owner_fk = :org and tipp_status_rv_fk != :removed and tipp_pkg_fk = any(:pkgIds)"
+                    Map<String, String> titleIdentifierMap = [:], perpetualAccessMap = [:]
                     sql.rows(identifierMapQuery, [pkgIds: sql.getDataSource().getConnection().createArrayOf('bigint', subPkgs.id as Object[]), idns: sql.getDataSource().getConnection().createArrayOf('bigint', namespaces.values().id as Object[])]).each { GroovyRowResult row ->
                         titleIdentifierMap.put(row['id_value'], row['tipp_gokb_id'])
                         titleIdentifierMap.put(row['tipp_host_platform_url'], row['tipp_gokb_id'])
                     }
+                    sql.rows(perpetualAccessQuery, [pkgIds: sql.getDataSource().getConnection().createArrayOf('bigint', subPkgs.id as Object[]), org: result.subscriber.id, status: RDStore.TIPP_STATUS_REMOVED.id]).each { GroovyRowResult row ->
+                        perpetualAccessMap.put(row['tipp_id'], row['tipp_gokb_id'])
+                        perpetualAccessMap.put(row['tipp_host_platform_url'], row['tipp_gokb_id'])
+                    }
+
                     MultipartFile kbartFile = params.kbartPreselect
                     identifiers.filename = kbartFile.originalFilename
                     InputStream stream = kbartFile.getInputStream()
@@ -2927,18 +2952,19 @@ class SubscriptionControllerService {
                                 if (result.uploadPriceInfo && isUniqueListpriceColumn) {
                                     try {
                                         switch (colName) {
-                                            case "listPriceCol": ieCandidate.listPrice = escapeService.parseFinancialValue(cellEntry)
+                                            //locally negotiated price items do not have list prices; thus the mapping redundant mapping
+                                            case "listPriceCol": ieCandidate.localPrice = escapeService.parseFinancialValue(cellEntry)
                                                 break
-                                            case "listCurrencyCol": ieCandidate.listCurrency = RefdataValue.getByValueAndCategory(cellEntry, RDConstants.CURRENCY)?.value
+                                            case "listCurrencyCol": ieCandidate.localCurrency = RefdataValue.getByValueAndCategory(cellEntry, RDConstants.CURRENCY)?.value
                                                 break
-                                            case "listPriceEurCol": ieCandidate.listPrice = escapeService.parseFinancialValue(cellEntry)
-                                                ieCandidate.listCurrency = RDStore.CURRENCY_EUR.value
+                                            case "listPriceEurCol": ieCandidate.localPrice = escapeService.parseFinancialValue(cellEntry)
+                                                ieCandidate.localCurrency = RDStore.CURRENCY_EUR.value
                                                 break
-                                            case "listPriceUsdCol": ieCandidate.listPrice = escapeService.parseFinancialValue(cellEntry)
-                                                ieCandidate.listCurrency = RDStore.CURRENCY_USD.value
+                                            case "listPriceUsdCol": ieCandidate.localPrice = escapeService.parseFinancialValue(cellEntry)
+                                                ieCandidate.localCurrency = RDStore.CURRENCY_USD.value
                                                 break
-                                            case "listPriceGbpCol": ieCandidate.listPrice = escapeService.parseFinancialValue(cellEntry)
-                                                ieCandidate.listCurrency = RDStore.CURRENCY_GBP.value
+                                            case "listPriceGbpCol": ieCandidate.localPrice = escapeService.parseFinancialValue(cellEntry)
+                                                ieCandidate.localCurrency = RDStore.CURRENCY_GBP.value
                                                 break
                                             case "localPriceCol": ieCandidate.localPrice = escapeService.parseFinancialValue(cellEntry)
                                                 break
@@ -2959,7 +2985,7 @@ class SubscriptionControllerService {
                             ieCandidate.coverages = ieCoverages
                         }
                         if(result.subscription && match) {
-                            boolean participantPerpetualAccessToTitle = surveyService.hasParticipantPerpetualAccessToTitle3(result.subscriber, match)
+                            boolean participantPerpetualAccessToTitle = /*surveyService.hasParticipantPerpetualAccessToTitle3(result.subscriber, match)*/ false
                             if(!participantPerpetualAccessToTitle) {
                                 issueEntitlementOverwrite[match.gokbId] = ieCandidate
                                 selectedTippIds << match.gokbId
@@ -3034,7 +3060,6 @@ class SubscriptionControllerService {
                         */
                 if(params.pagination) {
                     result.checked = checkedCache.get('checked')
-                    result.issueEntitlementOverwrite = checkedCache.get('issueEntitlementCandidates')
                 }
                 if (errorList)
                     result.error = "<pre style='font-family:Lato,Arial,Helvetica,sans-serif;'>" + errorList.join("\n") + "</pre>"
@@ -3042,6 +3067,7 @@ class SubscriptionControllerService {
 
             result.checkedCache = checkedCache.get('checked')
             result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
+            result.issueEntitlementOverwrite = checkedCache.get('issueEntitlementCandidates')
             result.countSelectedTipps = result.checkedCount
 
             [result:result,status:STATUS_OK]
