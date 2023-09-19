@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5278    15.08.2023  dev     3.3         David   Feature     GASCO-Monitor: Bezeichnungen Bundesländer überlagern sich
+
+5237    15.08.2023  dev     3.3         David   Feature     Kontextleiste
+
 5276    13.09.2023  dev     3.3         Andreas Feature     zu kopierende Mailadressen sind jetzt auswählbar
 
 5279    13.09.2023  rc-3.2  3.2.5       Andreas Bug         Dauerhafte Titel wurden nicht verzeichnet

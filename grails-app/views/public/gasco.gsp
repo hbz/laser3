@@ -219,10 +219,12 @@
         </div>
         <div class="content">
             <div class="filter" style="margin:0 0 1em 0; text-align:right;">
-                <span class="ui button mini la-popup-tooltip la-delay" data-content="Vergrößern" onclick="JSPC.app.gasco.ui.zoomIn()">+</span>
-                <span class="ui button mini la-popup-tooltip la-delay" data-content="Verkleinern" onclick="JSPC.app.gasco.ui.zoomOut()">-</span>
-                <span class="ui button mini la-popup-tooltip la-delay" data-content="Labels ein-/ausblenden" onclick="JSPC.app.gasco.ui.toggleLabel()">Labels</span>
-                <span class="ui button mini la-popup-tooltip la-delay" data-content="Legende ein-/ausblenden" onclick="JSPC.app.gasco.ui.toggleLegend()">Legende</span>
+                <div class="ui buttons mini">
+                    <span class="ui button la-popup-tooltip la-delay" data-content="Vergrößern" onclick="JSPC.app.gasco.ui.zoomIn()">+</span>
+                    <span class="ui button la-popup-tooltip la-delay" data-content="Verkleinern" onclick="JSPC.app.gasco.ui.zoomOut()">-</span>
+                    <span class="ui button la-popup-tooltip la-delay" data-content="Labels ein-/ausblenden" data-filter="label" onclick="JSPC.app.gasco.ui.toggleLabel()">Labels</span>
+                    <span class="ui button la-popup-tooltip la-delay" data-content="Legende ein-/ausblenden" data-filter="legend" onclick="JSPC.app.gasco.ui.toggleLegend()">Legende</span>
+                </div>
             </div>
             <div class="charts"></div>
         </div>
@@ -263,6 +265,7 @@
             ui: {
                 $flyout: $('#gascoFlyout'),
                 $title:  $('#gascoFlyout > .header > .content'),
+                $filter: $('#gascoFlyout > .content > .filter'),
                 $charts: $('#gascoFlyout > .content > .charts'),
 
                 toggleLabel: function() {
@@ -297,6 +300,11 @@
                         })
                         cc.resize();
                     }
+
+                    let $label = JSPC.app.gasco.ui.$filter.find('*[data-filter=label]');
+                    JSPC.app.gasco.current.config.showLabel ? $label.addClass('active') : $label.removeClass('active');
+                    let $legend = JSPC.app.gasco.ui.$filter.find('*[data-filter=legend]');
+                    JSPC.app.gasco.current.config.showLegend ? $legend.addClass('active') : $legend.removeClass('active');
                 }
             }
         };
@@ -347,10 +355,21 @@
     </g:if>%{-- {subscriptions} --}%
 
 <style>
-.chartHeader {
+#gascoFlyout .filter .button {
+    color: #54575b;
+    background-color: #d3dae3;
+}
+#gascoFlyout .filter .button:hover {
+    background-color: #c3cad3;
+}
+#gascoFlyout .filter .button.active {
+    color: #ffffff;
+    background-color: #004678;
+}
+#gascoFlyout .chartHeader {
     text-align: center;
 }
-.chartWrapper {
+#gascoFlyout .chartWrapper {
     width: 100%;
     height: 450px; /* todo */
     margin: 20px 0;
