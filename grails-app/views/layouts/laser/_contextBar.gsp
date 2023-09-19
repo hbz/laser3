@@ -3,8 +3,6 @@
 
 <g:set var="visibilityContextOrgMenu" value="la-show-context-orgMenu" />
 
-<g:if test="${true /*! AppUtils.isPreviewOnly()*/ }">
-
 <nav class="ui fixed menu la-contextBar" aria-label="${message(code:'wcag.label.modeNavigation')}">
 
     <div class="ui container">
@@ -120,8 +118,3 @@
     </div>
 
 </nav>%{-- la-contextBar --}%
-
-</g:if>
-<g:else>%{-- DEMO --}%
-    
-</g:else>

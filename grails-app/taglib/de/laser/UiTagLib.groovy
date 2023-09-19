@@ -366,10 +366,6 @@ class UiTagLib {
 
     def markerSwitch = { attrs, body ->
 
-        if (! AppUtils.isPreviewOnly()) {
-            return
-        }
-
         MarkerSupport obj   = (attrs.org ?: attrs.package ?: attrs.platform) as MarkerSupport
         boolean isMarked    = obj.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)
         String tt           = '?'
