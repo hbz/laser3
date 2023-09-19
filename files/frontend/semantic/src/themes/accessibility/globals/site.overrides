@@ -74,7 +74,7 @@ aside .ui.card{
 
 aside.ui.segment{
     background: @laSideCards;
-    z-index: 8;
+    z-index: @la-asideSegmentZIndex;
 }
 .ui.accordion .title .dropdown.icon.la-dropdown-accordion {
     float: right;
@@ -301,7 +301,7 @@ i.icon.la-list-icon{
     padding: 10px;
     box-shadow: 1px 1px 2px 1px rgba(20,20,20,.3);
     position: relative;
-    z-index:100;
+    z-index: @editableformControlZIndex;
     //left: -20px;
 }
 .editableform .control-group {

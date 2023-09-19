@@ -31,7 +31,7 @@
 
 .ui.menu.la-contextBar {
   top: 50px;
-  z-index:101;
+  z-index: @la-contextBarZIndex;
   background-color: @laDecorationColor;
   box-shadow: none;
   .item {
@@ -139,7 +139,7 @@
   padding-right:1rem;
 }
 #mainMenue {
-  z-index: 102;
+  z-index: @mainMenueZIndex;
 }
 
 .la-ctrls .ui.dropdown .menu {

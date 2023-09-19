@@ -47461,7 +47461,7 @@ a.ui.ui.ui.inverted.basic.black.label:hover {
 
 .ui.floating.label {
   position: absolute;
-  z-index: 3;
+  z-index: 100;
   top: -1em;
   right: 0;
   white-space: nowrap;
