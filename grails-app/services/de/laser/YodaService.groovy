@@ -51,15 +51,31 @@ class YodaService {
      */
     void fillValue(String toUpdate) {
         IssueEntitlement.withNewSession { Session sess ->
-            int total = IssueEntitlement.executeQuery('select count(ie) from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub where ((sub.startDate >= :start and sub.endDate <= :end) or sub.startDate = null or sub.endDate = null) and tipp.'+toUpdate+' != null and tipp.status != :removed and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, start: DateUtils.getSDF_yyyyMMdd().parse('2022-01-01'), end: DateUtils.getSDF_yyyyMMdd().parse('2023-12-31')])[0]
-            int max = 100000
-            for(int ctr = 0; ctr < total; ctr += max) {
-                IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub where ((sub.startDate >= :start and sub.endDate <= :end) or sub.startDate = null or sub.endDate = null) and tipp.'+toUpdate+' != null and tipp.status != :removed and ie.status != :removed order by sub.startDate', [removed: RDStore.TIPP_STATUS_REMOVED, start: DateUtils.getSDF_yyyyMMdd().parse('2022-01-01'), end: DateUtils.getSDF_yyyyMMdd().parse('2023-12-31')], [max: max, offset: ctr]).each { IssueEntitlement ie ->
-                    ie[toUpdate] = ie.tipp[toUpdate]
-                    ie.save()
+            if(toUpdate == 'globalUID') {
+                int max = 1000000
+                int total = IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.globalUID = null')[0]
+                for(int ctr = 0; ctr < total; ctr += max) {
+                    IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.globalUID = null', [max: max]).eachWithIndex { IssueEntitlement ie, int i ->
+                        if(i % 50000 == 0)
+                            log.debug("now processing ${i}")
+                        ie.setGlobalUID()
+                        ie.save()
+                    }
+                    log.debug("flush after ${ctr+max}")
+                    sess.flush()
                 }
-                log.debug("flush after ${ctr+max}")
-                sess.flush()
+            }
+            else {
+                int max = 100000
+                int total = IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub where ((sub.startDate >= :start and sub.endDate <= :end) or sub.startDate = null or sub.endDate = null) and tipp.'+toUpdate+' != null and tipp.status != :removed and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, start: DateUtils.getSDF_yyyyMMdd().parse('2022-01-01'), end: DateUtils.getSDF_yyyyMMdd().parse('2023-12-31')])[0]
+                for(int ctr = 0; ctr < total; ctr += max) {
+                    IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub where ((sub.startDate >= :start and sub.endDate <= :end) or sub.startDate = null or sub.endDate = null) and tipp.'+toUpdate+' != null and tipp.status != :removed and ie.status != :removed order by sub.startDate', [removed: RDStore.TIPP_STATUS_REMOVED, start: DateUtils.getSDF_yyyyMMdd().parse('2022-01-01'), end: DateUtils.getSDF_yyyyMMdd().parse('2023-12-31')], [max: max, offset: ctr]).each { IssueEntitlement ie ->
+                        ie[toUpdate] = ie.tipp[toUpdate]
+                        ie.save()
+                    }
+                    log.debug("flush after ${ctr+max}")
+                    sess.flush()
+                }
             }
             //IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.'+toUpdate+' = (select tipp.'+toUpdate+' from TitleInstancePackagePlatform tipp where tipp = ie.tipp and tipp.'+toUpdate+' != null and tipp.status != :removed) where ie.'+toUpdate+' = null and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED])
         }
