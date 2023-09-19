@@ -63,7 +63,7 @@
         }
     }
 %>
-<g:if test="${(contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro())}">
+<g:if test="${(contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support() || contextService.getOrg().isCustomerType_Inst_Pro())}">
     <ui:card message="${documentMessage}" class="documents la-js-hideable ${css_class}" href="#modalCreateDocument" editable="${editable || editable2}">
         <g:each in="${baseItems}" var="docctx">
             <g:if test="${docctx.isDocAFile() && (docctx.status?.value!='Deleted')}">

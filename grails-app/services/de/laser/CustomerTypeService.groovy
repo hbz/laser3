@@ -37,9 +37,7 @@ class CustomerTypeService {
 
     public static final String PERMS_PRO                        = 'ORG_INST_PRO,ORG_CONSORTIUM_PRO'
     public static final String PERMS_INST_PRO_CONSORTIUM_BASIC  = 'ORG_INST_PRO,ORG_CONSORTIUM_BASIC'
-
-    // + hbz
-
+    
     public static final String PERMS_PRO_SUPPORT                = 'ORG_INST_PRO,ORG_CONSORTIUM_PRO,ORG_SUPPORT'
 
     // -- string parsing --

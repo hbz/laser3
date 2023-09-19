@@ -366,6 +366,10 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         this.getCustomerType() in [ CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO ]
     }
 
+//    boolean isCustomerType_Consortium_or_Support() {
+//        this.getCustomerType() in [ CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO, CustomerTypeService.ORG_SUPPORT ] // hasPerm(ORG_CONSORTIUM_BASIC)
+//    }
+
     boolean isCustomerType_Support() {
         this.getCustomerType() == CustomerTypeService.ORG_SUPPORT
     }
