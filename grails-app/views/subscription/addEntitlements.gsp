@@ -30,7 +30,8 @@
 
 <g:set var="counter" value="${offset + 1}"/>
 
-<laser:render template="/templates/filter/tipp_ieFilter"/>
+<div id="filterWrapper"></div>
+<%--<laser:render template="/templates/filter/tipp_ieFilter"/>--%>
 
     <ui:messages data="${flash}"/>
 
@@ -137,11 +138,11 @@
 
 <ui:tabs actionName="${actionName}">
     <ui:tabsItem controller="subscription" action="addEntitlements"
-                 params="[id: subscription.id, tab: 'allTipps']"
+                 params="[id: subscription.id, tab: 'allTipps', uploadPriceInfo: uploadPriceInfo ? 'on' : '', preselectCoverageDates: preselectCoverageDates ? 'on' : '']"
                  text="${message(code: "subscription.details.addEntitlements.allTipps")}" tab="allTipps"
                  counts="${countAllTitles}"/>
     <ui:tabsItem controller="subscription" action="addEntitlements"
-                 params="[id: subscription.id, tab: 'selectedTipps']"
+                 params="[id: subscription.id, tab: 'selectedTipps', uploadPriceInfo: uploadPriceInfo ? 'on' : '', preselectCoverageDates: preselectCoverageDates ? 'on' : '']"
                  text="${message(code: "subscription.details.addEntitlements.selectedTipps")}" tab="selectedTipps"
                  counts="${countSelectedTipps}"/>
 </ui:tabs>
@@ -428,7 +429,7 @@
                                         <g:if test="${uploadPriceInfo}">
                                             <div class="ui list">
                                                 <div class="item">
-                                                    <div class="contet">
+                                                    <div class="content">
                                                         <div class="header">
                                                             <g:message code="tipp.price.localPrice"/>
                                                         </div>
@@ -580,6 +581,20 @@
             $('#globalLoadingIndicator').hide();
         });
     });
+
+    JSPC.app.loadFilter = function() {
+        $.ajax({
+            url: "<g:createLink action="getTippIeFilter"/>",
+            data: {
+                id: "${subscription.id}"
+            }
+        }).done(function(response){
+            $("#filterWrapper").html(response);
+            r2d2.initDynamicUiStuff("#filterWrapper");
+        });
+    }
+
+    JSPC.app.loadFilter();
 </laser:script>
 
 <laser:htmlEnd />

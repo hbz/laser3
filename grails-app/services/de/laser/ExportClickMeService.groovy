@@ -3369,7 +3369,11 @@ class ExportClickMeService {
                             }
                         } else if (fieldKey == 'survey.costAfterTax') {
                             if(participantResult.costItem) {
-                                def fieldValue = _getFieldValue(participantResult.costItem, 'costInBillingCurrencyAfterTax', sdf)
+                                def fieldValue
+                                if(participantResult.costItem.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE)
+                                    fieldValue = ' '
+                                else
+                                    fieldValue = _getFieldValue(participantResult.costItem, 'costInBillingCurrencyAfterTax', sdf)
                                 row.add(createTableCell(format, fieldValue))
                             }
                             else{
@@ -3377,7 +3381,11 @@ class ExportClickMeService {
                             }
                         }else if (fieldKey == 'survey.costTax') {
                             if(participantResult.costItem) {
-                                def fieldValue = _getFieldValue(participantResult.costItem, 'taxKey.taxRate', sdf)
+                                def fieldValue
+                                if(participantResult.costItem.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE)
+                                    fieldValue = RDStore.TAX_TYPE_REVERSE_CHARGE.getI10n('value')
+                                else
+                                    fieldValue = _getFieldValue(participantResult.costItem, 'taxKey.taxRate', sdf)
                                 row.add(createTableCell(format, fieldValue))
                             }
                             else{
