@@ -117,8 +117,8 @@
 
         <ui:messages data="${flash}" />
 
-        <g:if test="${AppUtils.isPreviewOnly()}">
-                <laser:render template="wekbChanges" model="${[wekbChanges: wekbChanges, tmplView: 'info']}"/>
+        <g:if test="${wekbChanges}">
+            <laser:render template="wekbChanges" model="${[wekbChanges: wekbChanges, tmplView: 'info']}"/>
         </g:if>
 
     <%
