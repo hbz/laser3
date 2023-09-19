@@ -273,7 +273,7 @@
                             <g:else>
                                 ${obj.name}
                             </g:else>
-                            <g:if test="${obj.uuid in cfg[1].created}"><span class="ui green mini label">NEU</span></g:if>
+                            <g:if test="${obj.uuid in cfg[1].created}"><span class="ui orange mini label">NEU</span></g:if>
                         </div>
                         <div class="column two wide center aligned">
                             <g:if test="${obj.uuid in cfg[1].my}">

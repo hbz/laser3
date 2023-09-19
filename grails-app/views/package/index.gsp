@@ -46,11 +46,7 @@
                     <th class="center aligned">
                         <ui:myXIcon tooltip="${message(code: 'menu.my.packages')}" />
                     </th>
-                    <g:if test="${AppUtils.isPreviewOnly()}">
-                        <th class="center aligned">
-                            <ui:markerIcon type="WEKB_CHANGES" />
-                        </th>
-                    </g:if>
+                    <th class="center aligned"><ui:markerIcon type="WEKB_CHANGES" /></th>
                     <sec:ifAllGranted roles="ROLE_YODA">
                         <th class="x center aligned">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="left center" data-content="${message(code: 'menu.yoda.reloadPackages')}">
@@ -155,13 +151,11 @@
                                 </span>
                             </g:if>
                         </td>
-                        <g:if test="${AppUtils.isPreviewOnly()}">
-                            <td class="center aligned">
-                                <g:if test="${pkg && pkg.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
-                                    <ui:markerIcon type="WEKB_CHANGES" color="purple" />
-                                </g:if>
-                            </td>
-                        </g:if>
+                        <td class="center aligned">
+                            <g:if test="${pkg && pkg.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
+                                <ui:markerIcon type="WEKB_CHANGES" color="purple" />
+                            </g:if>
+                        </td>
                         <sec:ifAllGranted roles="ROLE_YODA">
                             <td class="x">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'menu.yoda.reloadPackage')}">
