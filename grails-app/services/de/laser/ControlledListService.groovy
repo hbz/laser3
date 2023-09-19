@@ -636,7 +636,7 @@ class ControlledListService {
         Set<String> titleTypes = []
 
         if(subscription.packages){
-            titleTypes = TitleInstancePackagePlatform.executeQuery("select titleType from TitleInstancePackagePlatform where titleType is not null and pkg in (:pkg) ", [pkg: subscription.packages.pkg])
+            titleTypes = TitleInstancePackagePlatform.executeQuery("select titleType from TitleInstancePackagePlatform where titleType is not null and pkg in (:pkg) and status != :removed", [pkg: subscription.packages.pkg, removed: RDStore.TIPP_STATUS_REMOVED])
         }
         if(titleTypes.size() == 0){
             titleTypes << messageSource.getMessage('titleInstance.noTitleType.label', null, LocaleUtils.getCurrentLocale())
@@ -700,7 +700,7 @@ class ControlledListService {
         Set<String> mediumTypes = []
 
         if(subscription.packages){
-            mediumTypes.addAll(TitleInstancePackagePlatform.executeQuery("select tipp.medium from TitleInstancePackagePlatform tipp where tipp.medium is not null and tipp.pkg in (:pkg) ", [pkg: subscription.packages.pkg]))
+            mediumTypes.addAll(TitleInstancePackagePlatform.executeQuery("select tipp.medium from TitleInstancePackagePlatform tipp where tipp.medium is not null and tipp.pkg in (:pkg) and tipp.status != :removed", [pkg: subscription.packages.pkg, removed: RDStore.TIPP_STATUS_REMOVED]))
         }
         mediumTypes
     }
@@ -758,7 +758,7 @@ class ControlledListService {
         Set<RefdataValue> coverageDepths = []
 
         if(subscription.packages){
-            coverageDepths = RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.value in (select tc.coverageDepth from TIPPCoverage tc join tc.tipp tipp where tc.coverageDepth is not null and tipp.pkg in (:pkg)) ", [pkg: subscription.packages.pkg])
+            coverageDepths = RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.value in (select tc.coverageDepth from TIPPCoverage tc join tc.tipp tipp where tc.coverageDepth is not null and tipp.pkg in (:pkg) and tipp.status != :removed) ", [pkg: subscription.packages.pkg, removed: RDStore.TIPP_STATUS_REMOVED])
         }
 
         coverageDepths
@@ -821,7 +821,7 @@ class ControlledListService {
         Set<String> seriesName = []
 
         if(subscription.packages){
-            seriesName = TitleInstancePackagePlatform.executeQuery("select distinct(seriesName) from TitleInstancePackagePlatform where seriesName is not null and pkg in (:pkg) order by seriesName", [pkg: subscription.packages.pkg])
+            seriesName = TitleInstancePackagePlatform.executeQuery("select distinct(seriesName) from TitleInstancePackagePlatform where seriesName is not null and pkg in (:pkg) and status != :removed order by seriesName", [pkg: subscription.packages.pkg, removed: RDStore.TIPP_STATUS_REMOVED])
         }
         if(seriesName.size() == 0){
             seriesName << messageSource.getMessage('titleInstance.noSeriesName.label', null, LocaleUtils.getCurrentLocale())
@@ -872,7 +872,7 @@ class ControlledListService {
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
         Set<RefdataValue> ddcs = []
 
-        ddcs.addAll(TitleInstancePackagePlatform.executeQuery("select ddc.ddc from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg = :pkg and tipp.status = :status order by ddc.ddc.value_" + LocaleUtils.getCurrentLang(), [pkg: pkg, status: tippStatus]))
+        ddcs.addAll(TitleInstancePackagePlatform.executeQuery("select ddc.ddc from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg = :pkg and tipp.status = :status order by ddc.ddc.value", [pkg: pkg, status: tippStatus]))
 
         ddcs
     }
@@ -887,7 +887,7 @@ class ControlledListService {
         Set<RefdataValue> ddcs = []
 
         if(subscription.packages){
-            ddcs.addAll(DeweyDecimalClassification.executeQuery("select ddc.ddc from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg in (:pkg) order by ddc.ddc.value_" + LocaleUtils.getCurrentLang(), [pkg: subscription.packages.pkg]))
+            ddcs.addAll(DeweyDecimalClassification.executeQuery("select ddc.ddc from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg in (:pkg) and tipp.status != :status order by ddc.ddc.value", [pkg: subscription.packages.pkg, status: RDStore.TIPP_STATUS_REMOVED]))
         }
         ddcs
     }
@@ -947,7 +947,7 @@ class ControlledListService {
         Set<RefdataValue> languages = []
 
         if(subscription.packages){
-            languages.addAll(DeweyDecimalClassification.executeQuery("select lang.language from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg in (:pkg) order by lang.language.value_" + LocaleUtils.getCurrentLang(), [pkg: subscription.packages.pkg]))
+            languages.addAll(DeweyDecimalClassification.executeQuery("select lang.language from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg in (:pkg) and tipp.status != :removed order by lang.language.value_" + LocaleUtils.getCurrentLang(), [pkg: subscription.packages.pkg, removed: RDStore.TIPP_STATUS_REMOVED]))
         }
         languages
     }
@@ -1021,7 +1021,7 @@ class ControlledListService {
         List<String> rawSubjects = []
 
         if(subscription.packages){
-            rawSubjects = TitleInstancePackagePlatform.executeQuery("select distinct(subjectReference) from TitleInstancePackagePlatform where subjectReference is not null and pkg in (:pkg) order by subjectReference", [pkg: subscription.packages.pkg])
+            rawSubjects = TitleInstancePackagePlatform.executeQuery("select distinct(subjectReference) from TitleInstancePackagePlatform where subjectReference is not null and pkg in (:pkg) and status != :removed order by subjectReference", [pkg: subscription.packages.pkg, removed: RDStore.TIPP_STATUS_REMOVED])
         }
         if(rawSubjects.size() == 0){
             subjects << messageSource.getMessage('titleInstance.noSubjectReference.label', null, LocaleUtils.getCurrentLocale())

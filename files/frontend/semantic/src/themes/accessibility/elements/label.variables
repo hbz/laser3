@@ -1,2 +1,3 @@
 @backgroundColor: #d3dae3;
 
+@floatingZIndex: 3;
