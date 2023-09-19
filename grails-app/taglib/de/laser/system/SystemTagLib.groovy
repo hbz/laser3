@@ -40,7 +40,6 @@ class SystemTagLib {
         g.set( var:'userService',               bean:'userService' )
         g.set( var:'workflowService',           bean:'workflowService' )
         g.set( var:'yodaService',               bean:'yodaService' )
-        g.set( var:'ypsService',                bean:'ypsService' )
     }
 
     // DO NOT use for templates, pdf or email generation

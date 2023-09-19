@@ -71,8 +71,8 @@
                     %{-- menu: public, my objects, my institution --}%
 
                     <g:if test="${contextOrg}">
-                        <g:if test="${contextOrg.isCustomerType_Administration()}">
-                            <laser:render template="/layouts/laser/menu_yps" />
+                        <g:if test="${contextOrg.isCustomerType_Support()}">
+                            <laser:render template="/layouts/laser/menu_support" />
                         </g:if>
                         <g:else>
                             <laser:render template="/layouts/laser/menu_user_public" />

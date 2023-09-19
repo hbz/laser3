@@ -16,16 +16,10 @@
                     <div class="divider"></div>
                     <a class="item" onclick="JSPC.app.IdContoller.createIdentifier(${orgInstance.id});">${message(code: 'identifier.create.new')}</a>
                 </g:if>
-%{--                <g:else>--}%
-%{--                    <ui:subNavItem message="identifier.create.new" disabled="disabled" />--}%
-%{--                </g:else>--}%
                 <g:if test="${hasAccessToCustomeridentifier}">
                     <g:if test="${editable_customeridentifier}">
                         <a class="item" onclick="JSPC.app.IdContoller.createCustomerIdentifier(${orgInstance.id});">${message(code: 'org.customerIdentifier.create.new')}</a>
                     </g:if>
-%{--                    <g:else>--}%
-%{--                        <ui:subNavItem message="org.customerIdentifier.create.new" disabled="disabled" />--}%
-%{--                    </g:else>--}%
                 </g:if>
             </g:elseif>
             <g:elseif test="${actionName == 'users'}">
@@ -87,16 +81,10 @@
                 <div class="divider"></div>
                 <a class="item" onclick="JSPC.app.IdContoller.createIdentifier(${orgInstance.id});">${message(code: 'identifier.create.new')}</a>
             </g:if>
-%{--            <g:else>--}%
-%{--                <ui:actionsDropdownItem message="identifier.create.new" disabled="disabled" />--}%
-%{--            </g:else>--}%
             <g:if test="${hasAccessToCustomeridentifier}">
                 <g:if test="${editable_customeridentifier}">
                     <a class="item" onclick="JSPC.app.IdContoller.createCustomerIdentifier(${orgInstance.id});">${message(code: 'org.customerIdentifier.create.new')}</a>
                 </g:if>
-%{--                <g:else>--}%
-%{--                    <ui:actionsDropdownItem message="org.customerIdentifier.create.new" disabled="disabled" />--}%
-%{--                </g:else>--}%
             </g:if>
         </g:elseif>
         <g:elseif test="${actionName == 'users'}">

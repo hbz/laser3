@@ -9,7 +9,7 @@
 <laser:render template="breadcrumb" model="${[orgInstance: orgInstance, params: params]}"/>
 
 <ui:controlButtons>
-    <laser:render template="actions" />
+    <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
 </ui:controlButtons>
 
 <laser:render template="/templates/copyFilteredEmailAddresses"
@@ -19,7 +19,7 @@
     <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
 </ui:h1HeaderWithIcon>
 
-<laser:render template="${ypsService.getNavTemplatePath()}" model="${[orgInstance: orgInstance]}"/>
+<laser:render template="${customerTypeService.getNavTemplatePath()}" model="${[orgInstance: orgInstance]}"/>
 
 <ui:messages data="${flash}"/>
 
