@@ -70,11 +70,7 @@
             <th>${message(code:'default.provider.label')}</th>
             <th>${message(code:'platform.label')}</th>
             <th>${message(code:'myinst.currentPackages.assignedSubscriptions')}</th>
-            <g:if test="${AppUtils.isPreviewOnly()}">
-                <th class="center aligned">
-                    <ui:markerIcon type="WEKB_CHANGES" />
-                </th>
-            </g:if>
+            <th class="center aligned"><ui:markerIcon type="WEKB_CHANGES" /></th>
         </tr>
         </thead>
         <tbody>
@@ -126,13 +122,11 @@
                 </td>
                 <%--<td class="center aligned">
                 </td>--%>
-                <g:if test="${AppUtils.isPreviewOnly()}">
-                    <td class="center aligned">
-                        <g:if test="${pkg.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
-                            <ui:markerIcon type="WEKB_CHANGES" color="purple" />
-                        </g:if>
-                    </td>
-                </g:if>
+                <td class="center aligned">
+                    <g:if test="${pkg.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
+                        <ui:markerIcon type="WEKB_CHANGES" color="purple" />
+                    </g:if>
+                </td>
             </tr>
         </g:each>
         </tbody>

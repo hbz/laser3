@@ -145,12 +145,7 @@ class MyInstitutionControllerService {
         result.countSurvey = result.surveys.size()
         */
 
-        //int days = result.user.getSetting(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14).getValue()
-        //result.wekbChanges = wekbStatsService.getCurrentChanges(days)
-
-        if (AppUtils.isPreviewOnly()) {
-            result.wekbChanges = wekbStatsService.getCurrentChanges()
-        }
+        result.wekbChanges = wekbStatsService.getCurrentChanges()
 
         result.benchMark = prf.stopBenchmark()
         [status: STATUS_OK, result: result]

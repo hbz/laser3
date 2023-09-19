@@ -23,11 +23,9 @@
 						<th class="center aligned">
 							<ui:myXIcon tooltip="${message(code: 'menu.my.platforms')}" />
 						</th>
-						<g:if test="${AppUtils.isPreviewOnly()}">
-							<th class="center aligned">
-								<ui:markerIcon type="WEKB_CHANGES" />
-							</th>
-						</g:if>
+						<th class="center aligned">
+							<ui:markerIcon type="WEKB_CHANGES" />
+						</th>
 						<th>${message(code:'org.isWekbCurated.label')}</th>
 					</tr>
 					</thead>
@@ -83,13 +81,11 @@
 									</span>
 								</g:if>
 							</td>
-							<g:if test="${AppUtils.isPreviewOnly()}">
-								<td class="center aligned">
-									<g:if test="${platformInstance && platformInstance.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
-										<ui:markerIcon type="WEKB_CHANGES" color="purple" />
-									</g:if>
-								</td>
-							</g:if>
+							<td class="center aligned">
+								<g:if test="${platformInstance && platformInstance.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
+									<ui:markerIcon type="WEKB_CHANGES" color="purple" />
+								</g:if>
+							</td>
 							<td>
 								<g:if test="${platformInstance}">
 									<ui:wekbButtonLink type="platform" gokbId="${platformInstance.gokbId}" />
