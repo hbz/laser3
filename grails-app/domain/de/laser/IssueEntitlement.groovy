@@ -114,7 +114,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     }
 
     static constraints = {
-        globalUID      (unique:true, maxSize:255)
+        globalUID      (nullable: true, blank: false, unique:true, maxSize:255)
       //name           (nullable:true)
       //sortname       (nullable:true)
         notes          (nullable:true)
