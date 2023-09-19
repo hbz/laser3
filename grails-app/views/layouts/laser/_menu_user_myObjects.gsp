@@ -28,6 +28,7 @@
         <div class="divider"></div>
         <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="tasks" message="menu.my.tasks" />
         <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="documents" message="menu.my.documents" />
+        <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
 
         <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
             <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentSurveys" message="menu.my.surveys" />
@@ -36,15 +37,13 @@
             <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.ORG_CONSORTIUM_PRO}" controller="survey" action="workflowsSurveysConsortia" message="menu.my.surveys" />
         </g:elseif>
 
+        <div class="divider"></div>
+
         <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
             <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.ORG_CONSORTIUM_PRO}" controller="myInstitution" action="currentSubscriptionsTransfer" message="menu.my.currentSubscriptionsTransfer" />
         </g:if>
 
-        <g:if test="${AppUtils.isPreviewOnly()}">
-            <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentMarkers" message="menu.my.markers" />
-        </g:if>
-
-        <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
+        <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentMarkers" message="menu.my.markers" />
 
         %{--                                <g:if test="${contextService.getOrg().isCustomerType_Consortium_Pro()}">--}%
         %{--                                    <div class="divider"></div>--}%

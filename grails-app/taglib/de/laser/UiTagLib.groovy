@@ -368,6 +368,50 @@ class UiTagLib {
         }
     }
 
+    def markerSwitch = { attrs, body ->
+
+        MarkerSupport obj   = (attrs.org ?: attrs.package ?: attrs.platform) as MarkerSupport
+        boolean isMarked    = obj.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)
+        String tt           = '?'
+        String tt_list      = message(code: 'marker.WEKB_CHANGES')
+
+        if (attrs.org) {
+            tt = isMarked ? 'Der Anbieter/Lieferant ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
+                    : 'Anklicken, um den Anbieter/Lieferant auf die ' + tt_list + ' zu setzen.'
+        }
+        else if (attrs.package) {
+            tt = isMarked ? 'Das Paket ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
+                    : 'Anklicken, um das Paket auf die ' + tt_list + ' zu setzen.'
+        }
+        else if (attrs.platform) {
+            tt = isMarked ? 'Der Plattform ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
+                    : 'Anklicken, um die Plattform auf die ' + tt_list + ' zu setzen.'
+        }
+
+        if (obj) {
+            String onClick = ui.remoteJsToggler(
+                    controller:     'ajax',
+                    action:         'toggleMarker',
+                    data:           '{oid:\'' + genericOIDService.getOID(obj) + '\', type:\'' + Marker.TYPE.WEKB_CHANGES + '\'}',
+                    update:         '#marker-' + obj.id,
+                    successFunc:    'tooltip.init(\'#marker-' + obj.id + '\')'
+            )
+
+            if (! attrs.ajax) {
+                out << '<span id="marker-' + obj.id + '" style="margin-left:1em;">'
+            }
+
+            out <<      '<a class="ui icon label la-popup-tooltip la-long-tooltip la-delay" onclick="' + onClick + '" '
+            out <<          'data-content="' + tt + '" data-position="top right">'
+            out <<              '<i class="icon purple bookmark' + (isMarked ? '' : ' outline') + '"></i>'
+            out <<      '</a>'
+
+            if (! attrs.ajax) {
+                out << '</span>'
+            }
+        }
+    }
+
     //<ui:filter simple="true|false" extended="true|false"> CONTENT </ui:filter>
 
     def filter = { attrs, body ->
