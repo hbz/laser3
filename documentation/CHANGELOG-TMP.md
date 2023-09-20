@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5284    20.09.2023  rc-3.2  3.2.5       Andreas Bug         Performanz- und Zuordnungsfehler bei der Titelauswahl behoben
+
 5283    20.09.2023  rc-3.2  3.2.5       Andreas Bug         falsche Ausgabe des Reverse Charge korrigiert
 
 5279    13.09.2023  rc-3.2  3.2.5       Andreas Bug         Dauerhafte Titel wurden nicht verzeichnet

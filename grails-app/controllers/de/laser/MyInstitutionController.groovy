@@ -1085,7 +1085,7 @@ class MyInstitutionController  {
                        g.message(code: 'subscription.startDate.label'),
                        g.message(code: 'subscription.endDate.label'),
                        g.message(code: 'subscription.manualCancellationDate.label'),
-                       g.message(code: 'subscription.referenceYear.label'),
+                       g.message(code: 'subscription.referenceYear.export.label'),
                        g.message(code: 'subscription.isMultiYear.label')]
         if(!asCons) {
             titles.add(g.message(code: 'subscription.isAutomaticRenewAnnually.label'))
@@ -3570,7 +3570,7 @@ join sub.orgRelations or_sub where
             headerRow.setHeightInPoints(16.75f)
             List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'), message(code:'org.mainContact.label'),message(code:'default.subscription.label'),message(code:'globalUID.label'),
                            message(code:'license.label'), message(code:'myinst.consortiaSubscriptions.packages'),message(code:'myinst.consortiaSubscriptions.provider'),message(code:'myinst.consortiaSubscriptions.runningTimes'),
-                           message(code: 'subscription.referenceYear.label'), message(code:'subscription.isPublicForApi.label'),message(code:'subscription.hasPerpetualAccess.label'),
+                           message(code: 'subscription.referenceYear.export.label'), message(code:'subscription.isPublicForApi.label'),message(code:'subscription.hasPerpetualAccess.label'),
                            message(code:'financials.amountFinal'),"${message(code:'financials.isVisibleForSubscriber')} / ${message(code:'financials.costItemConfiguration')}"]
             titles.eachWithIndex{ titleName, int i ->
                 Cell cell = headerRow.createCell(i)
@@ -3748,7 +3748,7 @@ join sub.orgRelations or_sub where
                 csv {
                     List titles = [message(code: 'sidewide.number'), message(code: 'myinst.consortiaSubscriptions.member'), message(code: 'org.mainContact.label'), message(code: 'default.subscription.label'), message(code: 'globalUID.label'),
                                    message(code: 'license.label'), message(code: 'myinst.consortiaSubscriptions.packages'), message(code: 'myinst.consortiaSubscriptions.provider'), message(code: 'myinst.consortiaSubscriptions.runningTimes'),
-                                   message(code: 'subscription.referenceYear.label'), message(code: 'subscription.isPublicForApi.label'), message(code: 'subscription.hasPerpetualAccess.label'),
+                                   message(code: 'subscription.referenceYear.export.label'), message(code: 'subscription.isPublicForApi.label'), message(code: 'subscription.hasPerpetualAccess.label'),
                                    message(code: 'financials.amountFinal'), "${message(code: 'financials.isVisibleForSubscriber')} / ${message(code: 'financials.costItemConfiguration')}"]
                     List columnData = []
                     List row
