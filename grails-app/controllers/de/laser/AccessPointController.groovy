@@ -31,7 +31,6 @@ class AccessPointController  {
     EscapeService escapeService
     OrgTypeService orgTypeService
 
-
     //static allowedMethods = [create: ['GET', 'POST'], delete: ['GET', 'POST'], dynamicSubscriptionList: ['POST'], dynamicPlatformList: ['POST']]
 
     /**
@@ -77,7 +76,10 @@ class AccessPointController  {
      * Loads a list of subscriptions linked to the given {@link OrgAccessPoint}
      * @returns a table view listing the resulting subscriptions
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def dynamicSubscriptionList() {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
         List<Long> currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
@@ -106,7 +108,10 @@ class AccessPointController  {
      * Loads a list of platforms linked to the given {@link OrgAccessPoint}
      * @return a table view listing the resulting platforms
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def dynamicPlatformList() {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
         List<Long> currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
@@ -221,7 +226,10 @@ class AccessPointController  {
      * @see de.uni_freiburg.ub.Ipv4Address
      * @see de.uni_freiburg.ub.Ipv6Address
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def edit_ip() {
         _edit("ip")
     }
@@ -231,7 +239,10 @@ class AccessPointController  {
      * @return the OpenAthens editing view
      * @see de.laser.oap.OrgAccessPointOA
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def edit_oa() {
         _edit("oa")
     }
@@ -241,7 +252,10 @@ class AccessPointController  {
      * @return the proxy editing view
      * @see de.laser.oap.OrgAccessPointProxy
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def edit_proxy() {
         _edit("proxy")
     }
@@ -251,7 +265,10 @@ class AccessPointController  {
      * @return the EZProxy editing view
      * @see de.laser.oap.OrgAccessPointEzproxy
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def edit_ezproxy() {
         _edit("ezproxy")
     }
@@ -261,7 +278,10 @@ class AccessPointController  {
      * @return the Shibboleth editing view
      * @see de.laser.oap.OrgAccessPointShibboleth
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def edit_shibboleth() {
         _edit("shibboleth")
     }
@@ -271,7 +291,10 @@ class AccessPointController  {
      * @return the Mail-Domain editing view
      * @see de.laser.oap.OrgAccessPoint
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def edit_maildomain() {
         _edit("mailDomain")
     }

@@ -177,7 +177,10 @@ class MyInstitutionController  {
      * @see Platform
      * @see Subscription
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def currentPlatforms() {
         Map<String, Object> result = [:]
 
@@ -3110,7 +3113,10 @@ class MyInstitutionController  {
      * Call for the table view of those consortia which are linked to the context institution
      * @return a list of those institutions on whose consortial subscriptions the context institution is participating
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def currentConsortia() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 

@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.annotations.DebugInfo
 import de.laser.auth.User
 import de.laser.storage.RDStore
 import de.laser.utils.SwissKnife
@@ -32,7 +33,10 @@ class TitleController  {
      * Call to the list of all title instances recorded in the system
      * @return the result of {@link #list()}
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def index() {
         redirect controller: 'title', action: 'list', params: params
     }
@@ -41,7 +45,10 @@ class TitleController  {
      * Lists all recorded title in the app; the result may be filtered
      * @return a list of {@link TitleInstancePackagePlatform}s
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def list() {
         log.debug("list : ${params}")
 
@@ -104,7 +111,10 @@ class TitleController  {
      * Lists all recorded title in the app; the result may be filtered
      * @return a list of {@link TitleInstancePackagePlatform}s
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def listES() {
         log.debug("titleSearch : ${params}")
 
