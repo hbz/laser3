@@ -70471,8 +70471,9 @@ a.inverted.ui.card:hover,
 
 /* Dropdown Icon */
 
-.ui.accordion .title .dropdown.icon,
-.ui.accordion .accordion .title .dropdown.icon {
+.ui.accordion .ui.header > .dropdown.icon,
+.ui.accordion .title > .dropdown.icon,
+.ui.accordion .accordion .title > .dropdown.icon {
   font-family: Accordion;
   line-height: 1;
   -webkit-backface-visibility: hidden;
@@ -70482,9 +70483,11 @@ a.inverted.ui.card:hover,
   text-align: center;
 }
 
-.ui.accordion .title .dropdown.icon:before,
-.ui.accordion .accordion .title .dropdown.icon:before {
-  content: '\f0da' ;
+.ui.accordion .ui.header > .dropdown.icon::before,
+.ui.accordion .title > .dropdown.icon::before,
+.ui.accordion .accordion .title > .dropdown.icon::before {
+  content: "\f0da" 
+;
 }
 
 .ui.accordion.la-accordion-showMore .active.title .angle.double.icon {

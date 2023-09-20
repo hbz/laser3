@@ -74,7 +74,7 @@
                                 %>
                                 <g:if test="${showConsortiaFunctions && !sp.subscription.instanceOf}">
                                     <div class="ui buttons">
-                                        <div class="ui simple dropdown negative button la-modern-button ${unlinkDisabled}" data-content="${message(code: 'subscriptionsManagement.unlinkInfo.withIE')}">
+                                        <div class="ui simple dropdown negative icon button la-modern-button ${unlinkDisabled}" data-content="${message(code: 'subscriptionsManagement.unlinkInfo.withIE')}">
                                             <i aria-hidden="true" class="chain broken icon la-js-editmode-icon"></i>
                                             <div class="menu">
                                                 <g:link controller="subscription" action="unlinkPackage" class="${btnClass}" params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'withIE']}" data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name])}"
@@ -88,7 +88,7 @@
                                             </div>
                                         </div>
                                         <div class="or" data-text="|"></div>
-                                        <div class="ui simple dropdown negative button la-modern-button ${unlinkDisabled}" data-content="${message(code: 'subscriptionsManagement.unlinkInfo.onlyIE')}">
+                                        <div class="ui simple dropdown negative icon button la-modern-button ${unlinkDisabled}" data-content="${message(code: 'subscriptionsManagement.unlinkInfo.onlyIE')}">
                                             <i aria-hidden="true" class="eraser icon la-js-editmode-icon"></i>
                                             <div class="menu">
                                                 <g:link controller="subscription" action="unlinkPackage" class="${btnClass}" params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'onlyIE']}" data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.titles", args: [sp.pkg.name])}"
