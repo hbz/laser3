@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5283    20.09.2023  rc-3.2  3.2.5       Andreas Bug         falsche Ausgabe des Reverse Charge korrigiert
+
 5279    13.09.2023  rc-3.2  3.2.5       Andreas Bug         Dauerhafte Titel wurden nicht verzeichnet
 
 --      12.09.2023  rc-3.2  3.2.5       Andreas Bug         fehlende Blockade bei hart kodierten Namensräumen eingefügt
