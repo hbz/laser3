@@ -1524,4 +1524,21 @@
 
 @inputPlaceholderColor: #585c5f;
 
+/*******************************
+        general-use values
+        for managing z-index values
+*******************************/
+
+/*  FIRST LAYERS  */
+/*  2-100         */
+@fixedTableHeaderZIndex: 2;      // Fixed Table Header
+@floatingZIndex : 3;             // Round blue floating labels with counted items mostly in tabs
+@la-asideSegmentZIndex: 8;      // Accordion with identificators and namesspaces
+@menuZIndex: 11;                // Normal Dropdown Menue (after clicking)
+@editableformControlZIndex: 100;// Element that opens when clicking on x-editable Element
+
+/*  SECOND LAYERS */
+/*  > 100         */
+@la-contextBarZIndex: 101;      // gray context bar
+@mainMenueZIndex: 102;          // Main Menue
 
