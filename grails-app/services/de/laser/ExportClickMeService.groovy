@@ -3525,7 +3525,21 @@ class ExportClickMeService {
                         }
 
                     } else {
-                        def fieldValue = _getFieldValue(participantResult, field, sdf)
+                        def fieldValue
+                        if(fieldKey == 'survey.costTax') {
+                            if(participantResult.resultOfParticipation.costItem?.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE)
+                                fieldValue = RDStore.TAX_TYPE_REVERSE_CHARGE.getI10n('value')
+                            else
+                                fieldValue = _getFieldValue(participantResult, field, sdf)
+                        }
+                        else if(fieldKey == 'survey.costAfterTax') {
+                            if(participantResult.resultOfParticipation.costItem?.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE)
+                                fieldValue = ' '
+                            else
+                                fieldValue = _getFieldValue(participantResult, field, sdf)
+                        }
+                        else
+                            fieldValue = _getFieldValue(participantResult, field, sdf)
                         row.add(createTableCell(format, fieldValue))
                     }
                 }

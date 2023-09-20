@@ -509,8 +509,8 @@ class SurveyService {
                                    messageSource.getMessage('default.currency.label', null, locale),
                                    messageSource.getMessage('financials.newCosts.taxTypeAndRate', null, locale),
                                    messageSource.getMessage('financials.costInBillingCurrencyAfterTax', null, locale),
-                                   messageSource.getMessage('default.startDate.label', null, locale),
-                                   messageSource.getMessage('default.endDate.label', null, locale),
+                                   messageSource.getMessage('default.startDate.export.label', null, locale),
+                                   messageSource.getMessage('default.endDate.export.label', null, locale),
                                    messageSource.getMessage('surveyConfigsInfo.newPrice.comment', null, locale)])
                 }
 
@@ -558,7 +558,10 @@ class SurveyService {
                             else
                                 surveyCostTax = ''
                             row.add([field: surveyCostTax, style: null])
-                            row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
+                            if(surveyCostItem?.taxKey && surveyCostItem.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE)
+                                row.add([field: '', style: null])
+                            else
+                                row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
                             row.add([field: surveyCostItem?.startDate ? formatter.format(surveyCostItem.startDate): '', style: null])
                             row.add([field: surveyCostItem?.endDate ? formatter.format(surveyCostItem.endDate): '', style: null])
                             row.add([field: surveyCostItem?.costDescription ?: '', style: null])
@@ -591,8 +594,8 @@ class SurveyService {
                            messageSource.getMessage('default.currency.label', null, locale),
                            messageSource.getMessage('financials.newCosts.taxTypeAndRate', null, locale),
                            messageSource.getMessage('financials.costInBillingCurrencyAfterTax', null, locale),
-                           messageSource.getMessage('default.startDate.label', null, locale),
-                           messageSource.getMessage('default.endDate.label', null, locale),
+                           messageSource.getMessage('default.startDate.export.label', null, locale),
+                           messageSource.getMessage('default.endDate.export.label', null, locale),
                            messageSource.getMessage('surveyConfigsInfo.newPrice.comment', null, locale)])
 
 
@@ -634,7 +637,10 @@ class SurveyService {
                         else
                             surveyCostTax = ''
                         row.add([field: surveyCostTax, style: null])
-                        row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
+                        if(surveyCostItem?.taxKey && surveyCostItem.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE)
+                            row.add([field: '', style: null])
+                        else
+                            row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
                         row.add([field: surveyCostItem?.startDate ? formatter.format(surveyCostItem.startDate) : '', style: null])
                         row.add([field: surveyCostItem?.endDate ? formatter.format(surveyCostItem.endDate) : '', style: null])
                         row.add([field: surveyCostItem?.costDescription ?: '', style: null])
