@@ -91,9 +91,9 @@ class OrganisationController  {
      *     <li>oamonitor: permissions to the Open Access Monitor harvest access</li>
      * </ul>
      */
-    @DebugInfo(isInstAdm_or_ROLEADMIN = ['FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC'])
+    @DebugInfo(isInstAdm_denySupport_or_ROLEADMIN = ['FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC'])
     @Secured(closure = {
-        ctx.contextService.isInstAdm_or_ROLEADMIN( 'FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC' )
+        ctx.contextService.isInstAdm_denySupport_or_ROLEADMIN( 'FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC' )
     })
     @Check404(domain=Org)
     def settings() {
@@ -1638,9 +1638,9 @@ class OrganisationController  {
      * @return a table view of the reader numbers, grouped by semesters on the one hand, due dates on the other
      * @see ReaderNumber
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
     @Check404(domain=Org)
     def readerNumber() {
@@ -1722,9 +1722,9 @@ class OrganisationController  {
      * @return a list view of access points
      * @see de.laser.oap.OrgAccessPoint
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
     @Check404(domain=Org)
     def accessPoints() {
@@ -1922,9 +1922,9 @@ class OrganisationController  {
      * Call to list the contacts the context institution has attached to the given organisation
      * @return a table view of the contacts
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
     @Check404(domain=Org)
     def myPublicContacts() {

@@ -118,9 +118,9 @@ class MyInstitutionController  {
      * Call for the reporting module
      * @return the reporting entry view
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO_SUPPORT])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO_SUPPORT)
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     def reporting() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -863,9 +863,9 @@ class MyInstitutionController  {
      * The list results may be filtered with filter parameters
      * @return a list of matching {@link Org} records, as html or as export pipe (Excel / CSV)
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
     def currentProviders() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1425,9 +1425,9 @@ class MyInstitutionController  {
      * @see Platform
      * @see IssueEntitlement
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
     def currentTitles() {
 
@@ -1729,9 +1729,9 @@ class MyInstitutionController  {
      * @see PermanentTitle
      * @see FilterService#getPermanentTitlesQuery(grails.web.servlet.mvc.GrailsParameterMap, de.laser.Org)
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
     def currentPermanentTitles() {
 
@@ -1809,9 +1809,9 @@ class MyInstitutionController  {
      * @see SubscriptionPackage
      * @see Package
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
     def currentPackages() {
 
@@ -1968,9 +1968,9 @@ class MyInstitutionController  {
      * @see PendingChange
      */
     @Deprecated
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
     def changes() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)

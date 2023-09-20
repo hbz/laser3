@@ -16,7 +16,7 @@ class ContextBarTagLib {
     // <ui:cbItemCustomerType org="${contextService.getOrg()}" />
 
     def cbItemCustomerType = {attrs, body ->
-        String icon  = 'circle'
+        String icon  = 'smile outline'
         String color = 'grey'
         String text  = '?'
         Org org = attrs.org as Org

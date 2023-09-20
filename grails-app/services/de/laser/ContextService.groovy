@@ -116,7 +116,7 @@ class ContextService {
      * @see CustomerTypeService
      */
     boolean isInstUser_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN('INST_USER', orgPerms)
+        _hasInstRoleAndPerm_or_ROLEADMIN('INST_USER', orgPerms, false)
     }
 
     /**
@@ -126,7 +126,7 @@ class ContextService {
      * @see CustomerTypeService
      */
     boolean isInstEditor_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN('INST_EDITOR', orgPerms)
+        _hasInstRoleAndPerm_or_ROLEADMIN('INST_EDITOR', orgPerms, false)
     }
 
     /**
@@ -136,7 +136,19 @@ class ContextService {
      * @see CustomerTypeService
      */
     boolean isInstAdm_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN('INST_ADM', orgPerms)
+        _hasInstRoleAndPerm_or_ROLEADMIN('INST_ADM', orgPerms, false)
+    }
+
+    boolean isInstUser_denySupport_or_ROLEADMIN(String orgPerms = null) {
+        _hasInstRoleAndPerm_or_ROLEADMIN('INST_USER', orgPerms, true)
+    }
+
+    boolean isInstEditor_denySupport_or_ROLEADMIN(String orgPerms = null) {
+        _hasInstRoleAndPerm_or_ROLEADMIN('INST_EDITOR', orgPerms, true)
+    }
+
+    boolean isInstAdm_denySupport_or_ROLEADMIN(String orgPerms = null) {
+        _hasInstRoleAndPerm_or_ROLEADMIN('INST_ADM', orgPerms, true)
     }
 
     // -- private
@@ -149,12 +161,15 @@ class ContextService {
      * @see User
      * @see CustomerTypeService
      */
-    private boolean _hasInstRoleAndPerm_or_ROLEADMIN(String instUserRole, String orgPerms) {
+    private boolean _hasInstRoleAndPerm_or_ROLEADMIN(String instUserRole, String orgPerms, boolean denyCustomerTypeSupport) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
         boolean check = userService.hasAffiliation_or_ROLEADMIN(getUser(), getOrg(), instUserRole)
 
+        if (check && denyCustomerTypeSupport) {
+            check = !getOrg().isCustomerType_Support()
+        }
         if (check && orgPerms) {
             check = _hasPerm(orgPerms)
         }

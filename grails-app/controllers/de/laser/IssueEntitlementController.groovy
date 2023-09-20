@@ -33,9 +33,9 @@ class IssueEntitlementController {
     /**
      * Shows the given issue entitlement details
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
     @Check404()
     def show() {
@@ -126,9 +126,9 @@ class IssueEntitlementController {
       result
     }
 
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     @Deprecated
     def delete() {

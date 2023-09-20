@@ -80,7 +80,7 @@ class SurveyService {
             return false
         }
 
-        if (contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )) {
+        if (contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )) {
             SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfigInList(org, surveyInfo.surveyConfigs)
 
             if (surveyOrg.finishDate) {
@@ -108,7 +108,7 @@ class SurveyService {
             return false
         }
 
-        if (contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )) {
+        if (contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )) {
 
             if (SurveyOrg.findByOrgAndSurveyConfig(org, surveyConfig)?.finishDate) {
                 return false
