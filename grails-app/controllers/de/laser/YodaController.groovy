@@ -802,7 +802,7 @@ class YodaController {
             String dataToLoad = params.dataToLoad, objType = params.objType
             executorService.execute({
                 Thread.currentThread().setName("UpdateData")
-                if (dataToLoad in ["medium", "openAccess", "accessType"] && objType == 'issueEntitlement')
+                if (dataToLoad in ["medium", "openAccess", "accessType", "globalUID"] && objType == 'issueEntitlement')
                     yodaService.fillValue(dataToLoad)
                 else
                     globalSourceSyncService.updateData(dataToLoad)

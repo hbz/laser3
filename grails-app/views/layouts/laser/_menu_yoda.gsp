@@ -89,6 +89,7 @@
                     <div class="menu" role="menu">
                         <ui:link addItemAttributes="true" controller="yoda" action="reloadWekbProvider" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.reloadProvider')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="reloadWekbPlatform" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.reloadPlatform')}</ui:link>
+                        <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'globalUID', objType:'issueEntitlement']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateGlobalUID')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'identifier']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateIdentifiers')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'editionStatement']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateEditionStatement')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="matchTitleStatus" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.matchTitleStatus')}</ui:link>
