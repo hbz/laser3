@@ -141,20 +141,7 @@
                             </dd>
                         </dl>
                     </g:if>
-                    <g:if test="${orgInstance.isCustomerType_Inst_Pro()}">
-                        <dl>
-                            <dt>
-                                <g:message code="org.linkResolverBase.label"/>
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${message(code: 'org.linkResolverBase.expl')}">
-                                    <i class="question circle icon"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <ui:xEditable owner="${orgInstance}" field="linkResolverBaseURL" />
-                                <br />&nbsp<br />&nbsp<br />
-                            </dd>
-                        </dl>
+                    <g:if test="${orgInstance.isCustomerType_Inst()}">
                         <dl>
                             <dt>
                                 <g:message code="org.legalPatronName.label" />
@@ -189,6 +176,18 @@
             <g:if test="${orgInstance.isCustomerType_Inst()}">
                 <div class="ui card">
                     <div class="content">
+                        <dl>
+                            <dt>
+                                <g:message code="org.linkResolverBase.label"/>
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${message(code: 'org.linkResolverBase.expl')}">
+                                    <i class="question circle icon"></i>
+                                </span>
+                            </dt>
+                            <dd>
+                                <ui:xEditable owner="${orgInstance}" field="linkResolverBaseURL" />
+                            </dd>
+                        </dl>
                         <dl>
                             <dt>
                                 <g:message code="org.eInvoice.label" />
