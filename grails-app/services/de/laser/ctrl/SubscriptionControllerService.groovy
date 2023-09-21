@@ -2854,7 +2854,7 @@ class SubscriptionControllerService {
                                 match = TitleInstancePackagePlatform.findByHostPlatformURL(titleUrl)
                             }
                             if(idCandidate.value && !match) {
-                                List<TitleInstancePackagePlatform> matches = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id where id.value = :value and id.ns in (:namespaces)', [value: idCandidate.value.replace("\r",""), namespaces: namespaces.values()])
+                                List<TitleInstancePackagePlatform> matches = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:pkgs) and id.value = :value and id.ns in (:namespaces)', [pkgs: subPkgs, value: idCandidate.value.replace("\r",""), namespaces: namespaces.values()])
                                 if(matches)
                                     match = matches[0]
                             }

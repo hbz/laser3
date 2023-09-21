@@ -478,35 +478,40 @@ join sub.orgRelations or_sub where
             costs.each { row ->
                 result.totalMembers << row.org
             }
-            if(params.exportXLS || params.format)
+            if(params.fileformat) {
                 result.entries = costs
-            else result.entries = costs.drop((int) result.offset).take((int) result.max)
-
-            result.finances = {
-                Map entries = [:]
-                result.entries.each { obj ->
-                    if (obj.cost && obj.cost.owner.id == contextOrg.id) {
-                        CostItem ci = (CostItem) obj.cost
-                        if (!entries."${ci.billingCurrency}") {
-                            entries."${ci.billingCurrency}" = 0.0
-                        }
-
-                        if (ci.costItemElementConfiguration == RDStore.CIEC_POSITIVE) {
-                            entries."${ci.billingCurrency}" += ci.costInBillingCurrencyAfterTax
-                        }
-                        else if (ci.costItemElementConfiguration == RDStore.CIEC_NEGATIVE) {
-                            entries."${ci.billingCurrency}" -= ci.costInBillingCurrencyAfterTax
-                        }
-                        //result.totalMembers << ci.sub.getSubscriber()
-                    }
-                    if (obj.sub) {
-                        Subscription subCons = (Subscription) obj.sub
-                        //linkedLicenses.put(subCons,Links.findAllByDestinationSubscriptionAndLinkType(subCons,RDStore.LINKTYPE_LICENSE).collect { Links row -> genericOIDService.resolveOID(row.source)})
-                        linkedLicenses.put(subCons,Links.executeQuery('select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType',[subscription:subCons,linkType:RDStore.LINKTYPE_LICENSE]))
-                    }
+                result.entries.sub.each { Subscription subCons ->
+                    //linkedLicenses.put(subCons,Links.findAllByDestinationSubscriptionAndLinkType(subCons,RDStore.LINKTYPE_LICENSE).collect { Links row -> genericOIDService.resolveOID(row.source)})
+                    linkedLicenses.put(subCons, Links.executeQuery('select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType', [subscription: subCons, linkType: RDStore.LINKTYPE_LICENSE]))
                 }
-                entries
-            }()
+            }
+            else {
+                result.entries = costs.drop((int) result.offset).take((int) result.max)
+
+                result.finances = {
+                    Map entries = [:]
+                    result.entries.each { obj ->
+                        if (obj.cost && obj.cost.owner.id == contextOrg.id) {
+                            CostItem ci = (CostItem) obj.cost
+                            if (!entries."${ci.billingCurrency}") {
+                                entries."${ci.billingCurrency}" = 0.0
+                            }
+                            if (ci.costItemElementConfiguration == RDStore.CIEC_POSITIVE) {
+                                entries."${ci.billingCurrency}" += ci.costInBillingCurrencyAfterTax
+                            } else if (ci.costItemElementConfiguration == RDStore.CIEC_NEGATIVE) {
+                                entries."${ci.billingCurrency}" -= ci.costInBillingCurrencyAfterTax
+                            }
+                            //result.totalMembers << ci.sub.getSubscriber()
+                        }
+                        if (obj.sub) {
+                            Subscription subCons = (Subscription) obj.sub
+                            //linkedLicenses.put(subCons,Links.findAllByDestinationSubscriptionAndLinkType(subCons,RDStore.LINKTYPE_LICENSE).collect { Links row -> genericOIDService.resolveOID(row.source)})
+                            linkedLicenses.put(subCons, Links.executeQuery('select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType', [subscription: subCons, linkType: RDStore.LINKTYPE_LICENSE]))
+                        }
+                    }
+                    entries
+                }()
+            }
         }
         else if('onlyMemberSubs') {
             Set memberSubscriptions = Subscription.executeQuery(query,qarams)
@@ -1519,6 +1524,15 @@ join sub.orgRelations or_sub where
                     stmt.addBatch([wekbId: configMap.wekbId])
                 }
             }
+            if(sub.hasPerpetualAccess) {
+                Long ownerId = sub.getSubscriber().id
+                ieOverwriteMapSet.each { Map<String, Object> configMap ->
+                    sql.withBatch("insert into permanent_title (pt_version, pt_ie_fk, pt_date_created, pt_subscription_fk, pt_last_updated, pt_tipp_fk, pt_owner_fk) " +
+                            "select 0, ie_id, now(), ie_subscription_fk, now(), ie_tipp_fk, "+ownerId+" from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_gokb_id = :wekbId and ie_subscription_fk = :subId") { BatchingPreparedStatementWrapper stmt ->
+                        stmt.addBatch([wekbId: configMap.wekbId, subId: sub.id])
+                    }
+                }
+            }
             coverageOverwriteMapSet.each { Map<String, Object> configMap ->
                 if(configMap.startDate == '')
                     configMap.startDate = null
@@ -1543,6 +1557,15 @@ join sub.orgRelations or_sub where
                 sql.withBatch("insert into issue_entitlement (ie_version, ie_guid, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_status_rv_fk, ie_access_start_date, ie_access_end_date, ie_perpetual_access_by_sub_fk) " +
                         "select 0, concat('issueentitlement:',gen_random_uuid()), now(), now(), ${sub.id}, tipp_id, tipp_status_rv_fk, tipp_access_start_date, tipp_access_end_date, ${configMap.perpetualAccessBySub} from title_instance_package_platform where tipp_gokb_id = :wekbId") { BatchingStatementWrapper stmt ->
                     stmt.addBatch([wekbId: configMap.wekbId])
+                }
+            }
+            if(sub.hasPerpetualAccess) {
+                Long ownerId = sub.getSubscriber().id
+                ieDirectMapSet.each { Map<String, Object> configMap ->
+                    sql.withBatch("insert into permanent_title (pt_version, pt_ie_fk, pt_date_created, pt_subscription_fk, pt_last_updated, pt_tipp_fk, pt_owner_fk) " +
+                            "select 0, ie_id, now(), ie_subscription_fk, now(), ie_tipp_fk, "+ownerId+" from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_gokb_id = :wekbId and ie_subscription_fk = :subId") { BatchingPreparedStatementWrapper stmt ->
+                        stmt.addBatch([wekbId: configMap.wekbId, subId: sub.id])
+                    }
                 }
             }
             coverageDirectMapSet.each { Map<String, Object> configMap ->
