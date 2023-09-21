@@ -7,6 +7,36 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      21.09.2023  rc-3.2  3.2.5       Andreas Bug         Übertragungsfehler bei Umfragen behoben
+
+--      21.09.2023  rc-3.2  3.2.5       Andreas Bug         Sync aktualisierte den Anbieter in der Plattform nicht
+
+5293    21.09.2023  rc-3.2  3.2.5       Andreas Feature     Umrüstung von "Meine Lizenzen pro Einrichtung" auf konfigurierbaren Export
+
+5284    20.09.2023  rc-3.2  3.2.5       Andreas Bug         Performanz- und Zuordnungsfehler bei der Titelauswahl behoben
+
+5283    20.09.2023  rc-3.2  3.2.5       Andreas Bug         falsche Ausgabe des Reverse Charge korrigiert
+
+5279    13.09.2023  rc-3.2  3.2.5       Andreas Bug         Dauerhafte Titel wurden nicht verzeichnet
+
+--      12.09.2023  rc-3.2  3.2.5       Andreas Bug         fehlende Blockade bei hart kodierten Namensräumen eingefügt
+
+5217    08.09.2023  rc-3.2  3.2.5       Moe     Bug         Anlegen von Dokumenten beim Übertrag und Lizenzübertragung fehlerhaft
+
+5271    08.09.2023  rc-3.2  3.2.5       Andreas Bug         diverse Denk- und Programmierfehler bei der Titelverwaltung behoben
+
+5241    08.09.2023  rc-3.2  3.2-5       Moe     Feature     Meine Lizenzübertragungen: neue Spalte "Reminder"
+
+5270    07.09.2023  rc-3.2  3.2.5       Andreas Bug         diverse Bugs bei der Bereinigung von Titel behoben
+
+5269    07.09.2023  rc-3.2  3.2.5       Andreas Bug         inkonsistente Kostenausschüttung korrigiert
+
+5267    07.09.2023  rc-3.2  3.2.5       Moe     Feature     Umfrage: Paketübertrag für Teilnehmer
+
+5235    07.09.2023  rc-3.2  3.2.5       Moe     Bug         Lizenzpaket: Bloomsbury Titel via KBART hinzufügen 
+
+5268    06.09.2023  rc-3.2  3.2.5       Andreas Bug         irreführende Verknüpfung von Objekten behoben
+
 5266    05.09.2023  rc-3.2  3.2.4       Andreas Bug         fehlerhafte Erzeugung der individuellen Merkmale behoben
 
 --      05.09.2023  rc-3.2  3.2.4       Moe     Bug         Merkmalsänderungen in Umfrage werden falsch angezeigt

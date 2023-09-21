@@ -1,4 +1,4 @@
-<%@ page import="de.laser.*;de.laser.storage.RDStore;de.laser.interfaces.CalculatedType;de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.utils.DateUtils; de.laser.*;de.laser.storage.RDStore;de.laser.interfaces.CalculatedType;de.laser.storage.RDConstants" %>
 <laser:serviceInjection/>
 <g:if test="${editmode}">
 
@@ -24,28 +24,38 @@
         case Subscription.class.name:
             if(subscriptionLicenseLink) {
                 header = message(code:"subscription.linking.headerLicense")
-                thisString = message(code:"subscription.linking.this")
+                thisString = context.name
                 lookupName = "lookupLicenses"
                 instanceType = message(code:'license')
             }
             else {
                 header = message(code:"subscription.linking.header")
-                thisString = message(code:"subscription.linking.this")
+                thisString = context.name
                 lookupName = "lookupSubscriptions"
                 instanceType = message(code:"subscription")
             }
             urlParams.controller = 'myInstitution'
             urlParams.action = 'linkObjects'
+            if(context.startDate)
+                thisString += " (${DateUtils.getLocalizedSDF_noTime().format(context.startDate)} - "
+            if(context.endDate)
+                thisString += "${DateUtils.getLocalizedSDF_noTime().format(context.endDate)}"
+            thisString += ")"
             break
         case License.class.name: header = message(code:"license.linking.header")
-            thisString = message(code:"license.linking.this")
+            thisString = context.reference
             lookupName = "lookupLicenses"
             instanceType = message(code:"license")
             urlParams.controller = 'myInstitution'
             urlParams.action = 'linkObjects'
+            if(context.startDate)
+                thisString += " (${DateUtils.getLocalizedSDF_noTime().format(context.startDate)} - "
+            if(context.endDate)
+                thisString += "${DateUtils.getLocalizedSDF_noTime().format(context.endDate)}"
+            thisString += ")"
             break
         case Org.class.name: header = message(code:"org.linking.header")
-            thisString = message(code:"org.linking.this")
+            thisString = context.name
             lookupName = "lookupOrgs"
             instanceType = message(code:"org.label")
             urlParams.controller = 'organisation'
@@ -129,11 +139,6 @@
         </g:else>
         <div class="field">
             <div id="sub_role_tab_${tmplModalID}" class="ui grid">
-                <div class="row">
-                    <div class="column">
-                        ${header}
-                    </div>
-                </div>
                 <g:if test="${subscriptionLicenseLink}">
                     <g:hiddenField name="${selectLink}" value="${genericOIDService.getOID(RDStore.LINKTYPE_LICENSE)}§${1}"/>
                 </g:if>

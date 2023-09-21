@@ -189,26 +189,26 @@ class MyInstitutionController  {
         result.contextOrg = contextService.getOrg()
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        String instanceFilter = ""
-        Map<String, Object> subscriptionParams = [contextOrg:result.contextOrg, roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA], current:RDStore.SUBSCRIPTION_CURRENT, expired:RDStore.SUBSCRIPTION_EXPIRED]
+        String instanceFilter = "", perpetualFilter = ""
+        boolean withPerpetualAccess = params.hasPerpetualAccess == RDStore.YN_YES.id.toString()
+        if(withPerpetualAccess)
+            perpetualFilter = " or s2.hasPerpetualAccess = true "
+
+        Map<String, Object> subscriptionParams = [contextOrg:result.contextOrg, roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA], current:RDStore.SUBSCRIPTION_CURRENT]
         if(result.contextOrg.isCustomerType_Consortium())
-            instanceFilter += " and s.instanceOf = null "
-        String subscriptionQuery = 'select s from OrgRole oo join oo.sub s where oo.org = :contextOrg and oo.roleType in (:roleTypes) and (s.status = :current or (s.status = :expired and s.hasPerpetualAccess = true))'+instanceFilter
+            instanceFilter += " and s2.instanceOf = null "
+        String subscriptionQuery = 'select s2 from OrgRole oo join oo.sub s2 where oo.org = :contextOrg and oo.roleType in (:roleTypes) and (s2.status = :current'+perpetualFilter+')'+instanceFilter
 
         result.subscriptionMap = [:]
         result.platformInstanceList = []
 
         //if (subscriptionQuery) {
-            String qry3 = "select distinct p, s, ${params.sort ?: 'p.normname'} from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg, " +
-                    "TitleInstancePackagePlatform tipp join tipp.platform p left join p.org o " +
-                    "where tipp.pkg = pkg and s in (${subscriptionQuery}) and p.gokbId in (:wekbIds)"
-
-            qry3 += " and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
-            qry3 += " and ((tipp.status is null) or (tipp.status != :tippRemoved))"
+            String qry3 = "select distinct p, s, ${params.sort ?: 'p.normname'} from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg " +
+                    "join pkg.nominalPlatform p left join p.org o " +
+                    "where s in (${subscriptionQuery}) and p.gokbId in (:wekbIds) and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
 
             Map qryParams3 = [
-                    pkgDeleted     : RDStore.PACKAGE_STATUS_DELETED,
-                    tippRemoved    : RDStore.TIPP_STATUS_REMOVED
+                    pkgDeleted     : RDStore.PACKAGE_STATUS_DELETED
             ]
             qryParams3.putAll(subscriptionParams)
 
@@ -297,7 +297,7 @@ class MyInstitutionController  {
                     result.platformInstanceList.add(pl)
                 }
 
-                if (s.status.value == RDStore.SUBSCRIPTION_CURRENT.value) {
+                if (s.status.value == RDStore.SUBSCRIPTION_CURRENT.value || (withPerpetualAccess && s.hasPerpetualAccess)) {
                     result.subscriptionMap.get(key).add(s)
                 }
             }
@@ -1085,7 +1085,7 @@ class MyInstitutionController  {
                        g.message(code: 'subscription.startDate.label'),
                        g.message(code: 'subscription.endDate.label'),
                        g.message(code: 'subscription.manualCancellationDate.label'),
-                       g.message(code: 'subscription.referenceYear.label'),
+                       g.message(code: 'subscription.referenceYear.export.label'),
                        g.message(code: 'subscription.isMultiYear.label')]
         if(!asCons) {
             titles.add(g.message(code: 'subscription.isAutomaticRenewAnnually.label'))
@@ -3496,10 +3496,46 @@ join sub.orgRelations or_sub where
         ctx.contextService.hasPermAsInstUser_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def manageConsortiaSubscriptions() {
-
-        Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+        Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params), selectedFields = [:]
         result.tableConfig = ['withCostItems']
         result.putAll(subscriptionService.getMySubscriptionsForConsortia(params,result.user,result.institution,result.tableConfig))
+        Date datetoday = new Date()
+        String filename = "${DateUtils.getSDF_yyyyMMdd().format(datetoday)}_" + g.message(code: "export.my.consortiaSubscriptions")
+        Set<String> contactSwitch = []
+        if(params.fileformat) {
+            if (params.filename) {
+                filename = params.filename
+            }
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+            contactSwitch.addAll(params.list("contactSwitch"))
+            contactSwitch.addAll(params.list("addressSwitch"))
+        }
+
+        if(params.fileformat == 'xlsx') {
+            //result.entries has already been filtered in service method
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportConsortiaParticipations(result.entries, selectedFields, result.institution, contactSwitch, ExportClickMeService.FORMAT.XLS)
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }
+        else if(params.fileformat == 'csv') {
+            //result.entries has already been filtered in service method
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                //writer.write((String) _exportcurrentSubscription(result.allSubscriptions,"csv", result.institution))
+                writer.write((String) exportClickMeService.exportConsortiaParticipations(result.entries, selectedFields, result.institution, contactSwitch, ExportClickMeService.FORMAT.CSV))
+            }
+            out.close()
+        }
+        result
+        /*
         Profiler prf = result.pu
         prf.setBenchmark("after subscription loading, before providers")
         //LinkedHashMap<Subscription,List<Org>> providers = [:]
@@ -3515,13 +3551,13 @@ join sub.orgRelations or_sub where
                     subLinks.put(link.sourceSubscription, destinations)
                 }
             }
-            /*OrgRole.findAllByRoleTypeInList([RDStore.OR_PROVIDER,RDStore.OR_AGENCY]).each { it ->
+            OrgRole.findAllByRoleTypeInList([RDStore.OR_PROVIDER,RDStore.OR_AGENCY]).each { it ->
                 List<Org> orgs = providers.get(it.sub)
                 if(orgs == null)
                     orgs = [it.org]
                 else orgs.add(it.org)
                 providers.put(it.sub,orgs)
-            }*/
+            }
             List persons = Person.executeQuery("select c.content,c.prs from Contact c where c.prs in (select p from Person as p inner join p.roleLinks pr where " +
                     "( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) and pr.functionType = :roleType) and c.contentType = :email",
                     [ctx: result.institution,
@@ -3542,7 +3578,8 @@ join sub.orgRelations or_sub where
                 }
             }
         }
-
+        */
+        /*
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         prf.setBenchmark("before xls")
         if(params.exportXLS) {
@@ -3570,7 +3607,7 @@ join sub.orgRelations or_sub where
             headerRow.setHeightInPoints(16.75f)
             List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'), message(code:'org.mainContact.label'),message(code:'default.subscription.label'),message(code:'globalUID.label'),
                            message(code:'license.label'), message(code:'myinst.consortiaSubscriptions.packages'),message(code:'myinst.consortiaSubscriptions.provider'),message(code:'myinst.consortiaSubscriptions.runningTimes'),
-                           message(code: 'subscription.referenceYear.label'), message(code:'subscription.isPublicForApi.label'),message(code:'subscription.hasPerpetualAccess.label'),
+                           message(code: 'subscription.referenceYear.export.label'), message(code:'subscription.isPublicForApi.label'),message(code:'subscription.hasPerpetualAccess.label'),
                            message(code:'financials.amountFinal'),"${message(code:'financials.isVisibleForSubscriber')} / ${message(code:'financials.costItemConfiguration')}"]
             titles.eachWithIndex{ titleName, int i ->
                 Cell cell = headerRow.createCell(i)
@@ -3748,7 +3785,7 @@ join sub.orgRelations or_sub where
                 csv {
                     List titles = [message(code: 'sidewide.number'), message(code: 'myinst.consortiaSubscriptions.member'), message(code: 'org.mainContact.label'), message(code: 'default.subscription.label'), message(code: 'globalUID.label'),
                                    message(code: 'license.label'), message(code: 'myinst.consortiaSubscriptions.packages'), message(code: 'myinst.consortiaSubscriptions.provider'), message(code: 'myinst.consortiaSubscriptions.runningTimes'),
-                                   message(code: 'subscription.referenceYear.label'), message(code: 'subscription.isPublicForApi.label'), message(code: 'subscription.hasPerpetualAccess.label'),
+                                   message(code: 'subscription.referenceYear.export.label'), message(code: 'subscription.isPublicForApi.label'), message(code: 'subscription.hasPerpetualAccess.label'),
                                    message(code: 'financials.amountFinal'), "${message(code: 'financials.isVisibleForSubscriber')} / ${message(code: 'financials.costItemConfiguration')}"]
                     List columnData = []
                     List row
@@ -3890,6 +3927,7 @@ join sub.orgRelations or_sub where
                 }
             }
         }
+        */
     }
 
     /**

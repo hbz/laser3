@@ -216,19 +216,39 @@
             </span>
         </p>
         <div class="filter" style="margin:0 2em 0.5em; text-align:right;">
-            <span class="ui button mini" data-obj="org">${message(code: 'default.ProviderAgency.label')}: ${wekbChanges.org.count}</span>
-            <span class="ui button mini" data-obj="platform">${message(code: 'platform.plural')}: ${wekbChanges.platform.count}</span>
-            <span class="ui button mini" data-obj="package">${message(code: 'package.plural')}: ${wekbChanges.package.count}</span>
-            <span class="ui button mini" data-obj="all">Alle</span>
+            <div class="ui buttons mini">
+                <span class="ui button" data-obj="org">${message(code: 'default.ProviderAgency.label')}: ${wekbChanges.org.count}</span>
+                <span class="ui button" data-obj="platform">${message(code: 'platform.plural')}: ${wekbChanges.platform.count}</span>
+                <span class="ui button" data-obj="package">${message(code: 'package.plural')}: ${wekbChanges.package.count}</span>
+                <span class="ui button la-popup-tooltip la-long-tooltip la-delay" data-obj="all"
+                      data-content="Alle anzeigen: ${message(code: 'default.ProviderAgency.label')}, ${message(code: 'platform.plural')}, ${message(code: 'package.plural')}">Alle</span>
+            </div>
         </div>
         <div class="filter" style="margin:0 2em 0.5em; text-align:right;">
-            <span class="ui button mini" data-filter="created">Neue Objekte: ${wekbChanges.counts.created}</span>
-            <span class="ui button mini" data-filter="updated">Geänderte Objekte: ${wekbChanges.counts.updated}</span>
-            <span class="ui button mini" data-filter="my"><i class="icon star"></i> ${wekbChanges.counts.my}</span>
-            <span class="ui button mini" data-filter="marker"><i class="icon bookmark"></i> ${wekbChanges.counts.marker}</span>
-            <span class="ui button mini" data-filter="all">Alle</span>
+            <div class="ui buttons mini">
+                <span class="ui button" data-filter="created">Neue Objekte: ${wekbChanges.counts.created}</span>
+                <span class="ui button" data-filter="updated">Geänderte Objekte: ${wekbChanges.counts.updated}</span>
+                <span class="ui button" data-filter="my"><i class="icon star"></i> ${wekbChanges.counts.my}</span>
+                <span class="ui button" data-filter="marker"><i class="icon bookmark"></i> ${wekbChanges.counts.marker}</span>
+                <span class="ui button la-popup-tooltip la-long-tooltip la-delay" data-filter="all"
+                      data-content="Alle anzeigen: Neue Objekte, Geänderte Objekte, Meine Objekte, Meine Beobachtungsliste">Alle</span>
+            </div>
         </div>
     </div>
+
+    <style>
+    .filterWrapper > .filter .button {
+        color: #54575b;
+        background-color: #d3dae3;
+    }
+    .filterWrapper > .filter .button:hover {
+        background-color: #c3cad3;
+    }
+    .filterWrapper > .filter .button.active {
+        color: #ffffff;
+        background-color: #004678;
+    }
+    </style>
 
     <g:each in="${tmplConfig}" var="cfg">
         <div class="dataWrapper" data-obj="${cfg[0]}" style="margin:2em">
@@ -236,25 +256,26 @@
                 <i class="icon grey ${cfg[3]}" style="vertical-align:bottom"></i> ${message(code: "${cfg[2]}")}
             </p>
 
-            <div class="ui vertically divided very compact grid">
-                <g:each in="${cfg[1].all}" var="obj" status="i">
-                    <div class="three column row"
+            <div class="ui vertically divided very compact grid" style="margin-top: 1.5em;">
+                <g:each in="${cfg[1].all}" var="obj">
+                    <div class="row"
                          data-f1="${obj.uuid in cfg[1].created ? 'created' : 'updated'}"
                          data-f2="${obj.uuid in cfg[1].my ? 'true' : 'false'}"
                          data-f3="${obj.uuid in cfg[1].marker ? 'true' : 'false'}"
                     >
-                        <div class="column one wide center aligned">${i+1}</div>
-                        <div class="column ten wide">
+                        <div class="column one wide center aligned">
                             <ui:wekbIconLink type="${cfg[0]}" gokbId="${obj.uuid}" />
+                        </div>
+                        <div class="column nine wide">
                             <g:if test="${obj.globalUID}">
                                 <g:link controller="${cfg[0]}" action="show" target="_blank" params="${[id:obj.globalUID]}">${obj.name}</g:link>
                             </g:if>
                             <g:else>
                                 ${obj.name}
                             </g:else>
-                            <g:if test="${obj.uuid in cfg[1].created}"><span class="ui grey mini label">NEU</span></g:if>
+                            <g:if test="${obj.uuid in cfg[1].created}"><span class="ui orange mini label">NEU</span></g:if>
                         </div>
-                        <div class="column one wide center aligned">
+                        <div class="column two wide center aligned">
                             <g:if test="${obj.uuid in cfg[1].my}">
                                 <ui:myXIcon tooltip="${message(code: "${cfg[4]}")}" color="yellow"/>
                             </g:if>
@@ -268,7 +289,8 @@
                                 <i class="icon fake"></i>
                             </g:else>
                         </div>
-                        <div class="column four wide center aligned">${obj.dateCreatedDisplay}</div>
+                        <div class="column four wide center aligned">${obj.lastUpdatedDisplay}</div>
+%{--                        <div class="column four wide center aligned">${obj.dateCreatedDisplay}</div>--}%
                     </div>
                 </g:each>
             </div>

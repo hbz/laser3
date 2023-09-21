@@ -42,6 +42,7 @@ class ManagementService {
     AccessService accessService
     AddressbookService addressbookService
     ContextService contextService
+    ExecutorService executorService
     FormService formService
     GenericOIDService genericOIDService
     GlobalService globalService
@@ -294,13 +295,7 @@ class ManagementService {
             [result:null,status:STATUS_ERROR]
         else {
             if(controller instanceof SubscriptionController) {
-                Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
-                Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
-                threadArray.each {
-                    if (it.name == 'PackageTransfer_'+result.subscription.id) {
-                        result.isLinkingRunning = true
-                    }
-                }
+                result.isLinkingRunning = subscriptionService.checkThreadRunning('PackageTransfer_'+result.subscription.id)
                 result.validPackages = Package.executeQuery('select sp from SubscriptionPackage sp where sp.subscription = :subscription', [subscription: result.subscription])
                 result.filteredSubscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription)
                 if(result.filteredSubscriptions)
@@ -308,13 +303,7 @@ class ManagementService {
             }
 
             if(controller instanceof MyInstitutionController) {
-                Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
-                Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
-                threadArray.each {
-                    if (it.name == 'PackageTransfer_'+result.user.id) {
-                        result.isLinkingRunning = true
-                    }
-                }
+                result.isLinkingRunning = subscriptionService.checkThreadRunning('PackageTransfer_'+result.user.id)
                 result.validPackages = Package.findAllByGokbIdIsNotNullAndPackageStatusNotEqual(RDStore.PACKAGE_STATUS_DELETED)
 
                 result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
@@ -336,16 +325,27 @@ class ManagementService {
      */
     void processLinkPackages(def controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
-        if (result.editable && formService.validateToken(params)) {
+        String threadName
+        if(controller instanceof SubscriptionController) {
+            threadName = "PackageTransfer_${result.subscription.id}"
+        }
+        else if(controller instanceof MyInstitutionController) {
+            threadName = "PackageTransfer_${result.user.id}"
+        }
+        if (result.editable && formService.validateToken(params) && !subscriptionService.checkThreadRunning(threadName)) {
             FlashScope flash = getCurrentFlashScope()
             Locale locale = LocaleUtils.getCurrentLocale()
-            Set<Subscription> subscriptions
-            if(params.containsKey("membersListToggler")) {
+            Set<Subscription> subscriptions, permittedSubs = []
+            if(params.membersListToggler == 'on') {
                 if(controller instanceof SubscriptionController) {
                     subscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription).sub
                 }
                 else if(controller instanceof MyInstitutionController) {
                     subscriptions = subscriptionService.getMySubscriptions(params,result.user,result.institution).allSubscriptions
+                }
+                else {
+                    //fallback
+                    subscriptions = []
                 }
             }
             else subscriptions = Subscription.findAllByIdInList(params.list("selectedSubs"))
@@ -361,34 +361,43 @@ class ManagementService {
                     pkgsToProcess.add(Package.get(pkgKey))
                 }
             }
-            pkgsToProcess.each { Package pkg ->
-                subscriptions.each { Subscription selectedSub ->
-                    if(selectedSub.isEditableBy(result.user)) {
-                        SubscriptionPackage sp = SubscriptionPackage.findBySubscriptionAndPkg(selectedSub, pkg)
-                        if(params.processOption =~ /^link/) {
-                            if(!sp) {
-                                if(result.subscription) {
-                                    subscriptionService.addToSubscriptionCurrentStock(selectedSub, result.subscription, pkg, params.processOption == 'linkwithIE')
-                                }
-                                else {
-                                    subscriptionService.addToSubscription(selectedSub, pkg, params.processOption == 'linkwithIE')
-                                }
-                            }
-                        }
-                        else if(params.processOption =~ /^unlink/) {
-                            if(sp) {
-                                if (!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg = :sp and ci.costItemStatus != :deleted and ci.owner = :context', [sp: sp, deleted: RDStore.COST_ITEM_DELETED, context: result.institution])) {
-                                    packageService.unlinkFromSubscription(pkg, selectedSub, result.institution, params.processOption == 'unlinkwithIE')
-                                }
-                                else {
-                                    Object[] args = [pkg.name, selectedSub.getSubscriber().name]
-                                    result.error << messageSource.getMessage('subscriptionsManagement.unlinkInfo.costsExisting', args, locale)
+            subscriptions.each { Subscription selectedSub ->
+                if(selectedSub.isEditableBy(result.user))
+                    permittedSubs << selectedSub
+            }
+            executorService.execute({
+                Thread.currentThread().setName(threadName)
+                pkgsToProcess.each { Package pkg ->
+                    permittedSubs.each { Subscription selectedSub ->
+                            SubscriptionPackage sp = SubscriptionPackage.findBySubscriptionAndPkg(selectedSub, pkg)
+                            if(params.processOption =~ /^link/) {
+                                if(!sp) {
+                                    if(result.subscription) {
+                                        subscriptionService.addToSubscriptionCurrentStock(selectedSub, result.subscription, pkg, params.processOption == 'linkwithIE')
+                                    }
+                                    else {
+                                        subscriptionService.addToSubscription(selectedSub, pkg, params.processOption == 'linkwithIE')
+                                    }
                                 }
                             }
-                        }
+                            else if(params.processOption =~ /^unlink/) {
+                                if(sp) {
+                                    if (!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg = :sp and ci.costItemStatus != :deleted and ci.owner = :context', [sp: sp, deleted: RDStore.COST_ITEM_DELETED, context: result.institution])) {
+                                        packageService.unlinkFromSubscription(pkg, selectedSub, result.institution, params.processOption == 'unlinkwithIE')
+                                    }
+                                    /*
+                                    else {
+                                        Object[] args = [pkg.name, selectedSub.getSubscriber().name]
+                                        result.error << messageSource.getMessage('subscriptionsManagement.unlinkInfo.costsExisting', args, locale)
+                                    }
+                                    */
+                                }
+                            }
+
                     }
                 }
-            }
+            })
+
             /*
             dos:
             1. extend to multi package option

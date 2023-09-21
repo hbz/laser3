@@ -205,9 +205,8 @@
 <div class="ui bottom attached tab active segment">
    <div class="ui grid">
        <div class="row">
-           <div class="column">
-                <laser:render template="/templates/filter/tipp_ieFilter"/>
-            </div>
+           <div class="column" id="filterWrapper">
+           </div>
         </div><!--.row-->
     </div><!--.grid-->
 <div id="downloadWrapper"></div>
@@ -431,7 +430,9 @@
                                     <div class="ui raised segments la-accordion-segments">
                                         <div class="ui fluid segment title" data-ajaxTippId="${ie.tipp.id}" data-ajaxIeId="${ie ? ie.id : null}">
                                             <div class="ui stackable equal width grid">
-                                                <g:if test="${surveyService.hasParticipantPerpetualAccessToTitle3(subscription.getSubscriber(), ie.tipp)}">
+                                                <g:set var="participantPerpetualAccessToTitle"
+                                                       value="${surveyService.listParticipantPerpetualAccessToTitle(subscription.getSubscriber(), ie.tipp)}"/>
+                                                <g:if test="${participantPerpetualAccessToTitle.size() > 0}">
                                                     <g:if test="${ie.perpetualAccessBySub && ie.perpetualAccessBySub != subscription}">
                                                         <g:link controller="subscription" action="index" id="${ie.perpetualAccessBySub.id}">
                                                             <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip la-delay"
@@ -443,7 +444,7 @@
                                                     </g:if>
                                                     <g:else>
                                                         <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip la-delay"
-                                                              data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')}"
+                                                              data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitle.collect{it.getPermanentTitleInfo(contextOrg)}.join(',')}"
                                                               data-position="left center" data-variation="tiny">
                                                             <i class="star icon"></i>
                                                         </span>
@@ -467,7 +468,7 @@
                                                         <laser:render
                                                                 template="/templates/title_short_accordion"
                                                                 model="${[ie         : ie, tipp: ie.tipp,
-                                                                          showPackage: true, showPlattform: true, showEmptyFields: false]}"/>
+                                                                          showPackage: true, showPlattform: true, showEmptyFields: false, sub: subscription.id]}"/>
                                                         <!-- END TEMPLATE -->
 
                                                     </div>
@@ -857,5 +858,19 @@
             r2d2.initDynamicXEditableStuff(wrapper);
         });
     });
+
+    JSPC.app.loadFilter = function() {
+        $.ajax({
+            url: "<g:createLink action="getTippIeFilter"/>",
+            data: {
+                id: "${subscription.id}"
+            }
+        }).done(function(response){
+            $("#filterWrapper").html(response);
+            r2d2.initDynamicUiStuff("#filterWrapper");
+        });
+    }
+
+    JSPC.app.loadFilter();
 </laser:script>
 <laser:htmlEnd/>

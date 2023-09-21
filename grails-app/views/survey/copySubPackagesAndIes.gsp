@@ -1,12 +1,12 @@
 <%@ page import="de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
-<laser:htmlStart message="surveyInfo.copySurveyCostItems" serviceInjection="true" />
+<laser:htmlStart message="copySubPackagesAndIes.titel" serviceInjection="true"/>
 
 <ui:breadcrumbs>
     <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
 
     <g:if test="${surveyInfo}">
         <ui:crumb controller="survey" action="show" id="${surveyInfo.id}"
-                     params="[surveyConfigID: surveyConfig.id]" text="${surveyInfo.name}"/>
+                  params="[surveyConfigID: surveyConfig.id]" text="${surveyInfo.name}"/>
     </g:if>
     <ui:crumb message="surveyInfo.transferOverView" class="active"/>
 </ui:breadcrumbs>
@@ -31,6 +31,16 @@
 </g:if>
 <g:else>
 
+    <g:if test="${isLinkingRunning}">
+        <div class="ui icon warning message">
+            <i class="info icon"></i>
+            <div class="content">
+                <div class="header">Info</div>
+
+                <p>${message(code: 'subscriptionsManagement.isLinkingRunning.info')}</p>
+            </div>
+        </div>
+    </g:if>
     <div class="ui tablet stackable steps">
 
         <div class="${(actionName == 'compareMembersOfTwoSubs') ? 'active' : ''} step">
@@ -213,12 +223,10 @@
 
         </div>
 
-
-
     </div>
 
     <h2 class="ui header">
-        ${message(code: 'surveyInfo.copySurveyCostItems')}
+        ${message(code: 'copySubPackagesAndIes.titel')}
     </h2>
 
 
@@ -242,6 +250,21 @@
                             <g:link controller="subscription" action="members"
                                     id="${parentSubscription.id}">${message(code: 'renewalEvaluation.orgsInSub')}</g:link>
                             <ui:totalNumber total="${parentSubscription.getDerivedSubscribers().size()}"/>
+
+                            <br>
+
+                            <div class="ui middle aligned selection list">
+                                <b><g:message code="package.plural"/>:</b>
+                                <g:each in="${parentSubscription.packages}" var="sp">
+                                    <div class="item"><div class="content">
+                                        <g:link controller="subscription" action="index" id="${parentSubscription.id}"
+                                                params="[pkgfilter: sp.pkg.id]">
+                                            ${sp.pkg.name}<br/>${raw(sp.getIEandPackageSize())}
+                                        </g:link>
+                                    </div>
+                                    </div>
+                                </g:each>
+                            </div>
                         </g:if>
                     </h3>
                 </div>
@@ -262,6 +285,21 @@
                                     id="${parentSuccessorSubscription.id}">${message(code: 'renewalEvaluation.orgsInSub')}</g:link>
                             <ui:totalNumber
                                     total="${parentSuccessorSubscription.getDerivedSubscribers().size()}"/>
+                            <br>
+
+                            <div class="ui middle aligned selection list">
+                                <b><g:message code="package.plural"/>:</b>
+                                <g:each in="${parentSuccessorSubscription.packages}" var="sp">
+                                    <div class="item"><div class="content">
+                                        <g:link controller="subscription" action="index"
+                                                id="${parentSuccessorSubscription.id}"
+                                                params="[pkgfilter: sp.pkg.id]">
+                                            ${sp.pkg.name}<br/>${raw(sp.getIEandPackageSize())}
+                                        </g:link>
+                                    </div>
+                                    </div>
+                                </g:each>
+                            </div>
 
                         </g:if>
                     </h3>
@@ -272,58 +310,85 @@
 
     <ui:greySegment>
 
-        <g:form action="proccessCopySurveyCostItems" controller="survey" id="${surveyInfo.id}"
+        <g:form action="proccessCopySubPackagesAndIes" controller="survey" id="${surveyInfo.id}"
                 params="[surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]"
                 method="post" class="ui form ">
 
-            <g:set var="sumOldCostItem" value="${0.0}"/>
-            <g:set var="sumNewCostItem" value="${0.0}"/>
-            <g:set var="sumSurveyCostItem" value="${0.0}"/>
-            <g:set var="sumOldCostItemAfterTax" value="${0.0}"/>
-            <g:set var="sumNewCostItemAfterTax" value="${0.0}"/>
-            <g:set var="sumSurveyCostItemAfterTax" value="${0.0}"/>
-            <g:set var="oldCostItem" value="${0.0}"/>
-            <g:set var="oldCostItemAfterTax" value="${0.0}"/>
+            <div class="ui segment">
+                <div class="field required">
+
+                    <label>
+                        <g:message code="package.plural"/>
+                    <g:message code="renewalEvaluation.parentSuccessorSubscription"/></th>
+                        <g:message code="messageRequiredField"/>
+                    </label>
+
+                    <g:if test="${validPackages}">
+                        <g:select class="ui multiple search dropdown"
+                                  optionKey="${{ it.pkg.id }}"
+                                  optionValue="${{ it.getPackageNameWithCurrentTippsCount() }}"
+                                  from="${validPackages}" name="selectedPackages" value=""
+                                  required=""
+                                  noSelection='["all": "${message(code: 'subscriptionsManagement.all.package')}"]'/>
+                    </g:if>
+                    <g:else>
+                        <g:message code="subscriptionsManagement.noValidPackages"/>
+                    </g:else>
+
+                </div>
+
+                <div class="two fields">
+                    <div class="eight wide field" style="text-align: left;">
+                        <div class="ui buttons">
+                            <button class="ui green button" ${!editable || isLinkingRunning ? 'disabled="disabled"' : ''}
+                                    type="submit"
+                                    name="processOption"
+                                    value="linkwithoutIE">${message(code: 'subscriptionsManagement.linkwithoutIE')}</button>
+
+                            <div class="or" data-text="${message(code: 'default.or')}"></div>
+                            <button class="ui green button" ${!editable || isLinkingRunning ? 'disabled="disabled"' : ''}
+                                    type="submit"
+                                    name="processOption"
+                                    value="linkwithIE">${message(code: 'subscriptionsManagement.linkwithIE')}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <table class="ui celled sortable table la-js-responsive-table la-table" id="parentSubscription">
                 <thead>
                 <tr>
-                    <th>
-                        <g:checkBox name="costItemsToggler" id="costItemsToggler" checked="false"/>
-                    </th>
-                    <th>${message(code: 'sidewide.number')}</th>
-                    <th>${message(code: 'subscription.details.consortiaMembers.label')}</th>
-                    <th>${message(code: 'copySurveyCostItems.oldCostItem')}</th>
-                    <th>${message(code: 'copySurveyCostItems.surveyCostItem')}
-                        <g:if test="${surveyConfig.comment}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                  data-content="${surveyConfig.comment}">
-                                <i class="question circle icon"></i>
-                            </span>
-                        </g:if>
-                    </th>
-                    <th>${message(code: 'copySurveyCostItems.newCostItem')}</th>
-                    <th></th>
+                    <g:if test="${editable}">
+                        <th class="center aligned" rowspan="2">
+                            <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"/>
+                        </th>
+                    </g:if>
+                    <th rowspan="2">${message(code: 'sidewide.number')}</th>
+                    <th rowspan="2">${message(code: 'subscription.details.consortiaMembers.label')}</th>
+                    <th><g:message code="renewalEvaluation.parentSubscription"/></th>
+                    <th><g:message code="renewalEvaluation.parentSuccessorSubscription"/></th>
+                    <th rowspan="2"></th>
+                </tr>
+                <tr>
+                    <th><g:message code="package.plural"/></th>
+                    <th><g:message code="package.plural"/></th>
                 </tr>
                 </thead>
                 <tbody>
                 <g:each in="${participantsList}" var="participant" status="i">
-                    <g:set var="oldCostItem" value="${0.0}"/>
-                    <g:set var="oldCostItemAfterTax" value="${0.0}"/>
-                    <g:set var="costElement"
-                           value="${RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE}"/>
-
-                    <g:if test="${participant.surveyCostItem}">
-                        <g:set var="costElement"
-                               value="${participant.surveyCostItem.costItemElement}"/>
-                    </g:if>
 
                     <tr class="">
-                        <td>
-                            <g:if test="${participant.surveyCostItem && !CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, institution, costElement, RDStore.COST_ITEM_DELETED)}">
-                                <g:checkBox name="selectedSurveyCostItem" value="${participant.surveyCostItem.id}"
-                                            checked="false"/>
-                            </g:if>
-                        </td>
+                        <g:if test="${editable}">
+                            <td>
+                                <%-- This whole construct is necessary for that the form validation works!!! --%>
+                                <div class="field">
+                                    <div class="ui checkbox">
+                                        <g:checkBox id="selectedSubs_${participant.newSub.id}" name="selectedSubs" value="${participant.newSub.id}"
+                                                    checked="false"/>
+                                    </div>
+                                </div>
+                            </td>
+                        </g:if>
                         <td>${i + 1}</td>
                         <td class="titleCell">
                             <g:if test="${participant.newSub && participant.newSub.isMultiYear}">
@@ -354,202 +419,55 @@
 
                         </td>
                         <td>
-                            <g:if test="${participant.oldSub}">
-                                <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.oldSub, institution, costElement, RDStore.COST_ITEM_DELETED)}"
-                                        var="costItemParticipantSub">
-
-                                    ${costItemParticipantSub.costItemElement?.getI10n('value')}<br/>
-                                    <strong><g:formatNumber
-                                            number="${costItemParticipantSub.costInBillingCurrencyAfterTax}"
-                                            minFractionDigits="2"
-                                            maxFractionDigits="2" type="number"/></strong>
-
-                                    (<g:formatNumber number="${costItemParticipantSub.costInBillingCurrency}"
-                                                     minFractionDigits="2"
-                                                     maxFractionDigits="2" type="number"/>)
-
-                                    ${(costItemParticipantSub.billingCurrency?.getI10n('value')?.split('-')).first()}
-                                    <g:set var="sumOldCostItem"
-                                           value="${sumOldCostItem + costItemParticipantSub.costInBillingCurrency ?: 0}"/>
-                                    <g:set var="sumOldCostItemAfterTax"
-                                           value="${sumOldCostItemAfterTax + costItemParticipantSub.costInBillingCurrencyAfterTax ?: 0}"/>
-
-                                    <g:set var="oldCostItem"
-                                           value="${costItemParticipantSub.costInBillingCurrency ?: null}"/>
-                                    <g:set var="oldCostItemAfterTax"
-                                           value="${costItemParticipantSub.costInBillingCurrencyAfterTax ?: null}"/>
+                            <div class="ui middle aligned selection list">
+                                <g:each in="${participant.oldSub?.packages}" var="sp">
+                                    <div class="item"><div class="content">
+                                        <g:link controller="subscription" action="index" id="${participant.oldSub.id}"
+                                                params="[pkgfilter: sp.pkg.id]">
+                                            ${sp.pkg.name}<br/>${raw(sp.getIEandPackageSize())}
+                                        </g:link>
+                                    </div>
+                                    </div>
                                 </g:each>
-                            </g:if>
+                            </div>
                         </td>
-
                         <td>
-
-                            <g:if test="${participant.surveyCostItem}">
-                                ${participant.surveyCostItem.costItemElement?.getI10n('value')}<br/>
-                                <strong><g:formatNumber
-                                        number="${participant.surveyCostItem.costInBillingCurrencyAfterTax}"
-                                        minFractionDigits="2"
-                                        maxFractionDigits="2" type="number"/></strong>
-
-                                (<g:formatNumber number="${participant.surveyCostItem.costInBillingCurrency}"
-                                                 minFractionDigits="2"
-                                                 maxFractionDigits="2" type="number"/>)
-
-                                ${(participant.surveyCostItem.billingCurrency?.getI10n('value')?.split('-')).first()}
-
-                                <g:set var="sumSurveyCostItem"
-                                       value="${sumSurveyCostItem + participant.surveyCostItem.costInBillingCurrency ?: 0}"/>
-                                <g:set var="sumSurveyCostItemAfterTax"
-                                       value="${sumSurveyCostItemAfterTax + participant.surveyCostItem.costInBillingCurrencyAfterTax ?: 0}"/>
-
-                                <g:if test="${oldCostItem || oldCostItemAfterTax}">
-                                    <br/><strong><g:formatNumber
-                                        number="${((participant.surveyCostItem.costInBillingCurrencyAfterTax - oldCostItemAfterTax) / oldCostItemAfterTax) * 100}"
-                                        minFractionDigits="2"
-                                        maxFractionDigits="2" type="number"/>%</strong>
-
-                                    (<g:formatNumber
-                                        number="${((participant.surveyCostItem.costInBillingCurrency - oldCostItem) / oldCostItem) * 100}"
-                                        minFractionDigits="2"
-                                        maxFractionDigits="2" type="number"/>%)
-                                </g:if>
-
-                            </g:if>
-                        </td>
-
-                        <td>
-                            <g:if test="${participant.newSub}">
-                                <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, institution, costElement, RDStore.COST_ITEM_DELETED)}"
-                                        var="costItemParticipantSuccessorSub">
-
-                                    ${costItemParticipantSuccessorSub.costItemElement?.getI10n('value')}<br/>
-                                    <strong><g:formatNumber
-                                            number="${costItemParticipantSuccessorSub.costInBillingCurrencyAfterTax}"
-                                            minFractionDigits="2"
-                                            maxFractionDigits="2" type="number"/></strong>
-
-                                    (<g:formatNumber number="${costItemParticipantSuccessorSub.costInBillingCurrency}"
-                                                     minFractionDigits="2"
-                                                     maxFractionDigits="2" type="number"/>)
-
-                                    ${(costItemParticipantSuccessorSub.billingCurrency?.getI10n('value')?.split('-')).first()}
-                                    <g:set var="sumNewCostItem"
-                                           value="${sumNewCostItem + costItemParticipantSuccessorSub.costInBillingCurrency ?: 0}"/>
-                                    <g:set var="sumNewCostItemAfterTax"
-                                           value="${sumNewCostItemAfterTax + costItemParticipantSuccessorSub.costInBillingCurrencyAfterTax ?: 0}"/>
-
-                                    <g:if test="${oldCostItem || oldCostItemAfterTax}">
-                                        <br/><strong><g:formatNumber
-                                            number="${((costItemParticipantSuccessorSub.costInBillingCurrencyAfterTax - oldCostItemAfterTax) / oldCostItemAfterTax) * 100}"
-                                            minFractionDigits="2"
-                                            maxFractionDigits="2" type="number"/>%</strong>
-
-                                        (<g:formatNumber
-                                            number="${((costItemParticipantSuccessorSub.costInBillingCurrency - oldCostItem) / oldCostItem) * 100}"
-                                            minFractionDigits="2"
-                                            maxFractionDigits="2" type="number"/>%)
-                                    </g:if>
+                            <div class="ui middle aligned selection list">
+                                <g:each in="${participant.newSub.packages}" var="sp">
+                                    <div class="item"><div class="content">
+                                        <g:link controller="subscription" action="index" id="${participant.newSub.id}"
+                                                params="[pkgfilter: sp.pkg.id]">
+                                            ${sp.pkg.name}<br/>${raw(sp.getIEandPackageSize())}
+                                        </g:link>
+                                    </div>
+                                    </div>
                                 </g:each>
-                            </g:if>
+                            </div>
                         </td>
                         <td>
                             <g:if test="${participant.newSub}">
-                                <g:link mapping="subfinance" controller="finance" action="index"
-                                        params="${[sub: participant.newSub.id]}"
+                                <g:link controller="subscription" action="index"
+                                        params="${[id: participant.newSub.id]}"
                                         class="ui button icon"><i class="icon clipboard"></i></g:link>
                             </g:if>
                         </td>
                     </tr>
                 </g:each>
                 </tbody>
-                <tfoot>
-                <tr>
-                    <td></td>
-                    <td><strong><g:message code="financials.export.sums"/></strong></td>
-                    <td></td>
-                    <td>
-                        <strong><g:formatNumber number="${sumOldCostItemAfterTax}" minFractionDigits="2"
-                                                maxFractionDigits="2" type="number"/></strong>
-                        (<g:formatNumber number="${sumOldCostItem}" minFractionDigits="2"
-                                         maxFractionDigits="2" type="number"/>)
-                    </td>
-                    <td>
-                        <strong><g:formatNumber number="${sumSurveyCostItemAfterTax}" minFractionDigits="2"
-                                                maxFractionDigits="2" type="number"/></strong>
-                        (<g:formatNumber number="${sumSurveyCostItem}" minFractionDigits="2"
-                                         maxFractionDigits="2" type="number"/>)
-
-                        <g:if test="${sumOldCostItemAfterTax || sumOldCostItem}">
-                            <br/><strong><g:formatNumber
-                                number="${((sumSurveyCostItemAfterTax - sumOldCostItemAfterTax) / sumOldCostItemAfterTax) * 100}"
-                                minFractionDigits="2"
-                                maxFractionDigits="2" type="number"/>%</strong>
-
-                            (<g:formatNumber number="${((sumSurveyCostItem - sumOldCostItem) / sumOldCostItem) * 100}"
-                                             minFractionDigits="2"
-                                             maxFractionDigits="2" type="number"/>%)
-                        </g:if>
-                    </td>
-                    <td>
-                        <strong><g:formatNumber number="${sumNewCostItemAfterTax}" minFractionDigits="2"
-                                                maxFractionDigits="2" type="number"/></strong>
-                        (<g:formatNumber number="${sumNewCostItem}" minFractionDigits="2"
-                                         maxFractionDigits="2" type="number"/>)
-
-                        <g:if test="${sumOldCostItemAfterTax || sumOldCostItem}">
-                            <br/><strong><g:formatNumber
-                                number="${((sumNewCostItemAfterTax - sumOldCostItemAfterTax) / sumOldCostItemAfterTax) * 100}"
-                                minFractionDigits="2"
-                                maxFractionDigits="2" type="number"/>%</strong>
-
-                            (<g:formatNumber
-                                number="${((sumNewCostItemAfterTax - sumOldCostItem) / sumOldCostItem) * 100}"
-                                minFractionDigits="2"
-                                maxFractionDigits="2" type="number"/>%)
-                        </g:if>
-                    </td>
-                    <td></td>
-                </tr>
-                </tfoot>
             </table>
 
-            <div class="two fields">
-                <div class="eight wide field" style="text-align: left;">
-
-                </div>
-
-                <div class="eight wide field" style="text-align: right;">
-                    <button class="ui button positive"
-                            type="submit">${message(code: 'copySurveyCostItems.copyCostItems')}</button>
-                    <br/>
-                    <br/>
-                    <button class="ui button positive" name="isVisibleForSubscriber" value="true"
-                            type="submit">${message(code: 'copySurveyCostItems.copyCostItems')} (${message(code: 'financials.isVisibleForSubscriber')})</button>
-                </div>
-            </div>
         </g:form>
     </ui:greySegment>
     <laser:script file="${this.getGroovyPageFileName()}">
-        $('#costItemsToggler').click(function () {
-            if ($(this).prop('checked')) {
-                $("tr[class!=disabled] input[name=selectedSurveyCostItem]").prop('checked', true)
-            } else {
-                $("tr[class!=disabled] input[name=selectedSurveyCostItem]").prop('checked', false)
-            }
-        })
+        $('#membersListToggler').click(function () {
+        if ($(this).prop('checked')) {
+            $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', true)
+        }
+        else {
+            $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', false)
+        }
+    });
     </laser:script>
 
-    <g:form action="setSurveyCompleted" method="post" class="ui form"
-            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
-
-        <div class="ui right floated compact segment">
-            <div class="ui checkbox">
-                <input type="checkbox" onchange="this.form.submit()"
-                       name="surveyCompleted" ${surveyInfo.status.id == RDStore.SURVEY_COMPLETED.id ? 'checked' : ''}>
-                <label><g:message code="surveyInfo.status.completed"/></label>
-            </div>
-        </div>
-
-    </g:form>
 </g:else>
-<laser:htmlEnd />
+<laser:htmlEnd/>

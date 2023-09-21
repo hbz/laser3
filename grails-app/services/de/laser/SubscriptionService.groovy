@@ -478,35 +478,40 @@ join sub.orgRelations or_sub where
             costs.each { row ->
                 result.totalMembers << row.org
             }
-            if(params.exportXLS || params.format)
+            if(params.fileformat) {
                 result.entries = costs
-            else result.entries = costs.drop((int) result.offset).take((int) result.max)
-
-            result.finances = {
-                Map entries = [:]
-                result.entries.each { obj ->
-                    if (obj.cost && obj.cost.owner.id == contextOrg.id) {
-                        CostItem ci = (CostItem) obj.cost
-                        if (!entries."${ci.billingCurrency}") {
-                            entries."${ci.billingCurrency}" = 0.0
-                        }
-
-                        if (ci.costItemElementConfiguration == RDStore.CIEC_POSITIVE) {
-                            entries."${ci.billingCurrency}" += ci.costInBillingCurrencyAfterTax
-                        }
-                        else if (ci.costItemElementConfiguration == RDStore.CIEC_NEGATIVE) {
-                            entries."${ci.billingCurrency}" -= ci.costInBillingCurrencyAfterTax
-                        }
-                        //result.totalMembers << ci.sub.getSubscriber()
-                    }
-                    if (obj.sub) {
-                        Subscription subCons = (Subscription) obj.sub
-                        //linkedLicenses.put(subCons,Links.findAllByDestinationSubscriptionAndLinkType(subCons,RDStore.LINKTYPE_LICENSE).collect { Links row -> genericOIDService.resolveOID(row.source)})
-                        linkedLicenses.put(subCons,Links.executeQuery('select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType',[subscription:subCons,linkType:RDStore.LINKTYPE_LICENSE]))
-                    }
+                result.entries.sub.each { Subscription subCons ->
+                    //linkedLicenses.put(subCons,Links.findAllByDestinationSubscriptionAndLinkType(subCons,RDStore.LINKTYPE_LICENSE).collect { Links row -> genericOIDService.resolveOID(row.source)})
+                    linkedLicenses.put(subCons, Links.executeQuery('select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType', [subscription: subCons, linkType: RDStore.LINKTYPE_LICENSE]))
                 }
-                entries
-            }()
+            }
+            else {
+                result.entries = costs.drop((int) result.offset).take((int) result.max)
+
+                result.finances = {
+                    Map entries = [:]
+                    result.entries.each { obj ->
+                        if (obj.cost && obj.cost.owner.id == contextOrg.id) {
+                            CostItem ci = (CostItem) obj.cost
+                            if (!entries."${ci.billingCurrency}") {
+                                entries."${ci.billingCurrency}" = 0.0
+                            }
+                            if (ci.costItemElementConfiguration == RDStore.CIEC_POSITIVE) {
+                                entries."${ci.billingCurrency}" += ci.costInBillingCurrencyAfterTax
+                            } else if (ci.costItemElementConfiguration == RDStore.CIEC_NEGATIVE) {
+                                entries."${ci.billingCurrency}" -= ci.costInBillingCurrencyAfterTax
+                            }
+                            //result.totalMembers << ci.sub.getSubscriber()
+                        }
+                        if (obj.sub) {
+                            Subscription subCons = (Subscription) obj.sub
+                            //linkedLicenses.put(subCons,Links.findAllByDestinationSubscriptionAndLinkType(subCons,RDStore.LINKTYPE_LICENSE).collect { Links row -> genericOIDService.resolveOID(row.source)})
+                            linkedLicenses.put(subCons, Links.executeQuery('select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType', [subscription: subCons, linkType: RDStore.LINKTYPE_LICENSE]))
+                        }
+                    }
+                    entries
+                }()
+            }
         }
         else if('onlyMemberSubs') {
             Set memberSubscriptions = Subscription.executeQuery(query,qarams)
@@ -917,11 +922,20 @@ join sub.orgRelations or_sub where
 
         if ( createEntitlements ) {
             //List packageTitles = sql.rows("select * from title_instance_package_platform where tipp_pkg_fk = :pkgId and tipp_status_rv_fk = :current", [pkgId: pkg.id, current: RDStore.TIPP_STATUS_CURRENT.id])
-            sql.withBatch('insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_status_rv_fk, ie_perpetual_access_by_sub_fk) select ' +
-                    '0, now(), now(), (select sub_id from subscription where sub_id = :subId), ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_status_rv_fk, (select case sub_has_perpetual_access when true then sub_id else null end from subscription where sub_id = :subId) from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id ' +
-                    'where tipp_pkg_fk = :pkgId and ie_subscription_fk = :parentId and ie_status_rv_fk != :removed') { BatchingPreparedStatementWrapper stmt ->
+            sql.withBatch("insert into issue_entitlement (ie_version, ie_guid, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_status_rv_fk, ie_perpetual_access_by_sub_fk) select " +
+                    "0, concat('issueentitlement:',gen_random_uuid()), now(), now(), (select sub_id from subscription where sub_id = :subId), ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_status_rv_fk, (select case sub_has_perpetual_access when true then sub_id else null end from subscription where sub_id = :subId) from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id " +
+                    "where tipp_pkg_fk = :pkgId and ie_subscription_fk = :parentId and ie_status_rv_fk != :removed") { BatchingPreparedStatementWrapper stmt ->
                 memberSubs.each { Subscription memberSub ->
                     stmt.addBatch([pkgId: pkg.id, subId: memberSub.id, parentId: subscription.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
+                }
+            }
+            //"insert into permanent_title (pt_version, pt_ie_fk, pt_date_created, pt_subscription_fk, pt_last_updated, pt_tipp_fk, pt_owner_fk) select 0, ie_id, now(), "+subId+", now(), ie_tipp_fk, "+ownerId+" from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :removed and ie_status_rv_fk = tipp_status_rv_fk and ie_subscription_fk = :subId and not exists(select pt_id from permanent_title where pt_subscription_fk = :subId and pt_ie_fk = ie_id and pt_tipp_fk = tipp_id and pt_owner_fk = :ownerId)"
+            // [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id, ownerId: ownerId]
+            sql.withBatch('insert into permanent_title (pt_version, pt_ie_fk, pt_date_created, pt_subscription_fk, pt_last_updated, pt_tipp_fk, pt_owner_fk) select ' +
+                    '0, ie_id, now(), ie_subscription_fk, now(), ie_tipp_fk, (select or_org_fk from org_role where or_sub_fk = :subId and or_roletype_fk = :subscrRole) from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id ' +
+                    'where tipp_pkg_fk = :pkgId and ie_subscription_fk = :parentId and ie_status_rv_fk != :removed and not exists(select pt_id from permanent_title where pt_subscription_fk = :subId and pt_ie_fk = ie_id and pt_tipp_fk = tipp_id and pt_owner_fk = (select or_org_fk from org_role where or_sub_fk = :subId and or_roletype_fk = :subscrRole))') { BatchingPreparedStatementWrapper stmt ->
+                memberSubs.each { Subscription memberSub ->
+                    stmt.addBatch([subId: memberSub.id, parentId: subscription.id, pkgId: pkg.id, removed: RDStore.TIPP_STATUS_REMOVED.id, subscrRole: RDStore.OR_SUBSCRIBER_CONS.id])
                 }
             }
             sql.withBatch('insert into issue_entitlement_coverage (ic_version, ic_ie_fk, ic_date_created, ic_last_updated, ic_start_date, ic_start_volume, ic_start_issue, ic_end_date, ic_end_volume, ic_end_issue, ic_coverage_depth, ic_coverage_note, ic_embargo) select ' +
@@ -1505,9 +1519,18 @@ join sub.orgRelations or_sub where
                     accessStartDate = "'${ configMap.accessStartDate }'"
                 if(configMap.accessEndDate)
                     accessEndDate = "'${ configMap.accessEndDate }'"
-                sql.withBatch("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_status_rv_fk, ie_access_start_date, ie_access_end_date, ie_perpetual_access_by_sub_fk) " +
-                        "select 0, now(), now(), ${sub.id}, tipp_id, tipp_status_rv_fk, ${accessStartDate}, ${accessEndDate}, ${configMap.perpetualAccessBySub} from title_instance_package_platform where tipp_gokb_id = :wekbId") { BatchingStatementWrapper stmt ->
+                sql.withBatch("insert into issue_entitlement (ie_version, ie_guid, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_status_rv_fk, ie_access_start_date, ie_access_end_date, ie_perpetual_access_by_sub_fk) " +
+                        "select 0, concat('issueentitlement:',gen_random_uuid()), now(), now(), ${sub.id}, tipp_id, tipp_status_rv_fk, ${accessStartDate}, ${accessEndDate}, ${configMap.perpetualAccessBySub} from title_instance_package_platform where tipp_gokb_id = :wekbId") { BatchingStatementWrapper stmt ->
                     stmt.addBatch([wekbId: configMap.wekbId])
+                }
+            }
+            if(sub.hasPerpetualAccess) {
+                Long ownerId = sub.getSubscriber().id
+                ieOverwriteMapSet.each { Map<String, Object> configMap ->
+                    sql.withBatch("insert into permanent_title (pt_version, pt_ie_fk, pt_date_created, pt_subscription_fk, pt_last_updated, pt_tipp_fk, pt_owner_fk) " +
+                            "select 0, ie_id, now(), ie_subscription_fk, now(), ie_tipp_fk, "+ownerId+" from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_gokb_id = :wekbId and ie_subscription_fk = :subId") { BatchingPreparedStatementWrapper stmt ->
+                        stmt.addBatch([wekbId: configMap.wekbId, subId: sub.id])
+                    }
                 }
             }
             coverageOverwriteMapSet.each { Map<String, Object> configMap ->
@@ -1531,9 +1554,18 @@ join sub.orgRelations or_sub where
                 }
             }
             ieDirectMapSet.each { Map<String, Object> configMap ->
-                sql.withBatch("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_status_rv_fk, ie_access_start_date, ie_access_end_date, ie_perpetual_access_by_sub_fk) " +
-                        "select 0, now(), now(), ${sub.id}, tipp_id, tipp_status_rv_fk, tipp_access_start_date, tipp_access_end_date, ${configMap.perpetualAccessBySub} from title_instance_package_platform where tipp_gokb_id = :wekbId") { BatchingStatementWrapper stmt ->
+                sql.withBatch("insert into issue_entitlement (ie_version, ie_guid, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_status_rv_fk, ie_access_start_date, ie_access_end_date, ie_perpetual_access_by_sub_fk) " +
+                        "select 0, concat('issueentitlement:',gen_random_uuid()), now(), now(), ${sub.id}, tipp_id, tipp_status_rv_fk, tipp_access_start_date, tipp_access_end_date, ${configMap.perpetualAccessBySub} from title_instance_package_platform where tipp_gokb_id = :wekbId") { BatchingStatementWrapper stmt ->
                     stmt.addBatch([wekbId: configMap.wekbId])
+                }
+            }
+            if(sub.hasPerpetualAccess) {
+                Long ownerId = sub.getSubscriber().id
+                ieDirectMapSet.each { Map<String, Object> configMap ->
+                    sql.withBatch("insert into permanent_title (pt_version, pt_ie_fk, pt_date_created, pt_subscription_fk, pt_last_updated, pt_tipp_fk, pt_owner_fk) " +
+                            "select 0, ie_id, now(), ie_subscription_fk, now(), ie_tipp_fk, "+ownerId+" from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_gokb_id = :wekbId and ie_subscription_fk = :subId") { BatchingPreparedStatementWrapper stmt ->
+                        stmt.addBatch([wekbId: configMap.wekbId, subId: sub.id])
+                    }
                 }
             }
             coverageDirectMapSet.each { Map<String, Object> configMap ->
@@ -2912,6 +2944,21 @@ join sub.orgRelations or_sub where
                 AuditConfig.addConfig(identifier, AuditConfig.COMPLETE_OBJECT)
             }
         }
+    }
+
+    //-------------------------------------- helper section ----------------------------------------
+
+
+    boolean checkThreadRunning(String threadName) {
+        boolean threadRunning = false
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
+        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
+        threadArray.each { Thread thread ->
+            if (thread.name == threadName) {
+                threadRunning = true
+            }
+        }
+        threadRunning
     }
 
     //-------------------------------------- cronjob section ----------------------------------------

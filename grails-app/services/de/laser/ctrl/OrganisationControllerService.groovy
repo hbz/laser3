@@ -48,12 +48,12 @@ class OrganisationControllerService {
             int perspectiveIndex = Integer.parseInt(params["linkType_new"].split("§")[1])
             c.type = RDStore.COMBO_TYPE_FOLLOWS
             if(perspectiveIndex == 0) {
-                c.fromOrg = Org.get(params.context)
-                c.toOrg = Org.get(params.pair_new)
-            }
-            else if(perspectiveIndex == 1) {
                 c.fromOrg = Org.get(params.pair_new)
                 c.toOrg = Org.get(params.context)
+            }
+            else if(perspectiveIndex == 1) {
+                c.fromOrg = Org.get(params.context)
+                c.toOrg = Org.get(params.pair_new)
             }
         }
         c.save()

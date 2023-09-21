@@ -50,20 +50,30 @@ class YodaService {
      * Copies missing values into the issue entitlements; values are being taken from the title the holding records have been derived
      */
     void fillValue(String toUpdate) {
-        IssueEntitlement.withNewSession { Session sess ->
-            int total = IssueEntitlement.executeQuery('select count(ie) from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub where ((sub.startDate >= :start and sub.endDate <= :end) or sub.startDate = null or sub.endDate = null) and tipp.'+toUpdate+' != null and tipp.status != :removed and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, start: DateUtils.getSDF_yyyyMMdd().parse('2022-01-01'), end: DateUtils.getSDF_yyyyMMdd().parse('2023-12-31')])[0]
-            int max = 100000
+        if(toUpdate == 'globalUID') {
+            int max = 200000
+            Sql sql = globalService.obtainSqlConnection()
+            int total = sql.rows('select count(*) from issue_entitlement ie where ie_guid is null')[0]['count']
             for(int ctr = 0; ctr < total; ctr += max) {
-                IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub where ((sub.startDate >= :start and sub.endDate <= :end) or sub.startDate = null or sub.endDate = null) and tipp.'+toUpdate+' != null and tipp.status != :removed and ie.status != :removed order by sub.startDate', [removed: RDStore.TIPP_STATUS_REMOVED, start: DateUtils.getSDF_yyyyMMdd().parse('2022-01-01'), end: DateUtils.getSDF_yyyyMMdd().parse('2023-12-31')], [max: max, offset: ctr]).each { IssueEntitlement ie ->
-                    ie[toUpdate] = ie.tipp[toUpdate]
-                    ie.save()
+                sql.executeUpdate("update issue_entitlement set ie_last_updated = now(), ie_guid = concat('issueentitlement:',gen_random_uuid()) where ie_id in (select ie_id from issue_entitlement where ie_guid is null limit "+max+")")
+                log.debug("processed: ${ctr}")
+            }
+        }
+        else {
+            IssueEntitlement.withNewSession { Session sess ->
+                int max = 100000
+                int total = IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub where ((sub.startDate >= :start and sub.endDate <= :end) or sub.startDate = null or sub.endDate = null) and tipp.'+toUpdate+' != null and tipp.status != :removed and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, start: DateUtils.getSDF_yyyyMMdd().parse('2022-01-01'), end: DateUtils.getSDF_yyyyMMdd().parse('2023-12-31')])[0]
+                for(int ctr = 0; ctr < total; ctr += max) {
+                    IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub where ((sub.startDate >= :start and sub.endDate <= :end) or sub.startDate = null or sub.endDate = null) and tipp.'+toUpdate+' != null and tipp.status != :removed and ie.status != :removed order by sub.startDate', [removed: RDStore.TIPP_STATUS_REMOVED, start: DateUtils.getSDF_yyyyMMdd().parse('2022-01-01'), end: DateUtils.getSDF_yyyyMMdd().parse('2023-12-31')], [max: max, offset: ctr]).each { IssueEntitlement ie ->
+                        ie[toUpdate] = ie.tipp[toUpdate]
+                        ie.save()
+                    }
+                    log.debug("flush after ${ctr+max}")
+                    sess.flush()
                 }
-                log.debug("flush after ${ctr+max}")
-                sess.flush()
             }
             //IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.'+toUpdate+' = (select tipp.'+toUpdate+' from TitleInstancePackagePlatform tipp where tipp = ie.tipp and tipp.'+toUpdate+' != null and tipp.status != :removed) where ie.'+toUpdate+' = null and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED])
         }
-
     }
 
     /**
@@ -308,19 +318,20 @@ class YodaService {
     void matchPackageHoldings(Long pkgId) {
         Sql sql = GlobalService.obtainSqlConnection()
         sql.withTransaction {
-            List subscriptionPackagesConcerned = sql.rows("select sp_sub_fk, sp_pkg_fk, sub_has_perpetual_access " +
+            List subscriptionPackagesConcerned = sql.rows("select sp_sub_fk, sp_pkg_fk, sub_has_perpetual_access, sub_holding_selection_rv_fk " +
                     "from subscription_package join subscription on sp_sub_fk = sub_id " +
-                    "where sub_holding_selection_rv_fk = :entire and sp_pkg_fk = :pkgId",
-            [pkgId: pkgId, entire: RDStore.SUBSCRIPTION_HOLDING_ENTIRE.id])
+                    "where sp_pkg_fk = :pkgId",
+            [pkgId: pkgId])
             subscriptionPackagesConcerned.eachWithIndex { GroovyRowResult row, int ax ->
                 Set<Long> subIds = [row['sp_sub_fk']]
                 List inheritingSubs = sql.rows("select sub_id from subscription join audit_config on auc_reference_id = sub_parent_sub_fk where auc_reference_field = 'holdingSelection' and sub_parent_sub_fk = :parent", [parent: row['sp_sub_fk']])
                 subIds.addAll(inheritingSubs.collect { GroovyRowResult inherit -> inherit['sub_id'] })
-                boolean perpetualAccess = row['sub_has_perpetual_access']
+                boolean perpetualAccess = row['sub_has_perpetual_access'], entire = row['sub_holding_selection_rv_fk'] == RDStore.SUBSCRIPTION_HOLDING_ENTIRE.id
                 subIds.each { Long subId ->
                     log.debug("now processing package ${subId}:${pkgId}")
-                    packageService.bulkAddHolding(sql, subId, pkgId, perpetualAccess)
-                    sql.executeUpdate('update issue_entitlement set ie_status_rv_fk = tipp_status_rv_fk from title_instance_package_platform where ie_tipp_fk = tipp_id and ie_subscription_fk = :subId and ie_status_rv_fk != tipp_status_rv_fk', [subId: subId])
+                    if(entire)
+                        packageService.bulkAddHolding(sql, subId, pkgId, perpetualAccess)
+                    log.debug("${sql.executeUpdate('update issue_entitlement set ie_status_rv_fk = tipp_status_rv_fk from title_instance_package_platform where ie_tipp_fk = tipp_id and ie_subscription_fk = :subId and ie_status_rv_fk != tipp_status_rv_fk and ie_status_rv_fk != :removed', [subId: subId, removed: RDStore.TIPP_STATUS_REMOVED.id])} rows updated")
                 }
             }
         }

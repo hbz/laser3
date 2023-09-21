@@ -509,8 +509,8 @@ class SurveyService {
                                    messageSource.getMessage('default.currency.label', null, locale),
                                    messageSource.getMessage('financials.newCosts.taxTypeAndRate', null, locale),
                                    messageSource.getMessage('financials.costInBillingCurrencyAfterTax', null, locale),
-                                   messageSource.getMessage('default.startDate.label', null, locale),
-                                   messageSource.getMessage('default.endDate.label', null, locale),
+                                   messageSource.getMessage('default.startDate.export.label', null, locale),
+                                   messageSource.getMessage('default.endDate.export.label', null, locale),
                                    messageSource.getMessage('surveyConfigsInfo.newPrice.comment', null, locale)])
                 }
 
@@ -558,7 +558,10 @@ class SurveyService {
                             else
                                 surveyCostTax = ''
                             row.add([field: surveyCostTax, style: null])
-                            row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
+                            if(surveyCostItem?.taxKey && surveyCostItem.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE)
+                                row.add([field: '', style: null])
+                            else
+                                row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
                             row.add([field: surveyCostItem?.startDate ? formatter.format(surveyCostItem.startDate): '', style: null])
                             row.add([field: surveyCostItem?.endDate ? formatter.format(surveyCostItem.endDate): '', style: null])
                             row.add([field: surveyCostItem?.costDescription ?: '', style: null])
@@ -591,8 +594,8 @@ class SurveyService {
                            messageSource.getMessage('default.currency.label', null, locale),
                            messageSource.getMessage('financials.newCosts.taxTypeAndRate', null, locale),
                            messageSource.getMessage('financials.costInBillingCurrencyAfterTax', null, locale),
-                           messageSource.getMessage('default.startDate.label', null, locale),
-                           messageSource.getMessage('default.endDate.label', null, locale),
+                           messageSource.getMessage('default.startDate.export.label', null, locale),
+                           messageSource.getMessage('default.endDate.export.label', null, locale),
                            messageSource.getMessage('surveyConfigsInfo.newPrice.comment', null, locale)])
 
 
@@ -634,7 +637,10 @@ class SurveyService {
                         else
                             surveyCostTax = ''
                         row.add([field: surveyCostTax, style: null])
-                        row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
+                        if(surveyCostItem?.taxKey && surveyCostItem.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE)
+                            row.add([field: '', style: null])
+                        else
+                            row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
                         row.add([field: surveyCostItem?.startDate ? formatter.format(surveyCostItem.startDate) : '', style: null])
                         row.add([field: surveyCostItem?.endDate ? formatter.format(surveyCostItem.endDate) : '', style: null])
                         row.add([field: surveyCostItem?.costDescription ?: '', style: null])
@@ -1633,8 +1639,8 @@ class SurveyService {
         Sql sql = GlobalService.obtainSqlConnection()
         Connection connection = sql.dataSource.getConnection()
 
-        List newIes = sql.executeInsert("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_status_rv_fk, ie_name, ie_perpetual_access_by_sub_fk) " +
-                "select 0, now(), now(), ${participantSub.id},  ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_status_rv_fk, ie_name, ie_perpetual_access_by_sub_fk from issue_entitlement where ie_tipp_fk not in (select ie_tipp_fk from issue_entitlement where ie_subscription_fk = ${participantSub.id}) and ie_id = any(:ieIds)", [ieIds: connection.createArrayOf('bigint', entitlementsToTake.toArray())])
+        List newIes = sql.executeInsert("insert into issue_entitlement (ie_version, ie_guid, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_status_rv_fk, ie_name, ie_perpetual_access_by_sub_fk) " +
+                "select 0, concat('issueentitlement:',gen_random_uuid()), now(), now(), ${participantSub.id},  ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_status_rv_fk, ie_name, ie_perpetual_access_by_sub_fk from issue_entitlement where ie_tipp_fk not in (select ie_tipp_fk from issue_entitlement where ie_subscription_fk = ${participantSub.id}) and ie_id = any(:ieIds)", [ieIds: connection.createArrayOf('bigint', entitlementsToTake.toArray())])
 
         if(newIes.size() > 0){
 

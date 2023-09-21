@@ -122,7 +122,7 @@ class IssueEntitlementController {
         result.contextOrg = contextService.getOrg()
         result.participantPerpetualAccessToTitle = []
 
-        result.participantPerpetualAccessToTitle = surveyService.listParticipantPerpetualAccessToTitle(result.contextOrg, result.issueEntitlementInstance.tipp)
+        result.participantPerpetualAccessToTitle = surveyService.listParticipantPerpetualAccessToTitle(result.issueEntitlementInstance.subscription.getSubscriber(), result.issueEntitlementInstance.tipp)
 
       result
     }

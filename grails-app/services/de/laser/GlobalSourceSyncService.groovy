@@ -919,7 +919,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         Date now = new Date()
         newTitles.each { TitleInstancePackagePlatform tipp ->
-            Set<Subscription> subsConcerned = Subscription.executeQuery('select s from Subscription s join s.packages sp where s.startDate is not null and s.startDate <= :now and s.endDate is not null and s.endDate >= :now and s.holdingSelection = :entire and sp.pkg = :pkg', [now: now, entire: RDStore.SUBSCRIPTION_HOLDING_ENTIRE, pkg: tipp.pkg])
+            Set<Subscription> subsConcerned = Subscription.executeQuery('select s from Subscription s join s.packages sp where s.endDate is not null and s.endDate >= :now and s.holdingSelection = :entire and sp.pkg = :pkg', [now: now, entire: RDStore.SUBSCRIPTION_HOLDING_ENTIRE, pkg: tipp.pkg])
             //we may need to switch to native sql ...
             subsConcerned.each { Subscription s ->
                 IssueEntitlement.construct([subscription: s, tipp: tipp])
@@ -1468,6 +1468,21 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 platform.normname = platformRecord.name.toLowerCase()
                 if(platformRecord.primaryUrl)
                     platform.primaryUrl = new URL(platformRecord.primaryUrl)
+                if(platformRecord.providerUuid) {
+                    Org provider = Org.findByGokbId(platformRecord.providerUuid)
+                    if(!provider) {
+                        Map<String, Object> providerData = fetchRecordJSON(false,[uuid: platformRecord.providerUuid])
+                        if(providerData && !providerData.error)
+                            provider = createOrUpdateOrg(providerData)
+                        else if(providerData && providerData.error == 404) {
+                            throw new SyncException("we:kb server is currently down")
+                        }
+                        else {
+                            throw new SyncException("Provider loading failed for ${platformRecord.providerUuid}")
+                        }
+                    }
+                    platform.org = provider
+                }
                 /*
                 TEST: create linking from provider to platform, not from platform to provider! Platforms should exist also without titles!
                 if(platformRecord.providerUuid) {

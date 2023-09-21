@@ -1099,7 +1099,7 @@ class SurveyController {
             }
             CostItem.withTransaction { TransactionStatus ts ->
                 List<CostItem> surveyCostItems = CostItem.executeQuery('select costItem from CostItem costItem join costItem.surveyOrg surOrg where surOrg.surveyConfig = :survConfig and surOrg.org.id in (:orgIDs) and costItem.costItemStatus != :status', [survConfig:  result.surveyConfig, orgIDs: selectedMembers.collect{Long.parseLong(it)}, status: RDStore.COST_ITEM_DELETED])
-                surveyCostItems.each { surveyCostItem ->
+                surveyCostItems.each { CostItem surveyCostItem ->
                     if(params.deleteCostItems == "true") {
                         surveyCostItem.delete()
                     }
@@ -1129,6 +1129,8 @@ class SurveyController {
                         //Not specified default to GDP
                         //surveyCostItem.costInLocalCurrency = cost_local_currency ?: surveyCostItem.costInLocalCurrency
                         surveyCostItem.billingSumRounding = billingSumRounding != surveyCostItem.billingSumRounding ? billingSumRounding : surveyCostItem.billingSumRounding
+                        if(surveyCostItem.billingSumRounding)
+                            surveyCostItem.costInBillingCurrency = Math.round(surveyCostItem.costInBillingCurrency)
                         surveyCostItem.finalCostRounding = finalCostRounding != surveyCostItem.finalCostRounding ? finalCostRounding : surveyCostItem.finalCostRounding
 
                         //println( params.newFinalCostRounding)
@@ -3417,11 +3419,16 @@ class SurveyController {
             //RefdataValue cost_tax_type         = params.newCostTaxType ?          (RefdataValue.get(params.long('newCostTaxType'))) : null           //on invoice, self declared, etc
 
             NumberFormat format = NumberFormat.getInstance(LocaleUtils.getCurrentLocale())
-            def cost_billing_currency = params.newCostInBillingCurrency ? format.parse(params.newCostInBillingCurrency).doubleValue() : 0.00
+            boolean billingSumRounding = params.newBillingSumRounding ? true : false, finalCostRounding = params.newFinalCostRounding ? true : false
+            Double cost_billing_currency = params.newCostInBillingCurrency ? format.parse(params.newCostInBillingCurrency).doubleValue() : 0.00
             //def cost_currency_rate = params.newCostCurrencyRate ? params.double('newCostCurrencyRate', 1.00) : 1.00
             //def cost_local_currency = params.newCostInLocalCurrency ? format.parse(params.newCostInLocalCurrency).doubleValue() : 0.00
 
-            def cost_billing_currency_after_tax = params.newCostInBillingCurrencyAfterTax ? format.parse(params.newCostInBillingCurrencyAfterTax).doubleValue() : cost_billing_currency
+            Double cost_billing_currency_after_tax = params.newCostInBillingCurrencyAfterTax ? format.parse(params.newCostInBillingCurrencyAfterTax).doubleValue() : cost_billing_currency
+            if(billingSumRounding)
+                cost_billing_currency = Math.round(cost_billing_currency)
+            if(finalCostRounding)
+                cost_billing_currency_after_tax = Math.round(cost_billing_currency_after_tax)
             //def cost_local_currency_after_tax = params.newCostInLocalCurrencyAfterTax ? format.parse(params.newCostInLocalCurrencyAfterTax).doubleValue() : cost_local_currency
             //moved to TAX_TYPES
             //def new_tax_rate                      = params.newTaxRate ? params.int( 'newTaxRate' ) : 0
@@ -3518,8 +3525,8 @@ class SurveyController {
                         newCostItem.costInBillingCurrency = cost_billing_currency as Double
                         //newCostItem.costInLocalCurrency = cost_local_currency as Double
 
-                        newCostItem.billingSumRounding = params.newBillingSumRounding ? true : false
-                        newCostItem.finalCostRounding = params.newFinalCostRounding ? true : false
+                        newCostItem.billingSumRounding = billingSumRounding
+                        newCostItem.finalCostRounding = finalCostRounding
                         newCostItem.costInBillingCurrencyAfterTax = cost_billing_currency_after_tax as Double
                         //newCostItem.costInLocalCurrencyAfterTax = cost_local_currency_after_tax as Double
                         //newCostItem.currencyRate = cost_currency_rate as Double
@@ -3647,6 +3654,114 @@ class SurveyController {
     }
 
     /**
+     * Call to copy the packages of subscription
+     * @return a list of each participant's packages
+     */
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    Map<String,Object> copySubPackagesAndIes() {
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        if (!result.editable) {
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
+        }
+
+        result.parentSubscription = result.surveyConfig.subscription
+        result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
+
+        result.targetSubscription =  result.parentSuccessorSubscription
+        result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
+
+        result.participantsList = []
+
+        result.parentSuccessortParticipantsList = []
+
+        result.parentSuccessorSubChilds.each { sub ->
+            Map newMap = [:]
+            Org org = sub.getSubscriber()
+            newMap.id = org.id
+            newMap.sortname = org.sortname
+            newMap.name = org.name
+            newMap.newSub = sub
+            newMap.oldSub = sub._getCalculatedPreviousForSurvey()
+
+            result.participantsList << newMap
+
+        }
+
+        result.participantsList = result.participantsList.sort{it.sortname}
+
+        result.validPackages = result.parentSuccessorSubscription ? Package.executeQuery('select sp from SubscriptionPackage sp where sp.subscription = :subscription', [subscription: result.parentSuccessorSubscription]) : []
+
+        result.isLinkingRunning = subscriptionService.checkThreadRunning('PackageTransfer_'+result.parentSuccessorSubscription.id)
+
+        result
+
+    }
+
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    Map<String,Object> proccessCopySubPackagesAndIes() {
+        Map<String, Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        if (!result.editable) {
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
+        }
+
+        result.parentSubscription = result.surveyConfig.subscription
+        result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
+
+        result.targetSubscription = result.parentSuccessorSubscription
+        result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
+
+        if(!subscriptionService.checkThreadRunning('PackageTransfer_'+result.parentSuccessorSubscription.id)) {
+            String processOption = params.processOption
+            Set<Subscription> subscriptions, permittedSubs = []
+            if(params.containsKey("membersListToggler")) {
+                subscriptions =  result.parentSuccessorSubChilds
+            }
+            else subscriptions = Subscription.findAllByIdInList(params.list("selectedSubs"))
+            subscriptions.each { Subscription selectedSub ->
+                if(selectedSub.isEditableBy(result.user)) {
+                    permittedSubs << selectedSub
+                }
+            }
+            List selectedPackageKeys = params.list("selectedPackages")
+            Set<Package> pkgsToProcess = []
+            if(selectedPackageKeys.contains('all') && result.parentSuccessorSubscription) {
+                pkgsToProcess.addAll(Package.executeQuery('select sp.pkg from SubscriptionPackage sp where sp.subscription = :subscription', [subscription: result.parentSuccessorSubscription]))
+            }
+            else {
+                selectedPackageKeys.each { String pkgKey ->
+                    pkgsToProcess.add(Package.get(pkgKey))
+                }
+            }
+            executorService.execute({
+                Thread.currentThread().setName('PackageTransfer_'+result.parentSuccessorSubscription.id)
+                pkgsToProcess.each { Package pkg ->
+                    permittedSubs.each { Subscription selectedSub ->
+                        SubscriptionPackage sp = SubscriptionPackage.findBySubscriptionAndPkg(selectedSub, pkg)
+                        if(processOption =~ /^link/) {
+                            if(!sp) {
+                                if(result.parentSuccessorSubscription) {
+                                    subscriptionService.addToSubscriptionCurrentStock(selectedSub, result.parentSuccessorSubscription, pkg, processOption == 'linkwithIE')
+                                }
+                                else {
+                                    subscriptionService.addToSubscription(selectedSub, pkg, processOption == 'linkwithIE')
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+        }
+        redirect(action: 'copySubPackagesAndIes', id: params.id, params: [surveyConfigID: result.surveyConfig.id, targetSubscriptionId: result.targetSubscription.id])
+
+    }
+
+        /**
      * Call to copy the survey cost items
      * @return a list of each participant's survey costs
      */
@@ -4332,15 +4447,7 @@ class SurveyController {
             }
         }
 
-        boolean bulkProcessRunning = false
-        Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
-        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
-        threadArray.each {
-            if (it.name == 'PackageTransfer_'+result.parentSuccessorSubscription.id) {
-                bulkProcessRunning = true
-            }
-        }
-        if(!bulkProcessRunning) {
+        if(!subscriptionService.checkThreadRunning('PackageTransfer_'+result.parentSuccessorSubscription.id)) {
             boolean withEntitlements = params.linkWithEntitlements == 'on'
             executorService.execute({
                 Thread.currentThread().setName('PackageTransfer_'+result.parentSuccessorSubscription.id)
@@ -4419,6 +4526,7 @@ class SurveyController {
                         name: newParentSub.name,
                         startDate: startDate,
                         endDate: endDate,
+                        manualCancellationDate: AuditConfig.getConfig(newParentSub, 'manualCancellationDate') ? newParentSub.manualCancellationDate : null,
                         referenceYear: newParentSub.referenceYear ?: null,
                         administrative: newParentSub._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE,
                         manualRenewalDate: newParentSub.manualRenewalDate,
