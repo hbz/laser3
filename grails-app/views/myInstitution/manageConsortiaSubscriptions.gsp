@@ -74,6 +74,6 @@
 
 <laser:render template="/templates/copyEmailaddresses" model="[orgList: totalMembers]"/>
 
-<laser:render template="export/individuallyExportModalConsortiaSubs" model="[modalID: 'individuallyExportModal']" />
+<laser:render template="export/individuallyExportModalConsortiaParticipations" model="[modalID: 'individuallyExportModal']" />
 
 <laser:htmlEnd />
