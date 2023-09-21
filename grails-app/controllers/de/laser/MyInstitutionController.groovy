@@ -3496,10 +3496,46 @@ join sub.orgRelations or_sub where
         ctx.contextService.hasPermAsInstUser_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def manageConsortiaSubscriptions() {
-
-        Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+        Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params), selectedFields = [:]
         result.tableConfig = ['withCostItems']
         result.putAll(subscriptionService.getMySubscriptionsForConsortia(params,result.user,result.institution,result.tableConfig))
+        Date datetoday = new Date()
+        String filename = "${DateUtils.getSDF_yyyyMMdd().format(datetoday)}_" + g.message(code: "export.my.consortiaSubscriptions")
+        Set<String> contactSwitch = []
+        if(params.fileformat) {
+            if (params.filename) {
+                filename = params.filename
+            }
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+            contactSwitch.addAll(params.list("contactSwitch"))
+            contactSwitch.addAll(params.list("addressSwitch"))
+        }
+
+        if(params.fileformat == 'xlsx') {
+            //result.entries has already been filtered in service method
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportConsortiaParticipations(result.entries, selectedFields, result.institution, contactSwitch, ExportClickMeService.FORMAT.XLS)
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }
+        else if(params.fileformat == 'csv') {
+            //result.entries has already been filtered in service method
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                //writer.write((String) _exportcurrentSubscription(result.allSubscriptions,"csv", result.institution))
+                writer.write((String) exportClickMeService.exportConsortiaParticipations(result.entries, selectedFields, result.institution, contactSwitch, ExportClickMeService.FORMAT.CSV))
+            }
+            out.close()
+        }
+        result
+        /*
         Profiler prf = result.pu
         prf.setBenchmark("after subscription loading, before providers")
         //LinkedHashMap<Subscription,List<Org>> providers = [:]
@@ -3515,13 +3551,13 @@ join sub.orgRelations or_sub where
                     subLinks.put(link.sourceSubscription, destinations)
                 }
             }
-            /*OrgRole.findAllByRoleTypeInList([RDStore.OR_PROVIDER,RDStore.OR_AGENCY]).each { it ->
+            OrgRole.findAllByRoleTypeInList([RDStore.OR_PROVIDER,RDStore.OR_AGENCY]).each { it ->
                 List<Org> orgs = providers.get(it.sub)
                 if(orgs == null)
                     orgs = [it.org]
                 else orgs.add(it.org)
                 providers.put(it.sub,orgs)
-            }*/
+            }
             List persons = Person.executeQuery("select c.content,c.prs from Contact c where c.prs in (select p from Person as p inner join p.roleLinks pr where " +
                     "( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) and pr.functionType = :roleType) and c.contentType = :email",
                     [ctx: result.institution,
@@ -3542,7 +3578,8 @@ join sub.orgRelations or_sub where
                 }
             }
         }
-
+        */
+        /*
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         prf.setBenchmark("before xls")
         if(params.exportXLS) {
@@ -3890,6 +3927,7 @@ join sub.orgRelations or_sub where
                 }
             }
         }
+        */
     }
 
     /**

@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      21.09.2023  rc-3.2  3.2.5       Andreas Bug         Sync aktualisierte den Anbieter in der Plattform nicht
+
+5293    21.09.2023  rc-3.2  3.2.5       Andreas Feature     Umrüstung von "Meine Lizenzen pro Einrichtung" auf konfigurierbaren Export
+
 5284    20.09.2023  rc-3.2  3.2.5       Andreas Bug         Performanz- und Zuordnungsfehler bei der Titelauswahl behoben
 
 5283    20.09.2023  rc-3.2  3.2.5       Andreas Bug         falsche Ausgabe des Reverse Charge korrigiert
