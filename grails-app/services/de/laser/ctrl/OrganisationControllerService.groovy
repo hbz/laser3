@@ -237,7 +237,7 @@ class OrganisationControllerService {
                     result.orgInstanceRecord = records ? records[0] : [:]
                 }
             }
-            result.editable = controller.checkIsEditable(user, result.orgInstance)
+            result.editable = controller._checkIsEditable(user, result.orgInstance)
             result.inContextOrg = result.orgInstance.id == org.id
             //this is a flag to check whether the page has been called for a consortia or inner-organisation member
             Combo checkCombo = Combo.findByFromOrgAndToOrg(result.orgInstance,org)
@@ -272,7 +272,7 @@ class OrganisationControllerService {
             }
         }
         else {
-            result.editable = controller.checkIsEditable(user, org)
+            result.editable = controller._checkIsEditable(user, org)
             result.orgInstance = result.institution
             result.inContextOrg = true
         }

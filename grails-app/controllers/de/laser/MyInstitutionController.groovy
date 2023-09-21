@@ -38,18 +38,8 @@ import de.laser.workflow.WfChecklist
 import grails.gsp.PageRenderer
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
-import org.apache.commons.collections.BidiMap
-import org.apache.commons.collections.bidimap.DualHashBidiMap
 import org.apache.http.HttpStatus
-import org.apache.poi.POIXMLProperties
-import org.apache.poi.ss.usermodel.Cell
-import org.apache.poi.ss.usermodel.FillPatternType
-import org.apache.poi.ss.usermodel.Row
-import org.apache.poi.xssf.streaming.SXSSFSheet
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
-import org.apache.poi.xssf.usermodel.XSSFCellStyle
-import org.apache.poi.xssf.usermodel.XSSFColor
-import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.transaction.TransactionStatus
 import org.mozilla.universalchardet.UniversalDetector
@@ -4143,7 +4133,7 @@ join sub.orgRelations or_sub where
 
             if (params.newObjects) {
                 params.list("newObjects").each { String id ->
-                    def owner = resolveOwner(pd, id)
+                    def owner = _resolveOwner(pd, id)
                     if (owner) {
                         AbstractPropertyWithCalculatedLastUpdated prop = owner.propertySet.find { exProp -> exProp.type.id == pd.id && exProp.tenant.id == result.institution.id }
                         if (!prop || pd.multipleOccurrence) {
@@ -4166,11 +4156,11 @@ join sub.orgRelations or_sub where
             if (params.selectedObjects) {
                 if (params.deleteProperties) {
                     List selectedObjects = params.list("selectedObjects")
-                    processDeleteProperties(pd, selectedObjects, result.institution)
+                    _processDeleteProperties(pd, selectedObjects, result.institution)
                 }
                 else {
                     params.list("selectedObjects").each { String id ->
-                        def owner = resolveOwner(pd, id)
+                        def owner = _resolveOwner(pd, id)
                         if (owner) {
                             AbstractPropertyWithCalculatedLastUpdated prop = owner.propertySet.find { exProp -> exProp.type.id == pd.id && exProp.tenant.id == result.institution.id }
                             if (prop) {
@@ -4191,11 +4181,11 @@ join sub.orgRelations or_sub where
      * @param selectedObjects the objects from which the property should be unassigned
      * @param contextOrg the institution whose properties should be removed
      */
-    def processDeleteProperties(PropertyDefinition propDef, selectedObjects, Org contextOrg) {
+    private def _processDeleteProperties(PropertyDefinition propDef, selectedObjects, Org contextOrg) {
         PropertyDefinition.withTransaction {
             int deletedProperties = 0
             selectedObjects.each { ownerId ->
-                def owner = resolveOwner(propDef, ownerId)
+                def owner = _resolveOwner(propDef, ownerId)
                 Set<AbstractPropertyWithCalculatedLastUpdated> existingProps = owner.propertySet.findAll {
                     it.owner.id == owner.id && it.type.id == propDef.id && it.tenant?.id == contextOrg.id && !AuditConfig.getConfig(it)
                 }
@@ -4217,7 +4207,7 @@ join sub.orgRelations or_sub where
      * @return the object matching the property definition's object type and the given identifier
      * @see PropertyDefinition#descr
      */
-    def resolveOwner(PropertyDefinition pd, String id) {
+    private def _resolveOwner(PropertyDefinition pd, String id) {
         def owner
         switch(pd.descr) {
             case PropertyDefinition.SUB_PROP: owner = Subscription.get(id)

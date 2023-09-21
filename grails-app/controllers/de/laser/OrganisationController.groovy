@@ -442,7 +442,10 @@ class OrganisationController  {
      * @see OrganisationService#exportOrg(java.util.List, java.lang.Object, boolean, java.lang.String)
      * @see ExportClickMeService#getExportOrgFields(java.lang.String)
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def listProvider() {
         Map<String, Object> result = [:]
         result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
@@ -1004,7 +1007,10 @@ class OrganisationController  {
      * Shows the details of the organisation to display
      * @return the details view of the given orgainsation
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_or_ROLEADMIN()
+    })
     @Check404(domain=Org)
     def show() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1102,7 +1108,10 @@ class OrganisationController  {
      * @see Identifier
      * @see CustomerIdentifier
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_or_ROLEADMIN()
+    })
     @Check404(domain=Org)
     def ids() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1367,7 +1376,7 @@ class OrganisationController  {
     def users() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
-        result.editable = checkIsEditable(result.user, result.orgInstance)
+        result.editable = _checkIsEditable(result.user, result.orgInstance)
 
         if (! result.editable) {
             boolean instAdminExists = (result.orgInstance as Org).hasInstAdminEnabled()
@@ -1474,7 +1483,7 @@ class OrganisationController  {
         // TODO: --> CHECK LOGIC IMPLEMENTATION <--
         // TODO: userIsYoda != SpringSecurityUtils.ifAnyGranted('ROLE_YODA') @ user.hasMinRole('ROLE_YODA')
 
-        result.editable = checkIsEditable(result.user, contextService.getOrg())
+        result.editable = _checkIsEditable(result.user, contextService.getOrg())
         result.availableOrgs = [ result.orgInstance ]
 
         render view: '/user/global/edit', model: result
@@ -1791,7 +1800,7 @@ class OrganisationController  {
             redirect action: 'list'
             return
         }
-        result.editable = checkIsEditable(result.user, orgInstance)
+        result.editable = _checkIsEditable(result.user, orgInstance)
 
         if (result.editable) {
             orgInstance.addToOrgType(RefdataValue.get(params.orgType))
@@ -1818,7 +1827,7 @@ class OrganisationController  {
             return
         }
 
-        result.editable = checkIsEditable(result.user, orgInstance)
+        result.editable = _checkIsEditable(result.user, orgInstance)
 
         if (result.editable) {
             orgInstance.removeFromOrgType(RefdataValue.get(params.removeOrgType))
@@ -1853,7 +1862,7 @@ class OrganisationController  {
             redirect(url: request.getHeader('referer'))
             return
         }
-        result.editable = checkIsEditable(result.user, result.orgInstance)
+        result.editable = _checkIsEditable(result.user, result.orgInstance)
 
         if (result.editable) {
             result.orgInstance.addToSubjectGroup(subjectGroup: RefdataValue.get(params.subjectGroup))
@@ -1978,7 +1987,7 @@ class OrganisationController  {
      * @param org the target organisation
      * @return true if edit rights are granted to the given user/org/view context, false otherwise
      */
-    boolean checkIsEditable(User user, Org org) {
+    private boolean _checkIsEditable(User user, Org org) {
         boolean isEditable = false
         Org contextOrg = contextService.getOrg()
         boolean inContextOrg = org.id == contextOrg.id

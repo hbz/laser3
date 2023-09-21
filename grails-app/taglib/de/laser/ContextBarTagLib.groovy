@@ -16,7 +16,7 @@ class ContextBarTagLib {
     // <ui:cbItemCustomerType org="${contextService.getOrg()}" />
 
     def cbItemCustomerType = {attrs, body ->
-        String icon  = 'smile outline'
+        String icon  = 'question'
         String color = 'grey'
         String text  = '?'
         Org org = attrs.org as Org
@@ -27,16 +27,18 @@ class ContextBarTagLib {
             text  = Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_PRO).getI10n('authority')
         }
         else if (org.isCustomerType_Consortium_Basic()) {
+            icon  = 'smile outline'
             color = 'teal'
             text  = Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_BASIC).getI10n('authority')
         }
         else if (org.isCustomerType_Inst_Pro()) {
             icon  = 'trophy'
-            color = 'blue'
+            color = 'yellow'
             text  = Role.findByAuthority(CustomerTypeService.ORG_INST_PRO).getI10n('authority')
         }
         else if (org.isCustomerType_Inst()) {
-            color = 'blue'
+            icon  = 'smile outline'
+            color = 'yellow'
             text  = Role.findByAuthority(CustomerTypeService.ORG_INST_BASIC).getI10n('authority')
         }
         else if (org.isCustomerType_Support()) {

@@ -277,7 +277,7 @@ class AjaxController {
                             result = value[params.resultProp]
                         } else {
                             if (value) {
-                                result = renderObjectValue(value)
+                                result = _renderObjectValue(value)
                             }
                         }
                     } else {
@@ -1138,6 +1138,7 @@ class AjaxController {
         }
     }
 
+    @Secured(['ROLE_USER'])
     @Transactional
     def toggleMarker() {
 
@@ -2036,7 +2037,7 @@ class AjaxController {
     }
 
   @Deprecated
-  def renderObjectValue(value) {
+  private def _renderObjectValue(value) {
     String result = ''
     String not_set = message(code:'refdata.notSet') as String
 
