@@ -14,25 +14,25 @@
                 <div class="ui fluid segment title">
                     <div class="ui stackable equal width grid">
                         <div class="four wide column">
-                            <ui:wekbIconLink type="package" gokbId="${sp.pkg.gokbId}"/>
                             <g:link controller="package" action="show" id="${sp.pkg.id}">${sp.pkg.name}</g:link>
+                            <ui:wekbIconLink type="package" gokbId="${sp.pkg.gokbId}"/>
                             <br>
                             ${sp.getCurrentIssueEntitlementCountOfPackage()} <g:message code="subscription.packages.currentTitles"/>
                         </div>
                         <div class="three wide column">
                             <g:if test="${sp.pkg.contentProvider}">
                                 <i aria-hidden="true" class="handshake outline icon la-popup-tooltip la-delay" data-content="${message(code: 'default.provider.label')}"></i>
-                                <g:if test="${sp.pkg.contentProvider.gokbId}"><ui:wekbIconLink type="org" gokbId="${sp.pkg.contentProvider.gokbId}"/></g:if>
                                 <g:link controller="org" action="show" id="${sp.pkg.contentProvider.id}">${sp.pkg.contentProvider.name}</g:link>
                                 <ui:linkWithIcon href="${sp.pkg.contentProvider.url?.startsWith('http') ? sp.pkg.contentProvider.url : 'http://' + sp.pkg.contentProvider.url}"/>
+                                <g:if test="${sp.pkg.contentProvider.gokbId}"><ui:wekbIconLink type="org" gokbId="${sp.pkg.contentProvider.gokbId}"/></g:if>
                             </g:if>
                         </div>
                         <div class="three wide column">
                             <g:if test="${sp.pkg.nominalPlatform}">
                                 <i aria-hidden="true" class="grey cloud icon la-popup-tooltip la-delay" data-content="${message(code: 'platform.label')}"></i>
-                                <ui:wekbIconLink type="platform" gokbId="${sp.pkg.nominalPlatform.gokbId}"/>
                                 <g:link controller="platform" action="show" id="${sp.pkg.nominalPlatform.id}">${sp.pkg.nominalPlatform.name}</g:link>
                                 <ui:linkWithIcon href="${sp.pkg.nominalPlatform.primaryUrl?.startsWith('http') ? sp.pkg.nominalPlatform.primaryUrl : 'http://' + sp.pkg.nominalPlatform.primaryUrl}"/>
+                                <ui:wekbIconLink type="platform" gokbId="${sp.pkg.nominalPlatform.gokbId}"/>
                             </g:if>
                                         <%--
                                         <g:if test="${packageService.getCountOfNonDeletedTitles(sp.pkg) > 0}">
@@ -190,8 +190,8 @@
                                     <div class="ui list">
                                         <g:each in="${packageInstanceRecord.curatoryGroups}" var="curatoryGroup">
                                             <div class="item">
-                                                <ui:wekbIconLink type="curatoryGroup" gokbId="${curatoryGroup.curatoryGroup}"/>
                                                 ${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}
+                                                <ui:wekbIconLink type="curatoryGroup" gokbId="${curatoryGroup.curatoryGroup}"/>
                                             </div>
                                         </g:each>
                                     </div>
