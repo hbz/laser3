@@ -172,7 +172,7 @@
                                                     <g:if test="${dd.key == 'perm'}">
                                                         <g:if test="${dd.value.contains('ORG_INST_BASIC')}">
                                                             <span class="la-long-tooltip" data-tooltip="Zugriff: ORG_INST_BASIC / ORG_INST_PRO">
-                                                                <i class="icon smile outline yellow"></i><i class="icon trophy yellow"></i>
+                                                                <i class="icon frog yellow"></i><i class="icon trophy yellow"></i>
                                                             </span>
                                                         </g:if>
                                                         <g:if test="${dd.value.contains('ORG_INST_PRO')}">
@@ -182,7 +182,7 @@
                                                         </g:if>
                                                         <g:if test="${dd.value.contains('ORG_CONSORTIUM_BASIC')}">
                                                             <span class="la-long-tooltip" data-tooltip="Zugriff: ORG_CONSORTIUM_BASIC / ORG_CONSORTIUM_PRO">
-                                                                <i class="icon smile outline teal"></i><i class="icon trophy teal"></i>
+                                                                <i class="icon frog teal"></i><i class="icon trophy teal"></i>
                                                             </span>
                                                         </g:if>
                                                         <g:if test="${dd.value.contains('ORG_CONSORTIUM_PRO')}">
@@ -192,7 +192,7 @@
                                                         </g:if>
                                                     </g:if>
                                                     <g:if test="${dd.key == 'test'}">
-                                                        <g:if test="${info.value.getAt('perm')?.contains('ORG_CONSORTIUM_BASIC')}">%{-- check with given perms --}%
+                                                        <g:if test="${info.value.getAt('perm')?.contains('ORG_CONSORTIUM_BASIC') || info.value.getAt('perm')?.contains('ORG_SUPPORT')}">%{-- check with given perms --}%
                                                             <g:if test="${! dd.value.contains('_denySupport_')}">
                                                                 <i class="icon theater masks red"></i>
                                                             </g:if>
@@ -204,10 +204,10 @@
 
                                             <g:if test="${! info.value.getAt('perm')}">%{-- check without explicit perms --}%
                                                 <span class="la-long-tooltip" data-tooltip="Zugriff: ORG_INST_BASIC / ORG_INST_PRO">
-                                                    <i class="icon smile outline yellow"></i><i class="icon trophy yellow"></i>
+                                                    <i class="icon frog yellow"></i><i class="icon trophy yellow"></i>
                                                 </span>
                                                 <span class="la-long-tooltip" data-tooltip="Zugriff: ORG_CONSORTIUM_BASIC / ORG_CONSORTIUM_PRO">
-                                                    <i class="icon smile outline teal"></i><i class="icon trophy teal"></i>
+                                                    <i class="icon frog teal"></i><i class="icon trophy teal"></i>
                                                 </span>
                                                 <g:if test="${! info.value.getAt('test').contains('_denySupport_')}">
                                                     <i class="icon theater masks red"></i>
