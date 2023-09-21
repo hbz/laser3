@@ -1426,7 +1426,6 @@ i.icon.la-list-icon {
 i.icon.la-list-icon:before {
   display: inline-flex;
   text-decoration: none;
-  opacity: 0.8;
   height: 1em;
   color: #767676;
 }
