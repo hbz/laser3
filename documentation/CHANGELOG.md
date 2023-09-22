@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5277    22.09.2023  dev     3.3         Andreas Feature     Umstellung der Identifier-Namensraum-Kartei auf externe CSV
+
 --      21.09.2023  rc-3.2  3.2.5       Andreas Bug         Übertragungsfehler bei Umfragen behoben
 
 --      21.09.2023  rc-3.2  3.2.5       Andreas Bug         Sync aktualisierte den Anbieter in der Plattform nicht
