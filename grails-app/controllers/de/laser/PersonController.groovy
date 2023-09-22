@@ -582,6 +582,7 @@ class PersonController  {
      * @return if a redirect has been specified, the redirect is being executed; the person details page otherwise
      */
     @Transactional
+    @Secured(['ROLE_USER'])
     def addPersonRole() {
         PersonRole result
         Person prs = Person.get(params.id)
@@ -630,6 +631,7 @@ class PersonController  {
      * @return the person details view
      */
     @Transactional
+    @Secured(['ROLE_USER'])
     def deletePersonRole() {
         Person prs = Person.get(params.id)
 

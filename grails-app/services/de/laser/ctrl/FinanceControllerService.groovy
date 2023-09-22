@@ -220,7 +220,7 @@ class FinanceControllerService {
         Locale locale = LocaleUtils.getCurrentLocale()
         Map<String,Object> result = getEditVars(configMap.institution)
 
-        log.debug(configMap.dataToDisplay)
+        log.debug(configMap.dataToDisplay.toString())
 
         if (configMap.dataToDisplay.stream().anyMatch(['cons','consAtSubscr'].&contains)) {
             result.licenseeLabel = messageSource.getMessage( 'consortium.member',null,locale)

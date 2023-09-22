@@ -18,9 +18,9 @@ class PendingChangeController  {
     /**
      * Call to accept the given change and to trigger processing of the changes stored in the record
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def accept() {
         log.debug("Accept")
@@ -32,9 +32,9 @@ class PendingChangeController  {
     /**
      * Call to accept the given title change and to trigger processing of the changes stored in the record
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def acceptTitleChange() {
         log.debug("Accept")
@@ -46,9 +46,9 @@ class PendingChangeController  {
     /**
      * Call to reject the given change
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def reject() {
         log.debug("Reject")
@@ -60,9 +60,9 @@ class PendingChangeController  {
     /**
      * Call to reject the given change
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def rejectTitleChange() {
         log.debug("Reject")
@@ -74,9 +74,9 @@ class PendingChangeController  {
     /**
      * Call to bulk-process a set of changes. Loops through the changes and performs accepting or rejecting
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def processAll() {
         log.debug("processAll - ${params}")

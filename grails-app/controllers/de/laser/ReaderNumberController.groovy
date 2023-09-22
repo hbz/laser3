@@ -17,9 +17,9 @@ class ReaderNumberController  {
 	 * Creates a new reader number for the given institution
 	 * @return redirect to the updated reader number table
 	 */
-	@DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+	@DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
 	@Secured(closure = {
-		ctx.contextService.isInstEditor_or_ROLEADMIN()
+		ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
 	})
     def create() {
 		ReaderNumber.withTransaction { TransactionStatus ts ->
@@ -35,9 +35,9 @@ class ReaderNumberController  {
 	 * Takes the submitted parameters and updates the given reader number with the given parameter map
 	 * @return the updated reader number table
 	 */
-	@DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+	@DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
 	@Secured(closure = {
-		ctx.contextService.isInstEditor_or_ROLEADMIN()
+		ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
 	})
     def edit() {
 		ReaderNumber.withTransaction { TransactionStatus ts ->
@@ -64,9 +64,9 @@ class ReaderNumberController  {
 	 * Deletes the given reader numbers, specified by their grouping unit
 	 * @return the updated reader number table
 	 */
-	@DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+	@DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
 	@Secured(closure = {
-		ctx.contextService.isInstEditor_or_ROLEADMIN()
+		ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
 	})
     def delete() {
 		ReaderNumber.withTransaction { TransactionStatus ts ->

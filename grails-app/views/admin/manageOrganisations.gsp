@@ -32,20 +32,21 @@
                 <th>${message(code:'org.customerType.label')}</th>
                 <th>
                     ${message(code:'org.apiLevel.label')}
-                    <span class="la-popup-tooltip la-delay la-no-uppercase" data-position="right center" data-content="${message(code:'org.apiLevel.tooltip')}" >
+                    <span class="la-popup-tooltip la-delay la-no-uppercase" data-position="right center" data-content="${message(code:'org.apiLevel.tooltip')}">
                         <i class="question circle icon popup"></i>
                     </span>
                 </th>
                 <th>
                     ${message(code:'org.specialApiPermission.label')}
-                    <span class="la-popup-tooltip la-delay la-no-uppercase" data-position="right center" data-content="${message(code:'org.specialApiPermission.tooltip')}" >
+                    <span class="la-popup-tooltip la-delay la-no-uppercase" data-position="right center" data-content="${message(code:'org.specialApiPermission.tooltip')}">
                         <i class="question circle icon popup"></i>
                     </span>
                 </th>
-                <th class="la-no-uppercase"><span class="la-popup-tooltip la-delay" data-position="left center"
-                          data-content="${message(code:'org.legalInformation.tooltip')}" >
-                    <i class="handshake outline icon"></i>
-                </span></th>
+                <th class="la-no-uppercase">
+                    <span class="la-popup-tooltip la-delay" data-position="left center" data-content="${message(code:'org.legalInformation.tooltip')}">
+                        <i class="handshake outline icon"></i>
+                    </span>
+                </th>
                 <th>${message(code:'org.hasAccessOrg')}</th>
                 <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </tr>

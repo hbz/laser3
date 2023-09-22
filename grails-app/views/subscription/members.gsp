@@ -84,7 +84,7 @@
             </ui:exportDropdownItem>
             --%>
         </ui:exportDropdown>
-        <laser:render template="actions" />
+        <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
     </ui:controlButtons>
 
     <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" visibleOrgRelations="${visibleOrgRelations}">
@@ -94,7 +94,7 @@
 
     <ui:anualRings object="${subscription}" controller="subscription" action="members" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
-    <laser:render template="nav" />
+    <laser:render template="${customerTypeService.getNavTemplatePath()}" />
 
     <ui:filter>
         <g:form action="members" controller="subscription" params="${[id:params.id]}" method="get" class="ui form">

@@ -6,7 +6,7 @@
 
     <ui:controlButtons>
         <g:if test="${userService.hasFormalAffiliation(user, institution, 'INST_EDITOR')}">
-            <laser:render template="actions" />
+            <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
         </g:if>
     </ui:controlButtons>
 
@@ -16,7 +16,7 @@
     <ui:totalNumber total="${validMemberLicenses.size() ?: 0}"/>
     <ui:anualRings object="${license}" controller="license" action="members" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
-<laser:render template="nav" />
+<laser:render template="${customerTypeService.getNavTemplatePath()}" />
 
 <ui:filter>
     <g:form action="members" controller="license" params="${[id:params.id]}" method="get" class="ui form">

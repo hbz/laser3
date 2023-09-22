@@ -237,7 +237,7 @@ class OrganisationControllerService {
                     result.orgInstanceRecord = records ? records[0] : [:]
                 }
             }
-            result.editable = controller.checkIsEditable(user, result.orgInstance)
+            result.editable = controller._checkIsEditable(user, result.orgInstance)
             result.inContextOrg = result.orgInstance.id == org.id
             //this is a flag to check whether the page has been called for a consortia or inner-organisation member
             Combo checkCombo = Combo.findByFromOrgAndToOrg(result.orgInstance,org)
@@ -253,9 +253,15 @@ class OrganisationControllerService {
                 }
             }
             //restrictions hold if viewed org is not the context org
-            if (!result.inContextOrg && !contextService.getOrg().isCustomerType_Consortium() && !SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+//            if (!result.inContextOrg && !contextService.getOrg().isCustomerType_Consortium() && !SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+//                //restrictions further concern only single users or consortium members, not consortia
+//                if (!contextService.getOrg().isCustomerType_Consortium() && result.orgInstance.isCustomerType_Inst()) {
+//                    return null
+//                }
+//            }
+            if (!result.inContextOrg && !SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
                 //restrictions further concern only single users or consortium members, not consortia
-                if (!contextService.getOrg().isCustomerType_Consortium() && result.orgInstance.isCustomerType_Inst()) {
+                if (!(contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()) && result.orgInstance.isCustomerType_Inst()) {
                     return null
                 }
             }
@@ -266,7 +272,7 @@ class OrganisationControllerService {
             }
         }
         else {
-            result.editable = controller.checkIsEditable(user, org)
+            result.editable = controller._checkIsEditable(user, org)
             result.orgInstance = result.institution
             result.inContextOrg = true
         }

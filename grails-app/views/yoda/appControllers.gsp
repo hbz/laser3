@@ -152,9 +152,67 @@
                                         <g:if test="${info.key == 'debug'}">
                                             <g:each in="${info.value}" var="dd">
                                                 <g:if test="${dd.value}">
-                                                    <span class="${dd.key}">${dd.value}</span>
+                                                    <span class="${dd.key}">
+                                                        <g:if test="${dd.key == 'perm'}">
+                                                            ${dd.value.replaceAll('ORG_', '')}
+                                                        </g:if>
+                                                        <g:elseif test="${dd.key == 'test'}">
+                                                            <g:if test="${dd.value.contains('_denySupport_')}">
+                                                                closure_denySupport
+                                                            </g:if>
+                                                            <g:else>
+                                                                closure
+                                                            </g:else>
+                                                        </g:elseif>
+                                                        <g:else>
+                                                            ${dd.value}
+                                                        </g:else>
+                                                    </span>
+
+                                                    <g:if test="${dd.key == 'perm'}">
+                                                        <g:if test="${dd.value.contains('ORG_INST_BASIC')}">
+                                                            <span class="la-long-tooltip" data-tooltip="Zugriff: ORG_INST_BASIC / ORG_INST_PRO">
+                                                                <i class="icon frog yellow"></i><i class="icon trophy yellow"></i>
+                                                            </span>
+                                                        </g:if>
+                                                        <g:if test="${dd.value.contains('ORG_INST_PRO')}">
+                                                            <span class="la-long-tooltip" data-tooltip="Zugriff: ORG_INST_PRO">
+                                                                <i class="icon trophy yellow"></i>
+                                                            </span>
+                                                        </g:if>
+                                                        <g:if test="${dd.value.contains('ORG_CONSORTIUM_BASIC')}">
+                                                            <span class="la-long-tooltip" data-tooltip="Zugriff: ORG_CONSORTIUM_BASIC / ORG_CONSORTIUM_PRO">
+                                                                <i class="icon frog teal"></i><i class="icon trophy teal"></i>
+                                                            </span>
+                                                        </g:if>
+                                                        <g:if test="${dd.value.contains('ORG_CONSORTIUM_PRO')}">
+                                                            <span class="la-long-tooltip" data-tooltip="Zugriff: ORG_CONSORTIUM_PRO">
+                                                                <i class="icon trophy teal"></i>
+                                                            </span>
+                                                        </g:if>
+                                                    </g:if>
+                                                    <g:if test="${dd.key == 'test'}">
+                                                        <g:if test="${info.value.getAt('perm')?.contains('ORG_CONSORTIUM_BASIC') || info.value.getAt('perm')?.contains('ORG_SUPPORT')}">%{-- check with given perms --}%
+                                                            <g:if test="${! dd.value.contains('_denySupport_')}">
+                                                                <i class="icon theater masks red"></i>
+                                                            </g:if>
+                                                        </g:if>
+                                                    </g:if>
+
                                                 </g:if>
                                             </g:each>
+
+                                            <g:if test="${! info.value.getAt('perm')}">%{-- check without explicit perms --}%
+                                                <span class="la-long-tooltip" data-tooltip="Zugriff: ORG_INST_BASIC / ORG_INST_PRO">
+                                                    <i class="icon frog yellow"></i><i class="icon trophy yellow"></i>
+                                                </span>
+                                                <span class="la-long-tooltip" data-tooltip="Zugriff: ORG_CONSORTIUM_BASIC / ORG_CONSORTIUM_PRO">
+                                                    <i class="icon frog teal"></i><i class="icon trophy teal"></i>
+                                                </span>
+                                                <g:if test="${! info.value.getAt('test').contains('_denySupport_')}">
+                                                    <i class="icon theater masks red"></i>
+                                                </g:if>
+                                            </g:if>
                                         </g:if>
                                         <g:elseif test="${info.key == 'secured'}">
                                             <g:each in="${info.value}" var="ss">
@@ -214,7 +272,7 @@
                                             <g:if test="${info.key == 'debug'}">
                                                 <g:each in="${info.value}" var="dd">
                                                     <g:if test="${dd.value}">
-                                                        <span class="${dd.key}">${dd.value}</span>
+                                                        aa <span class="${dd.key}">${dd.value}</span>
                                                     </g:if>
                                                 </g:each>
                                             </g:if>
@@ -243,7 +301,7 @@
     padding: 0 5px;
     color: #FF00FF;
 }
-.secInfoWrapper2 span {
+.secInfoWrapper2 span:not(.la-long-tooltip) {
     margin-left: 2px;
     float: right;
 }
@@ -296,11 +354,13 @@
     color: green;
 }
 
-.secInfoWrapper .affil,
 .secInfoWrapper .perm,
 .secInfoWrapper .type,
 .secInfoWrapper .specRole {
     color: #335555;
+}
+.secInfoWrapper .affil {
+    color: #ff55ff;
 }
 .secInfoWrapper .perm {
     font-weight: normal;
@@ -310,6 +370,7 @@
 }
 .secInfoWrapper .test {
     color: #dd33dd;
+    text-decoration: underline dotted;
 }
 
 .secInfoWrapper .IS_AUTHENTICATED_FULLY {

@@ -1,10 +1,10 @@
 <%@ page import="de.laser.storage.RDStore;" %>
-<laser:htmlStart message="license.nav.docs" />
+<laser:htmlStart message="license.nav.docs" serviceInjection="true"/>
 
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
     <ui:controlButtons>
-        <laser:render template="actions" />
+        <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
     </ui:controlButtons>
 
     <ui:h1HeaderWithIcon visibleOrgRelations="${visibleOrgRelations}">
@@ -13,7 +13,7 @@
 
     <ui:anualRings object="${license}" controller="license" action="documents" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
-    <laser:render template="nav" />
+    <laser:render template="${customerTypeService.getNavTemplatePath()}" />
 
     <ui:messages data="${flash}" />
 

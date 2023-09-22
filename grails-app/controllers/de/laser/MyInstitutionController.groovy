@@ -38,18 +38,8 @@ import de.laser.workflow.WfChecklist
 import grails.gsp.PageRenderer
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
-import org.apache.commons.collections.BidiMap
-import org.apache.commons.collections.bidimap.DualHashBidiMap
 import org.apache.http.HttpStatus
-import org.apache.poi.POIXMLProperties
-import org.apache.poi.ss.usermodel.Cell
-import org.apache.poi.ss.usermodel.FillPatternType
-import org.apache.poi.ss.usermodel.Row
-import org.apache.poi.xssf.streaming.SXSSFSheet
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
-import org.apache.poi.xssf.usermodel.XSSFCellStyle
-import org.apache.poi.xssf.usermodel.XSSFColor
-import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.transaction.TransactionStatus
 import org.mozilla.universalchardet.UniversalDetector
@@ -68,7 +58,6 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class MyInstitutionController  {
 
-    AccessService accessService
     AddressbookService addressbookService
     ContextService contextService
     ComparisonService comparisonService
@@ -178,7 +167,10 @@ class MyInstitutionController  {
      * @see Platform
      * @see Subscription
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def currentPlatforms() {
         Map<String, Object> result = [:]
 
@@ -391,7 +383,7 @@ class MyInstitutionController  {
                 licenseFilterTable << "action"
             licenseFilterTable << "licensingConsortium"
         }
-        else if (contextService.getOrg().isCustomerType_Consortium()) {
+        else if (contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()) {
             base_qry = "from License as l where exists ( select o from l.orgRelations as o where ( o.roleType = :roleTypeC AND o.org = :lic_org AND l.instanceOf is null AND NOT exists ( select o2 from l.orgRelations as o2 where o2.roleType = :roleTypeL ) ) )"
             qry_params = [roleTypeC:RDStore.OR_LICENSING_CONSORTIUM, roleTypeL:RDStore.OR_LICENSEE_CONS, lic_org:result.institution]
             licenseFilterTable << "memberLicenses"
@@ -500,7 +492,7 @@ class MyInstitutionController  {
                 qry_params.subKinds = subKinds
             }
 
-            if (contextService.getOrg().isCustomerType_Consortium()) {
+            if (contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()) {
                 subscrQueryFilter << "s.instanceOf is null"
             }
 
@@ -864,9 +856,9 @@ class MyInstitutionController  {
      * The list results may be filtered with filter parameters
      * @return a list of matching {@link Org} records, as html or as export pipe (Excel / CSV)
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
     def currentProviders() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1426,9 +1418,9 @@ class MyInstitutionController  {
      * @see Platform
      * @see IssueEntitlement
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
     def currentTitles() {
 
@@ -1730,9 +1722,9 @@ class MyInstitutionController  {
      * @see PermanentTitle
      * @see FilterService#getPermanentTitlesQuery(grails.web.servlet.mvc.GrailsParameterMap, de.laser.Org)
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
     def currentPermanentTitles() {
 
@@ -1810,9 +1802,9 @@ class MyInstitutionController  {
      * @see SubscriptionPackage
      * @see Package
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
     def currentPackages() {
 
@@ -1923,16 +1915,21 @@ class MyInstitutionController  {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     def dashboard() {
-
         Map<String, Object> ctrlResult = myInstitutionControllerService.dashboard(this, params)
 
-        if (ctrlResult.status == MyInstitutionControllerService.STATUS_ERROR) {
-            flash.error = "You do not have permission to access ${ctrlResult.result.institution.name} pages. Please request access on the profile page"
-            response.sendError(401)
-                return
+        // todo
+        if (contextService.getOrg().isCustomerType_Support()) {
+            render view: 'dashboard_support', model: ctrlResult.result
         }
+        else {
+            if (ctrlResult.status == MyInstitutionControllerService.STATUS_ERROR) {
+                flash.error = "You do not have permission to access ${ctrlResult.result.institution.name} pages. Please request access on the profile page"
+                response.sendError(401)
+                return
+            }
 
-        return ctrlResult.result
+            return ctrlResult.result
+        }
     }
 
     /**
@@ -1964,9 +1961,9 @@ class MyInstitutionController  {
      * @see PendingChange
      */
     @Deprecated
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
     def changes() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2877,9 +2874,9 @@ class MyInstitutionController  {
      * @return a table view of tasks
      * @see Task
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO_SUPPORT], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO_SUPPORT)
     })
     def tasks() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2989,9 +2986,9 @@ class MyInstitutionController  {
      * @return the (filtered) list of workflows currently under process at the context institution
      * @see WfChecklist
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO], ctrlService = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO_SUPPORT], ctrlService = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO_SUPPORT)
     })
     def currentWorkflows() {
 
@@ -3106,7 +3103,10 @@ class MyInstitutionController  {
      * Call for the table view of those consortia which are linked to the context institution
      * @return a list of those institutions on whose consortial subscriptions the context institution is participating
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def currentConsortia() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
@@ -4175,7 +4175,7 @@ join sub.orgRelations or_sub where
 
             if (params.newObjects) {
                 params.list("newObjects").each { String id ->
-                    def owner = resolveOwner(pd, id)
+                    def owner = _resolveOwner(pd, id)
                     if (owner) {
                         AbstractPropertyWithCalculatedLastUpdated prop = owner.propertySet.find { exProp -> exProp.type.id == pd.id && exProp.tenant.id == result.institution.id }
                         if (!prop || pd.multipleOccurrence) {
@@ -4198,11 +4198,11 @@ join sub.orgRelations or_sub where
             if (params.selectedObjects) {
                 if (params.deleteProperties) {
                     List selectedObjects = params.list("selectedObjects")
-                    processDeleteProperties(pd, selectedObjects, result.institution)
+                    _processDeleteProperties(pd, selectedObjects, result.institution)
                 }
                 else {
                     params.list("selectedObjects").each { String id ->
-                        def owner = resolveOwner(pd, id)
+                        def owner = _resolveOwner(pd, id)
                         if (owner) {
                             AbstractPropertyWithCalculatedLastUpdated prop = owner.propertySet.find { exProp -> exProp.type.id == pd.id && exProp.tenant.id == result.institution.id }
                             if (prop) {
@@ -4223,11 +4223,11 @@ join sub.orgRelations or_sub where
      * @param selectedObjects the objects from which the property should be unassigned
      * @param contextOrg the institution whose properties should be removed
      */
-    def processDeleteProperties(PropertyDefinition propDef, selectedObjects, Org contextOrg) {
+    private def _processDeleteProperties(PropertyDefinition propDef, selectedObjects, Org contextOrg) {
         PropertyDefinition.withTransaction {
             int deletedProperties = 0
             selectedObjects.each { ownerId ->
-                def owner = resolveOwner(propDef, ownerId)
+                def owner = _resolveOwner(propDef, ownerId)
                 Set<AbstractPropertyWithCalculatedLastUpdated> existingProps = owner.propertySet.findAll {
                     it.owner.id == owner.id && it.type.id == propDef.id && it.tenant?.id == contextOrg.id && !AuditConfig.getConfig(it)
                 }
@@ -4249,7 +4249,7 @@ join sub.orgRelations or_sub where
      * @return the object matching the property definition's object type and the given identifier
      * @see PropertyDefinition#descr
      */
-    def resolveOwner(PropertyDefinition pd, String id) {
+    private def _resolveOwner(PropertyDefinition pd, String id) {
         def owner
         switch(pd.descr) {
             case PropertyDefinition.SUB_PROP: owner = Subscription.get(id)
