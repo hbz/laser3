@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      21.09.2023  rc-3.2  3.2.5       Andreas Bug         Übertragungsfehler bei Umfragen behoben
+
 --      21.09.2023  rc-3.2  3.2.5       Andreas Bug         Sync aktualisierte den Anbieter in der Plattform nicht
 
 5293    21.09.2023  rc-3.2  3.2.5       Andreas Feature     Umrüstung von "Meine Lizenzen pro Einrichtung" auf konfigurierbaren Export
