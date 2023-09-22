@@ -2718,10 +2718,12 @@ class SubscriptionControllerService {
                     String identifierMapQuery = "select id_value, tipp_gokb_id, tipp_host_platform_url from identifier join title_instance_package_platform on tipp_id = id_tipp_fk where tipp_pkg_fk = any(:pkgIds) and id_ns_fk = any(:idns)",
                     perpetualAccessQuery = "select tipp_host_platform_url, tipp_id from permanent_title join title_instance_package_platform on pt_tipp_fk = tipp_id where pt_owner_fk = :org and tipp_status_rv_fk != :removed and tipp_pkg_fk = any(:pkgIds)"
                     Map<String, String> titleIdentifierMap = [:], perpetualAccessMap = [:]
+                    /*
                     sql.rows(identifierMapQuery, [pkgIds: sql.getDataSource().getConnection().createArrayOf('bigint', subPkgs.id as Object[]), idns: sql.getDataSource().getConnection().createArrayOf('bigint', namespaces.values().id as Object[])]).each { GroovyRowResult row ->
                         titleIdentifierMap.put(row['id_value'], row['tipp_gokb_id'])
                         titleIdentifierMap.put(row['tipp_host_platform_url'], row['tipp_gokb_id'])
                     }
+                    */
                     sql.rows(perpetualAccessQuery, [pkgIds: sql.getDataSource().getConnection().createArrayOf('bigint', subPkgs.id as Object[]), org: result.subscriber.id, status: RDStore.TIPP_STATUS_REMOVED.id]).each { GroovyRowResult row ->
                         perpetualAccessMap.put(row['tipp_id'], row['tipp_gokb_id'])
                         perpetualAccessMap.put(row['tipp_host_platform_url'], row['tipp_gokb_id'])
@@ -2811,6 +2813,7 @@ class SubscriptionControllerService {
                     rows.remove(0)
                     TitleInstancePackagePlatform match
                     rows.eachWithIndex { row, int i ->
+                        log.debug("now processing record ${i}")
                         String titleUrl = null
                         Map<String, Object> ieCandidate = [:]
                         ArrayList<String> cols = row.split('\t')
@@ -2890,17 +2893,29 @@ class SubscriptionControllerService {
                             log.debug("after matchingTipps ${System.currentTimeMillis()-start} msecs")
                              */
 
+                            if(titleUrl) {
+                                match = TitleInstancePackagePlatform.findByHostPlatformURL(titleUrl)
+                            }
+                            if(idCandidate.value && !match) {
+                                List<TitleInstancePackagePlatform> matches = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:pkgs) and id.value = :value and id.ns in (:namespaces)', [pkgs: subPkgs, value: idCandidate.value.replace("\r",""), namespaces: namespaces.values()])
+                                if(matches)
+                                    match = matches[0]
+                            }
 
-                            if ((idCandidate.value && titleIdentifierMap.containsKey(idCandidate.value.replace("\r", ""))) || titleIdentifierMap.containsKey(titleUrl)) {
-                                String tippKey = titleIdentifierMap.containsKey(titleUrl) ? titleIdentifierMap.get(titleUrl) : titleIdentifierMap.get(idCandidate.value.replace("\r", ""))
+                            if (match) {
+                                String tippKey = match.gokbId
+                            //if ((idCandidate.value && titleIdentifierMap.containsKey(idCandidate.value.replace("\r", ""))) || titleIdentifierMap.containsKey(titleUrl)) {
+                                //String tippKey = titleIdentifierMap.containsKey(titleUrl) ? titleIdentifierMap.get(titleUrl) : titleIdentifierMap.get(idCandidate.value.replace("\r", ""))
                                 //is title already added?
                                 if (addedTipps.contains(tippKey)) {
                                     errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${messageSource.getMessage('subscription.details.addEntitlements.titleAlreadyAdded', null, locale)}")
                                 }
+                                /*
                                 else {
                                     //TEST!
                                     match = TitleInstancePackagePlatform.findByGokbId(tippKey)
                                 }
+                                */
                             }
                             else {
                                /* if(matchingTipps)

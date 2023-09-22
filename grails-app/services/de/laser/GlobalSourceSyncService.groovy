@@ -1480,6 +1480,21 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 platform.normname = platformRecord.name.toLowerCase()
                 if(platformRecord.primaryUrl)
                     platform.primaryUrl = new URL(platformRecord.primaryUrl)
+                if(platformRecord.providerUuid) {
+                    Org provider = Org.findByGokbId(platformRecord.providerUuid)
+                    if(!provider) {
+                        Map<String, Object> providerData = fetchRecordJSON(false,[uuid: platformRecord.providerUuid])
+                        if(providerData && !providerData.error)
+                            provider = createOrUpdateOrg(providerData)
+                        else if(providerData && providerData.error == 404) {
+                            throw new SyncException("we:kb server is currently down")
+                        }
+                        else {
+                            throw new SyncException("Provider loading failed for ${platformRecord.providerUuid}")
+                        }
+                    }
+                    platform.org = provider
+                }
                 /*
                 TEST: create linking from provider to platform, not from platform to provider! Platforms should exist also without titles!
                 if(platformRecord.providerUuid) {
