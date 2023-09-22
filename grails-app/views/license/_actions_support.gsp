@@ -30,9 +30,11 @@
 
             <div class="divider"></div>
 
-            <g:if test="${license._getCalculatedType() == License.TYPE_LOCAL || license._getCalculatedType() == License.TYPE_CONSORTIAL}">
+            <g:if test="${license._getCalculatedType() == License.TYPE_CONSORTIAL}">
                 <ui:actionsDropdownItem controller="license" action="copyLicense" params="${[sourceObjectId: genericOIDService.getOID(license), copyObject: true]}" message="myinst.copyLicense" />
             </g:if>
+
+            <ui:actionsDropdownItem controller="license" action="copyElementsIntoLicense" params="${[sourceObjectId: genericOIDService.getOID(license)]}" message="myinst.copyElementsIntoLicense" />
 
         </g:if>
         <g:if test="${actionName == 'show'}">

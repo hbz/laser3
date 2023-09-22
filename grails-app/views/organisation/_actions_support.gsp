@@ -5,7 +5,7 @@
     <ui:actionsDropdown>
         <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
 
-        <g:if test="${editable || contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_SUPPORT)}">
+        <g:if test="${editable}">
             <g:if test="${actionName == 'show'}">
 %{--                <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />--}%%{-- --}%%{-- erms-4798 --}%
             </g:if>

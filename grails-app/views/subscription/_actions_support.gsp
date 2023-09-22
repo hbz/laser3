@@ -19,33 +19,24 @@
 
         <g:if test="${editable}">
 
-            <g:if test="${(contextCustomerType == CustomerTypeService.ORG_INST_PRO && subscription._getCalculatedType() == Subscription.TYPE_LOCAL) || (customerTypeService.isConsortium( contextCustomerType ) && subscription._getCalculatedType() == Subscription.TYPE_CONSORTIAL)}">
+            <g:if test="${subscription._getCalculatedType() == Subscription.TYPE_CONSORTIAL}">
                 <ui:actionsDropdownItem controller="subscription" action="copySubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription), copyObject: true]}" message="myinst.copySubscription" />
             </g:if>
 
-            <g:if test="${(contextCustomerType == CustomerTypeService.ORG_INST_PRO && !subscription.instanceOf) || customerTypeService.isConsortium( contextCustomerType )}">
-                <ui:actionsDropdownItem controller="subscription" action="copyElementsIntoSubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription)]}" message="myinst.copyElementsIntoSubscription" />
-            </g:if>
+            <ui:actionsDropdownItem controller="subscription" action="copyElementsIntoSubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription)]}" message="myinst.copyElementsIntoSubscription" />
         </g:if>
 
-            <g:if test="${contextCustomerType == CustomerTypeService.ORG_INST_PRO && subscription.instanceOf}">
-                <ui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[sourceObjectId: genericOIDService.getOID(subscription)]}" message="myinst.copyMyElements" />
-                <g:if test="${navPrevSubscription}">
-                    <ui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[sourceObjectId: genericOIDService.getOID(navPrevSubscription[0]), targetObjectId: genericOIDService.getOID(subscription)]}" message="myinst.copyMyElementsFromPrevSubscription" />
-                </g:if>
-            </g:if>
-
             <g:if test="${editable}">
-                <div class="divider"></div>
+%{--                <div class="divider"></div>--}%
 
-                <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE] && contextService.getOrg().isCustomerType_Consortium_Pro()}">
-                    <div class="divider"></div>
-                    <ui:actionsDropdownItem controller="subscription" action="manageDiscountScale" params="${[id:params.id]}" message="subscription.details.manageDiscountScale.label" />
-                    <g:if test="${subscription.discountScales.size() > 0}">
-                        <ui:actionsDropdownItem controller="subscription" action="copyDiscountScales" params="${[id:params.id]}" message="subscription.details.copyDiscountScales.label" />
-                    </g:if>
-                </g:if>
-                    <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE] && contextService.getOrg().isCustomerType_Consortium()}">
+%{--                <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE]}">--}%
+%{--                    <div class="divider"></div>--}%
+%{--                    <ui:actionsDropdownItem controller="subscription" action="manageDiscountScale" params="${[id:params.id]}" message="subscription.details.manageDiscountScale.label" />--}%
+%{--                    <g:if test="${subscription.discountScales.size() > 0}">--}%
+%{--                        <ui:actionsDropdownItem controller="subscription" action="copyDiscountScales" params="${[id:params.id]}" message="subscription.details.copyDiscountScales.label" />--}%
+%{--                    </g:if>--}%
+%{--                </g:if>--}%
+                    <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE]}">
                 <div class="divider"></div>
                 <g:if test="${hasNext}">
                     <ui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription"
@@ -71,7 +62,7 @@
                 <ui:actionsDropdownItem controller="subscription" action="addMembers" params="${[id:params.id]}" text="${message(code:'subscription.details.addMembers.label',args:[message(code:'subscription.details.consortiaMembers.label')])}" />
             </g:if>
 
-            <g:if test="${subscription._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && customerTypeService.isConsortium( contextCustomerType )}">
+            <g:if test="${subscription._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL}">
 
                   <ui:actionsDropdownItem controller="subscription" action="membersSubscriptionsManagement"
                                            params="${[id: params.id]}"
