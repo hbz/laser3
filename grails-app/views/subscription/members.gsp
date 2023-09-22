@@ -116,9 +116,7 @@
         <table class="ui celled monitor sortable stackable la-js-responsive-table la-table table">
             <thead>
             <tr>
-                <th>
-                    <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
-                </th>
+                <th>${message(code:'sidewide.number')}</th>
                 <th>${message(code:'default.sortname.label')}</th>
                 <g:sortableColumn params="${params}" property="o.sortname" title="${message(code:'subscriptionDetails.members.members')}"/>
                 <th class="center aligned">
@@ -160,9 +158,7 @@
                 <g:set var="sub" value="${row.sub}"/>
                 <tr>
                     <g:set var="subscr" value="${row.orgs}" />
-                    <td>
-                        <g:checkBox class="orgSelector" name="selectedOrgs" value="${subscr.id}" checked="false"/>
-                    </td>
+                    <td>${i + 1}</td>
                     <%--<g:each in="${filteredSubscribers}" var="subscr">--%>
                         <td>
                             ${subscr.sortname}</td>
@@ -341,20 +337,7 @@
             } else {
                 $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', false)
             }
-            updateMailAddressList();
-        })
-
-        $('.orgSelector').change(function() {
-            updateMailAddressList();
         });
-
-        function updateMailAddressList() {
-            let selIds = [];
-            $('.orgSelector:checked').each(function(i) {
-                selIds.push($(this).val());
-            });
-            $('#copyMailAddresses').attr('data-orgIdList', selIds.join(','));
-        }
     </laser:script>
 
 <laser:htmlEnd />

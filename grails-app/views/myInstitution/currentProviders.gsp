@@ -68,8 +68,8 @@
         <g:if test="${orgList}">
         <laser:render template="/templates/filter/orgFilterTable"
                   model="[orgList: orgList,
-                          tmplShowCheckbox: true,
-                          tmplConfigShow: ['sortname', 'name', 'altname', /*'numberOfSubscriptions',*/ 'currentSubscriptions', 'marker', 'isWekbCurated']
+                          tmplShowCheckbox: false,
+                          tmplConfigShow: ['lineNumber', 'sortname', 'name', 'altname', /*'numberOfSubscriptions',*/ 'currentSubscriptions', 'marker', 'isWekbCurated']
                   ]"/>
         </g:if>
         <g:else>
