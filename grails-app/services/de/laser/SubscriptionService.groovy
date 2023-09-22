@@ -101,7 +101,7 @@ class SubscriptionService {
         viableOrgs.add(contextOrg)
 
         String consortiaFilter = ''
-        if(contextOrg.isCustomerType_Consortium())
+        if(contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Support())
             consortiaFilter = 'and s.instanceOf = null'
 
         Set<Year> availableReferenceYears = Subscription.executeQuery('select s.referenceYear from OrgRole oo join oo.sub s where s.referenceYear != null and oo.org = :contextOrg '+consortiaFilter+' order by s.referenceYear', [contextOrg: contextOrg])

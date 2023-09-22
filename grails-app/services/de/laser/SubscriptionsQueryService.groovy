@@ -54,7 +54,7 @@ class SubscriptionsQueryService {
         Map qry_params = [:]
 
         if (! params.orgRole) {
-            if (contextOrg.isCustomerType_Consortium()) {
+            if (contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Support()) {
                 params.orgRole = 'Subscription Consortia'
             }
             else {

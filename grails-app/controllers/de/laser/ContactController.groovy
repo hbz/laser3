@@ -22,7 +22,10 @@ class ContactController  {
 	/**
 	 * index call, redirecting to the context institution's addressbook
 	 */
-	@Secured(['ROLE_USER'])
+	@DebugInfo(isInstUser_or_ROLEADMIN = [])
+	@Secured(closure = {
+		ctx.contextService.isInstUser_or_ROLEADMIN()
+	})
 	def index() {
 		redirect controller: 'myInstitution', action: 'addressbook'
 	}

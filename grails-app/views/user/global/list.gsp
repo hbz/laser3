@@ -21,10 +21,10 @@
         </ui:controlButtons>
 
         <g:if test="${controllerName == 'myInstitution'}">
-            <laser:render template="/organisation/nav" model="${navConfig}"/>
+            <laser:render template="/organisation/${customerTypeService.getNavTemplatePath()}" model="${navConfig}"/>
         </g:if>
         <g:if test="${controllerName == 'organisation'}">
-            <laser:render template="/organisation/nav" model="${navConfig}"/>
+            <laser:render template="/organisation/${customerTypeService.getNavTemplatePath()}" model="${navConfig}"/>
         </g:if>
 
         <laser:render template="/templates/user/filter" model="${filterConfig}"/>

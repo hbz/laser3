@@ -18,7 +18,7 @@
           model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView, consortialView: consortialView]}"/>
 
 <ui:controlButtons>
-    <laser:render template="actions" model="${[org: orgInstance, user: user]}"/>
+    <laser:render template="${customerTypeService.getActionsTemplatePath()}" model="${[org: orgInstance, user: user]}"/>
 </ui:controlButtons>
 
 <ui:h1HeaderWithIcon text="${orgInstance.name}" >
@@ -51,7 +51,7 @@
     </div>
 </g:if>
 
-<laser:render debug="true" template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, isProviderOrAgency: isProviderOrAgency]}"/>
+<laser:render template="${customerTypeService.getNavTemplatePath()}" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, isProviderOrAgency: isProviderOrAgency]}"/>
 
 <ui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
 
@@ -889,7 +889,7 @@
                     </g:if>
                 </g:if>
 
-            <g:if test="${(contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro())}">
+            <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support() || contextService.getOrg().isCustomerType_Inst_Pro()}">
                 <div id="new-dynamic-properties-block">
                     <laser:render template="properties" model="${[ orgInstance: orgInstance, authOrg: formalOrg, contextOrg: institution ]}"/>
                 </div><!-- #new-dynamic-properties-block -->

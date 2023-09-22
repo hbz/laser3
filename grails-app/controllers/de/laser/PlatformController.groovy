@@ -38,7 +38,10 @@ class PlatformController  {
     /**
      * Landing point; redirects to the list of platforms
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def index() {
         redirect action: 'list', params: params
     }
@@ -48,7 +51,10 @@ class PlatformController  {
      * Beware that a we:kb API connection has to be established for the list to work!
      * @return a list of all platforms currently recorded in the we:kb ElasticSearch index
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def list() {
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         Map<String, Object> result = [
@@ -223,7 +229,10 @@ class PlatformController  {
      * but fetched on-the-fly from we:kb; a we:kb ElasticSearch API is thus necessary
      * @return the details view of the platform
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     @Check404()
     def show() {
         Map<String, Object> result = platformControllerService.getResultGenerics(params)
@@ -302,9 +311,9 @@ class PlatformController  {
      * @deprecated use {@link #dynamicApLink()} instead
      */
     @Deprecated
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     @Check404()
     def link() {
@@ -336,9 +345,9 @@ class PlatformController  {
      * Call to link a platform to another access point
      * @return renders the available options in a modal
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def dynamicApLink(){
         Map<String, Object> result = [:]
@@ -376,9 +385,9 @@ class PlatformController  {
      * Call to add a new derivation to the given platform
      * @return redirect to the referer
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def addDerivation() {
         Map<String,Object> ctrlResult = platformControllerService.addDerivation(params)
@@ -392,9 +401,9 @@ class PlatformController  {
      * Call to remove a new derivation to the given platform
      * @return redirect to the referer
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def removeDerivation() {
         Map<String,Object> ctrlResult = platformControllerService.removeDerivation(params)
@@ -405,9 +414,9 @@ class PlatformController  {
     }
 
     @Deprecated
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def linkAccessPoint() {
         OrgAccessPoint apInstance
@@ -430,9 +439,9 @@ class PlatformController  {
     }
 
     @Deprecated
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def removeAccessPoint() {
         Map<String,Object> ctrlResult = platformControllerService.removeAccessPoint(params)

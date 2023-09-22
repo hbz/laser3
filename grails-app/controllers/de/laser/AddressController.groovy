@@ -24,7 +24,10 @@ class AddressController  {
      * Index call
      * @return the addressbook of the context institution
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_or_ROLEADMIN()
+    })
     def index() {
         redirect controller: 'myInstitution', action: 'addressbook'
     }
@@ -82,7 +85,10 @@ class AddressController  {
      * Shows the given address details
      * @return a modal containing the address details
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_or_ROLEADMIN()
+    })
     def show() {
         Address addressInstance = Address.get(params.id)
         if (! addressInstance) {

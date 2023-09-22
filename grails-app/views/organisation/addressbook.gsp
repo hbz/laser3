@@ -1,6 +1,6 @@
 <%@ page import="de.laser.Org; de.laser.Person; de.laser.PersonRole; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants " %>
 
-<laser:htmlStart message="menu.institutions.myAddressbook" />
+<laser:htmlStart message="menu.institutions.myAddressbook" serviceInjection="true"/>
 
 <g:set var="allOrgTypeIds" value="${orgInstance.getAllOrgTypeIds()}"/>
 <g:set var="isProviderOrAgency"
@@ -9,7 +9,7 @@
 <laser:render template="breadcrumb" model="${[orgInstance: orgInstance, params: params]}"/>
 
 <ui:controlButtons>
-    <laser:render template="actions" />
+    <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
 </ui:controlButtons>
 
 <laser:render template="/templates/copyFilteredEmailAddresses"
@@ -19,7 +19,7 @@
     <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
 </ui:h1HeaderWithIcon>
 
-<laser:render template="nav" model="${[orgInstance: orgInstance]}"/>
+<laser:render template="${customerTypeService.getNavTemplatePath()}" model="${[orgInstance: orgInstance]}"/>
 
 <ui:messages data="${flash}"/>
 
