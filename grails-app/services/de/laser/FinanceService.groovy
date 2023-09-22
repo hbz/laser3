@@ -1039,15 +1039,15 @@ class FinanceService {
                     else {
                         billingSum = posEntry.billingSum
                         billingSumAfterTax = posEntry.billingSumAfterTax
-                        localSum = posEntry.localSum
-                        localSumAfterTax = posEntry.localSumAfterTax
+                        localSum = posEntry.localSum ?: 0.0
+                        localSumAfterTax = posEntry.localSumAfterTax ?: 0.0
                     }
                 }
                 else {
                     billingSum = posEntry.billingSum
                     billingSumAfterTax = posEntry.billingSumAfterTax
-                    localSum = posEntry.localSum
-                    localSumAfterTax = posEntry.localSumAfterTax
+                    localSum = posEntry.localSum ?: 0.0
+                    localSumAfterTax = posEntry.localSumAfterTax ?: 0.0
                 }
                 positiveCurrencies << posEntry.currency
                 billingSums.add([currency: posEntry.currency, billingSum: billingSum, billingSumAfterTax: billingSumAfterTax, localSum: localSum, localSumAfterTax: localSumAfterTax])
