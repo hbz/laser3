@@ -4533,6 +4533,7 @@ class SurveyController {
                         name: newParentSub.name,
                         startDate: startDate,
                         endDate: endDate,
+                        manualCancellationDate: AuditConfig.getConfig(newParentSub, 'manualCancellationDate') ? newParentSub.manualCancellationDate : null,
                         referenceYear: newParentSub.referenceYear ?: null,
                         administrative: newParentSub._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE,
                         manualRenewalDate: newParentSub.manualRenewalDate,
