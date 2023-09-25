@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5291    25.09.2023  rc-3.2  3.2.5       Moe     Feature     merkmal Auftragsnummer bei Lizenzverlängerung nicht automatisch setzen
+
 --      21.09.2023  rc-3.2  3.2.4       Andreas Bug         Übertragungsfehler bei Umfragen behoben
 
 --      21.09.2023  rc-3.2  3.2.4       Andreas Bug         Sync aktualisierte den Anbieter in der Plattform nicht
