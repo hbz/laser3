@@ -396,7 +396,9 @@ class DeletionService {
                     }
 
                     // pending changes
-                    PendingChange.executeUpdate('delete from PendingChange pc where pc.subscription = :sub', [sub: sub])
+                    pendingChanges.each { PendingChange pc ->
+                        pc.delete()
+                    }
 
                     // issue entitlements
                     // sub.issueEntitlements.clear()

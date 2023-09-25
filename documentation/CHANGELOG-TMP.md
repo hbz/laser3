@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      25.09.2023  rc-3.2  3.2.5       Andreas Bug         Bug beim Export von Titel behoben
+
+5296    25.09.2023  rc-3.2  3.2.5       Andreas Bug         Kaskadenfehler beim Löschen von Lizenzen behoben
+
 5291    25.09.2023  rc-3.2  3.2.5       Moe     Feature     merkmal Auftragsnummer bei Lizenzverlängerung nicht automatisch setzen
 
 --      25.09.2023  rc-3.2  3.2.5       Andreas Bug         einige Count-Abfragen auf count(*) umgestellt
