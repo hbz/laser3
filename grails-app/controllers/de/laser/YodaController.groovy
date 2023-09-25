@@ -995,7 +995,7 @@ class YodaController {
                 indexInfo.countIndex = "n/a"
             }
 
-            String query = "select count(id) from ${index.key}"
+            String query = "select count(*) from ${index.key}"
             indexInfo.countDB = FTControl.executeQuery(query)[0]
             result.indices << indexInfo
         }
@@ -1596,7 +1596,7 @@ class YodaController {
             Thread.currentThread().setName("setPermanentTitle")
             int countProcess = 0, max = 100000
             Set<RefdataValue> status = [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED]
-            int ieCount = IssueEntitlement.executeQuery('select count(ie) from IssueEntitlement ie where ie.perpetualAccessBySub is not null and ie.status in (:status)', [status: status])[0]
+            int ieCount = IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.perpetualAccessBySub is not null and ie.status in (:status)', [status: status])[0]
             if (ieCount > 0) {
                 for(int offset = 0; offset < ieCount; offset+=max) {
                     List<IssueEntitlement> ies = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.perpetualAccessBySub is not null and ie.status in (:status)', [status: status], [max: max, offset: offset])

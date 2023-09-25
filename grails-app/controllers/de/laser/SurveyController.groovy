@@ -4522,6 +4522,15 @@ class SurveyController {
             Subscription.withTransaction { TransactionStatus ts ->
                 Date startDate = newStartDate ?: null
                 Date endDate = newEndDate ?: null
+                //subject to be removed in 3.3
+                List<String> excludes = PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key }
+                //excludes << 'freezeHolding'
+                excludes.add(PendingChangeConfiguration.TITLE_REMOVED)
+                excludes.add(PendingChangeConfiguration.TITLE_REMOVED+PendingChangeConfiguration.NOTIFICATION_SUFFIX)
+                excludes.add(PendingChangeConfiguration.TITLE_DELETED)
+                excludes.add(PendingChangeConfiguration.TITLE_DELETED+PendingChangeConfiguration.NOTIFICATION_SUFFIX)
+                excludes.addAll(PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key+PendingChangeConfiguration.NOTIFICATION_SUFFIX})
+                Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,newParentSub.id,excludes)
 
                 memberSub = new Subscription(
                         type: newParentSub.type ?: null,
@@ -4530,7 +4539,6 @@ class SurveyController {
                         name: newParentSub.name,
                         startDate: startDate,
                         endDate: endDate,
-                        manualCancellationDate: AuditConfig.getConfig(newParentSub, 'manualCancellationDate') ? newParentSub.manualCancellationDate : null,
                         referenceYear: newParentSub.referenceYear ?: null,
                         administrative: newParentSub._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE,
                         manualRenewalDate: newParentSub.manualRenewalDate,
@@ -4546,6 +4554,9 @@ class SurveyController {
                         isMultiYear: multiYear ?: false
                 )
 
+                inheritedAttributes.each { AuditConfig attr ->
+                    memberSub[attr.referenceField] = memberSub[attr.referenceField]
+                }
                 if (!memberSub.save()) {
                     memberSub.errors.each { e ->
                         log.debug("Problem creating new sub: ${e}")

@@ -9,6 +9,12 @@
 
 5291    25.09.2023  rc-3.2  3.2.5       Moe     Feature     merkmal Auftragsnummer bei Lizenzverlängerung nicht automatisch setzen
 
+--      25.09.2023  rc-3.2  3.2.5       Andreas Bug         einige Count-Abfragen auf count(*) umgestellt
+
+5295    25.09.2023  rc-3.2  3.2.5       Andreas Bug         Vererbungsübertragung verallgemeinert
+
+--      21.09.2023  rc-3.2  3.2.4       Andreas Bug         Übertragungsfehler bei Umfragen behoben
+
 --      21.09.2023  rc-3.2  3.2.4       Andreas Bug         Übertragungsfehler bei Umfragen behoben
 
 --      21.09.2023  rc-3.2  3.2.4       Andreas Bug         Sync aktualisierte den Anbieter in der Plattform nicht
