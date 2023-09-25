@@ -617,11 +617,15 @@ class SurveyController {
                             surveyConfig: surveyConfig,
                             mandatoryProperty: true)
 
-                    SurveyConfigProperties configProperty2 = new SurveyConfigProperties(
+                    /*SurveyConfigProperties configProperty2 = new SurveyConfigProperties(
                             surveyProperty: PropertyStore.SURVEY_PROPERTY_ORDER_NUMBER,
-                            surveyConfig: surveyConfig)
+                            surveyConfig: surveyConfig)*/
 
-                    if (configProperty.save() && configProperty2.save()) {
+                    /*if (configProperty.save() && configProperty2.save()) {
+                        surveyService.addSubMembers(surveyConfig)
+                    }*/
+
+                    if (configProperty.save()) {
                         surveyService.addSubMembers(surveyConfig)
                     }
                 }
