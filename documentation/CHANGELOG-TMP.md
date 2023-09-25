@@ -131,85 +131,85 @@
 
 #### day of release 3.2
 
-5199    20.07.2023  rc-3.2  rc-3.2      Andreas Feature     Auswahloptionen nach vorne gesetzt
+5199    20.07.2023  rc-3.2  3.2         Andreas Feature     Auswahloptionen nach vorne gesetzt
 
-5162    20.07.2023  rc-3.2  rc-3.2      Andreas Feature     Export von Anmerkungen jetzt möglich
+5162    20.07.2023  rc-3.2  3.2         Andreas Feature     Export von Anmerkungen jetzt möglich
 
---      19.07.2023  rc-3.2  rc-3.2      Andreas Feature     Mailtemplatetext angepasst
+--      19.07.2023  rc-3.2  3.2         Andreas Feature     Mailtemplatetext angepasst
 
-5197    19.07.2023  rc-3.2  rc-3.2      Andreas Bug         Sortierung der Merkmale nach Typ auf case-insensitive umgestellt
+5197    19.07.2023  rc-3.2  3.2         Andreas Bug         Sortierung der Merkmale nach Typ auf case-insensitive umgestellt
 
-5196    19.07.2023  rc-3.2  rc-3.2      David   Feature     Benutzernamenprüfung bei Login derzeit case-sensitive
+5196    19.07.2023  rc-3.2  3.2         David   Feature     Benutzernamenprüfung bei Login derzeit case-sensitive
 
-5195    19.07.2023  rc-3.2  rc-3.2      Andreas Bug         Fällige Termine setzten sich immer wieder zurück
+5195    19.07.2023  rc-3.2  3.2         Andreas Bug         Fällige Termine setzten sich immer wieder zurück
 
-5190    18.07.2023  rc-3.2  rc-3.2      Ingrid Bug          Modal "Workflow für 'xyz' anlegen: Modal wird jetzt nicht abgeschickt, wenn Titel nicht ausgefüllt
+5190    18.07.2023  rc-3.2  3.2         Ingrid Bug          Modal "Workflow für 'xyz' anlegen: Modal wird jetzt nicht abgeschickt, wenn Titel nicht ausgefüllt
 
-5192    18.07.2023  rc-3.2  rc-3.2      Ingrid Bug          Mouseover bei Tooltip innerhalb des Modals wird jetzt ausgelöst
+5192    18.07.2023  rc-3.2  3.2         Ingrid Bug          Mouseover bei Tooltip innerhalb des Modals wird jetzt ausgelöst
 
-5191    18.07.2023  rc-3.2  rc-3.2      Andreas Feature     Erweiterungen bei der Paketverknüpfung
+5191    18.07.2023  rc-3.2  3.2         Andreas Feature     Erweiterungen bei der Paketverknüpfung
 
-5130    18.07.2023  rc-3.2  rc-3.2      Andreas Feature     Bezeichner umgestellt
+5130    18.07.2023  rc-3.2  3.2         Andreas Feature     Bezeichner umgestellt
 
-5092    18.07.2023  rc-3.2  rc-3.2      Andreas Feature     Bezeichner (Teilnehmervertrag) aus Verträgen entfernt und auf Icon umgestellt
+5092    18.07.2023  rc-3.2  3.2         Andreas Feature     Bezeichner (Teilnehmervertrag) aus Verträgen entfernt und auf Icon umgestellt
 
-5045    18.07.2023  rc-3.2  rc-3.2      Andreas Feature     Wording angepasst
+5045    18.07.2023  rc-3.2  3.2         Andreas Feature     Wording angepasst
 
-5184    14.07.2023  rc-3.2  rc-3.2      Andreas Bug         Adressen um "Meine"-Flag aufgerüstet, Daten wiederhergestellt
+5184    14.07.2023  rc-3.2  3.2         Andreas Bug         Adressen um "Meine"-Flag aufgerüstet, Daten wiederhergestellt
 
-5187    13.07.2023  rc-3.2  rc-3.2      David   Feature     Aufräumen: Lizenzen/Verträge/Elemente kopieren
+5187    13.07.2023  rc-3.2  3.2         David   Feature     Aufräumen: Lizenzen/Verträge/Elemente kopieren
 
-4545    11.07.2023  rc-3.2  rc-3.2      Ingrid  Feature     Anbieter in die Überschrift aufnehmen für Views, in denen es Sinn macht
+4545    11.07.2023  rc-3.2  3.2         Ingrid  Feature     Anbieter in die Überschrift aufnehmen für Views, in denen es Sinn macht
 
-5186    11.07.2023  rc-3.2  rc-3.2      Andreas Bug         dauerhafte Titel wurden nicht gekennzeichnet
+5186    11.07.2023  rc-3.2  3.2         Andreas Bug         dauerhafte Titel wurden nicht gekennzeichnet
 
-4660    10.07.2023  rc-3.2  rc-3.2      Andreas Feature     neues Verfahrensverzeichnis eingecheckt
+4660    10.07.2023  rc-3.2  3.2         Andreas Feature     neues Verfahrensverzeichnis eingecheckt
 
---      07.07.2023  rc-3.2  rc-3.2      Andreas Bug         interne Sortierung der Werte geändert (zum besseren Debug)
+--      07.07.2023  rc-3.2  3.2         Andreas Bug         interne Sortierung der Werte geändert (zum besseren Debug)
 
-5181    07.07.2023  rc-3.2  rc-3.2      Andreas Bug         diverse Aufruffehler in der API behoben (API Version 2.1)
+5181    07.07.2023  rc-3.2  3.2         Andreas Bug         diverse Aufruffehler in der API behoben (API Version 2.1)
 
-5180    07.07.2023  rc-3.2  rc-3.2      Andreas Bug         Konsortien konnten von PRO-Nutzern nicht mehr aufgerufen werden
+5180    07.07.2023  rc-3.2  3.2         Andreas Bug         Konsortien konnten von PRO-Nutzern nicht mehr aufgerufen werden
 
-5045    05.07.2023  dev     rc-3.2      Moe     Feature     Neue Umfragemerkmale (Wunsch BSB)
+5045    05.07.2023  dev     3.2         Moe     Feature     Neue Umfragemerkmale (Wunsch BSB)
 
-5171    05.07.2023  dev     rc-3.2      Moe     Feature     Wildcard @* Maildomä
+5171    05.07.2023  dev     3.2         Moe     Feature     Wildcard @* Maildomä
 
-5173    05.07.2023  dev     rc-3.2      Andreas Feature     diverse Verbesserungen bei der Lizenzverwaltung
+5173    05.07.2023  dev     3.2         Andreas Feature     diverse Verbesserungen bei der Lizenzverwaltung
 
-5113    04.07.2023  dev     rc-3.2      Moe     Feature     Titelumfrage: Datei hochladen - Titel werden automatisch ausgewählt
+5113    04.07.2023  dev     3.2         Moe     Feature     Titelumfrage: Datei hochladen - Titel werden automatisch ausgewählt
 
-5175    04.07.2023  dev     rc-3.2      Moe     Feature     Rabattstaffel für Elternlizenzen einführen
+5175    04.07.2023  dev     3.2         Moe     Feature     Rabattstaffel für Elternlizenzen einführen
 
-5164    04.07.2023  dev     rc-3.2      Moe     Feature     Übersicht über Lizenzübertrag
+5164    04.07.2023  dev     3.2         Moe     Feature     Übersicht über Lizenzübertrag
 
-5176    05.07.2023  dev     rc-3.2      Andreas Bug         Konsortialmanager Basic fehlten in GASCO-Auflistung
+5176    05.07.2023  dev     3.2         Andreas Bug         Konsortialmanager Basic fehlten in GASCO-Auflistung
 
-4921    04.07.2023  dev     rc-3.2      David   Feature     Refactoring: Rechtemodell
+4921    04.07.2023  dev     3.2         David   Feature     Refactoring: Rechtemodell
 
-5101    04.07.2023  dev     rc-3.2      David   Feature     Nutzer bearbeiten
+5101    04.07.2023  dev     3.2         David   Feature     Nutzer bearbeiten
 
-5172    04.07.2023  dev     rc-3.2      David   Bug         Anmerkungen: doppelter Titel
+5172    04.07.2023  dev     3.2         David   Bug         Anmerkungen: doppelter Titel
 
-5174    04.07.2023  dev     rc-3.2      Andreas Bug         Menüeinträge für Konsortialmanager-Basic ausgegraut
+5174    04.07.2023  dev     3.2         Andreas Bug         Menüeinträge für Konsortialmanager-Basic ausgegraut
 
-4959    04.07.2023  dev     rc-3.2      Andreas Feature     Hinweis bei automatisch erfolgter Verlängerung
+4959    04.07.2023  dev     3.2         Andreas Feature     Hinweis bei automatisch erfolgter Verlängerung
 
-5089    03.07.2023  dev     rc-3.2      Andreas Bug         Checkbox der Gesamtauswahl berücksichtigte nur Auswahl der aktuellen Seite
+5089    03.07.2023  dev     3.2         Andreas Bug         Checkbox der Gesamtauswahl berücksichtigte nur Auswahl der aktuellen Seite
 
-5004    03.07.2023  dev     rc-3.2      Andreas Feature     Preise hinzufügen/entfernen ohne Neuladen der Seite
+5004    03.07.2023  dev     3.2         Andreas Feature     Preise hinzufügen/entfernen ohne Neuladen der Seite
 
-5158    30.06.2023  dev     rc-3.2      Andreas Feature     Umstellung der KBART-Exporte
+5158    30.06.2023  dev     3.2         Andreas Feature     Umstellung der KBART-Exporte
 
-5165    28.06.2023  dev     rc-3.2      Andreas Bug         lokale Verträge konnten mit Konsortiallizenzen verknüpft werden
+5165    28.06.2023  dev     3.2         Andreas Bug         lokale Verträge konnten mit Konsortiallizenzen verknüpft werden
 
-5158    28.06.2023  dev     rc-3.2      Andreas Feature     KBART-Export großer Titelmengen umgestellt
+5158    28.06.2023  dev     3.2         Andreas Feature     KBART-Export großer Titelmengen umgestellt
 
-5151    28.06.2023  dev     rc-3.2      Andreas Bug         überflüssiges Menü abgeblendet
+5151    28.06.2023  dev     3.2         Andreas Bug         überflüssiges Menü abgeblendet
 
-5155    27.06.2023  dev     rc-3.2      Andreas Feature     Trennzeichen im Einrichtungsexport umgestellt
+5155    27.06.2023  dev     3.2         Andreas Feature     Trennzeichen im Einrichtungsexport umgestellt
 
-4943    27.06.2023  dev     rc-3.2      Andreas Feature     Umstellungen und Erweiterungen im Lizenzimport
+4943    27.06.2023  dev     3.2         Andreas Feature     Umstellungen und Erweiterungen im Lizenzimport
 
 5160    26.06.2023  rc-3.1  3.1.3       Moe     Bug         Lizenzumfrage für Nicht-Teilnehmer: "Lizenzname" in GASCO-Monitor ohne Anführungszeichen übernehmen
 
@@ -217,11 +217,11 @@
 
 5159    26.06.2023  rc-3.1  3.1.3       Moe     Bug         Lizenzumfrage: Informations-URL wird mit Codefetzen angezeigt
 
-4973    26.06.2023  dev     rc-3.2      Andreas Feature     Abbau obsoleter Felder aus issueEntitlement
+4973    26.06.2023  dev     3.2         Andreas Feature     Abbau obsoleter Felder aus issueEntitlement
 
-5096    26.06.2023  dev     rc-3.2      David   Feature     Refactoring: Affiliations
+5096    26.06.2023  dev     3.2         David   Feature     Refactoring: Affiliations
 
-4974    22.06.2023  dev     rc-3.2      Andreas Feature     Verwaltung gelöschter Elemente umgestellt
+4974    22.06.2023  dev     3.2         Andreas Feature     Verwaltung gelöschter Elemente umgestellt
 
 5153    22.06.2023  rc-3.1  3.1.3       Moe     Bug         Export einer Einrichtungsliste mit Zugangskonfigurationen
 
@@ -235,7 +235,7 @@
 
 5142    19.06.2023  rc-3.1  3.1.2       Moe     Bug         Übertrag Teilnehmer
 
-4545    16.06.2023  rc-3.2  rc-3.2         Ingrid  Feature     Bestands-View: Filterergebnis "Stichtag" verbessern
+4545    16.06.2023  rc-3.2  3.2            Ingrid  Feature     Bestands-View: Filterergebnis "Stichtag" verbessern
 
 5139    16.06.2023  rc-3.1  3.1.2       Moe     Bug         Titel hinzufügen: Nur 1 oder alle Titel möglich
 
@@ -247,11 +247,11 @@
 
 5134    16.06.2023  rc-3.1  3.1.2       Andreas Bug         falsche Konfiguration bei der Erstellung der Modale
 
-4725    15.06.2023  dev     rc-3.2         Ingrid  Feature     Überbreite Tabelle in Teilnehmerverwaltung passt jetzt in den View
+4725    15.06.2023  dev     3.2            Ingrid  Feature     Überbreite Tabelle in Teilnehmerverwaltung passt jetzt in den View
 
 5137    15.06.2023  rc-3.1  3.1.2       Andreas Bug         Bereinigungsmethoden korrigiert
 
-5125    15.06.2023  dev     rc-3.2         Ingrid Bug          Tooltip taucht im Kosteneingabemodul jetzt an richtiger Stelle auf
+5125    15.06.2023  dev     3.2            Ingrid Bug          Tooltip taucht im Kosteneingabemodul jetzt an richtiger Stelle auf
 
 5135    15.06.2023  rc-3.1  3.1.2       Andreas Bug         Links mit we:kb-Icon an diversen Stellen angelegt
 
