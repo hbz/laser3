@@ -37,12 +37,16 @@
             <th rowspan="2" class="center aligned">${message(code:'sidewide.number')}</th>
             <g:sortableColumn property="roleT.org.sortname" params="${params}" title="${message(code:'myinst.consortiaSubscriptions.member')}" rowspan="2" />
             <g:sortableColumn property="subT.name" params="${params}" title="${message(code:'default.subscription.label')}" class="la-smaller-table-head" />
-            <th rowspan="2">${message(code:'myinst.consortiaSubscriptions.packages')}</th>
-            <th rowspan="2">${message(code:'myinst.consortiaSubscriptions.provider')}</th>
+            <g:if test="${'showPackages' in tableConfig}">
+                <th rowspan="2">${message(code:'myinst.consortiaSubscriptions.packages')}</th>
+            </g:if>
+            <g:if test="${'showProviders' in tableConfig}">
+                <th rowspan="2">${message(code:'myinst.consortiaSubscriptions.provider')}</th>
+            </g:if>
             <th rowspan="2">${message(code:'myinst.consortiaSubscriptions.runningTimes')}</th>
             <g:if test="${'withCostItems' in tableConfig}">
                 <th rowspan="2">${message(code:'financials.amountFinal')}</th>
-                <th class="la-no-uppercase" rowspan="2">
+                <th rowspan="2" class="la-no-uppercase center aligned">
                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center">
                         <i class="money bill alternate icon"></i>
                     </span>&nbsp;/&nbsp;
@@ -52,7 +56,7 @@
                 </th>
             </g:if>
 
-            <th class="la-no-uppercase" rowspan="2" >
+            <th rowspan="2" class="la-no-uppercase center aligned">
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                       data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
                     <i class="map orange icon"></i>
@@ -122,19 +126,23 @@
                         </div>
                     </g:each>
                 </th>
-                <td>
-                    <g:each in="${subCons.packages}" var="subPkg">
-                        <div class="la-flexbox">
-                            <i class="icon gift la-list-icon"></i>
-                            <g:link controller="package" action="show" id="${subPkg.pkg.id}">${subPkg.pkg.name}</g:link>
-                        </div>
-                    </g:each>
-                </td>
-                <td>
-                    <g:each in="${subCons.providers}" var="p">
-                        <g:link controller="organisation" action="show" id="${p.id}">${p.getDesignation()}</g:link> <br />
-                    </g:each>
-                </td>
+                <g:if test="${'showPackages' in tableConfig}">
+                    <td>
+                        <g:each in="${subCons.packages}" var="subPkg">
+                            <div class="la-flexbox">
+                                <i class="icon gift la-list-icon"></i>
+                                <g:link controller="package" action="show" id="${subPkg.pkg.id}">${subPkg.pkg.name}</g:link>
+                            </div>
+                        </g:each>
+                    </td>
+                </g:if>
+                <g:if test="${'showProviders' in tableConfig}">
+                    <td>
+                        <g:each in="${subCons.providers}" var="p">
+                            <g:link controller="organisation" action="show" id="${p.id}">${p.getDesignation()}</g:link> <br />
+                        </g:each>
+                    </td>
+                </g:if>
                 <g:if test="${'withCostItems' in tableConfig}">
                     <td>
                         <%-- because of right join in query, ci may be missing, those are subscriptions where no cost items exist --%>
@@ -251,7 +259,7 @@
             </tr>
             <g:each in="${finances}" var="entry">
                 <tr>
-                    <td colspan="6">
+                    <td colspan="${3 + tableConfig.size()}">
                         ${message(code:'financials.sum.billing')} ${entry.key}<br />
                     </td>
                     <td class="la-exposed-bg">

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.Subscription; de.laser.Links; de.laser.interfaces.CalculatedType; de.laser.OrgRole; de.laser.Org; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.SubscriptionPackage" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.Subscription; de.laser.Links; de.laser.interfaces.CalculatedType; de.laser.OrgRole; de.laser.Org; de.laser.storage.RDStore; de.laser.RefdataValue" %>
 
 <laser:serviceInjection />
 <g:set var="actionStart" value="${System.currentTimeMillis()}"/>
@@ -36,27 +36,6 @@
 %{--                        <ui:actionsDropdownItem controller="subscription" action="copyDiscountScales" params="${[id:params.id]}" message="subscription.details.copyDiscountScales.label" />--}%
 %{--                    </g:if>--}%
 %{--                </g:if>--}%
-                    <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE]}">
-                <div class="divider"></div>
-                <g:if test="${hasNext}">
-                    <ui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription"
-                                                       params="${[id: params.id]}" tooltip="${message(code: 'subscription.details.renewals.isAlreadyRenewed')}" message="subscription.details.renewalsConsortium.label"/>
-                </g:if>
-                <g:else>
-                    <ui:actionsDropdownItem controller="subscription" action="renewSubscription"
-                                           params="${[id: params.id]}" message="subscription.details.renewalsConsortium.label"/>
-                </g:else>
-            </g:if>
-            <g:if test ="${subscription._getCalculatedType() == CalculatedType.TYPE_LOCAL}">
-                <g:if test ="${hasNext}">
-                    <ui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription"
-                                                       params="${[id: params.id]}" tooltip="${message(code: 'subscription.details.renewals.isAlreadyRenewed')}" message="subscription.details.renewals.label"/>
-                </g:if>
-                <g:else>
-                    <ui:actionsDropdownItem controller="subscription" action="renewSubscription"
-                                           params="${[id: params.id]}" message="subscription.details.renewals.label"/>
-                </g:else>
-            </g:if>
 
             <g:if test="${showConsortiaFunctions || subscription.administrative}">
                 <ui:actionsDropdownItem controller="subscription" action="addMembers" params="${[id:params.id]}" text="${message(code:'subscription.details.addMembers.label',args:[message(code:'subscription.details.consortiaMembers.label')])}" />

@@ -367,6 +367,9 @@ class MyInstitutionController  {
         }
 
         Set<String> licenseFilterTable = []
+        if (! contextService.getOrg().isCustomerType_Support()) {
+            licenseFilterTable << "providerAgency"
+        }
 
         if (contextService.getOrg().isCustomerType_Inst_Pro()) {
             Set<RefdataValue> roleTypes = []
@@ -991,9 +994,12 @@ class MyInstitutionController  {
     def currentSubscriptions() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-		Profiler prf = new Profiler()
-		//prf.setBenchmark('init')
         result.tableConfig = ['showActions','showLicense']
+        if (! contextService.getOrg().isCustomerType_Support()) {
+            result.tableConfig << "showPackages"
+            result.tableConfig << "showProviders"
+        }
+
         result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
 
         result.compare = params.compare ?: ''
@@ -1003,8 +1009,6 @@ class MyInstitutionController  {
         String datetoday = sdf.format(new Date())
         String filename = "${datetoday}_" + g.message(code: "export.my.currentSubscriptions")
 
-		//List bm = prf.stopBenchmark()
-		//result.benchMark = bm
         Map<String, Object> selectedFields = [:]
 
         if(params.fileformat) {
@@ -3422,6 +3426,11 @@ join sub.orgRelations or_sub where
     def manageConsortiaSubscriptions() {
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params), selectedFields = [:]
         result.tableConfig = ['withCostItems']
+        if (! contextService.getOrg().isCustomerType_Support()) {
+            result.tableConfig << "showPackages"
+            result.tableConfig << "showProviders"
+        }
+
         result.putAll(subscriptionService.getMySubscriptionsForConsortia(params,result.user,result.institution,result.tableConfig))
         Date datetoday = new Date()
         String filename = "${DateUtils.getSDF_yyyyMMdd().format(datetoday)}_" + g.message(code: "export.my.consortiaSubscriptions")

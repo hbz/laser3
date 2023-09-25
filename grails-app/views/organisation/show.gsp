@@ -16,7 +16,6 @@
 
 <laser:render template="breadcrumb"
           model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView, consortialView: consortialView]}"/>
-
 <ui:controlButtons>
     <laser:render template="${customerTypeService.getActionsTemplatePath()}" model="${[org: orgInstance, user: user]}"/>
 </ui:controlButtons>
@@ -1416,7 +1415,9 @@
     }--%>
 
     <g:if test="${orgInstance.isCustomerType_Inst()}">
-        JSPC.app.showRegionsdropdown( $("#country").editable('getValue', true) );
+        if($("#country").length) {
+            JSPC.app.showRegionsdropdown( $("#country").editable('getValue', true) );
+        }
     </g:if>
     $('#addAltname').click(function() {
         $.ajax({

@@ -341,7 +341,10 @@ class OrganisationController  {
      * Inverse of listInstitution: lists for single users and basic members the consortia
      * @return a list of consortia institutions
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN(CustomerTypeService.ORG_INST_BASIC)
+    })
     Map listConsortia() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         params.customerType   = Role.findByAuthority('ORG_CONSORTIUM_PRO').id.toString()
@@ -1356,7 +1359,6 @@ class OrganisationController  {
      * Call to delete the given identifier
      * @return the identifier table view
      */
-    @DebugInfo(ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(['ROLE_USER'])
     def deleteIdentifier() {
         identifierService.deleteIdentifier(params.owner,params.target)

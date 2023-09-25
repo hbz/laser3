@@ -226,9 +226,9 @@ class AccessPointController  {
      * @see de.uni_freiburg.ub.Ipv4Address
      * @see de.uni_freiburg.ub.Ipv6Address
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def edit_ip() {
         _edit("ip")
@@ -239,9 +239,9 @@ class AccessPointController  {
      * @return the OpenAthens editing view
      * @see de.laser.oap.OrgAccessPointOA
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def edit_oa() {
         _edit("oa")
@@ -252,9 +252,9 @@ class AccessPointController  {
      * @return the proxy editing view
      * @see de.laser.oap.OrgAccessPointProxy
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def edit_proxy() {
         _edit("proxy")
@@ -265,9 +265,9 @@ class AccessPointController  {
      * @return the EZProxy editing view
      * @see de.laser.oap.OrgAccessPointEzproxy
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def edit_ezproxy() {
         _edit("ezproxy")
@@ -278,9 +278,9 @@ class AccessPointController  {
      * @return the Shibboleth editing view
      * @see de.laser.oap.OrgAccessPointShibboleth
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def edit_shibboleth() {
         _edit("shibboleth")
@@ -291,9 +291,9 @@ class AccessPointController  {
      * @return the Mail-Domain editing view
      * @see de.laser.oap.OrgAccessPoint
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def edit_maildomain() {
         _edit("mailDomain")
