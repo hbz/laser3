@@ -235,7 +235,7 @@ class BootStrapService {
         updateRolePerms(orgInstProRole,          [CustomerTypeService.ORG_INST_PRO, CustomerTypeService.ORG_INST_BASIC])
         updateRolePerms(orgConsortiumRole,       [CustomerTypeService.ORG_CONSORTIUM_BASIC])
         updateRolePerms(orgConsortiumProRole,    [CustomerTypeService.ORG_CONSORTIUM_PRO, CustomerTypeService.ORG_CONSORTIUM_BASIC])
-        updateRolePerms(orgSupportRole,          [CustomerTypeService.ORG_SUPPORT, CustomerTypeService.ORG_CONSORTIUM_BASIC])
+        updateRolePerms(orgSupportRole,          [CustomerTypeService.ORG_SUPPORT, CustomerTypeService.ORG_CONSORTIUM_PRO, CustomerTypeService.ORG_CONSORTIUM_BASIC])
     }
 
     /**

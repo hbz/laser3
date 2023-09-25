@@ -37,8 +37,6 @@ class CustomerTypeService {
 
     public static final String PERMS_PRO                        = 'ORG_INST_PRO,ORG_CONSORTIUM_PRO'
     public static final String PERMS_INST_PRO_CONSORTIUM_BASIC  = 'ORG_INST_PRO,ORG_CONSORTIUM_BASIC'
-    
-    public static final String PERMS_PRO_SUPPORT                = 'ORG_INST_PRO,ORG_CONSORTIUM_PRO,ORG_SUPPORT'
 
     // -- string parsing --
 
@@ -54,10 +52,22 @@ class CustomerTypeService {
     //
 
     String getActionsTemplatePath() {
-        return contextService.getOrg().isCustomerType_Support() ? 'actions_support' : 'actions'
+        String tmpl = 'actions'
+        return contextService.getOrg().isCustomerType_Support() ? tmpl + '_support' : tmpl
     }
 
     String getNavTemplatePath() {
-        return contextService.getOrg().isCustomerType_Support() ? 'nav_support' : 'nav'
+        String tmpl = 'nav'
+        return contextService.getOrg().isCustomerType_Support() ? tmpl + '_support' : tmpl
+    }
+
+    String getConsortiaSubscriptionFilterTemplatePath() {
+        String tmpl = '/templates/subscription/consortiaSubscriptionFilter'
+        return contextService.getOrg().isCustomerType_Support() ? tmpl + '_support' : tmpl
+    }
+
+    String getSubscriptionFilterTemplatePath() {
+        String tmpl = '/templates/subscription/subscriptionFilter'
+        return contextService.getOrg().isCustomerType_Support() ? tmpl + '_support' : tmpl
     }
 }
