@@ -40,7 +40,7 @@
       --%>
       </ui:exportDropdown>
 
-      <laser:render template="actions" />
+      <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
 
   </ui:controlButtons>
 
@@ -85,6 +85,7 @@
                                 value="${params.status}"
                                 noSelection="${['' : message(code:'default.select.choose.label')]}"/>
               </div>
+            <g:if test="${'providerAgency' in licenseFilterTable}">
               <div class="field">
                   <label for="licensor"><g:message code="default.ProviderAgency.singular"/></label>
                   <select id="licensor" name="licensor" multiple="" class="ui search selection fluid dropdown">
@@ -94,6 +95,7 @@
                       </g:each>
                   </select>
               </div>
+            </g:if>
               <div class="field">
                   <label for="categorisation"><g:message code="license.categorisation.label"/></label>
                   <select id="categorisation" name="categorisation" multiple="" class="ui search selection fluid dropdown">
@@ -179,13 +181,16 @@
                       <th rowspan="2"><g:message code="sidewide.number"/></th>
                       <g:sortableColumn rowspan="2" params="${params}" property="reference" title="${message(code:'license.slash.name')}" />
                       <g:if test="${'memberLicenses' in licenseFilterTable}">
-                          <th rowspan="2">
+                          <th rowspan="2" class="center aligned">
                               <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.incoming.childs')}" data-position="top right">
                                   <i class="users large icon"></i>
                               </span>
                           </th>
                       </g:if>
-                      <th rowspan="2"><g:message code="default.ProviderAgency.singular"/></th>
+
+                        <g:if test="${'providerAgency' in licenseFilterTable}">
+                            <th rowspan="2"><g:message code="default.ProviderAgency.singular"/></th>
+                        </g:if>
                       <g:if test="${'licensingConsortium' in licenseFilterTable}">
                           <th rowspan="2"><g:message code="consortium"/></th>
                       </g:if>
@@ -230,6 +235,7 @@
                                   </g:each>
                               </td>
                           </g:if>
+                        <g:if test="${'providerAgency' in licenseFilterTable}">
                           <td>
                               <g:set var="licensors" value="${l.getProviderAgency()}"/>
                               <g:each in="${licensors}" var="licensor">
@@ -242,6 +248,7 @@
                                   <br>
                               </g:each>
                           </td>
+                        </g:if>
                           <g:if test="${'licensingConsortium' in licenseFilterTable}">
                               <td>${l.getLicensingConsortium()?.name}</td>
                           </g:if>

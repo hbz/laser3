@@ -2,36 +2,25 @@
 <laser:serviceInjection />
 
 <g:set var="contextOrg" value="${contextService.getOrg()}" />
-<g:if test="${actionName == 'currentSubscriptions'}">
-    <ui:actionsDropdown>
-        <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+
+<g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_SUPPORT)}">
+    <g:if test="${actionName == 'currentSubscriptions'}">
+        <ui:actionsDropdown>
             <ui:actionsDropdownItem controller="subscription" action="emptySubscription" message="menu.institutions.emptySubscription" />
             <ui:actionsDropdownItem controller="myInstitution" action="subscriptionImport" message="menu.institutions.subscriptionImport" />
-            <div class="divider"></div>
-        </g:if>
-        <ui:actionsDropdownItem notActive="true" controller="myInstitution" action="currentSubscriptions" params="${[compare: true]+params}" message="menu.my.comp_sub" />
-    </ui:actionsDropdown>
-</g:if>
-
-<g:if test="${actionName in ['currentLicenses']}">
-    <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
-        <ui:actionsDropdown>
-            <ui:actionsDropdownItem controller="myInstitution" action="emptyLicense" message="license.add.blank" />
-
-            <div class="divider"></div>
-            <ui:actionsDropdownItem notActive="true" controller="myInstitution" action="currentLicenses" params="${[compare: true]+params}" message="menu.my.comp_lic" />
         </ui:actionsDropdown>
     </g:if>
-</g:if>
 
-<g:if test="${actionName in ['manageMembers', 'addMembers']}">
-    <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+    <g:if test="${actionName in ['currentLicenses']}">
+            <ui:actionsDropdown>
+            <ui:actionsDropdownItem controller="myInstitution" action="emptyLicense" message="license.add.blank" />
+        </ui:actionsDropdown>
+    </g:if>
+
+    <g:if test="${actionName in ['manageMembers', 'addMembers']}">
         <ui:actionsDropdown>
             <g:if test="${comboType != null && comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
                 <ui:actionsDropdownItem controller="myInstitution" action="addMembers" message="menu.institutions.add_consortia_members" />
-                <%-- leave for eventual reconsideration on behalf of users
-                <ui:actionsDropdownItem controller="organisation" action="findOrganisationMatches" message="org.create_new_institution.label"/>
-                --%>
             </g:if>
             <g:if test="${actionName in ['manageMembers']}">
                 <ui:actionsDropdownItem data-ui="modal" id="copyMailAddresses" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
@@ -39,7 +28,6 @@
         </ui:actionsDropdown>
     </g:if>
 </g:if>
-
 
 <g:if test="${editable}">
     <g:if test="${actionName in ['documents']}">

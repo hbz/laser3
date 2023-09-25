@@ -3,7 +3,7 @@
 
     <laser:render template="breadcrumb" model="${[ params:params ]}"/>
     <ui:controlButtons>
-      <laser:render template="actions" />
+      <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
     </ui:controlButtons>
 
     <ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" visibleOrgRelations="${visibleOrgRelations}">

@@ -1,12 +1,12 @@
 <%@ page import="de.laser.RefdataCategory;de.laser.storage.RDConstants"%>
-<laser:htmlStart message="menu.my.tasks" />
+<laser:htmlStart message="menu.my.tasks" serviceInjection="true"/>
 
     <ui:breadcrumbs>
         <ui:crumb message="menu.my.tasks" class="active"/>
     </ui:breadcrumbs>
 
         <ui:controlButtons>
-            <laser:render template="actions"/>
+            <laser:render template="${customerTypeService.getActionsTemplatePath()}"/>
         </ui:controlButtons>
 
         <ui:h1HeaderWithIcon message="menu.my.tasks" type="task" floated="true" />
