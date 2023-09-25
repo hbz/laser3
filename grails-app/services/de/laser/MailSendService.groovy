@@ -107,6 +107,11 @@ class MailSendService {
 
                         surveyOrg.reminderMailDate = new Date()
                         surveyOrg.save()
+
+                        if(result.surveyConfig.subSurveyUseForTransfer){
+                            result.surveyConfig.subscription.reminderSent = true
+                            result.surveyConfig.subscription.reminderSentDate = new Date()
+                        }
                     }
                     countReminderMails++
                 }
