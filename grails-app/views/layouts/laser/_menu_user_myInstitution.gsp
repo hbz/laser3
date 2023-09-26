@@ -9,13 +9,10 @@
     </a>
     <div class="menu" role="menu">
         <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="dashboard" message="menu.institutions.dash" />
-%{--        <div class="divider"></div>--}%
 
         <ui:link addItemAttributes="true" controller="organisation" action="show" params="[id: contextOrg?.id]">${message(code:'menu.institutions.org_info')}</ui:link>
 
         <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="addressbook" message="menu.institutions.addressbook" />
-        <%--<ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="changes" message="menu.institutions.changes" />--%>
-
         <div class="divider"></div>
 
         <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="finance" message="menu.institutions.finance" />

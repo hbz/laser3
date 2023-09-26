@@ -10,7 +10,7 @@
 
 %{--<g:if test="${editable_identifier || editable_customeridentifier}">--}%
     <ui:controlButtons>
-        <laser:render template="actions" model="${[
+        <laser:render template="${customerTypeService.getActionsTemplatePath()}" model="${[
                 org: orgInstance,
                 user: user,
                 editable: (editable_identifier || editable_customeridentifier),
@@ -25,7 +25,7 @@
     <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
 </ui:h1HeaderWithIcon>
 
-<laser:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
+<laser:render template="${customerTypeService.getNavTemplatePath()}" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
 
 <ui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
 

@@ -11,12 +11,12 @@
 </ui:h1HeaderWithIcon>
 
 <ui:controlButtons>
-    <laser:render template="actions" />
+    <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
 </ui:controlButtons>
 
 <ui:messages data="${flash}"/>
 
-<laser:render template="/organisation/nav"/>
+<laser:render template="${customerTypeService.getNavTemplatePath()}"/>
 
 <div class="ui top attached stackable tabular la-tab-with-js menu">
     <a class="${params.tab == 'contacts' ? 'active' : ''} item" data-tab="contacts">

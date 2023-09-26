@@ -84,7 +84,7 @@
             </ui:exportDropdownItem>
             --%>
         </ui:exportDropdown>
-        <laser:render template="actions" />
+        <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
     </ui:controlButtons>
 
     <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" visibleOrgRelations="${visibleOrgRelations}">
@@ -94,7 +94,7 @@
 
     <ui:anualRings object="${subscription}" controller="subscription" action="members" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
-    <laser:render template="nav" />
+    <laser:render template="${customerTypeService.getNavTemplatePath()}" />
 
     <ui:filter>
         <g:form action="members" controller="subscription" params="${[id:params.id]}" method="get" class="ui form">
@@ -116,9 +116,7 @@
         <table class="ui celled monitor sortable stackable la-js-responsive-table la-table table">
             <thead>
             <tr>
-                <th>
-                    <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
-                </th>
+                <th>${message(code:'sidewide.number')}</th>
                 <th>${message(code:'default.sortname.label')}</th>
                 <g:sortableColumn params="${params}" property="o.sortname" title="${message(code:'subscriptionDetails.members.members')}"/>
                 <th class="center aligned">
@@ -135,16 +133,20 @@
                         <i class="arrow right icon"></i>
                     </span>
                 </th>
-                <th class="center aligned la-no-uppercase">
-                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="${message(code: 'subscription.linktoLicense')}">
-                        <i class="balance scale icon"></i>
-                    </span>
-                </th>
-                <th class="center aligned la-no-uppercase">
-                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="${message(code: 'subscription.packages.label')}">
-                        <i class="gift icon"></i>
-                    </span>
-                </th>
+                <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()}">
+                    <th class="center aligned la-no-uppercase">
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="${message(code: 'subscription.linktoLicense')}">
+                            <i class="balance scale icon"></i>
+                        </span>
+                    </th>
+                </g:if>
+                <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
+                    <th class="center aligned la-no-uppercase">
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="${message(code: 'subscription.packages.label')}">
+                            <i class="gift icon"></i>
+                        </span>
+                    </th>
+                </g:if>
                 <th>${message(code:'default.status.label')}</th>
                 <th class="center aligned la-no-uppercase">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
@@ -160,9 +162,7 @@
                 <g:set var="sub" value="${row.sub}"/>
                 <tr>
                     <g:set var="subscr" value="${row.orgs}" />
-                    <td>
-                        <g:checkBox class="orgSelector" name="selectedOrgs" value="${subscr.id}" checked="false"/>
-                    </td>
+                    <td>${i + 1}</td>
                     <%--<g:each in="${filteredSubscribers}" var="subscr">--%>
                         <td>
                             ${subscr.sortname}</td>
@@ -242,16 +242,16 @@
                                     params="[next: true, memberOrg: subscr.id, memberSubID: sub.id]"><i class="arrow right icon grey"></i></g:link>
                         </g:elseif>
                     </td>
-                    <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
+                    <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()}">
                         <td class="center aligned">
                             <g:set var="license" value="${Links.executeQuery('select li.id from Links li where li.destinationSubscription = :destination and li.linkType = :linktype',[destination:sub,linktype:RDStore.LINKTYPE_LICENSE])}"/>
                             <g:if test="${!license}">
-                                <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkLicense']" id="${subscription.id}" class="ui icon ">
+                                <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkLicense']" id="${subscription.id}" class="ui icon">
                                     <i class="circular la-light-grey inverted minus icon"></i>
                                 </g:link>
                             </g:if>
                             <g:else>
-                                <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkLicense']" id="${subscription.id}" class="ui icon ">
+                                <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkLicense']" id="${subscription.id}" class="ui icon">
                                     <i class="circular la-license icon"></i>
                                 </g:link>
                             </g:else>
@@ -260,12 +260,12 @@
                     <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                         <td class="center aligned">
                             <g:if test="${!sub.packages}">
-                                <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkPackages']" id="${subscription.id}" class="ui icon ">
+                                <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkPackages']" id="${subscription.id}" class="ui icon">
                                     <i class="circular la-light-grey inverted minus icon"></i>
                                 </g:link>
                             </g:if>
                             <g:else>
-                                <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkPackages']" id="${subscription.id}" class="ui icon ">
+                                <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkPackages']" id="${subscription.id}" class="ui icon">
                                     <i class="circular la-package icon"></i>
                                 </g:link>
                             </g:else>
@@ -290,7 +290,7 @@
                             <g:if test="${sub._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION] && sub.instanceOf._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE}">
                                 <g:if test="${sub.orgRelations.find{it.roleType == RDStore.OR_SUBSCRIBER_CONS_HIDDEN}}">
                                         <g:link class="ui icon button la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.hiddenForSubscriber')}" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
-                                            <i class="ui icon eye orange"></i>
+                                            <i class="ui icon eye"></i>
                                         </g:link>
                                 </g:if>
                                 <g:else>
@@ -341,20 +341,7 @@
             } else {
                 $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', false)
             }
-            updateMailAddressList();
-        })
-
-        $('.orgSelector').change(function() {
-            updateMailAddressList();
         });
-
-        function updateMailAddressList() {
-            let selIds = [];
-            $('.orgSelector:checked').each(function(i) {
-                selIds.push($(this).val());
-            });
-            $('#copyMailAddresses').attr('data-orgIdList', selIds.join(','));
-        }
     </laser:script>
 
 <laser:htmlEnd />

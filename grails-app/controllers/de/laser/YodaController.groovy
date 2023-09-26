@@ -482,13 +482,31 @@ class YodaController {
                                 mInfo.debug.affil       = 'INST_ADM'
                                 mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }
-                            if (da.hasPermAsInstRoleAsConsortium_or_ROLEADMIN() != (['',''] as String[])) {
-                                mInfo.debug.test        = 'hasPermAsInstRoleAsConsortium_or_ROLEADMIN()' //  + da.hasPermAsInstRoleAsConsortium_or_ROLEADMIN().toList()
-                                mInfo.debug.perm        = da.hasPermAsInstRoleAsConsortium_or_ROLEADMIN().toList()[0]
-                                mInfo.debug.affil       = da.hasPermAsInstRoleAsConsortium_or_ROLEADMIN().toList()[1]
-                                mInfo.debug.type        = 'Consortium'
+                            if (da.isInstUser_denySupport_or_ROLEADMIN() != ([''] as String[])) {
+                                mInfo.debug.test        = 'isInstUser_denySupport_or_ROLEADMIN()' //  + da.isInstUser_denySupport_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.isInstUser_denySupport_or_ROLEADMIN().toList()[0]
+                                mInfo.debug.affil       = 'INST_USER'
                                 mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }
+                            if (da.isInstEditor_denySupport_or_ROLEADMIN() != ([''] as String[])) {
+                                mInfo.debug.test        = 'isInstEditor_denySupport_or_ROLEADMIN()' //  + da.isInstEditor_denySupport_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.isInstEditor_denySupport_or_ROLEADMIN().toList()[0]
+                                mInfo.debug.affil       = 'INST_EDITOR'
+                                mInfo.debug.specRole    = 'ROLE_ADMIN'
+                            }
+                            if (da.isInstAdm_denySupport_or_ROLEADMIN() != ([''] as String[])) {
+                                mInfo.debug.test        = 'isInstAdm_denySupport_or_ROLEADMIN()' //  + da.isInstAdm_denySupport_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.isInstAdm_denySupport_or_ROLEADMIN().toList()[0]
+                                mInfo.debug.affil       = 'INST_ADM'
+                                mInfo.debug.specRole    = 'ROLE_ADMIN'
+                            }
+//                            if (da.hasPermAsInstRoleAsConsortium_or_ROLEADMIN() != (['',''] as String[])) {
+//                                mInfo.debug.test        = 'hasPermAsInstRoleAsConsortium_or_ROLEADMIN()' //  + da.hasPermAsInstRoleAsConsortium_or_ROLEADMIN().toList()
+//                                mInfo.debug.perm        = da.hasPermAsInstRoleAsConsortium_or_ROLEADMIN().toList()[0]
+//                                mInfo.debug.affil       = da.hasPermAsInstRoleAsConsortium_or_ROLEADMIN().toList()[1]
+//                                mInfo.debug.type        = 'Consortium'
+//                                mInfo.debug.specRole    = 'ROLE_ADMIN'
+//                            }
 
                             if (da.ctrlService()) {
                                 mInfo.ctrlService = da.ctrlService()
@@ -985,7 +1003,7 @@ class YodaController {
                 indexInfo.countIndex = "n/a"
             }
 
-            String query = "select count(id) from ${index.key}"
+            String query = "select count(*) from ${index.key}"
             indexInfo.countDB = FTControl.executeQuery(query)[0]
             result.indices << indexInfo
         }
@@ -1605,7 +1623,7 @@ class YodaController {
             Thread.currentThread().setName("setPermanentTitle")
             int countProcess = 0, max = 100000
             Set<RefdataValue> status = [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED]
-            int ieCount = IssueEntitlement.executeQuery('select count(ie) from IssueEntitlement ie where ie.perpetualAccessBySub is not null and ie.status in (:status)', [status: status])[0]
+            int ieCount = IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.perpetualAccessBySub is not null and ie.status in (:status)', [status: status])[0]
             if (ieCount > 0) {
                 for(int offset = 0; offset < ieCount; offset+=max) {
                     List<IssueEntitlement> ies = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.perpetualAccessBySub is not null and ie.status in (:status)', [status: status], [max: max, offset: offset])

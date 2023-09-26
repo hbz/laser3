@@ -29,6 +29,11 @@
 <%--<laser:render template="/templates/filter/tipp_ieFilter"/>--%>
 
     <ui:messages data="${flash}"/>
+    <g:if test="${errorFile}">
+        <div class="errorKBARTWrapper">
+            <g:render template="/templates/bulkItemDownload" model="[token: errorFile, errorKBART: true]"/>
+        </div>
+    </g:if>
 
 <ui:greySegment>
     <h3 class="ui dividing header"><g:message code="subscription.details.addEntitlements.header"/></h3>

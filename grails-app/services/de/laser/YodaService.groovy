@@ -50,22 +50,17 @@ class YodaService {
      * Copies missing values into the issue entitlements; values are being taken from the title the holding records have been derived
      */
     void fillValue(String toUpdate) {
-        IssueEntitlement.withNewSession { Session sess ->
-            if(toUpdate == 'globalUID') {
-                int max = 1000000
-                int total = IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.globalUID = null')[0]
-                for(int ctr = 0; ctr < total; ctr += max) {
-                    IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.globalUID = null', [max: max]).eachWithIndex { IssueEntitlement ie, int i ->
-                        if(i % 50000 == 0)
-                            log.debug("now processing ${i}")
-                        ie.setGlobalUID()
-                        ie.save()
-                    }
-                    log.debug("flush after ${ctr+max}")
-                    sess.flush()
-                }
+        if(toUpdate == 'globalUID') {
+            int max = 200000
+            Sql sql = globalService.obtainSqlConnection()
+            int total = sql.rows('select count(*) from issue_entitlement ie where ie_guid is null')[0]['count']
+            for(int ctr = 0; ctr < total; ctr += max) {
+                sql.executeUpdate("update issue_entitlement set ie_last_updated = now(), ie_guid = concat('issueentitlement:',gen_random_uuid()) where ie_id in (select ie_id from issue_entitlement where ie_guid is null limit "+max+")")
+                log.debug("processed: ${ctr}")
             }
-            else {
+        }
+        else {
+            IssueEntitlement.withNewSession { Session sess ->
                 int max = 100000
                 int total = IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub where ((sub.startDate >= :start and sub.endDate <= :end) or sub.startDate = null or sub.endDate = null) and tipp.'+toUpdate+' != null and tipp.status != :removed and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, start: DateUtils.getSDF_yyyyMMdd().parse('2022-01-01'), end: DateUtils.getSDF_yyyyMMdd().parse('2023-12-31')])[0]
                 for(int ctr = 0; ctr < total; ctr += max) {
@@ -79,7 +74,6 @@ class YodaService {
             }
             //IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.'+toUpdate+' = (select tipp.'+toUpdate+' from TitleInstancePackagePlatform tipp where tipp = ie.tipp and tipp.'+toUpdate+' != null and tipp.status != :removed) where ie.'+toUpdate+' = null and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED])
         }
-
     }
 
     /**
@@ -160,7 +154,7 @@ class YodaService {
         int max = 100000
         bulkOperationRunning = true
         executorService.execute({
-            int total = IssueEntitlement.executeQuery('select count(ie) from IssueEntitlement ie where ie.tipp.status != ie.status and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED])[0]
+            int total = IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.tipp.status != ie.status and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED])[0]
             log.debug("${total} titles concerned")
             for(int offset = 0; offset < total; offset += max) {
                 Set<IssueEntitlement> iesConcerned = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.status != ie.status and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED], [max: max, offset: offset])

@@ -45,7 +45,7 @@
         --%>
     </ui:exportDropdown>
     <g:if test="${editable}">
-        <laser:render template="actions"/>
+        <laser:render template="${customerTypeService.getActionsTemplatePath()}"/>
     </g:if>
 </ui:controlButtons>
 
@@ -55,6 +55,11 @@
     <%
         List configShowFilter = [['name', 'identifier'], ['identifierNamespace', 'customerIDNamespace'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'], ['property&value', 'subStatus', 'subValidOn'], ['subPerpetualAccess'], ['providers']]
         List configShowTable = ['sortname', 'name', 'mainContact', 'libraryType', 'status', 'legalInformation', 'numberOfSubscriptions', 'numberOfSurveys']
+
+        if (contextService.getOrg().isCustomerType_Support()) {
+            configShowFilter = [['name', 'identifier'], ['identifierNamespace', 'customerIDNamespace'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'], ['property&value', 'subStatus', 'subValidOn']]
+            configShowTable = ['sortname', 'name', 'mainContact', 'libraryType', 'status', 'legalInformation', 'numberOfSubscriptions']
+        }
     %>
 
     <ui:filter>

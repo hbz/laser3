@@ -5,9 +5,6 @@
 
 <div class="subscription-results subscription-results la-clear-before">
     <g:if test="${subscriptions}">
-        <%--<input type="submit"
-                   value="${message(code: 'license.linking.submit')}"
-                   class="ui primary button"/>--%>
             <table class="ui celled sortable table la-table la-js-responsive-table">
                 <thead>
                     <tr>
@@ -26,42 +23,36 @@
                             <g:set var="subscriptionHeader" value="${message(code: 'subscription')}"/>
                         </g:else>
                         <g:sortableColumn params="${params}" property="s.name" title="${subscriptionHeader}" rowspan="2" scope="col" />
-                        <th rowspan="2" scope="col">
-                            ${message(code: 'license.details.linked_pkg')}
-                        </th>
-                        <% /*
-                        <th>
-                            ${message(code: 'myinst.currentSubscriptions.subscription_type', default: RDConstants.SUBSCRIPTION_TYPE)}
-                        </th>
-                        */ %>
+
+                        <g:if test="${'showPackages' in tableConfig}">
+                            <th rowspan="2" scope="col">
+                                ${message(code: 'license.details.linked_pkg')}
+                            </th>
+                        </g:if>
                         <g:if test="${params.orgRole in ['Subscriber'] && contextService.getOrg().isCustomerType_Inst()}">
                             <th scope="col" rowspan="2" >${message(code: 'consortium')}</th>
                         </g:if>
                         <g:elseif test="${params.orgRole == 'Subscriber'}">
                             <th rowspan="2">${message(code:'org.institution.label')}</th>
                         </g:elseif>
-                        <g:sortableColumn scope="col" params="${params}" property="providerAgency" title="${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}" rowspan="2" />
-                        <%--<th rowspan="2" >${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}</th>--%>
-                        <%--
-                        <g:if test="${params.orgRole == 'Subscription Consortia'}">
-                            <th>${message(code: 'consortium.subscriber')}</th>
+                        <g:if test="${'showProviders' in tableConfig}">
+                            <g:sortableColumn scope="col" params="${params}" property="providerAgency" title="${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}" rowspan="2" />
                         </g:if>
-                        --%>
                         <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label')}"/>
                         <g:if test="${params.orgRole in ['Subscription Consortia']}">
-                            <th scope="col" rowspan="2">
+                            <th scope="col" rowspan="2" class="center aligned">
                                 <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.numberOfLicenses.label')}" data-position="top center">
                                     <i class="users large icon"></i>
                                 </a>
                             </th>
-                            <th scope="col" rowspan="2">
+                            <th scope="col" rowspan="2" class="center aligned">
                                 <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.numberOfCostItems.label')}" data-position="top center">
                                     <i class="money bill large icon"></i>
                                 </a>
                             </th>
                         </g:if>
                         <g:if test="${!(institution.isCustomerType_Consortium())}">
-                            <th class="la-no-uppercase" scope="col" rowspan="2" >
+                            <th scope="col" rowspan="2" class="la-no-uppercase center aligned">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                       data-content="${message(code: 'subscription.isMultiYear.label')}">
                                     <i class="map orange icon"></i>
@@ -92,7 +83,6 @@
                                     <g:if test="${s?.referenceYear}">
                                         ( ${s.referenceYear} )
                                     </g:if>
-
                                 </g:if>
                                 <g:else>
                                     -- ${message(code: 'myinst.currentSubscriptions.name_not_set')}  --
@@ -104,21 +94,6 @@
                                 </g:if>
                             </g:link>
                             <g:if test="${'showLicense' in tableConfig}">
-                                <%--<div id="${s.id}linkedLicenses">
-                                    <laser:script file="${this.getGroovyPageFileName()}">
-                                        $.ajax({
-                                            url: "<g:createLink controller="ajaxJson" action="getLinkedLicenses" />",
-                                            data: {
-                                                subscription: "${genericOIDService.getOID(s)}"
-                                            }
-                                        }).done(function(data) {
-                                                let link = "<g:createLink controller="license" action="show"/>";
-                                                $.each(data.results,function(k,v) {
-                                                    $("#${s.id}linkedLicenses").append('<i class="icon balance scale la-list-icon"></i><a href="'+link+'/'+v.id+'">'+v.name+'</a><br />');
-                                                });
-                                            });
-                                    </laser:script>
-                                </div>--%>
                                 <g:each in="${allLinkedLicenses}" var="row">
                                     <g:if test="${s == row.destinationSubscription}">
                                         <g:set var="license" value="${row.sourceLicense}"/>
@@ -135,6 +110,7 @@
                                 </g:each>
                             </g:if>
                         </th>
+                        <g:if test="${'showPackages' in tableConfig}">
                         <td>
                         <!-- packages -->
                             <g:each in="${s.packages}" var="sp" status="ind">
@@ -165,9 +141,7 @@
                             </g:if>
                         <!-- packages -->
                         </td>
-                    <%--<td>
-                            ${s.type?.getI10n('value')}
-                        </td>--%>
+                        </g:if>
                         <g:if test="${params.orgRole == 'Subscriber'}">
                             <td>
                                 <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
@@ -175,13 +149,13 @@
                                 </g:if>
                             </td>
                         </g:if>
+                        <g:if test="${'showProviders' in tableConfig}">
                         <td>
                             <%-- as of ERMS-584, these queries have to be deployed onto server side to make them sortable --%>
                             <g:each in="${s.providers}" var="org">
                                 <g:link controller="organisation" action="show" id="${org.id}">${fieldValue(bean: org, field: "name")}
                                     <g:if test="${org.sortname}">
-                                        <br />
-                                        (${fieldValue(bean: org, field: "sortname")})
+                                        <br /> (${fieldValue(bean: org, field: "sortname")})
                                     </g:if>
                                 </g:link><br />
                             </g:each>
@@ -189,12 +163,12 @@
                                 <g:link controller="organisation" action="show" id="${org.id}">
                                     ${fieldValue(bean: org, field: "name")}
                                     <g:if test="${org.sortname}">
-                                        <br />
-                                        (${fieldValue(bean: org, field: "sortname")})
+                                        <br /> (${fieldValue(bean: org, field: "sortname")})
                                     </g:if> (${message(code: 'default.agency.label')})
                                 </g:link><br />
                             </g:each>
                         </td>
+                        </g:if>
                         <%--
                             <td>
                                 <g:if test="${params.orgRole == 'Subscription Consortia'}">

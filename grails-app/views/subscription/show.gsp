@@ -21,7 +21,7 @@
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
 <ui:controlButtons>
-    <laser:render template="actions"/>
+    <laser:render template="${customerTypeService.getActionsTemplatePath()}"/>
 </ui:controlButtons>
 
 <ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" visibleOrgRelations="${visibleOrgRelations}">
@@ -34,7 +34,7 @@
 </g:if>
 <ui:anualRings object="${subscription}" controller="subscription" action="show" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
-<laser:render template="nav"/>
+<laser:render template="${customerTypeService.getNavTemplatePath()}"/>
 
 <ui:objectStatus object="${subscription}" status="${subscription.status}"/>
 <laser:render template="message"/>
@@ -392,6 +392,8 @@
     </div><!-- .eleven -->
     <aside class="five wide column la-sidekick">
         <div class="ui one cards">
+
+            <g:if test="${!contextService.getOrg().isCustomerType_Support()}">
             <div id="container-provider">
                 <div class="ui card">
                     <div class="content">
@@ -438,6 +440,7 @@
                     </div>
                 </div>
             </div>
+            </g:if>
 
             <div id="container-billing">
                 <g:if test="${costItemSums.ownCosts || costItemSums.consCosts || costItemSums.subscrCosts}">

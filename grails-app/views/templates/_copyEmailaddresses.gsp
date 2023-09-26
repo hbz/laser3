@@ -7,33 +7,27 @@
 <ui:modal id="${modalID}" text="${message(code:'menu.institutions.copy_emailaddresses', args:[orgList?.size()?:0])}" hideSubmitButton="true">
     <g:set var="rdvAllPersonFunctions" value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}" scope="request"/>
     <g:set var="rdvAllPersonPositions" value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}" scope="request"/>
-    <div class="ui la-filter segment la-clear-before">
-        <div class="field">
-            <div>
+    <div class="ui form la-filter segment la-clear-before">
+        <div class="two fields">
+            <div class="field">
                 <label><g:message code="person.function.label" /></label>
-            </div>
-            <div>
                 <ui:select class="ui dropdown search"
-                              name="prsFunctionMultiSelect"
-                              multiple=""
-                              from="${rdvAllPersonFunctions}"
-                              optionKey="id"
-                              optionValue="value"
-                              value="${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.id}"/>
+                           name="prsFunctionMultiSelect"
+                           multiple=""
+                           from="${rdvAllPersonFunctions}"
+                           optionKey="id"
+                           optionValue="value"
+                           value="${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.id}"/>
             </div>
-        </div>
-        <div class="field">
-            <div>
+            <div class="field">
                 <label><g:message code="person.position.label" /></label>
-            </div>
-            <div>
                 <ui:select class="ui dropdown search"
-                              name="prsPositionMultiSelect"
-                              multiple=""
-                              from="${rdvAllPersonPositions}"
-                              optionKey="id"
-                              optionValue="value"
-                              />
+                           name="prsPositionMultiSelect"
+                           multiple=""
+                           from="${rdvAllPersonPositions}"
+                           optionKey="id"
+                           optionValue="value"
+                />
             </div>
         </div>
         <br />
@@ -42,11 +36,11 @@
                 <input type="checkbox" id="publicContacts" checked/>
                 <label for="publicContacts">${message(code:'email.fromPublicContacts')}</label>
             </div>
-        <div class="ui checkbox">
-            <input type="checkbox" id="privateContacts" checked/>
-            <label for="privateContacts">${message(code:'email.fromPrivateAddressbook')}</label>
+            <div class="ui checkbox">
+                <input type="checkbox" id="privateContacts" checked/>
+                <label for="privateContacts">${message(code:'email.fromPrivateAddressbook')}</label>
+            </div>
         </div>
-    </div>
     </div>
     <br />
 
@@ -60,8 +54,23 @@
         <button class="ui icon button right floated" onclick="JSPC.app.copyToEmailProgram()">
             ${message(code:'menu.institutions.copy_emailaddresses_to_emailclient')}
         </button>
-        <br />
     </div>
+    <table class="ui table">
+        <thead>
+            <tr>
+                <th><g:checkBox name="copyMailToggler" id="copyMailToggler" checked="true"/></th>
+                <th><g:message code="org.sortname.label"/></th>
+            </tr>
+        </thead>
+        <tbody>
+            <g:each in="${orgList}" var="org">
+                <tr>
+                    <td><g:checkBox id="toCopyMail_${org.id}" name="copyMail" class="orgSelector" value="${org.id}" checked="true"/></td>
+                    <td>${org.sortname}</td>
+                </tr>
+            </g:each>
+        </tbody>
+    </table>
 
     <laser:script file="${this.getGroovyPageFileName()}">
         JSPC.app.jsonOrgIdListDefault = <%=groovy.json.JsonOutput.toJson((Set) orgList.collect { it.id })%>;
@@ -101,10 +110,31 @@
             JSPC.app.updateTextArea();
         };
 
+        function updateMailAddressList() {
+            JSPC.app.jsonOrgIdList = [];
+            $('.orgSelector:checked').each(function(i) {
+                JSPC.app.jsonOrgIdList.push($(this).val());
+            });
+            JSPC.app.updateTextArea();
+        }
+
         $("#prsFunctionMultiSelect").change(function()  { JSPC.app.updateTextArea(); });
         $("#prsPositionMultiSelect").change(function()  { JSPC.app.updateTextArea(); });
         $("#privateContacts").change(function()         { JSPC.app.updateTextArea(); });
         $("#publicContacts").change(function()          { JSPC.app.updateTextArea(); });
+
+        $('.orgSelector').change(function() {
+            updateMailAddressList();
+        });
+
+        $('#copyMailToggler').change(function() {
+            if ($(this).prop('checked')) {
+                $(".orgSelector").prop('checked', true);
+            } else {
+                $(".orgSelector").prop('checked', false);
+            }
+            updateMailAddressList();
+        });
 
     </laser:script>
 

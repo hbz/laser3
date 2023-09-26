@@ -64,7 +64,10 @@ class PackageController {
      * Lists current packages in the we:kb ElasticSearch index.
      * @return Data from we:kb ES
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def index() {
 
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
@@ -229,7 +232,10 @@ class PackageController {
      * Shows the details of the package. Consider that an active connection to a we:kb ElasticSearch index has to exist
      * because some data will not be mirrored to the app
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     @Check404()
     def show() {
         Map<String, Object> result = packageService.getResultGenerics(params)
@@ -345,7 +351,10 @@ class PackageController {
      * @see GlobalService#obtainFileStorageLocation()
      * @see #downloadKBART()
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     @Check404()
     def current() {
         log.debug("current ${params}");
@@ -464,7 +473,10 @@ class PackageController {
      * @return a downloadable file stream, providing a previously generated file
      * @see #current()
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def downloadKBART() {
         byte[] output = []
         try {
@@ -486,7 +498,10 @@ class PackageController {
      * Call to see planned titles of the package
      * @return {@link #planned_expired_deleted(java.lang.Object, java.lang.Object)}
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def planned() {
         planned_expired_deleted(params, "planned")
     }
@@ -495,7 +510,10 @@ class PackageController {
      * Call to see expired titles of the package
      * @return {@link #planned_expired_deleted(java.lang.Object, java.lang.Object)}
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def expired() {
         planned_expired_deleted(params, "expired")
     }
@@ -504,7 +522,10 @@ class PackageController {
      * Call to see deleted titles of the package
      * @return {@link #planned_expired_deleted(java.lang.Object, java.lang.Object)}
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def deleted() {
         planned_expired_deleted(params, "deleted")
     }
@@ -517,7 +538,10 @@ class PackageController {
      * @return a HTML table showing the holding or the holding rendered as KBART or Excel worksheet
      * @see TitleInstancePackagePlatform
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def planned_expired_deleted(params, func) {
         log.debug("planned_expired_deleted ${params}");
         Map<String, Object> result = packageService.getResultGenerics(params)
@@ -635,7 +659,10 @@ class PackageController {
      * Shows the title changes done in the package
      * @see PendingChange
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     @Check404()
     def tippChanges() {
         Map<String, Object> result = [:]
@@ -686,9 +713,9 @@ class PackageController {
      * the we:kb data will be fetched and data mirrored prior to linking the package
      * to the subscription
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def processLinkToSub() {
         Map<String, Object> result = [:]

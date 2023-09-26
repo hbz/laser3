@@ -8,7 +8,7 @@
         <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
         <ui:controlButtons>
-            <laser:render template="actions" />
+            <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
         </ui:controlButtons>
 
         <ui:h1HeaderWithIcon visibleOrgRelations="${visibleOrgRelations}">
@@ -17,7 +17,7 @@
 
         <ui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
-        <laser:render template="nav" />
+        <laser:render template="${customerTypeService.getNavTemplatePath()}" />
 
         <%--<ui:objectStatus object="${license}" status="${license.status}" />--%>
 
@@ -137,6 +137,7 @@
             <aside class="five wide column la-sidekick">
                 <div class="ui one cards">
 
+                    <g:if test="${!contextService.getOrg().isCustomerType_Support()}">
                     <div id="container-provider">
                         <div class="ui card">
                             <div class="content">
@@ -181,6 +182,8 @@
                             </div>
                         </div>
                     </div>
+                    </g:if>
+
                     <div id="container-links">
                         <div class="ui card" id="links"></div>
                     </div>

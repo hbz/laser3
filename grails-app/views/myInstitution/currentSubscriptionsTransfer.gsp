@@ -209,7 +209,7 @@
             </div>
             <% /* 4-2 */ %>
         <%-- TODO [ticket=2276] provisoric, name check is in order to prevent id mismatch --%>
-            <g:if test="${contextService.getOrg().isCustomerType_Inst_Pro() || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
+            <g:if test="${contextService.getOrg().isCustomerType_Inst_Pro() || institution.isCustomerType_Support() || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
                 <div class="field">
                     <fieldset id="subscritionType">
                         <label>${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
@@ -217,7 +217,7 @@
                         <div class="inline fields la-filter-inline">
                             <%
                                 List subTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)
-                                if (institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID)
+                                if (institution.isCustomerType_Support() || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID)
                                     subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL
                                 else
                                     subTypes -= RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE
@@ -331,8 +331,6 @@
                         Renewal
                     </th>
 
-
-
                     <th scope="col" rowspan="3" class="center aligned">
                         <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.participantTransferWithSurvey.label')}" data-position="top center">
                             <i class="large icons">
@@ -341,7 +339,6 @@
                             </i>
                         </a>
                     </th>
-
                 </tr>
                 <tr>
                     <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}"
@@ -365,9 +362,6 @@
                     <th scope="col" rowspan="2" class="center aligned two wide">
                         ${message(code: 'subscriptionsManagement.documents')}
                     </th>%{-- Documents--}%
-
-
-
                 </tr>
                 <tr>
                     <g:sortableColumn scope="col" rowspan="1" class="la-smaller-table-head" params="${params}"
@@ -741,10 +735,8 @@
 </div>
 
 <g:if test="${subscriptions}">
-    <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
-                 max="${max}" total="${num_sub_rows}"/>
+    <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}" max="${max}" total="${num_sub_rows}"/>
 </g:if>
-
 
 <laser:render template="export/individuallyExportModalSubsTransfer" model="[modalID: 'individuallyExportModal']"/>
 

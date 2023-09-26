@@ -228,12 +228,14 @@ class BootStrapService {
         Role orgInstProRole         = updateRole(CustomerTypeService.ORG_INST_PRO,          'org', [en: 'LAS:eR (Pro)', de: 'LAS:eR (Pro)'])
         Role orgConsortiumRole      = updateRole(CustomerTypeService.ORG_CONSORTIUM_BASIC,  'org', [en: 'Consortium Manager (Basic)', de: 'Konsortialmanager (Basic)'])
         Role orgConsortiumProRole   = updateRole(CustomerTypeService.ORG_CONSORTIUM_PRO,    'org', [en: 'Consortium Manager (Pro)',   de: 'Konsortialmanager (Pro)'])
+        Role orgSupportRole         = updateRole(CustomerTypeService.ORG_SUPPORT,           'org', [en: 'Interne Verwaltung (HBZ)', de: 'Interne Verwaltung (HBZ)'])
 
         updateRolePerms(fakeRole,                ['FAKE'])
         updateRolePerms(orgInstRole,             [CustomerTypeService.ORG_INST_BASIC])
         updateRolePerms(orgInstProRole,          [CustomerTypeService.ORG_INST_PRO, CustomerTypeService.ORG_INST_BASIC])
         updateRolePerms(orgConsortiumRole,       [CustomerTypeService.ORG_CONSORTIUM_BASIC])
         updateRolePerms(orgConsortiumProRole,    [CustomerTypeService.ORG_CONSORTIUM_PRO, CustomerTypeService.ORG_CONSORTIUM_BASIC])
+        updateRolePerms(orgSupportRole,          [CustomerTypeService.ORG_SUPPORT, CustomerTypeService.ORG_CONSORTIUM_PRO, CustomerTypeService.ORG_CONSORTIUM_BASIC])
     }
 
     /**
@@ -264,7 +266,7 @@ class BootStrapService {
         List<Map> result = []
         File csvFile = grailsApplication.mainContext.getResource(filePath).file
 
-        if (! (filePath.contains('RefdataCategory') || filePath.contains('RefdataValue') || filePath.contains('PropertyDefinition')) ) {
+        if (! (filePath.contains('RefdataCategory') || filePath.contains('RefdataValue') || filePath.contains('PropertyDefinition')|| filePath.contains('IdentifierNamespace')) ) {
             log.warn("getParsedCsvData() - invalid object type ${filePath}!")
         }
         else if (! csvFile.exists()) {
@@ -312,9 +314,9 @@ class BootStrapService {
                                     category    : line[0].trim(),
                                     type        : line[4].trim(),
                                     rdc         : line[5].trim(),
-                                    mandatory   : new Boolean( line[6].trim() ),
-                                    multiple    : new Boolean( line[7].trim() ),
-                                    logic       : new Boolean( line[8].trim() ),
+                                    mandatory   : Boolean.parseBoolean( line[6].trim() ),
+                                    multiple    : Boolean.parseBoolean( line[7].trim() ),
+                                    logic       : Boolean.parseBoolean( line[8].trim() ),
                                     tenant      : line[11].trim(),
                                     hardData    : BOOTSTRAP,
                                     i10n        : [
@@ -323,6 +325,20 @@ class BootStrapService {
                                             expl_de: line[9].trim(),
                                             expl_en: line[10].trim()
                                     ]
+                            ]
+                            result.add(map)
+                        }
+                        if(filePath.contains('IdentifierNamespace')) {
+                            Map<String, Object> map = [
+                                    ns     : line[0].trim(),
+                                    name_de: line[1].trim(),
+                                    name_en: line[3].trim(),
+                                    description_de: line[2].trim() ?: null,
+                                    description_en: line[4].trim() ?: null,
+                                    nsType        : line[5].trim() ?: null,
+                                    urlPrefix     : line[6].trim() ?: null,
+                                    isUnique      : Boolean.parseBoolean(line[7].trim()),
+                                    isHidden      : Boolean.parseBoolean(line[8].trim())
                             ]
                             result.add(map)
                         }
@@ -473,44 +489,7 @@ class BootStrapService {
      */
     void setIdentifierNamespace() {
 
-        //TODO isUnique/isHidden flags are set provisorically to "false", adaptations may be necessary
-        List<Map<String,Object>> namespaces = [
-            [ns: "Anbieter_Produkt_ID", name_de: "Anbieter-Produkt-ID", description_de: "Interne, eindeutige ID der Anbieter für die eigenen Pakete.", name_en: "Provider-product-ID", description_en: "Internal unique ID of provider for the own packages.", nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false],
-            [ns: "Anbieter_Produkt_ID", name_de: "Anbieter-Produkt-ID", description_de: "Interne, eindeutige ID der Anbieter für die eigenen Pakete.", name_en: "Provider-product-ID", description_en: "Internal unique ID of provider for the own packages.", nsType: IdentifierNamespace.NS_PACKAGE, isUnique: false, isHidden: false],
-            [ns: "crossref funder id", name_de: "Crossref Funder ID", description_de: null, name_en: "Crossref Funder ID", description_en: null, nsType: IdentifierNamespace.NS_ORGANISATION, isUnique: false, isHidden: false],
-            [ns: "DBS-ID", name_de: "DBS-ID", description_de: "ID in der Deutschen und Österreichischen Bibliotheksstatistik (DBS/ÖBS) (https://www.bibliotheksstatistik.de/).", name_en: "DBS-ID", description_en: "ID in the German and Austrian library statistic (DBS/ÖBS) (https://www.bibliotheksstatistik.de/).", nsType: IdentifierNamespace.NS_ORGANISATION, urlPrefix: null, isUnique: false, isHidden: false],
-            [ns: "dbis_org_id", name_de: "DBIS-Organisations-ID", description_de: "ID Ihrer Bibliothek oder Einrichtung im DBIS System, typischerweise ein Kürzel mit mehreren Buchstaben, z.B. 'ub_r'. Derzeit z.B. über die URL der eigenen Einrichtung auslesbar.", name_en: "DBIS organisation ID", description_en: "ID of your library or organisation in the DBIS system, typically an abbreviation with several letters, e.g. 'ub_r'. It may be read off currently from the URL of your own institution for example.", nsType: IdentifierNamespace.NS_ORGANISATION, urlPrefix: "https://dbis.ur.de//fachliste.php?bib_id=", isUnique: true, isHidden: false],
-            [ns: "dbis_res_id", name_de: "DBIS-Ressourcen-ID", description_de: "ID für eine Datenbank oder allgemein Ressource im DBIS-System, die Sie z.B. mit einer Lizenz verknüpfen können.", name_en: "DBIS resource ID", description_en: "ID for a database or generally a resource in the DBIS system what you may link to a subscription for example.",  nsType: IdentifierNamespace.NS_SUBSCRIPTION, urlPrefix: "https://dbis.uni-regensburg.de/frontdoor.php?titel_id=", isUnique: false, isHidden: false],
-            [ns: "dbpedia", name_de: "DBpedia", description_de: null, name_en: "DBpedia", description_en: null, nsType: IdentifierNamespace.NS_ORGANISATION, isUnique: false, isHidden: false],
-            [ns: "DNB_ID", name_de: "DNB-ID", description_de: "Identifikator der Deutschen Nationalbibliothek.", name_en: "DNB-ID", description_en: "Identifier of the German National Library (DNB).", nsType: IdentifierNamespace.NS_SUBSCRIPTION, urlPrefix: "http://d-nb.info/", isUnique: false, isHidden: false],
-            [ns: "eissn", name_de: "E-ISSN", description_de: "Internationale Standardnummer(n) für fortlaufende Sammelwerke.", name_en: "E-ISSN", description_en: "International standard number(s) for continued series.", nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false],
-            [ns: "eduPersonEntitlement", name_de: "Entitlement KfL-Portal", description_de: "das Shibboleth-Entitlement", name_en: "Entitlement KfL portal", description_en: "the Shibboleth entitlement", nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false],
-            [ns: "ezb_anchor", name_de: "EZB-Anker", description_de: "EZB-Anker werden von Konsortialverwaltern für deren jeweilige angelegte Kollektionen vergeben, um so die genaue Lizenzeinheit abbilden zu können.", name_en: "EZB anchor", description_en: "EZB anchors are distributed by consortia managers for their respective collections in order to represent the subscription unit.", nsType:null, isUnique: false, isHidden: false],
-            [ns: "ezb_collection_id", name_de: "EZB-Kollektions-ID", description_de: "Automatisch vergebene ID. Beim Abruf frei verfügbarer Titellisten der jeweiligen Kollektionen dient die Kollektions-ID als eindeutiger Identifikator.", name_en: "EZB collection id", description_en: "Automatically distributed ID. The collection ID serves as unique identifier upon a call of the entitlement lists of the collections.", nsType: IdentifierNamespace.NS_SUBSCRIPTION, urlPrefix: "http://ezb.ur.de/api/collections/", isUnique: false, isHidden: false],
-            [ns: "ezb_org_id", name_de: "EZB-ID", description_de: "Identifikator der Elektronischen Zeitschriftendatenbank (EZB). Mehrfachangabe möglich.", name_en: "EZB-ID", description_en: "Identifier of Electronic Journals Library (EZB). Multiple insertion possible.", nsType: IdentifierNamespace.NS_ORGANISATION, urlPrefix: "https://ezb.uni-regensburg.de/fl.phtml?bibid=", isUnique: false, isHidden: false],
-            [ns: "ezb_sub_id", name_de: "EZB-ID", description_de: "Identnummer, die einen bestimmten Eintrag in der Elektronischen Zeitschriftenbibliothek EZB auszeichnet.", name_en: "EZB-ID", description_en: "Identification number which indicates a certain entry in the Electronic Journals Library (EZB).", nsType: IdentifierNamespace.NS_SUBSCRIPTION, urlPrefix: "http://rzbvm017.uni-regensburg.de/ezeit/detail.phtml?bibid=AAAAA&colors=7&lang=de&jour_id=", isUnique: false, isHidden: false],
-            [ns: "gnd_org_nr", name_de: "GND-NR", description_de: "Eindeutiger und stabiler Bezeichner für jede einzelne Entität in der GND (Gemeinsame Normdatei). https://www.dnb.de/DE/Professionell/Standardisierung/GND/gnd_node.html", name_en: "GND-NR", description_en: "Unique and stable identifier for every entity in the GND (Integrated Authority File). https://www.dnb.de/EN/Professionell/Standardisierung/GND/gnd_node.html", nsType: IdentifierNamespace.NS_ORGANISATION, urlPrefix: "https://d-nb.info/gnd/", isUnique: false, isHidden: false],
-            [ns: "ISBN", name_de: "ISBN", description_de: "Internationale Standardbuchnummer.", name_en: "ISIL", description_en: "International standard book number.", nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false],
-            [ns: "ISIL", name_de: "ISIL", description_de: "International Standard Identifier for Libraries and Related Organizations, entspricht dem Bibliothekssigel der Sigelstelle. Sind der Einrichtung mehrere ISIL zugeordnet, ist eine Mehrfachangabe möglich.", name_en: "ISIL", description_en: "International Standard Identifier for Libraries and Related Organizations, corresponds to the library identifier of the identifier authority. Are several ISILs assigned to the organisation, multiple distribution is possible.", nsType: IdentifierNamespace.NS_ORGANISATION, urlPrefix: "https://sigel.staatsbibliothek-berlin.de/suche/?isil=", isUnique: false, isHidden: false],
-            [ns: "ISIL Paketsigel", name_de: "ZDB-Paketsigel", description_de: "ZDB-Produktkennzeichnung für (Gesamt)pakete, vergeben von der ISIL-Agentur.", name_en: "ISIL package identifier", description_en: "ZDB product marking for (whole) packages, distributed by the ISIL agency.", nsType: IdentifierNamespace.NS_SUBSCRIPTION, urlPrefix: "https://sigel.staatsbibliothek-berlin.de/suche/?isil=", isUnique: false, isHidden: false],
-            [ns: "isil_product", name_de: "ZDB-Produktsigel", description_de: "ZDB-Produktsigel für Teilpakete, vergeben von der ISIL-Agentur.", name_en: "ISIL product identifier", description_en: "ZDB product marking for partial packages, distributed by the ISIL agency.", nsType: IdentifierNamespace.NS_SUBSCRIPTION, urlPrefix: "https://sigel.staatsbibliothek-berlin.de/suche/?isil=", isUnique: false, isHidden: false],
-            [ns: "isni", name_de: "ISNI", description_de: null, name_en: "ISNI", description_en: null, nsType: IdentifierNamespace.NS_ORGANISATION, isUnique: false, isHidden: false],
-            [ns: "leibniz", name_de: "Leibniz-ID", description_de: "Kürzel einer Einrichtung der Leibniz-Gemeinschaft", name_en: "Leibniz-ID", description_en: "Abbreviation of an institution of the Leibniz association", nsType: IdentifierNamespace.NS_ORGANISATION, isUnique: true, isHidden: false],
-            [ns: "loc id", name_de: "LOC ID", description_de: null, name_en: "LOC ID", description_en: null, nsType: IdentifierNamespace.NS_ORGANISATION, isUnique: false, isHidden: false],
-            [ns: "pissn", name_de: "P-ISSN", description_de: "Internationale Standardnummer(n) für fortlaufende Sammelwerke.", name_en: "P-ISSN", description_en: "International standard number(s) for continued series.", nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false],
-            [ns: "Rechnungssystem_Nummer", name_de: "Rechnungssystem-Nr.", description_de: "Individuelle, interne Rechnungsnummer, vergeben von der einzelnen Einrichtung.", name_en: "Invoice system number", description_en: "Unique internal invoice system number, assigned by the respective institution.", nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false],
-            [ns: "ROR ID", name_de: "ROR-ID", description_de: "Identifikator einer Forschungseinrichtung im Research Organization Registry (ROR)", name_en: "ROR-ID", description_en: "Identifier of a research organization in the Research Organization Registry (ROR).", nsType: IdentifierNamespace.NS_ORGANISATION, urlPrefix: "https://ror.org/", isUnique: false, isHidden: false],
-            [ns: "SFX-Anker", name_de: "SFX-Anker", description_de: "Eintrag im Linkresolver SFX (Ex Libris Group).", name_en: "SFX anchor", description_en: "Entry in the Linkresolver SFX (Ex Libris Group).", nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false],
-            [ns: "sis_kfl_proof", name_de: "Nachweis im KfL-Portal", description_de: "Nachweis im KfL-Portal", name_en: "Proof in KfL portal", description_en: "Proof in KfL portal", nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false],
-            [ns: "fid_negotiator_id", name_de: "FID-Verhandlungs-ID", "description_de": null, "name_en": "SIS negotiator ID", description_en: null, nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false], //when creating the namespace, I did not knew that DFG provided a translation for German Fachonformationsdienste (Specialised Information Services)
-            [ns: "sis_nl_proof", name_de: "Nachweis im NL-Portal", description_de: "Nachweis im NL-Portal", name_en: "Proof in NL portal", description_en: "Proof in NL portal", nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false],
-            [ns: "sis_product_id", name_de: "FID-Produkt-ID", description_de: "eindeutige FID-Produktkennung", name_en: "SIS product ID", description_en: "unique SIS product marking", nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: true, isHidden: false],
-            [ns: "VAT", name_de: "VAT", description_de: "Internationale Bezeichnung für Umsatzsteuer-ID bzw. Steuer-Ident-Nummer. Zur eindeutigen Identifikation eines Unternehmen im steuerrechtlichen Sinne.", name_en: "VAT", description_en: null, nsType: IdentifierNamespace.NS_ORGANISATION, isUnique: true, isHidden: false],
-            [ns: "viaf", name_de: "VIAF", description_de: null, name_en: "VIAF", description_en: null, nsType: IdentifierNamespace.NS_ORGANISATION, isUnique: false, isHidden: false],
-            [ns: "wibid", name_de: "WIB-ID", description_de: "Identifikator, den Sie bei der Registrierung auf nationallizenzen.de erhalten.", name_en: "WIB-ID", description_en: "The identifier you received upon registration on nationallizenzen.de.", nsType: IdentifierNamespace.NS_ORGANISATION, isUnique: true, isHidden: false], //, validationRegex: "WIB\\d{4}" needed to be crossed out because of initial dummy values
-            [ns: "wikidata id", name_de: "Wikidata ID", description_de: null, name_en: "Wikidata ID", description_en: null, nsType: IdentifierNamespace.NS_ORGANISATION, isUnique: false, isHidden: false],
-            [ns: "zdb", name_de: "ZDB-ID", description_de: "ID der Ressource in der ZDB.", name_en: "ZDB-ID", description_en: "ID of resource in ZDB.", nsType: IdentifierNamespace.NS_SUBSCRIPTION, urlPrefix: "https://ld.zdb-services.de/resource/", isUnique: false, isHidden: false]
-        ]
+        List namespaces = getParsedCsvData( ConfigDefaults.SETUP_IDENTIFIER_NAMESPACE_CSV )
 
         List<IdentifierNamespace> hardCodedIDNS = IdentifierNamespace.findAllByIsHardData(true)
 

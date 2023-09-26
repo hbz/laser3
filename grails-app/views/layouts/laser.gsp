@@ -71,9 +71,14 @@
                     %{-- menu: public, my objects, my institution --}%
 
                     <g:if test="${contextOrg}">
-                        <laser:render template="/layouts/laser/menu_user_public" />
-                        <laser:render template="/layouts/laser/menu_user_myObjects" />
-                        <laser:render template="/layouts/laser/menu_user_myInstitution" />
+                        <g:if test="${contextOrg.isCustomerType_Support()}">
+                            <laser:render template="/layouts/laser/menu_support" />
+                        </g:if>
+                        <g:else>
+                            <laser:render template="/layouts/laser/menu_user_public" />
+                            <laser:render template="/layouts/laser/menu_user_myObjects" />
+                            <laser:render template="/layouts/laser/menu_user_myInstitution" />
+                        </g:else>
                     </g:if>
 
                     %{-- menu: admin --}%

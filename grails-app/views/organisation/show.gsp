@@ -16,9 +16,8 @@
 
 <laser:render template="breadcrumb"
           model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView, consortialView: consortialView]}"/>
-
 <ui:controlButtons>
-    <laser:render template="actions" model="${[org: orgInstance, user: user]}"/>
+    <laser:render template="${customerTypeService.getActionsTemplatePath()}" model="${[org: orgInstance, user: user]}"/>
 </ui:controlButtons>
 
 <ui:h1HeaderWithIcon text="${orgInstance.name}" >
@@ -51,7 +50,7 @@
     </div>
 </g:if>
 
-<laser:render debug="true" template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, isProviderOrAgency: isProviderOrAgency]}"/>
+<laser:render template="${customerTypeService.getNavTemplatePath()}" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, isProviderOrAgency: isProviderOrAgency]}"/>
 
 <ui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
 
@@ -145,20 +144,7 @@
                             </dd>
                         </dl>
                     </g:if>
-                    <g:if test="${orgInstance.isCustomerType_Inst_Pro()}">
-                        <dl>
-                            <dt>
-                                <g:message code="org.linkResolverBase.label"/>
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${message(code: 'org.linkResolverBase.expl')}">
-                                    <i class="question circle icon"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <ui:xEditable owner="${orgInstance}" field="linkResolverBaseURL" />
-                                <br />&nbsp;<br />&nbsp;<br />
-                            </dd>
-                        </dl>
+                    <g:if test="${orgInstance.isCustomerType_Inst()}">
                         <dl>
                             <dt>
                                 <g:message code="org.legalPatronName.label" />
@@ -193,6 +179,18 @@
             <g:if test="${orgInstance.isCustomerType_Inst()}">
                 <div class="ui card">
                     <div class="content">
+                        <dl>
+                            <dt>
+                                <g:message code="org.linkResolverBase.label"/>
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${message(code: 'org.linkResolverBase.expl')}">
+                                    <i class="question circle icon"></i>
+                                </span>
+                            </dt>
+                            <dd>
+                                <ui:xEditable owner="${orgInstance}" field="linkResolverBaseURL" />
+                            </dd>
+                        </dl>
                         <dl>
                             <dt>
                                 <g:message code="org.eInvoice.label" />
@@ -890,7 +888,7 @@
                     </g:if>
                 </g:if>
 
-            <g:if test="${(contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro())}">
+            <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support() || contextService.getOrg().isCustomerType_Inst_Pro()}">
                 <div id="new-dynamic-properties-block">
                     <laser:render template="properties" model="${[ orgInstance: orgInstance, authOrg: formalOrg, contextOrg: institution ]}"/>
                 </div><!-- #new-dynamic-properties-block -->
@@ -1417,7 +1415,9 @@
     }--%>
 
     <g:if test="${orgInstance.isCustomerType_Inst()}">
-        JSPC.app.showRegionsdropdown( $("#country").editable('getValue', true) );
+        if($("#country").length) {
+            JSPC.app.showRegionsdropdown( $("#country").editable('getValue', true) );
+        }
     </g:if>
     $('#addAltname').click(function() {
         $.ajax({

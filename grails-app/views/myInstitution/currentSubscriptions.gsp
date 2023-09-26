@@ -41,8 +41,8 @@
                 --%>
             </ui:exportDropdown>
 
-            <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro()}">
-                <laser:render template="actions" />
+            <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support() || contextService.getOrg().isCustomerType_Inst_Pro()}">
+                <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
             </g:if>
         </ui:controlButtons>
 
@@ -50,7 +50,7 @@
 
     <ui:messages data="${flash}"/>
 
-    <laser:render template="/templates/subscription/subscriptionFilter"/>
+    <laser:render template="${customerTypeService.getSubscriptionFilterTemplatePath()}"/>
 
     <laser:render template="/templates/subscription/subscriptionTable"/>
 

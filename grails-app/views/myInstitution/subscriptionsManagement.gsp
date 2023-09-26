@@ -16,7 +16,7 @@
     <laser:render template="/templates/management/properties"/>
 </g:if><g:else>
 
-    <laser:render template="/templates/subscription/subscriptionFilter"/>
+    <laser:render template="${customerTypeService.getSubscriptionFilterTemplatePath()}"/>
 
     <g:if test="${params.tab == 'linkLicense'}">
         <laser:render template="/templates/management/linkLicense"/>

@@ -40,35 +40,33 @@
     </g:if>
 </g:if>
 
-<g:if test="${actionName in ['documents']}">
-    <g:if test="${editable}">
+
+<g:if test="${editable}">
+    <g:if test="${actionName in ['documents']}">
         <ui:actionsDropdown>
             <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />
         </ui:actionsDropdown>
     </g:if>
-    <laser:render template="/templates/documents/modal" model="${[ownobj: contextOrg, owntp: 'org', inContextOrg: true]}"/>
-</g:if>
 
-<g:if test="${actionName == 'tasks'}">
-    <g:if test="${editable}">
+    <g:if test="${actionName == 'tasks'}">
         <ui:actionsDropdown>
             <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
         </ui:actionsDropdown>
     </g:if>
-</g:if>
 
-<g:if test="${actionName == 'managePrivatePropertyDefinitions'}">
-    <g:if test="${editable}">
+    <g:if test="${actionName == 'managePrivatePropertyDefinitions'}">
         <ui:actionsDropdown>
             <ui:actionsDropdownItem message="menu.institutions.manage_props.create_new" data-ui="modal" href="#addPropertyDefinitionModal" />
         </ui:actionsDropdown>
     </g:if>
-</g:if>
 
-<g:if test="${actionName == 'managePropertyGroups'}">
-    <g:if test="${editable}">
+    <g:if test="${actionName == 'managePropertyGroups'}">
         <ui:actionsDropdown>
             <ui:actionsDropdownItem message="propertyDefinitionGroup.create_new.label" controller="myInstitution" action="managePropertyGroups" params="${[cmd:'new']}" class="trigger-modal" notActive="true" />
         </ui:actionsDropdown>
     </g:if>
+</g:if>
+
+<g:if test="${actionName in ['documents']}">
+    <laser:render template="/templates/documents/modal" model="${[ownobj: contextOrg, owntp: 'org', inContextOrg: true]}"/>
 </g:if>
