@@ -17,7 +17,7 @@
 
     <laser:render template="nav" />
 
-    <laser:render template="/templates/subscription/subscriptionFilter"/>
+    <laser:render template="${customerTypeService.getSubscriptionFilterTemplatePath()}"/>
 
     <div class="ui buttons">
         <g:link action="linkToSubscription" class="ui button positive" params="${params+[id:license.id,subscription:"all"]}"><g:message code="license.linkAll"/></g:link>

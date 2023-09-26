@@ -1217,9 +1217,9 @@ class OrganisationController  {
      * @return the task table view
      * @see Task
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO_SUPPORT])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO_SUPPORT)
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     @Check404(domain=Org)
     def tasks() {
@@ -1239,9 +1239,9 @@ class OrganisationController  {
      * @return the workflow checklist view
      * @see de.laser.workflow.WfChecklist
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO_SUPPORT])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO_SUPPORT)
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     @Check404()
     def workflows() {

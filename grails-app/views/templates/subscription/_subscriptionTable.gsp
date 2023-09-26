@@ -5,9 +5,6 @@
 
 <div class="subscription-results subscription-results la-clear-before">
     <g:if test="${subscriptions}">
-        <%--<input type="submit"
-                   value="${message(code: 'license.linking.submit')}"
-                   class="ui primary button"/>--%>
             <table class="ui celled sortable table la-table la-js-responsive-table">
                 <thead>
                     <tr>
@@ -32,11 +29,6 @@
                                 ${message(code: 'license.details.linked_pkg')}
                             </th>
                         </g:if>
-                        <% /*
-                        <th>
-                            ${message(code: 'myinst.currentSubscriptions.subscription_type', default: RDConstants.SUBSCRIPTION_TYPE)}
-                        </th>
-                        */ %>
                         <g:if test="${params.orgRole in ['Subscriber'] && contextService.getOrg().isCustomerType_Inst()}">
                             <th scope="col" rowspan="2" >${message(code: 'consortium')}</th>
                         </g:if>
@@ -46,12 +38,6 @@
                         <g:if test="${'showProviders' in tableConfig}">
                             <g:sortableColumn scope="col" params="${params}" property="providerAgency" title="${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}" rowspan="2" />
                         </g:if>
-                        <%--<th rowspan="2" >${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}</th>--%>
-                        <%--
-                        <g:if test="${params.orgRole == 'Subscription Consortia'}">
-                            <th>${message(code: 'consortium.subscriber')}</th>
-                        </g:if>
-                        --%>
                         <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label')}"/>
                         <g:if test="${params.orgRole in ['Subscription Consortia']}">
                             <th scope="col" rowspan="2" class="center aligned">
@@ -108,21 +94,6 @@
                                 </g:if>
                             </g:link>
                             <g:if test="${'showLicense' in tableConfig}">
-                                <%--<div id="${s.id}linkedLicenses">
-                                    <laser:script file="${this.getGroovyPageFileName()}">
-                                        $.ajax({
-                                            url: "<g:createLink controller="ajaxJson" action="getLinkedLicenses" />",
-                                            data: {
-                                                subscription: "${genericOIDService.getOID(s)}"
-                                            }
-                                        }).done(function(data) {
-                                                let link = "<g:createLink controller="license" action="show"/>";
-                                                $.each(data.results,function(k,v) {
-                                                    $("#${s.id}linkedLicenses").append('<i class="icon balance scale la-list-icon"></i><a href="'+link+'/'+v.id+'">'+v.name+'</a><br />');
-                                                });
-                                            });
-                                    </laser:script>
-                                </div>--%>
                                 <g:each in="${allLinkedLicenses}" var="row">
                                     <g:if test="${s == row.destinationSubscription}">
                                         <g:set var="license" value="${row.sourceLicense}"/>
@@ -171,9 +142,6 @@
                         <!-- packages -->
                         </td>
                         </g:if>
-                    <%--<td>
-                            ${s.type?.getI10n('value')}
-                        </td>--%>
                         <g:if test="${params.orgRole == 'Subscriber'}">
                             <td>
                                 <g:if test="${contextService.getOrg().isCustomerType_Inst()}">

@@ -23,7 +23,8 @@
 
 <laser:render template="nav" />
 
-<laser:render template="/templates/subscription/consortiaSubscriptionFilter"/>
+<laser:render template="${customerTypeService.getConsortiaSubscriptionFilterTemplatePath()}" />
+
 <div class="ui buttons">
     <g:link action="linkToSubscription" class="ui button positive" params="${params+[id:license.id,subscription:"all",(FormService.FORM_SERVICE_TOKEN):formService.getNewToken()]}"><g:message code="license.linkAll"/></g:link>
     <div class="or" data-text="${message(code:'default.or')}"></div>

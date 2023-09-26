@@ -26,6 +26,7 @@
         <div class="item">
             <span class="ROLE_USER">ORG_INST_PRO</span> &rArr;
             <span class="IS_AUTHENTICATED_FULLY">ORG_INST_BASIC</span> |
+            <span class="ROLE_YODA">ORG_SUPPORT</span> &rArr;
             <span class="ROLE_USER">ORG_CONSORTIUM_PRO</span> &rArr;
             <span class="IS_AUTHENTICATED_FULLY">ORG_CONSORTIUM_BASIC</span>
         </div>
@@ -158,10 +159,10 @@
                                                         </g:if>
                                                         <g:elseif test="${dd.key == 'test'}">
                                                             <g:if test="${dd.value.contains('_denySupport_')}">
-                                                                closure_denySupport
+                                                                [ - ] closure_denySupport
                                                             </g:if>
                                                             <g:else>
-                                                                closure
+                                                                [ + ] closure
                                                             </g:else>
                                                         </g:elseif>
                                                         <g:else>
@@ -192,7 +193,7 @@
                                                         </g:if>
                                                     </g:if>
                                                     <g:if test="${dd.key == 'test'}">
-                                                        <g:if test="${info.value.getAt('perm')?.contains('ORG_CONSORTIUM_BASIC') || info.value.getAt('perm')?.contains('ORG_SUPPORT')}">%{-- check with given perms --}%
+                                                        <g:if test="${info.value.getAt('perm')?.contains('ORG_CONSORTIUM_BASIC') || info.value.getAt('perm')?.contains('ORG_CONSORTIUM_PRO') || info.value.getAt('perm')?.contains('ORG_SUPPORT')}">%{-- check with given perms --}%
                                                             <g:if test="${! dd.value.contains('_denySupport_')}">
                                                                 <i class="icon theater masks red"></i>
                                                             </g:if>

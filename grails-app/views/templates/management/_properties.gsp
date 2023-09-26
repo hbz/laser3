@@ -309,7 +309,7 @@
     <g:set var="editableOld" value="${false}"/>
 
     <g:if test="${controllerName == "myInstitution"}">
-        <laser:render template="/templates/subscription/subscriptionFilter"/>
+        <laser:render template="${customerTypeService.getSubscriptionFilterTemplatePath()}"/>
     </g:if>
 
     <h3 class="ui header">${message(code: 'subscriptionsManagement.info.property')}</h3>

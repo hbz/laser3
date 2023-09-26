@@ -85,7 +85,6 @@
                         <div class="item">
                             <i class="chartline icon la-list-icon"></i>
                             <div class="content">
-                                <ui:securedMainNavItem controller="myInstitution" action="reporting" message="myinst.reporting" />
                             </div>
                         </div>
                         <div class="item">
