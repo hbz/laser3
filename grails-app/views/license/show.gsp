@@ -137,6 +137,7 @@
             <aside class="five wide column la-sidekick">
                 <div class="ui one cards">
 
+                    <g:if test="${!contextService.getOrg().isCustomerType_Support()}">
                     <div id="container-provider">
                         <div class="ui card">
                             <div class="content">
@@ -181,6 +182,8 @@
                             </div>
                         </div>
                     </div>
+                    </g:if>
+
                     <div id="container-links">
                         <div class="ui card" id="links"></div>
                     </div>

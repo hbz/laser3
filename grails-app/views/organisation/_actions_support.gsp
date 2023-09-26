@@ -16,10 +16,8 @@
                 <g:if test="${editable_identifier}">
                     <a class="item" onclick="JSPC.app.IdContoller.createIdentifier(${orgInstance.id});">${message(code: 'identifier.create.new')}</a>
                 </g:if>
-                <g:if test="${hasAccessToCustomeridentifier}">
-                    <g:if test="${editable_customeridentifier}">
+                <g:if test="${hasAccessToCustomeridentifier && editable_customeridentifier}">
                         <a class="item" onclick="JSPC.app.IdContoller.createCustomerIdentifier(${orgInstance.id});">${message(code: 'org.customerIdentifier.create.new')}</a>
-                    </g:if>
                 </g:if>
             </g:elseif>
             <g:elseif test="${actionName == 'users'}">

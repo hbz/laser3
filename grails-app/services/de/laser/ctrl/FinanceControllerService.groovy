@@ -119,8 +119,7 @@ class FinanceControllerService {
         //Determine own org belonging, then, in which relationship I am to the given subscription instance
         switch(result.institution.getCustomerType()) {
         //cases one to three
-            case CustomerTypeService.ORG_CONSORTIUM_BASIC:
-            case CustomerTypeService.ORG_CONSORTIUM_PRO:
+            case [ CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO, CustomerTypeService.ORG_SUPPORT ]:
                 if (result.subscription) {
                     //cases two and three: child subscription
                     if (result.subscription.instanceOf) {

@@ -113,7 +113,7 @@ class FinanceController  {
                         result.currentCostItemCounts = result.financialData.own.count
                 }
                 else {
-                    result.currentCostItemCounts = result.financialData.subscr.count
+                    result.currentCostItemCounts = result.financialData.subscr ? result.financialData.subscr.count : 0 // ?
                 }
             }
             result.workflowCount = workflowService.getWorkflowCount(result.subscription, result.contextOrg)
