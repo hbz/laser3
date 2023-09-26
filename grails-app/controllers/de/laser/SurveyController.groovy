@@ -2412,6 +2412,7 @@ class SurveyController {
 
                 if(!openFailByTitleSelection) {
                     result.surveyInfo.status = params.startNow ? RDStore.SURVEY_SURVEY_STARTED : RDStore.SURVEY_READY
+                    result.surveyInfo.startDate = startDate
                     result.surveyInfo.save()
                     flash.message = params.startNow ? g.message(code: "openSurveyNow.successfully") : g.message(code: "openSurvey.successfully")
                 }else {
