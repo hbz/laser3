@@ -9,7 +9,7 @@
     </ui:exportDropdown>
 </g:if>
 
-<g:if test="${userService.hasFormalAffiliation(user, institution, 'INST_EDITOR')}">
+<g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_SUPPORT)}">
     <ui:actionsDropdown>
         <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
 
@@ -65,6 +65,6 @@
     </ui:actionsDropdown>
 </g:if>
 
-<g:if test="${contextService.isInstEditor_or_ROLEADMIN()}">
+<g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_SUPPORT)}">
     <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: license, owntp: 'license']]}" />
 </g:if>

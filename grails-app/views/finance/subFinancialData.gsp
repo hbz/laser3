@@ -86,7 +86,7 @@
         <ui:totalNumber class="la-numberHeader" total="${total.join(' / ')}"/>
         <ui:anualRings mapping="subfinance" object="${subscription}" controller="finance" action="index" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
-        <laser:render template="/subscription/nav" model="${[subscription:subscription, params:(params << [id:subscription.id, showConsortiaFunctions:showConsortiaFunctions])]}"/>
+        <laser:render template="/subscription/${customerTypeService.getNavTemplatePath()}" model="${[subscription:subscription, params:(params << [id:subscription.id, showConsortiaFunctions:showConsortiaFunctions])]}"/>
 
         <g:if test="${showConsortiaFunctions}">
             <laser:render template="/subscription/message" model="${[contextOrg: institution, subscription: subscription]}"/>

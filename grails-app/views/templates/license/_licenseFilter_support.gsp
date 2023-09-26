@@ -1,7 +1,6 @@
 <%@ page import="de.laser.CustomerTypeService; de.laser.License;de.laser.RefdataCategory;de.laser.interfaces.CalculatedType;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.RefdataValue;de.laser.Links;de.laser.Org" %>
 <laser:serviceInjection />
 
-
 <ui:filter>
       [DEBUG: Support-Filter]
       <form class="ui form">
