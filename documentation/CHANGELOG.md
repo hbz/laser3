@@ -39,11 +39,11 @@
 
 5276    13.09.2023  dev     3.3         Andreas Feature     zu kopierende Mailadressen sind jetzt auswählbar
 
-5279    13.09.2023  rc-3.2  3.2.5       Andreas Bug         Dauerhafte Titel wurden nicht verzeichnet
+5279    13.09.2023  rc-3.2  3.2.4       Andreas Bug         Dauerhafte Titel wurden nicht verzeichnet
 
 5263    13.09.2023  dev     3.3         Andreas Feature     Eingabe von Kundennummern ist jetzt auch in der Lizenz möglich
 
---      12.09.2023  rc-3.2  3.2.5       Andreas Bug         fehlende Blockade bei hart kodierten Namensräumen eingefügt
+--      12.09.2023  rc-3.2  3.2.4       Andreas Bug         fehlende Blockade bei hart kodierten Namensräumen eingefügt
 
 5279    13.09.2023  rc-3.2  3.2.4       Andreas Bug         Dauerhafte Titel wurden nicht verzeichnet
 
