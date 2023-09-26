@@ -3653,8 +3653,8 @@ class ExportClickMeService {
                             currency = RDStore.CURRENCY_USD.id
                         else
                             currency = RDStore.CURRENCY_EUR.id
-                        sqlCols.add("(select pi_list_price from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :currency) as ${fields.sqlCol}")
-                        sqlParams.put('currency', currency)
+                        sqlCols.add("(select pi_list_price from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :currency${idx}) as ${fields.sqlCol}")
+                        sqlParams.put('currency'+idx, currency)
                     }
                     else {
                         sqlCols.add(fields.sqlCol)
