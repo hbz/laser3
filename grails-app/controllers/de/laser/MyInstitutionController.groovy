@@ -1576,7 +1576,7 @@ class MyInstitutionController  {
 
         Map<String,Object> qryParamsClone = qryParams.clone()
         if(!params.containsKey('fileformat') && !params.containsKey('exportKBart')) {
-            List counts = IssueEntitlement.executeQuery('select new map(count(ie) as count, status as status) '+ qryString+ ' and status != :ieStatus group by status', qryParamsClone+[ieStatus: RDStore.TIPP_STATUS_REMOVED])
+            List counts = IssueEntitlement.executeQuery('select new map(count(*) as count, status as status) '+ qryString+ ' and status != :ieStatus group by status', qryParamsClone+[ieStatus: RDStore.TIPP_STATUS_REMOVED])
             result.allIECounts = 0
             counts.each { row ->
                 switch (row['status']) {
@@ -1647,7 +1647,7 @@ class MyInstitutionController  {
                     current: RDStore.SUBSCRIPTION_CURRENT,
                     orgRoles: orgRoles])
             if(result.subscriptions.size() > 0) {
-                Set<Long> allIssueEntitlements = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription in (:currentSubs)',[currentSubs:result.subscriptions])
+                //Set<Long> allIssueEntitlements = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription in (:currentSubs)',[currentSubs:result.subscriptions])
                 result.providers = Org.executeQuery('select org.id,org.name from TitleInstancePackagePlatform tipp join tipp.pkg pkg join pkg.orgs oo join oo.org org where tipp.id in (select tipp.id '+qryString+') group by org.id order by org.name asc',qryParams)
                 result.hostplatforms = Platform.executeQuery('select plat.id,plat.name from TitleInstancePackagePlatform tipp join tipp.platform plat where tipp.id in (select tipp.id '+qryString+') group by plat.id order by plat.name asc',qryParams)
             }
