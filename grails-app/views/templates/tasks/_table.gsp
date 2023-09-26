@@ -1,6 +1,8 @@
 <%@ page import="de.laser.storage.RDConstants" %>
 <laser:serviceInjection />
 
+<g:set var="userIsInstEditorOrRoleAdmin" value="${userService.hasAffiliation_or_ROLEADMIN(user, contextService.getOrg(), 'INST_EDITOR')}" />
+
 <div class="ui grid la-clear-before">
     <div class="sixteen wide column">
 
@@ -14,9 +16,7 @@
                         / ${message(code: 'task.object.label')}
                     </g:if>
                 </th>
-                <th class="three wide" rowspan="2" scope="col">
-                    ${message(code: 'task.assignedTo.label')}
-                </th>
+                <th class="three wide" rowspan="2" scope="col">${message(code: 'task.assignedTo.label')}</th>
                 <th rowspan="2" scope="col">${message(code: 'task.status.label')}</th>
                 <th class="two wide" rowspan="2" scope="col">${message(code: 'task.creator.label')}</th>
                 <th class="two wide la-smaller-table-head" scope="col">${message(code: 'default.lastUpdated.label')}</th>
@@ -28,27 +28,26 @@
             </thead>
             <tbody>
             <g:each in="${taskInstanceList}" var="taskInstance">
-                <!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${userService.hasFormalAffiliation(user, contextService.getOrg(), 'INST_EDITOR')} -->
                 <g:set var="overwriteEditable" value="${editable || taskService.isTaskEditableBy(taskInstance, contextService.getUser(), contextService.getOrg())}" />
                 <tr>
                     <td>
-                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${taskInstance?.endDate}"/>
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${taskInstance.endDate}"/>
                     </td>
                     <td>
                         ${fieldValue(bean: taskInstance, field: "title")}
 
                         <g:if test="${controllerName == 'myInstitution'}">
                             <g:if test="${taskInstance.license}">
-                                <br /> <g:link controller="license" action="show" id="${taskInstance.license?.id}">${fieldValue(bean: taskInstance, field: "license")}</g:link> <br />
+                                <br /> <g:link controller="license" action="show" id="${taskInstance.license.id}">${fieldValue(bean: taskInstance, field: "license")}</g:link> <br />
                             </g:if>
                             <g:if test="${taskInstance.org}">
-                                <br /> <g:link controller="organisation" action="show" id="${taskInstance.org?.id}">${fieldValue(bean: taskInstance, field: "org")}</g:link> <br />
+                                <br /> <g:link controller="organisation" action="show" id="${taskInstance.org.id}">${fieldValue(bean: taskInstance, field: "org")}</g:link> <br />
                             </g:if>
                             <g:if test="${taskInstance.pkg}">
-                                <br /> <g:link controller="package" action="show" id="${taskInstance.pkg?.id}">${fieldValue(bean: taskInstance, field: "pkg")}</g:link> <br />
+                                <br /> <g:link controller="package" action="show" id="${taskInstance.pkg.id}">${fieldValue(bean: taskInstance, field: "pkg")}</g:link> <br />
                             </g:if>
                             <g:if test="${taskInstance.subscription}">
-                                <br /> <g:link controller="subscription" action="show" id="${taskInstance.subscription?.id}">${fieldValue(bean: taskInstance, field: "subscription")}</g:link>
+                                <br /> <g:link controller="subscription" action="show" id="${taskInstance.subscription.id}">${fieldValue(bean: taskInstance, field: "subscription")}</g:link>
                             </g:if>
                         </g:if>
                     </td>
@@ -64,11 +63,9 @@
                     </td>
                     <td>
                         <g:if test="${taskInstance.creator?.id == contextService.getUser().id}">
-                            <i class="icon hand point right sc_grey"></i>${taskInstance.creator.display}
+                            <i class="icon hand point right sc_grey"></i>
                         </g:if>
-                        <g:else>
-                            ${taskInstance.creator.display}
-                        </g:else>
+                        ${taskInstance.creator.display}
                     </td>
 
                     <td>
@@ -87,8 +84,7 @@
                                 <i aria-hidden="true" class="write icon"></i>
                             </a>
                         </g:if>
-                        <g:if test="${(user == taskInstance.creator && userService.hasAffiliation_or_ROLEADMIN(user, contextService.getOrg(), 'INST_EDITOR')) || contextService.isInstAdm_or_ROLEADMIN()}">
-%{-- todo: orig.                       <g:if test="${(user == taskInstance.creator && user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')) || contextService.isInstAdm_or_ROLEADMIN()}">--}%
+                        <g:if test="${(user == taskInstance.creator && userIsInstEditorOrRoleAdmin) || contextService.isInstAdm_or_ROLEADMIN()}">
                             <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
                                     data-confirm-term-how="delete"
