@@ -89,7 +89,7 @@ class FinanceController  {
             Map<String,Object> result = financeControllerService.getResultGenerics(params)
             result.financialData = financeService.getCostItemsForSubscription(params,result)
             result.currentTitlesCounts = IssueEntitlement.executeQuery("select count(*) from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :status  ", [sub: result.subscription, status: RDStore.TIPP_STATUS_CURRENT])[0]
-            if (result.institution.isCustomerType_Consortium()) {
+            if (result.institution.isCustomerType_Consortium() || result.institution.isCustomerType_Support()) {
                 if(result.subscription.instanceOf){
                     result.currentSurveysCounts = SurveyConfig.executeQuery("from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
                             [sub: result.subscription.instanceOf,
@@ -113,7 +113,7 @@ class FinanceController  {
                         result.currentCostItemCounts = result.financialData.own.count
                 }
                 else {
-                    result.currentCostItemCounts = result.financialData.subscr ? result.financialData.subscr.count : 0 // ?
+                    result.currentCostItemCounts = result.financialData.subscr.count
                 }
             }
             result.workflowCount = workflowService.getWorkflowCount(result.subscription, result.contextOrg)
