@@ -73,6 +73,7 @@ class ExportClickMeService {
                                     'survey.costTax'              : [field: 'resultOfParticipation.costItem.taxKey.taxRate', label: 'Cost Tax', message: 'renewalEvaluation.costTax', defaultChecked: 'true'],
                                     'survey.currency'             : [field: 'resultOfParticipation.costItem.billingCurrency', label: 'Cost Before Tax', message: 'default.currency.label', defaultChecked: 'true'],
                                     'survey.costPeriod'           : [field: 'resultOfParticipation.costPeriod', label: 'Cost Period', message: 'renewalEvaluation.costPeriod', defaultChecked: 'true'],
+                                    'survey.ownerComment'        : [field: null, label: 'Owner Comment', message: 'surveyResult.commentOnlyForOwner', defaultChecked: 'true']
                             ]
                     ],
 
@@ -973,6 +974,7 @@ class ExportClickMeService {
                     fields: [
                             'participant.sortname'        : [field: 'participant.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
                             'participant.name'            : [field: 'participant.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
+                            'survey.ownerComment'        : [field: null, label: 'Owner Comment', message: 'surveyResult.commentOnlyForOwner', defaultChecked: 'true']
                     ]
             ],
 
@@ -3639,6 +3641,10 @@ class ExportClickMeService {
 
                     row.add(createTableCell(format, period))
                 }
+                else if (fieldKey == 'survey.ownerComment') {
+                    SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(participantResult.surveyConfig, participantResult.participant)
+                    row.add(createTableCell(format, surveyOrg.ownerComment))
+                }
                 else if (fieldKey == 'survey.periodComment') {
                     String twoComment = participantResult.participantPropertyTwoComment ?: ' '
                     String threeComment = participantResult.participantPropertyThreeComment ?: ' '
@@ -4375,6 +4381,9 @@ class ExportClickMeService {
                             row.add(createTableCell(format, ' '))
                         }
                     }
+                } else if (fieldKey == 'survey.ownerComment') {
+                    SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(participantResult.surveyConfig, participantResult.participant)
+                    row.add(createTableCell(format, surveyOrg.ownerComment))
                 }else {
                         def fieldValue = _getFieldValue(participantResult, field, sdf)
                         row.add(createTableCell(format, fieldValue))
