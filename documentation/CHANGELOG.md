@@ -7,21 +7,35 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      25.09.2023  rc-3.2  3.2.5       Andreas Bug         Bug beim Export von Titel behoben
+
+5297    25.09.2023  rc-3.2  3.2.5       Andreas Bug         Kaskadenfehler beim Löschen von Lizenzen behoben
+
+5291    25.09.2023  rc-3.2  3.2.5       Moe     Feature     merkmal Auftragsnummer bei Lizenzverlängerung nicht automatisch setzen
+
+--      25.09.2023  rc-3.2  3.2.5       Andreas Bug         einige Count-Abfragen auf count(*) umgestellt
+
+5295    25.09.2023  rc-3.2  3.2.5       Andreas Bug         Vererbungsübertragung verallgemeinert
+
 5277    22.09.2023  dev     3.3         Andreas Feature     Umstellung der Identifier-Namensraum-Kartei auf externe CSV
 
 --      21.09.2023  rc-3.2  3.2.5       Andreas Bug         Übertragungsfehler bei Umfragen behoben
 
---      21.09.2023  rc-3.2  3.2.5       Andreas Bug         Sync aktualisierte den Anbieter in der Plattform nicht
+--      21.09.2023  rc-3.2  3.2.4       Andreas Bug         Übertragungsfehler bei Umfragen behoben
 
-5293    21.09.2023  rc-3.2  3.2.5       Andreas Feature     Umrüstung von "Meine Lizenzen pro Einrichtung" auf konfigurierbaren Export
+--      21.09.2023  rc-3.2  3.2.4       Andreas Bug         Übertragungsfehler bei Umfragen behoben
 
-5284    20.09.2023  rc-3.2  3.2.5       Andreas Bug         Performanz- und Zuordnungsfehler bei der Titelauswahl behoben
+--      21.09.2023  rc-3.2  3.2.4       Andreas Bug         Sync aktualisierte den Anbieter in der Plattform nicht
 
-5283    20.09.2023  rc-3.2  3.2.5       Andreas Bug         falsche Ausgabe des Reverse Charge korrigiert
+5293    21.09.2023  rc-3.2  3.2.4       Andreas Feature     Umrüstung von "Meine Lizenzen pro Einrichtung" auf konfigurierbaren Export
 
-5278    15.08.2023  dev     3.3         David   Feature     GASCO-Monitor: Bezeichnungen Bundesländer überlagern sich
+5284    20.09.2023  rc-3.2  3.2.4       Andreas Bug         Performanz- und Zuordnungsfehler bei der Titelauswahl behoben
 
-5237    15.08.2023  dev     3.3         David   Feature     Kontextleiste
+5283    20.09.2023  rc-3.2  3.2.4       Andreas Bug         falsche Ausgabe des Reverse Charge korrigiert
+
+5278    15.09.2023  dev     3.3         David   Feature     GASCO-Monitor: Bezeichnungen Bundesländer überlagern sich
+
+5237    15.09.2023  dev     3.3         David   Feature     Kontextleiste
 
 5276    13.09.2023  dev     3.3         Andreas Feature     zu kopierende Mailadressen sind jetzt auswählbar
 
@@ -31,81 +45,85 @@
 
 --      12.09.2023  rc-3.2  3.2.5       Andreas Bug         fehlende Blockade bei hart kodierten Namensräumen eingefügt
 
-5217    08.09.2023  rc-3.2  3.2.5       Moe     Bug         Anlegen von Dokumenten beim Übertrag und Lizenzübertragung fehlerhaft
+5279    13.09.2023  rc-3.2  3.2.4       Andreas Bug         Dauerhafte Titel wurden nicht verzeichnet
 
-5271    08.09.2023  rc-3.2  3.2.5       Andreas Bug         diverse Denk- und Programmierfehler bei der Titelverwaltung behoben
+--      12.09.2023  rc-3.2  3.2.4       Andreas Bug         fehlende Blockade bei hart kodierten Namensräumen eingefügt
+
+5217    08.09.2023  rc-3.2  3.2.4       Moe     Bug         Anlegen von Dokumenten beim Übertrag und Lizenzübertragung fehlerhaft
+
+5271    08.09.2023  rc-3.2  3.2.4       Andreas Bug         diverse Denk- und Programmierfehler bei der Titelverwaltung behoben
 
 5241    08.09.2023  rc-3.2  3.2-5       Moe     Feature     Meine Lizenzübertragungen: neue Spalte "Reminder"
 
-5270    07.09.2023  rc-3.2  3.2.5       Andreas Bug         diverse Bugs bei der Bereinigung von Titel behoben
+5270    07.09.2023  rc-3.2  3.2.4       Andreas Bug         diverse Bugs bei der Bereinigung von Titel behoben
 
-5269    07.09.2023  rc-3.2  3.2.5       Andreas Bug         inkonsistente Kostenausschüttung korrigiert
+5269    07.09.2023  rc-3.2  3.2.4       Andreas Bug         inkonsistente Kostenausschüttung korrigiert
 
-5267    07.09.2023  rc-3.2  3.2.5       Moe     Feature     Umfrage: Paketübertrag für Teilnehmer
+5267    07.09.2023  rc-3.2  3.2.4       Moe     Feature     Umfrage: Paketübertrag für Teilnehmer
 
-5235    07.09.2023  rc-3.2  3.2.5       Moe     Bug         Lizenzpaket: Bloomsbury Titel via KBART hinzufügen 
+5235    07.09.2023  rc-3.2  3.2.4       Moe     Bug         Lizenzpaket: Bloomsbury Titel via KBART hinzufügen 
 
-5268    06.09.2023  rc-3.2  3.2.5       Andreas Bug         irreführende Verknüpfung von Objekten behoben
+5268    06.09.2023  rc-3.2  3.2.4       Andreas Bug         irreführende Verknüpfung von Objekten behoben
 
-5266    05.09.2023  rc-3.2  3.2.4       Andreas Bug         fehlerhafte Erzeugung der individuellen Merkmale behoben
+5266    05.09.2023  rc-3.2  3.2.3       Andreas Bug         fehlerhafte Erzeugung der individuellen Merkmale behoben
 
---      05.09.2023  rc-3.2  3.2.4       Moe     Bug         Merkmalsänderungen in Umfrage werden falsch angezeigt
+--      05.09.2023  rc-3.2  3.2.3       Moe     Bug         Merkmalsänderungen in Umfrage werden falsch angezeigt
 
-5265    05.09.2023  rc-3.2  3.2.4       Moe     Feature     Umfrage-Export Renewal: Kosten auch bei MJL und Bereits Teilnehmer anzeigen
+5265    05.09.2023  rc-3.2  3.2.3       Moe     Feature     Umfrage-Export Renewal: Kosten auch bei MJL und Bereits Teilnehmer anzeigen
 
-5264    05.09.2023  rc-3.2  3.2.4       Andreas Feature     Erweiterung der Exportkonfigurationen in der Umfrage, Bugfixes
+5264    05.09.2023  rc-3.2  3.2.3       Andreas Feature     Erweiterung der Exportkonfigurationen in der Umfrage, Bugfixes
 
-5262    04.09.2023  rc-3.2  3.2.4       Andreas Bug         falsche Anzeige eines Steuersatzes bei Reverse Charge behoben
+5262    04.09.2023  rc-3.2  3.2.3       Andreas Bug         falsche Anzeige eines Steuersatzes bei Reverse Charge behoben
 
 5258    31.08.2023  dev     3.3         Andreas Feature     optische Trennung des Kontaktexports
 
---      31.08.2023  rc-3.2  3.2.4       Andreas Bug         DDC-Filter funktionierte bei "Alle Pakete" nicht
+--      31.08.2023  rc-3.2  3.2.3       Andreas Bug         DDC-Filter funktionierte bei "Alle Pakete" nicht
 
-5260    31.08.2023  rc-3.2  3.2.4       Andreas Bug         Kritischen Ladefehler bei Plattformabfrage behoben
+5260    31.08.2023  rc-3.2  3.2.3       Andreas Bug         Kritischen Ladefehler bei Plattformabfrage behoben
 
---      29.08.2023  rc-3.2  3.2.4       Andreas Bug         Ausgabefehler im Organisationsendpunkt der API behoben (API v2.7)
+--      29.08.2023  rc-3.2  3.2.3       Andreas Bug         Ausgabefehler im Organisationsendpunkt der API behoben (API v2.7)
 
-5256    28.08.2023  rc-3.2  3.2.4       Andreas Bug         500er bei Auflistung aller Title behoben
+5256    28.08.2023  rc-3.2  3.2.3       Andreas Bug         500er bei Auflistung aller Title behoben
 
-5253    25.08.2023  rc-3.2  3.2.4       Andreas Feature     Erweiterung des Exports um Anmerkungsspalte für Identifikatoren
+5253    25.08.2023  rc-3.2  3.2.3       Andreas Feature     Erweiterung des Exports um Anmerkungsspalte für Identifikatoren
 
-5252    24.08.2023  rc-3.2  3.2.4       Andreas Feature     Umstellung eines Links in der Verwaltung der Lizenzen eines Vertrages
+5252    24.08.2023  rc-3.2  3.2.3       Andreas Feature     Umstellung eines Links in der Verwaltung der Lizenzen eines Vertrages
 
-5249    24.08.2023  rc-3.2  3.2.4       Andreas Feature     Performanzverbesserung beim Löschen von Bestandstitel
+5249    24.08.2023  rc-3.2  3.2.3       Andreas Feature     Performanzverbesserung beim Löschen von Bestandstitel
 
-5251    23.08.2023  rc-3.2  3.2.4       David   Bug         "Inhalte editierbar"-Funktion arbeitet fehlerhaft
+5251    23.08.2023  rc-3.2  3.2.3       David   Bug         "Inhalte editierbar"-Funktion arbeitet fehlerhaft
 
-5245    22.08.2023  rc-3.2  3.2.4       Andreas Bug         URL-Kontakte wurden in Karte unterschlagen
+5245    22.08.2023  rc-3.2  3.2.3       Andreas Bug         URL-Kontakte wurden in Karte unterschlagen
 
-5244    21.08.2023  rc-3.2  3.2.4       Andreas Bug         Platform Reports mit mehreren Plattformen / Schnittstelle wurden inkorrekt verarbeitet
+5244    21.08.2023  rc-3.2  3.2.3       Andreas Bug         Platform Reports mit mehreren Plattformen / Schnittstelle wurden inkorrekt verarbeitet
 
-5238    21.08.2023  rc-3.2  3.2.4       David   Bug         Nutzer ohne Rolle anlegen unterbinden
+5238    21.08.2023  rc-3.2  3.2.3       David   Bug         Nutzer ohne Rolle anlegen unterbinden
 
-5240    21.08.2023  rc-3.2  3.2.4       Andreas Bug         Dauerhafte Titel wurden nicht mit entknüpft
+5240    21.08.2023  rc-3.2  3.2.3       Andreas Bug         Dauerhafte Titel wurden nicht mit entknüpft
 
-5147    18.08.2023  rc-3.2  3.2.3       Andreas Bug         Titel wurden nicht mit zu Titelgruppe hinzugefügt
+5147    18.08.2023  rc-3.2  3.2.2       Andreas Bug         Titel wurden nicht mit zu Titelgruppe hinzugefügt
 
---      18.08.2023  rc-3.2  3.2.3       Andreas Bug         Trennung von privaten und öffentlichen Adressen in der API-Ausgabe
+--      18.08.2023  rc-3.2  3.2.2       Andreas Bug         Trennung von privaten und öffentlichen Adressen in der API-Ausgabe
 
-5233    16.08.2023  rc-3.2  3.2.3       Andreas Feature     Identifikatorenpanel klappt nicht mehr zu bei Änderungen
+5233    16.08.2023  rc-3.2  3.2.2       Andreas Feature     Identifikatorenpanel klappt nicht mehr zu bei Änderungen
 
-5232    15.08.2023  rc-3.2  3.2.3       Andreas Feature     Entfernen allgemeiner Plattformmerkmale, private Plattformmerkmale können hinzugefügt werden
+5232    15.08.2023  rc-3.2  3.2.2       Andreas Feature     Entfernen allgemeiner Plattformmerkmale, private Plattformmerkmale können hinzugefügt werden
 
-5227    11.08.2023  rc-3.2  3.2.3       Andreas Bug         Zugriffsfehler beim Abhaken einer ausstehenden Änderung
+5227    11.08.2023  rc-3.2  3.2.2       Andreas Bug         Zugriffsfehler beim Abhaken einer ausstehenden Änderung
 
-5226    11.08.2023  rc-3.2  3.2.3       Andreas Feature     ROR-IDs können mehrfach vergeben werden
+5226    11.08.2023  rc-3.2  3.2.2       Andreas Feature     ROR-IDs können mehrfach vergeben werden
 
-5224    10.08.2023  rc-3.2  3.2.3       Andreas Feature     Umstellung des Anbieter/Lieferanten-Verknüpfungsmodals
+5224    10.08.2023  rc-3.2  3.2.2       Andreas Feature     Umstellung des Anbieter/Lieferanten-Verknüpfungsmodals
 
-5223    09.08.2023  rc-3.2  3.2.3       Andreas Feature     diverse Optimierungen in der Titelverwaltung
+5223    09.08.2023  rc-3.2  3.2.2       Andreas Feature     diverse Optimierungen in der Titelverwaltung
 
---      09.08.2023  rc-3.2  3.2.3       Andreas Bug         Umstellung des allgemeinen Lizenzendpunktes
+--      09.08.2023  rc-3.2  3.2.2       Andreas Bug         Umstellung des allgemeinen Lizenzendpunktes
 
-5222    08.08.2023  rc-3.2  3.2.3       Andreas Bug         Fehlverarbeitung in der englischen Oberfläche behoben
+5222    08.08.2023  rc-3.2  3.2.2       Andreas Bug         Fehlverarbeitung in der englischen Oberfläche behoben
 
-5214    08.08.2023  rc-3.2  3.2.2       Ingrid  Feature     Meine Lizenzübertragungen: Tabelle übersichtlicher
+5214    08.08.2023  rc-3.2  3.2.1       Ingrid  Feature     Meine Lizenzübertragungen: Tabelle übersichtlicher
 
-5220    07.08.2023  rc-3.2  3.2.2       Andreas Bug         eigene Adressen konnten nicht hinzugefügt werden
+5220    07.08.2023  rc-3.2  3.2.1       Andreas Bug         eigene Adressen konnten nicht hinzugefügt werden
 
 3781    04.08.2023  dev     3.3         Andreas Feature     neue PDF-Exporte und ClickMichs implementiert
 
@@ -115,13 +133,13 @@
 
 --      01.08.2023  rc-3.2  3.2.2       Andreas Bug         Exportreiter "Übertrag" hat keine Defaultbelegung mehr
 
-5213    01.08.2023  rc-3.2  3.2.2       Andreas Bug         verschiedene Fehler in der Lizenzverwaltung behoben
+5213    01.08.2023  rc-3.2  3.2.1       Andreas Bug         verschiedene Fehler in der Lizenzverwaltung behoben
 
-5211    31.07.2023  rc-3.2  3.2.2       Andreas Bug         502er durch Umstellung der Query behoben
+5211    31.07.2023  rc-3.2  3.2.1       Andreas Bug         502er durch Umstellung der Query behoben
 
-5210    31.07.2023  rc-3.2  3.2.2       Andreas Bug         falscher Verweis des dauerhaften Bestandstitels aufgelöst
+5210    31.07.2023  rc-3.2  3.2.1       Andreas Bug         falscher Verweis des dauerhaften Bestandstitels aufgelöst
 
-5209    31.07.2023  rc-3.2  3.2.2       Andreas Bug         erneute Umstellung der Kosteneingabemodal-Eventlistener
+5209    31.07.2023  rc-3.2  3.2.1       Andreas Bug         erneute Umstellung der Kosteneingabemodal-Eventlistener
 
 4981    28.07.2023  dev     3.3         David   Feature     HttpStatus 40x wird nicht korrekt verarbeitet
 
@@ -131,29 +149,29 @@
 
 5168    27.07.2023  dev     3.3         David   Feature     Wekb-News in Laser anzeigen
 
---      26.07.2023  rc-3.2  3.2.1       Andreas Bug         Falschanzeige des Menüeintrages "Meine Lizenzübertragungen" behoben
+--      26.07.2023  rc-3.2  3.2       Andreas Bug         Falschanzeige des Menüeintrages "Meine Lizenzübertragungen" behoben
 
-5208    26.07.2023  rc-3.2  3.2.1       Andreas Feature     Export einer einzelnen Lizenz in PDF
+5208    26.07.2023  rc-3.2  3.2         Andreas Feature     Export einer einzelnen Lizenz in PDF
 
-5201    26.07.2023  rc-3.2  3.2.1       Andreas Bug         Umstrukturierungen in der Paketver- und entknüpfung
+5201    26.07.2023  rc-3.2  3.2         Andreas Bug         Umstrukturierungen in der Paketver- und entknüpfung
 
 5198    26.07.2023  dev     3.3         David   Feature     Upgrade auf Grails6
 
-5207    25.07.2023  rc-3.2  3.2.1       Andreas Bug         diverse Haken bei der Vererbung behoben
+5207    25.07.2023  rc-3.2  3.2         Andreas Bug         diverse Haken bei der Vererbung behoben
 
-5206    25.07.2023  rc-3.2  3.2.1       Andreas Bug         falschen Aufruf bei Paginierung behoben
+5206    25.07.2023  rc-3.2  3.2         Andreas Bug         falschen Aufruf bei Paginierung behoben
 
-5205    21.07.2023  rc-3.2  3.2.1       Andreas Bug         Tooltip für Nichtkonsortialstellen angepasst
+5205    21.07.2023  rc-3.2  3.2         Andreas Bug         Tooltip für Nichtkonsortialstellen angepasst
 
-5204    21.07.2023  rc-3.2  3.2.1       Andreas Bug         falsche Referenzen korrigiert
+5204    21.07.2023  rc-3.2  3.2         Andreas Bug         falsche Referenzen korrigiert
 
-5203    21.07.2023  rc-3.2  3.2.1       Andreas Bug         Lizenzverknüpfungen und deren Erzeugung überarbeitet
+5203    21.07.2023  rc-3.2  3.2         Andreas Bug         Lizenzverknüpfungen und deren Erzeugung überarbeitet
 
-5202    21.07.2023  rc-3.2  3.2.1       Andreas Bug         Dauerhafter Zugriffs-Flag wurde falsch abgefragt
+5202    21.07.2023  rc-3.2  3.2         Andreas Bug         Dauerhafter Zugriffs-Flag wurde falsch abgefragt
 
 5200    21.07.2023  dev     3.3         Andreas Feature     Backend-Voraussetzungen für Anzeige umgesetzt
 
-5178    21.07.2023  rc-3.2  3.2.1       David   Feature     Lizenzverwaltung: Anmerkungen zentral teilbar machen
+5178    21.07.2023  rc-3.2  3.2         David   Feature     Lizenzverwaltung: Anmerkungen zentral teilbar machen
 
 #### day of release 3.2
 
@@ -237,11 +255,11 @@
 
 4943    27.06.2023  dev     3.2         Andreas Feature     Umstellungen und Erweiterungen im Lizenzimport
 
-5160    26.06.2023  rc-3.1  3.1.4       Moe     Bug         Lizenzumfrage für Nicht-Teilnehmer: "Lizenzname" in GASCO-Monitor ohne Anführungszeichen übernehmen
+5160    26.06.2023  rc-3.1  3.1.3       Moe     Bug         Lizenzumfrage für Nicht-Teilnehmer: "Lizenzname" in GASCO-Monitor ohne Anführungszeichen übernehmen
 
---      26.06.2023  rc-3.1  3.1.4       Moe     Bug         Username vergessen Mail geht nicht raus
+--      26.06.2023  rc-3.1  3.1.3       Moe     Bug         Username vergessen Mail geht nicht raus
 
-5159    26.06.2023  rc-3.1  3.1.4       Moe     Bug         Lizenzumfrage: Informations-URL wird mit Codefetzen angezeigt
+5159    26.06.2023  rc-3.1  3.1.3       Moe     Bug         Lizenzumfrage: Informations-URL wird mit Codefetzen angezeigt
 
 4973    26.06.2023  dev     3.2         Andreas Feature     Abbau obsoleter Felder aus issueEntitlement
 
@@ -249,131 +267,131 @@
 
 4974    22.06.2023  dev     3.2         Andreas Feature     Verwaltung gelöschter Elemente umgestellt
 
-5153    22.06.2023  rc-3.1  3.1.4       Moe     Bug         Export einer Einrichtungsliste mit Zugangskonfigurationen
+5153    22.06.2023  rc-3.1  3.1.3       Moe     Bug         Export einer Einrichtungsliste mit Zugangskonfigurationen
 
-5150    21.06.2023  rc-3.1  3.1.4       Andreas Bug         falsche Sortierung der Tabellenüberschriften
+5150    21.06.2023  rc-3.1  3.1.3       Andreas Bug         falsche Sortierung der Tabellenüberschriften
 
-5146    19.06.2023  rc-3.1  3.1.3       David   Feature     URL-Auflösung für we:kb-IDs ermöglichen
+5146    19.06.2023  rc-3.1  3.1.2       David   Feature     URL-Auflösung für we:kb-IDs ermöglichen
 
-5145    19.06.2023  rc-3.1  3.1.3       Andreas Bug         Export der Identifier bei Titelexport griff nicht
+5145    19.06.2023  rc-3.1  3.1.2       Andreas Bug         Export der Identifier bei Titelexport griff nicht
 
-5144    19.06.2023  rc-3.1  3.1.3       Andreas Bug         Überprüfung und Korrektur von Synchronisationsabläufen und Bereinigungsmethoden
+5144    19.06.2023  rc-3.1  3.1.2       Andreas Bug         Überprüfung und Korrektur von Synchronisationsabläufen und Bereinigungsmethoden
 
-5142    19.06.2023  rc-3.1  3.1.3       Moe     Bug         Übertrag Teilnehmer
+5142    19.06.2023  rc-3.1  3.1.2       Moe     Bug         Übertrag Teilnehmer
 
 4545    16.06.2023  rc-3.2  3.2         Ingrid  Feature     Bestands-View: Filterergebnis "Stichtag" verbessern
 
-5139    16.06.2023  rc-3.1  3.1.3       Moe     Bug         Titel hinzufügen: Nur 1 oder alle Titel möglich
+5139    16.06.2023  rc-3.1  3.1.2       Moe     Bug         Titel hinzufügen: Nur 1 oder alle Titel möglich
 
-5143    16.06.2023  rc-3.1  3.1.3       Andreas Bug         Paketzuschnittvererbung: prüfen und Skript erstellen
+5143    16.06.2023  rc-3.1  3.1.2       Andreas Bug         Paketzuschnittvererbung: prüfen und Skript erstellen
 
-5138    16.06.2023  rc-3.1  3.1.3       Andreas Feature     fehlende Spalten nachgereicht
+5138    16.06.2023  rc-3.1  3.1.2       Andreas Feature     fehlende Spalten nachgereicht
 
-5136    16.06.2023  rc-3.1  3.1.3       Andreas Feature     Zuordnungsjahr um ein Jahr fortschalten
+5136    16.06.2023  rc-3.1  3.1.2       Andreas Feature     Zuordnungsjahr um ein Jahr fortschalten
 
-5134    16.06.2023  rc-3.1  3.1.3       Andreas Bug         falsche Konfiguration bei der Erstellung der Modale
+5134    16.06.2023  rc-3.1  3.1.2       Andreas Bug         falsche Konfiguration bei der Erstellung der Modale
 
 4725    15.06.2023  dev     3.2         Ingrid  Feature     Überbreite Tabelle in Teilnehmerverwaltung passt jetzt in den View
 
-5137    15.06.2023  rc-3.1  3.1.3       Andreas Bug         Bereinigungsmethoden korrigiert
+5137    15.06.2023  rc-3.1  3.1.2       Andreas Bug         Bereinigungsmethoden korrigiert
 
 5125    15.06.2023  dev     3.2         Ingrid Bug          Tooltip taucht im Kosteneingabemodul jetzt an richtiger Stelle auf
 
-5135    15.06.2023  rc-3.1  3.1.3       Andreas Bug         Links mit we:kb-Icon an diversen Stellen angelegt
+5135    15.06.2023  rc-3.1  3.1.2       Andreas Bug         Links mit we:kb-Icon an diversen Stellen angelegt
 
---      14.06.2023  rc-3.1  3.1.3       Moe     Feature     Open Participant and Reminder Participant split in two function
+--      14.06.2023  rc-3.1  3.1.2       Moe     Feature     Open Participant and Reminder Participant split in two function
 
-5127    14.06.2023  rc-3.1  3.1.3       Andreas Bug         Titel konnten nicht zu Titelgruppen hinzugefügt werden
+5127    14.06.2023  rc-3.1  3.1.2       Andreas Bug         Titel konnten nicht zu Titelgruppen hinzugefügt werden
 
-5128    13.06.2023  rc-3.1  3.1.3       Moe     Bug         Titelgruppe ändern/löschen: fehlender Modal QA/DEV
+5128    13.06.2023  rc-3.1  3.1.2       Moe     Bug         Titelgruppe ändern/löschen: fehlender Modal QA/DEV
 
-5123    12.06.2023  rc-3.1  3.1.3       Andreas Bug         Proxyfehler bei Paketverknüpfung behoben
+5123    12.06.2023  rc-3.1  3.1.2       Andreas Bug         Proxyfehler bei Paketverknüpfung behoben
 
---      09.06.2023  rc-3.1  3.1.3       Moe     Bug         ClickMe-Export funktioniert nicht richtig bei Umfrage
+--      09.06.2023  rc-3.1  3.1.2       Moe     Bug         ClickMe-Export funktioniert nicht richtig bei Umfrage
 
---      09.06.2023  rc-3.1  3.1.3       Moe     Feature     IP-Adressen in Zwischenablage kopieren
+--      09.06.2023  rc-3.1  3.1.2       Moe     Feature     IP-Adressen in Zwischenablage kopieren
 
-5121    07.06.2023  rc-3.1  3.1.3       Andreas Bug         Kosteneingabe falsch verarbeitet
+5121    07.06.2023  rc-3.1  3.1.2       Andreas Bug         Kosteneingabe falsch verarbeitet
 
-5118    06.06.2023  rc-3.1  3.1.3       Andreas Bug         irreführende Sortierung zurückgesetzt
+5118    06.06.2023  rc-3.1  3.1.2       Andreas Bug         irreführende Sortierung zurückgesetzt
 
-5117    06.06.2023  rc-3.1  3.1.3       Andreas Bug         fehlerhaften Export der Nutzerzahlen korrigiert
+5117    06.06.2023  rc-3.1  3.1.2       Andreas Bug         fehlerhaften Export der Nutzerzahlen korrigiert
 
-5115    06.06.2023  rc-3.1  3.1.3       Andreas Bug         diverse Fehler im Einrichtungsexport behoben
+5115    06.06.2023  rc-3.1  3.1.2       Andreas Bug         diverse Fehler im Einrichtungsexport behoben
 
-5114    06.06.2023  rc-3.1  3.1.3       Andreas Feature     direkte Vererbbarkeit von der Lizenzverwaltung
+5114    06.06.2023  rc-3.1  3.1.2       Andreas Feature     direkte Vererbbarkeit von der Lizenzverwaltung
 
-5112    05.06.2023  rc-3.1  3.1.2       Andreas Bug         Überbleibsel entfernt
+5112    05.06.2023  rc-3.1  3.1.1       Andreas Bug         Überbleibsel entfernt
 
-5110    02.06.2023  rc-3.1  3.1.2       Moe     Bug         Button Benutzername über Nutzerverwaltung geht nicht
+5110    02.06.2023  rc-3.1  3.1.1       Moe     Bug         Button Benutzername über Nutzerverwaltung geht nicht
 
-5109    02.06.2023  rc-3.1  3.1.2       Andreas Bug         Zugriffsfehler beim Speichern von Adressen
+5109    02.06.2023  rc-3.1  3.1.1       Andreas Bug         Zugriffsfehler beim Speichern von Adressen
 
---      02.06.2023  rc-3.1  3.1.2       Andreas Feature     einige kleinere Verbesserungen zur Fehlerverwaltung von Statistik-Abfrageantworten
+--      02.06.2023  rc-3.1  3.1.1       Andreas Feature     einige kleinere Verbesserungen zur Fehlerverwaltung von Statistik-Abfrageantworten
 
-5105    01.06.2023  rc-3.1  3.1.2       Andreas Feature     Felder in der Exportkonfiguration ergänzt 
+5105    01.06.2023  rc-3.1  3.1.1       Andreas Feature     Felder in der Exportkonfiguration ergänzt 
 
-5104    01.06.2023  rc-3.1  3.1.2       Moe     Feature     Optimierungen Titelumfrage
+5104    01.06.2023  rc-3.1  3.1.1       Moe     Feature     Optimierungen Titelumfrage
 
-5103    01.06.2023  rc-3.1  3.1.2       Moe     Bug         Titelumfrage: dauerhafter Zugriff steuern
+5103    01.06.2023  rc-3.1  3.1.1       Moe     Bug         Titelumfrage: dauerhafter Zugriff steuern
 
-5102    01.06.2023  rc-3.1  3.1.2       Andreas Feature     diverse Ausbesserungen bei der Paketverknüpfung
+5102    01.06.2023  rc-3.1  3.1.1       Andreas Feature     diverse Ausbesserungen bei der Paketverknüpfung
 
-5099    01.06.2023  rc-3.1  3.1.2       Andreas Bug         Falsches Caching der erzeugten Reports
+5099    01.06.2023  rc-3.1  3.1.1       Andreas Bug         Falsches Caching der erzeugten Reports
 
-5078    31.05.2023  rc-3.1  3.1.2       Moe     Bug         Titelumfrage: Keine Einzeltitelauswahl möglich - System behauptet dauerhaften Zugriff
+5078    31.05.2023  rc-3.1  3.1.1       Moe     Bug         Titelumfrage: Keine Einzeltitelauswahl möglich - System behauptet dauerhaften Zugriff
 
-5097    31.05.2023  rc-3.1  3.1.2       Andreas Bug         zu langsame Performanz bei Titelvorauswahl
+5097    31.05.2023  rc-3.1  3.1.1       Andreas Bug         zu langsame Performanz bei Titelvorauswahl
 
-5098    31.05.2023  rc-3.1  3.1.2       Andreas Bug         verschobene Spalten korrigiert
+5098    31.05.2023  rc-3.1  3.1.1       Andreas Bug         verschobene Spalten korrigiert
 
-5100    31.05.2023  rc-3.1  3.1.2       Moe     Bug         Es werden keine Mails beim Öffnen einer Umfrage rausgeschickt
+5100    31.05.2023  rc-3.1  3.1.1       Moe     Bug         Es werden keine Mails beim Öffnen einer Umfrage rausgeschickt
 
-5086    31.05.2023  rc-3.1  3.1.2       Moe     Bug         Titel hinzufügen / Plus-Icon läuft in seltsamen Bug
+5086    31.05.2023  rc-3.1  3.1.1       Moe     Bug         Titel hinzufügen / Plus-Icon läuft in seltsamen Bug
 
-5059    30.05.2023  rc-3.1  3.1.2       Moe     Bug         500er in Titelumfrage
+5059    30.05.2023  rc-3.1  3.1.1       Moe     Bug         500er in Titelumfrage
 
-5080    30.05.2023  rc-3.1  3.1.2       Moe     Bug         Meine Titel komplett unstimmig
+5080    30.05.2023  rc-3.1  3.1.1       Moe     Bug         Meine Titel komplett unstimmig
 
-5083    30.05.2023  rc-3.1  3.1.2       Moe     Bug         Bug: eigene Umfragemerkmale
+5083    30.05.2023  rc-3.1  3.1.1       Moe     Bug         Bug: eigene Umfragemerkmale
 
-5081    30.05.2023  rc-3.1  3.1.2       Moe     Bug         Meine dauerhaften Titel zeigt keine Titel an
+5081    30.05.2023  rc-3.1  3.1.1       Moe     Bug         Meine dauerhaften Titel zeigt keine Titel an
 
---      30.05.2023  rc-3.1  3.1.2       Andreas Bug         Brücke in ApiPerson gebaut
+--      30.05.2023  rc-3.1  3.1.1       Andreas Bug         Brücke in ApiPerson gebaut
 
---      30.05.2023  rc-3.1  3.1.2       Andreas Bug         kleinere Ausbesserungen im Statistik-Ladevorgang
+--      30.05.2023  rc-3.1  3.1.1       Andreas Bug         kleinere Ausbesserungen im Statistik-Ladevorgang
 
-5074    26.05.2023  rc-3.1  3.1.2       Andreas Bug         Titelexport lief nicht performant genug
+5074    26.05.2023  rc-3.1  3.1.1       Andreas Bug         Titelexport lief nicht performant genug
 
-5095    26.05.2023  rc-3.1  3.1.2       David   Bug         Alle > Alle Plattformen wirft 500er
+5095    26.05.2023  rc-3.1  3.1.1       David   Bug         Alle > Alle Plattformen wirft 500er
 
-5075    26.05.2023  rc-3.1  3.1.1       David   Feature     Wording: Anbieter erstellen vs anlegen
+5075    26.05.2023  rc-3.1  3.1       David   Feature     Wording: Anbieter erstellen vs anlegen
 
-5091    26.05.2023  rc-3.1  3.1.1       Andreas Bug         Teilnehmer hinzufügen hing wegen veralteten Einstellungen
+5091    26.05.2023  rc-3.1  3.1       Andreas Bug         Teilnehmer hinzufügen hing wegen veralteten Einstellungen
 
---      26.05.2023  rc-3.1  3.1.1       Andreas Feature     interne Umstellung der Identifier-Namensräume
+--      26.05.2023  rc-3.1  3.1       Andreas Feature     interne Umstellung der Identifier-Namensräume
 
-5088    26.05.2023  rc-3.1  3.1.1       Andreas Feature     Auswahl "Alle" berücksichtigt Gesamtmenge
+5088    26.05.2023  rc-3.1  3.1       Andreas Feature     Auswahl "Alle" berücksichtigt Gesamtmenge
 
-5090    26.05.2023  rc-3.1  3.1.1       David   Bug         Lizenzverwaltung > Dokumente
+5090    26.05.2023  rc-3.1  3.1       David   Bug         Lizenzverwaltung > Dokumente
 
-5087    25.05.2023  rc-3.1  3.1.1       Andreas Feature     Ausblenden der Felder lastRun und centralApiKey aus LAS:eR
+5087    25.05.2023  rc-3.1  3.1       Andreas Feature     Ausblenden der Felder lastRun und centralApiKey aus LAS:eR
 
-5084    25.05.2023  rc-3.1  3.1.1       Andreas Feature     Umfrage-Merkmal "Testzugriff" zum allgemeinen Merkmal aufgestuft
+5084    25.05.2023  rc-3.1  3.1       Andreas Feature     Umfrage-Merkmal "Testzugriff" zum allgemeinen Merkmal aufgestuft
 
-5082    25.05.2023  rc-3.1  3.1.1       Andreas Bug         Lizenzen und Verträge konnten nicht gelöscht werden
+5082    25.05.2023  rc-3.1  3.1       Andreas Bug         Lizenzen und Verträge konnten nicht gelöscht werden
 
-5079    25.05.2023  rc-3.1  3.1.1       David   Bug         Sichtbare Linien Spaltenüberschrift Kostenreiter
+5079    25.05.2023  rc-3.1  3.1       David   Bug         Sichtbare Linien Spaltenüberschrift Kostenreiter
 
-5076    25.05.2023  rc-3.1  3.1.1       Andreas Bug         Seite "Titel hinzufügen" war nicht erreichbar
+5076    25.05.2023  rc-3.1  3.1       Andreas Bug         Seite "Titel hinzufügen" war nicht erreichbar
 
-5072    25.05.2023  rc-3.1  3.1.1       Andreas Bug         Teilnehmer exportieren war nicht aufrufbar
+5072    25.05.2023  rc-3.1  3.1       Andreas Bug         Teilnehmer exportieren war nicht aufrufbar
 
-5071    24.05.2023  rc-3.1  3.1.1       David   Feature     Reporting: Lizenz > Aktuelles Paket > Verlag
+5071    24.05.2023  rc-3.1  3.1       David   Feature     Reporting: Lizenz > Aktuelles Paket > Verlag
 
-5070    23.05.2023  rc-3.1  3.1.1       Andreas Bug         Doppelanzeige der Kontakte behoben
+5070    23.05.2023  rc-3.1  3.1       Andreas Bug         Doppelanzeige der Kontakte behoben
 
-5068    23.05.2023  rc-3.1  3.1.1       Andreas Bug         500er bei Statistikaufruf
+5068    23.05.2023  rc-3.1  3.1       Andreas Bug         500er bei Statistikaufruf
 
 #### day of release 3.1
 

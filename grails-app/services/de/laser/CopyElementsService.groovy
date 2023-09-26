@@ -273,6 +273,15 @@ class CopyElementsService {
 
                 /* Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
                         [result.subscription, it.id])*/
+                //subject to be removed in 3.3
+                List<String> excludes = PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key }
+                //excludes << 'freezeHolding'
+                excludes.add(PendingChangeConfiguration.TITLE_REMOVED)
+                excludes.add(PendingChangeConfiguration.TITLE_REMOVED+PendingChangeConfiguration.NOTIFICATION_SUFFIX)
+                excludes.add(PendingChangeConfiguration.TITLE_DELETED)
+                excludes.add(PendingChangeConfiguration.TITLE_DELETED+PendingChangeConfiguration.NOTIFICATION_SUFFIX)
+                excludes.addAll(PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key+PendingChangeConfiguration.NOTIFICATION_SUFFIX})
+                Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,targetObject.id,excludes)
 
                 Subscription newSubscription = new Subscription(
                         isMultiYear: subMember.isMultiYear,
@@ -296,6 +305,9 @@ class CopyElementsService {
                         hasPublishComponent: targetObject.hasPublishComponent,
                         administrative: subMember.administrative
                 )
+                inheritedAttributes.each { AuditConfig attr ->
+                    newSubscription[attr.referenceField] = targetObject[attr.referenceField]
+                }
                 newSubscription.save()
                 //ERMS-892: insert preceding relation in new data model
                 if (subMember) {
@@ -386,7 +398,7 @@ class CopyElementsService {
                         }
                     }
                 }
-                if (IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.subscription = :member', [member: subMember])[0] > 0 && IssueEntitlement.executeQuery('select count(ie.id) from IssueEntitlement ie where ie.subscription = :target', [target: targetObject])[0] > 0) {
+                if (IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.subscription = :member', [member: subMember])[0] > 0 && IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.subscription = :target', [target: targetObject])[0] > 0) {
                     memberHoldingsToTransfer << newSubscription
                     //Sql sql = GlobalService.obtainSqlConnection()
                     //List sourceHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where ie_subscription_fk = :source and ie_status_rv_fk = :current", [source: subMember.id, current: RDStore.TIPP_STATUS_CURRENT.id])
