@@ -181,7 +181,9 @@
                                         <g:each in="${packageInstanceRecord.altname}" var="altname">
                                           <div class="item">
                                               <i class="box open grey icon"></i>
-                                              ${altname}
+                                              <div class="content">
+                                                ${altname}
+                                              </div>
                                           </div>
                                         </g:each>
                                     </div>
@@ -193,8 +195,10 @@
                                     <div class="ui list">
                                         <g:each in="${packageInstanceRecord.curatoryGroups}" var="curatoryGroup">
                                             <div class="item">
-                                                ${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}
-                                                <ui:wekbIconLink type="curatoryGroup" gokbId="${curatoryGroup.curatoryGroup}"/>
+                                                <div class="content">
+                                                    ${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}
+                                                    <ui:wekbIconLink type="curatoryGroup" gokbId="${curatoryGroup.curatoryGroup}"/>
+                                                </div>
                                             </div>
                                         </g:each>
                                     </div>
@@ -319,7 +323,9 @@
                                         <g:each in="${packageInstanceRecord.ddcs}" var="ddc">
                                             <div class="item">
                                                 <i class="sitemap grey icon"></i>
-                                                ${RefdataValue.getByValueAndCategory(ddc.value,RDConstants.DDC) ? RefdataValue.getByValueAndCategory(ddc.value,RDConstants.DDC).getI10n('value') : message(code:'package.ddc.invalid')}
+                                                <div class="content">
+                                                    ${RefdataValue.getByValueAndCategory(ddc.value,RDConstants.DDC) ? RefdataValue.getByValueAndCategory(ddc.value,RDConstants.DDC).getI10n('value') : message(code:'package.ddc.invalid')}
+                                                </div>
                                             </div>
                                         </g:each>
                                     </div>
