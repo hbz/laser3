@@ -54,7 +54,7 @@
                         </option>
                     </g:each>
                 </select>
-            </div> %>
+            </div>
             <% /* 1-5 */ %>
             <div class="field">
                 <label for="status"><g:message code="default.status.label"/></label>
@@ -75,30 +75,7 @@
 
             <% /* 2-1 and 2-2 */ %>
             <laser:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
-            <%--
-                        <!-- 2-1 -->
-                        <div class="field disabled">
-                            <label>${message(code: 'myinst.currentSubscriptions.filter.consortium.label')}</label>
-                            <ui:select name="status" class="ui dropdown"
-                                          from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
-                                          optionKey="id"
-                                          optionValue="value"
-                                          value="${params.consortium}"
-                                          noSelection="${['' : message(code:'default.select.choose.label')]}"/>
 
-                        </div>
-                        <!-- 2-2 -->
-                        <div class="field disabled">
-                            <label>${message(code: 'default.status.label')}</label>
-                            <ui:select name="status" class="ui dropdown"
-                                          from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
-                                          optionKey="id"
-                                          optionValue="value"
-                                          value="${params.status}"
-                                          noSelection="${['' : message(code:'default.select.choose.label')]}"/>
-                        </div>
-
-                       --%>
             <% /* 2-3 */ %>
             <div class="field">
                 <label for="form"><g:message code="subscription.form.label"/></label>
@@ -180,19 +157,6 @@
 
         <div class="four fields">
             <div class="field">
-                <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')}</label>
-                <select id="holdingSelection" name="holdingSelection" multiple="" class="ui search selection fluid dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
-
-                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" var="holdingSelection">
-                        <option <%=(params.list('holdingSelection').contains(holdingSelection.id.toString())) ? 'selected="selected"' : ''%>
-                                value="${holdingSelection.id}">
-                            ${holdingSelection.getI10n('value')}
-                        </option>
-                    </g:each>
-                </select>
-            </div>
-            <div class="field">
                 <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
                 <div class="inline fields la-filter-inline">
                     <div class="inline field">
@@ -230,6 +194,8 @@
                     </div>
                 </fieldset>
             </div>
+
+            <div class="field"></div>
 
             <div class="field la-field-right-aligned">
                 <a href="${createLink(controller:controllerName,action:actionName,params:[id:params.id,resetFilter:true, tab: params.tab])}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
