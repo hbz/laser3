@@ -50,7 +50,7 @@
 
     <ui:messages data="${flash}"/>
 
-    <laser:render template="/templates/subscription/subscriptionFilter"/>
+    <laser:render template="${customerTypeService.getSubscriptionFilterTemplatePath()}"/>
 
     <laser:render template="/templates/subscription/subscriptionTable"/>
 

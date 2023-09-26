@@ -61,13 +61,18 @@ class CustomerTypeService {
         return contextService.getOrg().isCustomerType_Support() ? tmpl + '_support' : tmpl
     }
 
-    String getConsortiaSubscriptionFilterTemplatePath() {
-        String tmpl = '/templates/subscription/consortiaSubscriptionFilter'
+    String getLicenseFilterTemplatePath() {
+        String tmpl = '/templates/license/licenseFilter'
         return contextService.getOrg().isCustomerType_Support() ? tmpl + '_support' : tmpl
     }
 
     String getSubscriptionFilterTemplatePath() {
         String tmpl = '/templates/subscription/subscriptionFilter'
+        return contextService.getOrg().isCustomerType_Support() ? tmpl + '_support' : tmpl
+    }
+
+    String getConsortiaSubscriptionFilterTemplatePath() {
+        String tmpl = '/templates/subscription/consortiaSubscriptionFilter'
         return contextService.getOrg().isCustomerType_Support() ? tmpl + '_support' : tmpl
     }
 }

@@ -2,6 +2,7 @@
 <laser:serviceInjection />
 
 <ui:filter>
+    [DEBUG: Support-Filter]
     <g:form action="${actionName}" controller="${controllerName}" method="get" class="ui small form clearing">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
         <g:if test="${license}">
@@ -22,9 +23,7 @@
                 </label>
 
                 <div class="ui input">
-                    <input type="text" id="search-title" name="q"
-                           placeholder="${message(code: 'default.search.ph')}"
-                           value="${params.q}"/>
+                    <input type="text" id="search-title" name="q" placeholder="${message(code: 'default.search.ph')}" value="${params.q}"/>
                 </div>
             </div>
             <% /* 1-2 */ %>
@@ -36,9 +35,7 @@
                 </label>
 
                 <div class="ui input">
-                    <input type="text" id="identifier" name="identifier"
-                           placeholder="${message(code: 'default.search.identifier.ph')}"
-                           value="${params.identifier}"/>
+                    <input type="text" id="identifier" name="identifier" placeholder="${message(code: 'default.search.identifier.ph')}" value="${params.identifier}"/>
                 </div>
             </div>
             <% /* 1-3 */ %>

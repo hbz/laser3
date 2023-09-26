@@ -2,6 +2,7 @@
 <%--<laser:serviceInjection />--%>
 
 <ui:filter>
+    [DEBUG: Support-Filter]
     <g:form action="${actionName}" controller="${controllerName}" method="get" class="ui small form">
         <g:if test="${license}">
             <input type="hidden" name="id" value="${license.id}"/>
@@ -43,9 +44,7 @@
             <div class="field">
                 <label for="identifier">${message(code: 'default.search.identifier')}</label>
                 <div class="ui input">
-                    <input type="text" id="identifier" name="identifier"
-                           placeholder="${message(code: 'default.search.identifier.ph')}"
-                           value="${params.identifier}"/>
+                    <input type="text" id="identifier" name="identifier" placeholder="${message(code: 'default.search.identifier.ph')}" value="${params.identifier}"/>
                 </div>
             </div>
             <div class="field">
