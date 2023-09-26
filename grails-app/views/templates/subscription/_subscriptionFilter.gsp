@@ -195,7 +195,7 @@
 
         <div class="four fields">
             <div class="field">
-                <label>${message(code: 'subscription.holdingSelection.label')}</label>
+                <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')}</label>
                 <select id="holdingSelection" name="holdingSelection" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 

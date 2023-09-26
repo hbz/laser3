@@ -355,6 +355,7 @@ class OrganisationController  {
 
         List<Org> availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, [sort:params.sort])
         availableOrgs.remove(Org.findByName("LAS:eR Backoffice"))
+        // TODO remove all with customerType support ?
 
         String header = message(code: 'menu.public.all_cons')
         String exportHeader = message(code: 'export.all.consortia')
@@ -2032,15 +2033,17 @@ class OrganisationController  {
                                 case CustomerTypeService.ORG_INST_PRO:          isEditable = userIsYoda; break
                                 case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = userIsYoda; break
                                 case CustomerTypeService.ORG_CONSORTIUM_PRO:    isEditable = userIsYoda; break
+                                case CustomerTypeService.ORG_SUPPORT:           isEditable = userIsYoda; break
                                 default:                                        isEditable = userHasEditableRights; break //means providers and agencies
                             }
                             break
-                        case [ CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO ] :
+                        case [ CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO, CustomerTypeService.ORG_SUPPORT ] :
                             switch (org.getCustomerType()){
                                 case CustomerTypeService.ORG_INST_BASIC:        isEditable = userHasEditableRights; break
                                 case CustomerTypeService.ORG_INST_PRO:          isEditable = userHasEditableRights; break
                                 case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = userIsYoda; break
                                 case CustomerTypeService.ORG_CONSORTIUM_PRO:    isEditable = userIsYoda; break
+                                case CustomerTypeService.ORG_SUPPORT:           isEditable = userIsYoda; break
                                 default:                                        isEditable = userHasEditableRights; break //means providers and agencies
                             }
                             break

@@ -54,19 +54,7 @@
                         </option>
                     </g:each>
                 </select>
-            </div>
-            <% /*
-            <!-- 1-4 -->
-            <div class="field disabled">
-                <ui:datepicker label="myinst.currentSubscriptions.filter.renewalDate.label"  id="renewalDate" name="renewalDate"
-                                  placeholder="filter.placeholder" value="${params.renewalDate}"/>
-            </div>
-            <!-- 1-5 -->
-            <div class="field disabled">
-                <ui:datepicker label="myinst.currentSubscriptions.filter.durationDateEnd.label"
-                                  id="durationDate" name="durationDate" placeholder="filter.placeholder" value="${params.durationDate}"/>
-            </div>
-            */ %>
+            </div> %>
             <% /* 1-5 */ %>
             <div class="field">
                 <label for="status"><g:message code="default.status.label"/></label>
@@ -192,7 +180,7 @@
 
         <div class="four fields">
             <div class="field">
-                <label>${message(code: 'subscription.holdingSelection.label')}</label>
+                <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')}</label>
                 <select id="holdingSelection" name="holdingSelection" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
@@ -224,51 +212,25 @@
                 </div>
             </div>
             <% /* 4-2 */ %>
-        <%-- TODO [ticket=2276] provisoric, name check is in order to prevent id mismatch --%>
-            <g:if test="${contextService.getOrg().isCustomerType_Inst_Pro() || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
-                <div class="field">
-                    <fieldset id="subscritionType">
-                        <label>${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
-                        <div class="inline fields la-filter-inline">
-                            <%
-                                List subTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)
-                                if(institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID)
-                                    subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL
-                                else
-                                    subTypes -= RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE
-                            %>
-                            <g:each in="${subTypes}" var="subType">
-                                <div class="inline field">
-                                    <div class="ui checkbox">
-                                        <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
-                                        <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox" value="${subType.id}"
-                                            <g:if test="${params.list('subTypes').contains(subType.id.toString())}"> checked="" </g:if>
-                                               tabindex="0">
-                                    </div>
+
+            <div class="field">
+                <fieldset id="subscritionType">
+                    <label>${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
+                    <div class="inline fields la-filter-inline">
+                        <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE) - RDStore.SUBSCRIPTION_TYPE_LOCAL}" var="subType">
+                            <div class="inline field">
+                                <div class="ui checkbox">
+                                    <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
+                                    <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox" value="${subType.id}"
+                                        <g:if test="${params.list('subTypes').contains(subType.id.toString())}"> checked="" </g:if>
+                                           tabindex="0">
                                 </div>
-                            </g:each>
-                        </div>
-                    </fieldset>
-                </div>
-            </g:if>
-            <g:else>
-                <div class="field"></div>
-            </g:else>
+                            </div>
+                        </g:each>
+                    </div>
+                </fieldset>
+            </div>
 
-            <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
-                <div class="field">
-                    <fieldset>
-                        <legend id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</legend>
-
-                        <g:select from="${allConsortia}" id="consortial" class="ui fluid search selection dropdown"
-                                  optionKey="${{ Org.class.name + ':' + it.id }}"
-                                  optionValue="${{ it.getName() }}"
-                                  name="consortia"
-                                  noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                  value="${params.consortia}"/>
-                    </fieldset>
-                </div>
-            </g:if>
             <div class="field la-field-right-aligned">
                 <a href="${createLink(controller:controllerName,action:actionName,params:[id:params.id,resetFilter:true, tab: params.tab])}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
                 <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}">

@@ -1,7 +1,7 @@
 <%@ page import="de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 
-<g:if test="${contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_SUPPORT )}">
+<g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_SUPPORT)}">
     <ui:actionsDropdown>
         <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
 
@@ -10,8 +10,10 @@
 %{--                <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />--}%%{-- --}%%{-- erms-4798 --}%
             </g:if>
             <g:elseif test="${actionName == 'ids'}">
-                <g:if test="${editable_identifier}">
+                <g:if test="${editable_identifier || (hasAccessToCustomeridentifier && editable_customeridentifier)}">
                     <div class="divider"></div>
+                </g:if>
+                <g:if test="${editable_identifier}">
                     <a class="item" onclick="JSPC.app.IdContoller.createIdentifier(${orgInstance.id});">${message(code: 'identifier.create.new')}</a>
                 </g:if>
                 <g:if test="${hasAccessToCustomeridentifier}">
@@ -26,15 +28,9 @@
             </g:elseif>
             <g:elseif test="${actionName == 'addressbook'}">
                 <div class="divider"></div>
-                <g:if test="${editable}">
-                    <g:if test="${(institution.isCustomerType_Consortium()) && !isProviderOrAgency}">
-                        <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForInstitution', ${orgInstance.id});"><g:message code="person.create_new.contactPersonForInstitution.label"/></a>
-                        <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForInstitution', ${orgInstance.id});"><g:message code="address.add.addressForInstitution.label"/></a>
-                    </g:if>
-                    <g:if test="${isProviderOrAgency}">
-                        <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForProviderAgency', ${orgInstance.id});"><g:message code="person.create_new.contactPersonForProviderAgency.label"/></a>
-                        <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForProviderAgency', ${orgInstance.id});"><g:message code="address.add.addressForProviderAgency.label"/></a>
-                    </g:if>
+                <g:if test="${editable && !isProviderOrAgency}">
+                    <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForInstitution', ${orgInstance.id});"><g:message code="person.create_new.contactPersonForInstitution.label"/></a>
+                    <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForInstitution', ${orgInstance.id});"><g:message code="address.add.addressForInstitution.label"/></a>
                 </g:if>
                 <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
             </g:elseif>
@@ -42,8 +38,6 @@
                 <div class="divider"></div>
                 <g:if test="${editable}">
                     <a href="#createPersonModal" class="item" onclick="JSPC.app.personCreate('contactPersonForPublic');"><g:message code="person.create_new.contactPerson.label"/></a>
-                </g:if>
-                <g:if test="${editable}">
                     <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForPublic');"><g:message code="address.add.addressForPublic.label"/></a>
                 </g:if>
                 <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
@@ -64,7 +58,7 @@
 %{--    institution (context org) : ${institution}--}%
 %{----!>--}%
 
-<g:if test="${contextService.isInstEditor_or_ROLEADMIN()}">
+<g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_SUPPORT)}">
     <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: orgInstance, owntp: 'org', institution: institution]]}" />
 </g:if>
 

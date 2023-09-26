@@ -31,7 +31,7 @@
                                   class="ui select dropdown"/>
                 </div>
 
-                <g:if test="${(institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID)}">
+                <g:if test="${institution.isCustomerType_Support() || (institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID)}">
                     <%
                         List subscriptionTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)
                         subscriptionTypes-=RDStore.SUBSCRIPTION_TYPE_LOCAL
