@@ -53,7 +53,7 @@
 
 5271    08.09.2023  rc-3.2  3.2.4       Andreas Bug         diverse Denk- und Programmierfehler bei der Titelverwaltung behoben
 
-5241    08.09.2023  rc-3.2  3.2-5       Moe     Feature     Meine Lizenzübertragungen: neue Spalte "Reminder"
+5241    08.09.2023  rc-3.2  3.2.4       Moe     Feature     Meine Lizenzübertragungen: neue Spalte "Reminder"
 
 5270    07.09.2023  rc-3.2  3.2.4       Andreas Bug         diverse Bugs bei der Bereinigung von Titel behoben
 
@@ -127,11 +127,11 @@
 
 3781    04.08.2023  dev     3.3         Andreas Feature     neue PDF-Exporte und ClickMichs implementiert
 
---      03.08.2023  rc-3.2  3.2.2       Andreas Bug         Ausgaben beim PDF-Vertragsexport korrigiert
+--      03.08.2023  rc-3.2  3.2.1       Andreas Bug         Ausgaben beim PDF-Vertragsexport korrigiert
 
 4920    02.08.2023  dev     3.3         David   Feature     Lizenzen: "Zur Teilnehmersicht wechseln" entfernen
 
---      01.08.2023  rc-3.2  3.2.2       Andreas Bug         Exportreiter "Übertrag" hat keine Defaultbelegung mehr
+--      01.08.2023  rc-3.2  3.2.1       Andreas Bug         Exportreiter "Übertrag" hat keine Defaultbelegung mehr
 
 5213    01.08.2023  rc-3.2  3.2.1       Andreas Bug         verschiedene Fehler in der Lizenzverwaltung behoben
 
@@ -279,7 +279,7 @@
 
 5142    19.06.2023  rc-3.1  3.1.2       Moe     Bug         Übertrag Teilnehmer
 
-4545    16.06.2023  rc-3.2  3.2         Ingrid  Feature     Bestands-View: Filterergebnis "Stichtag" verbessern
+4545    16.06.2023  dev     3.2         Ingrid  Feature     Bestands-View: Filterergebnis "Stichtag" verbessern
 
 5139    16.06.2023  rc-3.1  3.1.2       Moe     Bug         Titel hinzufügen: Nur 1 oder alle Titel möglich
 
