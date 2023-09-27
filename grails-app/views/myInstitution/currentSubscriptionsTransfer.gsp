@@ -481,7 +481,6 @@
                                                                 target="_blank"><i class="download small icon"></i></g:link>
 
                                                     <%-- 2 --%>
-                                                        ${s}
                                                         <laser:render template="/templates/documents/modal"
                                                                       model="[ownobj: s, owntp: 'subscription', docctx: docctx, doc: docctx.owner]"/>
                                                         <button type="button"

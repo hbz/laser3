@@ -583,7 +583,8 @@
         $.ajax({
             url: "<g:createLink action="getTippIeFilter"/>",
             data: {
-                id: "${subscription.id}"
+                formAction: "${actionName}",
+                <g:each in="${params.keySet()}" var="key">${key}: <g:if test="${params[key] instanceof String[] || params[key] instanceof List}">[${params[key].join(',')}]</g:if><g:else>"${params[key]}"</g:else>,</g:each>
             }
         }).done(function(response){
             $("#filterWrapper").html(response);

@@ -1342,6 +1342,11 @@ class SurveyController {
             transferWorkflow.transferPrivateProperties = params.transferPrivateProperties
         }
 
+        if(params.transferSubPackagesAndIes != null)
+        {
+            transferWorkflow.transferSubPackagesAndIes = params.transferSubPackagesAndIes
+        }
+
         result.surveyConfig.transferWorkflow = transferWorkflow ?  (new JSON(transferWorkflow)).toString() : null
 
         SurveyConfig.withTransaction { TransactionStatus ts ->
@@ -2420,6 +2425,7 @@ class SurveyController {
 
                 if(!openFailByTitleSelection) {
                     result.surveyInfo.status = params.startNow ? RDStore.SURVEY_SURVEY_STARTED : RDStore.SURVEY_READY
+                    result.surveyInfo.startDate = startDate
                     result.surveyInfo.save()
                     flash.message = params.startNow ? g.message(code: "openSurveyNow.successfully") : g.message(code: "openSurvey.successfully")
                 }else {
@@ -4458,7 +4464,7 @@ class SurveyController {
             }
         }
 
-        if(!subscriptionService.checkThreadRunning('PackageTransfer_'+result.parentSuccessorSubscription.id)) {
+        if(packagesToProcess.size() > 0 && !subscriptionService.checkThreadRunning('PackageTransfer_'+result.parentSuccessorSubscription.id)) {
             boolean withEntitlements = params.linkWithEntitlements == 'on'
             executorService.execute({
                 Thread.currentThread().setName('PackageTransfer_'+result.parentSuccessorSubscription.id)
