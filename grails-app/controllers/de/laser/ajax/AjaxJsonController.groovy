@@ -754,6 +754,24 @@ class AjaxJsonController {
     }
 
     /**
+     * Retrieves a list of platforms for dropdown display
+     * @return the result of {@link de.laser.ControlledListService#getPlatforms(grails.web.servlet.mvc.GrailsParameterMap)}
+     */
+    @Secured(['ROLE_USER'])
+    def lookupPlatforms() {
+        render controlledListService.getPlatforms(params) as JSON
+    }
+
+    /**
+     * Retrieves a list of providers for dropdown display
+     * @return the result of {@link de.laser.ControlledListService#getProviders(grails.web.servlet.mvc.GrailsParameterMap)}
+     */
+    @Secured(['ROLE_USER'])
+    def lookupProviders() {
+        render controlledListService.getProviders(params) as JSON
+    }
+
+    /**
      * Retrieves a list of subscription packages for dropdown display
      * @return the result of {@link de.laser.ControlledListService#getSubscriptionPackages(java.util.Map)}
      */
