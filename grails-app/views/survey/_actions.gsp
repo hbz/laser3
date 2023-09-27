@@ -69,6 +69,10 @@
 
                 <g:if test="${surveyInfo && surveyInfo.status.id in [RDStore.SURVEY_IN_EVALUATION.id, RDStore.SURVEY_SURVEY_COMPLETED.id,RDStore.SURVEY_COMPLETED.id]}">
 
+                    <ui:actionsDropdownItem data-ui="modal"
+                                            href="#openSurveyAgain"
+                                            message="openSurveyAgain.button"/>
+
                     <ui:actionsDropdownItem controller="survey" action="participantsReminder" params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
                                             message="participantsReminder.button"/>
                     <div class="ui divider"></div>
