@@ -1426,7 +1426,6 @@ i.icon.la-list-icon {
 i.icon.la-list-icon:before {
   display: inline-flex;
   text-decoration: none;
-  opacity: 0.8;
   height: 1em;
   color: #767676;
 }
@@ -70545,8 +70544,9 @@ a.inverted.ui.card:hover,
 
 /* Dropdown Icon */
 
-.ui.accordion .title .dropdown.icon,
-.ui.accordion .accordion .title .dropdown.icon {
+.ui.accordion .ui.header > .dropdown.icon,
+.ui.accordion .title > .dropdown.icon,
+.ui.accordion .accordion .title > .dropdown.icon {
   font-family: Accordion;
   line-height: 1;
   -webkit-backface-visibility: hidden;
@@ -70556,9 +70556,11 @@ a.inverted.ui.card:hover,
   text-align: center;
 }
 
-.ui.accordion .title .dropdown.icon:before,
-.ui.accordion .accordion .title .dropdown.icon:before {
-  content: '\f0da' ;
+.ui.accordion .ui.header > .dropdown.icon::before,
+.ui.accordion .title > .dropdown.icon::before,
+.ui.accordion .accordion .title > .dropdown.icon::before {
+  content: "\f0da" 
+;
 }
 
 .ui.accordion.la-accordion-showMore .active.title .angle.double.icon {

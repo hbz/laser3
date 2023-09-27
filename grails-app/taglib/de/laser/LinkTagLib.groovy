@@ -53,9 +53,9 @@ class LinkTagLib {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
             label = message(code: 'title.label') + ' in der we:kb aufrufen'
         }
-        out << '<span class="la-popup-tooltip la-delay" data-position="top right" data-content="' + label + '" style="bottom: -3px">&nbsp;'
+        out << '<span class="la-popup-tooltip la-delay" data-position="top right" data-content="' + label + '" >&nbsp;'
         out << '<a href="' + href + '" target="_blank" aria-label="' + label + '">'
-        out << '<i class="icon la-gokb" aria-hidden="true"></i>'
+        out << '<i class="icon small la-gokb" aria-hidden="true"></i>'
         out << '</a>'
         out << '</span>'
     }
