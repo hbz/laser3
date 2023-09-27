@@ -3098,7 +3098,7 @@ class SubscriptionControllerService {
                     String dir = GlobalService.obtainFileStorageLocation()
                     File f = new File(dir+"/${filename}_matchingErrors")
                     String returnKBART = exportService.generateSeparatorTableString(titleRow, returnErrorList, '\t')
-                    result.errorList = returnErrorList.size()
+                    result.errorCount = returnErrorList.size()
                     FileOutputStream fos = new FileOutputStream(f)
                     fos.withWriter { Writer w ->
                         w.write(returnKBART)

@@ -1725,7 +1725,7 @@ class FilterService {
             }
             base_qry += ' ( '
             listReaderWrapper(params, 'subject_references').eachWithIndex { String subRef, int i ->
-                base_qry += " genfunc_filter_matcher(tipp.subjectReference,'"+subRef.trim().toLowerCase()+"') "
+                base_qry += " genfunc_filter_matcher(tipp.subjectReference,'"+subRef.trim().toLowerCase()+"') = true "
                 if(i < listReaderWrapper(params, 'subject_references').size()-1)
                     base_qry += 'or'
             }

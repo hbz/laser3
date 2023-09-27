@@ -31,7 +31,7 @@
     <ui:messages data="${flash}"/>
     <g:if test="${errorFile}">
         <div class="errorKBARTWrapper">
-            <g:render template="/templates/bulkItemDownload" model="[token: errorFile, errorKBART: true]"/>
+            <g:render template="/templates/bulkItemDownload" model="[errorCount: errorCount, token: errorFile, errorKBART: true]"/>
         </div>
     </g:if>
 
