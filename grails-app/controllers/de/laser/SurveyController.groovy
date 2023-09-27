@@ -2425,7 +2425,7 @@ class SurveyController {
                 }
             }
 
-            if(!openFailByTitleSelection) {
+            if(!openFailByTitleSelection && params.startNow) {
                 executorService.execute({
                     Thread.currentThread().setName('EmailsToSurveyUsers' + result.surveyInfo.id)
                     surveyService.emailsToSurveyUsers([result.surveyInfo.id])
