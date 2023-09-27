@@ -2122,7 +2122,7 @@ class SubscriptionController {
     @Secured(['ROLE_USER'])
     def getTippIeFilter() {
         Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-
+        result.action = params.formAction
         //<laser:render template="/templates/filter/tipp_ieFilter"/>
         render template: '/templates/filter/tipp_ieFilter', model: result
     }

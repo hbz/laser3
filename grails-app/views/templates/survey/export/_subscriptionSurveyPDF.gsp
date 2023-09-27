@@ -412,16 +412,16 @@
                 <tr>
 
                     <th><g:message code="financials.costItemElement"/></th>
-                    <th><g:message code="financials.costInBillingCurrency"/></th>
-                    <th><g:message code="financials.taxRate"/></th>
+                    <th><g:message code="financials.invoice_total"/></th>
+                    <th><g:message code="financials.newCosts.taxTypeAndRate"/></th>
                     <th><g:message
-                            code="financials.costInBillingCurrencyAfterTax"/></th>
+                            code="financials.newCosts.totalAmount"/></th>
 
                     <th><g:message code="financials.costItemElement"/></th>
-                    <th><g:message code="financials.costInBillingCurrency"/></th>
-                    <th><g:message code="financials.taxRate"/></th>
+                    <th><g:message code="financials.invoice_total"/></th>
+                    <th><g:message code="financials.newCosts.taxTypeAndRate"/></th>
                     <th><g:message
-                            code="financials.costInBillingCurrencyAfterTax"/></th>
+                            code="financials.newCosts.totalAmount"/></th>
 
                 </tr>
                 </thead>

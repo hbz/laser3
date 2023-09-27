@@ -34,10 +34,9 @@
                     <ui:actionsDropdownItem controller="survey" action="processOpenSurvey" params="[id: params.id]"
                                                message="openSurvey.button"
                                                tooltip="${message(code: "openSurvey.button.info2")}"/>
-                    <ui:actionsDropdownItem controller="survey" action="processOpenSurvey"
-                                               params="[id: params.id, startNow: true]"
-                                               message="openSurveyNow.button"
-                                               tooltip="${message(code: "openSurveyNow.button.info2")}"/>
+                    <ui:actionsDropdownItem data-ui="modal"
+                                            href="#openSurveyNow"
+                                            message="openSurveyNow.button"/>
                     <div class="ui divider"></div>
                 </g:if>
 
@@ -47,8 +46,8 @@
                                                        message="openSurvey.button"
                                                        tooltip="${message(code: "openSurvey.button.info")}"/>
 
-                    <ui:actionsDropdownItemDisabled controller="survey" action="processOpenSurvey"
-                                                       params="[id: params.id, startNow: true]"
+                    <ui:actionsDropdownItemDisabled data-ui="modal"
+                                                    href="#openSurveyNow"
                                                        message="openSurveyNow.button"
                                                        tooltip="${message(code: "openSurveyNow.button.info")}"/>
                     <div class="ui divider"></div>
@@ -69,6 +68,10 @@
                 </g:if>
 
                 <g:if test="${surveyInfo && surveyInfo.status.id in [RDStore.SURVEY_IN_EVALUATION.id, RDStore.SURVEY_SURVEY_COMPLETED.id,RDStore.SURVEY_COMPLETED.id]}">
+
+                    <ui:actionsDropdownItem data-ui="modal"
+                                            href="#openSurveyAgain"
+                                            message="openSurveyAgain.button"/>
 
                     <ui:actionsDropdownItem controller="survey" action="participantsReminder" params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
                                             message="participantsReminder.button"/>
@@ -160,6 +163,20 @@
         </g:form>
 
     </ui:modal>
+</g:if>
+
+
+<g:if test="${surveyInfo && (surveyInfo.status.id == RDStore.SURVEY_IN_PROCESSING.id) && surveyInfo.checkOpenSurvey()}">
+<ui:modal id="openSurveyNow" text="${message(code:'openSurveyNow.button')}" msgSave="${message(code:'openSurveyNow.button')}">
+
+    <g:form class="ui form"
+            url="[controller:'survey', action:'processOpenSurvey', params:[id: params.id, startNow: true], method: 'post']">
+        <div class="field">
+            <p>${message(code: "openSurveyNow.button.info2")}</p>
+        </div>
+    </g:form>
+
+</ui:modal>
 </g:if>
 
 <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO) && (actionName != 'currentSurveysConsortia' && actionName != 'workflowsSurveysConsortia')}">
