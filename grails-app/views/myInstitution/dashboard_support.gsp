@@ -27,6 +27,7 @@
                         <div class="item">
                             <i class="university icon la-list-icon"></i>
                             <div class="content">
+                                <ui:securedMainNavItem specRole="ROLE_ADMIN" controller="myInstitution" action="manageMembers" message="menu.my.insts" />
                             </div>
                         </div>
                     </div>
@@ -40,8 +41,9 @@
                             </div>
                         </div>
                         <div class="item">
-                            <i class="chart pie icon la-list-icon"></i>
+                            <i class="file icon la-list-icon"></i>
                             <div class="content">
+                                <ui:securedMainNavItem controller="myInstitution" action="documents" message="menu.my.documents" />
                             </div>
                         </div>
                         <div class="item">
@@ -79,12 +81,13 @@
                         <div class="item">
                             <i class="university icon la-list-icon"></i>
                             <div class="content">
-                                <ui:securedMainNavItem addItemAttributes="true" specRole="ROLE_ADMIN" controller="myInstitution" action="manageMembers" message="menu.my.insts" />
+                                <ui:securedMainNavItem specRole="ROLE_ADMIN" controller="myInstitution" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
                             </div>
                         </div>
                         <div class="item">
-                            <i class="chartline icon la-list-icon"></i>
+                            <i class="clipboard icon la-list-icon"></i>
                             <div class="content">
+                                <ui:securedMainNavItem controller="myInstitution" action="subscriptionsManagement" message="menu.institutions.subscriptionsManagement" />
                             </div>
                         </div>
                         <div class="item">
