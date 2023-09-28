@@ -16,25 +16,14 @@
     ${message(code: 'subscriptionsManagement.subscriptions.members')}
 </h2>
 
-<laser:render template="/templates/management/navSubscriptionManagement" model="${[args: args]}"/>
+<laser:render template="${customerTypeService.getNavSubscriptionManagementTemplatePath()}" model="${[args: args]}"/>
 
 <ui:messages data="${flash}"/>
-
-%{--<h4 class="ui header">--}%
-%{--    <g:message code="subscription"/>:--}%
-%{--    <g:link controller="subscription" action="show" id="${subscription.id}">${subscription.name}</g:link>--}%
-%{--    <br /><br />--}%
-
-%{--    <g:if test="${params.tab == 'linkLicense' && parentLicense}">--}%
-%{--        <g:message code="subscriptionsManagement.license" args="${args.superOrgType}"/>:--}%
-%{--        <g:link controller="license" action="show" id="${parentLicense.id}">${parentLicense.reference}</g:link>--}%
-%{--    </g:if>--}%
-%{--</h4>--}%
 
 <g:if test="${params.tab == 'linkLicense'}">
     <laser:render template="/templates/management/linkLicense"/>
 </g:if>
-<g:elseif test="${params.tab == 'linkPackages'}">
+<g:elseif test="${params.tab == 'linkPackages' && !contextService.getOrg().isCustomerType_Support()}">
     <laser:render template="/templates/management/linkPackages"/>
 </g:elseif>
 <g:elseif test="${params.tab == 'properties'}">
@@ -43,7 +32,7 @@
 <g:elseif test="${params.tab == 'generalProperties'}">
     <laser:render template="/templates/management/generalProperties"/>
 </g:elseif>
-<g:elseif test="${params.tab == 'providerAgency'}">
+<g:elseif test="${params.tab == 'providerAgency' && !contextService.getOrg().isCustomerType_Support()}">
     <laser:render template="/templates/management/providerAgency"/>
 </g:elseif>
 <g:elseif test="${params.tab == 'multiYear'}">

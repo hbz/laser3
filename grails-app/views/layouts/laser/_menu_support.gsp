@@ -59,7 +59,7 @@
 
         <div class="divider"></div>
 
-%{--        <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="subscriptionsManagement" message="menu.institutions.subscriptionsManagement" />--}%
+        <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="subscriptionsManagement" message="menu.institutions.subscriptionsManagement" />
         <ui:securedMainNavItem addItemAttributes="true" instRole="INST_ADM" controller="myInstitution" action="users" message="menu.institutions.users" />
         <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="managePrivatePropertyDefinitions" message="menu.institutions.manage_props" />
     </div>
