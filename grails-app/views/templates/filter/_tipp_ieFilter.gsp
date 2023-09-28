@@ -1,24 +1,25 @@
 <%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.base.AbstractReport" %>
 <laser:serviceInjection />
+<g:set var="action" value="${action ?: actionName}"/>
 <g:if test="${controllerName == 'package' || fillDropdownsWithPackage}">
     <g:set var="seriesNames"
-           value="${packageInstance ? controlledListService.getAllPossibleSeriesByPackage(packageInstance,actionName) : []}"/>
+           value="${packageInstance ? controlledListService.getAllPossibleSeriesByPackage(packageInstance,action) : []}"/>
     <g:set var="subjects"
-           value="${packageInstance ? controlledListService.getAllPossibleSubjectsByPackage(packageInstance,actionName) : []}"/>
+           value="${packageInstance ? controlledListService.getAllPossibleSubjectsByPackage(packageInstance,action) : []}"/>
     <g:set var="ddcs"
-           value="${packageInstance ? controlledListService.getAllPossibleDdcsByPackage(packageInstance,actionName) : []}"/>
+           value="${packageInstance ? controlledListService.getAllPossibleDdcsByPackage(packageInstance,action) : []}"/>
     <g:set var="languages"
-           value="${packageInstance ? controlledListService.getAllPossibleLanguagesByPackage(packageInstance,actionName) : []}"/>
+           value="${packageInstance ? controlledListService.getAllPossibleLanguagesByPackage(packageInstance,action) : []}"/>
     <g:set var="yearsFirstOnline"
-           value="${packageInstance ? controlledListService.getAllPossibleDateFirstOnlineYearByPackage(packageInstance,actionName) : []}"/>
+           value="${packageInstance ? controlledListService.getAllPossibleDateFirstOnlineYearByPackage(packageInstance,action) : []}"/>
     <g:set var="publishers"
-           value="${packageInstance ? controlledListService.getAllPossiblePublisherByPackage(packageInstance,actionName) : []}"/>
+           value="${packageInstance ? controlledListService.getAllPossiblePublisherByPackage(packageInstance,action) : []}"/>
     <g:set var="titleTypes"
-           value="${packageInstance ? controlledListService.getAllPossibleTitleTypesByPackage(packageInstance,actionName) : []}"/>
+           value="${packageInstance ? controlledListService.getAllPossibleTitleTypesByPackage(packageInstance,action) : []}"/>
     <g:set var="mediumTypes"
-           value="${packageInstance ? controlledListService.getAllPossibleMediumTypesByPackage(packageInstance,actionName) : []}"/>
+           value="${packageInstance ? controlledListService.getAllPossibleMediumTypesByPackage(packageInstance,action) : []}"/>
     <g:set var="coverageDepths"
-           value="${packageInstance ? controlledListService.getAllPossibleCoverageDepthsByPackage(packageInstance,actionName) : []}"/>
+           value="${packageInstance ? controlledListService.getAllPossibleCoverageDepthsByPackage(packageInstance,action) : []}"/>
 </g:if>
 <g:elseif test="${controllerName == 'subscription'}">
     <g:set var="seriesNames"
@@ -40,7 +41,7 @@
     <g:set var="coverageDepths"
            value="${subscription ? controlledListService.getAllPossibleCoverageDepthsBySub(subscription) : []}"/>
 </g:elseif>
-<g:elseif test="${controllerName == 'title' || actionName == 'currentPermanentTitles'}">
+<g:elseif test="${controllerName == 'title' || action == 'currentPermanentTitles'}">
     <g:set var="seriesNames"
            value="${params.status ? controlledListService.getAllPossibleSeriesByStatus(params) : []}"/>
     <g:set var="subjects"
@@ -63,12 +64,12 @@
 
 <g:set var="availableStatus" value="${RefdataCategory.getAllRefdataValues(RDConstants.TIPP_STATUS)-RDStore.TIPP_STATUS_REMOVED}"/>
 
-<g:if test="${actionName == 'currentPermanentTitles'}">
+<g:if test="${action == 'currentPermanentTitles'}">
     <g:set var="availableStatus" value="${availableStatus-RDStore.TIPP_STATUS_EXPECTED}"/>
 </g:if>
 
 <ui:filter>
-    <g:form controller="${controllerName}" action="${actionName}" id="${params.id}" method="get" class="ui form">
+    <g:form controller="${controllerName}" action="${action}" id="${params.id}" method="get" class="ui form">
         <g:hiddenField name="sort" value="${params.sort}"/>
         <g:hiddenField name="order" value="${params.order}"/>
 
@@ -108,14 +109,14 @@
                     </select>
                 </div>
             </g:if>
-            <g:if test="${params.mode != 'advanced' && !showStatsFilter && actionName != 'renewEntitlementsWithSurvey'}">
+            <g:if test="${params.mode != 'advanced' && !showStatsFilter && action != 'renewEntitlementsWithSurvey'}">
                 <div class="field">
                     <ui:datepicker label="subscription.details.asAt" id="asAt" name="asAt"
                                       value="${params.asAt}"
                                       placeholder="subscription.details.asAt.placeholder"/>
                 </div>
             </g:if>
-            <g:if test="${!showStatsFilter && !(actionName in ['renewEntitlementsWithSurvey', 'current', 'planned', 'expired', 'deleted'])}">
+            <g:if test="${!showStatsFilter && !(action in ['renewEntitlementsWithSurvey', 'current', 'planned', 'expired', 'deleted'])}">
                 <div class="field">
                     <label for="status">
                         ${message(code: 'default.status.label')}
@@ -296,7 +297,7 @@
                                   value="${params.hasPerpetualAccess}"
                                   noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                 </div>
-                <g:if test="${actionName =='index' && subscription.ieGroups.size() > 0}">
+                <g:if test="${action =='index' && subscription.ieGroups.size() > 0}">
                     <div class="field">
                         <label>${message(code: 'issueEntitlementGroup.label')}</label>
                         <g:select class="ui fluid dropdown" name="titleGroup"
@@ -411,7 +412,7 @@
         </g:if>
 
             <div class="field la-field-right-aligned">
-                <g:link controller="${controllerName}" action="${actionName}" id="${params.id}" params="[surveyConfigID: params.surveyConfigID, tab: params.tab, tabStat: params.tabStat]"
+                <g:link controller="${controllerName}" action="${action}" id="${params.id}" params="[surveyConfigID: params.surveyConfigID, tab: params.tab, tabStat: params.tabStat]"
                    class="ui reset secondary button">${message(code: 'default.button.reset.label')}</g:link>
                 <input type="submit" class="ui primary button"
                        value="${message(code: 'default.button.filter.label')}"/>

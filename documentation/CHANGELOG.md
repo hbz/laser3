@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5300    27.09.2023  rc-3.2  3.2.5       Andreas Bug         Template-Fragment öffnete sich allein
+
+5289    25.09.2023  rc-3.2  3.2.5       Moe     Bug         Umfrage sofort öffnen...
+
+5281    25.09.2023  rc-3.2  3.2.5       Moe     Bug         Erneute Freischaltung Teilnehmer bei Umfragen im Status "beendet" unterbinden
+
 --      25.09.2023  rc-3.2  3.2.5       Andreas Bug         Bug beim Export von Titel behoben
 
 5297    25.09.2023  rc-3.2  3.2.5       Andreas Bug         Kaskadenfehler beim Löschen von Lizenzen behoben

@@ -14,25 +14,25 @@
                 <div class="ui fluid segment title">
                     <div class="ui stackable equal width grid">
                         <div class="four wide column">
-                            <ui:wekbIconLink type="package" gokbId="${sp.pkg.gokbId}"/>
                             <g:link controller="package" action="show" id="${sp.pkg.id}">${sp.pkg.name}</g:link>
+                            <ui:wekbIconLink type="package" gokbId="${sp.pkg.gokbId}"/>
                             <br>
                             ${sp.getCurrentIssueEntitlementCountOfPackage()} <g:message code="subscription.packages.currentTitles"/>
                         </div>
                         <div class="three wide column">
                             <g:if test="${sp.pkg.contentProvider}">
-                                <i aria-hidden="true" class="handshake outline icon la-popup-tooltip la-delay" data-content="${message(code: 'default.provider.label')}"></i>
-                                <g:if test="${sp.pkg.contentProvider.gokbId}"><ui:wekbIconLink type="org" gokbId="${sp.pkg.contentProvider.gokbId}"/></g:if>
+                                <i aria-hidden="true" class="handshake grey outline icon la-popup-tooltip la-delay" data-content="${message(code: 'default.provider.label')}"></i>
                                 <g:link controller="org" action="show" id="${sp.pkg.contentProvider.id}">${sp.pkg.contentProvider.name}</g:link>
                                 <ui:linkWithIcon href="${sp.pkg.contentProvider.url?.startsWith('http') ? sp.pkg.contentProvider.url : 'http://' + sp.pkg.contentProvider.url}"/>
+                                <g:if test="${sp.pkg.contentProvider.gokbId}"><ui:wekbIconLink type="org" gokbId="${sp.pkg.contentProvider.gokbId}"/></g:if>
                             </g:if>
                         </div>
                         <div class="three wide column">
                             <g:if test="${sp.pkg.nominalPlatform}">
                                 <i aria-hidden="true" class="grey cloud icon la-popup-tooltip la-delay" data-content="${message(code: 'platform.label')}"></i>
-                                <ui:wekbIconLink type="platform" gokbId="${sp.pkg.nominalPlatform.gokbId}"/>
                                 <g:link controller="platform" action="show" id="${sp.pkg.nominalPlatform.id}">${sp.pkg.nominalPlatform.name}</g:link>
                                 <ui:linkWithIcon href="${sp.pkg.nominalPlatform.primaryUrl?.startsWith('http') ? sp.pkg.nominalPlatform.primaryUrl : 'http://' + sp.pkg.nominalPlatform.primaryUrl}"/>
+                                <ui:wekbIconLink type="platform" gokbId="${sp.pkg.nominalPlatform.gokbId}"/>
                             </g:if>
                                         <%--
                                         <g:if test="${packageService.getCountOfNonDeletedTitles(sp.pkg) > 0}">
@@ -74,7 +74,7 @@
                                 %>
                                 <g:if test="${showConsortiaFunctions && !sp.subscription.instanceOf}">
                                     <div class="ui buttons">
-                                        <div class="ui simple dropdown negative button la-modern-button ${unlinkDisabled}" data-content="${message(code: 'subscriptionsManagement.unlinkInfo.withIE')}">
+                                        <div class="ui simple dropdown negative icon button la-modern-button ${unlinkDisabled}" data-content="${message(code: 'subscriptionsManagement.unlinkInfo.withIE')}">
                                             <i aria-hidden="true" class="chain broken icon la-js-editmode-icon"></i>
                                             <div class="menu">
                                                 <g:link controller="subscription" action="unlinkPackage" class="${btnClass}" params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'withIE']}" data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name])}"
@@ -88,7 +88,7 @@
                                             </div>
                                         </div>
                                         <div class="or" data-text="|"></div>
-                                        <div class="ui simple dropdown negative button la-modern-button ${unlinkDisabled}" data-content="${message(code: 'subscriptionsManagement.unlinkInfo.onlyIE')}">
+                                        <div class="ui simple dropdown negative icon button la-modern-button ${unlinkDisabled}" data-content="${message(code: 'subscriptionsManagement.unlinkInfo.onlyIE')}">
                                             <i aria-hidden="true" class="eraser icon la-js-editmode-icon"></i>
                                             <div class="menu">
                                                 <g:link controller="subscription" action="unlinkPackage" class="${btnClass}" params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'onlyIE']}" data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.titles", args: [sp.pkg.name])}"
@@ -177,9 +177,14 @@
                             <dl>
                                 <dt>${message(code: 'package.show.altname')}</dt>
                                 <dd>
-                                    <div class="ui bulleted list">
+                                    <div class="ui list">
                                         <g:each in="${packageInstanceRecord.altname}" var="altname">
-                                            <div class="item">${altname}</div>
+                                          <div class="item">
+                                              <i class="box open grey icon"></i>
+                                              <div class="content">
+                                                ${altname}
+                                              </div>
+                                          </div>
                                         </g:each>
                                     </div>
                                 </dd>
@@ -190,8 +195,10 @@
                                     <div class="ui list">
                                         <g:each in="${packageInstanceRecord.curatoryGroups}" var="curatoryGroup">
                                             <div class="item">
-                                                <ui:wekbIconLink type="curatoryGroup" gokbId="${curatoryGroup.curatoryGroup}"/>
-                                                ${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}
+                                                <div class="content">
+                                                    ${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}
+                                                    <ui:wekbIconLink type="curatoryGroup" gokbId="${curatoryGroup.curatoryGroup}"/>
+                                                </div>
                                             </div>
                                         </g:each>
                                     </div>
@@ -312,9 +319,14 @@
                             <dl>
                                 <dt>${message(code: 'package.ddc.label')}</dt>
                                 <dd>
-                                    <div class="ui bulleted list">
+                                    <div class="ui list">
                                         <g:each in="${packageInstanceRecord.ddcs}" var="ddc">
-                                            <div class="item">${RefdataValue.getByValueAndCategory(ddc.value,RDConstants.DDC) ? RefdataValue.getByValueAndCategory(ddc.value,RDConstants.DDC).getI10n('value') : message(code:'package.ddc.invalid')}</div>
+                                            <div class="item">
+                                                <i class="sitemap grey icon"></i>
+                                                <div class="content">
+                                                    ${RefdataValue.getByValueAndCategory(ddc.value,RDConstants.DDC) ? RefdataValue.getByValueAndCategory(ddc.value,RDConstants.DDC).getI10n('value') : message(code:'package.ddc.invalid')}
+                                                </div>
+                                            </div>
                                         </g:each>
                                     </div>
                                 </dd>
@@ -322,14 +334,15 @@
                             <dl>
                                 <dt>${message(code: 'package.archivingAgency.label')}</dt>
                                 <dd>
-                                    <div class="ui bulleted list">
+                                    <div class="ui list">
                                         <g:each in="${packageInstanceRecord.packageArchivingAgencies}" var="arcAgency">
                                             <div class="item">
-                                                <ul style="list-style-type: none">
-                                                    <li>${arcAgency.archivingAgency ? RefdataValue.getByValueAndCategory(arcAgency.archivingAgency, RDConstants.ARCHIVING_AGENCY).getI10n("value") : message(code: 'package.archivingAgency.invalid')}</li>
-                                                    <li>${message(code: 'package.archivingAgency.openAccess.label')}: ${arcAgency.openAccess ? RefdataValue.getByValueAndCategory(arcAgency.openAccess, RDConstants.Y_N_P).getI10n("value") : ""}</li>
-                                                    <li>${message(code: 'package.archivingAgency.postCancellationAccess.label')}: ${arcAgency.postCancellationAccess ? RefdataValue.getByValueAndCategory(arcAgency.postCancellationAccess, RDConstants.Y_N_P).getI10n("value") : ""}</li>
-                                                </ul>
+                                                <i class="archive grey icon"></i>
+                                                <div class="content">
+                                                    <div class="header">${arcAgency.archivingAgency ? RefdataValue.getByValueAndCategory(arcAgency.archivingAgency, RDConstants.ARCHIVING_AGENCY).getI10n("value") : message(code: 'package.archivingAgency.invalid')}</div>
+                                                    <div class="description">${message(code: 'package.archivingAgency.openAccess.label')}: ${arcAgency.openAccess ? RefdataValue.getByValueAndCategory(arcAgency.openAccess, RDConstants.Y_N_P).getI10n("value") : ""}</div>
+                                                    <div class="description">${message(code: 'package.archivingAgency.postCancellationAccess.label')}: ${arcAgency.postCancellationAccess ? RefdataValue.getByValueAndCategory(arcAgency.postCancellationAccess, RDConstants.Y_N_P).getI10n("value") : ""}</div>
+                                                </div>
                                             </div>
                                         </g:each>
                                     </div>
