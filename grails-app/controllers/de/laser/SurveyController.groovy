@@ -787,12 +787,13 @@ class SurveyController {
                 }
                 result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
 
-                if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION]) {
-                    result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
+                if(result.surveyConfig.subSurveyUseForTransfer) {
+                    result.successorSubscriptionParent = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
+                    result.subscriptionParent = result.surveyConfig.subscription
                     Collection<AbstractPropertyWithCalculatedLastUpdated> props
-                    props = result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
-                    if(result.successorSubscription){
-                        props += result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+                    props = result.subscriptionParent.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.surveyInfo.owner.id || (it.tenant?.id != result.surveyInfo.owner.id && it.isPublic))}
+                    if(result.successorSubscriptionParent){
+                        props += result.successorSubscriptionParent.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.surveyInfo.owner.id || (it.tenant?.id != result.surveyInfo.owner.id && it.isPublic))}
                     }
                     result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
                 }
@@ -1340,6 +1341,11 @@ class SurveyController {
         if(params.transferPrivateProperties != null)
         {
             transferWorkflow.transferPrivateProperties = params.transferPrivateProperties
+        }
+
+        if(params.transferSubPackagesAndIes != null)
+        {
+            transferWorkflow.transferSubPackagesAndIes = params.transferSubPackagesAndIes
         }
 
         result.surveyConfig.transferWorkflow = transferWorkflow ?  (new JSON(transferWorkflow)).toString() : null
@@ -1970,6 +1976,17 @@ class SurveyController {
                     objects << result.successorSubscription
                     result = result + compareService.compareProperties(objects)
                 }
+
+                if(result.surveyConfig.subSurveyUseForTransfer) {
+                    result.successorSubscriptionParent = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
+                    result.subscriptionParent = result.surveyConfig.subscription
+                    Collection<AbstractPropertyWithCalculatedLastUpdated> props
+                    props = result.subscriptionParent.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.surveyInfo.owner.id || (it.tenant?.id != result.surveyInfo.owner.id && it.isPublic))}
+                    if(result.successorSubscriptionParent){
+                        props += result.successorSubscriptionParent.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.surveyInfo.owner.id || (it.tenant?.id != result.surveyInfo.owner.id && it.isPublic))}
+                    }
+                    result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
+                }
             }
         }
 
@@ -2060,12 +2077,13 @@ class SurveyController {
                 }
             }
 
-            if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION]) {
-                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
+            if(result.surveyConfig.subSurveyUseForTransfer) {
+                result.successorSubscriptionParent = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
+                result.subscriptionParent = result.surveyConfig.subscription
                 Collection<AbstractPropertyWithCalculatedLastUpdated> props
-                props = result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
-                if(result.successorSubscription){
-                    props += result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+                props = result.subscriptionParent.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.surveyInfo.owner.id || (it.tenant?.id != result.surveyInfo.owner.id && it.isPublic))}
+                if(result.successorSubscriptionParent){
+                    props += result.successorSubscriptionParent.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.surveyInfo.owner.id || (it.tenant?.id != result.surveyInfo.owner.id && it.isPublic))}
                 }
                 result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
             }
@@ -2420,6 +2438,7 @@ class SurveyController {
 
                 if(!openFailByTitleSelection) {
                     result.surveyInfo.status = params.startNow ? RDStore.SURVEY_SURVEY_STARTED : RDStore.SURVEY_READY
+                    result.surveyInfo.startDate = startDate
                     result.surveyInfo.save()
                     flash.message = params.startNow ? g.message(code: "openSurveyNow.successfully") : g.message(code: "openSurvey.successfully")
                 }else {
@@ -2427,7 +2446,7 @@ class SurveyController {
                 }
             }
 
-            if(!openFailByTitleSelection) {
+            if(!openFailByTitleSelection && params.startNow) {
                 executorService.execute({
                     Thread.currentThread().setName('EmailsToSurveyUsers' + result.surveyInfo.id)
                     surveyService.emailsToSurveyUsers([result.surveyInfo.id])
@@ -4458,7 +4477,7 @@ class SurveyController {
             }
         }
 
-        if(!subscriptionService.checkThreadRunning('PackageTransfer_'+result.parentSuccessorSubscription.id)) {
+        if(packagesToProcess.size() > 0 && !subscriptionService.checkThreadRunning('PackageTransfer_'+result.parentSuccessorSubscription.id)) {
             boolean withEntitlements = params.linkWithEntitlements == 'on'
             executorService.execute({
                 Thread.currentThread().setName('PackageTransfer_'+result.parentSuccessorSubscription.id)

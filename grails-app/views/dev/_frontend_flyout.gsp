@@ -2,7 +2,7 @@
 </h2>
 
 
-<div class="ui flyout">
+<div class="ui flyout test">
     <i class="close icon"></i>
     <div class="ui header">
         <i class="question icon"></i>
@@ -26,12 +26,13 @@
 </div>
 
 <laser:script file="">
-    $('.ui.flyout')
-  .flyout('toggle')
-;
+    $('#flyout-trigger').on ('click', function(e) {
+        e.preventDefault()
+        $('.ui.flyout.test').flyout('toggle')
+    });
 </laser:script>
 
-
+<a class="ui button" id="flyout-trigger">Trigger Flyout</a>
 <div class="html ui top attached segment example">
     <div class="ui top attached label">Neues Feature in Fomantic UI 2.9: Flyouts ist die Vereinigung von einem Modal und einer Sidebar</div>
 </div>

@@ -1231,4 +1231,32 @@ class ControlledListService {
                 break
         }
     }
+
+    Map getPlatforms(GrailsParameterMap params) {
+        Org institution = contextService.getOrg()
+        String consortiumFilter = "", platNameFilter = ""
+        Map qryParams = [context: institution]
+        if(institution.isCustomerType_Consortium())
+            consortiumFilter = "and sub.instanceOf is null"
+        if(params.query) {
+            platNameFilter = "and genfunc_filter_matcher(plat.name,:query) = true"
+            qryParams.query = params.query
+        }
+        String qryString = "select new map(concat('${Platform.class.name}:',plat.id) as value,plat.name as name) from TitleInstancePackagePlatform tipp join tipp.platform plat where tipp in (select ie.tipp from IssueEntitlement ie where ie.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context ${consortiumFilter})) ${platNameFilter} group by plat.id order by plat.name asc"
+        [results: Platform.executeQuery(qryString, qryParams)]
+    }
+
+    Map getProviders(GrailsParameterMap params) {
+        Org institution = contextService.getOrg()
+        String consortiumFilter = "", orgNameFilter = ""
+        Map qryParams = [context: institution]
+        if(institution.isCustomerType_Consortium())
+            consortiumFilter = "and sub.instanceOf is null"
+        if(params.query) {
+            orgNameFilter = "and (genfunc_filter_matcher(org.name,:query) = true or genfunc_filter_matcher(org.sortname,:query) = true)"
+            qryParams.query = params.query
+        }
+        String qryString = "select new map(concat('${Org.class.name}:',org.id) as value,org.name as name) from TitleInstancePackagePlatform tipp join tipp.pkg pkg join pkg.orgs oo join oo.org org where tipp in (select ie.tipp from IssueEntitlement ie where ie.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context ${consortiumFilter})) ${orgNameFilter} group by org.id order by org.sortname asc"
+        [results: Org.executeQuery(qryString, qryParams)]
+    }
 }

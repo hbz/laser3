@@ -174,7 +174,7 @@
                     </td>
 
                     <td class="x">
-                        <g:if test="${org.isCustomerType_Consortium()}">
+                        <g:if test="${org.isCustomerType_Consortium() || org.isCustomerType_Support()}">
                             <button type="button" class="ui icon button la-modern-button la-popup-tooltip la-delay"
                                     data-gascoTarget="${Org.class.name}:${org.id}"
                                     data-gascoEntry="${gascoEntry.class.name}:${gascoEntry.id}"

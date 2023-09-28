@@ -16,6 +16,7 @@ echarts / version 5.4.3
         - legend *
         - tooltip *
         - toolbox *
+        - visualMap *
 
     others
         - utilites *

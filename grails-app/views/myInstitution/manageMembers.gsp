@@ -44,7 +44,7 @@
         </g:else>
         --%>
     </ui:exportDropdown>
-    <g:if test="${editable}">
+    <g:if test="${editable || contextService.getOrg().isCustomerType_Support()}">
         <laser:render template="${customerTypeService.getActionsTemplatePath()}"/>
     </g:if>
 </ui:controlButtons>

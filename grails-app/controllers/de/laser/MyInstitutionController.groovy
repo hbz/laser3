@@ -1483,6 +1483,7 @@ class MyInstitutionController  {
 
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         boolean defaultSet = false
+        /*
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date())
             checkedDate = sdf.parse(result.validOn)
@@ -1495,18 +1496,58 @@ class MyInstitutionController  {
             checkedDate = sdf.parse(params.validOn)
             log.debug("Getting titles as of ${checkedDate} (given)")
         }
+        */
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        List filterSub = params.list("filterSub")
-        if (filterSub == "all")
-            filterSub = null
-        List filterPvd = params.list("filterPvd")
-        if (filterPvd == "all")
-            filterPvd = null
-        List filterHostPlat = params.list("filterHostPlat")
-        if (filterHostPlat == "all")
-            filterHostPlat = null
+        List<Subscription> filterSub = []
+        if(params.containsKey('filterSub')) {
+            //it is unclear for me why it is unable to use the params.list() method resp. why Grails does not recognise the filter param as list ...
+            if(params.filterSub.contains(',')) {
+                params.filterSub.split(',').each { String oid ->
+                    Subscription sub = genericOIDService.resolveOID(oid)
+                    if(sub) {
+                        filterSub << sub
+                    }
+                }
+            }
+            else {
+                Subscription sub = genericOIDService.resolveOID(params.filterSub)
+                if (sub) {
+                    filterSub << sub
+                }
+            }
+        }
+        List<Org> filterPvd = []
+        if(params.containsKey('filterPvd')) {
+            if(params.filterPvd.contains(',')) {
+                params.filterPvd.split(',').each { String oid ->
+                    Org pvd = genericOIDService.resolveOID(oid)
+                    if(pvd)
+                        filterPvd << pvd
+                }
+            }
+            else {
+                Org pvd = genericOIDService.resolveOID(params.filterPvd)
+                if(pvd)
+                    filterPvd << pvd
+            }
+        }
+        List<Platform> filterHostPlat = []
+        if(params.containsKey('filterHostPlat')) {
+            if(params.filterHostPlat.contains(',')) {
+                params.filterHostPlat.split(',').each { String oid ->
+                    Platform hostPlat = genericOIDService.resolveOID(oid)
+                    if(hostPlat)
+                        filterHostPlat << hostPlat
+                }
+            }
+            else {
+                Platform hostPlat = genericOIDService.resolveOID(params.filterHostPlat)
+                if(hostPlat)
+                    filterHostPlat << hostPlat
+            }
+        }
         log.debug("Using params: ${params}")
 
         Map<String,Object> qryParams = [
@@ -1516,9 +1557,11 @@ class MyInstitutionController  {
                 orgRoles: orgRoles
         ]
 
+        /*
+        needed?
         if(checkedDate) {
             queryFilter << ' ( :checkedDate >= coalesce(ie.accessStartDate,sub.startDate,tipp.accessStartDate) or (ie.accessStartDate is null and sub.startDate is null and tipp.accessStartDate is null) ) and ( :checkedDate <= coalesce(ie.accessEndDate,sub.endDate,tipp.accessEndDate) or (ie.accessEndDate is null and sub.endDate is null and tipp.accessEndDate is null)  or (sub.hasPerpetualAccess = true))'
-            /*queryFilter << ' (ie.accessStartDate <= :checkedDate or ' +
+            queryFilter << ' (ie.accessStartDate <= :checkedDate or ' +
                               '(ie.accessStartDate is null and ' +
                                 '(sub.startDate <= :checkedDate or ' +
                                   '(sub.startDate is null and ' +
@@ -1539,9 +1582,10 @@ class MyInstitutionController  {
                                       ')' +
                                   ')' +
                                 ')' +
-                            ')'*/
+                            ')'
             qryParams.checkedDate = checkedDate
         }
+        */
 
         if ((params.filter) && (params.filter.length() > 0)) {
             queryFilter << "genfunc_filter_matcher(tipp.name, :titlestr) = true "
@@ -1549,11 +1593,13 @@ class MyInstitutionController  {
         }
 
         if (filterSub) {
-            queryFilter << "sub in (" + filterSub.join(", ") + ")"
+            queryFilter << "sub in (:selSubs) "
+            qryParams.selSubs = filterSub
         }
 
         if (filterHostPlat) {
-            queryFilter << "tipp.platform in (" + filterHostPlat.join(", ") + ")"
+            queryFilter << "tipp.platform in (:platforms) "
+            qryParams.platforms = filterHostPlat
         }
 
         //String havingClause = params.filterMultiIE ? 'having count(ie.ie_id) > 1' : ''
@@ -1620,7 +1666,10 @@ class MyInstitutionController  {
             }
             else roleTypes.addAll([RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])
             //load proxies instead of full objects ... maybe this gonna bring performance?
-            tippIDs.addAll(TitleInstancePackagePlatform.executeQuery("select tipp.id from IssueEntitlement ie join ie.tipp tipp where ie.status != :ieStatus and ie.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :contextOrg and oo.roleType in (:roleTypes) and (sub.status = :current or sub.hasPerpetualAccess = true)"+consFilter+")", [ieStatus: RDStore.TIPP_STATUS_REMOVED, contextOrg: result.institution, roleTypes: roleTypes, current: RDStore.SUBSCRIPTION_CURRENT], [sort: 'sortname']))
+            String subQuery = "select sub.id from OrgRole oo join oo.sub sub where oo.org = :contextOrg and oo.roleType in (:roleTypes) and (sub.status = :current or sub.hasPerpetualAccess = true)"+consFilter
+            if(filterSub)
+                subQuery = filterSub.id.join(',')
+            tippIDs.addAll(TitleInstancePackagePlatform.executeQuery("select tipp.id from IssueEntitlement ie join ie.tipp tipp where ie.status != :ieStatus and ie.subscription.id in ("+subQuery+")", [ieStatus: RDStore.TIPP_STATUS_REMOVED, contextOrg: result.institution, roleTypes: roleTypes, current: RDStore.SUBSCRIPTION_CURRENT], [sort: 'sortname']))
             //tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(titleIDs, [sort: 'sortname']))
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
@@ -1631,7 +1680,7 @@ class MyInstitutionController  {
             Map queryMap = [:]
             //second filter needed because double-join on same table does deliver me empty results
             if (filterPvd) {
-                query = " from IssueEntitlement ie join ie.tipp tipp join tipp.pkg pkg join pkg.orgs oo where oo.roleType in (:cpRole) and oo.org.id in ("+filterPvd.join(", ")+") "
+                query = " from IssueEntitlement ie join ie.tipp tipp join tipp.pkg pkg join pkg.orgs oo where oo.roleType in (:cpRole) and oo.org.id in ("+filterPvd.id.join(", ")+") "
                 queryMap = [cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER]]
             }
             else {
@@ -1640,8 +1689,9 @@ class MyInstitutionController  {
 
             }
 
-            currentIssueEntitlements.addAll(IssueEntitlement.executeQuery('select ie.id '+query, queryMap))
-            Set<TitleInstancePackagePlatform> allTitles = TitleInstancePackagePlatform.executeQuery('select tipp from IssueEntitlement ie join ie.tipp tipp where ie.id in (select ie.id ' + query + ') and ie.status != :ieStatus group by tipp, ie.id '+orderByClause,[ieStatus: RDStore.TIPP_STATUS_REMOVED]+queryMap, [max: result.max, offset: result.offset])
+            //currentIssueEntitlements.addAll(IssueEntitlement.executeQuery('select ie.id '+query, queryMap))
+            Set<TitleInstancePackagePlatform> allTitles = TitleInstancePackagePlatform.executeQuery('select tipp.id from IssueEntitlement ie join ie.tipp tipp where ie.id in (select ie.id ' + query + ') and ie.status != :ieStatus group by tipp, ie.id '+orderByClause,[ieStatus: RDStore.TIPP_STATUS_REMOVED]+queryMap)
+            /*
             result.subscriptions = Subscription.executeQuery('select distinct(sub) from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.roleType in (:orgRoles) and oo.org = :institution and (sub.status = :current or sub.hasPerpetualAccess = true) '+instanceFilter+" order by sub.name asc",[
                     institution: result.institution,
                     current: RDStore.SUBSCRIPTION_CURRENT,
@@ -1651,8 +1701,10 @@ class MyInstitutionController  {
                 result.providers = Org.executeQuery('select org.id,org.name from TitleInstancePackagePlatform tipp join tipp.pkg pkg join pkg.orgs oo join oo.org org where tipp.id in (select tipp.id '+qryString+') group by org.id order by org.name asc',qryParams)
                 result.hostplatforms = Platform.executeQuery('select plat.id,plat.name from TitleInstancePackagePlatform tipp join tipp.platform plat where tipp.id in (select tipp.id '+qryString+') group by plat.id order by plat.name asc',qryParams)
             }
-            result.num_ti_rows = TitleInstancePackagePlatform.executeQuery('select count(*) from IssueEntitlement ie join ie.tipp tipp where ie.id in (select ie.id ' + query + ') and ie.status != :ieStatus ',[ieStatus: RDStore.TIPP_STATUS_REMOVED]+queryMap)[0]
-            result.titles = allTitles
+            */
+            result.num_ti_rows = allTitles.size()
+            result.titles = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:tippIDs) '+orderByClause, [tippIDs: allTitles.drop(result.offset).take(result.max)])
+            //result.num_ti_rows = TitleInstancePackagePlatform.executeQuery('select count(*) from IssueEntitlement ie join ie.tipp tipp where ie.id in (select ie.id ' + query + ') and ie.status != :ieStatus ',[ieStatus: RDStore.TIPP_STATUS_REMOVED]+queryMap)[0]
 
             result.filterSet = params.filterSet || defaultSet
         }
@@ -1667,9 +1719,12 @@ class MyInstitutionController  {
             if(!f.exists()) {
                 Map<String, Object> configMap = [:]
                 configMap.putAll(params)
-                configMap.validOn = checkedDate.getTime()
-                String consFilter = result.institution.isCustomerType_Consortium() ? ' and s.instanceOf is null' : ''
-                configMap.pkgIds = SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes)'+consFilter, [context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS]])
+                //configMap.validOn = checkedDate.getTime()
+                //TODO lift restriction on current subscriptions and include filters!
+                if(filterSub)
+                    configMap.subscriptions = filterSub
+                else
+                    configMap.subscriptions = SubscriptionPackage.executeQuery('select s.id from Subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes) and s.status = :current'+instanceFilter, [current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS]]).toSet()
                 FileOutputStream out = new FileOutputStream(f)
                 Map<String,List> tableData = exportService.generateTitleExportKBART(configMap, IssueEntitlement.class.name)
                 out.withWriter { writer ->
@@ -2284,12 +2339,13 @@ class MyInstitutionController  {
 		        result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
             }
 
-            if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION]) {
-                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
+            if(result.surveyConfig.subSurveyUseForTransfer) {
+                result.successorSubscriptionParent = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
+                result.subscriptionParent = result.surveyConfig.subscription
                 Collection<AbstractPropertyWithCalculatedLastUpdated> props
-                props = result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
-                if(result.successorSubscription){
-                    props += result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+                props = result.subscriptionParent.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.surveyInfo.owner.id || (it.tenant?.id != result.surveyInfo.owner.id && it.isPublic))}
+                if(result.successorSubscriptionParent){
+                    props += result.successorSubscriptionParent.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.surveyInfo.owner.id || (it.tenant?.id != result.surveyInfo.owner.id && it.isPublic))}
                 }
                 result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
             }

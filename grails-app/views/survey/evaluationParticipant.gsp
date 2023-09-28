@@ -21,7 +21,7 @@
             </ui:exportDropdownItem>
         </ui:exportDropdown>
     <ui:actionsDropdown>
-        <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_SURVEY_STARTED.id, RDStore.SURVEY_SURVEY_COMPLETED.id]}">
+        <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_SURVEY_STARTED.id]}">
 
             <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
                 <ui:actionsDropdownItem controller="survey" action="openSurveyAgainForParticipant"
