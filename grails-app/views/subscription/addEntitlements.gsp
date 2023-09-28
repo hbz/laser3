@@ -34,6 +34,11 @@
 <%--<laser:render template="/templates/filter/tipp_ieFilter"/>--%>
 
     <ui:messages data="${flash}"/>
+    <g:if test="${errorFile}">
+        <div class="errorKBARTWrapper">
+            <g:render template="/templates/bulkItemDownload" model="[errorCount: errorCount, token: errorFile, errorKBART: true]"/>
+        </div>
+    </g:if>
 
 <ui:greySegment>
     <h3 class="ui dividing header"><g:message code="subscription.details.addEntitlements.header"/></h3>
@@ -586,7 +591,8 @@
         $.ajax({
             url: "<g:createLink action="getTippIeFilter"/>",
             data: {
-                id: "${subscription.id}"
+                formAction: "${actionName}",
+                <g:each in="${params.keySet()}" var="key">${key}: <g:if test="${params[key] instanceof String[] || params[key] instanceof List}">[${params[key].join(',')}]</g:if><g:else>"${params[key]}"</g:else>,</g:each>
             }
         }).done(function(response){
             $("#filterWrapper").html(response);

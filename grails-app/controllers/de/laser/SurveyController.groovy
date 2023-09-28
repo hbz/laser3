@@ -617,11 +617,15 @@ class SurveyController {
                             surveyConfig: surveyConfig,
                             mandatoryProperty: true)
 
-                    SurveyConfigProperties configProperty2 = new SurveyConfigProperties(
+                    /*SurveyConfigProperties configProperty2 = new SurveyConfigProperties(
                             surveyProperty: PropertyStore.SURVEY_PROPERTY_ORDER_NUMBER,
-                            surveyConfig: surveyConfig)
+                            surveyConfig: surveyConfig)*/
 
-                    if (configProperty.save() && configProperty2.save()) {
+                    /*if (configProperty.save() && configProperty2.save()) {
+                        surveyService.addSubMembers(surveyConfig)
+                    }*/
+
+                    if (configProperty.save()) {
                         surveyService.addSubMembers(surveyConfig)
                     }
                 }
@@ -780,12 +784,13 @@ class SurveyController {
                 }
                 result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
 
-                if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION]) {
-                    result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
+                if(result.surveyConfig.subSurveyUseForTransfer) {
+                    result.successorSubscriptionParent = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
+                    result.subscriptionParent = result.surveyConfig.subscription
                     Collection<AbstractPropertyWithCalculatedLastUpdated> props
-                    props = result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
-                    if(result.successorSubscription){
-                        props += result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+                    props = result.subscriptionParent.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.surveyInfo.owner.id || (it.tenant?.id != result.surveyInfo.owner.id && it.isPublic))}
+                    if(result.successorSubscriptionParent){
+                        props += result.successorSubscriptionParent.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.surveyInfo.owner.id || (it.tenant?.id != result.surveyInfo.owner.id && it.isPublic))}
                     }
                     result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
                 }
@@ -1333,6 +1338,11 @@ class SurveyController {
         if(params.transferPrivateProperties != null)
         {
             transferWorkflow.transferPrivateProperties = params.transferPrivateProperties
+        }
+
+        if(params.transferSubPackagesAndIes != null)
+        {
+            transferWorkflow.transferSubPackagesAndIes = params.transferSubPackagesAndIes
         }
 
         result.surveyConfig.transferWorkflow = transferWorkflow ?  (new JSON(transferWorkflow)).toString() : null
@@ -1962,6 +1972,17 @@ class SurveyController {
                     objects << result.successorSubscription
                     result = result + compareService.compareProperties(objects)
                 }
+
+                if(result.surveyConfig.subSurveyUseForTransfer) {
+                    result.successorSubscriptionParent = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
+                    result.subscriptionParent = result.surveyConfig.subscription
+                    Collection<AbstractPropertyWithCalculatedLastUpdated> props
+                    props = result.subscriptionParent.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.surveyInfo.owner.id || (it.tenant?.id != result.surveyInfo.owner.id && it.isPublic))}
+                    if(result.successorSubscriptionParent){
+                        props += result.successorSubscriptionParent.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.surveyInfo.owner.id || (it.tenant?.id != result.surveyInfo.owner.id && it.isPublic))}
+                    }
+                    result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
+                }
             }
         }
 
@@ -2048,12 +2069,13 @@ class SurveyController {
                 }
             }
 
-            if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION]) {
-                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
+            if(result.surveyConfig.subSurveyUseForTransfer) {
+                result.successorSubscriptionParent = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
+                result.subscriptionParent = result.surveyConfig.subscription
                 Collection<AbstractPropertyWithCalculatedLastUpdated> props
-                props = result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
-                if(result.successorSubscription){
-                    props += result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+                props = result.subscriptionParent.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.surveyInfo.owner.id || (it.tenant?.id != result.surveyInfo.owner.id && it.isPublic))}
+                if(result.successorSubscriptionParent){
+                    props += result.successorSubscriptionParent.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.surveyInfo.owner.id || (it.tenant?.id != result.surveyInfo.owner.id && it.isPublic))}
                 }
                 result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
             }
@@ -2408,6 +2430,7 @@ class SurveyController {
 
                 if(!openFailByTitleSelection) {
                     result.surveyInfo.status = params.startNow ? RDStore.SURVEY_SURVEY_STARTED : RDStore.SURVEY_READY
+                    result.surveyInfo.startDate = startDate
                     result.surveyInfo.save()
                     flash.message = params.startNow ? g.message(code: "openSurveyNow.successfully") : g.message(code: "openSurvey.successfully")
                 }else {
@@ -2415,7 +2438,7 @@ class SurveyController {
                 }
             }
 
-            if(!openFailByTitleSelection) {
+            if(!openFailByTitleSelection && params.startNow) {
                 executorService.execute({
                     Thread.currentThread().setName('EmailsToSurveyUsers' + result.surveyInfo.id)
                     surveyService.emailsToSurveyUsers([result.surveyInfo.id])
@@ -4447,7 +4470,7 @@ class SurveyController {
             }
         }
 
-        if(!subscriptionService.checkThreadRunning('PackageTransfer_'+result.parentSuccessorSubscription.id)) {
+        if(packagesToProcess.size() > 0 && !subscriptionService.checkThreadRunning('PackageTransfer_'+result.parentSuccessorSubscription.id)) {
             boolean withEntitlements = params.linkWithEntitlements == 'on'
             executorService.execute({
                 Thread.currentThread().setName('PackageTransfer_'+result.parentSuccessorSubscription.id)
@@ -4518,6 +4541,15 @@ class SurveyController {
             Subscription.withTransaction { TransactionStatus ts ->
                 Date startDate = newStartDate ?: null
                 Date endDate = newEndDate ?: null
+                //subject to be removed in 3.3
+                List<String> excludes = PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key }
+                //excludes << 'freezeHolding'
+                excludes.add(PendingChangeConfiguration.TITLE_REMOVED)
+                excludes.add(PendingChangeConfiguration.TITLE_REMOVED+PendingChangeConfiguration.NOTIFICATION_SUFFIX)
+                excludes.add(PendingChangeConfiguration.TITLE_DELETED)
+                excludes.add(PendingChangeConfiguration.TITLE_DELETED+PendingChangeConfiguration.NOTIFICATION_SUFFIX)
+                excludes.addAll(PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key+PendingChangeConfiguration.NOTIFICATION_SUFFIX})
+                Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,newParentSub.id,excludes)
 
                 memberSub = new Subscription(
                         type: newParentSub.type ?: null,
@@ -4526,7 +4558,6 @@ class SurveyController {
                         name: newParentSub.name,
                         startDate: startDate,
                         endDate: endDate,
-                        manualCancellationDate: AuditConfig.getConfig(newParentSub, 'manualCancellationDate') ? newParentSub.manualCancellationDate : null,
                         referenceYear: newParentSub.referenceYear ?: null,
                         administrative: newParentSub._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE,
                         manualRenewalDate: newParentSub.manualRenewalDate,
@@ -4542,6 +4573,9 @@ class SurveyController {
                         isMultiYear: multiYear ?: false
                 )
 
+                inheritedAttributes.each { AuditConfig attr ->
+                    memberSub[attr.referenceField] = memberSub[attr.referenceField]
+                }
                 if (!memberSub.save()) {
                     memberSub.errors.each { e ->
                         log.debug("Problem creating new sub: ${e}")

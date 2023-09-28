@@ -695,16 +695,16 @@
                     <tr>
 
                         <th class="la-smaller-table-head"><g:message code="financials.costItemElement"/></th>
-                        <th class="la-smaller-table-head"><g:message code="financials.costInBillingCurrency"/></th>
-                        <th class="la-smaller-table-head"><g:message code="financials.taxRate"/></th>
+                        <th class="la-smaller-table-head"><g:message code="financials.invoice_total"/></th>
+                        <th class="la-smaller-table-head"><g:message code="financials.newCosts.taxTypeAndRate"/></th>
                         <th class="la-smaller-table-head"><g:message
-                                code="financials.costInBillingCurrencyAfterTax"/></th>
+                                code="financials.newCosts.totalAmount"/></th>
 
                         <th class="la-smaller-table-head"><g:message code="financials.costItemElement"/></th>
-                        <th class="la-smaller-table-head"><g:message code="financials.costInBillingCurrency"/></th>
-                        <th class="la-smaller-table-head"><g:message code="financials.taxRate"/></th>
+                        <th class="la-smaller-table-head"><g:message code="financials.invoice_total"/></th>
+                        <th class="la-smaller-table-head"><g:message code="financials.newCosts.taxTypeAndRate"/></th>
                         <th class="la-smaller-table-head"><g:message
-                                code="financials.costInBillingCurrencyAfterTax"/></th>
+                                code="financials.newCosts.totalAmount"/></th>
 
                     </tr>
                     </thead>
