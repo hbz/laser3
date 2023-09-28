@@ -287,11 +287,13 @@
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
                             <i aria-hidden="true" class="write icon"></i>
                         </g:link>
+
+                        <g:if test="${contextService.getUser().isYoda()}">
                             <g:if test="${sub._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION] && sub.instanceOf._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE}">
                                 <g:if test="${sub.orgRelations.find{it.roleType == RDStore.OR_SUBSCRIBER_CONS_HIDDEN}}">
-                                        <g:link class="ui icon button la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.hiddenForSubscriber')}" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
-                                            <i class="ui icon eye"></i>
-                                        </g:link>
+                                    <g:link class="ui icon button la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.hiddenForSubscriber')}" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
+                                        <i class="ui icon eye"></i>
+                                    </g:link>
                                 </g:if>
                                 <g:else>
                                     <g:link class="ui icon orange button la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.hideToSubscriber')}" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
@@ -299,6 +301,8 @@
                                     </g:link>
                                 </g:else>
                             </g:if>
+                        </g:if>
+
                             <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci.id from CostItem ci where ci.sub = :sub and ci.costItemStatus != :deleted and ci.owner = :context',[sub:sub,deleted:RDStore.COST_ITEM_DELETED,context:institution])}"/>
                             <g:if test="${!hasCostItems}">
                                 <g:link class="ui icon negative button la-modern-button" controller="subscription" action="delete" params="${[id:sub.id]}"
@@ -316,6 +320,7 @@
                                     </button>
                                 </span>
                             </g:else>
+
                         <ui:xEditableAsIcon owner="${sub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea" emptyTooltip="${message(code: 'subscription.details.internalComment')}"/>
                     </td>
                 </tr>

@@ -229,7 +229,19 @@
 <g:elseif test="${contextService.isInstEditor_or_ROLEADMIN()}">
     <ui:actionsDropdown>
         <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
+
+        <g:if test="${actionName == 'members' && subscriptionService.getValidSubChilds(subscription)}">
+            <ui:actionsDropdownItem data-ui="modal" id="copyMailAddresses" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
+            <div class="divider"></div>
+        </g:if>
     </ui:actionsDropdown>
+</g:elseif>
+<g:elseif test="${contextService.isInstUser_or_ROLEADMIN()}">
+    <g:if test="${actionName == 'members' && subscriptionService.getValidSubChilds(subscription)}">
+        <ui:actionsDropdown>
+            <ui:actionsDropdownItem data-ui="modal" id="copyMailAddresses" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
+        </ui:actionsDropdown>
+    </g:if>
 </g:elseif>
 
 <g:if test="${contextService.isInstEditor_or_ROLEADMIN()}">

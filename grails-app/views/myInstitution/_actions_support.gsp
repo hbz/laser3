@@ -12,14 +12,14 @@
     </g:if>
 
     <g:if test="${actionName in ['currentLicenses']}">
-            <ui:actionsDropdown>
+        <ui:actionsDropdown>
             <ui:actionsDropdownItem controller="myInstitution" action="emptyLicense" message="license.add.blank" />
         </ui:actionsDropdown>
     </g:if>
 
     <g:if test="${actionName in ['manageMembers', 'addMembers']}">
         <ui:actionsDropdown>
-            <g:if test="${comboType != null && comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
+            <g:if test="${comboType != null && comboType == RDStore.COMBO_TYPE_CONSORTIUM}"> %{-- todo --}%
                 <ui:actionsDropdownItem controller="myInstitution" action="addMembers" message="menu.institutions.add_consortia_members" />
             </g:if>
             <g:if test="${actionName in ['manageMembers']}">
@@ -28,6 +28,13 @@
         </ui:actionsDropdown>
     </g:if>
 </g:if>
+<g:elseif test="${contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.ORG_SUPPORT)}">
+    <g:if test="${actionName == 'manageMembers'}">
+        <ui:actionsDropdown>
+            <ui:actionsDropdownItem data-ui="modal" id="copyMailAddresses" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
+        </ui:actionsDropdown>
+    </g:if>
+</g:elseif>
 
 <g:if test="${editable}">
     <g:if test="${actionName in ['documents']}">

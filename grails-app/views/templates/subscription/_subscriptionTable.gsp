@@ -42,7 +42,7 @@
                         <g:if test="${params.orgRole in ['Subscription Consortia']}">
                             <th scope="col" rowspan="2" class="center aligned">
                                 <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.numberOfLicenses.label')}" data-position="top center">
-                                    <i class="users large icon"></i>
+                                    <i class="university large icon"></i>
                                 </a>
                             </th>
                             <th scope="col" rowspan="2" class="center aligned">
@@ -55,7 +55,7 @@
                             <th scope="col" rowspan="2" class="la-no-uppercase center aligned">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                       data-content="${message(code: 'subscription.isMultiYear.label')}">
-                                    <i class="map orange icon"></i>
+                                    <i class="map icon"></i>
                                 </span>
                             </th>
                         </g:if>

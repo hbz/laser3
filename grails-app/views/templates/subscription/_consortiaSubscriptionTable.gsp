@@ -51,7 +51,7 @@
                         <i class="money bill alternate icon"></i>
                     </span>&nbsp;/&nbsp;
                     <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
-                        <i class="ui icon eye orange"></i>
+                        <i class="icon eye"></i>
                     </span>
                 </th>
             </g:if>
@@ -59,7 +59,7 @@
             <th rowspan="2" class="la-no-uppercase center aligned">
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                       data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
-                    <i class="map orange icon"></i>
+                    <i class="map icon"></i>
                 </span>
             </th>
             <g:if test="${'onlyMemberSubs' in tableConfig}">
@@ -209,7 +209,7 @@
 
                         <g:if test="${ci?.isVisibleForSubscriber}">
                             <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
-                                <i class="ui icon eye orange"></i>
+                                <i class="icon eye orange"></i>
                             </span>
                         </g:if>
                     </td>
