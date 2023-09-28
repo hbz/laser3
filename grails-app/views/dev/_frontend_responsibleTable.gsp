@@ -47,7 +47,7 @@
                 <i class="money bill large icon" aria-hidden="true"></i>
             </a>
         </th>
-
+        <th scope="col" rowspan="2" class="two">Trend</th>
         <th scope="col" rowspan="2" class="two">Optionen</th>
     </tr>
     <tr>
@@ -121,7 +121,321 @@
 
             </a>
         </td>
+        <td>
+            <div id="1" style="width: 100px;height:40px"></div>
+        </td>
+        <td class="x" data-label="Optionen:">
 
+            <a href="/subscription/surveysConsortia/47645" class="ui button blue icon la-modern-button">
+                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                      data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
+                      aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
+                    <i class="ui icon pie chart" aria-hidden="true"></i>
+                </span>
+            </a>
+
+        </td>
+    </tr>
+    <tr>
+
+        <td class="center aligned" data-label="
+                        Nr.
+                    :">
+            2
+        </td>
+        <th scope="row" class="la-th-column">
+            <a href="/subscription/show/47645" class="la-main-object">
+
+                All You Can Read
+
+            </a>
+
+            <div class="la-flexbox la-minor-object">
+                <i class="icon balance scale la-list-icon" aria-hidden="true"></i>
+                <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
+            </div>
+
+        </th>
+        <td data-label="
+                        Verknüpfte Pakete
+                    :">
+            <!-- packages -->
+
+            <div class="la-flexbox">
+                <i class="icon gift la-list-icon" aria-hidden="true"></i>
+                <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
+                    All You Can Read
+                </a>
+            </div>
+
+            <!-- packages -->
+        </td>
+
+        <td data-label="Anbieter / Lieferant:">
+
+            <a href="/org/show/25">HERDT-Verlag für Bildungsmedien GmbH
+
+                <br>
+                (Herdt)
+
+            </a><br>
+
+        </td>
+
+        <td data-label="Anfangsdatum:">
+            01.01.2022<br>
+            <span class="la-secondHeaderRow" data-label="Enddatum:">31.12.2022</span>
+        </td>
+
+        <td data-label="Einrichtung:">
+
+            <a href="/subscription/members/47645">2</a>
+
+        </td>
+        <td data-label="Einrichtungskosten:">
+            <a href="/subscription/47645/finance">
+
+                1
+
+            </a>
+        </td>
+        <td>
+            <div id="2" style="width: 100px;height:40px"></div>
+        </td>
+        <td class="x" data-label="Optionen:">
+
+            <a href="/subscription/surveysConsortia/47645" class="ui button blue icon la-modern-button">
+                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                      data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
+                      aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
+                    <i class="ui icon pie chart" aria-hidden="true"></i>
+                </span>
+            </a>
+
+        </td>
+    </tr>
+    <tr>
+
+        <td class="center aligned" data-label="
+                        Nr.
+                    :">
+            3
+        </td>
+        <th scope="row" class="la-th-column">
+            <a href="/subscription/show/47645" class="la-main-object">
+
+                All You Can Read
+
+            </a>
+
+            <div class="la-flexbox la-minor-object">
+                <i class="icon balance scale la-list-icon" aria-hidden="true"></i>
+                <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
+            </div>
+
+        </th>
+        <td data-label="
+                        Verknüpfte Pakete
+                    :">
+            <!-- packages -->
+
+            <div class="la-flexbox">
+                <i class="icon gift la-list-icon" aria-hidden="true"></i>
+                <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
+                    All You Can Read
+                </a>
+            </div>
+
+            <!-- packages -->
+        </td>
+
+        <td data-label="Anbieter / Lieferant:">
+
+            <a href="/org/show/25">HERDT-Verlag für Bildungsmedien GmbH
+
+                <br>
+                (Herdt)
+
+            </a><br>
+
+        </td>
+
+        <td data-label="Anfangsdatum:">
+            01.01.2022<br>
+            <span class="la-secondHeaderRow" data-label="Enddatum:">31.12.2022</span>
+        </td>
+
+        <td data-label="Einrichtung:">
+
+            <a href="/subscription/members/47645">2</a>
+
+        </td>
+        <td data-label="Einrichtungskosten:">
+            <a href="/subscription/47645/finance">
+
+                1
+
+            </a>
+        </td>
+        <td>
+            <div id="3" style="width: 100px;height:40px"></div>
+        </td>
+        <td class="x" data-label="Optionen:">
+
+            <a href="/subscription/surveysConsortia/47645" class="ui button blue icon la-modern-button">
+                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                      data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
+                      aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
+                    <i class="ui icon pie chart" aria-hidden="true"></i>
+                </span>
+            </a>
+
+        </td>
+    </tr>
+    <tr>
+
+        <td class="center aligned" data-label="
+                        Nr.
+                    :">
+            4
+        </td>
+        <th scope="row" class="la-th-column">
+            <a href="/subscription/show/47645" class="la-main-object">
+
+                All You Can Read
+
+            </a>
+
+            <div class="la-flexbox la-minor-object">
+                <i class="icon balance scale la-list-icon" aria-hidden="true"></i>
+                <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
+            </div>
+
+        </th>
+        <td data-label="
+                        Verknüpfte Pakete
+                    :">
+            <!-- packages -->
+
+            <div class="la-flexbox">
+                <i class="icon gift la-list-icon" aria-hidden="true"></i>
+                <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
+                    All You Can Read
+                </a>
+            </div>
+
+            <!-- packages -->
+        </td>
+
+        <td data-label="Anbieter / Lieferant:">
+
+            <a href="/org/show/25">HERDT-Verlag für Bildungsmedien GmbH
+
+                <br>
+                (Herdt)
+
+            </a><br>
+
+        </td>
+
+        <td data-label="Anfangsdatum:">
+            01.01.2022<br>
+            <span class="la-secondHeaderRow" data-label="Enddatum:">31.12.2022</span>
+        </td>
+
+        <td data-label="Einrichtung:">
+
+            <a href="/subscription/members/47645">2</a>
+
+        </td>
+        <td data-label="Einrichtungskosten:">
+            <a href="/subscription/47645/finance">
+
+                1
+
+            </a>
+        </td>
+        <td>
+            <div id="4" style="width: 100px;height:40px"></div>
+        </td>
+        <td class="x" data-label="Optionen:">
+
+            <a href="/subscription/surveysConsortia/47645" class="ui button blue icon la-modern-button">
+                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                      data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
+                      aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
+                    <i class="ui icon pie chart" aria-hidden="true"></i>
+                </span>
+            </a>
+
+        </td>
+    </tr>
+    <tr>
+
+        <td class="center aligned" data-label="
+                        Nr.
+                    :">
+            5
+        </td>
+        <th scope="row" class="la-th-column">
+            <a href="/subscription/show/47645" class="la-main-object">
+
+                All You Can Read
+
+            </a>
+
+            <div class="la-flexbox la-minor-object">
+                <i class="icon balance scale la-list-icon" aria-hidden="true"></i>
+                <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
+            </div>
+
+        </th>
+        <td data-label="
+                        Verknüpfte Pakete
+                    :">
+            <!-- packages -->
+
+            <div class="la-flexbox">
+                <i class="icon gift la-list-icon" aria-hidden="true"></i>
+                <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
+                    All You Can Read
+                </a>
+            </div>
+
+            <!-- packages -->
+        </td>
+
+        <td data-label="Anbieter / Lieferant:">
+
+            <a href="/org/show/25">HERDT-Verlag für Bildungsmedien GmbH
+
+                <br>
+                (Herdt)
+
+            </a><br>
+
+        </td>
+
+        <td data-label="Anfangsdatum:">
+            01.01.2022<br>
+            <span class="la-secondHeaderRow" data-label="Enddatum:">31.12.2022</span>
+        </td>
+
+        <td data-label="Einrichtung:">
+
+            <a href="/subscription/members/47645">2</a>
+
+        </td>
+        <td data-label="Einrichtungskosten:">
+            <a href="/subscription/47645/finance">
+
+                1
+
+            </a>
+        </td>
+        <td>
+            <div id="5" style="width: 100px;height:40px"></div>
+        </td>
         <td class="x" data-label="Optionen:">
 
             <a href="/subscription/surveysConsortia/47645" class="ui button blue icon la-modern-button">

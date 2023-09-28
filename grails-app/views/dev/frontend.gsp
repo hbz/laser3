@@ -1,6 +1,6 @@
 <%@ page import="de.laser.License; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.UserSetting" %>
 <laser:htmlStart text="Frontend for Developers"> %{-- <!doctype html><html><head>--}%
-
+    <laser:javascript src="echarts.js"/>%{-- dont move --}%
     <style>
     #example .example .column .icon {
         opacity: 1;
@@ -74,6 +74,7 @@
     <laser:render template="frontend_copyFunction" />
     %{-- Kopierfunktion  --}%
     <laser:render template="frontend_responsibleTable" />
+    <laser:render template="sparklines" />
     %{-- LABELS --}%
     <laser:render template="frontend_labels" />
     %{-- FLYOUT --}%
