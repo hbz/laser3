@@ -70,6 +70,13 @@
         </g:if>
     </ui:actionsDropdown>
 </g:if>
+<g:elseif test="${contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.ORG_SUPPORT)}">
+    <g:if test="${actionName == 'members' && subscriptionService.getValidSubChilds(subscription)}">
+        <ui:actionsDropdown>
+            <ui:actionsDropdownItem data-ui="modal" id="copyMailAddresses" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
+        </ui:actionsDropdown>
+    </g:if>
+</g:elseif>
 
 <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_SUPPORT)}">
     <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: subscription, owntp: 'subscription']]}" />
