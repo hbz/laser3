@@ -331,13 +331,13 @@
                         Renewal
                     </th>
 
-                    <th scope="col" rowspan="3" class="center aligned">
-                        <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.participantTransferWithSurvey.label')}" data-position="top center">
+                    <th scope="col" rowspan="3" class="center aligned sortable ${params.sort == 'participantTransferWithSurvey' ? ('sorted '+(params.order == 'asc' ? 'desc' : 'asc')) : ''}">
+                        <g:link action="currentSubscriptionsTransfer" params="${params+[sort: 'participantTransferWithSurvey', order: params.order == 'asc' ? 'desc' : 'asc']}" class="la-popup-tooltip la-delay " data-content="${message(code: 'subscription.participantTransferWithSurvey.label')}" data-position="top center">
                             <i class="large icons">
                                 <i class="chart pie icon"></i>
                                 <i class="top right corner redo icon"></i>
                             </i>
-                        </a>
+                        </g:link>
                     </th>
                 </tr>
                 <tr>
@@ -459,9 +459,9 @@
                                                 <g:else>
                                                     ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
                                                 </g:else>
-                                                <g:if test="${docctx.getDocType()}">
+                                               %{-- <g:if test="${docctx.getDocType()}">
                                                     (${docctx.getDocType().getI10n("value")})
-                                                </g:if>
+                                                </g:if>--}%
 
                                             </div>
 
@@ -570,7 +570,7 @@
                     </g:else>
 
                         <g:set var="countOrgsWithTermination" value="${0}"/>
-                        <g:if test="${surveyConfig}">
+                        <g:if test="${surveyConfig && surveyConfig.surveyInfo.status in [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED]}">
                             <g:set var="countOrgsWithTermination" value="${surveyConfig.countOrgsWithTermination()}"/>
                         </g:if>
 
@@ -658,9 +658,9 @@
                                                 <g:else>
                                                     ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
                                                 </g:else>
-                                                <g:if test="${docctx.getDocType()}">
+                                               %{-- <g:if test="${docctx.getDocType()}">
                                                     (${docctx.getDocType().getI10n("value")})
-                                                </g:if>
+                                                </g:if>--}%
                                             </div>
 
                                             <div class="right aligned five wide column la-column-left-lessPadding la-border-left">

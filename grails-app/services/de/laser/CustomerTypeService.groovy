@@ -75,4 +75,9 @@ class CustomerTypeService {
         String tmpl = '/templates/subscription/consortiaSubscriptionFilter'
         return contextService.getOrg().isCustomerType_Support() ? tmpl + '_support' : tmpl
     }
+
+    String getNavSubscriptionManagementTemplatePath() {
+        String tmpl = '/templates/management/navSubscriptionManagement'
+        return contextService.getOrg().isCustomerType_Support() ? tmpl + '_support' : tmpl
+    }
 }

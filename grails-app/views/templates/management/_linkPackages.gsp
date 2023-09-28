@@ -145,7 +145,7 @@
                     <th class="la-no-uppercase">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                               data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
-                            <i class="map orange icon"></i>
+                            <i class="map icon"></i>
                         </span>
                     </th>
                     <th>${message(code:'default.actions.label')}</th>

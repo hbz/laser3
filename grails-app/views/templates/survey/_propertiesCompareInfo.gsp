@@ -29,11 +29,11 @@
                             </g:if>
                         </td>
                         <g:set var="propValues" value="${prop.getValue()}"/>
-                        <g:if test="${(subscription && subscription.id in propValues.owner.id)}">
+                        <g:if test="${(subscriptionParent && subscriptionParent.id in propValues.owner.id)}">
                             <td class="center aligned">
                                 <div class="ui relaxed divided list">
                                     <g:each var="subProperty" in="${propValues}">
-                                        <g:if test="${subProperty.owner.id == subscription.id}">
+                                        <g:if test="${subProperty.owner.id == subscriptionParent.id}">
                                             <div class="item">
                                             %{--SOURCE-SUBSCRIPTION--}%
 
@@ -85,7 +85,7 @@
                                 </div>
                             </td>
                         </g:if>
-                        <g:if test="${!(subscription && subscription.id in propValues.owner.id)}">
+                        <g:if test="${!(subscriptionParent && subscriptionParent.id in propValues.owner.id)}">
                             <td class="center aligned">
                                 <a class="ui circular label la-popup-tooltip la-delay"
                                    data-content="<g:message
@@ -93,12 +93,12 @@
                                 </a>
                             </td>
                         </g:if>
-                        <g:if test="${(successorSubscription && successorSubscription.id in propValues.owner.id)}">
+                        <g:if test="${(successorSubscriptionParent && successorSubscriptionParent.id in propValues.owner.id)}">
                             <td class="center aligned">
                                 <div class="ui relaxed divided list">
                                     <g:each var="subProperty" in="${propValues}">
                                     %{--TARGET-SUBSCRIPTION--}%
-                                        <g:if test="${subProperty.owner.id == successorSubscription.id}">
+                                        <g:if test="${subProperty.owner.id == successorSubscriptionParent.id}">
                                             <div class="item">
                                                 <g:if test="${subProperty.type.isIntegerType()}">
                                                     <ui:xEditable owner="${subProperty}" type="text" field="intValue"
@@ -149,7 +149,7 @@
                                 </div>
                             </td>
                         </g:if>
-                        <g:if test="${!(successorSubscription && successorSubscription.id in propValues.owner.id)}">
+                        <g:if test="${!(successorSubscriptionParent && successorSubscriptionParent.id in propValues.owner.id)}">
                             <td class="center aligned">
                                 <a class="ui circular label la-popup-tooltip la-delay"
                                    data-content="<g:message

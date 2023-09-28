@@ -237,9 +237,11 @@ class UserService {
         }
 
         rolesToCheck.each { String rtc ->
-            Role role = Role.findByAuthority(rtc)
-            if (role) {
-                check = check || userToCheck.isFormal(role, orgToCheck)
+            if (!check) {
+                Role role = Role.findByAuthority(rtc)
+                if (role) {
+                    check = userToCheck.isFormal(role, orgToCheck)
+                }
             }
         }
         //TODO: log.debug("_checkUserOrgRole(): ${userToCheck} ${orgToCheck} ${instUserRole} -> ${check}")
