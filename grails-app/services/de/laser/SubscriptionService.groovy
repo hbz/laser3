@@ -216,7 +216,7 @@ class SubscriptionService {
 
         if(params.sort){
             String newSort = "oo.sub.${params.sort}"
-            subscriptions = Subscription.executeQuery("select oo.sub from OrgRole oo join oo.org providerAgency where oo.sub.id in (:subscriptions) and oo.roleType in (:providerAgency) order by " + newSort +", providerAgency.name, oo.sub.name " + params.order, [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
+            subscriptions = Subscription.executeQuery("select oo.sub from OrgRole oo join oo.org providerAgency where oo.sub.id in (:subscriptions) and oo.roleType in (:providerAgency) order by " + newSort +" "+ params.order + ", providerAgency.name, oo.sub.name " , [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
         }else {
             subscriptions = Subscription.executeQuery("select oo.sub from OrgRole oo join oo.org providerAgency where oo.sub.id in (:subscriptions) and oo.roleType in (:providerAgency) order by providerAgency.name, oo.sub.name ", [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
         }
