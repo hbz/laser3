@@ -20,10 +20,11 @@
                             'Current Participants'
                     ]
             ],
-            'timeline-cost' : [
+            'timeline-member-cost' : [
                     'de' : [
                             'Die Abfrage visualisiert die zeitliche Entwicklung der Einrichtungskosten für diese Lizenz',
-                            'Gelistet werden alle relevanten Lizenzen (referenzierte Vorgänger, bzw. Nachfolger) mit ihren jeweiligen Datumsgrenzen. Über betroffene Einrichtungslizenzen und existierende Kosten werden folgende Informationen berechnet:',
+                            'Gelistet werden alle relevanten Lizenzen (referenzierte Vorgänger, bzw. Nachfolger) mit ihren jeweiligen Datumsgrenzen. ' +
+                                    'Über betroffene Einrichtungslizenzen und existierende Kosten werden folgende Informationen berechnet - eigene Kosten werden dabei ignoriert:',
                             'Kumulierter Endpreis in Euro (nach Steuern)',
                             'Kumulierter Wert in Euro',
                             'Neutrale Kosten in Euro (nach Steuern)',
@@ -31,7 +32,28 @@
                     ],
                     'en' : [
                             'The query visualizes the development of the participants costs for this subscription over time',
-                            'All relevant subscriptions (referenced predecessors or successors) are listed with their respective date limits. The following information is calculated on affected participant subscriptions and existing cost items:',
+                            'All relevant subscriptions (referenced predecessors or successors) are listed with their respective date limits. ' +
+                                    'The following information is calculated on affected participant subscriptions and existing cost items - own costs will be ignored:',
+                            'Accumulated final price in euros (after taxes)',
+                            'Accumulated value in euros',
+                            'Neutral costs in euros (after taxes)',
+                            'Neutral costs in euros'
+                    ]
+            ],
+            'timeline-participant-cost' : [
+                    'de' : [
+                            'Die Abfrage visualisiert die zeitliche Entwicklung der Teilnahmekosten für diese Lizenz',
+                            'Gelistet werden alle relevanten Lizenzen (referenzierte Vorgänger, bzw. Nachfolger) mit ihren jeweiligen Datumsgrenzen. ' +
+                                    'Über existierende Teilnahmekosten werden folgende Informationen berechnet - eigene Kosten werden dabei ignoriert:',
+                            'Kumulierter Endpreis in Euro (nach Steuern)',
+                            'Kumulierter Wert in Euro',
+                            'Neutrale Kosten in Euro (nach Steuern)',
+                            'Neutrale Kosten in Euro'
+                    ],
+                    'en' : [
+                            'The query visualizes the development of the member costs for this subscription over time',
+                            'All relevant subscriptions (referenced predecessors or successors) are listed with their respective date limits. ' +
+                                    'The following information is calculated on existing cost items - own costs will be ignored:',
                             'Accumulated final price in euros (after taxes)',
                             'Accumulated value in euros',
                             'Neutral costs in euros (after taxes)',
@@ -88,18 +110,32 @@
             <i class="icon circle blue"></i> ${text['timeline-member'][lang][4]}
         </p>
     </div>
-    <div class="help-section" data-help-section="timeline-cost">
+    <div class="help-section" data-help-section="timeline-member-cost">
         <p class="ui header">
-            ${text['timeline-cost'][lang][0]}
+            ${text['timeline-member-cost'][lang][0]}
         </p>
         <p>
-            ${text['timeline-cost'][lang][1]}
+            ${text['timeline-member-cost'][lang][1]}
         </p>
         <p>
-            <i class="icon circle blue"></i> ${text['timeline-cost'][lang][2]}, <br />
-            <i class="icon circle green"></i> ${text['timeline-cost'][lang][3]}, <br />
-            <i class="icon circle orange"></i> ${text['timeline-cost'][lang][4]}, <br />
-            <i class="icon circle yellow"></i> ${text['timeline-cost'][lang][5]}
+            <i class="icon circle blue"></i> ${text['timeline-member-cost'][lang][2]}, <br />
+            <i class="icon circle green"></i> ${text['timeline-member-cost'][lang][3]}, <br />
+            <i class="icon circle orange"></i> ${text['timeline-member-cost'][lang][4]}, <br />
+            <i class="icon circle yellow"></i> ${text['timeline-member-cost'][lang][5]}
+        </p>
+    </div>
+    <div class="help-section" data-help-section="timeline-participant-cost">
+        <p class="ui header">
+            ${text['timeline-participant-cost'][lang][0]}
+        </p>
+        <p>
+            ${text['timeline-participant-cost'][lang][1]}
+        </p>
+        <p>
+            <i class="icon circle blue"></i> ${text['timeline-participant-cost'][lang][2]}, <br />
+            <i class="icon circle green"></i> ${text['timeline-participant-cost'][lang][3]}, <br />
+            <i class="icon circle orange"></i> ${text['timeline-participant-cost'][lang][4]}, <br />
+            <i class="icon circle yellow"></i> ${text['timeline-participant-cost'][lang][5]}
         </p>
     </div>
     <div class="help-section" data-help-section="timeline-entitlement">
