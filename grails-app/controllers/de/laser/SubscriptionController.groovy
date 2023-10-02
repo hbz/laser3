@@ -949,7 +949,7 @@ class SubscriptionController {
                     fos.flush()
                     fos.close()
                 }
-                Map fileResult = [token: filename]
+                Map fileResult = [token: filename, fileformat: 'kbart']
                 render template: '/templates/bulkItemDownload', model: fileResult
                 return
             }
@@ -1061,7 +1061,7 @@ class SubscriptionController {
                     out.flush()
                     out.close()
                 }
-                Map fileResult = [token: filename]
+                Map fileResult = [token: filename, fileformat: 'kbart']
                 render template: '/templates/bulkItemDownload', model: fileResult
                 return
             }
@@ -1583,7 +1583,7 @@ class SubscriptionController {
                     out.flush()
                     out.close()
                 }
-                Map fileResult = [token: filename]
+                Map fileResult = [token: filename, fileformat: 'kbart']
                 render template: '/templates/bulkItemDownload', model: fileResult
                 return
             }
