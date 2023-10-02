@@ -27,7 +27,7 @@ class ContextBarTagLib {
             text  = Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_PRO).getI10n('authority')
         }
         else if (org.isCustomerType_Consortium_Basic()) {
-            icon  = 'smile'
+            icon  = 'user circle'
             color = 'teal'
             text  = Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_BASIC).getI10n('authority')
         }
@@ -37,7 +37,7 @@ class ContextBarTagLib {
             text  = Role.findByAuthority(CustomerTypeService.ORG_INST_PRO).getI10n('authority')
         }
         else if (org.isCustomerType_Inst()) {
-            icon  = 'smile'
+            icon  = 'user circle'
             color = 'yellow'
             text  = Role.findByAuthority(CustomerTypeService.ORG_INST_BASIC).getI10n('authority')
         }
