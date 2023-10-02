@@ -84,6 +84,9 @@ abstract class BaseDetailsExport {
             if (ctxConsortium()) {
                 CostItemExportLocal.CONFIG_ORG_CONSORTIUM_BASIC
             }
+            else if (ctxInst()) {
+                CostItemExportLocal.CONFIG_ORG_INST
+            }
         }
         else if (key == IssueEntitlementExportLocal.KEY) {
             IssueEntitlementExportLocal.CONFIG_X

@@ -51,6 +51,41 @@ class CostItemExport extends BaseDetailsExport {
             ]
     ]
 
+    static Map<String, Object> CONFIG_ORG_INST = [ // todo - check fields
+
+            base : [
+                    meta : [
+                            class: CostItem
+                    ],
+                    fields : [
+                            default: [
+                                    '@-cost-member+sortname+name' : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-cost-subscription'         : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-cost-package'              : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-cost-order'                : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-cost-invoice'              : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
+
+                                    'costTitle'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'costDescription'   : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'reference'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+
+                                    'costInBillingCurrency'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'costInBillingCurrencyAfterTax' : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'billingCurrency'               : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'costInLocalCurrency'           : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'costInLocalCurrencyAfterTax'   : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    '@-cost-taxKey'                 : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
+                                    'costItemElementConfiguration'  : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'costItemStatus'                : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'startDate'                     : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'endDate'                       : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'datePaid'                      : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'financialYear'                 : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ]
+                            ]
+                    ],
+            ]
+    ]
+
     CostItemExport(String token, Map<String, Object> fields) {
         init(token, fields)
     }

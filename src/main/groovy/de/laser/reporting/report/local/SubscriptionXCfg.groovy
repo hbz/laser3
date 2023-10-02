@@ -29,6 +29,51 @@ class SubscriptionXCfg {
 
                     timeline: [
                             default: [
+//                                    'timeline-cost' : [ // todo
+//                                            detailsTemplate : 'timeline/cost',
+//                                            chartTemplate   : 'timeline/cost',
+//                                            chartLabels     : [ 'cost.1', 'cost.2', 'cost.3', 'cost.4' ]
+//                                    ],
+                                    'timeline-entitlement' : [
+                                            detailsTemplate : 'timeline/entitlement',
+                                            chartTemplate   : 'timeline/1axis3values',
+                                            chartLabels     : [ 'entitlement.1', 'entitlement.2', 'entitlement.3' ]
+                                    ]
+                            ]
+                    ]
+            ]
+    ]
+
+    static Map<String, Object> CONFIG_PARTICIPATION = [
+
+            base : [
+                    meta : [
+                            cfgKey: BaseConfig.KEY_LOCAL_SUBSCRIPTION
+                    ],
+                    query: [
+                            default: [
+                                    tipp : [
+                                            'tipp-publisherName' :      [ 'generic.tipp.publisherName' ],
+                                            'tipp-seriesName' :         [ 'generic.tipp.seriesName' ],
+                                            'tipp-subjectReference' :   [ 'generic.tipp.subjectReference' ],
+                                            'tipp-titleType' :          [ 'generic.tipp.titleType' ],
+                                            'tipp-medium' :             [ 'generic.tipp.medium' ],
+                                            'tipp-dateFirstOnline' :    [ 'generic.tipp.dateFirstOnline' ],
+                                            'tipp-ddcs' :               [ 'generic.tipp.ddcs' ],
+                                            'tipp-languages' :          [ 'generic.tipp.languages' ],
+                                            //  'tipp-package' :        [ 'generic.tipp.package' ],
+                                            //  'tipp-platform' :       [ 'generic.tipp.platform' ]
+                                    ]
+                            ]
+                    ],
+
+                    timeline: [
+                            default: [
+                                    'timeline-participant-cost' : [
+                                            detailsTemplate : 'timeline/cost',
+                                            chartTemplate   : 'timeline/cost',
+                                            chartLabels     : [ 'cost.1', 'cost.2', 'cost.3', 'cost.4' ]
+                                    ],
                                     'timeline-entitlement' : [
                                             detailsTemplate : 'timeline/entitlement',
                                             chartTemplate   : 'timeline/1axis3values',
@@ -82,7 +127,7 @@ class SubscriptionXCfg {
                                             chartTemplate   : 'timeline/1axis3values',
                                             chartLabels     : [ 'member.1', 'member.2', 'member.3' ]
                                     ],
-                                    'timeline-cost' : [
+                                    'timeline-member-cost' : [
                                             detailsTemplate : 'timeline/cost',
                                             chartTemplate   : 'timeline/cost',
                                             chartLabels     : [ 'cost.1', 'cost.2', 'cost.3', 'cost.4' ]
@@ -97,6 +142,46 @@ class SubscriptionXCfg {
                                             chartTemplate   : 'timeline/annualMember',
                                             chartLabels     : [ 'annualMember-subscription' ]
                                     ],
+                            ],
+                    ]
+            ]
+    ]
+
+    static Map<String, Object> CONFIG_CONS_AT_SUBSCR = [
+
+            base : [
+                    meta : [
+                            cfgKey: BaseConfig.KEY_LOCAL_SUBSCRIPTION
+                    ],
+                    query: [
+                            default: [
+                                    tipp : [
+                                            'tipp-publisherName' :      [ 'generic.tipp.publisherName' ],
+                                            'tipp-seriesName' :         [ 'generic.tipp.seriesName' ],
+                                            'tipp-subjectReference' :   [ 'generic.tipp.subjectReference' ],
+                                            'tipp-titleType' :          [ 'generic.tipp.titleType' ],
+                                            'tipp-medium' :             [ 'generic.tipp.medium' ],
+                                            'tipp-dateFirstOnline' :    [ 'generic.tipp.dateFirstOnline' ],
+                                            'tipp-ddcs' :               [ 'generic.tipp.ddcs' ],
+                                            'tipp-languages' :          [ 'generic.tipp.languages' ],
+                                            //  'tipp-package' :        [ 'generic.tipp.package' ],
+                                            //  'tipp-platform' :       [ 'generic.tipp.platform' ]
+                                    ]
+                            ]
+                    ],
+
+                    timeline: [
+                            default: [
+                                    'timeline-member-cost' : [
+                                            detailsTemplate : 'timeline/cost',
+                                            chartTemplate   : 'timeline/cost',
+                                            chartLabels     : [ 'cost.1', 'cost.2', 'cost.3', 'cost.4' ]
+                                    ],
+                                    'timeline-entitlement' : [
+                                            detailsTemplate : 'timeline/entitlement',
+                                            chartTemplate   : 'timeline/1axis3values',
+                                            chartLabels     : [ 'entitlement.1', 'entitlement.2', 'entitlement.3' ]
+                                    ]
                             ],
                     ]
             ]

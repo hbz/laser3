@@ -41,7 +41,7 @@ class LocalQueryExport extends BaseQueryExport {
             result.cols.add( messageSource.getMessage('default.count.label', null, locale) ) // simple
         }
         else {
-            if (queryCache.query == 'timeline-cost') {
+            if (['timeline-member-cost', 'timeline-participant-cost'].contains(queryCache.query)) {
                 for (c in chart) {
                     result.cols.add(c)
                     result.cols.add(messageSource.getMessage('default.currency.label', null, locale))
@@ -57,7 +57,7 @@ class LocalQueryExport extends BaseQueryExport {
 
         result.rows = dd.collect{ Map e ->
             List entry = [e.label.toString()]
-            if (queryCache.query == 'timeline-cost') { // -- todo // -- todo // -- todo
+            if (['timeline-member-cost', 'timeline-participant-cost'].contains(queryCache.query)) { // -- todo // -- todo // -- todo
                 entry.add((e.vnc ?: ''))
                 entry.add(eur)
                 entry.add((e.vnct ?: ''))
