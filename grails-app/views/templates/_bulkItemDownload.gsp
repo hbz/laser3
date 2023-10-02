@@ -5,5 +5,5 @@
     <g:else>
         <ui:msg icon="ui check icon" class="success" message="default.file.success"/>
     </g:else>
-    <g:link class="ui icon button la-modern-button" controller="package" action="downloadKBART" params="[token: token]"><i class="ui icon download"></i></g:link>
+    <g:link class="ui icon button la-modern-button" controller="package" action="downloadLargeFile" params="[token: token, filenameDisplay: filenameDisplay, fileformat: fileformat]"><i class="ui icon download"></i></g:link>
 </g:if>

@@ -1242,7 +1242,7 @@ class ControlledListService {
             platNameFilter = "and genfunc_filter_matcher(plat.name,:query) = true"
             qryParams.query = params.query
         }
-        String qryString = "select new map(concat('${Platform.class.name}:',plat.id) as value,plat.name as name) from TitleInstancePackagePlatform tipp join tipp.platform plat where tipp in (select ie.tipp from IssueEntitlement ie where ie.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context ${consortiumFilter})) ${platNameFilter} group by plat.id order by plat.name asc"
+        String qryString = "select new map(concat('${Platform.class.name}:',plat.id) as value,plat.name as name) from SubscriptionPackage sp join sp.pkg pkg join pkg.nominalPlatform plat where sp.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context ${consortiumFilter}) ${platNameFilter} group by plat.id order by plat.name asc"
         [results: Platform.executeQuery(qryString, qryParams)]
     }
 
@@ -1256,7 +1256,7 @@ class ControlledListService {
             orgNameFilter = "and (genfunc_filter_matcher(org.name,:query) = true or genfunc_filter_matcher(org.sortname,:query) = true)"
             qryParams.query = params.query
         }
-        String qryString = "select new map(concat('${Org.class.name}:',org.id) as value,org.name as name) from TitleInstancePackagePlatform tipp join tipp.pkg pkg join pkg.orgs oo join oo.org org where tipp in (select ie.tipp from IssueEntitlement ie where ie.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context ${consortiumFilter})) ${orgNameFilter} group by org.id order by org.sortname asc"
+        String qryString = "select new map(concat('${Org.class.name}:',org.id) as value,org.name as name) from SubscriptionPackage sp join sp.pkg pkg join pkg.orgs oo join oo.org org where sp.subscription in (select sub from OrgRole os join os.sub sub where os.org = :context ${consortiumFilter}) ${orgNameFilter} group by org.id order by org.sortname asc"
         [results: Org.executeQuery(qryString, qryParams)]
     }
 }

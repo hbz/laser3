@@ -349,7 +349,7 @@ class PackageController {
      * @return a HTML table showing the holding or the holding rendered as KBART or Excel worksheet
      * @see TitleInstancePackagePlatform
      * @see GlobalService#obtainFileStorageLocation()
-     * @see #downloadKBART()
+     * @see #downloadLargeFile()
      */
     @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
@@ -409,7 +409,7 @@ class PackageController {
                 fos.flush()
                 fos.close()
             }
-            Map fileResult = [token: filename]
+            Map fileResult = [token: filename, fileformat: 'kbart']
             render template: '/templates/bulkItemDownload', model: fileResult
             return
         }
@@ -477,15 +477,28 @@ class PackageController {
     @Secured(closure = {
         ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
-    def downloadKBART() {
+    def downloadLargeFile() {
         byte[] output = []
         try {
-            String dir = ConfigMapper.getStatsReportSaveLocation() ?: '/usage'
+            String dir = ConfigMapper.getStatsReportSaveLocation() ?: '/usage', filename = params.containsKey('filenameDisplay') ? params.filenameDisplay : params.token, extension = ""
             File f = new File(dir+'/'+params.token)
             output = f.getBytes()
-            response.setHeader( "Content-Disposition", "attachment; filename=${params.token}.tsv")
+            switch(params.fileformat) {
+                case 'kbart': response.contentType = "text/tsv"
+                    extension = "tsv"
+                    break
+                case 'csv': response.contentType = "text/csv"
+                    extension = "csv"
+                    break
+                case 'xlsx': response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    extension = "xlsx"
+                    break
+                case 'pdf': response.contentType = "application/pdf"
+                    extension = "pdf"
+                    break
+            }
+            response.setHeader( "Content-Disposition", "attachment; filename=${filename}.${extension}")
             response.setHeader("Content-Length", "${output.length}")
-            response.contentType = "text/tsv"
             response.outputStream << output
         }
         catch (Exception e) {
@@ -607,7 +620,7 @@ class PackageController {
                 fos.flush()
                 fos.close()
             }
-            Map fileResult = [token: filename]
+            Map fileResult = [token: filename, fileformat: 'kbart']
             render template: '/templates/bulkItemDownload', model: fileResult
             return
         }
