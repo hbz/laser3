@@ -554,7 +554,7 @@ join sub.orgRelations or_sub where
             params.joinQuery = "join s.orgRelations so"
         }
 
-        if (contextService.getOrg().isCustomerType_Consortium()) {
+        if (contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()) {
             tmpQ = _getSubscriptionsConsortiaQuery(params)
             result.addAll(Subscription.executeQuery(queryStart + tmpQ[0], tmpQ[1]))
 
@@ -583,7 +583,7 @@ join sub.orgRelations or_sub where
         List result = []
         List tmpQ
 
-        if (contextService.getOrg().isCustomerType_Consortium()) {
+        if (contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()) {
             tmpQ = _getSubscriptionsConsortiaQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
             if (params.showSubscriber) {

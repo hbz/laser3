@@ -2015,6 +2015,7 @@ class SubscriptionController {
         else {
             result.allObjects_readRights = subscriptionService.getMySubscriptionsWithMyElements_readRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
             result.allObjects_writeRights = subscriptionService.getMySubscriptionsWithMyElements_writeRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
+
             switch (params.workFlowPart) {
                 case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
                     result << copyElementsService.copyObjectElements_DocsTasksWorkflows(params)

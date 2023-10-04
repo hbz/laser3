@@ -232,9 +232,9 @@ class SubscriptionReport {
 
                         Map<String, Object> fsCifsMap = financeControllerService.getResultGenerics(clone)
                         fsCifsMap.put('max', 5000)
-println fsCifsMap // todo - remove
+                        //println fsCifsMap // todo - remove
                         Map<String, Object> finance = financeService.getCostItemsForSubscription(clone, fsCifsMap)
-println finance // todo - remove
+                        //println finance // todo - remove
                         //List<CostItem> relevantCostItems = finance.cons.costItems.findAll{ it.costItemElementConfiguration in [RDStore.CIEC_POSITIVE, RDStore.CIEC_NEGATIVE]} ?: []
                         def typeDependingCosts = finance.cons ?: finance.subscr
 
