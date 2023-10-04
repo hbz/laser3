@@ -197,18 +197,19 @@
                                                             <div class="ui list">
                                                                 <g:each in="${ie_infos}" var="ie">
                                                                     <div class="item">
-                                                                        <div class="sixteen wide column">
-                                                                            <i class="icon clipboard outline la-list-icon"></i>
-                                                                            <g:link controller="subscription"
-                                                                                    action="index"
-                                                                                    id="${ie.subscription.id}">${ie.subscription.dropdownNamingConvention(institution)}</g:link>
-                                                                            &nbsp;
-                                                                            <br/>
-                                                                            <br/>
-                                                                            <g:link controller="issueEntitlement"
-                                                                                    action="show"
-                                                                                    id="${ie.id}">${message(code: 'myinst.currentTitles.full_ie')}</g:link>
-                                                                            <br/>
+                                                                        <i class="icon clipboard outline la-list-icon"></i>
+                                                                        <div class="content">
+                                                                            <div class="header">
+                                                                                <g:link controller="subscription"
+                                                                                        action="index"
+                                                                                        id="${ie.subscription.id}">${ie.subscription.dropdownNamingConvention(institution)}</g:link>
+                                                                            </div>
+                                                                            <div class="description">
+                                                                                <g:link controller="issueEntitlement"
+                                                                                        action="show"
+                                                                                        class="ui tiny button la-margin-top-05em"
+                                                                                        id="${ie.id}">${message(code: 'myinst.currentTitles.full_ie')}</g:link>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </g:each>

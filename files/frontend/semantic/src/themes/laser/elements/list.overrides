@@ -142,3 +142,18 @@ dd {
     }
   }
 }
+
+.ui.list .list.la-titleAccordionList:not(.icon) {
+    padding: 0 0 0.25em 1.3em;
+    >.item {
+        list-style-type: square;
+        color: rgba(0, 0, 0, 0.7);
+    }
+}
+
+.ui.list.la-titleAccordionList{
+    padding: 0 0 0.25em 1.3em;
+    >.item {
+        list-style-type: square;
+    }
+}

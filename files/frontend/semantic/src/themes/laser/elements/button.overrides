@@ -220,3 +220,7 @@ a i.circular.la-gokb:hover {
     border-top-right-radius: @borderRadius;
     border-bottom-right-radius: @borderRadius;
 }
+
+.la-margin-top-05em {
+    margin-top: .5em!important;
+}
