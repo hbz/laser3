@@ -230,6 +230,7 @@
         <%-- TODO [ticket=2276] provisoric, name check is in order to prevent id mismatch --%>
             <g:if test="${contextService.getOrg().isCustomerType_Inst_Pro() || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
                 <div class="field">
+                    <label></label>
                     <fieldset id="subscritionType">
                         <label>${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
                         <div class="inline fields la-filter-inline">

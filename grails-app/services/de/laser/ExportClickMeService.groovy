@@ -3655,7 +3655,7 @@ class ExportClickMeService {
                             currency = RDStore.CURRENCY_USD.id
                         else
                             currency = RDStore.CURRENCY_EUR.id
-                        sqlCols.add("(select pi_list_price from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :currency${idx}) as ${fields.sqlCol}")
+                        sqlCols.add("(select pi_list_price from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :currency${idx} order by pi_date_created desc limit 1) as ${fields.sqlCol}")
                         sqlParams.put('currency'+idx, currency)
                     }
                     else {
@@ -3687,6 +3687,8 @@ class ExportClickMeService {
                 return exportService.generateSeparatorTableString(titles, exportData, '|')
             case FORMAT.TSV:
                 return exportService.generateSeparatorTableString(titles, exportData, '\t')
+            case FORMAT.PDF:
+                return [mainHeader: titles, pages: [[titleRow: titles, columnData: exportData]]]
         }
     }
 

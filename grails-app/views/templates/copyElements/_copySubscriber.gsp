@@ -36,10 +36,7 @@
                                 <th>${message(code: 'default.startDate.label')}</th>
                                 <th>${message(code: 'default.endDate.label')}</th>
                                 <th class="la-no-uppercase">
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                          data-content="${message(code: 'subscription.isMultiYear.label')}">
-                                        <i class="map icon"></i>
-                                    </span>
+                                    <ui:multiYearIcon />
                                 </th>
                                 <th>${message(code: 'default.status.label')}</th>
                                 <th class=" center aligned">
@@ -60,11 +57,7 @@
                                         <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
                                         <td>
                                             <g:if test="${sub.isMultiYear}">
-                                                <span class="la-long-tooltip la-popup-tooltip la-delay"
-                                                      data-position="bottom center"
-                                                      data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
-                                                    <i class="map orange icon"></i>
-                                                </span>
+                                                <ui:multiYearIcon isConsortial="true" color="orange" />
                                             </g:if>
                                         </td>
                                         <td>${sub.status.getI10n('value')}</td>
@@ -102,10 +95,7 @@
                                 <th>${message(code: 'default.startDate.label')}</th>
                                 <th>${message(code: 'default.endDate.label')}</th>
                                 <th class="la-no-uppercase">
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                          data-content="${message(code: 'subscription.isMultiYear.label')}">
-                                        <i class="map icon"></i>
-                                    </span>
+                                    <ui:multiYearIcon />
                                 </th>
                                 <th>${message(code: 'default.status.label')}</th>
                             </tr>
@@ -121,11 +111,7 @@
                                         <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
                                         <td>
                                             <g:if test="${sub.isMultiYear}">
-                                                <span class="la-long-tooltip la-popup-tooltip la-delay"
-                                                      data-position="bottom center"
-                                                      data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
-                                                    <i class="map orange icon"></i>
-                                                </span>
+                                                <ui:multiYearIcon isConsortial="true" color="orange" />
                                             </g:if>
                                         </td>
                                         <td>${sub.status.getI10n('value')}</td>

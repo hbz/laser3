@@ -30,7 +30,8 @@
 
             <div class="divider"></div>
 
-            <g:if test="${license._getCalculatedType() == License.TYPE_CONSORTIAL}">
+%{--            <g:if test="${license._getCalculatedType() == License.TYPE_CONSORTIAL}">--}%
+            <g:if test="${license._getCalculatedType() in [License.TYPE_CONSORTIAL, License.TYPE_ADMINISTRATIVE]}">
                 <ui:actionsDropdownItem controller="license" action="copyLicense" params="${[sourceObjectId: genericOIDService.getOID(license), copyObject: true]}" message="myinst.copyLicense" />
             </g:if>
 

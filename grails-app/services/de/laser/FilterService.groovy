@@ -1616,7 +1616,7 @@ class FilterService {
         if (params.asAt && params.asAt.length() > 0) {
             date_filter = sdf.parse(params.asAt)
             result.as_at_date = date_filter
-            result.editable = false
+            filterSet = true
         }
 
 
@@ -1803,7 +1803,7 @@ class FilterService {
             }
             //(exists (select orgRole from OrgRole orgRole where orgRole.tipp = tipp and orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and orgRole.org.name in (:publishers))
             base_qry += " (lower(tipp.publisherName)) in (:publishers) "
-            qry_params.publishers = listReaderWrapper(params, 'publishers').collect { it.toLowerCase() }
+            qry_params.publishers = listReaderWrapper(params, 'publishers').collect { it.toLowerCase().replaceAll('&quot;', '"') }
             filterSet = true
         }
 
@@ -1912,11 +1912,22 @@ class FilterService {
                     join += " join issue_entitlement on ie_tipp_fk = tipp_id"
                     subFilter = " ie_subscription_fk = any(:subscriptions)"
                 }
+                else if(configMap.defaultSubscriptionFilter) {
+                    String consFilter = ""
+                    Org contextOrg = contextService.getOrg()
+                    if(contextOrg.isCustomerType_Consortium())
+                        consFilter = "and sub_parent_sub_fk is null"
+                    subFilter = " exists (select ie_id from issue_entitlement join subscription on ie_subscription_fk = sub_id join subscription_package on sub_id = sp_sub_fk join org_role on or_sub_fk = sub_id where ie_tipp_fk = tipp_id and (sub_status_rv_fk = any(:subStatus) or sub_has_perpetual_access = true) and or_org_fk = :contextOrg ${consFilter}) "
+                    //temp; should be enlarged later to configMap.subStatus
+                    List<Object> subStatus = [RDStore.SUBSCRIPTION_CURRENT.id]
+                    params.subStatus = connection.createArrayOf('bigint', subStatus.toArray())
+                    params.contextOrg = contextOrg.id
+                }
                 if(configMap.pkgfilter != null && !configMap.pkgfilter.isEmpty()) {
                     params.pkgId = Long.parseLong(configMap.pkgfilter)
                     whereClauses << " tipp_pkg_fk = :pkgId"
                 }
-                else {
+                else if(configMap.containsKey('pkgIds')) {
                     List<Object> pkgIds = []
                     pkgIds.addAll(configMap.pkgIds)
                     params.pkgIds = connection.createArrayOf('bigint', pkgIds.toArray())
@@ -1930,15 +1941,15 @@ class FilterService {
                 }
                 if(configMap.status != null && !configMap.status.isEmpty()) {
                     params.tippStatus = configMap.status instanceof String ? Long.parseLong(configMap.status) : configMap.status //already id
-                    whereClauses << " tipp_status_rv_fk = :tippStatus"
+                    whereClauses << " tipp_status_rv_fk = :tippStatus "
                 }
                 else if(configMap.notStatus != null && !configMap.notStatus.isEmpty()) {
                     params.tippStatus = configMap.notStatus instanceof String ? Long.parseLong(configMap.notStatus) : configMap.status //already id
-                    whereClauses << " tipp_status_rv_fk != :tippStatus"
+                    whereClauses << " tipp_status_rv_fk != :tippStatus "
                 }
                 else {
                     params.tippStatus = RDStore.TIPP_STATUS_CURRENT.id
-                    whereClauses << " tipp_status_rv_fk = :tippStatus"
+                    whereClauses << " tipp_status_rv_fk = :tippStatus "
                 }
             }
             else if(entitlementInstance == IssueEntitlement.class.name) {
@@ -2150,14 +2161,14 @@ class FilterService {
             }
             if(configMap.filterPvd != null && !configMap.filterPvd.isEmpty()) {
                 List<Object> providers = [], providerRoleTypes = [RDStore.OR_CONTENT_PROVIDER.id, RDStore.OR_PROVIDER.id, RDStore.OR_AGENCY.id, RDStore.OR_PUBLISHER.id]
-                providers.addAll(listReaderWrapper(configMap, 'filterPvd').collect { Long.parseLong(it)} )
+                providers.addAll(listReaderWrapper(configMap, 'filterPvd').collect { Long.parseLong(it.split(':')[1])} )
                 params.providers = connection.createArrayOf('bigint', providers.toArray())
                 params.providerRoleTypes = connection.createArrayOf('bigint', providerRoleTypes.toArray())
-                whereClauses << " exists(select or_id from org_role where or_tipp_fk = tipp_id and or_org_fk = any(:providers) and or_roletype_fk = any(:providerRoleTypes))"
+                whereClauses << " exists(select or_id from org_role where or_pkg_fk = pkg_id and or_org_fk = any(:providers) and or_roletype_fk = any(:providerRoleTypes))"
             }
             if(configMap.filterHostPlat != null && !configMap.filterHostPlat.isEmpty()) {
                 List<Object> hostPlatforms = []
-                hostPlatforms.addAll(listReaderWrapper(configMap, 'filterHostPlat').collect { Long.parseLong(it) })
+                hostPlatforms.addAll(listReaderWrapper(configMap, 'filterHostPlat').collect { Long.parseLong(it.split(':')[1]) })
                 params.platforms = connection.createArrayOf('bigint', hostPlatforms.toArray())
                 whereClauses << " tipp_plat_fk = any(:platforms)"
             }

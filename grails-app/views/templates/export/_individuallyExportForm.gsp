@@ -362,7 +362,7 @@
             </div>
 
             <div class="wide two field">
-                <button class="ui button positive right floated exportButton" value="exportClickMeExcel">Export</button>
+                <button class="ui button positive right floated export" value="exportClickMeExcel">Export</button>
                 <%-- disused
                 <br>
                 <g:hiddenField name="format" value=""/>
@@ -381,18 +381,6 @@
     </div><!-- .form -->
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    /* disused
-    $('.exportButton').click(function(){
-        if($(this).attr('id') === 'export-as-excel') {
-            $('#exportClickMeExcel').val('true');
-            $('#format').val(null);
-        }
-        else if($(this).attr('id') === 'export-as-csv') {
-            $('#exportClickMeExcel').val('false');
-            $('#format').val('csv');
-        }
-    });
-    */
 
     $('#${modalID} select[name=fileformat]').on( 'change', function() {
         $('#${modalID} *[id^=fileformat-query-]').addClass('hidden')

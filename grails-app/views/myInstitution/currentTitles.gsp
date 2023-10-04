@@ -55,7 +55,7 @@
                 </g:link>
             </g:if>
             <g:else>--%>
-                <g:link class="item kbartExport" params="${params + [exportKBart: true]}">KBART Export</g:link>
+                <a class="item export" href="#kbart" data-fileformat="kbart">KBART Export</a>
             <%--</g:else>--%>
         </ui:exportDropdownItem>
     <%--<ui:exportDropdownItem>
@@ -75,7 +75,7 @@
        value="${RefdataCategory.getAllRefdataValues(RDConstants.TIPP_STATUS) - RDStore.TIPP_STATUS_REMOVED}"/>
 
 <ui:filter>
-    <g:form id="filtering-form" action="currentTitles" controller="myInstitution" method="get" class="ui form">
+    <g:form action="currentTitles" controller="myInstitution" class="ui form">
 
 
         <div class="two fields">
@@ -291,18 +291,18 @@
                 <g:set var="counter" value="${offset + 1}"/>
 
 
-                <g:if test="${titles}">
-                    <div class="ui fluid card">
-                        <div class="content">
-                            <div class="ui accordion la-accordion-showMore">
-                                <g:each in="${titles}" var="tipp">
-                                    <div class="ui raised segments la-accordion-segments">
-                                        <%
-                                            String instanceFilter = ''
-                                            if (institution.isCustomerType_Consortium())
-                                                instanceFilter += ' and pvd.instanceOf = null'
-                                            Set<IssueEntitlement> ie_infos = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription pvd join pvd.orgRelations oo where oo.org = :context and ie.tipp = :tipp and pvd.status = :current and ie.status != :ieStatus' + instanceFilter, [ieStatus: RDStore.TIPP_STATUS_REMOVED, context: institution, tipp: tipp, current: RDStore.SUBSCRIPTION_CURRENT])
-                                        %>
+                    <g:if test="${titles}">
+                        <div class="ui fluid card">
+                            <div class="content">
+                                <div class="ui accordion la-accordion-showMore">
+                                    <g:each in="${titles}" var="tipp">
+                                        <div class="ui raised segments la-accordion-segments">
+                                            <%
+                                                String instanceFilter = ''
+                                                if (institution.isCustomerType_Consortium())
+                                                    instanceFilter += ' and pvd.instanceOf = null'
+                                                Set<IssueEntitlement> ie_infos = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription pvd join pvd.orgRelations oo where oo.org = :context and ie.tipp = :tipp and (pvd.status = :current or pvd.hasPerpetualAccess = true) and ie.status != :ieStatus' + instanceFilter, [ieStatus: RDStore.TIPP_STATUS_REMOVED, context: institution, tipp: tipp, current: RDStore.SUBSCRIPTION_CURRENT])
+                                            %>
 
                                         <g:render template="/templates/title_segment_accordion"
                                                   model="[ie: null, tipp: tipp, permanentTitle: PermanentTitle.findByOwnerAndTipp(institution, tipp)]"/>
@@ -319,13 +319,13 @@
                                                         <g:if test="${tipp.accessStartDate}">
                                                             <div class="ui label la-label-accordion">${message(code: 'tipp.access')}</div>
 
-                                                            <div class="item">
-                                                                <div class="content">
-                                                                    <g:formatDate
-                                                                            format="${message(code: 'default.date.format.notime')}"
-                                                                            date="${tipp.accessStartDate}"/>
+                                                                <div class="item">
+                                                                    <div class="content">
+                                                                        <g:formatDate
+                                                                                format="${message(code: 'default.date.format.notime')}"
+                                                                                date="${tipp.accessStartDate}"/>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
 
                                                         </g:if>
                                                         <g:if test="${tipp.accessEndDate}">
@@ -464,12 +464,22 @@
               model="[modalID: 'individuallyExportTippsModal']"/>
 
 <laser:script>
-    $('.kbartExport').click(function(e) {
+    $('.export').click(function(e) {
         e.preventDefault();
+        $('#individuallyExportTippsModal').modal('hide');
         $('#globalLoadingIndicator').show();
+        //the shorthand ?: is not supported???
+        let fileformat = $(this).attr('data-fileformat') ? $(this).attr('data-fileformat') : $('#fileformat-query').val();
+        let fd
+        if(fileformat === 'kbart')
+            fd = { fileformat: fileformat };
+        else
+            fd = new FormData($('#individuallyExportTippsModal').find('form')[0]);
         $.ajax({
-            url: "<g:createLink action="currentTitles" params="${params + [exportKBart: true]}"/>",
+            url: "<g:createLink action="currentTitles" params="${params}"/>",
+            data: fd,
             type: 'POST',
+            processData: false,
             contentType: false
         }).done(function(response){
             $("#downloadWrapper").html(response);
@@ -501,7 +511,6 @@
         }
     }
 
-    //continue here: setup dropdown preselection and move then to backend hookup; after done so: move on to addEntitlements() migration
     JSPC.app.ajaxDropdown($('#filterSub'), '<g:createLink controller="ajaxJson" action="lookupSubscriptions"/>?query={query}&restrictLevel=true', '${params.filterSub}');
     JSPC.app.ajaxDropdown($('#filterPvd'), '<g:createLink controller="ajaxJson" action="lookupProviders"/>?query={query}', '${params.filterPvd}');
     JSPC.app.ajaxDropdown($('#filterHostPlat'), '<g:createLink controller="ajaxJson" action="lookupPlatforms"/>?query={query}', '${params.filterHostPlat}');

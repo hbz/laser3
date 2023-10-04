@@ -361,10 +361,7 @@
                         <th>${message(code: 'subscription.isAutomaticRenewAnnually.label')}</th>
                     </g:if>
                     <th class="la-no-uppercase">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                              data-content="${message(code: 'subscription.isMultiYear.label')}">
-                            <i class="map icon"></i>
-                        </span>
+                        <ui:multiYearIcon />
                     </th>
                     <th>${message(code:'default.actions.label')}</th>
                 </tr>
@@ -465,11 +462,7 @@
                         </g:if>
                         <td>
                             <g:if test="${sub.isMultiYear}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay"
-                                      data-position="bottom center"
-                                      data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
-                                    <i class="map orange icon"></i>
-                                </span>
+                                <ui:multiYearIcon isConsortial="true" color="orange" />
                             </g:if>
                         </td>
                         <td class="x">
