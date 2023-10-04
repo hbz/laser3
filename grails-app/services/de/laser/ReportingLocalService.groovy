@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.ctrl.FinanceControllerService
+import de.laser.finance.CostItem
 import de.laser.storage.RDStore
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseQuery
@@ -101,7 +102,7 @@ class ReportingLocalService {
                 cfg = subConf.base.timeline.getAt('default').get( params.query )
             }
 
-            if (params.query == 'timeline-cost') {
+            if (params.query in ['timeline-member-cost', 'timeline-participant-cost']) {
                 result.labels = SubscriptionReport.getTimelineQueryLabels(params)
 
                 GrailsParameterMap clone = params.clone() as GrailsParameterMap
@@ -111,12 +112,15 @@ class ReportingLocalService {
                 fsCifsMap.put('max', 5000)
                 Map<String, Object> finance = financeService.getCostItemsForSubscription(clone, fsCifsMap)
 
-                result.list              = finance.cons.costItems ?: []
+                def typeDependingCosts = finance.cons ?: finance.subscr
+
+//                result.list              = finance.cons.costItems ?: []
+                result.list              = (typeDependingCosts.costItems ?: []) as List<CostItem>
                 result.relevantCostItems = result.list.findAll{ it.costItemElementConfiguration in [RDStore.CIEC_POSITIVE, RDStore.CIEC_NEGATIVE]}
                 result.neutralCostItems  = result.list.minus( result.relevantCostItems )
 
-                result.billingSums = finance.cons.sums?.billingSums ?: []
-                result.localSums   = finance.cons.sums?.localSums ?: []
+                result.billingSums = typeDependingCosts.sums?.billingSums ?: []
+                result.localSums   = typeDependingCosts.sums?.localSums ?: []
                 result.tmpl        = TMPL_PATH_DETAILS + cfg.getAt('detailsTemplate')
             }
             else if (params.query in ['timeline-entitlement', 'timeline-member']) {

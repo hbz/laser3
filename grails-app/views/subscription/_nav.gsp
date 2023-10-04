@@ -52,9 +52,9 @@
             <ui:subNavItem message="default.stats.label" tooltip="${message(code: 'default.stats.noPackage')}" disabled="disabled" />
         </g:else>
 
-        <g:if test="${contextService.getOrg().isCustomerType_Pro()}">
-            <ui:subNavItem controller="subscription" action="reporting" params="${[id:params.id]}" message="myinst.reporting" />
-        </g:if>
+%{--        <g:if test="${contextService.getOrg().isCustomerType_Pro()}">--}%
+            <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="subscription" action="reporting" params="${[id:params.id]}" message="myinst.reporting" />
+%{--        </g:if>--}%
 
         <ui:subNavItem controller="subscription" action="notes" params="${[id:params.id]}" counts="${notesCount}" message="default.notes.label" />
         <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="subscription" action="tasks" params="${[id:params.id]}" counts="${tasksCount}" message="task.plural" />

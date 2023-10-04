@@ -282,6 +282,18 @@ class IconTagLib {
         }
     }
 
+    def multiYearIcon = { attrs, body ->
+        String tt = (attrs.isConsortial && attrs.isConsortial == 'true') ? message(code: 'subscription.isMultiYear.consortial.label') : message(code: 'subscription.isMultiYear.label')
+//        String color = attrs.color ? ' ' + attrs.color : ''
+        String color = attrs.color ? ' grey' : '' // tmp override
+
+        out << '<span class="la-long-tooltip la-popup-tooltip la-delay"'
+        out << ' data-position="bottom center" data-content="' + tt +'">'
+        out << '<i class="forward icon' + color + '"></i>'
+//        out << '<i class="double angle right icon' + color + '"></i>'
+        out << '</span>'
+    }
+
     // <ui:myIcon type="wekbchanges" color="optional" />
 
     def markerIcon = { attrs, body ->

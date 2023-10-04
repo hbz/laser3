@@ -58,13 +58,13 @@
     </div>
     <div class="ui list">
         <div class="item">
-            <div class="ui label blue">
-                <i class="icon circle outline"></i>
+            <div class="ui label yellow">
+                <i class="icon user circle"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_INST_BASIC).getI10n('authority')}
             </div>
         </div>
         <div class="item">
-            <div class="ui label blue">
+            <div class="ui label yellow">
                 <i class="icon trophy"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_INST_PRO).getI10n('authority')}
             </div>
@@ -72,7 +72,7 @@
 
         <div class="item">
             <div class="ui label teal">
-                <i class="icon circle outline"></i>
+                <i class="icon user circle"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_BASIC).getI10n('authority')}
             </div>
         </div>

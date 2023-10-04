@@ -19,7 +19,8 @@
 
         <g:if test="${editable}">
 
-            <g:if test="${subscription._getCalculatedType() == Subscription.TYPE_CONSORTIAL}">
+%{--            <g:if test="${subscription._getCalculatedType() == Subscription.TYPE_CONSORTIAL}">--}%
+            <g:if test="${subscription._getCalculatedType() in [Subscription.TYPE_CONSORTIAL, Subscription.TYPE_ADMINISTRATIVE]}">
                 <ui:actionsDropdownItem controller="subscription" action="copySubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription), copyObject: true]}" message="myinst.copySubscription" />
             </g:if>
 
@@ -41,7 +42,8 @@
                 <ui:actionsDropdownItem controller="subscription" action="addMembers" params="${[id:params.id]}" text="${message(code:'subscription.details.addMembers.label',args:[message(code:'subscription.details.consortiaMembers.label')])}" />
             </g:if>
 
-            <g:if test="${subscription._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL}">
+%{--            <g:if test="${subscription._getCalculatedType() == Subscription.TYPE_CONSORTIAL}">--}%
+            <g:if test="${subscription._getCalculatedType() in [Subscription.TYPE_CONSORTIAL, Subscription.TYPE_ADMINISTRATIVE]}">
 
                   <ui:actionsDropdownItem controller="subscription" action="membersSubscriptionsManagement"
                                            params="${[id: params.id]}"

@@ -31,10 +31,17 @@ class SubscriptionReport {
     static Map<String, Object> getCurrentConfig(Subscription sub) {
 
         String calcType = sub._getCalculatedType()
-        // println '>> ' + calcType
 
         if (calcType in [Subscription.TYPE_CONSORTIAL]) {
             return SubscriptionXCfg.CONFIG_CONS_AT_CONS
+        }
+        else if (calcType in [Subscription.TYPE_PARTICIPATION]) {
+            if (sub.getConsortia().id == BeanStore.getContextService().getOrg().id) {
+                return SubscriptionXCfg.CONFIG_CONS_AT_SUBSCR
+            }
+            else {
+                return SubscriptionXCfg.CONFIG_PARTICIPATION
+            }
         }
         else {
             return SubscriptionXCfg.CONFIG
@@ -213,7 +220,7 @@ class SubscriptionReport {
 
                     //println result.dataDetails
                 }
-                else if (params.query == 'timeline-cost') {
+                else if (params.query in ['timeline-member-cost', 'timeline-participant-cost']) {
                     GrailsParameterMap clone = params.clone() as GrailsParameterMap
 
                     // ApplicationTagLib g = BeanStore.getApplicationTagLib()
@@ -225,10 +232,13 @@ class SubscriptionReport {
 
                         Map<String, Object> fsCifsMap = financeControllerService.getResultGenerics(clone)
                         fsCifsMap.put('max', 5000)
+                        //println fsCifsMap // todo - remove
                         Map<String, Object> finance = financeService.getCostItemsForSubscription(clone, fsCifsMap)
-
+                        //println finance // todo - remove
                         //List<CostItem> relevantCostItems = finance.cons.costItems.findAll{ it.costItemElementConfiguration in [RDStore.CIEC_POSITIVE, RDStore.CIEC_NEGATIVE]} ?: []
-                        List<CostItem> neutralCostItems  = finance.cons.costItems.findAll{ it.costItemElementConfiguration == RDStore.CIEC_NEUTRAL } ?: []
+                        def typeDependingCosts = finance.cons ?: finance.subscr
+
+                        List<CostItem> neutralCostItems = (typeDependingCosts.costItems.findAll{ it.costItemElementConfiguration == RDStore.CIEC_NEUTRAL } ?: []) as List<CostItem>
                         List<Double> vncList  = neutralCostItems.collect{Double cilc = it.costInLocalCurrency ?: 0.0; it.finalCostRounding ? cilc.round(0) : cilc.round(2) }
                         List<Double> vnctList = neutralCostItems.collect{it.getCostInLocalCurrencyAfterTax() }
 
@@ -237,8 +247,8 @@ class SubscriptionReport {
                                 s.name,
                                 vncList ? vncList.sum() : 0.0,
                                 vnctList ? vnctList.sum() : 0.0,
-                                finance.cons?.sums?.localSums?.localSum ?: 0,
-                                finance.cons?.sums?.localSums?.localSumAfterTax ?: 0,
+                                typeDependingCosts?.sums?.localSums?.localSum ?: 0,
+                                typeDependingCosts?.sums?.localSums?.localSumAfterTax ?: 0,
                                 (s.startDate ? sdf.format(s.startDate) : NO_STARTDATE) + ' - ' + (s.endDate ? sdf.format(s.endDate) : NO_ENDDATE),
                                 sub == s
                         ]
@@ -247,7 +257,7 @@ class SubscriptionReport {
                                 query   : params.query,
                                 id      : s.id,
                                 label   : data[6],
-                                idList  : finance.cons.costItems.collect{ it.id },
+                                idList  : typeDependingCosts.costItems.collect{ it.id },
                                 vnc     : ( Math.round(data[2] * 100) / 100 ).doubleValue(),
                                 vnct    : ( Math.round(data[3] * 100) / 100 ).doubleValue(),
                                 vc      : ( Math.round(data[4] * 100) / 100 ).doubleValue(),

@@ -22,7 +22,7 @@ class LicenseService {
         List<License> result = []
         List tmpQ // [String, Map<String, Object>]
 
-        if(contextService.getOrg().isCustomerType_Consortium()) {
+        if(contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()) {
             tmpQ = getLicensesConsortiaQuery(params)
             result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
 
@@ -48,7 +48,7 @@ class LicenseService {
         List<License> result = []
         List tmpQ // [String, Map<String, Object>]
 
-        if(contextService.getOrg().isCustomerType_Consortium()) {
+        if(contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()) {
             tmpQ = getLicensesConsortiaQuery(params)
             result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
 

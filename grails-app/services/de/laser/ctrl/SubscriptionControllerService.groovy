@@ -4248,6 +4248,7 @@ class SubscriptionControllerService {
             result.transferIntoMember = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_LOCAL && result.targetObject?._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
             result.allObjects_readRights = subscriptionService.getMySubscriptions_readRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
             result.allObjects_writeRights = subscriptionService.getMySubscriptions_writeRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
+
             List<String> subTypSubscriberVisible = [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE]
             result.isSubscriberVisible = result.sourceObject && result.targetObject &&
                     subTypSubscriberVisible.contains(result.sourceObject._getCalculatedType()) &&
@@ -4383,7 +4384,7 @@ class SubscriptionControllerService {
 
             result.currentTitlesCounts = IssueEntitlement.executeQuery("select count(*) from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :status ", [sub: result.subscription, status: RDStore.TIPP_STATUS_CURRENT])[0]
 
-            if ((result.contextOrg as Org).isCustomerType_Consortium()) {
+            if ((result.contextOrg as Org).isCustomerType_Consortium() || (result.contextOrg as Org).isCustomerType_Support()) {
                 if(result.subscription.instanceOf){
                     List subscrCostCounts = CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub = :sub and ci.owner = :ctx and ci.surveyOrg = null and ci.costItemStatus != :deleted', [sub: result.subscription, ctx: result.contextOrg, deleted: RDStore.COST_ITEM_DELETED])
                     result.currentCostItemCounts = subscrCostCounts ? subscrCostCounts[0] : 0
