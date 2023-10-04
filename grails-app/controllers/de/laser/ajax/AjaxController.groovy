@@ -1028,6 +1028,7 @@ class AjaxController {
 
         if (ownobj && propDefGroup && binding) {
             binding.delete()
+            availPropDefGroups = availPropDefGroups - propDefGroup
         }
 
         render(template: "/templates/properties/groupBindings", model:[
