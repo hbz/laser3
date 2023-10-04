@@ -70,6 +70,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
      */
     public static final List<String> CORE_ORG_NS = [
             ISIL,
+            ISNI,
             WIBID,
             GND_ORG_NR,
             EZB_ORG_ID,
@@ -77,6 +78,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
             DBS_ID,
             DBIS_ORG_ID,
             VAT,
+            WIKIDATA_ID,
             LEIT_ID,
             LEIT_KR,
             LEIBNIZ_ID
