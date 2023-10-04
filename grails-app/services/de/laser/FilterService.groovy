@@ -1616,7 +1616,7 @@ class FilterService {
         if (params.asAt && params.asAt.length() > 0) {
             date_filter = sdf.parse(params.asAt)
             result.as_at_date = date_filter
-            result.editable = false
+            filterSet = true
         }
 
 
@@ -1803,7 +1803,7 @@ class FilterService {
             }
             //(exists (select orgRole from OrgRole orgRole where orgRole.tipp = tipp and orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and orgRole.org.name in (:publishers))
             base_qry += " (lower(tipp.publisherName)) in (:publishers) "
-            qry_params.publishers = listReaderWrapper(params, 'publishers').collect { it.toLowerCase() }
+            qry_params.publishers = listReaderWrapper(params, 'publishers').collect { it.toLowerCase().replaceAll('&quot;', '"') }
             filterSet = true
         }
 

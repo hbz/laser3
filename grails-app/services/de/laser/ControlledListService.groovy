@@ -611,14 +611,21 @@ class ControlledListService {
      * Called from title filter views
      * Retrieves all possible title types for the given package and the given title status
      * @param pkg the package whose titles should be inspected
+     * @param query a query filter to restrict on certain title types
      * @param forTitles the title status considered
      * @return a set of possible title types
      */
-    Set<String> getAllPossibleTitleTypesByPackage(Package pkg, String forTitles) {
+    Set<String> getAllPossibleTitleTypesByPackage(Package pkg, String query, String forTitles) {
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
         Set<String> titleTypes = []
+        Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
+        String nameFilter = ""
+        if(query) {
+            nameFilter += "and genfunc_filter_matcher(titleType, :query) = true"
+            queryParams.query = query
+        }
 
-        titleTypes = TitleInstancePackagePlatform.executeQuery("select titleType from TitleInstancePackagePlatform where titleType is not null and pkg = :pkg and status = :status ", [pkg: pkg, status: tippStatus])
+        titleTypes = TitleInstancePackagePlatform.executeQuery("select new map(titleType as name, titleType as value) from TitleInstancePackagePlatform where titleType is not null and pkg = :pkg and status = :status "+nameFilter+" group by titleType", queryParams)
 
         if(titleTypes.size() == 0){
             titleTypes << messageSource.getMessage('titleInstance.noTitleType.label', null, LocaleUtils.getCurrentLocale())
@@ -630,13 +637,20 @@ class ControlledListService {
      * Called from title filter views
      * Retrieves all possible title types for the given subscription
      * @param subscription the subscription whose titles should be inspected
+     * @param query a query filter to restrict on certain title types
      * @return a set of possible title types
      */
-    Set<String> getAllPossibleTitleTypesBySub(Subscription subscription) {
+    Set<String> getAllPossibleTitleTypesBySub(Subscription subscription, String query) {
         Set<String> titleTypes = []
+        String nameFilter = ""
+        Map<String, Object> queryParams = [pkg: subscription.packages.pkg, removed: RDStore.TIPP_STATUS_REMOVED]
+        if(query) {
+            nameFilter += "and genfunc_filter_matcher(titleType, :query) = true"
+            queryParams.query = query
+        }
 
         if(subscription.packages){
-            titleTypes = TitleInstancePackagePlatform.executeQuery("select titleType from TitleInstancePackagePlatform where titleType is not null and pkg in (:pkg) and status != :removed", [pkg: subscription.packages.pkg, removed: RDStore.TIPP_STATUS_REMOVED])
+            titleTypes = TitleInstancePackagePlatform.executeQuery("select new map(titleType as name, titleType as value) from TitleInstancePackagePlatform where titleType is not null and pkg in (:pkg) and status != :removed "+nameFilter+" group by titleType", queryParams)
         }
         if(titleTypes.size() == 0){
             titleTypes << messageSource.getMessage('titleInstance.noTitleType.label', null, LocaleUtils.getCurrentLocale())
@@ -658,13 +672,18 @@ class ControlledListService {
             params.list('status').each { String statusId ->
                 statusList << Long.parseLong(statusId)
             }
-           String query = "select titleType from TitleInstancePackagePlatform tipp where tipp.titleType is not null and tipp.status.id in (:status) "
+           String query = "select new map(titleType as name, titleType as value) from TitleInstancePackagePlatform tipp where tipp.titleType is not null and tipp.status.id in (:status) "
            Map queryMap = [status: statusList]
 
            if(params.institution && params.filterForPermanentTitle){
                queryMap.inst = params.institution
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
+           if(params.query) {
+               queryMap.query = params.query
+               query += " and genfunc_filter_matcher(titleType, :query) = true"
+           }
+           query += " group by titleType order by titleType"
 
            titleTypes = TitleInstancePackagePlatform.executeQuery(query, queryMap)
         }
@@ -678,14 +697,21 @@ class ControlledListService {
      * Called from title filter views
      * Retrieves all possible medium types for the given package and the given title status
      * @param pkg the package whose titles should be inspected
+     * @param query a query filter to restrict on certain medium types
      * @param forTitles the title status considered
      * @return a set of possible title types
      */
-    Set<String> getAllPossibleMediumTypesByPackage(Package pkg, String forTitles) {
+    Set<String> getAllPossibleMediumTypesByPackage(Package pkg, String query, String forTitles) {
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
         Set<String> mediumTypes = []
+        String nameFilter = "", i18n = LocaleUtils.getCurrentLang()
+        Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
+        if(query) {
+            nameFilter += "and genfunc_filter_matcher(tipp.medium.value_"+i18n+", :query) = true"
+            queryParams.query = query
+        }
 
-        mediumTypes.addAll(TitleInstancePackagePlatform.executeQuery("select tipp.medium from TitleInstancePackagePlatform tipp where tipp.medium is not null and tipp.pkg = :pkg and tipp.status = :status ", [pkg: pkg, status: tippStatus]))
+        mediumTypes.addAll(TitleInstancePackagePlatform.executeQuery("select new map(tipp.medium.value_"+i18n+" as name tipp.medium.id as value) from TitleInstancePackagePlatform tipp where tipp.medium is not null and tipp.pkg = :pkg and tipp.status = :status "+nameFilter+" group by tipp.medium.id, tipp.medium.value_"+i18n+" order by tipp.medium.value_"+i18n, queryParams))
 
         mediumTypes
     }
@@ -694,13 +720,19 @@ class ControlledListService {
      * Called from title filter views
      * Retrieves all possible medium types for the given subscription
      * @param subscription the subscription whose titles should be inspected
+     * @param query a query filter to restrict on certain medium types
      * @return a set of possible title types
      */
-    Set<String> getAllPossibleMediumTypesBySub(Subscription subscription) {
+    Set<String> getAllPossibleMediumTypesBySub(Subscription subscription, String query) {
         Set<String> mediumTypes = []
-
+        String nameFilter = "", i18n = LocaleUtils.getCurrentLang()
+        Map<String, Object> queryParams = [pkg: subscription.packages.pkg, removed: RDStore.TIPP_STATUS_REMOVED]
+        if(query) {
+            nameFilter += "and genfunc_filter_matcher(tipp.medium.value_"+i18n+", :query) = true"
+            queryParams.query = query
+        }
         if(subscription.packages){
-            mediumTypes.addAll(TitleInstancePackagePlatform.executeQuery("select tipp.medium from TitleInstancePackagePlatform tipp where tipp.medium is not null and tipp.pkg in (:pkg) and tipp.status != :removed", [pkg: subscription.packages.pkg, removed: RDStore.TIPP_STATUS_REMOVED]))
+            mediumTypes.addAll(TitleInstancePackagePlatform.executeQuery("select new map(tipp.medium_value_"+i18n+" as name, tipp.medium.id as value) from TitleInstancePackagePlatform tipp where tipp.medium is not null and tipp.pkg in (:pkg) and tipp.status != :removed "+nameFilter+" group by tipp.medium.id, tipp.medium.value_"+i18n+" order by tipp.medium.value_"+i18n, queryParams))
         }
         mediumTypes
     }
@@ -713,19 +745,26 @@ class ControlledListService {
      */
     Set<String> getAllPossibleMediumTypesByStatus(GrailsParameterMap params) {
         Set<String> mediumTypes = []
+        String i18n = LocaleUtils.getCurrentLang()
 
        if(params.status != '' && params.status != null && params.list('status')) {
             List<Long> statusList = []
             params.list('status').each { String statusId ->
                 statusList << Long.parseLong(statusId)
             }
-           String query = "select tipp.medium from TitleInstancePackagePlatform tipp where tipp.medium is not null and tipp.status.id in (:status) "
+           String query = "select new map(tipp.medium.value_"+i18n+" as name, tipp.medium.id as value) from TitleInstancePackagePlatform tipp where tipp.medium is not null and tipp.status.id in (:status) "
            Map queryMap = [status: statusList]
 
            if(params.institution && params.filterForPermanentTitle){
                queryMap.inst = params.institution
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
+
+           if(params.query) {
+               queryMap.query = params.query
+               query += " and genfunc_filter_matcher(tipp.medium.value_"+i18n+", :query) = true"
+           }
+           query += " group by tipp.medium.id, tipp.medium.value_"+i18n+" order by tipp.medium.value_"+i18n
 
             mediumTypes.addAll(TitleInstancePackagePlatform.executeQuery(query, queryMap))
         }
@@ -736,14 +775,21 @@ class ControlledListService {
      * Called from title filter views
      * Retrieves all possible coverage depths for the given package and the given title status
      * @param pkg the package whose titles should be inspected
+     * @param query a query filter to restrict on certain coverage depths
      * @param forTitles the title status considered
      * @return a set of possible coverage depths
      */
-    Set<RefdataValue> getAllPossibleCoverageDepthsByPackage(Package pkg, String forTitles) {
+    Set getAllPossibleCoverageDepthsByPackage(Package pkg, String query, String forTitles) {
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
-        Set<RefdataValue> coverageDepths = []
+        String nameFilter = "", i18n = LocaleUtils.getCurrentLang()
+        Set<Map> coverageDepths = []
+        Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
+        if(query) {
+            queryParams.query = query
+            nameFilter += "and genfunc_filter_matcher(rdv.value_${i18n}, :query) = true"
+        }
 
-        coverageDepths.addAll(RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.value in (select tc.coverageDepth from TIPPCoverage tc join tc.tipp tipp where tc.coverageDepth is not null and tipp.pkg = :pkg and tipp.status = :status) ", [pkg: pkg, status: tippStatus]))
+        coverageDepths.addAll(RefdataValue.executeQuery("select new map(rdv.value_"+i18n+" as name, rdv.id as value) from RefdataValue rdv where rdv.value in (select tc.coverageDepth from TIPPCoverage tc join tc.tipp tipp where tc.coverageDepth is not null and tipp.pkg = :pkg and tipp.status = :status) "+nameFilter+" group by rdv.id, rdv.value_"+i18n+" order by rdv.value_"+i18n, queryParams))
 
         coverageDepths
     }
@@ -752,13 +798,20 @@ class ControlledListService {
      * Called from title filter views
      * Retrieves all possible coverage depths for the given subscription
      * @param subscription the subscription whose titles should be inspected
+     * @param query a query filter to restrict on certain coverage depths
      * @return a set of possible coverage depths
      */
-    Set<RefdataValue> getAllPossibleCoverageDepthsBySub(Subscription subscription) {
-        Set<RefdataValue> coverageDepths = []
+    Set getAllPossibleCoverageDepthsBySub(Subscription subscription, String query) {
+        Set<Map> coverageDepths = []
+        Map<String, Object> queryParams = [pkg: subscription.packages.pkg, removed: RDStore.TIPP_STATUS_REMOVED]
+        String nameFilter = "", i18n = LocaleUtils.getCurrentLang()
+        if(query) {
+            queryParams.query = query
+            nameFilter += "and genfunc_filter_matcher(rdv.value_"+i18n+", :query) = true"
+        }
 
         if(subscription.packages){
-            coverageDepths = RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.value in (select tc.coverageDepth from TIPPCoverage tc join tc.tipp tipp where tc.coverageDepth is not null and tipp.pkg in (:pkg) and tipp.status != :removed) ", [pkg: subscription.packages.pkg, removed: RDStore.TIPP_STATUS_REMOVED])
+            coverageDepths = RefdataValue.executeQuery("select new map(rdv.value_"+i18n+" as name, rdv.id as value) from RefdataValue rdv where rdv.value in (select tc.coverageDepth from TIPPCoverage tc join tc.tipp tipp where tc.coverageDepth is not null and tipp.pkg in (:pkg) and tipp.status != :removed) "+nameFilter+" group by rdv.id, rdv.value_"+i18n+" order by rdv.value_"+i18n, queryParams)
         }
 
         coverageDepths
@@ -770,22 +823,23 @@ class ControlledListService {
      * @param subscription the subscription whose titles should be inspected
      * @return a set of possible coverage depths
      */
-    Set<RefdataValue> getAllPossibleCoverageDepthsByStatus(GrailsParameterMap params) {
-        Set<RefdataValue> coverageDepths = []
+    Set getAllPossibleCoverageDepthsByStatus(GrailsParameterMap params) {
+        Set<Map> coverageDepths = []
+        String i18n = LocaleUtils.getCurrentLang()
 
        if(params.status != '' && params.status != null && params.list('status')) {
             List<Long> statusList = []
             params.list('status').each { String statusId ->
                 statusList << Long.parseLong(statusId)
             }
-           String query = "select rdv from RefdataValue rdv where rdv.value in (select tc.coverageDepth from TIPPCoverage tc join tc.tipp tipp where tc.coverageDepth is not null and tipp.status.id in (:status) "
+           String query = "select new map(rdv.value_"+i18n+" as name, rdv.id as value) from RefdataValue rdv where rdv.value in (select tc.coverageDepth from TIPPCoverage tc join tc.tipp tipp where tc.coverageDepth is not null and tipp.status.id in (:status) "
            Map queryMap = [status: statusList]
 
            if(params.institution && params.filterForPermanentTitle){
                queryMap.inst = params.institution
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
-           query += " )"
+           query += " ) group by rdv.id, rdv.value_"+i18n+" order by rdv.value_"+i18n
             coverageDepths = RefdataValue.executeQuery(query, queryMap)
         }
 
@@ -796,17 +850,24 @@ class ControlledListService {
      * Called from title filter views
      * Retrieves all possible series for the given package and the given title status
      * @param pkg the package whose titles should be inspected
+     * @param query a query filter to restrict on certain series
      * @param forTitles the title status considered
      * @return a set of possible series
      */
-    Set<String> getAllPossibleSeriesByPackage(Package pkg, String forTitles) {
+    Set getAllPossibleSeriesByPackage(Package pkg, String query, String forTitles) {
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
-        Set<String> seriesName = []
+        Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
+        Set<Map> seriesName = []
+        String nameFilter = ""
+        if(query) {
+            nameFilter += "and genfunc_filter_matcher(seriesName, :query) = true"
+            queryParams.query = query
+        }
 
-        seriesName = TitleInstancePackagePlatform.executeQuery("select distinct(seriesName) from TitleInstancePackagePlatform where seriesName is not null and pkg = :pkg and status = :status order by seriesName", [pkg: pkg, status: tippStatus])
+        seriesName = TitleInstancePackagePlatform.executeQuery("select new map(seriesName as name, seriesName as value) from TitleInstancePackagePlatform where seriesName is not null and pkg = :pkg and status = :status "+nameFilter+" group by seriesName order by seriesName", queryParams)
 
         if(seriesName.size() == 0){
-            seriesName << messageSource.getMessage('titleInstance.noSeriesName.label', null, LocaleUtils.getCurrentLocale())
+            seriesName << [name: messageSource.getMessage('titleInstance.noSeriesName.label', null, LocaleUtils.getCurrentLocale()), value: null]
         }
         seriesName
     }
@@ -815,16 +876,24 @@ class ControlledListService {
      * Called from title filter views
      * Retrieves all possible series for the given subscription
      * @param subscription the subscription whose titles should be inspected
+     * @param query a query filter to restrict on certain series
      * @return a set of possible series
      */
-    Set<String> getAllPossibleSeriesBySub(Subscription subscription) {
-        Set<String> seriesName = []
+    Set getAllPossibleSeriesBySub(Subscription subscription, String query) {
+        Set<Map> seriesName = []
 
         if(subscription.packages){
-            seriesName = TitleInstancePackagePlatform.executeQuery("select distinct(seriesName) from TitleInstancePackagePlatform where seriesName is not null and pkg in (:pkg) and status != :removed order by seriesName", [pkg: subscription.packages.pkg, removed: RDStore.TIPP_STATUS_REMOVED])
+            Map<String, Object> queryParams = [pkg: subscription.packages.pkg, removed: RDStore.TIPP_STATUS_REMOVED]
+            String nameFilter = ""
+            if(query) {
+                nameFilter += "and genfunc_filter_matcher(seriesName, :query) = true"
+                queryParams.query = query
+            }
+            //fomantic UI dropdown expects maps in structure [name: name, value: value]; a pure set is not being accepted ...
+            seriesName = TitleInstancePackagePlatform.executeQuery("select new map(seriesName as name, seriesName as value) from TitleInstancePackagePlatform where seriesName is not null and pkg in (:pkg) and status != :removed "+nameFilter+" group by seriesName order by seriesName", queryParams)
         }
         if(seriesName.size() == 0){
-            seriesName << messageSource.getMessage('titleInstance.noSeriesName.label', null, LocaleUtils.getCurrentLocale())
+            seriesName << [name: messageSource.getMessage('titleInstance.noSeriesName.label', null, LocaleUtils.getCurrentLocale()), value: null]
         }
         seriesName
     }
@@ -835,15 +904,16 @@ class ControlledListService {
      * @param subscription the subscription whose titles should be inspected
      * @return a set of possible series
      */
-    Set<String> getAllPossibleSeriesByStatus(GrailsParameterMap params) {
-        Set<String> seriesName = []
+    Set getAllPossibleSeriesByStatus(GrailsParameterMap params) {
+        Set<Map> seriesName = []
 
        if(params.status != '' && params.status != null && params.list('status')) {
             List<Long> statusList = []
             params.list('status').each { String statusId ->
                 statusList << Long.parseLong(statusId)
             }
-           String query = "select distinct(tipp.seriesName) from TitleInstancePackagePlatform as tipp where tipp.seriesName is not null and tipp.status.id in (:status) "
+           //fomantic UI dropdown expects maps in structure [name: name, value: value]; a pure set is not being accepted ...
+           String query = "select new map(tipp.seriesName as name, tipp.seriesName as value) from TitleInstancePackagePlatform as tipp where tipp.seriesName is not null and tipp.status.id in (:status) "
            Map queryMap = [status: statusList]
 
            if(params.institution && params.filterForPermanentTitle){
@@ -851,12 +921,17 @@ class ControlledListService {
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
 
-           query += " order by tipp.seriesName"
+           if(params.query) {
+               queryMap.query = params.query
+               query += " and genfunc_filter_matcher(tipp.seriesName, :query) = true"
+           }
+
+           query += " group by tipp.seriesName order by tipp.seriesName"
 
            seriesName = TitleInstancePackagePlatform.executeQuery(query, queryMap)
         }
         if(seriesName.size() == 0){
-            seriesName << messageSource.getMessage('titleInstance.noSeriesName.label', null, LocaleUtils.getCurrentLocale())
+            seriesName << [name: messageSource.getMessage('titleInstance.noSeriesName.label', null, LocaleUtils.getCurrentLocale()), value: null]
         }
         seriesName
     }
@@ -865,14 +940,22 @@ class ControlledListService {
      * Called from title filter views
      * Retrieves all possible Dewey decimal classification entries for the given package and the given title status
      * @param pkg the package whose titles should be inspected
+     * @param query query filter to restrict to certain values
      * @param forTitles the title status considered
      * @return a set of possible Dewey decimal classification entries
      */
-    Set<RefdataValue> getAllPossibleDdcsByPackage(Package pkg, String forTitles) {
+    Set getAllPossibleDdcsByPackage(Package pkg, String query, String forTitles) {
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
-        Set<RefdataValue> ddcs = []
+        String nameFilter = "", i18n = LocaleUtils.getCurrentLang()
+        Set<Map> ddcs = []
+        Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
+        if(query) {
+            nameFilter += "and (genfunc_filter_matcher(ddc.ddc.value_${i18n}, :query) = true or ddc.ddc.value like :query2)"
+            queryParams.query = query
+            queryParams.query2 = "%${query}%"
+        }
 
-        ddcs.addAll(TitleInstancePackagePlatform.executeQuery("select ddc.ddc from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg = :pkg and tipp.status = :status order by ddc.ddc.value", [pkg: pkg, status: tippStatus]))
+        ddcs.addAll(TitleInstancePackagePlatform.executeQuery("select new map(concat(ddc.ddc.value,' - ',ddc.ddc.value_"+i18n+") as name, ddc.ddc.id as value) from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg = :pkg and tipp.status = :status "+nameFilter+" group by ddc.ddc.id, ddc.ddc.value, ddc.ddc.value_"+i18n+" order by ddc.ddc.value", queryParams))
 
         ddcs
     }
@@ -881,13 +964,21 @@ class ControlledListService {
      * Called from title filter views
      * Retrieves all possible Dewey decimal classification entries for the given subscription
      * @param subscription the subscription whose titles should be inspected
+     * @param query query filter to restrict to certain values
      * @return a set of possible Dewey decimal classification entries
      */
-    Set<RefdataValue> getAllPossibleDdcsBySub(Subscription subscription) {
-        Set<RefdataValue> ddcs = []
+    Set getAllPossibleDdcsBySub(Subscription subscription, String query) {
+        Set<Map> ddcs = []
+        String nameFilter = "", i18n = LocaleUtils.getCurrentLang()
+        Map<String, Object> queryParams = [pkg: subscription.packages.pkg, status: RDStore.TIPP_STATUS_REMOVED]
+        if(query) {
+            nameFilter += "and (genfunc_filter_matcher(ddc.ddc.value_${i18n}, :query) = true or ddc.ddc.value like :query2)"
+            queryParams.query = query
+            queryParams.query2 = "%${query}%"
+        }
 
         if(subscription.packages){
-            ddcs.addAll(DeweyDecimalClassification.executeQuery("select ddc.ddc from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg in (:pkg) and tipp.status != :status order by ddc.ddc.value", [pkg: subscription.packages.pkg, status: RDStore.TIPP_STATUS_REMOVED]))
+            ddcs.addAll(DeweyDecimalClassification.executeQuery("select new map(concat(ddc.ddc.value,' - ',ddc.ddc.value_"+i18n+") as name, ddc.ddc.id as value) from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg in (:pkg) and tipp.status != :status "+nameFilter+" group by ddc.ddc.id, ddc.ddc.value, ddc.ddc.value_"+i18n+" order by ddc.ddc.value", queryParams))
         }
         ddcs
     }
@@ -898,15 +989,16 @@ class ControlledListService {
      * @param subscription the subscription whose titles should be inspected
      * @return a set of possible Dewey decimal classification entries
      */
-    Set<RefdataValue> getAllPossibleDdcsByStatus(GrailsParameterMap params) {
-        Set<RefdataValue> ddcs = []
+    Set getAllPossibleDdcsByStatus(GrailsParameterMap params) {
+        Set<Map> ddcs = []
+        String i18n = LocaleUtils.getCurrentLang()
 
        if(params.status != '' && params.status != null && params.list('status')) {
             List<Long> statusList = []
             params.list('status').each { String statusId ->
                 statusList << Long.parseLong(statusId)
             }
-           String query = "select ddc.ddc from DeweyDecimalClassification ddc join ddc.tipp tipp where tipp.status.id in (:status) "
+           String query = "select new map(concat(ddc.ddc.value,' - ',ddc.ddc.value_"+i18n+") as name, ddc.ddc.id as value) from DeweyDecimalClassification ddc join ddc.tipp tipp where tipp.status.id in (:status) "
            Map queryMap = [status: statusList]
 
            if(params.institution && params.filterForPermanentTitle){
@@ -914,8 +1006,13 @@ class ControlledListService {
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
 
-           query += "order by ddc.ddc.value_" + LocaleUtils.getCurrentLang()
+           if(params.query) {
+               query += " and (genfunc_filter_matcher(ddc.ddc.value_${i18n}, :query) = true or ddc.ddc.value like :query2)"
+               queryMap.query = params.query
+               queryMap.query2 = "%${params.query}%"
+           }
 
+           query += "group by ddc.ddc.id, ddc.ddc.value, ddc.ddc.value_"+i18n+" order by ddc.ddc.value"
             ddcs.addAll(DeweyDecimalClassification.executeQuery(query, queryMap))
         }
         ddcs
@@ -925,14 +1022,21 @@ class ControlledListService {
      * Called from title filter views
      * Retrieves all possible languages for the given package and the given title status
      * @param pkg the package whose titles should be inspected
+     * @params query query filter to restrict to certain values
      * @param forTitles the title status considered
      * @return a set of possible languages
      */
-    Set<RefdataValue> getAllPossibleLanguagesByPackage(Package pkg, String forTitles) {
+    Set getAllPossibleLanguagesByPackage(Package pkg, String query, String forTitles) {
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
-        Set<RefdataValue> languages = []
+        Set<Map> languages = []
+        String nameFilter = "", i18n = LocaleUtils.getCurrentLang()
+        Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
+        if(query) {
+            nameFilter += "and genfunc_filter_matcher(lang.language.value_${i18n}, :query) = true"
+            queryParams.query = query
+        }
 
-        languages.addAll(TitleInstancePackagePlatform.executeQuery("select lang.language from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg = :pkg and tipp.status = :status order by lang.language.value_" + LocaleUtils.getCurrentLang(), [pkg: pkg, status: tippStatus]))
+        languages.addAll(TitleInstancePackagePlatform.executeQuery("select new map(lang.language.value_"+i18n+" as name, lang.language.id as value) from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg = :pkg and tipp.status = :status "+nameFilter+" group by lang.language.id, lang.language.value_"+i18n+" order by lang.language.value_" + i18n, queryParams))
 
         languages
     }
@@ -941,13 +1045,20 @@ class ControlledListService {
      * Called from title filter views
      * Retrieves all possible language entries for the given subscription
      * @param subscription the subscription whose titles should be inspected
+     * @params query query filter to restrict to certain values
      * @return a set of possible language entries
      */
-    Set<RefdataValue> getAllPossibleLanguagesBySub(Subscription subscription) {
-        Set<RefdataValue> languages = []
+    Set getAllPossibleLanguagesBySub(Subscription subscription, String query) {
+        Set<Map> languages = []
+        String nameFilter = "", i18n = LocaleUtils.getCurrentLang()
+        Map<String, Object> queryParams = [pkg: subscription.packages.pkg, removed: RDStore.TIPP_STATUS_REMOVED]
+        if(query) {
+            nameFilter += "and genfunc_filter_matcher(lang.language.value_${i18n}, :query) = true"
+            queryParams.query = query
+        }
 
         if(subscription.packages){
-            languages.addAll(DeweyDecimalClassification.executeQuery("select lang.language from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg in (:pkg) and tipp.status != :removed order by lang.language.value_" + LocaleUtils.getCurrentLang(), [pkg: subscription.packages.pkg, removed: RDStore.TIPP_STATUS_REMOVED]))
+            languages.addAll(DeweyDecimalClassification.executeQuery("select new map(lang.language.value_"+i18n+" as name, lang.language.id as value) from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg in (:pkg) and tipp.status != :removed "+nameFilter+" group by lang.language.id, lang.language.value_"+i18n+" order by lang.language.value_" + i18n, queryParams))
         }
         languages
     }
@@ -958,15 +1069,16 @@ class ControlledListService {
      * @param subscription the subscription whose titles should be inspected
      * @return a set of possible language entries
      */
-    Set<RefdataValue> getAllPossibleLanguagesByStatus(GrailsParameterMap params) {
-        Set<RefdataValue> languages = []
+    Set getAllPossibleLanguagesByStatus(GrailsParameterMap params) {
+        Set<Map> languages = []
+        String i18n = LocaleUtils.getCurrentLang()
 
        if(params.status != '' && params.status != null && params.list('status')) {
             List<Long> statusList = []
             params.list('status').each { String statusId ->
                 statusList << Long.parseLong(statusId)
             }
-           String query = "select lang.language from Language lang join lang.tipp tipp where tipp.status.id in (:status) "
+           String query = "select new map(lang.language.value_"+i18n+" as name, lang.language.id as value) from Language lang join lang.tipp tipp where tipp.status.id in (:status) "
            Map queryMap = [status: statusList]
 
            if(params.institution && params.filterForPermanentTitle){
@@ -974,7 +1086,12 @@ class ControlledListService {
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
 
-           query += " order by lang.language.value_" + LocaleUtils.getCurrentLang()
+           if(params.query) {
+               query += "and genfunc_filter_matcher(lang.language.value_${i18n}, :query) = true"
+               queryMap.query = params.query
+           }
+
+           query += " group by lang.language.id, lang.language.value_"+i18n+" order by lang.language.value_" + i18n
 
             languages.addAll(Language.executeQuery(query, queryMap))
         }
@@ -985,14 +1102,21 @@ class ControlledListService {
      * Called from title filter views
      * Retrieves all possible subject references for the given package and the given title status
      * @param pkg the package whose titles should be inspected
+     * @params query query filter to restrict to certain values
      * @param forTitles the title status considered
      * @return a set of subject references
      */
-    Set<String> getAllPossibleSubjectsByPackage(Package pkg, String forTitles) {
+    Set getAllPossibleSubjectsByPackage(Package pkg, String query, String forTitles) {
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
         SortedSet<String> subjects = new TreeSet<String>()
+        Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
+        String nameFilter = ""
+        if(query) {
+            queryParams.query = query
+            nameFilter += "and genfunc_filter_matcher(subjectReference, :query) = true"
+        }
 
-        List<String> rawSubjects = TitleInstancePackagePlatform.executeQuery("select distinct(subjectReference) from TitleInstancePackagePlatform where subjectReference is not null and pkg = :pkg and status = :status order by subjectReference", [pkg: pkg, status: tippStatus])
+        List<String> rawSubjects = TitleInstancePackagePlatform.executeQuery("select distinct(subjectReference) from TitleInstancePackagePlatform where subjectReference is not null and pkg = :pkg and status = :status "+nameFilter+" order by subjectReference", queryParams)
 
         if(rawSubjects.size() == 0){
             subjects << messageSource.getMessage('titleInstance.noSubjectReference.label', null, LocaleUtils.getCurrentLocale())
@@ -1007,21 +1131,28 @@ class ControlledListService {
             }
         }
 
-        subjects
+        subjects.collect { String subject -> [name: subject, value: subject] }
     }
 
     /**
      * Called from title filter views
      * Retrieves all possible subject references for the given subscription
      * @param subscription the subscription whose titles should be inspected
+     * @params query query filter to restrict to certain values
      * @return a set of possible subject references
      */
-    Set<String> getAllPossibleSubjectsBySub(Subscription subscription) {
+    Set getAllPossibleSubjectsBySub(Subscription subscription, String query) {
         SortedSet<String> subjects = new TreeSet<String>()
         List<String> rawSubjects = []
+        Map<String, Object> queryParams = [pkg: subscription.packages.pkg, removed: RDStore.TIPP_STATUS_REMOVED]
+        String nameFilter = ""
+        if(query) {
+            queryParams.query = query
+            nameFilter += "and genfunc_filter_matcher(subjectReference, :query) = true"
+        }
 
         if(subscription.packages){
-            rawSubjects = TitleInstancePackagePlatform.executeQuery("select distinct(subjectReference) from TitleInstancePackagePlatform where subjectReference is not null and pkg in (:pkg) and status != :removed order by subjectReference", [pkg: subscription.packages.pkg, removed: RDStore.TIPP_STATUS_REMOVED])
+            rawSubjects = TitleInstancePackagePlatform.executeQuery("select distinct(subjectReference) from TitleInstancePackagePlatform where subjectReference is not null and pkg in (:pkg) and status != :removed "+nameFilter+" order by subjectReference", queryParams)
         }
         if(rawSubjects.size() == 0){
             subjects << messageSource.getMessage('titleInstance.noSubjectReference.label', null, LocaleUtils.getCurrentLocale())
@@ -1035,7 +1166,7 @@ class ControlledListService {
             }
         }
 
-        subjects
+        subjects.collect { String subject -> [name: subject, value: subject] }
     }
 
     /**
@@ -1044,7 +1175,7 @@ class ControlledListService {
      * @param subscription the subscription whose titles should be inspected
      * @return a set of possible subject references
      */
-    Set<String> getAllPossibleSubjectsByStatus(GrailsParameterMap params) {
+    Set getAllPossibleSubjectsByStatus(GrailsParameterMap params) {
         SortedSet<String> subjects = new TreeSet<String>()
         List<String> rawSubjects = []
 
@@ -1062,11 +1193,16 @@ class ControlledListService {
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
 
+           if(params.query) {
+               queryMap.query = params.query
+               query += " and genfunc_filter_macher(tipp.subjectReference, :query) = true"
+           }
+
            query += " order by tipp.subjectReference"
            rawSubjects = TitleInstancePackagePlatform.executeQuery(query, queryMap)
         }
         if(rawSubjects.size() == 0){
-            subjects << messageSource.getMessage('titleInstance.noSubjectReference.label', null, LocaleUtils.getCurrentLocale())
+            return [[name: messageSource.getMessage('titleInstance.noSubjectReference.label', null, LocaleUtils.getCurrentLocale()), value: null]]
         }
         else {
             rawSubjects.each { String rawSubject ->
@@ -1077,24 +1213,31 @@ class ControlledListService {
             }
         }
 
-        subjects
+        subjects.collect { String subject -> [name: subject, value: subject] }
     }
 
     /**
      * Called from title filter views
      * Retrieves all possible years of first online publication for the given package and the given title status
      * @param pkg the package whose titles should be inspected
+     * @params query query filter to restrict to certain values
      * @param forTitles the title status considered
      * @return a set of years of first online publication
      */
-    Set<String> getAllPossibleDateFirstOnlineYearByPackage(Package pkg, String forTitles) {
+    Set getAllPossibleDateFirstOnlineYearByPackage(Package pkg, String query, String forTitles) {
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
-        Set<String> subjects = []
+        Set<Map> subjects = []
+        String nameFilter = ""
+        Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
+        if(query) {
+            nameFilter += "and Year(dateFirstOnline) like :query"
+            queryParams.query = "%${query}%"
+        }
 
-        subjects = TitleInstancePackagePlatform.executeQuery("select distinct(Year(dateFirstOnline)) from TitleInstancePackagePlatform where dateFirstOnline is not null and pkg = :pkg and status = :status order by YEAR(dateFirstOnline)", [pkg: pkg, status: tippStatus])
+        subjects = TitleInstancePackagePlatform.executeQuery("select new map(Year(dateFirstOnline) as name, Year(dateFirstOnline) as value) from TitleInstancePackagePlatform where dateFirstOnline is not null and pkg = :pkg and status = :status "+nameFilter+" group by YEAR(dateFirstOnline) order by YEAR(dateFirstOnline)", queryParams)
 
         if(subjects.size() == 0){
-            subjects << messageSource.getMessage('default.selectionNotPossible.label', null, LocaleUtils.getCurrentLocale())
+            subjects << [name: messageSource.getMessage('default.selectionNotPossible.label', null, LocaleUtils.getCurrentLocale()), value: null]
         }
 
         subjects
@@ -1104,13 +1247,20 @@ class ControlledListService {
      * Called from title filter views
      * Retrieves all possible years of first online publication for the given subscription
      * @param subscription the subscription whose titles should be inspected
+     * @params query query filter to restrict to certain values
      * @return a set of possible years of first online publication
      */
-    Set<String> getAllPossibleDateFirstOnlineYearBySub(Subscription subscription) {
-        Set<String> yearsFirstOnline = []
+    Set getAllPossibleDateFirstOnlineYearBySub(Subscription subscription, String query) {
+        Set<Map> yearsFirstOnline = []
+        String nameFilter = ""
+        Map<String, Object> queryParams = [pkg: subscription.packages.pkg,current: RDStore.TIPP_STATUS_CURRENT]
+        if(query) {
+            nameFilter += "and Year(dateFirstOnline) like :query"
+            queryParams.query = "%${query}%"
+        }
 
         if(subscription.packages){
-            yearsFirstOnline = TitleInstancePackagePlatform.executeQuery("select distinct(YEAR(dateFirstOnline)) from TitleInstancePackagePlatform where dateFirstOnline is not null and pkg in (:pkg) and status = :current order by YEAR(dateFirstOnline)", [pkg: subscription.packages.pkg,current: RDStore.TIPP_STATUS_CURRENT])
+            yearsFirstOnline = TitleInstancePackagePlatform.executeQuery("select new map(Year(dateFirstOnline) as name, Year(dateFirstOnline) as value) from TitleInstancePackagePlatform where dateFirstOnline is not null and pkg in (:pkg) and status = :current "+nameFilter+" group by YEAR(dateFirstOnline) order by YEAR(dateFirstOnline)", queryParams)
         }
         if(yearsFirstOnline.size() == 0){
             yearsFirstOnline << messageSource.getMessage('default.selectionNotPossible.label', null, LocaleUtils.getCurrentLocale())
@@ -1125,15 +1275,15 @@ class ControlledListService {
      * @param subscription the subscription whose titles should be inspected
      * @return a set of possible years of first online publication
      */
-    Set<String> getAllPossibleDateFirstOnlineYearByStatus(GrailsParameterMap params) {
-        Set<String> yearsFirstOnline = []
+    Set getAllPossibleDateFirstOnlineYearByStatus(GrailsParameterMap params) {
+        Set<Map> yearsFirstOnline = []
 
        if(params.status != '' && params.status != null && params.list('status')) {
             List<Long> statusList = []
             params.list('status').each { String statusId ->
                 statusList << Long.parseLong(statusId)
             }
-           String query = "select distinct(YEAR(tipp.dateFirstOnline)) from TitleInstancePackagePlatform tipp where tipp.dateFirstOnline is not null and tipp.status.id in (:status) "
+           String query = "select new map(Year(dateFirstOnline) as name, Year(dateFirstOnline) as value) from TitleInstancePackagePlatform tipp where tipp.dateFirstOnline is not null and tipp.status.id in (:status) "
            Map queryMap = [status: statusList]
 
            if(params.institution && params.filterForPermanentTitle){
@@ -1141,7 +1291,12 @@ class ControlledListService {
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
 
-           query += " order by YEAR(tipp.dateFirstOnline)"
+           if(params.query) {
+               queryMap.query = "%${params.query}%"
+               query += " and Year(dateFirstOnline) like :query"
+           }
+
+           query += " group by YEAR(tipp.dateFirstOnline) order by YEAR(tipp.dateFirstOnline)"
            yearsFirstOnline = TitleInstancePackagePlatform.executeQuery(query, queryMap)
         }
         if(yearsFirstOnline.size() == 0){
@@ -1155,15 +1310,22 @@ class ControlledListService {
     * Called from title filter views
     * Retrieves all possible publishers for the given package and the given title status
     * @param pkg the package whose titles should be inspected
+    * @params query query filter to restrict to certain values
     * @param forTitles the title status considered
     * @return a set of publishers
     */
-    Set<String> getAllPossiblePublisherByPackage(Package pkg,String forTitles) {
+    Set<String> getAllPossiblePublisherByPackage(Package pkg, String query, String forTitles) {
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
         Set<String> publishers = []
+        Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
+        String nameFilter = ""
+        if(query) {
+            nameFilter += " and genfunc_filter_matcher(publisherName, :query) = true "
+            queryParams.query = query
+        }
 
         //publishers.addAll(TitleInstancePackagePlatform.executeQuery("select distinct(orgRole.org.name) from TitleInstancePackagePlatform tipp left join tipp.orgs orgRole where orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and tipp.pkg = :pkg and tipp.status = :status order by orgRole.org.name", [pkg: pkg, status: tippStatus]))
-        publishers.addAll(TitleInstancePackagePlatform.executeQuery("select distinct(publisherName) from TitleInstancePackagePlatform where publisherName is not null and pkg = :pkg and status = :status order by publisherName", [pkg: pkg, status: tippStatus]))
+        publishers.addAll(TitleInstancePackagePlatform.executeQuery("select new map(publisherName as name, publisherName as value) from TitleInstancePackagePlatform where publisherName is not null and pkg = :pkg and status = :status "+nameFilter+" group by publisherName order by publisherName", queryParams))
 
         publishers
     }
@@ -1172,14 +1334,21 @@ class ControlledListService {
      * Called from title filter views
      * Retrieves all possible publishers for the given subscription
      * @param subscription the subscription whose titles should be inspected
+     * @params query query filter to restrict to certain values
      * @return a set of possible publishers
      */
-    Set<String> getAllPossiblePublisherBySub(Subscription subscription) {
+    Set<String> getAllPossiblePublisherBySub(Subscription subscription, String query) {
         Set<String> publishers = []
 
         if(subscription.packages){
+            Map<String, Object> queryParams = [pkg: subscription.packages.pkg,current: RDStore.TIPP_STATUS_CURRENT]
+            String nameFilter = ""
+            if(query) {
+                nameFilter += " and genfunc_filter_matcher(publisherName, :query) = true "
+                queryParams.query = query
+            }
             //publishers.addAll(TitleInstancePackagePlatform.executeQuery("select distinct(orgRole.org.name) from TitleInstancePackagePlatform tipp left join tipp.orgs orgRole where orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and tipp.pkg in (:pkg) order by orgRole.org.name", [pkg: subscription.packages.pkg]))
-            publishers.addAll(TitleInstancePackagePlatform.executeQuery("select distinct(publisherName) from TitleInstancePackagePlatform where publisherName is not null and pkg in (:pkg) and status = :current order by publisherName", [pkg: subscription.packages.pkg,current: RDStore.TIPP_STATUS_CURRENT]))
+            publishers.addAll(TitleInstancePackagePlatform.executeQuery("select new map(publisherName as name, publisherName as value) from TitleInstancePackagePlatform where publisherName is not null and pkg in (:pkg) and status = :current "+nameFilter+" group by publisherName order by publisherName", queryParams))
         }
 
         publishers
@@ -1199,14 +1368,18 @@ class ControlledListService {
             params.list('status').each { String statusId ->
                 statusList << Long.parseLong(statusId)
             }
-           String query = "select distinct(tipp.publisherName) from TitleInstancePackagePlatform tipp where tipp.publisherName is not null and tipp.status.id in (:status) "
+           String query = "select new map(tipp.publisherName as name, tipp.publisherName as value) from TitleInstancePackagePlatform tipp where tipp.publisherName is not null and tipp.status.id in (:status) "
            Map queryMap = [status: statusList]
 
            if(params.institution && params.filterForPermanentTitle){
                queryMap.inst = params.institution
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
-           query += " order by tipp.publisherName"
+           if(params.query) {
+               queryMap.query = params.query
+               query += " and genfunc_filter_name(tipp.publisherName, :query) = true"
+           }
+           query += " group by tipp.publisherName order by tipp.publisherName"
             //publishers.addAll(TitleInstancePackagePlatform.executeQuery("select distinct(orgRole.org.name) from TitleInstancePackagePlatform tipp left join tipp.orgs orgRole where orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and tipp.pkg in (:pkg) order by orgRole.org.name", [pkg: subscription.packages.pkg]))
             publishers.addAll(TitleInstancePackagePlatform.executeQuery(query, queryMap))
         }
