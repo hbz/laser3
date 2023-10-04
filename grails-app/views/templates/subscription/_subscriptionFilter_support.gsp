@@ -178,6 +178,7 @@
             <% /* 4-2 */ %>
 
             <div class="field">
+                <label></label>
                 <fieldset id="subscritionType">
                     <label>${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
                     <div class="inline fields la-filter-inline">

@@ -57,10 +57,7 @@
             </g:if>
 
             <th rowspan="2" class="la-no-uppercase center aligned">
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                      data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
-                    <i class="map icon"></i>
-                </span>
+                <ui:multiYearIcon isConsortial="true" />
             </th>
             <g:if test="${'onlyMemberSubs' in tableConfig}">
                 <th rowspan="2">${message(code:'default.actions.label')}</th>
@@ -227,10 +224,7 @@
                 </g:elseif>
                 <td>
                     <g:if test="${subCons.isMultiYear}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                              data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
-                            <i class="map orange icon"></i>
-                        </span>
+                        <ui:multiYearIcon isConsortial="true" color="orange" />
                     </g:if>
                 </td>
                 <g:if test="${'onlyMemberSubs' in tableConfig}">

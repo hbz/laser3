@@ -149,10 +149,7 @@
                 </g:if>
                 <th>${message(code:'default.status.label')}</th>
                 <th class="center aligned la-no-uppercase">
-                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                          data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
-                        <i class="map icon"></i>
-                    </span>
+                    <ui:multiYearIcon isConsortial="true" />
                 </th>
                 <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </tr>
@@ -274,10 +271,7 @@
                     <td>${sub.status.getI10n('value')}</td>
                     <td>
                         <g:if test="${sub.isMultiYear}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                  data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
-                                <i class="map orange icon"></i>
-                            </span>
+                            <ui:multiYearIcon isConsortial="true" color="orange" />
                         </g:if>
                     </td>
                     <td class="x">
