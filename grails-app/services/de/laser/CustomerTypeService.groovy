@@ -51,33 +51,33 @@ class CustomerTypeService {
 
     //
 
+    String getCustomerTypeDependingView(String view) {
+        contextService.getOrg().isCustomerType_Support() ? view + '_support' : view
+    }
+
+    //
+
     String getActionsTemplatePath() {
-        String tmpl = 'actions'
-        return contextService.getOrg().isCustomerType_Support() ? tmpl + '_support' : tmpl
+        getCustomerTypeDependingView('actions')
     }
 
     String getNavTemplatePath() {
-        String tmpl = 'nav'
-        return contextService.getOrg().isCustomerType_Support() ? tmpl + '_support' : tmpl
+        getCustomerTypeDependingView('nav')
     }
 
     String getLicenseFilterTemplatePath() {
-        String tmpl = '/templates/license/licenseFilter'
-        return contextService.getOrg().isCustomerType_Support() ? tmpl + '_support' : tmpl
+        getCustomerTypeDependingView('/templates/license/licenseFilter')
     }
 
     String getSubscriptionFilterTemplatePath() {
-        String tmpl = '/templates/subscription/subscriptionFilter'
-        return contextService.getOrg().isCustomerType_Support() ? tmpl + '_support' : tmpl
+        getCustomerTypeDependingView('/templates/subscription/subscriptionFilter')
     }
 
     String getConsortiaSubscriptionFilterTemplatePath() {
-        String tmpl = '/templates/subscription/consortiaSubscriptionFilter'
-        return contextService.getOrg().isCustomerType_Support() ? tmpl + '_support' : tmpl
+        getCustomerTypeDependingView('/templates/subscription/consortiaSubscriptionFilter')
     }
 
     String getNavSubscriptionManagementTemplatePath() {
-        String tmpl = '/templates/management/navSubscriptionManagement'
-        return contextService.getOrg().isCustomerType_Support() ? tmpl + '_support' : tmpl
+        getCustomerTypeDependingView('/templates/management/navSubscriptionManagement')
     }
 }

@@ -38,6 +38,10 @@
 %{--                    </g:if>--}%
 %{--                </g:if>--}%
 
+            <g:if test="${showConsortiaFunctions || subscription.administrative || subscription._getCalculatedType() in [Subscription.TYPE_CONSORTIAL, Subscription.TYPE_ADMINISTRATIVE]}">
+                <div class="divider"></div>
+            </g:if>
+
             <g:if test="${showConsortiaFunctions || subscription.administrative}">
                 <ui:actionsDropdownItem controller="subscription" action="addMembers" params="${[id:params.id]}" text="${message(code:'subscription.details.addMembers.label',args:[message(code:'subscription.details.consortiaMembers.label')])}" />
             </g:if>

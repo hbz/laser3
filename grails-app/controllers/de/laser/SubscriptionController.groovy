@@ -35,6 +35,7 @@ class SubscriptionController {
 
     ContextService contextService
     CopyElementsService copyElementsService
+    CustomerTypeService customerTypeService
     CustomWkhtmltoxService wkhtmltoxService
     DeletionService deletionService
     DocstoreService docstoreService
@@ -1874,13 +1875,13 @@ class SubscriptionController {
                         params.workFlowPart = CopyElementsService.WORKFLOW_SUBSCRIBER
                         ctrlResult.result << copyElementsService.loadDataFor_Subscriber(params)
                     } else {
-                        params.workFlowPart = CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
+                        params.workFlowPart = contextService.getOrg().isCustomerType_Support() ? CopyElementsService.WORKFLOW_PROPERTIES : CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
                         ctrlResult.result << copyElementsService.loadDataFor_PackagesEntitlements(params)
                     }
                     break
                 case CopyElementsService.WORKFLOW_SUBSCRIBER:
                     ctrlResult.result << copyElementsService.copyObjectElements_Subscriber(params)
-                    params.workFlowPart = CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
+                    params.workFlowPart = contextService.getOrg().isCustomerType_Support() ? CopyElementsService.WORKFLOW_PROPERTIES : CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
                     ctrlResult.result << copyElementsService.loadDataFor_PackagesEntitlements(params)
                     break
                 case CopyElementsService.WORKFLOW_END:
@@ -1895,8 +1896,10 @@ class SubscriptionController {
                     break
             }
             ctrlResult.result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS
-            ctrlResult.result
+//            ctrlResult.result
         }
+
+        render view: customerTypeService.getCustomerTypeDependingView('copySubscription'), model: ctrlResult.result
     }
 
     /**
@@ -1994,8 +1997,10 @@ class SubscriptionController {
                     return
                 }
             }
-            else ctrlResult.result
+//            else ctrlResult.result
         }
+
+        render view: customerTypeService.getCustomerTypeDependingView('copyElementsIntoSubscription'), model: ctrlResult.result
     }
 
     /**
