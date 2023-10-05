@@ -31,6 +31,11 @@ import org.springframework.context.MessageSource
 
 import java.time.Year
 
+/**
+ * Abstract class containing export configurations common for every report such as cache,
+ * separators for export and init methods. See the implementing classes for more details
+ * on each report
+ */
 @Slf4j
 abstract class BaseDetailsExport {
 
@@ -48,10 +53,18 @@ abstract class BaseDetailsExport {
 
     String token                    // cache token
 
+    /**
+     * common nested fields
+     */
     static List<String> CUSTOM_MULTIPLE_FIELDS = [
             'x-identifier', '@-org-accessPoint', '@-org-contact', '@-org-readerNumber', '@-entitlement-tippIdentifier'
     ]
 
+    /**
+     * Initialises a new export with the given set of selected fields
+     * @param token the cache token under which the report will be stored
+     * @param fields the fields to be included in export
+     */
     void init(String token, Map<String, Object> fields)  {
         this.token = token
 
@@ -78,6 +91,11 @@ abstract class BaseDetailsExport {
 
     abstract List<Object> getDetailedObject(Object obj, Map<String, Object> fields)
 
+    /**
+     * Determines the configuration for the given report and context customer type
+     * @param key the key for which the configuration should be loaded
+     * @return the {@link Map} with the configuration settings
+     */
     Map<String, Object> getCurrentConfig(String key) {
 
         if (key == CostItemExportLocal.KEY) {
@@ -129,6 +147,10 @@ abstract class BaseDetailsExport {
         }
     }
 
+    /**
+     * Gets the fields for the cached configuration
+     * @return a {@link Map} of fields with their respective types
+     */
     Map<String, Object> getAllFields() {
 
         String cfg, field
@@ -160,16 +182,37 @@ abstract class BaseDetailsExport {
 
     // -----
 
+    /**
+     * Checks if this report is a local one, checking the class package name as reference
+     * @param obj the report class to check
+     * @return true if it is located in the local report package, false otherwise
+     */
     static boolean isLocal(Object obj) {
         obj.class.package.toString().endsWith('.local')
     }
+
+    /**
+     * Checks if this report is a global (= institution-wide) one, checking the class package name as reference
+     * @param obj the report class to check
+     * @return true if it is located in the global report package, false otherwise
+     */
     static boolean isGlobal(Object obj) {
         obj.class.package.toString().endsWith('.myInstitution')
     }
+
+    /**
+     * Checks if the context institution is a consortium
+     * @return true if the context institution is a consortium customer, false otherwise
+     */
     static boolean ctxConsortium() {
         ContextService contextService = BeanStore.getContextService()
         contextService.getOrg().isCustomerType_Consortium()
     }
+
+    /**
+     * Checks if the context institution is a PRO customer
+     * @return true if the context institution is a pro institution customer, false otherwise
+     */
     static boolean ctxInst() {
         ContextService contextService = BeanStore.getContextService()
         contextService.getOrg().isCustomerType_Inst_Pro()
@@ -177,6 +220,14 @@ abstract class BaseDetailsExport {
 
     // -----
 
+    /**
+     * Gets the content of the given property in the given object. Boolean types
+     * are being mapped to the {@link RefdataValue} of category {@link RDConstants#Y_N}
+     * @param obj the object whose value should be read
+     * @param field the field to be read
+     * @param type the type of object, used to determine whether boolean type or not
+     * @return the field content
+     */
     static def getPropertyContent(Object obj, String field, Class type) {
 
         def content = obj.getProperty(field)
@@ -195,12 +246,25 @@ abstract class BaseDetailsExport {
         content
     }
 
+    /**
+     * Gets the localised text content of the given reference data field
+     * @param obj the object whose value should be read
+     * @param field the field to be read
+     * @return the localised field content
+     */
     static String getRefdataContent(Object obj, String field) {
 
         String rdv = obj.getProperty(field)?.getI10n('value') ?: ''
         rdv
     }
 
+    /**
+     * Gets the localised text contents of the given reference data field list
+     * and concatenates all values of the list with the given value separator
+     * @param obj the object whose value should be read
+     * @param field the list to be read
+     * @return the concatenated string containing the list values
+     */
     static String getJointableRefdataContent(Object obj, String field) {
 
         Set refdata = obj.getProperty(field) as Set
@@ -209,10 +273,19 @@ abstract class BaseDetailsExport {
 
     // -----
 
+    /**
+     * Checks if the given field is among those which can have multiple values
+     * @param fieldName the field name to check
+     * @return true if the field name is among the multiple fields, false otherwise
+     */
     static boolean isFieldMultiple(String fieldName) {
         return fieldName in CUSTOM_MULTIPLE_FIELDS
     }
 
+    /**
+     * Normalises the multiple fields in the given export into lists
+     * @param export the report to be exported
+     */
     static void normalizeSelectedMultipleFields(BaseDetailsExport export) {
 
         export.selectedExportFields.each {it ->
@@ -227,6 +300,14 @@ abstract class BaseDetailsExport {
         }
     }
 
+    /**
+     * Build the list for a dropdown with the values of the given key.
+     * If identifier namespaces should be selected, those namespaces are retrieved based on the given configuration
+     * which are for the identifiers for the object type defined in the configuration
+     * @param key the field key to which the dropdown should be generated
+     * @param cfg the report configuration, used for identifier namespace determination
+     * @return a {@link List} of values for the dropdown
+     */
     static List getMultipleFieldListForDropdown(String key, Map<String, Object> cfg) {
 
         if (key == 'x-identifier') {
@@ -246,6 +327,12 @@ abstract class BaseDetailsExport {
         }
     }
 
+    /**
+     * Builds a list of identifier namespaces of the given object type. The type
+     * of object is defined in the report configuration
+     * @param cfg the report configuration containing the object type to which suitable identifier namespaces should be proposed in the dropdown
+     * @return a {@link List} of matching identifier namespaces
+     */
     static List getIdentifierNamespacesForDropdown(Map<String, Object> cfg) {
 
         List<IdentifierNamespace> idnsList = []
@@ -268,6 +355,10 @@ abstract class BaseDetailsExport {
         }.sort { a,b -> a[1] <=> b[1] }
     }
 
+    /**
+     * Builds a list of access point methods for dropdown selection
+     * @return values from the controlled list {@link RDConstants#ACCESS_POINT_TYPE}
+     */
     static List getAccessPointMethodsforDropdown() {
 
         List<RefdataValue> aptList = RefdataCategory.getAllRefdataValues( RDConstants.ACCESS_POINT_TYPE )
@@ -276,6 +367,11 @@ abstract class BaseDetailsExport {
             [ it.id, it.getI10n('value') ]
         }
     }
+
+    /**
+     * Builds a list of contact types for dropdown selection
+     * @return values from the controlled list {@link RDConstants#REPORTING_CONTACT_TYPE}
+     */
     static List getContactOptionsforDropdown() {
 
         List<RefdataValue> aptList = RefdataCategory.getAllRefdataValues( RDConstants.REPORTING_CONTACT_TYPE )
@@ -285,6 +381,10 @@ abstract class BaseDetailsExport {
         }
     }
 
+    /**
+     * Builds a list of university terms and years for reader number filter dropdown
+     * @return a {@link List} of term semesters and due date years
+     */
     static List getReaderNumberSemesterAndDueDatesForDropdown() {
 
         List<RefdataValue> semList = RefdataCategory.getAllRefdataValuesWithOrder( RDConstants.SEMESTER )
@@ -301,6 +401,11 @@ abstract class BaseDetailsExport {
 
     // -----
 
+    /**
+     * Gets the label for the given token
+     * @param token the token to which the output label should be generated
+     * @return the localised message string
+     */
     static String getExportLabel(String token) {
         String msg = '[reporting.export.custom.' + token + ']'
         try {
