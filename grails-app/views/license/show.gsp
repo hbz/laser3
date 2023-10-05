@@ -112,13 +112,15 @@
                                     </dl>--%>
                                 </g:if>
 
-                                <dl>
-                                    <dt class="control-label">${message(code: 'license.isPublicForApi.label')}</dt>
-                                    <dd><ui:xEditableBoolean owner="${license}" field="isPublicForApi" /></dd>
-                                    <g:if test="${editable}">
-                                        <dd class="la-js-editmode-container"><ui:auditButton auditable="[license, 'isPublicForApi']" auditConfigs="${auditConfigs}"/></dd>
-                                    </g:if>
-                                </dl>
+                                <g:if test="${!contextService.getOrg().isCustomerType_Support()}">
+                                    <dl>
+                                        <dt class="control-label">${message(code: 'license.isPublicForApi.label')}</dt>
+                                        <dd><ui:xEditableBoolean owner="${license}" field="isPublicForApi" /></dd>
+                                        <g:if test="${editable}">
+                                            <dd class="la-js-editmode-container"><ui:auditButton auditable="[license, 'isPublicForApi']" auditConfigs="${auditConfigs}"/></dd>
+                                        </g:if>
+                                    </dl>
+                                </g:if>
 
                             </div>
                         </div>

@@ -16,24 +16,14 @@
             %{--<div class="four fields">--}%
             <% /* 1-1 */ %>
             <div class="field">
-                <label for="search-title">${message(code: 'default.search.text')}
-                    <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription')}">
-                        <i class="question circle icon"></i>
-                    </span>
-                </label>
-
+                <label for="search-title">${message(code: 'default.search.text')}</label>
                 <div class="ui input">
                     <input type="text" id="search-title" name="q" placeholder="${message(code: 'default.search.ph')}" value="${params.q}"/>
                 </div>
             </div>
             <% /* 1-2 */ %>
             <div class="field">
-                <label for="identifier">${message(code: 'default.search.identifier')}
-                    <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription.identifier')}">
-                        <i class="question circle icon"></i>
-                    </span>
-                </label>
-
+                <label for="identifier">${message(code: 'default.search.identifier')}</label>
                 <div class="ui input">
                     <input type="text" id="identifier" name="identifier" placeholder="${message(code: 'default.search.identifier.ph')}" value="${params.identifier}"/>
                 </div>
@@ -108,7 +98,7 @@
         </div>
 
         <div class="four fields">
-            <% /* 3-1 */ %>
+
             <div class="field">
                 <label for="subKinds">${message(code: 'myinst.currentSubscriptions.subscription_kind')}</label>
                 <select id="subKinds" name="subKinds" multiple="" class="ui search selection fluid dropdown">
@@ -121,41 +111,8 @@
                         </option>
                     </g:each>
                 </select>
+            </div>
 
-            </div>
-            <% /* 3-2 */ %>
-            <div class="field">
-                <label>${message(code:'subscription.isPublicForApi.label')}</label>
-                <ui:select class="ui fluid dropdown" name="isPublicForApi"
-                              from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
-                              optionKey="id"
-                              optionValue="value"
-                              value="${params.isPublicForApi}"
-                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
-            </div>
-            <% /* 3-3 */ %>
-            <div class="field">
-                <label>${message(code:'subscription.hasPerpetualAccess.label')}</label>
-                <ui:select class="ui fluid dropdown" name="hasPerpetualAccess"
-                              from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
-                              optionKey="id"
-                              optionValue="value"
-                              value="${params.hasPerpetualAccess}"
-                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
-            </div>
-            <% /* 3-4 */ %>
-            <div class="field">
-                <label>${message(code:'subscription.hasPublishComponent.label')}</label>
-                <ui:select class="ui fluid dropdown" name="hasPublishComponent"
-                              from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
-                              optionKey="id"
-                              optionValue="value"
-                              value="${params.hasPublishComponent}"
-                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
-            </div>
-        </div>
-
-        <div class="four fields">
             <div class="field">
                 <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
                 <div class="inline fields la-filter-inline">
@@ -175,7 +132,6 @@
                     </div>
                 </div>
             </div>
-            <% /* 4-2 */ %>
 
             <div class="field">
                 <label></label>
@@ -197,12 +153,11 @@
             </div>
 
             <div class="field"></div>
+        </div>
 
-            <div class="field la-field-right-aligned">
-                <a href="${createLink(controller:controllerName,action:actionName,params:[id:params.id,resetFilter:true, tab: params.tab])}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
-                <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}">
-            </div>
-
+        <div class="field la-field-right-aligned">
+            <a href="${createLink(controller:controllerName,action:actionName,params:[id:params.id,resetFilter:true, tab: params.tab])}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
+            <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}">
         </div>
 
     </g:form>

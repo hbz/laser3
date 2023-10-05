@@ -35,8 +35,6 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
 %{--                <i class="cloud icon"></i>                      ${message(code: 'default.url.label')} <br />--}%
                 <i class="clipboard list icon"></i>             ${message(code: 'license.licenseCategory.label')} <br />
                 <i class="key icon"></i>                    ${message(code: 'license.openEnded.label')} <br />
-%{--                <i class="shipping fast icon"></i>              ${message(code: 'license.isPublicForApi.label')}--}%
-%{--                <i class="university icon"></i>                 ${message(code: 'subscription.organisations.label')} <br />--}%
                 <i class="barcode icon"></i>                    ${message(code: 'default.identifiers.label')} <br />
                 <i class="exchange icon"></i>                   ${message(code: 'license.linkedObjects')}
             </div>

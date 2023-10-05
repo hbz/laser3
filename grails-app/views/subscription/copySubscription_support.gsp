@@ -31,17 +31,13 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
                 <div class="description">
                     <i class="calendar alternate outline icon"></i>     ${message(code: 'subscription.periodOfValidity.label')} <br />
                     <i class="ellipsis vertical icon"></i>              ${message(code:'subscription.status.label')} <br />
-                    <i class="image outline icon"></i>  ${message(code:'subscription.kind.label')} <br />
-                    <i class="dolly icon"></i>          ${message(code:'subscription.form.label')} <br />
-                    <i class="box icon"></i>            ${message(code:'subscription.resource.label')} <br />
-%{--                    <i class="shipping fast icon"></i>  ${message(code:'subscription.isPublicForApi.label')} <br />--}%
-%{--                    <i class="flag outline icon"></i>   ${message(code:'subscription.hasPerpetualAccess.label')} <br />--}%
-%{--                    <i class="comment icon"></i>        ${message(code:'subscription.hasPublishComponent.label')} <br />--}%
-                    <i class="balance scale icon"></i>  ${message(code: 'license.label')} <br />
-%{--                    <i class="university icon"></i>     ${message(code: 'subscription.organisations.label')} <br />--}%
-                    <i class="address card icon"></i>   ${message(code: 'subscription.specificSubscriptionEditors')} <br />
-                    <i class="barcode icon"></i>        ${message(code: 'default.identifiers.label')} <br />
-                    <i class="exchange icon"></i>       ${message(code: 'subscription.linkedObjects')}
+                    <i class="image outline icon"></i>                  ${message(code:'subscription.kind.label')} <br />
+                    <i class="dolly icon"></i>                          ${message(code:'subscription.form.label')} <br />
+                    <i class="box icon"></i>                            ${message(code:'subscription.resource.label')} <br />
+                    <i class="balance scale icon"></i>                  ${message(code: 'license.label')} <br />
+                    <i class="address card icon"></i>                   ${message(code: 'subscription.specificSubscriptionEditors')} <br />
+                    <i class="barcode icon"></i>                        ${message(code: 'default.identifiers.label')} <br />
+                    <i class="exchange icon"></i>                       ${message(code: 'subscription.linkedObjects')}
                 </div>
         </div>
     </div>

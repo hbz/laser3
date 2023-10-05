@@ -130,8 +130,9 @@
                                                             config="${RDConstants.SUBSCRIPTION_TYPE}"
                                                             constraint="removeValue_administrativeSubscription,removeValue_localSubscription"/>
                                 </dd>
-                                <dd class="la-js-editmode-container"><ui:auditButton
-                                        auditable="[subscription, 'type']" auditConfigs="${auditConfigs}"/></dd>
+                                <dd class="la-js-editmode-container">
+                                    <ui:auditButton auditable="[subscription, 'type']" auditConfigs="${auditConfigs}"/>
+                                </dd>
                             </dl>
                         </sec:ifAnyGranted>
                         <dl>
@@ -167,46 +168,48 @@
                             </dl>
                         </g:if>
 
-                        <dl>
-                            <dt class="control-label">${message(code: 'subscription.isPublicForApi.label')}</dt>
-                            <dd><ui:xEditableBoolean owner="${subscription}" field="isPublicForApi"/></dd>
-                            <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><ui:auditButton
-                                        auditable="[subscription, 'isPublicForApi']"
-                                        auditConfigs="${auditConfigs}"/></dd>
-                            </g:if>
-                        </dl>
+                        <g:if test="${!contextService.getOrg().isCustomerType_Support()}">
+                            <dl>
+                                <dt class="control-label">${message(code: 'subscription.isPublicForApi.label')}</dt>
+                                <dd><ui:xEditableBoolean owner="${subscription}" field="isPublicForApi"/></dd>
+                                <g:if test="${editable}">
+                                    <dd class="la-js-editmode-container">
+                                        <ui:auditButton auditable="[subscription, 'isPublicForApi']" auditConfigs="${auditConfigs}"/>
+                                    </dd>
+                                </g:if>
+                            </dl>
 
-                        <dl>
-                            <dt class="control-label">${message(code: 'subscription.hasPerpetualAccess.label')}</dt>
-                            <%--<dd><ui:xEditableRefData owner="${subscription}" field="hasPerpetualAccess" config="${RDConstants.Y_N}" /></dd>--%>
-                            <dd><ui:xEditableBoolean owner="${subscription}" field="hasPerpetualAccess"/></dd>
-                            <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><ui:auditButton
-                                        auditable="[subscription, 'hasPerpetualAccess']"
-                                        auditConfigs="${auditConfigs}"/></dd>
-                            </g:if>
-                        </dl>
+                            <dl>
+                                <dt class="control-label">${message(code: 'subscription.hasPerpetualAccess.label')}</dt>
+                                <%--<dd><ui:xEditableRefData owner="${subscription}" field="hasPerpetualAccess" config="${RDConstants.Y_N}" /></dd>--%>
+                                <dd><ui:xEditableBoolean owner="${subscription}" field="hasPerpetualAccess"/></dd>
+                                <g:if test="${editable}">
+                                    <dd class="la-js-editmode-container">
+                                        <ui:auditButton auditable="[subscription, 'hasPerpetualAccess']" auditConfigs="${auditConfigs}"/>
+                                    </dd>
+                                </g:if>
+                            </dl>
 
-                        <dl>
-                            <dt class="control-label">${message(code: 'subscription.hasPublishComponent.label')}</dt>
-                            <dd><ui:xEditableBoolean owner="${subscription}" field="hasPublishComponent"/></dd>
-                            <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><ui:auditButton
-                                        auditable="[subscription, 'hasPublishComponent']"
-                                        auditConfigs="${auditConfigs}"/></dd>
-                            </g:if>
-                        </dl>
+                            <dl>
+                                <dt class="control-label">${message(code: 'subscription.hasPublishComponent.label')}</dt>
+                                <dd><ui:xEditableBoolean owner="${subscription}" field="hasPublishComponent"/></dd>
+                                <g:if test="${editable}">
+                                    <dd class="la-js-editmode-container">
+                                        <ui:auditButton auditable="[subscription, 'hasPublishComponent']" auditConfigs="${auditConfigs}"/>
+                                    </dd>
+                                </g:if>
+                            </dl>
 
-                        <dl>
-                            <dt class="control-label">${message(code: 'subscription.holdingSelection.label')}</dt>
-                            <dd><ui:xEditableRefData owner="${subscription}" field="holdingSelection" config="${RDConstants.SUBSCRIPTION_HOLDING}"/></dd>
-                            <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><ui:auditButton
-                                        auditable="[subscription, 'holdingSelection']"
-                                        auditConfigs="${auditConfigs}"/></dd>
-                            </g:if>
-                        </dl>
+                            <dl>
+                                <dt class="control-label">${message(code: 'subscription.holdingSelection.label')}</dt>
+                                <dd><ui:xEditableRefData owner="${subscription}" field="holdingSelection" config="${RDConstants.SUBSCRIPTION_HOLDING}"/></dd>
+                                <g:if test="${editable}">
+                                    <dd class="la-js-editmode-container">
+                                        <ui:auditButton auditable="[subscription, 'holdingSelection']" auditConfigs="${auditConfigs}"/>
+                                    </dd>
+                                </g:if>
+                            </dl>
+                        </g:if>
 
                     </div>
                 </div>
