@@ -201,7 +201,9 @@
 <div class="ui bottom attached tab active segment">
    <div class="ui grid">
        <div class="row">
-           <div class="column" id="filterWrapper">
+           <%--<div class="column" id="filterWrapper"></div>--%>
+           <div class="column">
+               <laser:render template="/templates/filter/tipp_ieFilter"/>
            </div>
         </div><!--.row-->
     </div><!--.grid-->
@@ -855,6 +857,7 @@
         });
     });
 
+    <%--
     JSPC.app.loadFilter = function() {
         $.ajax({
             url: "<g:createLink action="getTippIeFilter"/>",
@@ -869,5 +872,6 @@
     }
 
     JSPC.app.loadFilter();
+    --%>
 </laser:script>
 <laser:htmlEnd/>

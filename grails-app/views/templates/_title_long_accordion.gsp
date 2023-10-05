@@ -209,7 +209,6 @@
 </div>
 <div class="three wide column" data-ajaxTopic="true">
     <div class="ui list" >
-
         <g:if test="${(tipp.subjectReference || showEmptyFields)}">
             <div class="item">
                 <i class="grey icon comment alternate la-popup-tooltip la-delay"
@@ -219,7 +218,6 @@
                     <div class="header">
                         ${message(code: 'tipp.subjectReference') + ':'}
                     </div>
-
                     <div class="description">
                         ${tipp.subjectReference}
                     </div>
@@ -232,7 +230,6 @@
             <div class="item">
                 <i class="grey lock open icon la-popup-tooltip la-delay"
                    data-content="${message(code: 'tipp.delayedOA')}"></i>
-
                 <div class="content">
                     <div class="header">
                         ${message(code: 'tipp.delayedOA') + ':'}
@@ -249,7 +246,6 @@
             <div class="item">
                 <i class="grey lock open alternate icon la-popup-tooltip la-delay"
                    data-content="${message(code: 'tipp.hybridOA')}"></i>
-
                 <div class="content">
                     <div class="header">
                         ${message(code: 'tipp.hybridOA') + ':'}
@@ -266,18 +262,16 @@
             <div class="item">
                 <i class="grey sort numeric down icon la-popup-tooltip la-delay"
                    data-content="${message(code: 'tipp.ddc')}"></i>
-
                 <div class="content">
                     <div class="header">
                         ${message(code: 'tipp.ddc') + ':'}
                     </div>
-
                     <div class="description">
-                        <ul class="ui list">
+                        <div class="ui list la-titleAccordionList">
                             <g:each in="${tipp.ddcs}" var="ddc">
-                                <li>${ddc.ddc.value} - ${ddc.ddc.getI10n("value")}</li>
+                                <div class="item">${ddc.ddc.value} - ${ddc.ddc.getI10n("value")}</div>
                             </g:each>
-                        </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -287,19 +281,16 @@
             <div class="item">
                 <i class="grey language icon la-popup-tooltip la-delay"
                    data-content="${message(code: 'tipp.language')}"></i>
-
                 <div class="content">
                     <div class="header">
                         ${message(code: 'tipp.language') + ':'}
                     </div>
-
-                    <div class="description">
-                        <ul class="ui list">
-                            <g:each in="${tipp.languages}" var="language">
-                                <li class="item">${language.language.getI10n("value")}</li>
-                            </g:each>
-                        </ul>
+                    <div class="ui list la-titleAccordionList">
+                        <g:each in="${tipp.languages}" var="language">
+                            <div class="item">${language.language.getI10n("value")}</div>
+                        </g:each>
                     </div>
+
                 </div>
             </div>
         </g:if>
@@ -308,12 +299,10 @@
             <div class="item">
                 <i class="grey building icon la-popup-tooltip la-delay"
                    data-content="${message(code: 'tipp.publisher')}"></i>
-
                 <div class="content">
                     <div class="header">
                         ${message(code: 'tipp.publisher') + ':'}
                     </div>
-
                     <div class="description">
                         ${tipp.publisherName}
                     </div>
@@ -325,12 +314,10 @@
             <div class="item">
                 <i class="grey lock open icon la-popup-tooltip la-delay"
                    data-content="${message(code: 'tipp.accessType')}"></i>
-
                 <div class="content">
                     <div class="header">
                         ${message(code: 'tipp.accessType') + ':'}
                     </div>
-
                     <div class="description">
                         ${tipp.accessType?.getI10n("value")}
                     </div>
@@ -342,12 +329,10 @@
             <div class="item">
                 <i class="ellipsis vertical grey icon la-popup-tooltip la-delay"
                    data-content="${message(code: 'tipp.openAccess')}"></i>
-
                 <div class="content">
                     <div class="header">
                         ${message(code: 'tipp.openAccess') + ':'}
                     </div>
-
                     <div class="description">
                         ${tipp.openAccess?.getI10n("value")}
                     </div>
@@ -360,7 +345,6 @@
             <div class="item">
                 <i class="grey university icon la-popup-tooltip la-delay"
                    data-content="${message(code: 'tipp.provider')}"></i>
-
                 <div class="content">
                     <div class="header">
                         ${message(code: 'tipp.provider') + ':'}

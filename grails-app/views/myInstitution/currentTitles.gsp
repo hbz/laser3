@@ -273,23 +273,22 @@
 %>
 
 
-<div class="la-clear-before">
-    <div class="ui bottom attached tab active segment">
+<div class="ui bottom attached tab active segment">
 
-        <div class="ui form">
-            <div class="three wide fields">
-                <div class="field">
-                    <ui:sortingDropdown noSelection="${message(code: 'default.select.choose.label')}"
-                                        from="${sortFieldMap}" sort="${params.sort}" order="${params.order}"/>
-                </div>
+    <div class="ui form">
+        <div class="three wide fields">
+            <div class="field">
+                <ui:sortingDropdown noSelection="${message(code: 'default.select.choose.label')}"
+                                    from="${sortFieldMap}" sort="${params.sort}" order="${params.order}"/>
             </div>
         </div>
+    </div>
 
 
+    <div>
         <div>
-            <div>
-                <g:if test="${titles}">
-                    <g:set var="counter" value="${offset + 1}"/>
+            <g:if test="${titles}">
+                <g:set var="counter" value="${offset + 1}"/>
 
 
                     <g:if test="${titles}">
@@ -305,20 +304,20 @@
                                                 Set<IssueEntitlement> ie_infos = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription pvd join pvd.orgRelations oo where oo.org = :context and ie.tipp = :tipp and (pvd.status = :current or pvd.hasPerpetualAccess = true) and ie.status != :ieStatus' + instanceFilter, [ieStatus: RDStore.TIPP_STATUS_REMOVED, context: institution, tipp: tipp, current: RDStore.SUBSCRIPTION_CURRENT])
                                             %>
 
-                                            <g:render template="/templates/title_segment_accordion"
-                                                      model="[ie: null, tipp: tipp, permanentTitle: PermanentTitle.findByOwnerAndTipp(institution, tipp)]"/>
+                                        <g:render template="/templates/title_segment_accordion"
+                                                  model="[ie: null, tipp: tipp, permanentTitle: PermanentTitle.findByOwnerAndTipp(institution, tipp)]"/>
 
-                                            <div class="ui fluid segment content" data-ajaxTargetWrap="true">
-                                                <div class="ui stackable grid" data-ajaxTarget="true">
+                                        <div class="ui fluid segment content" data-ajaxTargetWrap="true">
+                                            <div class="ui stackable grid" data-ajaxTarget="true">
 
-                                                    <laser:render template="/templates/title_long_accordion"
-                                                                  model="${[ie         : null, tipp: tipp,
-                                                                            showPackage: true, showPlattform: true, showEmptyFields: false]}"/>
+                                                <laser:render template="/templates/title_long_accordion"
+                                                              model="${[ie         : null, tipp: tipp,
+                                                                        showPackage: true, showPlattform: true, showEmptyFields: false]}"/>
 
-                                                    <div class="three wide column">
-                                                        <div class="ui list la-label-list">
-                                                            <g:if test="${tipp.accessStartDate}">
-                                                                <div class="ui label la-label-accordion">${message(code: 'tipp.access')}</div>
+                                                <div class="three wide column">
+                                                    <div class="ui list la-label-list">
+                                                        <g:if test="${tipp.accessStartDate}">
+                                                            <div class="ui label la-label-accordion">${message(code: 'tipp.access')}</div>
 
                                                                 <div class="item">
                                                                     <div class="content">
@@ -328,136 +327,134 @@
                                                                     </div>
                                                                 </div>
 
+                                                        </g:if>
+                                                        <g:if test="${tipp.accessEndDate}">
+                                                            <!-- bis -->
+                                                            <!-- DEVIDER  -->
+                                                            <ui:dateDevider/>
+                                                            <div class="item">
+                                                                <div class="content">
+                                                                    <g:formatDate
+                                                                            format="${message(code: 'default.date.format.notime')}"
+                                                                            date="${tipp.accessEndDate}"/>
+                                                                </div>
+                                                            </div>
+                                                        </g:if>
+
+                                                    <%-- Coverage Details START --%>
+                                                        <g:each in="${tipp.coverages}" var="covStmt"
+                                                                status="counterCoverage">
+                                                            <g:if test="${covStmt.coverageNote || covStmt.coverageDepth || covStmt.embargo}">
+                                                                <div class="ui label la-label-accordion">${message(code: 'tipp.coverageDetails')} ${counterCoverage > 0 ? counterCoverage++ + 1 : ''}</div>
                                                             </g:if>
-                                                            <g:if test="${tipp.accessEndDate}">
-                                                                <!-- bis -->
-                                                                <!-- DEVIDER  -->
-                                                                <ui:dateDevider/>
+                                                            <g:if test="${covStmt.coverageNote}">
                                                                 <div class="item">
+                                                                    <i class="grey icon quote right la-popup-tooltip la-delay"
+                                                                       data-content="${message(code: 'default.note.label')}"></i>
+
                                                                     <div class="content">
-                                                                        <g:formatDate
-                                                                                format="${message(code: 'default.date.format.notime')}"
-                                                                                date="${tipp.accessEndDate}"/>
+                                                                        <div class="header">
+                                                                            ${message(code: 'default.note.label')}
+                                                                        </div>
+
+                                                                        <div class="description">
+                                                                            ${covStmt.coverageNote}
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </g:if>
+                                                            <g:if test="${covStmt.coverageDepth}">
+                                                                <div class="item">
+                                                                    <i class="grey icon file alternate right la-popup-tooltip la-delay"
+                                                                       data-content="${message(code: 'tipp.coverageDepth')}"></i>
 
-                                                        <%-- Coverage Details START --%>
-                                                            <g:each in="${tipp.coverages}" var="covStmt"
-                                                                    status="counterCoverage">
-                                                                <g:if test="${covStmt.coverageNote || covStmt.coverageDepth || covStmt.embargo}">
-                                                                    <div class="ui label la-label-accordion">${message(code: 'tipp.coverageDetails')} ${counterCoverage > 0 ? counterCoverage++ + 1 : ''}</div>
-                                                                </g:if>
-                                                                <g:if test="${covStmt.coverageNote}">
-                                                                    <div class="item">
-                                                                        <i class="grey icon quote right la-popup-tooltip la-delay"
-                                                                           data-content="${message(code: 'default.note.label')}"></i>
+                                                                    <div class="content">
+                                                                        <div class="header">
+                                                                            ${message(code: 'tipp.coverageDepth')}
+                                                                        </div>
 
-                                                                        <div class="content">
-                                                                            <div class="header">
-                                                                                ${message(code: 'default.note.label')}
-                                                                            </div>
-
-                                                                            <div class="description">
-                                                                                ${covStmt.coverageNote}
-                                                                            </div>
+                                                                        <div class="description">
+                                                                            ${covStmt.coverageDepth}
                                                                         </div>
                                                                     </div>
-                                                                </g:if>
-                                                                <g:if test="${covStmt.coverageDepth}">
-                                                                    <div class="item">
-                                                                        <i class="grey icon file alternate right la-popup-tooltip la-delay"
-                                                                           data-content="${message(code: 'tipp.coverageDepth')}"></i>
+                                                                </div>
+                                                            </g:if>
+                                                            <g:if test="${covStmt.embargo}">
+                                                                <div class="item">
+                                                                    <i class="grey icon hand paper right la-popup-tooltip la-delay"
+                                                                       data-content="${message(code: 'tipp.embargo')}"></i>
 
-                                                                        <div class="content">
-                                                                            <div class="header">
-                                                                                ${message(code: 'tipp.coverageDepth')}
-                                                                            </div>
+                                                                    <div class="content">
+                                                                        <div class="header">
+                                                                            ${message(code: 'tipp.embargo')}
+                                                                        </div>
 
-                                                                            <div class="description">
-                                                                                ${covStmt.coverageDepth}
-                                                                            </div>
+                                                                        <div class="description">
+                                                                            ${covStmt.embargo}
                                                                         </div>
                                                                     </div>
-                                                                </g:if>
-                                                                <g:if test="${covStmt.embargo}">
-                                                                    <div class="item">
-                                                                        <i class="grey icon hand paper right la-popup-tooltip la-delay"
-                                                                           data-content="${message(code: 'tipp.embargo')}"></i>
-
-                                                                        <div class="content">
-                                                                            <div class="header">
-                                                                                ${message(code: 'tipp.embargo')}
-                                                                            </div>
-
-                                                                            <div class="description">
-                                                                                ${covStmt.embargo}
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </g:if>
-                                                            </g:each>
-                                                        <%-- Coverage Details END --%>
-                                                        </div>
+                                                                </div>
+                                                            </g:if>
+                                                        </g:each>
+                                                    <%-- Coverage Details END --%>
                                                     </div>
-                                                    <%-- My Area START--%>
-                                                    <div class="seven wide column">
-                                                        <i class="grey icon circular inverted fingerprint la-icon-absolute la-popup-tooltip la-delay"
-                                                           data-content="${message(code: 'menu.my.subscriptions')}"></i>
+                                                </div>
+                                                <%-- My Area START--%>
+                                                <div class="seven wide column">
+                                                    <i class="grey icon circular inverted fingerprint la-icon-absolute la-popup-tooltip la-delay"
+                                                       data-content="${message(code: 'menu.my.subscriptions')}"></i>
 
-                                                        <div class="ui la-segment-with-icon">
-
-                                                            <div class="ui list">
-                                                                <g:each in="${ie_infos}" var="ie">
-                                                                    <div class="item">
-                                                                        <div class="sixteen wide column">
-                                                                            <i class="icon clipboard outline la-list-icon"></i>
+                                                    <div class="ui la-segment-with-icon">
+                                                        <div class="ui list">
+                                                            <g:each in="${ie_infos}" var="ie">
+                                                                <div class="item">
+                                                                    <i class="icon clipboard outline la-list-icon"></i>
+                                                                    <div class="content">
+                                                                        <div class="header">
                                                                             <g:link controller="subscription"
                                                                                     action="index"
                                                                                     id="${ie.subscription.id}">${ie.subscription.dropdownNamingConvention(institution)}</g:link>
-                                                                            &nbsp;
-                                                                            <br/>
-                                                                            <br/>
+                                                                        </div>
+                                                                        <div class="description">
                                                                             <g:link controller="issueEntitlement"
-                                                                                    action="show"
-                                                                                    id="${ie.id}">${message(code: 'myinst.currentTitles.full_ie')}</g:link>
-                                                                            <br/>
+                                                                                action="show"
+                                                                                class="ui tiny button la-margin-top-05em"
+                                                                                id="${ie.id}">${message(code: 'myinst.currentTitles.full_ie')}</g:link>
                                                                         </div>
                                                                     </div>
-                                                                </g:each>
-
-                                                            </div>
+                                                                </div>
+                                                            </g:each>
                                                         </div>
-                                                    </div><%-- My Area END --%>
-                                                </div><%-- .grid --%>
-                                            </div><%-- .segment --%>
-                                        </div><%--.segments --%>
-                                    </g:each>
-                                </div><%-- .accordions --%>
-                            </div><%-- .content --%>
-                        </div><%-- .card --%>
-                    </g:if>
+                                                    </div>
+                                                </div><%-- My Area END --%>
+                                            </div><%-- .grid --%>
+                                        </div><%-- .segment --%>
+                                    </div><%--.segments --%>
+                                </g:each>
+                            </div><%-- .accordions --%>
+                        </div><%-- .content --%>
+                    </div><%-- .card --%>
+                </g:if>
+            </g:if>
+            <g:else>
+                <g:if test="${filterSet}">
+                    <br/><strong><g:message code="filter.result.empty.object"
+                                            args="${[message(code: "title.plural")]}"/></strong>
                 </g:if>
                 <g:else>
-                    <g:if test="${filterSet}">
-                        <br/><strong><g:message code="filter.result.empty.object"
-                                                args="${[message(code: "title.plural")]}"/></strong>
-                    </g:if>
-                    <g:else>
-                        <br/><strong><g:message code="result.empty.object"
-                                                args="${[message(code: "title.plural")]}"/></strong>
-                    </g:else>
+                    <br/><strong><g:message code="result.empty.object"
+                                            args="${[message(code: "title.plural")]}"/></strong>
                 </g:else>
-            </div>
+            </g:else>
         </div>
-
     </div>
-    <g:if test="${titles}">
-        <ui:paginate action="currentTitles" controller="myInstitution" params="${params}"
-                     max="${max}" total="${num_ti_rows}"/>
-    </g:if>
 
 </div>
+<g:if test="${titles}">
+    <ui:paginate action="currentTitles" controller="myInstitution" params="${params}"
+                 max="${max}" total="${num_ti_rows}"/>
+</g:if>
+
 
 <ui:debugInfo>
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
