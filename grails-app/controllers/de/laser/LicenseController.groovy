@@ -32,6 +32,7 @@ class LicenseController {
     AddressbookService addressbookService
     ContextService contextService
     CopyElementsService copyElementsService
+    CustomerTypeService customerTypeService
     CustomWkhtmltoxService wkhtmltoxService
     DeletionService deletionService
     DocstoreService docstoreService
@@ -698,7 +699,6 @@ class LicenseController {
                             newOrgRole.save()
                         }
                     }
-
                 }
             }
         }
@@ -730,8 +730,9 @@ class LicenseController {
 
         result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS
 
-        result
+        //result
 
+        render view: customerTypeService.getCustomerTypeDependingView('copyLicense'), model: result
     }
 
     /**
@@ -815,7 +816,8 @@ class LicenseController {
         result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS
         result.workFlowPartNext = params.workFlowPartNext ?: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
 
-        result
+//        result
+        render view: customerTypeService.getCustomerTypeDependingView('copyElementsIntoLicense'), model: result
     }
 
 }

@@ -18,7 +18,7 @@
               </div>
               <laser:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
           </div>
-          <div class="three fields">
+          <div class="four fields">
               <div class="field">
                   <label for="status">${message(code: 'license.status.label')}</label>
                   <ui:select class="ui dropdown" name="status"
@@ -37,9 +37,6 @@
                       </g:each>
                   </select>
               </div>
-              <div class="field"></div>
-          </div>
-          <div class="three fields">
               <div class="field">
                   <label for="subStatus">${message(code: 'subscription.status.label')}</label>
                   <ui:select class="ui dropdown" name="subStatus"
@@ -58,7 +55,6 @@
                       </g:each>
                   </select>
               </div>
-              <div class="field"></div>
           </div>
           <div class="three fields">
               <div class="field">

@@ -7,20 +7,8 @@
         <g:if test="${license}">
             <input type="hidden" name="id" value="${license.id}"/>
         </g:if>
-        <div class="four fields">
+        <div class="five fields">
             <div class="field">
-                <%--
-               <label>${message(code: 'default.search.text')}
-                   <span data-position="right center" data-variation="tiny" data-content="${message(code:'default.search.tooltip.subscription')}">
-                       <i class="question circle icon"></i>
-                   </span>
-               </label>
-               <div class="ui input">
-                   <input type="text" name="q"
-                          placeholder="${message(code: 'default.search.ph')}"
-                          value="${params.q}"/>
-               </div>
-               --%>
                 <label>${message(code:'myinst.consortiaSubscriptions.consortia')}</label>
                 <g:select class="ui search selection dropdown" name="member"
                           from="${filterConsortiaMembers}"
@@ -49,6 +37,18 @@
             </div>
             <div class="field">
                 <ui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
+            </div>
+            <div class="field">
+                <label for="referenceYears">${message(code: 'subscription.referenceYear.label')}</label>
+                <select id="referenceYears" name="referenceYears" multiple="" class="ui search selection fluid dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+                    <g:each in="${referenceYears}" var="referenceYear">
+                        <option <%=(params.list('referenceYears').contains(referenceYear.toString())) ? 'selected="selected"' : ''%>
+                                value="${referenceYear}">
+                            ${referenceYear}
+                        </option>
+                    </g:each>
+                </select>
             </div>
             <div class="field">
                 <label>${message(code: 'default.status.label')}</label>
@@ -98,50 +98,8 @@
                         </option>
                     </g:each>
                 </select>
+            </div>
 
-            </div>
-            <div class="field">
-                <label>${message(code:'subscription.isPublicForApi.label')}</label>
-                <ui:select class="ui fluid dropdown" name="isPublicForApi"
-                              from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
-                              optionKey="id"
-                              optionValue="value"
-                              value="${params.isPublicForApi}"
-                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
-            </div>
-            <div class="field">
-                <label>${message(code:'subscription.hasPerpetualAccess.label')}</label>
-                <ui:select class="ui fluid dropdown" name="hasPerpetualAccess"
-                              from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
-                              optionKey="id"
-                              optionValue="value"
-                              value="${params.hasPerpetualAccess}"
-                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
-            </div>
-            <div class="field">
-                <label>${message(code:'subscription.hasPublishComponent.label')}</label>
-                <ui:select class="ui fluid dropdown" name="hasPublishComponent"
-                              from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
-                              optionKey="id"
-                              optionValue="value"
-                              value="${params.hasPublishComponent}"
-                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
-            </div>
-        </div>
-
-        <div class="four fields">
-            <div class="field">
-                <label for="referenceYears">${message(code: 'subscription.referenceYear.label')}</label>
-                <select id="referenceYears" name="referenceYears" multiple="" class="ui search selection fluid dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
-                    <g:each in="${referenceYears}" var="referenceYear">
-                        <option <%=(params.list('referenceYears').contains(referenceYear.toString())) ? 'selected="selected"' : ''%>
-                                value="${referenceYear}">
-                            ${referenceYear}
-                        </option>
-                    </g:each>
-                </select>
-            </div>
             <div class="field">
                 <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
                 <div class="inline fields la-filter-inline">
@@ -161,23 +119,24 @@
                     </div>
                 </div>
             </div>
-            <div class="field">
-                <g:if test="${'withCostItems' in tableConfig}">
-                    <label for="filterPvd">${message(code: 'menu.my.providers')}</label>
-                    <select id="filterPvd" name="filterPvd" multiple="" class="ui search selection fluid dropdown">
-                        <option value="">${message(code: 'default.select.choose.label')}</option>
+%{--            <div class="field">--}%
+%{--                <g:if test="${'withCostItems' in tableConfig}">--}%
+%{--                    <label for="filterPvd">${message(code: 'menu.my.providers')}</label>--}%
+%{--                    <select id="filterPvd" name="filterPvd" multiple="" class="ui search selection fluid dropdown">--}%
+%{--                        <option value="">${message(code: 'default.select.choose.label')}</option>--}%
 
-                        <g:each in="${providers.sort { it.name }}" var="provider">
-                            <option <%=(params.list('filterPvd').contains(provider.id.toString())) ? 'selected="selected"' : ''%>
-                                    value="${provider.id}">
-                                ${provider.name}
-                            </option>
-                        </g:each>
-                    </select>
+%{--                        <g:each in="${providers.sort { it.name }}" var="provider">--}%
+%{--                            <option <%=(params.list('filterPvd').contains(provider.id.toString())) ? 'selected="selected"' : ''%>--}%
+%{--                                    value="${provider.id}">--}%
+%{--                                ${provider.name}--}%
+%{--                            </option>--}%
+%{--                        </g:each>--}%
+%{--                    </select>--}%
 
-                </g:if>
-            </div>
+%{--                </g:if>--}%
+%{--            </div>--}%
             <div class="field">
+                <label></label>
                 <fieldset id="subscritionType">
                     <label>${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
                     <div class="inline fields la-filter-inline">
@@ -195,17 +154,18 @@
                 </fieldset>
             </div>
         </div>
-            <div class="field la-field-right-aligned">
-                <g:if test="${license && !request.forwardURI.contains(license.id.toString())}">
-                    <g:set var="returnURL" value="${request.forwardURI+"/"+license.id}"/>
-                </g:if>
-                <g:else>
-                    <g:set var="returnURL" value="${request.forwardURI}"/>
-                </g:else>
-                <a href="${returnURL}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
-                <g:hiddenField name="filterSet" value="true"/>
-                <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}">
-            </div>
+
+        <div class="field la-field-right-aligned">
+            <g:if test="${license && !request.forwardURI.contains(license.id.toString())}">
+                <g:set var="returnURL" value="${request.forwardURI+"/"+license.id}"/>
+            </g:if>
+            <g:else>
+                <g:set var="returnURL" value="${request.forwardURI}"/>
+            </g:else>
+            <a href="${returnURL}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
+            <g:hiddenField name="filterSet" value="true"/>
+            <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}">
+        </div>
     </g:form>
 </ui:filter>
 

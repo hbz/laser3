@@ -86,6 +86,17 @@ class CopyElementsService {
                 }
                 break
         }
+
+        if (contextService.getOrg().isCustomerType_Support()) {
+            switch (obj.class.simpleName) {
+                case License.class.simpleName:
+                    result = result - 'isPublicForApi'
+                    break
+                case Subscription.class.simpleName:
+                    result = result - ['isPublicForApi', 'hasPerpetualAccess', 'hasPublishComponent', 'holdingSelection']
+                    break
+            }
+        }
         result
     }
 

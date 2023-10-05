@@ -230,7 +230,7 @@
                     </g:if>
                 </tr>
             </g:if>
-            <g:if test="${sourceObject.hasProperty("orgRelations")}">
+            <g:if test="${sourceObject.hasProperty("orgRelations") && !contextService.getOrg().isCustomerType_Support()}">
                 <tr data-type="takeOrgRelations" data-element="copyObject.takeOrgRelations">
                     <td data-element="source">
                         <div>

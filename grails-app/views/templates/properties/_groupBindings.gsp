@@ -115,7 +115,7 @@
             </tbody>
         </table>
 
-        <ui:msg class="info" text="Damit die Einstellungen wirksam werden, muss die Seite muss ggfs. neu geladen werden." noClose="true"/>
+        <ui:msg class="info" text="Damit die Einstellungen wirksam werden, muss die Seite ggfs. neu geladen werden." noClose="true"/>
     </div><!-- #propDefGroupBindingConfig -->
 
 <laser:script file="${this.getGroovyPageFileName()}">
