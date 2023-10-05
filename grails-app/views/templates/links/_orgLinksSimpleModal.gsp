@@ -14,7 +14,7 @@
         <input type="hidden" name="orm_orgRole" value="${tmplRole?.id}" />
         <input type="hidden" name="linkType" value="${linkType}" />
 
-        <label>${message(code: 'title.search')}</label>
+        <label for="${tmplModalID}_orgSearch">${message(code: 'title.search')}</label>
         <input type="text" name="orgSearch" id="${tmplModalID}_orgSearch"/>
         <div class="la-clear-before la-padding-top-1em" id="${tmplModalID}_providerResultWrapper">
 
