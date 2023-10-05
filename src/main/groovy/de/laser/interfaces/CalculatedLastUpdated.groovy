@@ -9,5 +9,9 @@ interface CalculatedLastUpdated {
     def afterUpdate()
     def afterDelete()
 
+    /**
+     * Gets the date of the last update of the given object
+     * @return the lastUpdated or lastUpdatedCascading property
+     */
     Date _getCalculatedLastUpdated()
 }

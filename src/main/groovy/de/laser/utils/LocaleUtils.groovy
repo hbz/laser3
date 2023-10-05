@@ -6,10 +6,18 @@ import org.springframework.context.i18n.LocaleContextHolder
 @CompileStatic
 class LocaleUtils {
 
+    /**
+     * Gets the current locale
+     * @return the {@link Locale} of the running server environment
+     */
     static Locale getCurrentLocale() {
         LocaleContextHolder.getLocale()
     }
 
+    /**
+     * Gets the language suffix of the current language
+     * @return the result of {@link #decodeLocale(java.util.Locale)} with {@link #getCurrentLocale()}
+     */
     static String getCurrentLang() {
         decodeLocale(getCurrentLocale())
     }
@@ -41,6 +49,11 @@ class LocaleUtils {
         }
     }
 
+    /**
+     * Gets the localised attribute name of the given attribute
+     * @param attribute the attribute which should be localised
+     * @return the attribute name with the current language suffix
+     */
     static String getLocalizedAttributeName(String attribute) {
         String localizedName
 
@@ -55,9 +68,18 @@ class LocaleUtils {
         localizedName
     }
 
+    /**
+     * Gets the German locale
+     * @return the de-DE {@link Locale}
+     */
     static Locale getLocaleDE() {
         Locale.forLanguageTag('de-DE')
     }
+
+    /**
+     * Gets the English locale
+     * @return the en-EN {@link Locale}
+     */
     static Locale getLocaleEN() {
         Locale.forLanguageTag('en-EN')
     }
