@@ -360,6 +360,7 @@ class AjaxHtmlController {
         model.orgList = result.results
         model.tmplShowCheckbox = true
         model.tmplConfigShow = ['sortname', 'name', 'altname', 'isWekbCurated']
+        model.fixedHeader = 'la-ignore-fixed'
         render template: "/templates/filter/orgFilterTable", model: model
     }
 
