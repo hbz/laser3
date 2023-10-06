@@ -2,7 +2,6 @@ package changelogs
 
 databaseChangeLog = {
 
-
     changeSet(author: "djebeniani (generated)", id: "1694097702152-1") {
         addColumn(tableName: "subscription") {
             column(name: "sub_reminder_sent", type: "boolean") {

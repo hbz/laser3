@@ -233,12 +233,12 @@ class AdminController  {
         jobList.each { job ->
             if (job instanceof String) {
                 log.info('processing: ' + job)
-                String query = "select count(obj) from ${job} obj join obj.status s where lower(s.value) like 'deleted'"
+                String query = "select count(*) from ${job} obj join obj.status s where lower(s.value) like 'deleted'"
                 result.stats."${job}" = Org.executeQuery( query )
             }
             else {
                 log.info('processing: ' + job[0])
-                String query = "select count(obj) from ${job[0]} obj join obj.${job[1]} s where lower(s.value) like 'deleted'"
+                String query = "select count(*) from ${job[0]} obj join obj.${job[1]} s where lower(s.value) like 'deleted'"
                 result.stats."${job[0]}" = Org.executeQuery( query )
             }
         }
@@ -455,7 +455,19 @@ class AdminController  {
      */
     @Secured(['ROLE_ADMIN'])
     def fileConsistency() {
-        Map<String, Object> result = [:]
+        log.debug('fileConsistency - start')
+
+        Map<String, Object> result = [
+            listOfDocsInUse: [],
+            listOfDocsInUseOrphaned: [],
+
+            listOfDocsNotInUse : [],
+            listOfDocsNotInUseOrphaned: [],
+
+            listOfFiles: [],
+            listOfFilesMatchingDocs: [],
+            listOfFilesOrphaned: []
+        ]
 
         result.filePath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
 
@@ -473,16 +485,6 @@ class AdminController  {
         }
 
         // files
-
-        result.listOfFiles = []
-        result.listOfFilesMatchingDocs = []
-        result.listOfFilesOrphaned = []
-
-        result.listOfDocsInUse = []
-        result.listOfDocsInUseOrphaned = []
-
-        result.listOfDocsNotInUse= []
-        result.listOfDocsNotInUseOrphaned = []
 
         try {
             File folder = new File("${result.filePath}")
@@ -508,24 +510,21 @@ class AdminController  {
 
         // docs
 
-        List<Doc> listOfDocs = Doc.executeQuery(
-                'select doc from Doc doc where doc.contentType = :ct order by doc.id',
-                [ct: Doc.CONTENT_TYPE_FILE]
-        )
-
         result.listOfDocsInUse = Doc.executeQuery(
-                'select distinct(doc) from DocContext dc join dc.owner doc where doc.contentType = :ct order by doc.id',
-                [ct: Doc.CONTENT_TYPE_FILE]
+                'select distinct(doc) from DocContext dc join dc.owner doc where doc.contentType = :ct order by doc.id', [ct: Doc.CONTENT_TYPE_FILE]
+        )
+        result.listOfDocsNotInUseDoc = Doc.executeQuery(
+                'select doc from Doc doc where doc.contentType = :ct and doc not in ' +
+                    '(select distinct(doc2) from DocContext dc join dc.owner doc2 where doc2.contentType = :ct) ' +
+                'order by doc.id', [ct: Doc.CONTENT_TYPE_FILE]
         )
 
-        result.listOfDocsNotInUse = listOfDocs - result.listOfDocsInUse
-
-        result.listOfDocsInUse.each{ doc ->
+        result.listOfDocsInUse.each { Doc doc ->
             if (! fileCheck(doc)) {
                 result.listOfDocsInUseOrphaned << doc
             }
         }
-        result.listOfDocsNotInUse.each{ doc ->
+        result.listOfDocsNotInUse.each { Doc doc ->
             if (! fileCheck(doc)) {
                 result.listOfDocsNotInUseOrphaned << doc
             }
@@ -543,6 +542,7 @@ class AdminController  {
                 [ct: Doc.CONTENT_TYPE_FILE, del: RDStore.DOC_CTX_STATUS_DELETED]
         ).size()
 
+        log.debug('fileConsistency - done')
         result
     }
 
@@ -587,7 +587,6 @@ class AdminController  {
             result.docsToRecovery = docs
         }
         result
-
     }
 
     /**
