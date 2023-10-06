@@ -502,10 +502,11 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
      * @return the class representation of the object type
      */
     String getImplClass() {
-        if(descr.contains("Organisation"))
+        if (descr.contains("Organisation")) {
             OrgProperty.class.name
-        else if (descr.contains("Survey"))
+        } else if (descr.contains("Survey")) {
             SurveyResult.class.name
+        }
         else 'de.laser.properties.'+descr.replace(" ","")
     }
 
@@ -515,13 +516,14 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
      */
     int countUsages() {
         String table = this.descr.replace(" ","")
-        if(this.descr == PropertyDefinition.ORG_PROP) {
+
+        if (this.descr == PropertyDefinition.ORG_PROP) {
             table = "OrgProperty"
-        } else if(this.descr == PropertyDefinition.SVY_PROP)
+        } else if (this.descr == PropertyDefinition.SVY_PROP)
             table = "SurveyResult"
 
         if (table) {
-            int[] c = executeQuery("select count(c) from " + table + " as c where c.type.id = :type", [type:this.id])
+            int[] c = executeQuery("select count(*) from " + table + " as c where c.type.id = :type", [type:this.id])
             return c[0]
         }
         return 0
@@ -534,56 +536,22 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     int countOwnUsages() {
         String table = this.descr.replace(" ","")
         String tenantFilter = 'and c.tenant.id = :ctx'
-        Map<String,Long> filterParams = [type:this.id,ctx:BeanStore.getContextService().getOrg().id]
+
+        Map<String,Long> filterParams = [type:this.id, ctx:BeanStore.getContextService().getOrg().id]
         if (this.descr == PropertyDefinition.ORG_PROP) {
             table = "OrgProperty"
-        } else if(this.descr == PropertyDefinition.SVY_PROP) {
+        } else if (this.descr == PropertyDefinition.SVY_PROP) {
             table = "SurveyResult"
             tenantFilter = ''
             filterParams.remove("ctx")
         }
 
         if (table) {
-            int[] c = executeQuery("select count(c) from " + table + " as c where c.type.id = :type "+tenantFilter, filterParams)
+            int[] c = executeQuery("select count(*) from " + table + " as c where c.type.id = :type " + tenantFilter, filterParams)
             return c[0]
         }
         return 0
     }
-
-
-  @Deprecated
-  @Transient
-  List getOccurrencesOwner(String[] cls){
-    List all_owners = []
-    cls.each{
-        all_owners.add(getOccurrencesOwner(it)) 
-    }
-    all_owners
-  }
-
-  @Deprecated
-  @Transient
-  List getOccurrencesOwner(String cls){
-    String qry = 'select c.owner from ' + cls + " as c where c.type = :type"
-    PropertyDefinition.executeQuery(qry, [type: this])
-  }
-
-  @Deprecated
-  @Transient
-  int countOccurrences(String cls) {
-    String qry = 'select count(c) from ' + cls + " as c where c.type = :type"
-    PropertyDefinition.executeQuery(qry, [type: this])[0] ?: 0
-  }
-
-  @Deprecated
-  @Transient
-  int countOccurrences(String[] cls){
-    int total_count = 0
-    cls.each{
-        total_count += countOccurrences(it)
-    }
-    return total_count
-  }
 
     @Deprecated
     @Transient
