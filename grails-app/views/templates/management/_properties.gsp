@@ -124,7 +124,7 @@
                                               data-content="Anzahl der allg. Merkmale in der Lizenz"
                                               data-position="top right">
                                             <ui:totalNumber
-                                                    total="${SubscriptionProperty.executeQuery('select count(id) from SubscriptionProperty where owner = :sub AND ((tenant = :contextOrg OR tenant is null) OR (tenant != :contextOrg AND isPublic = true)) AND type.tenant is null', [contextOrg: contextOrg, sub: subscription])[0] }"/>
+                                                    total="${SubscriptionProperty.executeQuery('select count(*) from SubscriptionProperty where owner = :sub AND ((tenant = :contextOrg OR tenant is null) OR (tenant != :contextOrg AND isPublic = true)) AND type.tenant is null', [contextOrg: contextOrg, sub: subscription])[0] }"/>
                                         </span>
                                     </div>
 
@@ -210,7 +210,7 @@
                                               data-content="Anzahl der priv. Merkmale in der Lizenz"
                                               data-position="top right">
                                             <ui:totalNumber
-                                                    total="${SubscriptionProperty.executeQuery('select count(id) from SubscriptionProperty where owner = :sub AND (type.tenant = :contextOrg AND tenant = :contextOrg)', [contextOrg: contextOrg, sub: subscription])[0] }"/>
+                                                    total="${SubscriptionProperty.executeQuery('select count(*) from SubscriptionProperty where owner = :sub AND (type.tenant = :contextOrg AND tenant = :contextOrg)', [contextOrg: contextOrg, sub: subscription])[0] }"/>
                                         </span>
                                     </div>
 
@@ -480,7 +480,7 @@
                                                   data-content="Anzahl der allg. Merkmale in der Lizenz"
                                                   data-position="top right">
                                                 <ui:totalNumber
-                                                        total="${SubscriptionProperty.executeQuery('select count(id) from SubscriptionProperty where owner = :sub AND (tenant = :contextOrg OR tenant is null OR (tenant != :contextOrg AND isPublic = true)) AND type.tenant is null', [contextOrg: contextOrg, sub: sub])[0] }"/>
+                                                        total="${SubscriptionProperty.executeQuery('select count(*) from SubscriptionProperty where owner = :sub AND (tenant = :contextOrg OR tenant is null OR (tenant != :contextOrg AND isPublic = true)) AND type.tenant is null', [contextOrg: contextOrg, sub: sub])[0] }"/>
                                             </span>
                                         </div>
 
@@ -552,7 +552,7 @@
                                                   data-content="Anzahl der priv. Merkmale in der Lizenz"
                                                   data-position="top right">
                                                 <ui:totalNumber
-                                                        total="${SubscriptionProperty.executeQuery('select count(id) from SubscriptionProperty where owner = :sub AND (type.tenant = :contextOrg AND tenant = :contextOrg)', [contextOrg: contextOrg, sub: sub])[0] }"/>
+                                                        total="${SubscriptionProperty.executeQuery('select count(*) from SubscriptionProperty where owner = :sub AND (type.tenant = :contextOrg AND tenant = :contextOrg)', [contextOrg: contextOrg, sub: sub])[0] }"/>
                                             </span>
                                         </div>
 
