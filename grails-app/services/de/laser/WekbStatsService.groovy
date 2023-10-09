@@ -69,7 +69,8 @@ class WekbStatsService {
                 my:         result.org.my.size()        + result.platform.my.size()        + result.package.my.size(),
                 marker:     result.org.marker.size()    + result.platform.marker.size()    + result.package.marker.size(),
                 created:    result.org.created.size()   + result.platform.created.size()   + result.package.created.size(),
-                updated:    result.org.updated.size()   + result.platform.updated.size()   + result.package.updated.size()
+                updated:    result.org.updated.size()   + result.platform.updated.size()   + result.package.updated.size(),
+                deleted:    result.org.deleted.size()   + result.platform.deleted.size()   + result.package.deleted.size()
         ]
 
         result
@@ -119,19 +120,15 @@ class WekbStatsService {
         result = [
                 query       : [ days: days, changedSince: DateUtils.getLocalizedSDF_noTime().format(frame), call: DateUtils.getLocalizedSDF_noZ().format(new Date()) ],
                 counts      : [ : ],
-                org         : [ count: 0, countInLaser: 0, created: [], updated: [], all: [] ],
-                platform    : [ count: 0, countInLaser: 0, created: [], updated: [], all: [] ],
-                package     : [ count: 0, countInLaser: 0, created: [], updated: [], all: [] ]
+                org         : [ count: 0, countInLaser: 0, created: [], updated: [], deleted: [], all: [] ],
+                platform    : [ count: 0, countInLaser: 0, created: [], updated: [], deleted: [], all: [] ],
+                package     : [ count: 0, countInLaser: 0, created: [], updated: [], deleted: [], all: [] ]
         ]
 
         Closure process = { Map map, String key ->
             if (map.result) {
 //                map.result.sort { it.lastUpdatedDisplay }.each {
                 map.result.sort { it.sortname }.each { it ->
-                    it.remove('componentType')
-                    it.remove('sortname')
-                    // it.remove('status')
-
                     it.dateCreatedDisplay = DateUtils.getLocalizedSDF_noZ().format(DateUtils.parseDateGeneric(it.dateCreatedDisplay))
                     it.lastUpdatedDisplay = DateUtils.getLocalizedSDF_noZ().format(DateUtils.parseDateGeneric(it.lastUpdatedDisplay))
                     if (it.lastUpdatedDisplay == it.dateCreatedDisplay) {
@@ -140,6 +137,14 @@ class WekbStatsService {
                     else {
                         result[key].updated << it.uuid
                     }
+                    if (it.status.toLowerCase() in ['removed', 'deleted']) {
+                        result[key].deleted << it.uuid
+                    }
+
+                    it.remove('componentType')
+                    it.remove('dateCreatedDisplay')
+                    it.remove('sortname')
+                    it.remove('status')
 
                     if (key == 'org')       {
                         Org o = Org.findByGokbId(it.uuid)
