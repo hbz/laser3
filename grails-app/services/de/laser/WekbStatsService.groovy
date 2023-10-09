@@ -44,13 +44,14 @@ class WekbStatsService {
         EhcacheWrapper cache = cacheService.getTTL1800Cache(CACHE_KEY)
 
         if (! cache.get('data')) {
-            return [:]
+            //return [:]
+            updateCache()
         }
         Map result = cache.get('data') as Map
 
-        List<String> orgList    = result.org.all.collect{ it.uuid }
-        List<String> pkgList    = result.package.all.collect{ it.uuid }
-        List<String> pltList    = result.platform.all.collect{ it.uuid }
+        List<String> orgList    = result.org.all.collect{ it.id }
+        List<String> pkgList    = result.package.all.collect{ it.id }
+        List<String> pltList    = result.platform.all.collect{ it.id }
 
         Map<String, List> myXMap = markerService.getMyXMap()
 
@@ -58,9 +59,9 @@ class WekbStatsService {
         result.package.my       = myXMap.currentPackageIdList.intersect(pkgList)
         result.platform.my      = myXMap.currentPlatformIdList.intersect(pltList)
 
-        result.org.marker       = markerService.getObjectsByClassAndType(Org.class, Marker.TYPE.WEKB_CHANGES).collect { it.gokbId }.intersect(orgList)
-        result.package.marker   = markerService.getObjectsByClassAndType(Package.class, Marker.TYPE.WEKB_CHANGES).collect { it.gokbId }.intersect(pkgList)
-        result.platform.marker  = markerService.getObjectsByClassAndType(Platform.class, Marker.TYPE.WEKB_CHANGES).collect { it.gokbId }.intersect(pltList)
+        result.org.marker       = markerService.getObjectsByClassAndType(Org.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(orgList)
+        result.package.marker   = markerService.getObjectsByClassAndType(Package.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(pkgList)
+        result.platform.marker  = markerService.getObjectsByClassAndType(Platform.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(pltList)
 
         result.counts = [
                 all:        result.org.count            + result.platform.count            + result.package.count,
@@ -126,7 +127,11 @@ class WekbStatsService {
         Closure process = { Map map, String key ->
             if (map.result) {
 //                map.result.sort { it.lastUpdatedDisplay }.each {
-                map.result.sort { it.sortname }.each {
+                map.result.sort { it.sortname }.each { it ->
+                    it.remove('componentType')
+                    it.remove('sortname')
+                    // it.remove('status')
+
                     it.dateCreatedDisplay = DateUtils.getLocalizedSDF_noZ().format(DateUtils.parseDateGeneric(it.dateCreatedDisplay))
                     it.lastUpdatedDisplay = DateUtils.getLocalizedSDF_noZ().format(DateUtils.parseDateGeneric(it.lastUpdatedDisplay))
                     if (it.lastUpdatedDisplay == it.dateCreatedDisplay) {
@@ -135,9 +140,22 @@ class WekbStatsService {
                     else {
                         result[key].updated << it.uuid
                     }
-                    if (key == 'org')       { it.globalUID = Org.findByGokbId(it.uuid)?.globalUID }
-                    if (key == 'platform')  { it.globalUID = Platform.findByGokbId(it.uuid)?.globalUID }
-                    if (key == 'package')   { it.globalUID = Package.findByGokbId(it.uuid)?.globalUID }
+
+                    if (key == 'org')       {
+                        Org o = Org.findByGokbId(it.uuid)
+                        it.id = o?.id
+                        it.globalUID = o?.globalUID
+                    }
+                    if (key == 'platform')  {
+                        Platform p = Platform.findByGokbId(it.uuid)
+                        it.id = p?.id
+                        it.globalUID = p?.globalUID
+                    }
+                    if (key == 'package')   {
+                        Package p = Package.findByGokbId(it.uuid)
+                        it.id = p?.id
+                        it.globalUID = p?.globalUID
+                    }
 
                     if (it.globalUID) { result[key].countInLaser++ }
                     result[key].all << it

@@ -255,13 +255,16 @@
             <p class="ui header">
                 <i class="icon grey ${cfg[3]}" style="vertical-align:bottom"></i> ${message(code: "${cfg[2]}")}
             </p>
-
             <div class="ui vertically divided very compact grid" style="margin-top: 1.5em;">
                 <g:each in="${cfg[1].all}" var="obj">
+                    <g:set var="isObjCreated" value="${obj.uuid in cfg[1].created}" /> %{-- uuid --}%
+                    <g:set var="isObjMy" value="${obj.id in cfg[1].my}" />  %{-- id --}%
+                    <g:set var="isObjMarker" value="${obj.id in cfg[1].marker}" /> %{-- id --}%
+
                     <div class="row"
-                         data-f1="${obj.uuid in cfg[1].created ? 'created' : 'updated'}"
-                         data-f2="${obj.uuid in cfg[1].my ? 'true' : 'false'}"
-                         data-f3="${obj.uuid in cfg[1].marker ? 'true' : 'false'}"
+                         data-f1="${isObjCreated ? 'created' : 'updated'}"
+                         data-f2="${isObjMy ? 'true' : 'false'}"
+                         data-f3="${isObjMarker ? 'true' : 'false'}"
                     >
                         <div class="column one wide center aligned">
                             <ui:wekbIconLink type="${cfg[0]}" gokbId="${obj.uuid}" />
@@ -273,16 +276,17 @@
                             <g:else>
                                 ${obj.name}
                             </g:else>
-                            <g:if test="${obj.uuid in cfg[1].created}"><span class="ui orange mini label">NEU</span></g:if>
+                            <g:if test="${isObjCreated}"><span class="ui green mini label">NEU</span></g:if>
+                            <g:if test="${'removed'.equalsIgnoreCase(obj.status)}"><span class="ui red mini label">Gelöscht</span></g:if>
                         </div>
                         <div class="column two wide center aligned">
-                            <g:if test="${obj.uuid in cfg[1].my}">
+                            <g:if test="${isObjMy}">
                                 <ui:myXIcon tooltip="${message(code: "${cfg[4]}")}" color="yellow"/>
                             </g:if>
                             <g:else>
                                 <i class="icon fake"></i>
                             </g:else>
-                            <g:if test="${obj.uuid in cfg[1].marker}">
+                            <g:if test="${isObjMarker}">
                                 <ui:markerIcon type="WEKB_CHANGES" color="purple" />
                             </g:if>
                             <g:else>
