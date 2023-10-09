@@ -1517,6 +1517,10 @@ i.icon.la-list-icon:before {
   margin-top: 0px;
 }
 
+.editable-container.editable-inline .ui.search.dropdown {
+  max-width: 200px;
+}
+
 .editable-disabled {
   cursor: text !important;
 }
