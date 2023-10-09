@@ -1586,7 +1586,8 @@ class ExportClickMeService {
      */
     Map<String, Object> getExportSubscriptionFieldsForUI(Org institution, boolean showTransferFields = false) {
 
-        Map<String, Object> fields = EXPORT_SUBSCRIPTION_CONFIG as Map
+        Map<String, Object> fields = [:]
+        fields.putAll(EXPORT_SUBSCRIPTION_CONFIG)
         if(institution.getCustomerType() == CustomerTypeService.ORG_INST_PRO)
             fields.subscription.fields.put('subscription.isAutomaticRenewAnnually', [field: 'isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
         if (!institution.isCustomerType_Consortium()) {
