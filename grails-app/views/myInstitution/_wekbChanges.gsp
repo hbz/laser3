@@ -41,6 +41,7 @@
 %{--                                <div style="width:50%;min-width:130px;float:left">--}%
                                     <a href="#" class="wekb-flyout-trigger" data-preset="org,created">Neu: ${wekbChanges.org.created.size()}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="org,updated">Geändert: ${wekbChanges.org.updated.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="org,deleted">Gelöscht: ${wekbChanges.org.deleted.size()}</a> <br/>
 %{--                                </div>--}%
 %{--                                <div style="width:50%;min-width:130px;float:left">--}%
                                     <a href="#" class="wekb-flyout-trigger" data-preset="org,my"><i class="icon star"></i>${wekbChanges.org.my.size()}</a> <br/>
@@ -64,6 +65,7 @@
 %{--                                <div style="width:50%;min-width:130px;float:left">--}%
                                     <a href="#" class="wekb-flyout-trigger" data-preset="platform,created">Neu: ${wekbChanges.platform.created.size()}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="platform,updated">Geändert: ${wekbChanges.platform.updated.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="platform,deleted">Gelöscht: ${wekbChanges.platform.deleted.size()}</a> <br/>
 %{--                                </div>--}%
 %{--                                <div style="width:50%;min-width:130px;float:left">--}%
                                     <a href="#" class="wekb-flyout-trigger" data-preset="platform,my"><i class="icon star"></i>${wekbChanges.platform.my.size()}</a> <br/>
@@ -87,6 +89,7 @@
 %{--                                <div style="width:50%;min-width:130px;float:left">--}%
                                     <a href="#" class="wekb-flyout-trigger" data-preset="package,created">Neu: ${wekbChanges.package.created.size()}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="package,updated">Geändert: ${wekbChanges.package.updated.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="package,deleted">Gelöscht: ${wekbChanges.package.deleted.size()}</a> <br/>
 %{--                                </div>--}%
 %{--                                <div style="width:50%;min-width:130px;float:left">--}%
                                     <a href="#" class="wekb-flyout-trigger" data-preset="package,my"><i class="icon star"></i>${wekbChanges.package.my.size()}</a> <br/>
@@ -183,6 +186,9 @@
                 else if (filter == 'updated') {
                     $(rows + '[data-f1=updated]').show()
                 }
+                else if (filter == 'deleted') {
+                    $(rows + '[data-f1=deleted]').show()
+                }
                 else if (filter == 'my') {
                     $(rows + '[data-f2=true]').show()
                 }
@@ -228,10 +234,11 @@
             <div class="ui buttons mini">
                 <span class="ui button" data-filter="created">Neue Objekte: ${wekbChanges.counts.created}</span>
                 <span class="ui button" data-filter="updated">Geänderte Objekte: ${wekbChanges.counts.updated}</span>
+                <span class="ui button" data-filter="deleted">Gelöschte Objekte: ${wekbChanges.counts.deleted}</span>
                 <span class="ui button" data-filter="my"><i class="icon star"></i> ${wekbChanges.counts.my}</span>
                 <span class="ui button" data-filter="marker"><i class="icon bookmark"></i> ${wekbChanges.counts.marker}</span>
                 <span class="ui button la-popup-tooltip la-long-tooltip la-delay" data-filter="all"
-                      data-content="Alle anzeigen: Neue Objekte, Geänderte Objekte, Meine Objekte, Meine Beobachtungsliste">Alle</span>
+                      data-content="Alle anzeigen: Neue Objekte, Geänderte Objekte, Gelöschte Objekte, Meine Objekte, Meine Beobachtungsliste">Alle</span>
             </div>
         </div>
     </div>
@@ -255,13 +262,17 @@
             <p class="ui header">
                 <i class="icon grey ${cfg[3]}" style="vertical-align:bottom"></i> ${message(code: "${cfg[2]}")}
             </p>
-
             <div class="ui vertically divided very compact grid" style="margin-top: 1.5em;">
                 <g:each in="${cfg[1].all}" var="obj">
+                    <g:set var="isObjCreated" value="${obj.uuid in cfg[1].created}" /> %{-- uuid --}%
+                    <g:set var="isObjDeleted" value="${obj.uuid in cfg[1].deleted}" /> %{-- uuid --}%
+                    <g:set var="isObjMy" value="${obj.id in cfg[1].my}" />  %{-- id --}%
+                    <g:set var="isObjMarker" value="${obj.id in cfg[1].marker}" /> %{-- id --}%
+
                     <div class="row"
-                         data-f1="${obj.uuid in cfg[1].created ? 'created' : 'updated'}"
-                         data-f2="${obj.uuid in cfg[1].my ? 'true' : 'false'}"
-                         data-f3="${obj.uuid in cfg[1].marker ? 'true' : 'false'}"
+                         data-f1="${isObjCreated ? 'created' : (isObjDeleted ? 'deleted' : 'updated')}"
+                         data-f2="${isObjMy ? 'true' : 'false'}"
+                         data-f3="${isObjMarker ? 'true' : 'false'}"
                     >
                         <div class="column one wide center aligned">
                             <ui:wekbIconLink type="${cfg[0]}" gokbId="${obj.uuid}" />
@@ -273,16 +284,17 @@
                             <g:else>
                                 ${obj.name}
                             </g:else>
-                            <g:if test="${obj.uuid in cfg[1].created}"><span class="ui orange mini label">NEU</span></g:if>
+                            <g:if test="${isObjCreated}"><span class="ui green mini label">NEU</span></g:if>
+                            <g:if test="${isObjDeleted}"><span class="ui red mini label">Gelöscht</span></g:if>
                         </div>
                         <div class="column two wide center aligned">
-                            <g:if test="${obj.uuid in cfg[1].my}">
+                            <g:if test="${isObjMy}">
                                 <ui:myXIcon tooltip="${message(code: "${cfg[4]}")}" color="yellow"/>
                             </g:if>
                             <g:else>
                                 <i class="icon fake"></i>
                             </g:else>
-                            <g:if test="${obj.uuid in cfg[1].marker}">
+                            <g:if test="${isObjMarker}">
                                 <ui:markerIcon type="WEKB_CHANGES" color="purple" />
                             </g:if>
                             <g:else>
@@ -290,7 +302,6 @@
                             </g:else>
                         </div>
                         <div class="column four wide center aligned">${obj.lastUpdatedDisplay}</div>
-%{--                        <div class="column four wide center aligned">${obj.dateCreatedDisplay}</div>--}%
                     </div>
                 </g:each>
             </div>
