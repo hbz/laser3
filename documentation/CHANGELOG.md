@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5311    09.10.2023  dev     3.3         Andreas Bug         fehlerhaften Redirect bei Löschung von Dokumenten behoben
+
 5301    04.10.2023  dev     3.3         Andreas Feature     neue Ladelogiken für "Alle/Meine Titel" implementiert
 
 5298    04.10.2023  dev     3.3         Andreas Feature     neue Identifikatoren aufgenommen, Identifikatoren in CORE_ORG_NS eingetragen

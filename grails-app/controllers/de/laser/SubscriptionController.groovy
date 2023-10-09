@@ -546,7 +546,7 @@ class SubscriptionController {
     })
     def deleteDocuments() {
         docstoreService.unifiedDeleteDocuments(params)
-        redirect controller: 'subscription', action: params.redirectAction, id: params.instanceId
+        redirect controller: 'subscription', action: params.redirectAction, id: params.instanceId, params: [tab: params.redirectTab]
     }
 
     //--------------------------------- consortia members section ----------------------------------------------
