@@ -11,6 +11,8 @@
 
 5309    09.10.2023  rc-3.2  3.2.6       Andreas Bug         falsches Spaltenmapping bei "Kündigungsdatum"
 
+5308    09.10.2023  dev     3.3         Andreas Feature     Umstellung der AJAX-Modale Kostenmodal
+
 5301    04.10.2023  dev     3.3         Andreas Feature     neue Ladelogiken für "Alle/Meine Titel" implementiert
 
 5298    04.10.2023  dev     3.3         Andreas Feature     neue Identifikatoren aufgenommen, Identifikatoren in CORE_ORG_NS eingetragen
