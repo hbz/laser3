@@ -56,12 +56,16 @@
 %{-- help sidebar --}%
 <laser:render template="/templates/help/subscription_show"/>
 <section id="example">
+
     %{-- COLORS  --}%
     <laser:render template="frontend_colors" />
     %{-- ICONS  --}%
     <laser:render template="frontend_icons" />
     %{-- DROPDOWNS --}%
     <laser:render template="frontend_dropdowns" />
+    %{-- TABLES --}%
+    <laser:render template="frontend_responsibleTable" />
+    <laser:render template="sparklines" />
     %{-- DECKSAVER --}%
     <laser:render template="frontend_decksaver" />
     %{-- TOGGLE BUTTONS  --}%
@@ -73,8 +77,7 @@
     %{-- RESPONSIBLE TABELLEN  --}%
     <laser:render template="frontend_copyFunction" />
     %{-- Kopierfunktion  --}%
-    <laser:render template="frontend_responsibleTable" />
-    <laser:render template="sparklines" />
+
     %{-- LABELS --}%
     <laser:render template="frontend_labels" />
     %{-- FLYOUT --}%

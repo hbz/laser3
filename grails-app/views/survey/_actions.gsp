@@ -54,9 +54,9 @@
                 </g:if>
 
                 <g:if test="${surveyInfo && surveyInfo.status.id == RDStore.SURVEY_SURVEY_STARTED.id}">
-                    <ui:actionsDropdownItem controller="survey" action="processEndSurvey" params="[id: params.id]"
-                                               message="endSurvey.button"
-                                               tooltip="${message(code: "endSurvey.button.info")}"/>
+                    <ui:actionsDropdownItem data-ui="modal"
+                                            href="#openSurveyNow"
+                                            message="endSurvey.button"/>
 
                     <ui:actionsDropdownItem controller="survey" action="openParticipantsAgain" params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
                                                message="openParticipantsAgain.button"/>
@@ -177,6 +177,19 @@
     </g:form>
 
 </ui:modal>
+</g:if>
+
+<g:if test="${surveyInfo && surveyInfo.status.id == RDStore.SURVEY_SURVEY_STARTED.id}">
+    <ui:modal id="openSurveyNow" text="${message(code: 'endSurvey.button')}"
+              msgSave="${message(code: 'endSurvey.button')}">
+
+        <g:form class="ui form"
+                url="[controller: 'survey', action: 'processEndSurvey', params: [id: params.id], method: 'post']">
+            <div class="field">
+                <p><b>${message(code: "endSurvey.button.info")}</b></p>
+            </div>
+        </g:form>
+    </ui:modal>
 </g:if>
 
 <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO) && (actionName != 'currentSurveysConsortia' && actionName != 'workflowsSurveysConsortia')}">

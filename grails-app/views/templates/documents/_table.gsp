@@ -193,10 +193,13 @@
                                     %>
                                 </g:if>
                                 <g:if test="${!docctx.sharedFrom && !docctx.isShared && userService.hasFormalAffiliation(user, docctx.owner.owner, 'INST_EDITOR') && inOwnerOrg}">
+                                    <%
+                                        String redirectId = actionName == 'membersSubscriptionsManagement' && instance.instanceOf ? instance.instanceOf.id : instance.id
+                                    %>
                                     <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button la-modern-button js-open-confirm-modal"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                             data-confirm-term-how="delete"
-                                            params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectAction:"${actionName}"]'
+                                            params='[instanceId:"${redirectId}", deleteId:"${docctx.id}", redirectAction:"${actionName}", redirectTab: "${params.tab}"]'
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                         <i class="trash alternate outline icon"></i>
