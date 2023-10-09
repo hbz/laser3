@@ -9,11 +9,15 @@
 
 5311    09.10.2023  dev     3.3         Andreas Bug         fehlerhaften Redirect bei Löschung von Dokumenten behoben
 
+5309    09.10.2023  rc-3.2  3.2.6       Andreas Bug         falsches Spaltenmapping bei "Kündigungsdatum"
+
 5301    04.10.2023  dev     3.3         Andreas Feature     neue Ladelogiken für "Alle/Meine Titel" implementiert
 
 5298    04.10.2023  dev     3.3         Andreas Feature     neue Identifikatoren aufgenommen, Identifikatoren in CORE_ORG_NS eingetragen
 
 5296    04.10.2023  dev     3.3         Andreas Feature     neue Dropdown-Logik eingeführt
+
+5290    02.10.2023  rc-3.2  3.2.6       Moe     Bug         Warnmeldung bei Ausführung Umfrage beenden
 
 5300    27.09.2023  rc-3.2  3.2.5       Andreas Bug         Template-Fragment öffnete sich allein
 
