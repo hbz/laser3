@@ -51,11 +51,11 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
     abstract Date lastUpdatedCascading
     */
     protected void beforeInsertHandler() {
-        log.debug("beforeInsertHandler()")
+        //log.debug("beforeInsertHandler()")
     }
 
     protected void afterInsertHandler() {
-        log.debug("afterInsertHandler()")
+        //log.debug("afterInsertHandler()")
 
         BeanStore.getCascadingUpdateService().update(this, dateCreated)
     }
@@ -80,17 +80,17 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
     }
 
     protected void afterUpdateHandler() {
-        log.debug("afterUpdateHandler()")
+        //log.debug("afterUpdateHandler()")
 
         BeanStore.getCascadingUpdateService().update(this, lastUpdated)
     }
 
     protected void beforeDeleteHandler() {
-        log.debug("beforeDeleteHandler()")
+        //log.debug("beforeDeleteHandler()")
     }
 
     protected void afterDeleteHandler() {
-        log.debug("afterDeleteHandler()")
+        //log.debug("afterDeleteHandler()")
 
         BeanStore.getCascadingUpdateService().update(this, new Date())
     }
