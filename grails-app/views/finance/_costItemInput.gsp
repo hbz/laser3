@@ -416,6 +416,28 @@
         else if(subscription)
             contextSub = genericOIDService.getOID(subscription)
     %>
+    JSPC.app.ajaxDropdown = function(selector, url, valuesString) {
+        let values = [];
+        if(valuesString.includes(',')) {
+            values = valuesString.split(',');
+        }
+        else if(valuesString.length > 0) {
+            values.push(valuesString);
+        }
+        selector.dropdown({
+            apiSettings: {
+                url: url,
+                cache: false
+            },
+            clearable: true,
+            minCharacters: 0
+        });
+        if(values.length > 0) {
+            selector.dropdown('queryRemote', '', () => {
+                selector.dropdown('set selected', values);
+            });
+        }
+    }
     JSPC.app.finance${idSuffix} = {
         userLang: "${contextService.getUser().getSettingsValue(UserSetting.KEYS.LANGUAGE,null)}",
         currentForm: $("#editCost_${idSuffix}"),
@@ -480,14 +502,7 @@
         updateTitleDropdowns: function() {
             $(".newCISelect").each(function(k,v){
                 //console.log(JSPC.app.finance${idSuffix}.selLinks[$(this).attr("id")]);
-                $(this).dropdown({
-                    apiSettings: {
-                        url: JSPC.app.finance${idSuffix}.selLinks[$(this).attr("id")],
-                        cache: false
-                    },
-                    clearable: true,
-                    minCharacters: 0
-                });
+                JSPC.app.ajaxDropdown($(this), JSPC.app.finance${idSuffix}.selLinks[$(this).attr("id")], '')
             });
         <% if(costItem?.issueEntitlement) {
             String ieTitleName = costItem.issueEntitlement.name
@@ -518,9 +533,10 @@
         },
         onSubscriptionUpdate: function () {
             let context;
-            selectedMembers = $("[name='newLicenseeTarget']~a");
+            selectedMembers = $("[name='newLicenseeTarget']").val();
+            console.log(selectedMembers);
             if(selectedMembers.length === 1){
-                let values = JSPC.app.finance${idSuffix}.collect(selectedMembers);
+                let values = selectedMembers;
                 if(!values[0].match(/:null|:for/)) {
                      context = values[0];
                 }
