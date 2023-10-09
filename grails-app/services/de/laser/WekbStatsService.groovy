@@ -48,9 +48,9 @@ class WekbStatsService {
         }
         Map result = cache.get('data') as Map
 
-        List<String> orgList    = result.org.all.collect{ it.uuid }
-        List<String> pkgList    = result.package.all.collect{ it.uuid }
-        List<String> pltList    = result.platform.all.collect{ it.uuid }
+        List<String> orgList    = result.org.all.collect{ it.id }
+        List<String> pkgList    = result.package.all.collect{ it.id }
+        List<String> pltList    = result.platform.all.collect{ it.id }
 
         Map<String, List> myXMap = markerService.getMyXMap()
 
@@ -58,9 +58,9 @@ class WekbStatsService {
         result.package.my       = myXMap.currentPackageIdList.intersect(pkgList)
         result.platform.my      = myXMap.currentPlatformIdList.intersect(pltList)
 
-        result.org.marker       = markerService.getObjectsByClassAndType(Org.class, Marker.TYPE.WEKB_CHANGES).collect { it.gokbId }.intersect(orgList)
-        result.package.marker   = markerService.getObjectsByClassAndType(Package.class, Marker.TYPE.WEKB_CHANGES).collect { it.gokbId }.intersect(pkgList)
-        result.platform.marker  = markerService.getObjectsByClassAndType(Platform.class, Marker.TYPE.WEKB_CHANGES).collect { it.gokbId }.intersect(pltList)
+        result.org.marker       = markerService.getObjectsByClassAndType(Org.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(orgList)
+        result.package.marker   = markerService.getObjectsByClassAndType(Package.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(pkgList)
+        result.platform.marker  = markerService.getObjectsByClassAndType(Platform.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(pltList)
 
         result.counts = [
                 all:        result.org.count            + result.platform.count            + result.package.count,
@@ -68,7 +68,8 @@ class WekbStatsService {
                 my:         result.org.my.size()        + result.platform.my.size()        + result.package.my.size(),
                 marker:     result.org.marker.size()    + result.platform.marker.size()    + result.package.marker.size(),
                 created:    result.org.created.size()   + result.platform.created.size()   + result.package.created.size(),
-                updated:    result.org.updated.size()   + result.platform.updated.size()   + result.package.updated.size()
+                updated:    result.org.updated.size()   + result.platform.updated.size()   + result.package.updated.size(),
+                deleted:    result.org.deleted.size()   + result.platform.deleted.size()   + result.package.deleted.size()
         ]
 
         result
@@ -118,15 +119,15 @@ class WekbStatsService {
         result = [
                 query       : [ days: days, changedSince: DateUtils.getLocalizedSDF_noTime().format(frame), call: DateUtils.getLocalizedSDF_noZ().format(new Date()) ],
                 counts      : [ : ],
-                org         : [ count: 0, countInLaser: 0, created: [], updated: [], all: [] ],
-                platform    : [ count: 0, countInLaser: 0, created: [], updated: [], all: [] ],
-                package     : [ count: 0, countInLaser: 0, created: [], updated: [], all: [] ]
+                org         : [ count: 0, countInLaser: 0, created: [], updated: [], deleted: [], all: [] ],
+                platform    : [ count: 0, countInLaser: 0, created: [], updated: [], deleted: [], all: [] ],
+                package     : [ count: 0, countInLaser: 0, created: [], updated: [], deleted: [], all: [] ]
         ]
 
         Closure process = { Map map, String key ->
             if (map.result) {
 //                map.result.sort { it.lastUpdatedDisplay }.each {
-                map.result.sort { it.sortname }.each {
+                map.result.sort { it.sortname }.each { it ->
                     it.dateCreatedDisplay = DateUtils.getLocalizedSDF_noZ().format(DateUtils.parseDateGeneric(it.dateCreatedDisplay))
                     it.lastUpdatedDisplay = DateUtils.getLocalizedSDF_noZ().format(DateUtils.parseDateGeneric(it.lastUpdatedDisplay))
                     if (it.lastUpdatedDisplay == it.dateCreatedDisplay) {
@@ -135,9 +136,30 @@ class WekbStatsService {
                     else {
                         result[key].updated << it.uuid
                     }
-                    if (key == 'org')       { it.globalUID = Org.findByGokbId(it.uuid)?.globalUID }
-                    if (key == 'platform')  { it.globalUID = Platform.findByGokbId(it.uuid)?.globalUID }
-                    if (key == 'package')   { it.globalUID = Package.findByGokbId(it.uuid)?.globalUID }
+                    if (it.status.toLowerCase() in ['removed', 'deleted']) {
+                        result[key].deleted << it.uuid
+                    }
+
+                    it.remove('componentType')
+                    it.remove('dateCreatedDisplay')
+                    it.remove('sortname')
+                    it.remove('status')
+
+                    if (key == 'org')       {
+                        Org o = Org.findByGokbId(it.uuid)
+                        it.id = o?.id
+                        it.globalUID = o?.globalUID
+                    }
+                    if (key == 'platform')  {
+                        Platform p = Platform.findByGokbId(it.uuid)
+                        it.id = p?.id
+                        it.globalUID = p?.globalUID
+                    }
+                    if (key == 'package')   {
+                        Package p = Package.findByGokbId(it.uuid)
+                        it.id = p?.id
+                        it.globalUID = p?.globalUID
+                    }
 
                     if (it.globalUID) { result[key].countInLaser++ }
                     result[key].all << it
