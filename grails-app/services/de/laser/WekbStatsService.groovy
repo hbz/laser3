@@ -44,8 +44,7 @@ class WekbStatsService {
         EhcacheWrapper cache = cacheService.getTTL1800Cache(CACHE_KEY)
 
         if (! cache.get('data')) {
-            //return [:]
-            updateCache()
+            return [:]
         }
         Map result = cache.get('data') as Map
 
