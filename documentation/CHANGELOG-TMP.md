@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5309    09.10.2023  rc-3.2  3.2.6       Andreas Bug         falsches Spaltenmapping bei "Kündigungsdatum"
+
 5290    02.10.2023  rc-3.2  3.2.6       Moe     Bug         Warnmeldung bei Ausführung Umfrage beenden
 
 5300    27.09.2023  rc-3.2  3.2.5       Andreas Bug         Template-Fragment öffnete sich allein

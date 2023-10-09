@@ -556,8 +556,8 @@ class ExportClickMeService {
                             'subscription.offerRequested'                : [field: 'offerRequested', label: 'Offer Requested', message: 'subscription.offerRequested.label'],
                             'subscription.offerRequestedDate'            : [field: 'offerRequestedDate', label: 'Offer Requested Date', message: 'subscription.offerRequestedDate.label'],
                             'subscription.offerAccepted'                 : [field: 'offerAccepted', label: 'Offer Accepted', message: 'subscription.offerAccepted.label'],
-                            'subscription.manualCancellationDate'        : [field: 'offerNote', label: 'Offer Note', message: 'subscription.offerNote.label'],
-                            'subscription.offerNote'                     : [field: 'priceIncreaseInfo', label: 'Price Increase Info', message: 'subscription.priceIncreaseInfo.label'],
+                            'subscription.offerNote'                     : [field: 'offerNote', label: 'Offer Note', message: 'subscription.offerNote.label'],
+                            'subscription.priceIncreaseInfo'             : [field: 'priceIncreaseInfo', label: 'Price Increase Info', message: 'subscription.priceIncreaseInfo.label'],
                             'subscription.renewalSent'                   : [field: 'renewalSent', label: 'Renewal Sent', message: 'subscription.renewalSent.label'],
                             'subscription.renewalSentDate'               : [field: 'renewalSentDate', label: 'Renewal Sent Date', message: 'subscription.renewalSentDate.label'],
                             'subscription.participantTransferWithSurvey' : [field: 'participantTransferWithSurvey', label: 'Participant Transfe With Survey', message: 'subscription.participantTransferWithSurvey.label'],
@@ -1518,9 +1518,9 @@ class ExportClickMeService {
 
         if(showTransferFields){
             EXPORT_SUBSCRIPTION_TRANSFER_CONFIG.keySet().each { String key ->
-                    EXPORT_SUBSCRIPTION_TRANSFER_CONFIG.get(key).fields.each {
-                        exportFields.put(it.key, it.value)
-                    }
+                EXPORT_SUBSCRIPTION_TRANSFER_CONFIG.get(key).fields.each {
+                    exportFields.put(it.key, it.value)
+                }
             }
         }
 
