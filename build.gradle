@@ -11,12 +11,12 @@ buildscript {
         maven { url 'https://repo.grails.org/grails/core' }
     }
     dependencies {
-        classpath 'org.grails:grails-gradle-plugin:' + grailsGradlePluginVersion
+        classpath 'org.grails:grails-gradle-plugin:' + grailsGradlePluginVersion            // 2023
         classpath 'org.grails.plugins:hibernate5:' + gormVersion                            // 2023
         classpath 'org.grails.plugins:database-migration:4.2.1'                             // 2023
         classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:4.3.0'                     // 2023
         classpath 'com.gorylenko.gradle-git-properties:gradle-git-properties:2.4.1'         // 2022
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.48.0'                      // 2023
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.49.0'                      // 2023
 
         // -- dependency resolving issue
         classpath 'org.quartz-scheduler:quartz:2.3.2'                                       // 2019
@@ -104,7 +104,7 @@ dependencies {
     implementation 'org.elasticsearch:elasticsearch:7.17.12'                                // 2023
     implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.12'  // 2023
 
-    implementation 'org.grails.plugins:spring-security-core:6.0.0'          // 2023
+    implementation 'org.grails.plugins:spring-security-core:6.0.1'          // 2023
     implementation 'org.grails.plugins:audit-logging:4.0.3'                 // 2021
     implementation 'org.grails.plugins:database-migration:4.2.1', {         // 2023
         exclude module: 'spring-boot-cli'
@@ -185,7 +185,7 @@ buildProperties {
 
 war {
     enabled = true
-    baseName = 'laser3'
+    archiveBaseName = 'laser3'
     archiveFileName = 'laser3.war'
     duplicatesStrategy = DuplicatesStrategy.WARN
     rootSpec.exclude(
