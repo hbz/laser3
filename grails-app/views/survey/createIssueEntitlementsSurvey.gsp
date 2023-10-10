@@ -148,7 +148,6 @@
                 </th>
 
                 <th rowspan="2" class="two wide"></th>
-
             </tr>
 
             <tr>
@@ -237,8 +236,6 @@
                                     </div>
                                 </g:link>
                             </td>
-
-
 
                         <td class="x">
                             <g:if test="${editable && contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )}">
