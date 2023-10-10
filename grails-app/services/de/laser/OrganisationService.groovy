@@ -234,17 +234,21 @@ class OrganisationService {
      * @return a {@link Map} of structure [providerUUID: providerRecord] containing the request results
      */
     Map<String, Map> getWekbOrgRecords(GrailsParameterMap params, Map result) {
-        Map<String, Object> queryParams = [componentType: "Org"]
-        if (params.curatoryGroup || params.providerRole) {
-            if(params.curatoryGroup)
-                queryParams.curatoryGroupExact = params.curatoryGroup.replaceAll('&','ampersand').replaceAll('\\+','%2B').replaceAll(' ','%20')
-            if(params.providerRole)
-                queryParams.role = RefdataValue.get(params.providerRole).value.replaceAll(' ','%20')
+        Map<String, Map> records = [:]
+        Set<String> componentTypes = ['Org', 'Vendor']
+        componentTypes.each { String componentType ->
+            Map<String, Object> queryParams = [componentType: componentType]
+            if (params.curatoryGroup || params.providerRole) {
+                if(params.curatoryGroup)
+                    queryParams.curatoryGroupExact = params.curatoryGroup.replaceAll('&','ampersand').replaceAll('\\+','%2B').replaceAll(' ','%20')
+                if(params.providerRole)
+                    queryParams.role = RefdataValue.get(params.providerRole).value.replaceAll(' ','%20')
+            }
+            Map<String, Object> wekbResult = gokbService.doQuery(result, [max: 10000, offset: 0], queryParams)
+            if(wekbResult.recordsCount > 0)
+                records.putAll(wekbResult.records.collectEntries { Map wekbRecord -> [wekbRecord.uuid, wekbRecord] })
         }
-        Map<String, Object> wekbResult = gokbService.doQuery(result, [max: 10000, offset: 0], queryParams)
-        if(wekbResult.recordsCount > 0)
-            wekbResult.records.collectEntries { Map wekbRecord -> [wekbRecord.uuid, wekbRecord] }
-        else [:]
+        records
     }
 
 }

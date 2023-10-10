@@ -349,8 +349,12 @@ class YodaService {
         String componentType
         Set objects = []
         switch(className) {
-            case Org.class.name: rectype = GlobalSourceSyncService.RECTYPE_ORG
+            case GlobalSourceSyncService.ORG_TYPE_PROVIDER: rectype = GlobalSourceSyncService.RECTYPE_ORG
                 componentType = 'Org'
+                objects.addAll(Org.findAllByStatusNotEqualAndGokbIdIsNotNull(RDStore.ORG_STATUS_REMOVED))
+                break
+            case GlobalSourceSyncService.ORG_TYPE_VENDOR: rectype = GlobalSourceSyncService.RECTYPE_VENDOR
+                componentType = 'Vendor'
                 objects.addAll(Org.findAllByStatusNotEqualAndGokbIdIsNotNull(RDStore.ORG_STATUS_REMOVED))
                 break
             case Platform.class.name: rectype = GlobalSourceSyncService.RECTYPE_PLATFORM

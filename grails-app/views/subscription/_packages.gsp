@@ -20,12 +20,22 @@
                             ${sp.getCurrentIssueEntitlementCountOfPackage()} <g:message code="subscription.packages.currentTitles"/>
                         </div>
                         <div class="three wide column">
-                            <g:if test="${sp.pkg.contentProvider}">
-                                <i aria-hidden="true" class="handshake grey outline icon la-popup-tooltip la-delay" data-content="${message(code: 'default.provider.label')}"></i>
-                                <g:link controller="org" action="show" id="${sp.pkg.contentProvider.id}">${sp.pkg.contentProvider.name}</g:link>
-                                <ui:linkWithIcon href="${sp.pkg.contentProvider.url?.startsWith('http') ? sp.pkg.contentProvider.url : 'http://' + sp.pkg.contentProvider.url}"/>
-                                <g:if test="${sp.pkg.contentProvider.gokbId}"><ui:wekbIconLink type="org" gokbId="${sp.pkg.contentProvider.gokbId}"/></g:if>
-                            </g:if>
+                            <div>
+                                <g:if test="${sp.pkg.contentProvider}">
+                                    <i aria-hidden="true" class="handshake grey outline icon la-popup-tooltip la-delay" data-content="${message(code: 'default.provider.label')}"></i>
+                                    <g:link controller="org" action="show" id="${sp.pkg.contentProvider.id}">${sp.pkg.contentProvider.name}</g:link>
+                                    <g:if test="${sp.pkg.contentProvider.url}"><ui:linkWithIcon href="${sp.pkg.contentProvider.url.startsWith('http') ? sp.pkg.contentProvider.url : 'http://' + sp.pkg.contentProvider.url}"/></g:if>
+                                    <g:if test="${sp.pkg.contentProvider.gokbId}"><ui:wekbIconLink type="org" gokbId="${sp.pkg.contentProvider.gokbId}"/></g:if>
+                                </g:if>
+                            </div>
+                            <g:each in="${sp.pkg.agencies}" var="agency">
+                                <div>
+                                    <i aria-hidden="true" class="shipping fast grey icon la-popup-tooltip la-delay" data-content="${message(code: 'default.agency.label')}"></i>
+                                    <g:link controller="org" action="show" id="${agency.id}">${agency.name}</g:link>
+                                    <g:if test="${agency.url}"><ui:linkWithIcon href="${agency.url.startsWith('http') ? agency.url : 'http://' + agency.url}"/></g:if>
+                                    <g:if test="${agency.gokbId}"><ui:wekbIconLink type="vendor" gokbId="${agency.gokbId}"/></g:if>
+                                </div>
+                            </g:each>
                         </div>
                         <div class="three wide column">
                             <g:if test="${sp.pkg.nominalPlatform}">

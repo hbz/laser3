@@ -41,6 +41,8 @@
                           break
                       case GlobalSourceSyncService.RECTYPE_TIPP: component = "TitleInstancePackagePlatform"
                           break
+                      case GlobalSourceSyncService.RECTYPE_VENDOR: component = "Vendor"
+                          break
                   }
               %>
             <tr>

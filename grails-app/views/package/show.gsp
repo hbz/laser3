@@ -492,7 +492,7 @@ making obsolete package/actions
                 <div id="container-provider">
                     <div class="ui card">
                         <div class="content">
-                            <h2 class="ui header">${message(code: 'gasco.table.provider')}</h2>
+                            <h2 class="ui header">${message(code: 'default.ProviderAgency.label')}</h2>
                             <laser:render template="/templates/links/orgLinksAsList"
                                           model="${[roleLinks    : visibleOrgs,
                                                     roleObject   : packageInstance,
