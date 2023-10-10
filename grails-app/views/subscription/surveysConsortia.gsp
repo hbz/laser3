@@ -94,14 +94,10 @@
                     ${surveyInfo.status.getI10n('value')}
                 </td>
                 <td>
-                    <g:formatDate formatName="default.date.format.notime"
-                                  date="${surveyInfo.startDate}"/>
-
+                    <g:formatDate formatName="default.date.format.notime" date="${surveyInfo.startDate}"/>
                 </td>
                 <td>
-
-                    <g:formatDate formatName="default.date.format.notime"
-                                  date="${surveyInfo.endDate}"/>
+                    <g:formatDate formatName="default.date.format.notime" date="${surveyInfo.endDate}"/>
                 </td>
 
                 <td class="center aligned">

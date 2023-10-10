@@ -7,11 +7,12 @@ import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.cache.EhcacheWrapper
 import de.laser.cache.SessionCacheWrapper
-import de.laser.storage.RDStore
+import de.laser.storage.BeanStore
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.grails.taglib.GroovyPageAttributes
 import org.springframework.web.context.request.RequestAttributes
 import org.springframework.web.context.request.RequestContextHolder
 
@@ -24,7 +25,7 @@ import org.springframework.web.context.request.RequestContextHolder
 @Transactional
 class ContextService {
 
-    public final static String RCH_LASER_CONTEXT_ORG = 'laser.context.org'
+    public final static String RCH_LASER_CONTEXT_ORG    = 'laser_context_org'
 
     CacheService cacheService
     SpringSecurityService springSecurityService
@@ -250,4 +251,47 @@ class ContextService {
 //        }
 //        return false
 //    }
+
+    // -----
+
+    boolean checkCachedNavPerms(GroovyPageAttributes attrs) {
+
+        boolean check = false
+        User user = getUser()
+        Org org = getOrg()
+
+        EhcacheWrapper cache = cacheService.getTTL1800Cache('contextService/checkCachedNavPerms/' + user.id + ':' + user.formalOrg.id + ':' + user.formalRole.id)
+
+        Map<String, Boolean> permsMap = [:]
+        String permsKey = 'ctxOrg:' + org.id
+
+        if (cache.get(permsKey)) {
+            permsMap = cache.get(permsKey) as Map<String, Boolean>
+        }
+
+        String perm =  attrs.instRole + ':' + attrs.orgPerm + ':' + attrs.affiliationOrg + ':' + attrs.specRole
+
+        if (permsMap.get(perm) != null) {
+            check = (boolean) permsMap.get(perm)
+        }
+        else {
+            check = SpringSecurityUtils.ifAnyGranted(attrs.specRole ?: [])
+
+            if (!check) {
+                boolean instRoleCheck = attrs.instRole ? BeanStore.getUserService().hasAffiliation_or_ROLEADMIN(user, org, attrs.instRole) : true
+                boolean orgPermCheck  = attrs.orgPerm ? _hasPerm(attrs.orgPerm) : true
+
+                check = instRoleCheck && orgPermCheck
+
+                if (attrs.instRole && attrs.affiliationOrg && check) { // ???
+                    check = BeanStore.getUserService().hasAffiliation_or_ROLEADMIN(user, attrs.affiliationOrg, attrs.instRole)
+                    // check = user.hasOrgAffiliation_or_ROLEADMIN(attrs.affiliationOrg, attrs.instRole)
+                }
+            }
+            permsMap.put(perm, check)
+            cache.put(permsKey, permsMap)
+        }
+
+        check
+    }
 }
