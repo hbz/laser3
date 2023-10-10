@@ -1894,7 +1894,7 @@ class FilterService {
                                         "(select ${refdata_value_col} from refdata_value where rdv_id = tipp_open_access_rv_fk) as openAccess"]
                 orderClause = " order by tipp_sort_name, tipp_name"
                 query = "select ${columns.join(',')} from title_instance_package_platform"
-                String subFilter = ""
+                String subFilter
                 if(configMap.sub) {
                     params.subscription = configMap.sub.id
                     join += " join issue_entitlement on ie_tipp_fk = tipp_id"
@@ -1933,7 +1933,8 @@ class FilterService {
                     params.pkgIds = connection.createArrayOf('bigint', pkgIds.toArray())
                     whereClauses << " tipp_pkg_fk = any(:pkgIds)"
                 }
-                whereClauses << subFilter
+                if(subFilter)
+                    whereClauses << subFilter
                 if(configMap.asAt && configMap.asAt.length() > 0) {
                     Date dateFilter = DateUtils.getLocalizedSDF_noTime().parse(configMap.asAt)
                     params.asAt = new Timestamp(dateFilter.getTime())
