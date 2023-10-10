@@ -40,7 +40,7 @@
                             <div class="description">
 %{--                                <div style="width:50%;min-width:130px;float:left">--}%
                                     <a href="#" class="wekb-flyout-trigger" data-preset="org,created">Neu: ${wekbChanges.org.created.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="org,updated">Geändert: ${wekbChanges.org.updated.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="org,updated">Geändert: ${wekbChanges.org.countUpdated}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="org,deleted">Gelöscht: ${wekbChanges.org.deleted.size()}</a> <br/>
 %{--                                </div>--}%
 %{--                                <div style="width:50%;min-width:130px;float:left">--}%
@@ -64,7 +64,7 @@
                             <div class="description">
 %{--                                <div style="width:50%;min-width:130px;float:left">--}%
                                     <a href="#" class="wekb-flyout-trigger" data-preset="platform,created">Neu: ${wekbChanges.platform.created.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="platform,updated">Geändert: ${wekbChanges.platform.updated.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="platform,updated">Geändert: ${wekbChanges.platform.countUpdated}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="platform,deleted">Gelöscht: ${wekbChanges.platform.deleted.size()}</a> <br/>
 %{--                                </div>--}%
 %{--                                <div style="width:50%;min-width:130px;float:left">--}%
@@ -88,7 +88,7 @@
                             <div class="description">
 %{--                                <div style="width:50%;min-width:130px;float:left">--}%
                                     <a href="#" class="wekb-flyout-trigger" data-preset="package,created">Neu: ${wekbChanges.package.created.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="package,updated">Geändert: ${wekbChanges.package.updated.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="package,updated">Geändert: ${wekbChanges.package.countUpdated}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="package,deleted">Gelöscht: ${wekbChanges.package.deleted.size()}</a> <br/>
 %{--                                </div>--}%
 %{--                                <div style="width:50%;min-width:130px;float:left">--}%

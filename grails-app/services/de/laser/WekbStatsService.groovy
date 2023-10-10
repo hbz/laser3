@@ -68,7 +68,7 @@ class WekbStatsService {
                 my:         result.org.my.size()        + result.platform.my.size()        + result.package.my.size(),
                 marker:     result.org.marker.size()    + result.platform.marker.size()    + result.package.marker.size(),
                 created:    result.org.created.size()   + result.platform.created.size()   + result.package.created.size(),
-                updated:    result.org.updated.size()   + result.platform.updated.size()   + result.package.updated.size(),
+                updated:    result.org.countUpdated     + result.platform.countUpdated     + result.package.countUpdated,
                 deleted:    result.org.deleted.size()   + result.platform.deleted.size()   + result.package.deleted.size()
         ]
 
@@ -119,9 +119,9 @@ class WekbStatsService {
         result = [
                 query       : [ days: days, changedSince: DateUtils.getLocalizedSDF_noTime().format(frame), call: DateUtils.getLocalizedSDF_noZ().format(new Date()) ],
                 counts      : [ : ],
-                org         : [ count: 0, countInLaser: 0, created: [], updated: [], deleted: [], all: [] ],
-                platform    : [ count: 0, countInLaser: 0, created: [], updated: [], deleted: [], all: [] ],
-                package     : [ count: 0, countInLaser: 0, created: [], updated: [], deleted: [], all: [] ]
+                org         : [ count: 0, countInLaser: 0, countUpdated: 0, created: [], /*updated: [],*/ deleted: [], all: [] ],
+                platform    : [ count: 0, countInLaser: 0, countUpdated: 0, created: [], /*updated: [],*/ deleted: [], all: [] ],
+                package     : [ count: 0, countInLaser: 0, countUpdated: 0, created: [], /*updated: [],*/ deleted: [], all: [] ]
         ]
 
         Closure process = { Map map, String key ->
@@ -130,14 +130,16 @@ class WekbStatsService {
                 map.result.sort { it.sortname }.each { it ->
                     it.dateCreatedDisplay = DateUtils.getLocalizedSDF_noZ().format(DateUtils.parseDateGeneric(it.dateCreatedDisplay))
                     it.lastUpdatedDisplay = DateUtils.getLocalizedSDF_noZ().format(DateUtils.parseDateGeneric(it.lastUpdatedDisplay))
-                    if (it.lastUpdatedDisplay == it.dateCreatedDisplay) {
+
+                    if (it.status.toLowerCase() in ['removed', 'deleted']) {
+                        result[key].deleted << it.uuid
+                    }
+                    else if (it.lastUpdatedDisplay == it.dateCreatedDisplay) {
                         result[key].created << it.uuid
                     }
                     else {
-                        result[key].updated << it.uuid
-                    }
-                    if (it.status.toLowerCase() in ['removed', 'deleted']) {
-                        result[key].deleted << it.uuid
+                        //result[key].updated << it.uuid
+                        result[key].countUpdated = result[key].countUpdated + 1
                     }
 
                     it.remove('componentType')
@@ -164,7 +166,7 @@ class WekbStatsService {
                     if (it.globalUID) { result[key].countInLaser++ }
                     result[key].all << it
                 }
-                result[key].count = result[key].created.size() + result[key].updated.size()
+                result[key].count = result[key].created.size() + result[key].countUpdated + /*result[key].updated.size() +*/ result[key].deleted.size()
             }
         }
 
