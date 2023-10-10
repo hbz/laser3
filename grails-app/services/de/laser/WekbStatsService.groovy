@@ -111,7 +111,9 @@ class WekbStatsService {
 
         Date frame = Date.from(LocalDate.now().minusDays(days).atStartOfDay(ZoneId.systemDefault()).toInstant())
         String cs = DateUtils.getSDF_yyyyMMdd_HHmmss().format(frame)
+
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        String apiUrl = apiSource.baseUrl + apiSource.fixToken + '/searchApi'
         //log.debug('WekbStatsService.getCurrent() > ' + cs)
 
         Map base = [changedSince: cs, sort: 'lastUpdatedDisplay', order: 'desc', stubOnly: true, max: 10000]
@@ -170,13 +172,17 @@ class WekbStatsService {
             }
         }
 
-        Map orgMap = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/searchApi', base + [componentType: 'Org'])
-        process(orgMap.warning as Map, 'org')
+        Map orgMap1 = gokbService.executeQuery(apiUrl, base + [componentType: 'Org'])
+        Map orgMap2 = gokbService.executeQuery(apiUrl, base + [componentType: 'Vendor'])
+        Map orgCombinedMap = [result: []]
+        orgCombinedMap.result.addAll(orgMap1.warning.result)
+        orgCombinedMap.result.addAll(orgMap2.warning.result)
+        process(orgCombinedMap as Map, 'org')
 
-        Map platformMap = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/searchApi', base + [componentType: 'Platform'])
+        Map platformMap = gokbService.executeQuery(apiUrl, base + [componentType: 'Platform'])
         process(platformMap.warning as Map, 'platform')
 
-        Map packageMap = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/searchApi', base + [componentType: 'Package'])
+        Map packageMap = gokbService.executeQuery(apiUrl, base + [componentType: 'Package'])
         process(packageMap.warning as Map, 'package')
 
         result
