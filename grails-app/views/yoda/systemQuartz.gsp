@@ -14,7 +14,7 @@
 <ui:msg class="info" noClose="true">
     <i class="check icon"></i> Job is active <br />
     <i class="stop icon"></i> Job is NOT active <br />
-    <i class="hand point right icon"></i> Job is NOT available - due deactivation oder missing configuration <br />
+    <i class="exclamation triangle icon"></i> Job is NOT available - due deactivation oder missing configuration <br />
 </ui:msg>
 
 <g:each in="${quartz}" var="groupKey, group">
@@ -49,12 +49,12 @@
                         tdIcon    = 'check'
                     }
                     else if (! job.available && ! job.nextFireTime) {
-                        tdClass   = 'error'
+                        tdClass   = 'grey'
                         tdIcon    = 'stop'
                     }
                     else if (! job.available) {
-                        tdClass   = 'warning'
-                        tdIcon    = 'hand point right'
+                        tdClass   = 'error'
+                        tdIcon    = 'exclamation triangle'
                     }
                 %>
                 <tr>
