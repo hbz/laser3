@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5315    10.10.2023  dev     3.3         Andreas Bug         Toggle für Sichtbarschaltung aller Kosten eingebaut
+
+5314    10.10.2023  dev     3.3         Andreas Feature     Umbenennung der KBART-Export-Spalten
+
 4978    10.10.2023  dev     3.3         David   Feature     Berechtigungsprüfung der Navigation überarbeiten
 
 5311    09.10.2023  dev     3.3         Andreas Bug         fehlerhaften Redirect bei Löschung von Dokumenten behoben

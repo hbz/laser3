@@ -17,11 +17,14 @@
                     <tr>
                         <th rowspan="2">${message(code:'myinst.financeImport.post.costItem')}</th>
                         <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
-                            <th rowspan="2">${message(code:'myinst.financeImport.post.makeVisibleForSubscribers')}</th>
+                            <th>${message(code:'myinst.financeImport.post.makeVisibleForSubscribers')}</th>
                         </g:if>
                         <th>${message(code:'myinst.financeImport.post.takeItem')}</th>
                     </tr>
                     <tr>
+                        <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
+                            <td>${message(code:'myinst.financeImport.post.all.visible')} <input name="allVisibleForSubscriber" type="radio" value="true"><br />${message(code:'myinst.financeImport.post.all.invisible')} <input name="allVisibleForSubscriber" type="radio" value="false" checked></td>
+                        </g:if>
                         <td>${message(code:'myinst.financeImport.post.takeAllItems')} <g:checkBox name="takeAll"/></td>
                     </tr>
                 </thead>
@@ -76,7 +79,7 @@
                             <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                                 <td>
                                     <g:if test="${ci.sub && OrgRole.executeQuery('select oo from OrgRole oo where oo.org = :org and oo.sub = :sub and oo.roleType = :roleType and oo.sub.instanceOf is not null',[org: ci.owner,sub: ci.sub,roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA])}">
-                                        ${message(code:'myinst.financeImport.post.visible')} <input name="visibleForSubscriber${r}" type="radio" value="true"><br />${message(code:'myinst.financeImport.post.notVisible')} <input name="visibleForSubscriber${r}" type="radio" value="false" checked>
+                                        ${message(code:'myinst.financeImport.post.visible')} <input name="visibleForSubscriber${r}" class="visibleForSubscriber" type="radio" value="true"><br />${message(code:'myinst.financeImport.post.notVisible')} <input name="visibleForSubscriber${r}" class="invisibleForSubscriber" type="radio" value="false" checked>
                                     </g:if>
                                 </td>
                             </g:if>
@@ -100,13 +103,22 @@
         </g:form>
 
     <laser:script file="${this.getGroovyPageFileName()}">
-            $("#takeAll").change(function(){
-                if($(this).is(":checked")) {
-                    $(".ciSelect").prop('checked',true);
-                }
-                else {
-                    $(".ciSelect").prop('checked',false);
-                }
-            });
+        $("[name='allVisibleForSubscriber']").change(function(){
+            if($(this).val() === 'true') {
+                $(".visibleForSubscriber").prop('checked',true);
+            }
+            else {
+                $(".invisibleForSubscriber").prop('checked',true);
+            }
+        });
+
+        $("#takeAll").change(function(){
+            if($(this).is(":checked")) {
+                $(".ciSelect").prop('checked',true);
+            }
+            else {
+                $(".ciSelect").prop('checked',false);
+            }
+        });
     </laser:script>
 <laser:htmlEnd />
