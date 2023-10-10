@@ -179,7 +179,7 @@
                             <a href="#" class="la-popup-tooltip la-delay"
                                data-content="${message(code: 'subscription.numberOfLicenses.label')}"
                                data-position="top center">
-                                <i class="users large icon"></i>
+                                <i class="university large icon"></i>
                             </a>
                         </th>
                         <th scope="col" rowspan="2">

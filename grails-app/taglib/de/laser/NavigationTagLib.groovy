@@ -269,7 +269,7 @@ class NavigationTagLib {
             attrs.instRole = Role.INST_USER // new default
         }
 
-        boolean check = SwissKnife.checkAndCacheNavPermsForCurrentRequest(attrs, request)
+        boolean check = contextService.checkCachedNavPerms(attrs)
 
         if (attrs.addItemAttributes) {
             attrs.elementId = _generateElementId(attrs)

@@ -68,7 +68,7 @@
                                                 </div>
                                             </g:elseif>
                                             <div class="item">
-                                                <i aria-hidden="true" class="grey calendar alternate icon icon"></i>
+                                                <i aria-hidden="true" class="grey calendar alternate icon"></i>
 
                                                 <div class="content">
                                                     <div class="header">

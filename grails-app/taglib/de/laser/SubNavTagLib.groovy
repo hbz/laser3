@@ -90,7 +90,7 @@ class SubNavTagLib {
             attrs.instRole = Role.INST_USER // new default
         }
 
-        boolean check = SwissKnife.checkAndCacheNavPermsForCurrentRequest(attrs, request)
+        boolean check = contextService.checkCachedNavPerms(attrs)
 
         if (tooltip != "") {
             linkBody = '<div data-tooltip="' + tooltip + '" data-position="bottom center">' + linkBody + '</div>'

@@ -500,7 +500,7 @@ r2d2 = {
                 else
                     $(ctxSel + ' .xEditable-datepicker').calendar(r2d2.configs.datepicker);
                 $(ctxSel + ' .editable-clear-x').click(function() {
-                    $('.calendar').calendar('clear');
+                    $('.xEditable-datepicker.calendar').calendar('clear');
                 });
             }else {
                 var dType = $(this).attr('data-type')

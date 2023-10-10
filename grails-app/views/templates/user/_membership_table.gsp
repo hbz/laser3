@@ -5,7 +5,7 @@
     <div class="content">
     <h2 class="ui dividing header">${message(code: 'profile.membership.existing')}</h2>
 
-    <table class="ui celled la-js-responsive-table la-table table">
+    <table class="ui fixed celled la-js-responsive-table la-table table">
         <thead>
         <tr>
             <th>${message(code: 'profile.membership.org')}</th>
@@ -36,7 +36,7 @@
                             )
                         %>
                         <g:if test="${check}">
-                            <ui:xEditableRole owner="${userInstance}" field="formalRole" type="user" />
+                            <ui:xEditableRole owner="${userInstance}" field="formalRole" type="user" style="background-color:red;" />
                         </g:if>
                         <g:else>
                             <g:message code="cv.roles.${userInstance.formalRole?.authority}"/>

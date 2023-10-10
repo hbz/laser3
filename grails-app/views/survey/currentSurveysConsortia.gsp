@@ -227,12 +227,9 @@
             </thead>
             <g:each in="${surveys}" var="survey" status="i">
 
-                <g:set var="surveyInfo"
-                       value="${survey[0]}"/>
+                <g:set var="surveyInfo" value="${survey[0]}"/>
 
-                <g:set var="surveyConfig"
-                       value="${survey[1]}"/>
-
+                <g:set var="surveyConfig" value="${survey[1]}"/>
 
                 %{--<g:set var="participantsFinish"
                        value="${SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig).participant?.flatten()?.unique { a, b -> a.id <=> b.id }}"/>
@@ -258,8 +255,6 @@
                                     </div>
                                 </g:if>
                             </g:if>
-
-
                     </th>
 
                     <td class="center aligned">
@@ -275,8 +270,7 @@
                         </g:if>
                     </td>
                     <td>
-                        <g:formatDate formatName="default.date.format.notime"
-                                      date="${surveyInfo.startDate}"/>
+                        <g:formatDate formatName="default.date.format.notime" date="${surveyInfo.startDate}"/>
                         <br />
                         <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label')}:">
                             <g:formatDate formatName="default.date.format.notime" date="${surveyInfo.endDate}"/>
@@ -288,7 +282,6 @@
                     </td>
 
                     <td class="center aligned">
-
                         <g:if test="${surveyConfig}">
                                 <g:link controller="survey" action="show" id="${surveyInfo.id}"
                                         params="[surveyConfigID: surveyConfig.id]" class="ui icon">
@@ -298,7 +291,6 @@
                                     </div>
                                 </g:link>
                         </g:if>
-
                     </td>
 
                         <td class="center aligned">

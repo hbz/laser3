@@ -143,7 +143,6 @@
                 </th>
 
                 <th rowspan="2" class="two wide">${message(code:'default.actions.label')}</th>
-
             </tr>
 
             <tr>

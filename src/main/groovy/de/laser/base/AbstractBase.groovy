@@ -70,7 +70,7 @@ abstract class AbstractBase {
      */
     protected void beforeDeleteHandler() {
 
-        log.debug("beforeDeleteHandler()")
+        //log.debug("beforeDeleteHandler()")
     }
 
     abstract def beforeInsert() /* { beforeInsertHandler() } */

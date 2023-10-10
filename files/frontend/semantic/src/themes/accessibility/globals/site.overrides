@@ -344,6 +344,9 @@ i.icon.la-list-icon{
     margin-left: 0px;
     margin-top: 0px;
 }
+.editable-container.editable-inline .ui.search.dropdown{
+    max-width: 200px;
+}
 // cursor in case of disabled x-editable
 .editable-disabled {
     cursor: text !important;

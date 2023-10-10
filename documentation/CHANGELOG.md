@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4978    10.10.2023  dev     3.3         David   Feature     Berechtigungsprüfung der Navigation überarbeiten
+
 5311    09.10.2023  dev     3.3         Andreas Bug         fehlerhaften Redirect bei Löschung von Dokumenten behoben
 
 5309    09.10.2023  rc-3.2  3.2.6       Andreas Bug         falsches Spaltenmapping bei "Kündigungsdatum"
