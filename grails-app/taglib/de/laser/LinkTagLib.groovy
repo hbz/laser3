@@ -37,6 +37,10 @@ class LinkTagLib {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
             label = message(code: 'default.provider.label') + ' in der we:kb aufrufen'
         }
+        else if (attrs.type == 'vendor') {
+            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
+            label = message(code: 'default.agency.label') + ' in der we:kb aufrufen'
+        }
         else if (attrs.type == 'package') {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
             label = message(code: 'package.label') + ' in der we:kb aufrufen'

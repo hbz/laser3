@@ -481,8 +481,8 @@ class OrganisationController  {
         }
         */
 
-        params.orgSector    = RDStore.O_SECTOR_PUBLISHER?.id?.toString()
-        params.orgType      = RDStore.OT_PROVIDER?.id?.toString()
+        params.orgSector    = RDStore.O_SECTOR_PUBLISHER.id.toString()
+        params.orgType      = [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]
         params.sort        = params.sort ?: " LOWER(o.sortname), LOWER(o.name)"
 
         def fsq            = filterService.getOrgQuery(params)

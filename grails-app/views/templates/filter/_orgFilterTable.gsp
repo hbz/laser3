@@ -372,7 +372,7 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('isWekbCurated')}">
                 <td class="center aligned">
-                    <g:if test="${org.gokbId != null && RDStore.OT_PROVIDER.id in org.getAllOrgTypeIds()}">
+                    <g:if test="${org.gokbId != null && org.getAllOrgTypeIds().any { ot -> [RDStore.OT_AGENCY.id, RDStore.OT_PROVIDER.id].contains(ot) }}">
                         <ui:wekbButtonLink type="org" gokbId="${org.gokbId}" />
                     </g:if>
                 </td>
@@ -693,13 +693,13 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('platform')}">
                 <td>
-                        <g:each in="${org.platforms}" var="platform">
-                                <g:if test="${platform.gokbId != null}">
-                                    <ui:wekbIconLink type="platform" gokbId="${platform.gokbId}" />
-                                </g:if>
-                                <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
-                                <br />
-                        </g:each>
+                    <g:each in="${org.platforms}" var="platform">
+                        <g:if test="${platform.gokbId != null}">
+                            <ui:wekbIconLink type="platform" gokbId="${platform.gokbId}" />
+                        </g:if>
+                        <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
+                        <br />
+                    </g:each>
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('type')}">

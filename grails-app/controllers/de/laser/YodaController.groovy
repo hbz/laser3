@@ -898,20 +898,21 @@ class YodaController {
     }
 
     /**
-     * Call to reload all provider data from the speicified we:kb instance.
+     * Call to reload all provider / agency data from the specified we:kb instance.
      * Note that the organisations whose data should be updated need a we:kb ID for match;
      * if no match is being found for the given we:kb ID, a new record will be created!
      */
     @Secured(['ROLE_YODA'])
-    def reloadWekbProvider() {
+    def reloadWekbOrg() {
         if(!globalSourceSyncService.running) {
-            //continue here and with running GlobalDataSync (beware: other GRS are switched off for test, test also with sources enabled!)
             log.debug("start reloading ...")
-            executorService.execute({
-                Thread.currentThread().setName("GlobalDataUpdate_Org")
-                globalSourceSyncService.reloadData('Org')
-                yodaService.expungeRemovedComponents(Org.class.name)
-            })
+            if(params.containsKey('componentType')) {
+                executorService.execute({
+                    Thread.currentThread().setName("GlobalDataUpdate_Org")
+                    globalSourceSyncService.reloadData(params.componentType)
+                    yodaService.expungeRemovedComponents(params.componentType)
+                })
+            }
         }
         else {
             log.debug("process running, lock is set!")
