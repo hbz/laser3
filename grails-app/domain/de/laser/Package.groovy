@@ -162,11 +162,22 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
      */
   @Transient
   Org getContentProvider() {
-    Org result
-    orgs.each { OrgRole or ->
-      if ( or.roleType in [RDStore.OR_CONTENT_PROVIDER, RDStore.OR_PROVIDER] )
-        result = or.org
-    }
+    Org result = orgs.find { OrgRole or ->
+      or.roleType in [RDStore.OR_CONTENT_PROVIDER, RDStore.OR_PROVIDER]
+    }?.org
+    result
+  }
+
+    /**
+     * Gets the agencies / vendors of this package
+     * @return the {@link Set} of {@link Org}s linked to this package by {@link OrgRole} of type Agency
+     */
+  @Transient
+  Set<Org> getAgencies() {
+    Set<Org> result = []
+    result.addAll(orgs.findAll { OrgRole or ->
+      or.roleType == RDStore.OR_AGENCY
+    }.org)
     result
   }
 
