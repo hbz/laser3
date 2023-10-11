@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2276    11.10.2023  dev     3.3         David   Feature     Neuer Kundentyp: ORG_ADMINISTRATION
+
 4636    11.10.2023  dev     3.3         David   Feature     SystemEvents per Mail - Refactoring
 
 5315    10.10.2023  dev     3.3         Andreas Bug         Toggle für Sichtbarschaltung aller Kosten eingebaut

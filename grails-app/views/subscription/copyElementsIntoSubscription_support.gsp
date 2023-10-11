@@ -51,7 +51,7 @@
     %>
     <g:if test="${isRenewSub}">
         <div class="ui tablet stackable steps la-clear-before">
-            <div class="${workFlowPart == CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS, CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS , CopyElementsService.WORKFLOW_SUBSCRIBER, CopyElementsService.WORKFLOW_PROPERTIES] ? 'completed' : '')} step">
+            <div class="${workFlowPart == CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS , CopyElementsService.WORKFLOW_SUBSCRIBER, CopyElementsService.WORKFLOW_PROPERTIES] ? 'completed' : '')} step">
                 <div class="content">
                     <div class="title">
                         <g:link controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: null]}">
@@ -59,22 +59,19 @@
                         </g:link>
                     </div>
                     <div class="description">
-                        <i class="image outline icon"></i>  ${message(code:'subscription.kind.label')}
-                        <i class="dolly icon"></i>          ${message(code:'subscription.form.label')}
-                        <i class="box icon"></i>            ${message(code:'subscription.resource.label')} <br />
-                        <i class="shipping fast icon"></i>  ${message(code:'subscription.isPublicForApi.label')}
-                        <i class="flag outline icon"></i>   ${message(code:'subscription.hasPerpetualAccess.label')}
-                        <i class="comment icon"></i>        ${message(code:'subscription.hasPublishComponent.label')} <br />
-                        <i class="pizza slice icon"></i>    ${message(code:'subscription.holdingSelection.label')}
-                        <i class="balance scale icon"></i>  ${message(code: 'license.label')}
-                        <i class="university icon"></i>     ${message(code: 'subscription.organisations.label')} <br />
-                        <i class="address card icon"></i>   ${message(code: 'subscription.specificSubscriptionEditors')}
-                        <i class="barcode icon"></i>        ${message(code: 'default.identifiers.label')}
-                        <i class="exchange icon"></i>       ${message(code: 'subscription.linkedObjects')}
+                        <i class="calendar alternate outline icon"></i>     ${message(code: 'subscription.periodOfValidity.label')} <br />
+                        <i class="ellipsis vertical icon"></i>              ${message(code:'subscription.status.label')} <br />
+                        <i class="image outline icon"></i>                  ${message(code:'subscription.kind.label')} <br />
+                        <i class="dolly icon"></i>                          ${message(code:'subscription.form.label')} <br />
+                        <i class="box icon"></i>                            ${message(code:'subscription.resource.label')} <br />
+                        <i class="balance scale icon"></i>                  ${message(code: 'license.label')} <br />
+                        <i class="address card icon"></i>                   ${message(code: 'subscription.specificSubscriptionEditors')} <br />
+                        <i class="barcode icon"></i>                        ${message(code: 'default.identifiers.label')} <br />
+                        <i class="exchange icon"></i>                       ${message(code: 'subscription.linkedObjects')}
                     </div>
                 </div>
             </div>
-            <div class="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS, CopyElementsService.WORKFLOW_SUBSCRIBER, CopyElementsService.WORKFLOW_PROPERTIES] ? 'completed' : '')} step">
+            <div class="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_SUBSCRIBER, CopyElementsService.WORKFLOW_PROPERTIES] ? 'completed' : '')} step">
                 <div class="content">
                     <div class="title">
                         <g:link controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS]}">
@@ -91,7 +88,7 @@
             </div>
 
             <g:if test="${!fromSurvey && isSubscriberVisible && contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
-                <div class="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS, CopyElementsService.WORKFLOW_PROPERTIES] ? 'completed' : '')} step">
+                <div class="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_PROPERTIES] ? 'completed' : '')} step">
                     <div class="content">
                         <div class="title">
                             <g:link controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS]}">
@@ -104,21 +101,6 @@
                     </div>
                 </div>
             </g:if>
-            <div class="${workFlowPart == CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_PROPERTIES] ? 'completed' : '')} step">
-                <div class="content">
-                    <div class="title">
-                        <g:link controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: CopyElementsService.WORKFLOW_SUBSCRIBER]}">
-                        %{--<g:link controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: CopyElementsService.WORKFLOW_IDENTIFIERS]}">--}%
-                            ${message(code: 'copyElementsIntoObject.inventory.label')}
-                        </g:link>
-                    </div>
-                    <div class="description">
-                        <i class="gift icon"></i>           ${message(code: 'package.label')} <br />
-                        <i class="book icon"></i>           ${message(code: 'title')} <br />
-                        <i class="icon object group"></i>   ${message(code: 'subscription.details.ieGroups')}
-                    </div>
-                </div>
-            </div>
 
             <div class="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES ? 'active' : ''} step">
                 <div class="content">

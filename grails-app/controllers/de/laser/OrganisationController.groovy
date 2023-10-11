@@ -355,6 +355,8 @@ class OrganisationController  {
 
         List<Org> availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, [sort:params.sort])
         availableOrgs.remove(Org.findByName("LAS:eR Backoffice"))
+
+        // TODO [ticket=2276]
         // TODO remove all with customerType support ?
 
         String header = message(code: 'menu.public.all_cons')

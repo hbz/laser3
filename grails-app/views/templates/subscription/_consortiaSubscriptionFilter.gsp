@@ -179,27 +179,6 @@
                 </g:if>
             </div>
             <div class="field">
-                <g:if test="${institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
-                    <fieldset id="subscritionType">
-                        <label>${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
-                        <div class="inline fields la-filter-inline">
-                            <%
-                                List subTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)
-                                subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL
-                            %>
-                            <g:each in="${subTypes}" var="subType">
-                                <div class="inline field">
-                                    <div class="ui checkbox">
-                                        <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
-                                        <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox" value="${subType.id}"
-                                            <g:if test="${params.list('subTypes').contains(subType.id.toString())}"> checked="" </g:if>
-                                               tabindex="0">
-                                    </div>
-                                </div>
-                            </g:each>
-                        </div>
-                    </fieldset>
-                </g:if>
             </div>
         </div>
             <div class="field la-field-right-aligned">
