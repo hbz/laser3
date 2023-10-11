@@ -191,7 +191,7 @@
                         <laser:render template="/templates/system/info" />
                     </g:if>
 
-                    <div id="system-profiler" class="ui label hidden">
+                    <div id="system-profiler" class="ui label hidden la-debugInfos">
                         <i class="clock icon"></i> <span></span>
                     </div>
                 </sec:ifAnyGranted>
