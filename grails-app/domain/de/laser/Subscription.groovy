@@ -370,6 +370,10 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         false
     }
 
+    /**
+     * Checks whether this subscription is a consortial parent subscription
+     * @return true if the subscription is of the {@link CalculatedType#TYPE_CONSORTIAL}, false otherwise
+     */
     @Override
     boolean showUIShareButton() {
         _getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL]
@@ -741,9 +745,9 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
-     * Checks if this subscription is viewable by the given user
+     * Checks if this subscription is visible for the given user
      * @param user the {@link User} whose grants should be checked
-     * @return true if this subscription is viewable, false otherwise
+     * @return true if this subscription is visible, false otherwise
      */
     boolean isVisibleBy(User user) {
         hasPerm('view', user)

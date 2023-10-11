@@ -12,6 +12,9 @@ import de.laser.reporting.export.base.BaseDetailsExport
 
 import java.text.SimpleDateFormat
 
+/**
+ * Contains configurations for the cost report
+ */
 class CostItemExport extends BaseDetailsExport {
 
     static String KEY = 'cost'
@@ -86,20 +89,40 @@ class CostItemExport extends BaseDetailsExport {
             ]
     ]
 
+    /**
+     * Constructor call for a new cost report
+     * @param token the token under which the queried data is going to be stored
+     * @param fields the {@link Map} with the fields selected for the export
+     */
     CostItemExport(String token, Map<String, Object> fields) {
         init(token, fields)
     }
 
+    /**
+     * Gets the fields selected for the current report export
+     * @return the class field map containing the selected report fields
+     */
     @Override
     Map<String, Object> getSelectedFields() {
         selectedExportFields
     }
 
+    /**
+     * Builds the label for the selected field key
+     * @param fieldName the field key to which the export label should be built
+     * @return the label which will appear in the report export
+     */
     @Override
     String getFieldLabel(String fieldName) {
         LocalExportHelper.getFieldLabel( this, fieldName )
     }
 
+    /**
+     * Collects the details of the given cost item and output the field values human-readably
+     * @param obj the cost item to export
+     * @param fields the selected fields which should appear in the report
+     * @return a {@link List} with the cost item's human-readable field values
+     */
     @Override
     List<Object> getDetailedObject(Object obj, Map<String, Object> fields) {
 

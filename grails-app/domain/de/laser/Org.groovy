@@ -837,11 +837,22 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         return Identifier.findByOrgAndNs(this, IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID))
     }
 
+    /**
+     * Checks if the organisation is being marked for the given user with the given marker type
+     * @param user the {@link User} whose watchlist should be checked
+     * @param type the {@link Marker.TYPE} of the marker to check
+     * @return true if the organisation is marked, false otherwise
+     */
     @Override
     boolean isMarked(User user, Marker.TYPE type) {
         Marker.findByOrgAndUserAndType(this, user, type) ? true : false
     }
 
+    /**
+     * Sets the marker for the organisation for given user of the given type
+     * @param user the {@link User} for which the organisation should be marked
+     * @param type the {@link Marker.TYPE} of marker to record
+     */
     @Override
     void setMarker(User user, Marker.TYPE type) {
         if (!isMarked(user, type)) {
@@ -850,6 +861,11 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         }
     }
 
+    /**
+     * Removes the given marker with the given type for the organisation from the user's watchlist
+     * @param user the {@link User} from whose watchlist the organisation marker should be removed
+     * @param type the {@link Marker.TYPE} of marker to remove
+     */
     @Override
     void removeMarker(User user, Marker.TYPE type) {
         withTransaction {

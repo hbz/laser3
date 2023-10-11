@@ -6,14 +6,25 @@ import de.laser.reporting.export.base.BaseQueryExport
 import de.laser.utils.LocaleUtils
 import org.springframework.context.MessageSource
 
+/**
+ * Exports the reports generated for the institution-wide level
+ */
 class GlobalQueryExport extends BaseQueryExport {
 
     String token
 
+    /**
+     * Constructor call to instantiate the cache token for the given query
+     * @param token the token under which the report is going to be stored in the cache
+     */
     GlobalQueryExport(String token) {
         this.token = token
     }
 
+    /**
+     * Retrieves the queried report data from the cache
+     * @return a {@link Map} containing the report headers with the respective data
+     */
     @Override
     Map<String, Object> getQueriedData() {
         Map<String, Object> queryCache = GlobalExportHelper.getQueryCache( token )
