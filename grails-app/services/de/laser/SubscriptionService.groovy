@@ -214,12 +214,15 @@ class SubscriptionService {
         subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
         //candidate for ugliest bugfix ever ...
 
+        // TODO - bug has to be hotfixed @ Moe
+        /*
         if(params.sort){
             String newSort = "oo.sub.${params.sort}"
             subscriptions = Subscription.executeQuery("select oo.sub from OrgRole oo join oo.org providerAgency where oo.sub.id in (:subscriptions) and oo.roleType in (:providerAgency) order by " + newSort +" "+ params.order + ", providerAgency.name, oo.sub.name " , [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
         }else {
             subscriptions = Subscription.executeQuery("select oo.sub from OrgRole oo join oo.org providerAgency where oo.sub.id in (:subscriptions) and oo.roleType in (:providerAgency) order by providerAgency.name, oo.sub.name ", [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
         }
+        */
         result.allSubscriptions = subscriptions
         if(!params.exportXLS)
             result.num_sub_rows = subscriptions.size()

@@ -9,7 +9,7 @@
 
 <laser:htmlStart text="${pageTitle}" serviceInjection="true" />
 
-[DEBUG: Support-Template]
+[DEBUG: Support-Template] - workFlowPart: ${workFlowPart}
 
     <g:if test="${fromSurvey}">
         <ui:breadcrumbs>

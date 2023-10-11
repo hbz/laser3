@@ -19,14 +19,14 @@
 <ui:h1HeaderWithIcon message="menu.my.currentSubscriptionsTransfer" total="${num_sub_rows}" floated="true"/>
 
 <g:if test="${params.referenceYears}">
-    <div class="ui large label la-annual-rings"><g:link action="currentSubscriptionsTransfer"
-                                                        params="${[referenceYears: (Integer.parseInt(params.referenceYears).value - 1).toString()]}"
-                                                        class="item"><i class="arrow left icon"
-                                                                        aria-hidden="true"></i></g:link><span
-            class="la-annual-rings-text">${params.referenceYears}</span><g:link action="currentSubscriptionsTransfer"
-                                                                                params="${[referenceYears: (Integer.parseInt(params.referenceYears).value + 1).toString()]}"
-                                                                                class="item"><i class="arrow right icon"
-                                                                                                aria-hidden="true"></i></g:link>
+    <div class="ui large label la-annual-rings">
+        <g:link action="currentSubscriptionsTransfer" params="${[referenceYears: (Integer.parseInt(params.referenceYears).value - 1).toString()]}" class="item">
+            <i class="arrow left icon" aria-hidden="true"></i>
+        </g:link>
+        <span class="la-annual-rings-text">${params.referenceYears}</span>
+        <g:link action="currentSubscriptionsTransfer" params="${[referenceYears: (Integer.parseInt(params.referenceYears).value + 1).toString()]}" class="item">
+            <i class="arrow right icon" aria-hidden="true"></i>
+        </g:link>
     </div>
 </g:if>
 
@@ -47,9 +47,7 @@
                 </label>
 
                 <div class="ui input">
-                    <input type="text" id="search-title" name="q"
-                           placeholder="${message(code: 'default.search.ph')}"
-                           value="${params.q}"/>
+                    <input type="text" id="search-title" name="q" placeholder="${message(code: 'default.search.ph')}" value="${params.q}"/>
                 </div>
             </div>
             <% /* 1-2 */ %>
@@ -62,15 +60,12 @@
                 </label>
 
                 <div class="ui input">
-                    <input type="text" id="identifier" name="identifier"
-                           placeholder="${message(code: 'default.search.identifier.ph')}"
-                           value="${params.identifier}"/>
+                    <input type="text" id="identifier" name="identifier" placeholder="${message(code: 'default.search.identifier.ph')}" value="${params.identifier}"/>
                 </div>
             </div>
             <% /* 1-3 */ %>
             <div class="field">
-                <ui:datepicker label="default.valid_on.label" id="validOn" name="validOn"
-                               placeholder="filter.placeholder" value="${validOn}"/>
+                <ui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}"/>
             </div>
             <% /* 1-4 */ %>
             <div class="field">
@@ -87,8 +82,7 @@
         <div class="four fields">
 
             <% /* 2-1 and 2-2 */ %>
-            <laser:render template="/templates/properties/genericFilter"
-                          model="[propList: propList, label: message(code: 'subscription.property.search')]"/>
+            <laser:render template="/templates/properties/genericFilter" model="[propList: propList, label: message(code: 'subscription.property.search')]"/>
             <% /* 2-3 */ %>
             <div class="field">
                 <label for="form"><g:message code="subscription.form.label"/></label>
@@ -109,8 +103,7 @@
                 <select id="resource" name="resource" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
-                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"
-                            var="resource">
+                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}" var="resource">
                         <option <%=(params.list('resource').contains(resource.id.toString())) ? 'selected="selected"' : ''%>
                                 value="${resource.id}">
                             ${resource.getI10n('value')}
@@ -172,12 +165,10 @@
         <div class="four fields">
             <div class="field">
                 <label>${message(code: 'subscription.holdingSelection.label')}</label>
-                <select id="holdingSelection" name="holdingSelection" multiple=""
-                        class="ui search selection fluid dropdown">
+                <select id="holdingSelection" name="holdingSelection" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
-                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}"
-                            var="holdingSelection">
+                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" var="holdingSelection">
                         <option <%=(params.list('holdingSelection').contains(holdingSelection.id.toString())) ? 'selected="selected"' : ''%>
                                 value="${holdingSelection.id}">
                             ${holdingSelection.getI10n('value')}
@@ -224,8 +215,7 @@
                                 <div class="inline field">
                                     <div class="ui checkbox">
                                         <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
-                                        <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox"
-                                               value="${subType.id}"
+                                        <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox" value="${subType.id}"
                                             <g:if test="${params.list('subTypes').contains(subType.id.toString())}">checked=""</g:if>
                                                tabindex="0">
                                     </div>
@@ -291,7 +281,6 @@
                     <th colspan="3" class="la-smaller-table-head center aligned">
                         ${message(code: 'subscription.offer.table.th')}
                     </th>
-
 
                     <th scope="col" rowspan="3" class="center aligned">
                         ${message(code: 'subscription.priceIncreaseInfo.label')}
@@ -387,22 +376,22 @@
                         <td>
                         <%-- as of ERMS-584, these queries have to be deployed onto server side to make them sortable --%>
                             <g:each in="${s.providers}" var="org">
-                                <g:link controller="organisation" action="show"
-                                        id="${org.id}">${fieldValue(bean: org, field: "name")}
+                                <g:link controller="organisation" action="show" id="${org.id}">
+                                    ${fieldValue(bean: org, field: "name")}
                                     <g:if test="${org.sortname}">
-                                        <br/>
-                                        (${fieldValue(bean: org, field: "sortname")})
+                                        <br/> (${fieldValue(bean: org, field: "sortname")})
                                     </g:if>
-                                </g:link><br/>
+                                </g:link>
+                                <br/>
                             </g:each>
                             <g:each in="${s.agencies}" var="org">
                                 <g:link controller="organisation" action="show" id="${org.id}">
                                     ${fieldValue(bean: org, field: "name")}
                                     <g:if test="${org.sortname}">
-                                        <br/>
-                                        (${fieldValue(bean: org, field: "sortname")})
+                                        <br/> (${fieldValue(bean: org, field: "sortname")})
                                     </g:if> (${message(code: 'default.agency.label')})
-                                </g:link><br/>
+                                </g:link>
+                                <br/>
                             </g:each>
                         </td>
                         <td>
@@ -417,9 +406,9 @@
                         </td>
                         <td>
                             <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/><br/>
-                            <span class="la-secondHeaderRow"
-                                  data-label="${message(code: 'default.endDate.label')}:"><g:formatDate
-                                    formatName="default.date.format.notime" date="${s.endDate}"/></span>
+                            <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label')}:">
+                                <g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/>
+                            </span>
                         </td>
                         <td>
                             <g:formatDate formatName="default.date.format.notime" date="${s.manualCancellationDate}"/>
@@ -431,8 +420,8 @@
                         </td>
                         <td>
                             <button type="button" class="ui icon small button blue la-modern-button" data-ui="modal"
-                                    data-href="${"#modalCreateDocumentOffer" + s.id}"><i aria-hidden="true"
-                                                                                         class="plus small icon"></i>
+                                    data-href="${"#modalCreateDocumentOffer" + s.id}">
+                                <i aria-hidden="true" class="plus small icon"></i>
                             </button>
                             <laser:render template="/templates/documents/modal"
                                           model="${[newModalId: "modalCreateDocumentOffer" + s.id, ownobj: s, owntp: 'subscription']}"/>
@@ -446,10 +435,8 @@
                                     <div class="ui small feed content">
                                         <div class="ui grid summary">
                                             <div class="eleven wide column la-column-right-lessPadding">
-                                                <ui:documentIcon doc="${docctx.owner}" showText="false"
-                                                                 showTooltip="true"/>
-                                                <g:set var="supportedMimeType"
-                                                       value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
+                                                <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
+                                                <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                                 <g:if test="${supportedMimeType}">
                                                     <a href="#documentPreview"
                                                        data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
@@ -524,8 +511,7 @@
                             <ui:xEditable owner="${s}" field="priceIncreaseInfo" type="textarea"/>
                         </td>
 
-                        <g:set var="surveyConfig"
-                               value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(s, true)}"/>
+                        <g:set var="surveyConfig" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(s, true)}"/>
                         <g:set var="surveyClass" value=""/>
                         <g:if test="${surveyConfig}">
                             <g:set var="surveyClass"
@@ -534,28 +520,25 @@
                         <td class="${surveyClass}">
                             <g:if test="${surveyConfig}">
                                 <g:link controller="survey" action="show" id="${surveyConfig.surveyInfo.id}">
-                                    <g:formatDate formatName="default.date.format.notime"
-                                                  date="${surveyConfig.surveyInfo.startDate}"/><br/>
-                                    <span class="la-secondHeaderRow"
-                                          data-label="${message(code: 'default.endDate.label')}:"><g:formatDate
+                                    <g:formatDate formatName="default.date.format.notime" date="${surveyConfig.surveyInfo.startDate}"/><br/>
+                                    <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label')}:">
+                                        <g:formatDate
                                             formatName="default.date.format.notime"
-                                            date="${surveyConfig.surveyInfo.endDate}"/></span>
+                                            date="${surveyConfig.surveyInfo.endDate}"/>
+                                    </span>
                                 </g:link>
                             </g:if>
                         </td>
 
                         <g:if test="${surveyConfig}">
-                            <g:set var="finish"
-                                   value="${SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig).size()}"/>
-                            <g:set var="total"
-                                   value="${SurveyOrg.findAllBySurveyConfig(surveyConfig).size()}"/>
+                            <g:set var="finish" value="${SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig).size()}"/>
+                            <g:set var="total" value="${SurveyOrg.findAllBySurveyConfig(surveyConfig).size()}"/>
 
                             <g:set var="finishProcess"
                                    value="${(finish != 0 && total != 0) ? (finish / total) * 100 : 0}"/>
                             <td class="${finish == total ? 'positive' : ''}">
                                 <g:if test="${finishProcess >= 0}">
-                                    <g:link controller="survey" action="surveyEvaluation"
-                                            id="${surveyConfig.surveyInfo.id}">
+                                    <g:link controller="survey" action="surveyEvaluation" id="${surveyConfig.surveyInfo.id}">
                                         <g:formatNumber number="${finishProcess}"
                                                         type="number"
                                                         maxFractionDigits="2"
@@ -574,8 +557,7 @@
 
                         <td class="${countOrgsWithTermination > 0 && countOrgsWithTermination <= 10 ? 'warning' : (countOrgsWithTermination > 10 ? 'negative' : '')}">
                             <g:if test="${surveyConfig && countOrgsWithTermination >= 0}">
-                                <g:link controller="survey" action="renewalEvaluation"
-                                        id="${surveyConfig.surveyInfo.id}">
+                                <g:link controller="survey" action="renewalEvaluation" id="${surveyConfig.surveyInfo.id}">
                                     ${countOrgsWithTermination}
                                 </g:link>
                             </g:if>
@@ -592,8 +574,7 @@
                                     <g:if test="${s.discountScale}">
                                         ${s.discountScale.name} : ${s.discountScale.discount}
                                         <g:if test="${s.discountScale.note}">
-                                            <span data-position="top left" class="la-popup-tooltip la-delay"
-                                                  data-content="${s.discountScale.note}">
+                                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${s.discountScale.note}">
                                                 <i class="info circle icon blue"></i>
                                             </span>
                                         </g:if>
@@ -630,8 +611,8 @@
                         </td>
                         <td>
                             <button type="button" class="ui icon tiny button blue la-modern-button" data-ui="modal"
-                                    data-href="${"#modalCreateDocumentRenewal" + s.id}"><i aria-hidden="true"
-                                                                                           class="plus small icon"></i>
+                                    data-href="${"#modalCreateDocumentRenewal" + s.id}">
+                                <i aria-hidden="true" class="plus small icon"></i>
                             </button>
                             <laser:render template="/templates/documents/modal"
                                           model="${[newModalId: "modalCreateDocumentRenewal" + s.id, ownobj: s, owntp: 'subscription']}"/>
@@ -645,10 +626,8 @@
                                     <div class="ui small feed content la-js-dont-hide-this-card">
                                         <div class="ui grid summary">
                                             <div class="eleven wide column la-column-right-lessPadding">
-                                                <ui:documentIcon doc="${docctx.owner}" showText="false"
-                                                                 showTooltip="true"/>
-                                                <g:set var="supportedMimeType"
-                                                       value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
+                                                <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
+                                                <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                                 <g:if test="${supportedMimeType}">
                                                     <a href="#documentPreview"
                                                        data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
@@ -724,8 +703,7 @@
                                  args="${[message(code: "subscription.plural")]}"/></strong>
      </g:if>
      <g:else>--}%
-        <br/><strong><g:message code="result.empty.object"
-                                args="${[message(code: "subscription.plural")]}"/></strong>
+        <br/><strong><g:message code="result.empty.object" args="${[message(code: "subscription.plural")]}"/></strong>
     %{--</g:else>--}%
     </g:else>
 

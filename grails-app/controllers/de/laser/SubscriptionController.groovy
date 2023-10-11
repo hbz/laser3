@@ -1949,7 +1949,7 @@ class SubscriptionController {
                             params.workFlowPart = CopyElementsService.WORKFLOW_SUBSCRIBER
                             ctrlResult.result << copyElementsService.loadDataFor_Subscriber(params)
                         } else {
-                            params.workFlowPart = CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
+                            params.workFlowPart = contextService.getOrg().isCustomerType_Support() ? CopyElementsService.WORKFLOW_PROPERTIES : CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
                             ctrlResult.result << copyElementsService.loadDataFor_PackagesEntitlements(params)
                         }
                     } else {
@@ -1959,7 +1959,7 @@ class SubscriptionController {
                 case CopyElementsService.WORKFLOW_SUBSCRIBER:
                     ctrlResult.result << copyElementsService.copyObjectElements_Subscriber(params)
                     if (params.isRenewSub) {
-                        params.workFlowPart = CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
+                        params.workFlowPart = contextService.getOrg().isCustomerType_Support() ? CopyElementsService.WORKFLOW_PROPERTIES : CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
                         ctrlResult.result << copyElementsService.loadDataFor_PackagesEntitlements(params)
                     } else {
                         ctrlResult.result << copyElementsService.loadDataFor_Subscriber(params)
