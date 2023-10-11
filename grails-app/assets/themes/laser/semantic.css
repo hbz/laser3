@@ -36902,6 +36902,10 @@ i.icon.la-bookmark.slash {
   font-family: 'icomoon';
 }
 
+i.icon.la-sparkles {
+  font-family: 'icomoon';
+}
+
 i.icon.hand.pointer.outline.slash:before {
   content: "\e901";
 }
@@ -37059,6 +37063,10 @@ i.icon.la-tab:before {
 
 i.icon.la-bookmark.slash:before {
   content: "\e921";
+}
+
+i.icon.la-sparkles:before {
+  content: "\e920";
 }
 
 /*******************************
