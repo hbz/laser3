@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4636    11.10.2023  dev     3.3         David   Feature     SystemEvents per Mail - Refactoring
+
 5315    10.10.2023  dev     3.3         Andreas Bug         Toggle für Sichtbarschaltung aller Kosten eingebaut
 
 5314    10.10.2023  dev     3.3         Andreas Feature     Umbenennung der KBART-Export-Spalten

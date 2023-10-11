@@ -87,6 +87,7 @@ class SystemEvent {
             'SYSTEM_INFO_JOB_STOP'          : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'SYSTEM_INSIGHT_MAILS_START'    : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'SYSTEM_INSIGHT_MAILS_COMPLETE' : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
+            'SYSTEM_INSIGHT_MAILS_ERROR'    : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
             'YODA_ES_RESET_START'           : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
             'YODA_ES_RESET_DELETED'         : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
             'YODA_ES_RESET_CREATED'         : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO]
