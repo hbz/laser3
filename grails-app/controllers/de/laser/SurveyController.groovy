@@ -2846,9 +2846,9 @@ class SurveyController {
      * Excel worksheet
      * @return the evaluation view for the given renewal survey
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> renewalEvaluation() {
         Map<String,Object> ctrlResult = surveyControllerService.renewalEvaluation(params)

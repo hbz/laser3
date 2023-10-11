@@ -384,7 +384,7 @@ class PackageController {
 
         if(params.fileformat) {
             if (params.filename) {
-                filename =params.filename
+                filename = params.filename
             }
 
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
@@ -409,7 +409,7 @@ class PackageController {
                 fos.flush()
                 fos.close()
             }
-            Map fileResult = [token: filename, fileformat: 'kbart']
+            Map fileResult = [token: filename, filenameDisplay: filename, fileformat: 'kbart']
             render template: '/templates/bulkItemDownload', model: fileResult
             return
         }
