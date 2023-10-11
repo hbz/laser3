@@ -11,6 +11,7 @@ import de.laser.utils.DateUtils
 import grails.gorm.transactions.Transactional
 import grails.plugins.mail.MailService
 import groovy.json.JsonOutput
+import org.springframework.mail.MailMessage
 
 import java.text.SimpleDateFormat
 
@@ -129,34 +130,41 @@ class SystemService {
                 }
 
                 String mailContent = JsonOutput.prettyPrint(JsonOutput.toJson(output))
+                // println mailContent
 
-                Map<String, String> mailsVerbose = [:]
+                Map<String, String> mailsFailed = [:]
                 String mailsStatus = 'ok'
 
                 recipients.split(',').each { mailTo ->
                     log.info 'to .. ' + mailTo
 
                     try {
-                        mailService.sendMail {
+                        MailMessage mail = mailService.sendMail {
                             to      mailTo
                             from    ConfigMapper.getNotificationsEmailFrom()
                             replyTo ConfigMapper.getNotificationsEmailReplyTo()
                             subject ConfigMapper.getLaserSystemId() + ' - (Insight)'
                             text    mailContent
                         }
-                        mailsVerbose.put(mailTo, 'ok')
+                        if (!mail) {
+                            mailsFailed.put(mailTo, 'unkown error')
+                            mailsStatus = 'error'
+                        }
                     }
                     catch (Exception e) {
                         log.error "mailService.sendMail exception: ${e.message}"
-                        mailsVerbose.put(mailTo, e.message)
+                        mailsFailed.put(mailTo, e.message.split(';').first())
                         mailsStatus = 'error'
                     }
                 }
-
                 seMap.put('status', mailsStatus)
-                seMap.put('verbose', mailsVerbose)
+
+                if (mailsFailed) {
+                    seMap.put('failed', mailsFailed)
+                }
             }
-            se.changeTo('SYSTEM_INSIGHT_MAILS_COMPLETE', seMap)
+
+            se.changeTo(seMap.status == 'ok' ? 'SYSTEM_INSIGHT_MAILS_COMPLETE' : 'SYSTEM_INSIGHT_MAILS_ERROR', seMap)
         }
     }
 }

@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4636    11.10.2023  dev     3.3         David   Feature     SystemEvents per Mail - Refactoring
+
 4978    10.10.2023  dev     3.3         David   Feature     Berechtigungsprüfung der Navigation überarbeiten
 
 5311    09.10.2023  dev     3.3         Andreas Bug         fehlerhaften Redirect bei Löschung von Dokumenten behoben
