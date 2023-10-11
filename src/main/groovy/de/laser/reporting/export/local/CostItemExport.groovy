@@ -118,7 +118,7 @@ class CostItemExport extends BaseDetailsExport {
     }
 
     /**
-     * Collects the details of the given cost item and output the field values human-readably
+     * Collects the details of the given cost item and outputs the field values human-readably
      * @param obj the cost item to export
      * @param fields the selected fields which should appear in the report
      * @return a {@link List} with the cost item's human-readable field values
