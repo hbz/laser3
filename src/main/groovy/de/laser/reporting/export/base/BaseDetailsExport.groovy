@@ -85,10 +85,27 @@ abstract class BaseDetailsExport {
 
     Map<String, Object> selectedExportFields = [:]
 
+    /**
+     * Gets the fields requested for the implementing report
+     * @return a {@link Map} containing the selected field keys and paths to fetch
+     */
     abstract Map<String, Object> getSelectedFields()
 
+    /**
+     * Builds the field label appearing in the report export.
+     * The methods implementing are taking care of the report context which determines how the
+     * label has to appear in the given circumstances
+     * @param fieldName the field key to which the label should be generated
+     * @return the field label appearing in the export
+     */
     abstract String getFieldLabel(String fieldName)
 
+    /**
+     * Gets the details of the implementing object fields and assembles them in a list of human-readable entries
+     * @param obj the object whose properties should be read off
+     * @param fields the fields to be retrieved from the object
+     * @return a {@link List} containing the details to be exported from the object
+     */
     abstract List<Object> getDetailedObject(Object obj, Map<String, Object> fields)
 
     /**
