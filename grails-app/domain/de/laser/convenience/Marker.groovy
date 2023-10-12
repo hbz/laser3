@@ -10,6 +10,10 @@ import de.laser.auth.User
  */
 class Marker {
 
+    /**
+     * The enum containing types of markers. Currently, {@link #WEKB_CHANGES} is supported, along with {@link #UNKOWN}
+     * as dummy value
+     */
     static enum TYPE {
         WEKB_CHANGES ("WEKB_CHANGES"), UNKOWN ("UNKOWN")
 

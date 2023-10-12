@@ -219,7 +219,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
     /**
      * Checks whether this license is a consortial parent license
-     * @return true if the license is a consortial parent license, false otherwise
+     * @return true if the license is of type {@link CalculatedType#TYPE_CONSORTIAL}, false otherwise
      */
     boolean showUIShareButton() {
         _getCalculatedType() == CalculatedType.TYPE_CONSORTIAL
