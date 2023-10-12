@@ -94,8 +94,8 @@
                     <option value="">${message(code: 'default.select.choose.label')}</option>
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND).sort{it.getI10n('value')}}" var="subKind">
                         <option <%=(params.list('subKinds').contains(subKind.id.toString())) ? 'selected="selected"' : ''%>
-                        value="${subKind.id}" ">
-                        ${subKind.getI10n('value')}
+                            value="${subKind.id}">
+                            ${subKind.getI10n('value')}
                         </option>
                     </g:each>
                 </select>

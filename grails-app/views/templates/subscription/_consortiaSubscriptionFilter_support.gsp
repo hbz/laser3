@@ -86,15 +86,15 @@
                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
         </div>
-        <div class="four fields">
+        <div class="three fields">
             <div class="field">
                 <label for="subKinds">${message(code: 'myinst.currentSubscriptions.subscription_kind')}</label>
                 <select id="subKinds" name="subKinds" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND).sort{it.getI10n('value')}}" var="subKind">
                         <option <%=(params.list('subKinds').contains(subKind.id.toString())) ? 'selected="selected"' : ''%>
-                        value="${subKind.id}" ">
-                        ${subKind.getI10n('value')}
+                            value="${subKind.id}">
+                            ${subKind.getI10n('value')}
                         </option>
                     </g:each>
                 </select>
@@ -119,40 +119,8 @@
                     </div>
                 </div>
             </div>
-%{--            <div class="field">--}%
-%{--                <g:if test="${'withCostItems' in tableConfig}">--}%
-%{--                    <label for="filterPvd">${message(code: 'menu.my.providers')}</label>--}%
-%{--                    <select id="filterPvd" name="filterPvd" multiple="" class="ui search selection fluid dropdown">--}%
-%{--                        <option value="">${message(code: 'default.select.choose.label')}</option>--}%
 
-%{--                        <g:each in="${providers.sort { it.name }}" var="provider">--}%
-%{--                            <option <%=(params.list('filterPvd').contains(provider.id.toString())) ? 'selected="selected"' : ''%>--}%
-%{--                                    value="${provider.id}">--}%
-%{--                                ${provider.name}--}%
-%{--                            </option>--}%
-%{--                        </g:each>--}%
-%{--                    </select>--}%
-
-%{--                </g:if>--}%
-%{--            </div>--}%
-            <div class="field">
-                <label></label>
-                <fieldset id="subscritionType">
-                    <label>${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
-                    <div class="inline fields la-filter-inline">
-                        <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE) - RDStore.SUBSCRIPTION_TYPE_LOCAL}" var="subType">
-                            <div class="inline field">
-                                <div class="ui checkbox">
-                                    <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
-                                    <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox" value="${subType.id}"
-                                        <g:if test="${params.list('subTypes').contains(subType.id.toString())}"> checked="" </g:if>
-                                           tabindex="0">
-                                </div>
-                            </div>
-                        </g:each>
-                    </div>
-                </fieldset>
-            </div>
+            <div class="field"></div>
         </div>
 
         <div class="field la-field-right-aligned">
