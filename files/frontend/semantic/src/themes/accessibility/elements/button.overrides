@@ -166,3 +166,10 @@ a i.circular.la-gokb:hover {
     border-top-right-radius: @borderRadius;
     border-bottom-right-radius: @borderRadius;
 }
+/*------------------------------------
+         Buttons for debug infos
+  ------------------------------------*/
+.la-debugInfos {
+    position: fixed;
+    z-index: @debugInfoZIndex
+}

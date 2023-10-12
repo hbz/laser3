@@ -224,3 +224,10 @@ a i.circular.la-gokb:hover {
 .la-margin-top-05em {
     margin-top: .5em!important;
 }
+/*------------------------------------
+         Buttons for debug infos
+  ------------------------------------*/
+.la-debugInfos {
+    position: fixed;
+    z-index: @debugInfoZIndex
+}

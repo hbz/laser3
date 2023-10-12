@@ -6589,6 +6589,15 @@ a i.circular.la-gokb:hover {
 .la-margin-top-05em {
   margin-top: 0.5em !important;
 }
+
+/*------------------------------------
+         Buttons for debug infos
+  ------------------------------------*/
+
+.la-debugInfos {
+  position: fixed;
+  z-index: 103;
+}
 /*!
  * # Fomantic-UI ^2.9.2 - Container
  * https://github.com/fomantic/Fomantic-UI/
