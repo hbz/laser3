@@ -10,8 +10,18 @@ import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.report.GenericHelper
 
+/**
+ * Class containing helper methods valid for local report exports, i.e. such which are departing from one certain object
+ * and not regarding the institution as a whole
+ */
 class LocalExportHelper extends BaseExportHelper {
 
+    /**
+     * Creates a new export with the selected fields for the given object
+     * @param token the token indicating the object type and its configuration to use; this token is also used for storage
+     * @param selectedFields the fields selected for the report
+     * @return the export of the given report
+     */
     static BaseDetailsExport createExport(String token, Map<String, Object> selectedFields) {
 
         String tmpl = getCachedExportStrategy( token )
@@ -32,6 +42,11 @@ class LocalExportHelper extends BaseExportHelper {
 
     // ----- Cache -----
 
+    /**
+     * Gets the cached filter stored under the given token
+     * @param token the token to load
+     * @return the cached filter
+     */
     static Map<String, Object> getFilterCache(String token) {
         ReportingCache rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION, token )
         Map<String, Object> cacheMap = rCache.get()
@@ -39,6 +54,11 @@ class LocalExportHelper extends BaseExportHelper {
         cacheMap.filterCache as Map<String, Object>
     }
 
+    /**
+     * Gets the cached query storage under the given token
+     * @param token the token to load
+     * @return the cached query
+     */
     static Map<String, Object> getQueryCache(String token) {
         ReportingCache rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION, token )
         Map<String, Object> cacheMap = rCache.get()
@@ -46,6 +66,11 @@ class LocalExportHelper extends BaseExportHelper {
         cacheMap.queryCache as Map<String, Object>
     }
 
+    /**
+     * Gets the details cache stored under the given token
+     * @param token the token to load
+     * @return the cached object details
+     */
     static Map<String, Object> getDetailsCache(String token) {
         ReportingCache rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION, token )
         Map<String, Object> cacheMap = rCache.get()
@@ -53,6 +78,11 @@ class LocalExportHelper extends BaseExportHelper {
         cacheMap.detailsCache as Map<String, Object>
     }
 
+    /**
+     * Gets the export strategy stored under the given token
+     * @param token the token to load
+     * @return the export strategy from the details
+     */
     static String getCachedExportStrategy(String token) {
 
         Map<String, Object> detailsCache = getDetailsCache(token)
@@ -60,6 +90,11 @@ class LocalExportHelper extends BaseExportHelper {
         parts[parts.size()-1]
     }
 
+    /**
+     * Gets the underlying config strategy of the export for the given token
+     * @param token the token to load
+     * @return the config strategy from the details
+     */
     static String getCachedConfigStrategy(String token) {
 
         Map<String, Object> detailsCache = getDetailsCache(token)
@@ -67,6 +102,11 @@ class LocalExportHelper extends BaseExportHelper {
         queryParts.size() == 3 ? queryParts[2] : queryParts[0]
     }
 
+    /**
+     * Gets the underlying field strategy of the export for the given token
+     * @param token the token to load
+     * @return the field strategy from the details
+     */
     static String getCachedFieldsStrategy(String token) {
 
         Map<String, Object> detailsCache = getDetailsCache(token)
@@ -81,12 +121,22 @@ class LocalExportHelper extends BaseExportHelper {
 //        filterCache.labels as Map<String, Object>
 //    }
 
+    /**
+     * Gets the cached field result stored under the given token
+     * @param token the token to load
+     * @return the cached filter result
+     */
     static String getCachedFilterResult(String token) {
 
         Map<String, Object> filterCache = getFilterCache(token)
         filterCache.result
     }
 
+    /**
+     * Gets the filter labels cached under the given token
+     * @param token the token to load
+     * @return the cached query labels
+     */
     static List<String> getCachedQueryLabels(String token) {
 
         Map<String, Object> queryCache = getQueryCache(token)
@@ -95,6 +145,12 @@ class LocalExportHelper extends BaseExportHelper {
 
     // -----
 
+    /**
+     * Builds the export label for the given name in context of the given report
+     * @param export the report to be exported resp. configurations to consider
+     * @param fieldName the field key to which the label should be build
+     * @return the field label appearing in the report export
+     */
     static String getFieldLabel(BaseDetailsExport export, String fieldName) {
 
         if ( BaseDetailsExport.isFieldMultiple(fieldName) ) {
