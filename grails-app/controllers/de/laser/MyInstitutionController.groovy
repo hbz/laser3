@@ -1754,7 +1754,7 @@ class MyInstitutionController  {
                             configMap.subscriptions = SubscriptionPackage.executeQuery('select s.id from Subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes) and s.status = :current'+instanceFilter, [current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS]]).toSet()
                         */
                         FileOutputStream out = new FileOutputStream(f)
-                        Map<String,List> tableData = exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name)
+                        Map<String,Collection> tableData = exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name)
                         out.withWriter { writer ->
                             writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
                         }

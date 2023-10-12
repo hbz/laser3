@@ -2655,16 +2655,17 @@ class ExportService {
 	}
 
 	/**
-	 * Generates a title stream export list according to the KBART II-standard but enriched with proprietary fields such as ZDB-ID
+	 * Generates a title export list according to the KBART II-standard but enriched with proprietary fields such as ZDB-ID
 	 * The standard is defined here: <a href="https://www.niso.org/standards-committees/kbart">KBART definition</a>
-	 * @param entitlementData a {@link Collection} containing the actual data
+	 * @param configMap a {@link Map} containing filter settings
+	 * @param entitlementInstance switch between {@link TitleInstancePackagePlatform} and {@link IssueEntitlement}
 	 * @return a {@link Map} containing lists for the title row and the column data
 	 */
-	Map<String,List> generateTitleExportKBART(Map configMap, String entitlementInstance) {
+	Map<String,Collection> generateTitleExportKBART(Map configMap, String entitlementInstance) {
 		log.debug("Begin generateTitleExportKBART")
 		Sql sql = GlobalService.obtainSqlConnection()
 		Map<String, String> titleHeaders = getBaseTitleHeaders(entitlementInstance)
-		Map<String, List> export = [titleRow:titleHeaders.keySet()]
+		Map<String, Collection> export = [titleRow:titleHeaders.keySet()]
 		Map<String, Object> queryClauseParts = filterService.prepareTitleSQLQuery(configMap, entitlementInstance, sql)
 		String queryBase, countQuery
 		if(entitlementInstance == IssueEntitlement.class.name) {
