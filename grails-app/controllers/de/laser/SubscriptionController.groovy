@@ -943,14 +943,14 @@ class SubscriptionController {
                     configMap.putAll(params)
                     configMap.sub = ctrlResult.result.subscription
                     configMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id //GORM sometimes does not initialise the sorted set
-                    Map<String, List> tableData = exportService.generateTitleExportKBART(configMap, IssueEntitlement.class.name)
+                    Map<String, Collection> tableData = exportService.generateTitleExportKBART(configMap, IssueEntitlement.class.name)
                     fos.withWriter { writer ->
                         writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
                     }
                     fos.flush()
                     fos.close()
                 }
-                Map fileResult = [token: filename, fileformat: 'kbart']
+                Map fileResult = [token: filename, filenameDisplay: filename, fileformat: 'kbart']
                 render template: '/templates/bulkItemDownload', model: fileResult
                 return
             }
@@ -1055,14 +1055,14 @@ class SubscriptionController {
                 File f = new File(dir+'/'+filename)
                 if(!f.exists()) {
                     FileOutputStream out = new FileOutputStream(f)
-                    Map<String,List> tableData = exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name)
+                    Map<String, Collection> tableData = exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name)
                     out.withWriter { writer ->
                         writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
                     }
                     out.flush()
                     out.close()
                 }
-                Map fileResult = [token: filename, fileformat: 'kbart']
+                Map fileResult = [token: filename, filenameDisplay: filename, fileformat: 'kbart']
                 render template: '/templates/bulkItemDownload', model: fileResult
                 return
             }
@@ -1577,14 +1577,14 @@ class SubscriptionController {
                 File f = new File(dir+'/'+filename)
                 if(!f.exists()) {
                     FileOutputStream out = new FileOutputStream(f)
-                    Map<String, List> tableData = exportService.generateTitleExportKBART(queryMap, IssueEntitlement.class.name)
+                    Map<String, Collection> tableData = exportService.generateTitleExportKBART(queryMap, IssueEntitlement.class.name)
                     out.withWriter { Writer writer ->
                         writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
                     }
                     out.flush()
                     out.close()
                 }
-                Map fileResult = [token: filename, fileformat: 'kbart']
+                Map fileResult = [token: filename, filenameDisplay: filename, fileformat: 'kbart']
                 render template: '/templates/bulkItemDownload', model: fileResult
                 return
             }

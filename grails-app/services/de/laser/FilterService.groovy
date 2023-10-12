@@ -1898,26 +1898,26 @@ class FilterService {
                 if(configMap.sub) {
                     params.subscription = configMap.sub.id
                     join += " join issue_entitlement on ie_tipp_fk = tipp_id"
-                    subFilter = " ie_subscription_fk = :subscription"
+                    subFilter = "ie_subscription_fk = :subscription"
                 }
                 else if(configMap.subscription) {
                     params.subscription = configMap.subscription.id
                     join += " join issue_entitlement on ie_tipp_fk = tipp_id"
-                    subFilter = " ie_subscription_fk = :subscription"
+                    subFilter = "ie_subscription_fk = :subscription"
                 }
                 else if(configMap.subscriptions) {
                     List<Object> subIds = []
                     subIds.addAll(configMap.subscriptions.id)
                     params.subscriptions = connection.createArrayOf('bigint', subIds.toArray())
                     join += " join issue_entitlement on ie_tipp_fk = tipp_id"
-                    subFilter = " ie_subscription_fk = any(:subscriptions)"
+                    subFilter = "ie_subscription_fk = any(:subscriptions)"
                 }
                 else if(configMap.defaultSubscriptionFilter) {
                     String consFilter = ""
                     Org contextOrg = contextService.getOrg()
                     if(contextOrg.isCustomerType_Consortium())
                         consFilter = "and sub_parent_sub_fk is null"
-                    subFilter = " exists (select ie_id from issue_entitlement join subscription on ie_subscription_fk = sub_id join subscription_package on sub_id = sp_sub_fk join org_role on or_sub_fk = sub_id where ie_tipp_fk = tipp_id and (sub_status_rv_fk = any(:subStatus) or sub_has_perpetual_access = true) and or_org_fk = :contextOrg ${consFilter}) "
+                    subFilter = "exists (select ie_id from issue_entitlement join subscription on ie_subscription_fk = sub_id join subscription_package on sub_id = sp_sub_fk join org_role on or_sub_fk = sub_id where ie_tipp_fk = tipp_id and (sub_status_rv_fk = any(:subStatus) or sub_has_perpetual_access = true) and or_org_fk = :contextOrg ${consFilter})"
                     //temp; should be enlarged later to configMap.subStatus
                     List<Object> subStatus = [RDStore.SUBSCRIPTION_CURRENT.id]
                     params.subStatus = connection.createArrayOf('bigint', subStatus.toArray())
@@ -1925,32 +1925,32 @@ class FilterService {
                 }
                 if(configMap.pkgfilter != null && !configMap.pkgfilter.isEmpty()) {
                     params.pkgId = Long.parseLong(configMap.pkgfilter)
-                    whereClauses << " tipp_pkg_fk = :pkgId"
+                    whereClauses << "tipp_pkg_fk = :pkgId"
                 }
                 else if(configMap.containsKey('pkgIds')) {
                     List<Object> pkgIds = []
                     pkgIds.addAll(configMap.pkgIds)
                     params.pkgIds = connection.createArrayOf('bigint', pkgIds.toArray())
-                    whereClauses << " tipp_pkg_fk = any(:pkgIds)"
+                    whereClauses << "tipp_pkg_fk = any(:pkgIds)"
                 }
                 if(subFilter)
                     whereClauses << subFilter
                 if(configMap.asAt && configMap.asAt.length() > 0) {
                     Date dateFilter = DateUtils.getLocalizedSDF_noTime().parse(configMap.asAt)
                     params.asAt = new Timestamp(dateFilter.getTime())
-                    whereClauses << " ((:asAt >= tipp_access_start_date or tipp_access_start_date is null) and (:asAt <= tipp_access_end_date or tipp_access_end_date is null))"
+                    whereClauses << "((:asAt >= tipp_access_start_date or tipp_access_start_date is null) and (:asAt <= tipp_access_end_date or tipp_access_end_date is null))"
                 }
                 if(configMap.status != null && !configMap.status.isEmpty()) {
                     params.tippStatus = configMap.status instanceof String ? Long.parseLong(configMap.status) : configMap.status //already id
-                    whereClauses << " tipp_status_rv_fk = :tippStatus "
+                    whereClauses << "tipp_status_rv_fk = :tippStatus"
                 }
                 else if(configMap.notStatus != null && !configMap.notStatus.isEmpty()) {
                     params.tippStatus = configMap.notStatus instanceof String ? Long.parseLong(configMap.notStatus) : configMap.status //already id
-                    whereClauses << " tipp_status_rv_fk != :tippStatus "
+                    whereClauses << "tipp_status_rv_fk != :tippStatus"
                 }
                 else {
                     params.tippStatus = RDStore.TIPP_STATUS_CURRENT.id
-                    whereClauses << " tipp_status_rv_fk = :tippStatus "
+                    whereClauses << "tipp_status_rv_fk = :tippStatus"
                 }
             }
             else if(entitlementInstance == IssueEntitlement.class.name) {
@@ -1974,13 +1974,13 @@ class FilterService {
                 query = "select ${columns.join(',')} from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id join subscription on ie_subscription_fk = sub_id"
                 if(configMap.pkgfilter != null && !configMap.pkgfilter.isEmpty()) {
                     params.pkgId = Long.parseLong(configMap.pkgfilter)
-                    whereClauses << " tipp_pkg_fk = :pkgId"
+                    whereClauses << "tipp_pkg_fk = :pkgId"
                 }
                 else if(configMap.containsKey('pkgIds')) {
                     List<Object> pkgIds = []
                     pkgIds.addAll(configMap.pkgIds)
                     params.pkgIds = connection.createArrayOf('bigint', pkgIds.toArray())
-                    whereClauses << " tipp_pkg_fk = any(:pkgIds)"
+                    whereClauses << "tipp_pkg_fk = any(:pkgIds)"
                 }
                 /*
                 where += " or_sub_fk = :ctxId"
@@ -1994,13 +1994,13 @@ class FilterService {
                     if(configMap.sub instanceof Subscription)
                         params.subscription = configMap.sub.id
                     else params.subscription = Long.parseLong(configMap.sub)
-                    whereClauses << " ie_subscription_fk = :subscription"
+                    whereClauses << "ie_subscription_fk = :subscription"
                 }
                 else if(configMap.subscription) {
                     if(configMap.subscription instanceof Subscription)
                         params.subscription = configMap.subscription.id
                     else params.subscription = Long.parseLong(configMap.subscription)
-                    whereClauses << " ie_subscription_fk = :subscription"
+                    whereClauses << "ie_subscription_fk = :subscription"
                 }
                 else if(configMap.subscriptions) {
                     List<Object> subIds = []
@@ -2009,51 +2009,51 @@ class FilterService {
                     else if(configMap.subscriptions[0] instanceof Long)
                         subIds.addAll(configMap.subscriptions)
                     params.subscriptions = connection.createArrayOf('bigint', subIds.toArray())
-                    whereClauses << " ie_subscription_fk = any(:subscriptions)"
+                    whereClauses << "ie_subscription_fk = any(:subscriptions)"
                 }
                 if(configMap.asAt != null && !configMap.asAt.isEmpty()) {
                     Date dateFilter = sdf.parse(configMap.asAt)
                     params.asAt = new Timestamp(dateFilter.getTime())
-                    whereClauses << " ((:asAt >= (coalesce(ie_access_start_date, tipp_access_start_date, sub_start_date)) or (ie_access_start_date is null and tipp_access_start_date is null and sub_start_date is null)) and (:asAt <= coalesce(ie_access_end_date, tipp_access_end_date, sub_end_date) or (ie_access_start_date is null and tipp_access_end_date is null and sub_end_date is null)))"
+                    whereClauses << "((:asAt >= (coalesce(ie_access_start_date, tipp_access_start_date, sub_start_date)) or (ie_access_start_date is null and tipp_access_start_date is null and sub_start_date is null)) and (:asAt <= coalesce(ie_access_end_date, tipp_access_end_date, sub_end_date) or (ie_access_start_date is null and tipp_access_end_date is null and sub_end_date is null)))"
                 }
                 if(configMap.validOn != null) {
                     params.validOn = new Timestamp(configMap.validOn)
-                    whereClauses << ' ( (:validOn >= coalesce(ie_access_start_date, sub_start_date, tipp_access_start_date) or (ie_access_start_date is null and sub_start_date is null and tipp_access_start_date is null) ) and ( :validOn <= coalesce(ie_access_end_date, sub_end_date, tipp_access_end_date) or (ie_access_end_date is null and sub_end_date is null and tipp_access_end_date is null) ) or sub_has_perpetual_access = true)'
+                    whereClauses << '( (:validOn >= coalesce(ie_access_start_date, sub_start_date, tipp_access_start_date) or (ie_access_start_date is null and sub_start_date is null and tipp_access_start_date is null) ) and ( :validOn <= coalesce(ie_access_end_date, sub_end_date, tipp_access_end_date) or (ie_access_end_date is null and sub_end_date is null and tipp_access_end_date is null) ) or sub_has_perpetual_access = true)'
                 }
                 if(configMap.ieStatus) {
                     params.ieStatus = configMap.ieStatus.id
-                    whereClauses << " ie_status_rv_fk = :ieStatus"
+                    whereClauses << "ie_status_rv_fk = :ieStatus"
                 }
                 else if(configMap.status) {
                     params.ieStatus = connection.createArrayOf('bigint', listReaderWrapper(configMap, 'status').toArray())
-                    whereClauses << " ie_status_rv_fk = any(:ieStatus)"
+                    whereClauses << "ie_status_rv_fk = any(:ieStatus)"
                 }
                 else if(configMap.notStatus != null && !configMap.notStatus.isEmpty()) {
                     params.ieStatus = configMap.notStatus instanceof String ? Long.parseLong(configMap.notStatus) : configMap.notStatus //already id
-                    whereClauses << " ie_status_rv_fk != :ieStatus"
+                    whereClauses << "ie_status_rv_fk != :ieStatus"
                 }
                 else {
                     params.ieStatus = RDStore.TIPP_STATUS_CURRENT.id
-                    whereClauses << " ie_status_rv_fk = :ieStatus"
+                    whereClauses << "ie_status_rv_fk = :ieStatus"
                 }
                 if(configMap.titleGroup != null && !configMap.titleGroup.isEmpty()) {
                     params.titleGroup = Long.parseLong(configMap.titleGroup)
-                    whereClauses << " exists(select igi_id from issue_entitlement_group_item where igi_ie_group_fk = :titleGroup and igi_ie_fk = ie_id)"
+                    whereClauses << "exists(select igi_id from issue_entitlement_group_item where igi_ie_group_fk = :titleGroup and igi_ie_fk = ie_id)"
                 }
                 if(configMap.inTitleGroups != null && !configMap.inTitleGroups.isEmpty()) {
                     if(configMap.inTitleGroups == RDStore.YN_YES.id.toString()) {
-                        whereClauses << " exists ( select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id) "
+                        whereClauses << "exists ( select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id) "
                     }
                     else{
-                        whereClauses << " not exists ( select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id) "
+                        whereClauses << "not exists ( select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id) "
                     }
                 }
                 if (configMap.hasPerpetualAccess && !configMap.hasPerpetualAccessBySubs) {
                     if(configMap.hasPerpetualAccess == RDStore.YN_YES.id.toString()) {
-                        whereClauses << " ie_perpetual_access_by_sub_fk is not null "
+                        whereClauses << "ie_perpetual_access_by_sub_fk is not null "
                     }
                     else{
-                        whereClauses << " ie_perpetual_access_by_sub_fk is null "
+                        whereClauses << "ie_perpetual_access_by_sub_fk is null "
                     }
                 }
                 if (configMap.hasPerpetualAccess && configMap.hasPerpetualAccessBySubs) {
@@ -2061,117 +2061,117 @@ class FilterService {
                     perpetualSubs.addAll(listReaderWrapper(configMap, 'hasPerpetualAccessBySubs'))
                     params.perpetualSubs = connection.createArrayOf('bigint', perpetualSubs.toArray())
                     if(configMap.hasPerpetualAccess == RDStore.YN_NO.id.toString()) {
-                        whereClauses << " tipp_host_platform_url not in (select tipp2.tipp_host_platform_url from issue_entitlement as ie2 join title_instance_package_platform as tipp2 on ie2.ie_tipp_fk = tipp2.tipp_id where ie2.ie_perpetual_access_by_sub_fk = any(:perpetualSubs)) "
+                        whereClauses << "tipp_host_platform_url not in (select tipp2.tipp_host_platform_url from issue_entitlement as ie2 join title_instance_package_platform as tipp2 on ie2.ie_tipp_fk = tipp2.tipp_id where ie2.ie_perpetual_access_by_sub_fk = any(:perpetualSubs)) "
                     }
                     else {
-                        whereClauses << " tipp_host_platform_url in (select tipp2.tipp_host_platform_url from issue_entitlement as ie2 join title_instance_package_platform as tipp2 on ie2.ie_tipp_fk = tipp2.tipp_id where ie2.ie_perpetual_access_by_sub_fk = any(:perpetualSubs)) "
+                        whereClauses << "tipp_host_platform_url in (select tipp2.tipp_host_platform_url from issue_entitlement as ie2 join title_instance_package_platform as tipp2 on ie2.ie_tipp_fk = tipp2.tipp_id where ie2.ie_perpetual_access_by_sub_fk = any(:perpetualSubs)) "
                     }
                 }
                 if (configMap.coverageDepth != null && !configMap.coverageDepth.isEmpty()) {
                     List<Object> coverageDepths = []
                     coverageDepths.addAll(listReaderWrapper(configMap, 'coverageDepth').collect { it.toLowerCase() })
                     params.coverageDepth = connection.createArrayOf('varchar', coverageDepths.toArray())
-                    whereClauses << " exists (select ic_id from issue_entitlement_coverages where ic_ie_fk = ie_id and lower(ic_coverage_depth) = any(:coverageDepth))"
+                    whereClauses << "exists (select ic_id from issue_entitlement_coverages where ic_ie_fk = ie_id and lower(ic_coverage_depth) = any(:coverageDepth))"
                 }
                 if(configMap.filterSub != null && !configMap.filterSub.isEmpty()) {
                     List<Object> subscriptions = []
                     subscriptions.addAll(listReaderWrapper(configMap, 'filterSub').collect { Long.parseLong(it)} )
                     params.subscriptions = connection.createArrayOf('bigint', subscriptions.toArray())
-                    whereClauses << " sub_id = any(:subscriptions)"
+                    whereClauses << "sub_id = any(:subscriptions)"
                 }
             }
             if(configMap.tippIds != null && !configMap.tippIds.isEmpty()) {
                 List<Object> tippIDs = []
                 tippIDs.addAll(configMap.tippIds)
                 params.tippIds = connection.createArrayOf('bigint', tippIDs.toArray())
-                whereClauses << " tipp_id = any(:tippIds)"
+                whereClauses << "tipp_id = any(:tippIds)"
             }
             if(configMap.filter != null && !configMap.filter.isEmpty()) {
                 params.stringFilter = configMap.filter
-                whereClauses << " ((genfunc_filter_matcher(tipp_name, :stringFilter) = true) or (genfunc_filter_matcher(tipp_first_author, :stringFilter) = true) or (genfunc_filter_matcher(tipp_first_editor, :stringFilter) = true) or exists(select id_id from identifier where id_tipp_fk = tipp_id and genfunc_filter_matcher(id_value, :stringFilter) = true))"
+                whereClauses << "((genfunc_filter_matcher(tipp_name, :stringFilter) = true) or (genfunc_filter_matcher(tipp_first_author, :stringFilter) = true) or (genfunc_filter_matcher(tipp_first_editor, :stringFilter) = true) or exists(select id_id from identifier where id_tipp_fk = tipp_id and genfunc_filter_matcher(id_value, :stringFilter) = true))"
             }
             if(configMap.ddcs != null && !configMap.ddcs.isEmpty()) {
                 List<Object> ddcs = []
                 ddcs.addAll(listReaderWrapper(configMap, 'ddcs').collect{ String key -> Long.parseLong(key) })
                 params.ddcs = connection.createArrayOf('bigint', ddcs.toArray())
-                whereClauses << " exists(select ddc_id from dewey_decimal_classification where ddc_tipp_fk = tipp_id and ddc_rv_fk = any(:ddcs))"
+                whereClauses << "exists(select ddc_id from dewey_decimal_classification where ddc_tipp_fk = tipp_id and ddc_rv_fk = any(:ddcs))"
             }
             if(configMap.languages != null && !configMap.languages.isEmpty()) {
                 List<Object> languages = []
                 languages.addAll(listReaderWrapper(configMap, 'languages').collect{ String key -> Long.parseLong(key) })
                 params.languages = connection.createArrayOf('bigint', languages.toArray())
-                whereClauses << " exists(select lang_id from language where lang_tipp_fk = tipp_id and lang_rv_fk = any(:languages))"
+                whereClauses << "exists(select lang_id from language where lang_tipp_fk = tipp_id and lang_rv_fk = any(:languages))"
             }
             if(configMap.subject_references != null && !configMap.subject_references.isEmpty()) {
                 List<Object> subjectReferences = []
                 subjectReferences.addAll(listReaderWrapper(configMap, 'subject_references').collect { '%'+it.toLowerCase()+'%' })
                 params.subjectReferences = connection.createArrayOf('varchar', subjectReferences.toArray())
-                whereClauses << " lower(tipp_subject_reference) like any(:subjectReferences)"
+                whereClauses << "lower(tipp_subject_reference) like any(:subjectReferences)"
             }
             if(configMap.series_names != null && !configMap.series_names.isEmpty()) {
                 List<Object> seriesNames = []
                 seriesNames.addAll(listReaderWrapper(configMap, 'series_names').collect { it.toLowerCase() })
                 params.seriesNames = connection.createArrayOf('varchar', seriesNames.toArray())
-                whereClauses << " lower(tipp_series_name) in (:seriesNames)"
+                whereClauses << "lower(tipp_series_name) in (:seriesNames)"
             }
             if(configMap.summaryOfContent != null && !configMap.summaryOfContent.isEmpty()) {
                 params.summaryOfContent = configMap.summaryOfContent
-                whereClauses << " genfunc_filter_matcher(tipp_summary_of_content, :summaryOfContent) = true"
+                whereClauses << "genfunc_filter_matcher(tipp_summary_of_content, :summaryOfContent) = true"
             }
             if(configMap.ebookFirstAutorOrFirstEditor != null && !configMap.ebookFirstAutorOrFirstEditor.isEmpty()) {
                 params.firstAuthorEditor = configMap.ebookFirstAutorOrFirstEditor
-                whereClauses << " genfunc_filter_matcher(tipp_first_author, :firstAuthorEditor) = true or genfunc_filter_matcher(tipp_first_editor, :firstAuthorEditor) = true)"
+                whereClauses << "genfunc_filter_matcher(tipp_first_author, :firstAuthorEditor) = true or genfunc_filter_matcher(tipp_first_editor, :firstAuthorEditor) = true)"
             }
             if(configMap.dateFirstOnlineFrom != null && !configMap.dateFirstOnlineFrom.isEmpty()) {
                 Date dateFirstOnlineFrom = sdf.parse(configMap.dateFirstOnlineFrom)
                 params.dateFirstOnlineFrom = DateUtils.getSDF_yyyyMMdd().format(dateFirstOnlineFrom)
-                whereClauses << " (tipp_date_first_online is not null AND tipp_date_first_online >= :dateFirstOnlineFrom)"
+                whereClauses << "(tipp_date_first_online is not null AND tipp_date_first_online >= :dateFirstOnlineFrom)"
             }
             if(configMap.dateFirstOnlineTo != null && !configMap.dateFirstOnlineTo.isEmpty()) {
                 Date dateFirstOnlineTo = sdf.parse(configMap.dateFirstOnlineTo)
                 params.dateFirstOnlineTo = DateUtils.getSDF_yyyyMMdd().format(dateFirstOnlineTo)
-                whereClauses << " (tipp.date_first_online is not null AND tipp_date_first_online <= :dateFirstOnlineTo)"
+                whereClauses << "(tipp.date_first_online is not null AND tipp_date_first_online <= :dateFirstOnlineTo)"
             }
             if(configMap.yearsFirstOnline != null && !configMap.yearsFirstOnline.isEmpty()) {
                 List<Object> yearsFirstOnline = []
                 yearsFirstOnline.addAll(listReaderWrapper(configMap, 'yearsFirstOnline').collect { Integer.parseInt(it) })
                 params.yearsFirstOnline = connection.createArrayOf('int', yearsFirstOnline.toArray())
-                whereClauses << " (date_part('year', tipp_date_first_online) = any(:yearsFirstOnline))"
+                whereClauses << "(date_part('year', tipp_date_first_online) = any(:yearsFirstOnline))"
             }
             if(configMap.identifier != null && !configMap.identifier.isEmpty()) {
                 params.identifier = configMap.identifier
-                whereClauses << " exists(select id_id from identifier where id_tipp_fk = tipp_id and genfunc_filter_matcher(id_value, :identifier) = true)"
+                whereClauses << "exists(select id_id from identifier where id_tipp_fk = tipp_id and genfunc_filter_matcher(id_value, :identifier) = true)"
             }
             if(configMap.publishers != null && !configMap.publishers.isEmpty()) {
                 List<Object> publishers = []
                 publishers.addAll(listReaderWrapper(configMap, 'publishers').collect { it.toLowerCase() })
                 params.publishers = connection.createArrayOf('varchar', publishers.toArray())
-                whereClauses << " lower(tipp_publisher_name) = any(:publishers)"
+                whereClauses << "lower(tipp_publisher_name) = any(:publishers)"
             }
             if(configMap.title_types != null && !configMap.title_types.isEmpty()) {
                 List<Object> titleTypes = []
                 titleTypes.addAll(listReaderWrapper(configMap, 'title_types').collect { it.toLowerCase() })
                 params.titleTypes = connection.createArrayOf('varchar', titleTypes.toArray())
-                whereClauses << " lower(tipp_title_type) = any(:titleTypes)"
+                whereClauses << "lower(tipp_title_type) = any(:titleTypes)"
             }
             if(configMap.medium != null && !configMap.medium.isEmpty()) {
                 List<Object> medium = []
                 medium.addAll(listReaderWrapper(configMap, 'medium').collect{ String key -> Long.parseLong(key) })
                 params.medium = connection.createArrayOf('bigint', medium.toArray())
-                whereClauses << " tipp_medium_rv_fk = any(:medium)"
+                whereClauses << "tipp_medium_rv_fk = any(:medium)"
             }
             if(configMap.filterPvd != null && !configMap.filterPvd.isEmpty()) {
                 List<Object> providers = [], providerRoleTypes = [RDStore.OR_CONTENT_PROVIDER.id, RDStore.OR_PROVIDER.id, RDStore.OR_AGENCY.id, RDStore.OR_PUBLISHER.id]
                 providers.addAll(listReaderWrapper(configMap, 'filterPvd').collect { Long.parseLong(it.split(':')[1])} )
                 params.providers = connection.createArrayOf('bigint', providers.toArray())
                 params.providerRoleTypes = connection.createArrayOf('bigint', providerRoleTypes.toArray())
-                whereClauses << " exists(select or_id from org_role where or_pkg_fk = pkg_id and or_org_fk = any(:providers) and or_roletype_fk = any(:providerRoleTypes))"
+                whereClauses << "exists(select or_id from org_role where or_pkg_fk = pkg_id and or_org_fk = any(:providers) and or_roletype_fk = any(:providerRoleTypes))"
             }
             if(configMap.filterHostPlat != null && !configMap.filterHostPlat.isEmpty()) {
                 List<Object> hostPlatforms = []
                 hostPlatforms.addAll(listReaderWrapper(configMap, 'filterHostPlat').collect { Long.parseLong(it.split(':')[1]) })
                 params.platforms = connection.createArrayOf('bigint', hostPlatforms.toArray())
-                whereClauses << " tipp_plat_fk = any(:platforms)"
+                whereClauses << "tipp_plat_fk = any(:platforms)"
             }
             /*
 
@@ -2192,7 +2192,7 @@ class FilterService {
             }
             */
         //}
-        [query: query, join: join, where: whereClauses.join('and'), order: orderClause, params: params, subJoin: subJoin]
+        [query: query, join: join, where: whereClauses.join(' and '), order: orderClause, params: params, subJoin: subJoin]
     }
 
     /**

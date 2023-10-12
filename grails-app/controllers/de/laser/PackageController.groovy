@@ -400,7 +400,7 @@ class PackageController {
                 Map<String, Object> configMap = [:]
                 configMap.putAll(params)
                 configMap.pkgIds = [params.id]
-                Map<String, List> tableData = titlesList ? exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name) : []
+                Map<String, Collection> tableData = titlesList ? exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name) : []
                 String tableOutput = exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t')
                 FileOutputStream fos = new FileOutputStream(f)
                 fos.withWriter { Writer w ->
@@ -613,14 +613,14 @@ class PackageController {
                 Map<String, Object> configMap = [:]
                 configMap.putAll(params)
                 configMap.pkgIds = [params.id]
-                Map<String, List> tableData = exportService.generateTitleExportKBART(configMap,TitleInstancePackagePlatform.class.name)
+                Map<String, Collection> tableData = exportService.generateTitleExportKBART(configMap,TitleInstancePackagePlatform.class.name)
                 fos.withWriter { writer ->
                     writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
                 }
                 fos.flush()
                 fos.close()
             }
-            Map fileResult = [token: filename, fileformat: 'kbart']
+            Map fileResult = [token: filename, filenameDisplay: filename, fileformat: 'kbart']
             render template: '/templates/bulkItemDownload', model: fileResult
             return
         }
