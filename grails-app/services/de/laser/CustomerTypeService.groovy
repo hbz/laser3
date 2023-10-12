@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.auth.Role
 import grails.gorm.transactions.Transactional
 
 /**
@@ -53,6 +54,18 @@ class CustomerTypeService {
 
     String getCustomerTypeDependingView(String view) {
         contextService.getOrg().isCustomerType_Support() ? view + '_support' : view
+    }
+
+    List<Org> getAllOrgsByCustomerType(String customerType) {
+        Role role = Role.findByAuthority(customerType)
+        if (role) {
+            OrgSetting.executeQuery("select os.org from OrgSetting as os where os.key = :key and os.roleValue = :role order by os.org.sortname, os.org.name",
+                [key: OrgSetting.KEYS.CUSTOMER_TYPE, role: role]
+            )
+        }
+        else {
+            []
+        }
     }
 
     //

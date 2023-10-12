@@ -463,6 +463,10 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         return StringUtils.left(name.trim().replaceAll(" ","_"), 128) // FIX
     }
 
+    static Set<Org> getAllByCustomerType(String customerType) {
+        BeanStore.getCustomerTypeService().getAllOrgsByCustomerType(customerType).toSet()
+    }
+
     /**
      * Generates a shortcode for the given organisation's name
      * @param name the name to prepare
