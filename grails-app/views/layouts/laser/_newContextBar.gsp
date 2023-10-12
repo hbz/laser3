@@ -149,10 +149,12 @@
     .la-cb-context.item,
     .la-cb-info.item {
         margin: 0 1em 0 0 !important;
+        border-right: none !important;
     }
     .la-cb-context.item > .label,
     .la-cb-info.item > .label {
         margin: 0 !important;
+        padding: 0.5em 1em !important;
         background-color: #e3eaf3 !important;
     }
     .la-cb-context.item > .label:hover,
@@ -193,13 +195,13 @@
 
     /* -- overrides -- */
 
-    .la-contextBar .la-cb-action.item .button.la-toggle-advanced.active {
+    .la-contextBar .la-cb-action.item .la-toggle-advanced.active {
         background-color: #98b500 !important;
     }
-    .la-contextBar .la-cb-action.item .button.la-toggle-advanced.inactive {
+    .la-contextBar .la-cb-action.item .la-toggle-advanced.inactive {
         background-color: #D95F3D !important;
     }
-    .la-contextBar .la-cb-action.item .button.toggle .icon {
+    .la-contextBar .la-cb-action.item .toggle .icon {
         color: #fff !important;
     }
 </style>

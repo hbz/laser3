@@ -119,7 +119,7 @@
                         <g:if test="${contextUser}">
                             <div class="ui dropdown item la-noBorder" role="menuitem" aria-haspopup="true">
                                 <a class="title">
-                                    ${contextUser.displayName} <i class="dropdown icon"></i>
+                                    <i class="dropdown icon"></i> ${contextUser.displayName}
                                 </a>
 
                                 <div class="menu" role="menu">
