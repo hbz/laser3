@@ -26,7 +26,7 @@
         <ui:link addItemAttributes="true" controller="title" action="index">${message(code:'menu.public.all_titles')}</ui:link>
 
         <div class="divider"></div>
-        <ui:link addItemAttributes="true" target="_blank" onclick="JSPC.app.workaround_targetBlank(event)" controller="gasco">${message(code:'menu.public.gasco_monitor')}</ui:link>
+        <ui:link addItemAttributes="true" target="_blank" onclick="JSPC.app.workaround_targetBlank(event)" controller="gasco"><i class="ui icon stream"></i> ${message(code:'menu.public.gasco_monitor')}</ui:link>
         <a href="${message(code:'url.wekb.' + currentServer)}" id="wekb" class="item" role="menuitem" target="_blank" onclick="JSPC.app.workaround_targetBlank(event)"><i class="ui icon la-gokb"></i> we:kb</a>
     </div>
 </div>

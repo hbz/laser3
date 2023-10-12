@@ -59,6 +59,9 @@ class IconTagLib {
             case 'journal':
                 icon = 'bordered la-object-journal'
                 break
+            case 'gasco':
+                icon = 'bordered inverted grey stream la-object-extended'
+                break
             case 'marker':
                 icon = 'bordered inverted purple bookmark la-object-extended'
                 break
