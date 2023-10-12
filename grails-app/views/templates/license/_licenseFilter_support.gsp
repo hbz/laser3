@@ -56,35 +56,10 @@
                   </select>
               </div>
           </div>
-          <div class="three fields">
-              <div class="field">
-                  <fieldset id="licenseType">
-                      <div class="inline fields la-filter-inline">
-                          <div class="inline field">
-                              <div class="ui checkbox">
-                                  <label for="checkLicType-${RDStore.OR_LICENSEE}"><g:message code="license.filter.local"/></label>
-                                  <input id="checkLicType-${RDStore.OR_LICENSEE}" name="licTypes" type="checkbox" value="${RDStore.OR_LICENSEE.id.toString()}"
-                                      <g:if test="${params.list('licTypes').contains(RDStore.OR_LICENSEE.id.toString())}"> checked="" </g:if>
-                                         tabindex="0">
-                              </div>
-                          </div>
-                          <div class="inline field">
-                              <div class="ui checkbox">
-                                  <label for="checkLicType-${RDStore.OR_LICENSEE_CONS}"><g:message code="license.filter.member"/></label>
-                                  <input id="checkLicType-${RDStore.OR_LICENSEE_CONS}" name="licTypes" type="checkbox" value="${RDStore.OR_LICENSEE_CONS.id.toString()}"
-                                      <g:if test="${params.list('licTypes').contains(RDStore.OR_LICENSEE_CONS.id.toString())}"> checked="" </g:if>
-                                         tabindex="0">
-                              </div>
-                          </div>
-                      </div>
-                  </fieldset>
-              </div>
-              <div class="field"></div>
-              <div class="field la-field-right-aligned">
-                  <g:link action="currentLicenses" params="[resetFilter:true]" class="ui reset secondary button">${message(code:'default.button.reset.label')}</g:link>
-                  <input type="hidden" name="filterSet" value="true">
-                  <input type="submit" name="filterSubmit" class="ui primary button" value="${message(code:'default.button.filter.label')}">
-              </div>
+          <div class="field la-field-right-aligned">
+              <g:link action="currentLicenses" params="[resetFilter:true]" class="ui reset secondary button">${message(code:'default.button.reset.label')}</g:link>
+              <input type="hidden" name="filterSet" value="true">
+              <input type="submit" name="filterSubmit" class="ui primary button" value="${message(code:'default.button.filter.label')}">
           </div>
       </form>
 </ui:filter>
