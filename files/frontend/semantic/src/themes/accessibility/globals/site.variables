@@ -1541,4 +1541,5 @@
 /*  > 100         */
 @la-contextBarZIndex: 101;      // gray context bar
 @mainMenueZIndex: 102;          // Main Menue
+@debugInfoZIndex: 103;                //System buttons and information label at right bottom
 

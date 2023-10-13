@@ -23,9 +23,9 @@
                     </tr>
                     <tr>
                         <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
-                            <td>${message(code:'myinst.financeImport.post.all.visible')} <input name="allVisibleForSubscriber" type="radio" value="true"><br />${message(code:'myinst.financeImport.post.all.invisible')} <input name="allVisibleForSubscriber" type="radio" value="false" checked></td>
+                            <td>${message(code:'myinst.financeImport.post.all.visible')} <g:checkBox name="allVisibleForSubscriber" checked="true"/></td>
                         </g:if>
-                        <td>${message(code:'myinst.financeImport.post.takeAllItems')} <g:checkBox name="takeAll"/></td>
+                        <td>${message(code:'myinst.financeImport.post.takeAllItems')} <g:checkBox name="takeAll" checked="true"/></td>
                     </tr>
                 </thead>
                 <tbody>
@@ -79,13 +79,13 @@
                             <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                                 <td>
                                     <g:if test="${ci.sub && OrgRole.executeQuery('select oo from OrgRole oo where oo.org = :org and oo.sub = :sub and oo.roleType = :roleType and oo.sub.instanceOf is not null',[org: ci.owner,sub: ci.sub,roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA])}">
-                                        ${message(code:'myinst.financeImport.post.visible')} <input name="visibleForSubscriber${r}" class="visibleForSubscriber" type="radio" value="true"><br />${message(code:'myinst.financeImport.post.notVisible')} <input name="visibleForSubscriber${r}" class="invisibleForSubscriber" type="radio" value="false" checked>
+                                        ${message(code:'myinst.financeImport.post.visible')} <g:checkBox name="visibleForSubscriber${r}" class="visibleForSubscriber" checked="true"/>
                                     </g:if>
                                 </td>
                             </g:if>
                             <td>
                                 <g:if test="${!withCriticalErrors}">
-                                    <g:checkBox name="take${r}" class="ciSelect"/>
+                                    <g:checkBox name="take${r}" class="ciSelect" checked="true"/>
                                 </g:if>
                             </td>
                         </tr>
@@ -103,12 +103,12 @@
         </g:form>
 
     <laser:script file="${this.getGroovyPageFileName()}">
-        $("[name='allVisibleForSubscriber']").change(function(){
-            if($(this).val() === 'true') {
+        $("#allVisibleForSubscriber").change(function(){
+            if($(this).is(":checked")) {
                 $(".visibleForSubscriber").prop('checked',true);
             }
             else {
-                $(".invisibleForSubscriber").prop('checked',true);
+                $(".visibleForSubscriber").prop('checked',false);
             }
         });
 

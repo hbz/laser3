@@ -97,7 +97,7 @@
 
         </div>
 
-        <div class="four fields">
+        <div class="three fields">
 
             <div class="field">
                 <label for="subKinds">${message(code: 'myinst.currentSubscriptions.subscription_kind')}</label>
@@ -131,25 +131,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="field">
-                <label></label>
-                <fieldset id="subscritionType">
-                    <label>${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
-                    <div class="inline fields la-filter-inline">
-                        <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE) - RDStore.SUBSCRIPTION_TYPE_LOCAL}" var="subType">
-                            <div class="inline field">
-                                <div class="ui checkbox">
-                                    <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
-                                    <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox" value="${subType.id}"
-                                        <g:if test="${params.list('subTypes').contains(subType.id.toString())}"> checked="" </g:if>
-                                           tabindex="0">
-                                </div>
-                            </div>
-                        </g:each>
-                    </div>
-                </fieldset>
             </div>
 
             <div class="field"></div>

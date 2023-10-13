@@ -228,20 +228,13 @@
             </div>
             <% /* 4-2 */ %>
         <%-- TODO [ticket=2276] provisoric, name check is in order to prevent id mismatch --%>
-            <g:if test="${contextService.getOrg().isCustomerType_Inst_Pro() || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
+            <g:if test="${contextService.getOrg().isCustomerType_Inst_Pro()}">
                 <div class="field">
                     <label></label>
                     <fieldset id="subscritionType">
                         <label>${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
                         <div class="inline fields la-filter-inline">
-                            <%
-                                List subTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)
-                                if(institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID)
-                                    subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL
-                                else
-                                    subTypes -= RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE
-                            %>
-                            <g:each in="${subTypes}" var="subType">
+                            <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE) - RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE}" var="subType">
                                 <div class="inline field">
                                     <div class="ui checkbox">
                                         <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>

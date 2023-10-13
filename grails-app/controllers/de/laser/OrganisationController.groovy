@@ -41,6 +41,7 @@ class OrganisationController  {
     AccessPointService accessPointService
     AddressbookService addressbookService
     ContextService contextService
+    CustomerTypeService customerTypeService
     DeletionService deletionService
     DocstoreService docstoreService
     ExportClickMeService exportClickMeService
@@ -354,8 +355,8 @@ class OrganisationController  {
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         List<Org> availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, [sort:params.sort])
-        availableOrgs.remove(Org.findByName("LAS:eR Backoffice"))
-        // TODO remove all with customerType support ?
+        // TODO [ticket=2276]
+        availableOrgs.removeAll(customerTypeService.getAllOrgsByCustomerType(CustomerTypeService.ORG_SUPPORT))
 
         String header = message(code: 'menu.public.all_cons')
         String exportHeader = message(code: 'export.all.consortia')

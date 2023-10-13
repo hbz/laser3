@@ -1,6 +1,6 @@
 <laser:serviceInjection />
 
-<a href="#systemInfoFlyout" id="showSystemInfo" role="dialog" aria-label="System Info" class="ui secondary button icon">
+<a href="#systemInfoFlyout" id="showSystemInfo" role="dialog" aria-label="System Info" class="ui secondary button icon la-debugInfos">
     <i aria-hidden="true" class="exclamation triangle icon"></i>
 </a>
 

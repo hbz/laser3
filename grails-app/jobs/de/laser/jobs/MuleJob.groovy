@@ -45,7 +45,7 @@ class MuleJob extends AbstractJob {
 
             // only once per day ..
 
-            if ((LocalTime.parse('06:30').toSecondOfDay() - LocalTime.now().toSecondOfDay()) < 300) {
+            if (Math.abs(LocalTime.parse('06:30').toSecondOfDay() - LocalTime.now().toSecondOfDay()) < 300) {
                 systemService.sendSystemInsightMails()
             }
 

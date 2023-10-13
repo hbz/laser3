@@ -13,8 +13,8 @@
         </g:if></p>
 
         <p>sub.administrative: ${subscription.administrative}</p>
-
         <p>getCalculatedType(): ${subscription._getCalculatedType()}</p>
+        <p>orgRole(ctxOrg): ${OrgRole.findAllBySubAndOrg(subscription, contextService.getOrg()).roleType.join(', ')}</p>
     </div>
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
 </ui:debugInfo>

@@ -943,14 +943,14 @@ class SubscriptionController {
                     configMap.putAll(params)
                     configMap.sub = ctrlResult.result.subscription
                     configMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id //GORM sometimes does not initialise the sorted set
-                    Map<String, List> tableData = exportService.generateTitleExportKBART(configMap, IssueEntitlement.class.name)
+                    Map<String, Collection> tableData = exportService.generateTitleExportKBART(configMap, IssueEntitlement.class.name)
                     fos.withWriter { writer ->
                         writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
                     }
                     fos.flush()
                     fos.close()
                 }
-                Map fileResult = [token: filename, fileformat: 'kbart']
+                Map fileResult = [token: filename, filenameDisplay: filename, fileformat: 'kbart']
                 render template: '/templates/bulkItemDownload', model: fileResult
                 return
             }
@@ -1055,14 +1055,14 @@ class SubscriptionController {
                 File f = new File(dir+'/'+filename)
                 if(!f.exists()) {
                     FileOutputStream out = new FileOutputStream(f)
-                    Map<String,List> tableData = exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name)
+                    Map<String, Collection> tableData = exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name)
                     out.withWriter { writer ->
                         writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
                     }
                     out.flush()
                     out.close()
                 }
-                Map fileResult = [token: filename, fileformat: 'kbart']
+                Map fileResult = [token: filename, filenameDisplay: filename, fileformat: 'kbart']
                 render template: '/templates/bulkItemDownload', model: fileResult
                 return
             }
@@ -1577,14 +1577,14 @@ class SubscriptionController {
                 File f = new File(dir+'/'+filename)
                 if(!f.exists()) {
                     FileOutputStream out = new FileOutputStream(f)
-                    Map<String, List> tableData = exportService.generateTitleExportKBART(queryMap, IssueEntitlement.class.name)
+                    Map<String, Collection> tableData = exportService.generateTitleExportKBART(queryMap, IssueEntitlement.class.name)
                     out.withWriter { Writer writer ->
                         writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
                     }
                     out.flush()
                     out.close()
                 }
-                Map fileResult = [token: filename, fileformat: 'kbart']
+                Map fileResult = [token: filename, filenameDisplay: filename, fileformat: 'kbart']
                 render template: '/templates/bulkItemDownload', model: fileResult
                 return
             }
@@ -1779,9 +1779,9 @@ class SubscriptionController {
      * Call for manual renewal of a given subscription, i.e. without performing a renewal survey before
      * @return the starting page of the subscription renewal process
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def renewSubscription() {
         Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
@@ -1810,9 +1810,9 @@ class SubscriptionController {
      * copying process
      * @return the first page of the element copy processing
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def processRenewSubscription() {
         Map<String,Object> ctrlResult = subscriptionControllerService.processRenewSubscription(this,params)
@@ -1949,7 +1949,7 @@ class SubscriptionController {
                             params.workFlowPart = CopyElementsService.WORKFLOW_SUBSCRIBER
                             ctrlResult.result << copyElementsService.loadDataFor_Subscriber(params)
                         } else {
-                            params.workFlowPart = CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
+                            params.workFlowPart = contextService.getOrg().isCustomerType_Support() ? CopyElementsService.WORKFLOW_PROPERTIES : CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
                             ctrlResult.result << copyElementsService.loadDataFor_PackagesEntitlements(params)
                         }
                     } else {
@@ -1959,7 +1959,7 @@ class SubscriptionController {
                 case CopyElementsService.WORKFLOW_SUBSCRIBER:
                     ctrlResult.result << copyElementsService.copyObjectElements_Subscriber(params)
                     if (params.isRenewSub) {
-                        params.workFlowPart = CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
+                        params.workFlowPart = contextService.getOrg().isCustomerType_Support() ? CopyElementsService.WORKFLOW_PROPERTIES : CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
                         ctrlResult.result << copyElementsService.loadDataFor_PackagesEntitlements(params)
                     } else {
                         ctrlResult.result << copyElementsService.loadDataFor_Subscriber(params)

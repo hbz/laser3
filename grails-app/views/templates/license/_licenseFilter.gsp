@@ -82,7 +82,7 @@
           </div>
           <div class="three fields">
           <%-- TODO [ticket=2276] provisoric, name check is in order to prevent id mismatch --%>
-              <g:if test="${contextService.getOrg().isCustomerType_Inst_Pro() || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
+              <g:if test="${contextService.getOrg().isCustomerType_Inst_Pro()}">
                   <div class="field">
                       <fieldset id="licenseType">
                           <div class="inline fields la-filter-inline">

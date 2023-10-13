@@ -29,8 +29,18 @@ import org.grails.plugins.web.taglib.ApplicationTagLib
 
 import java.text.SimpleDateFormat
 
+/**
+ * Central class to manage report exports. It delegates also between local (= object-bound) and institution-wide exports
+ * and takes care of the output into a file
+ */
 class DetailsExportManager {
 
+    /**
+     * Initialises a new export and handles the creation to the respective processing class
+     * @param token which kind of report is being generated? The token is used for report identification and cache storage
+     * @param context the switch between the global (= institution-wide) and local (= object-departing) report
+     * @return the generated export; the result of either {@link #createGlobalExport(java.lang.String, java.util.Map)} or {@link #createLocalExport(java.lang.String, java.util.Map)}
+     */
     static BaseDetailsExport createExport(String token, String context) {
         if (context == BaseConfig.KEY_MYINST) {
             createGlobalExport(token, [:])
@@ -40,14 +50,34 @@ class DetailsExportManager {
         }
     }
 
+    /**
+     * Initialises a new global (= institution-wide) export with the selected fields
+     * @param token the type of report to export; later used as cache storage token
+     * @param selectedFields the {@link Map} of fields which have been selected to be included in the report
+     * @return the new global report export
+     */
     static BaseDetailsExport createGlobalExport(String token, Map<String, Object> selectedFields) {
         GlobalExportHelper.createExport( token, selectedFields )
     }
 
+    /**
+     * Initialises a new local (= object-bound) export with the selected fields
+     * @param token the type of report to export; later used as cache storage token
+     * @param selectedFields the {@link Map} of fields which have been selected to be included in the report
+     * @return the new local report export
+     */
     static BaseDetailsExport createLocalExport(String token, Map<String, Object> selectedFields) {
         LocalExportHelper.createExport( token, selectedFields )
     }
 
+    /**
+     * Outputs the given export into a list; this is being used for PDF or CSV file outputs
+     * @param export the export data to be processed
+     * @param idList the list of object database IDs which are subject of export
+     * @param format the desired output file format
+     * @param options output configuration settings
+     * @return a {@link List} containing the rows of entries for output
+     */
     static List exportAsList(BaseDetailsExport export, List<Long> idList, String format, Map<String, Boolean> options) {
 
         List rows = []
@@ -93,6 +123,14 @@ class DetailsExportManager {
         rows
     }
 
+    /**
+     * Outputs the given export into an Excel workbook
+     * @param export the export data to be processed
+     * @param idList the list of object database IDs which are subject of export
+     * @param format the desired output file format (only xlsx is being supported)
+     * @param options output configuration settings
+     * @return a {@link Workbook}
+     */
     static Workbook exportAsWorkbook(BaseDetailsExport export, List<Long> idList, String format, Map<String, Boolean> options) {
 
         List objList = resolveObjectList( export, idList )
@@ -102,6 +140,13 @@ class DetailsExportManager {
         }
     }
 
+    /**
+     * Processes the export so that data is being formatted CSV-compatibly
+     * @param export the export data to process
+     * @param objList the list of database objects to be exported
+     * @param fields the fields which should be included in the report
+     * @return a {@link List} containing the formatted data
+     */
     static List buildCSV(BaseDetailsExport export, List objList, Map<String, Object> fields) {
 
         ApplicationTagLib g = BeanStore.getApplicationTagLib()
@@ -140,6 +185,11 @@ class DetailsExportManager {
         [rows, ici.reverse()]
     }
 
+    /**
+     * Helper method to escape lists of strings
+     * @param content the list to be formatted
+     * @return a {@link List} containing the escaped list
+     */
     static List<String> buildRowAsCSV(List<String> content) {
 
         content.collect{it ->
@@ -158,6 +208,14 @@ class DetailsExportManager {
         }
     }
 
+    /**
+     * Processes the export so that data is being formatted for Excel cells
+     * @param export the export data to process
+     * @param objList the list of database objects to be exported
+     * @param fields the fields which should be included in the report
+     * @param options configuration settings for data output
+     * @return a {@link Workbook} containing the processed data
+     */
     static Workbook buildXLSX(BaseDetailsExport export, List objList, Map<String, Object> fields, Map<String, Boolean> options) {
 
         Workbook workbook = new XSSFWorkbook()
@@ -214,6 +272,13 @@ class DetailsExportManager {
         workbook
     }
 
+    /**
+     * Processes the export so that data is being formatted for a PDF map
+     * @param export the export data to process
+     * @param objList the list of database objects to be exported
+     * @param fields the fields which should be included in the report
+     * @return a {@link List} containing the formatted data
+     */
     static List buildPDF(BaseDetailsExport export, List objList, Map<String, Object> fields) {
 
         ApplicationTagLib g = BeanStore.getApplicationTagLib()
@@ -246,6 +311,11 @@ class DetailsExportManager {
         [rows, ici.reverse()]
     }
 
+    /**
+     * Formats the given string list into a PDF row
+     * @param content the list to format
+     * @return the list of formatted list entries
+     */
     static List<List<String>> buildRowAsPDF(List<String> content) {
 
         content.collect{it ->
@@ -256,6 +326,12 @@ class DetailsExportManager {
         }
     }
 
+    /**
+     * Resolves the given list of database identifiers and returns the matching objects
+     * @param export the report for which the objects should be retrieved
+     * @param idList the list of database identifiers requested for the report
+     * @return a {@link List} of objects, depending on the KEY of the given export
+     */
     static List<Object> resolveObjectList(BaseDetailsExport export, List<Long> idList) {
 
         List<Object> result = []

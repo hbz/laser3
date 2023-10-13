@@ -1754,7 +1754,7 @@ class MyInstitutionController  {
                             configMap.subscriptions = SubscriptionPackage.executeQuery('select s.id from Subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes) and s.status = :current'+instanceFilter, [current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS]]).toSet()
                         */
                         FileOutputStream out = new FileOutputStream(f)
-                        Map<String,List> tableData = exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name)
+                        Map<String,Collection> tableData = exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name)
                         out.withWriter { writer ->
                             writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
                         }
@@ -4652,9 +4652,9 @@ join sub.orgRelations or_sub where
      * @return the (filtered) list of subscription transfers currently running
      * @see SubscriptionService#getMySubscriptionTransfer(grails.web.servlet.mvc.GrailsParameterMap, de.laser.auth.User, de.laser.Org)
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstUser_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     def currentSubscriptionsTransfer() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -4697,7 +4697,7 @@ join sub.orgRelations or_sub where
             out.close()
         }
 
-        result
+        render view: customerTypeService.getCustomerTypeDependingView('currentSubscriptionsTransfer'), model: result
     }
 
 

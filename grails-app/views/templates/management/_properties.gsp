@@ -334,7 +334,7 @@
                 ${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(propertiesFilterPropDef.type)}
                 <g:if test="${propertiesFilterPropDef.isRefdataValueType()}">
                     <g:set var="refdataValues" value="${[]}"/>
-                    <g:each in="${RefdataCategory.getAllRefdataValues(propertiesFilterPropDef.refdataCategory)}" var="refdataValue">
+                    <g:each in="${RefdataCategory.getAllRefdataValuesWithOrder(propertiesFilterPropDef.refdataCategory)}" var="refdataValue">
                         <g:if test="${refdataValue.getI10n('value')}">
                             <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
                         </g:if>
@@ -349,7 +349,7 @@
                 <g:if test="${propertiesFilterPropDef.isRefdataValueType()}">
                     <g:select class="ui search dropdown"
                               optionKey="id" optionValue="${{ it.getI10n('value') }}"
-                              from="${RefdataCategory.getAllRefdataValues(propertiesFilterPropDef.refdataCategory)}"
+                              from="${RefdataCategory.getAllRefdataValuesWithOrder(propertiesFilterPropDef.refdataCategory)}"
                               name="filterPropValue" value="${params.filterPropValue}"
                               required=""
                               noSelection='["": "${message(code: 'default.select.choose.label')}"]'/>

@@ -207,19 +207,16 @@ body.myInstitution_dashboard .ui.tab .item .header {
 /* debug info */
 
 #showSystemInfo {
-    position: fixed;
     bottom: 45px;
     right: 10px;
 }
 
 #showDebugInfo {
-    position: fixed;
     bottom: 45px;
     right: 55px;
 }
 
 #system-profiler {
-    position: fixed;
     bottom: 10px;
     right: 10px;
 }

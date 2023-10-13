@@ -6712,6 +6712,15 @@ a i.circular.la-gokb:hover {
   border-top-right-radius: 0.28571429rem;
   border-bottom-right-radius: 0.28571429rem;
 }
+
+/*------------------------------------
+         Buttons for debug infos
+  ------------------------------------*/
+
+.la-debugInfos {
+  position: fixed;
+  z-index: 103;
+}
 /*!
  * # Fomantic-UI ^2.9.2 - Container
  * https://github.com/fomantic/Fomantic-UI/

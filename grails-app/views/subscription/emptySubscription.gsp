@@ -31,15 +31,8 @@
                                   class="ui select dropdown"/>
                 </div>
 
-                <g:if test="${institution.isCustomerType_Support() || (institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID)}">
-                    <%
-                        List subscriptionTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)
-                        subscriptionTypes-=RDStore.SUBSCRIPTION_TYPE_LOCAL
-                    %>
-                    <div class="field">
-                        <label>${message(code:'myinst.emptySubscription.create_as')}</label>
-                        <ui:select id="asOrgType" name="type" from="${subscriptionTypes}" value="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}" optionKey="id" optionValue="value" class="ui select dropdown" />
-                    </div>
+                <g:if test="${contextService.getOrg().isCustomerType_Support()}">
+                    <input type="hidden" id="asOrgType" name="type" value="${RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE.id}" />
                 </g:if>
                 <g:elseif test="${contextService.getOrg().isCustomerType_Consortium()}">
                     <input type="hidden" id="asOrgType" name="type" value="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}" />
