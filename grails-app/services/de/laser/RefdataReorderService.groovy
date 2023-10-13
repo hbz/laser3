@@ -86,6 +86,21 @@ class RefdataReorderService {
                 default: rdv.order = i*order+40
                     break
             }
+            rdv.save()
+        }
+
+        //simuser.count: numerical order, then the textual ones
+        order = 150
+        RefdataValue.executeQuery("select rdv from RefdataValue rdv join rdv.owner rdc where rdc.desc = :simuserCnt", [simuserCnt: RDConstants.SIM_USER_NUMBER]).eachWithIndex{ RefdataValue rdv, int i ->
+            try {
+                long numericOrder = Long.parseLong(rdv.value)
+                rdv.order = numericOrder
+            }
+            catch (NumberFormatException e) {
+                rdv.order = order
+                order += 10
+            }
+            rdv.save()
         }
 
         //ToDo Order of cost.item.elements
