@@ -138,9 +138,6 @@
 
 
 <div>
-
-
-
     <ui:tabs actionName="${actionName}">
         <ui:tabsItem controller="myInstitution" action="manageParticipantSurveys"
                         params="${[id: params.id, tab: 'new', name: params.name, validOn: params.validOn, validOnYear: params.validOnYear, type: params.type, mandatory: params.mandatory, noMandatory: params.noMandatory, checkSubSurveyUseForTransfer: params.checkSubSurveyUseForTransfer]}" text="${message(code: "surveys.tabs.new")}" tab="new"
