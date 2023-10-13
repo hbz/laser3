@@ -1,22 +1,24 @@
 <%@ page import="de.laser.Subscription;de.laser.License;de.laser.DocContext;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.properties.PropertyDefinition;de.laser.interfaces.CalculatedType" %>
 <laser:htmlStart message="license.details.label" serviceInjection="true"/>
-
+<g:set var="profiler" value="${new de.laser.helper.Profiler()}"/>
+<% profiler.setBenchmark('start')%>
+        <%-- DO NOT COMMIT!
         <ui:debugInfo>
             <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
-        </ui:debugInfo>
-
+        </ui:debugInfo>--%>
+<% profiler.setBenchmark('breadcrumb')%>
         <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
-
+<% profiler.setBenchmark('control buttons')%>
         <ui:controlButtons>
             <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
         </ui:controlButtons>
-
+<% profiler.setBenchmark('header with provider')%>
         <ui:h1HeaderWithIcon visibleOrgRelations="${visibleOrgRelations}">
             <ui:xEditable owner="${license}" field="reference" id="reference"/>
         </ui:h1HeaderWithIcon>
-
+<% profiler.setBenchmark('annual rings')%>
         <ui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
-
+<% profiler.setBenchmark('nav')%>
         <laser:render template="${customerTypeService.getNavTemplatePath()}" />
 
         <%--<ui:objectStatus object="${license}" status="${license.status}" />--%>
@@ -30,12 +32,12 @@
                     </g:link>.
                 </ui:msg>
         </g:if>
-
+<% profiler.setBenchmark('identifier')%>
         <laser:render template="/templates/meta/identifier" model="${[object: license, editable: editable]}" />
 
         <ui:messages data="${flash}" />
         <laser:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" />
-
+<% profiler.setBenchmark('details')%>
         <div class="ui stackable grid">
 
             <div class="eleven wide column">
@@ -125,7 +127,7 @@
                             </div>
                         </div>
                     </div>
-
+                <% profiler.setBenchmark('properties')%>
                 <div id="new-dynamic-properties-block">
                     <laser:render template="properties" model="${[ license: license ]}" />
                 </div><!-- #new-dynamic-properties-block -->
@@ -144,6 +146,7 @@
                         <div class="ui card">
                             <div class="content">
                                 <h2 class="ui header">${message(code: 'license.details.tmplEntity')}</h2>
+                                <% profiler.setBenchmark('license org relations A')%>
                                 <laser:render template="/templates/links/orgLinksAsList"
                                           model="${[roleLinks: visibleOrgRelations,
                                                     roleObject: license,
@@ -151,7 +154,7 @@
                                                     editmode: editable,
                                                     showPersons: true
                                           ]}" />
-
+                                <% profiler.setBenchmark('license org relations B')%>
                                 <div class="ui la-vertical buttons la-js-hide-this-card">
                                     <laser:render template="/templates/links/orgLinksSimpleModal"
                                               model="${[linkType: license.class.name,
@@ -166,7 +169,7 @@
                                                         tmplType: RDStore.OT_LICENSOR,
                                                         editmode: editable
                                               ]}" />
-
+                                    <% profiler.setBenchmark('license org relations C')%>
                                     <laser:render template="/templates/links/orgLinksSimpleModal"
                                               model="${[linkType: license.class.name,
                                                         parent: license.class.name + ':' + license.id,
@@ -189,11 +192,15 @@
                     <div id="container-links">
                         <div class="ui card" id="links"></div>
                     </div>
+                    <% profiler.setBenchmark('aside')%>
                     <laser:render template="/templates/sidebar/aside" model="${[ownobj:license, owntp:'license']}" />
                 </div>
             </aside><!-- .four -->
 
         </div><!-- .grid -->
+    <ui:debugInfo>
+        <laser:render template="/templates/debug/benchMark" model="[debug: profiler.stopBenchmark()]" />
+    </ui:debugInfo>
     <laser:script file="${this.getGroovyPageFileName()}">
             $.ajax({
                 url: "<g:createLink controller="ajaxHtml" action="getLinks" />",
