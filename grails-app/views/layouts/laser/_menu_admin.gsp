@@ -53,6 +53,8 @@
         <ui:link addItemAttributes="true" controller="admin" action="listMailTemplates">${message(code:'menu.admin.manageMailTemplates')}</ui:link>
 
         <div class="divider"></div>
+        <ui:link addItemAttributes="true" controller="admin" action="missingPermantTitlesInSubs">${message(code:'menu.admin.missingPermantTitlesInSubs')}</ui:link>
+        <div class="divider"></div>
 
         <div class="item" role="menuitem" aria-haspopup="true">
             <div class="title">
