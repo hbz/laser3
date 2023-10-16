@@ -87,7 +87,7 @@ class IconTagLib {
                 icon = 'bordered inverted brown tasks la-object-extended'
                 break
             case 'yoda':
-                icon = 'la-object paw'
+                icon = 'la-object dungeon'
                 break
         }
         }

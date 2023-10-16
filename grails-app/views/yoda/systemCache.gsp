@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils" %>
+<%@ page import="groovy.json.JsonBuilder; de.laser.utils.DateUtils" %>
 
 <laser:htmlStart message="menu.yoda.systemCache" serviceInjection="true"/>
 
@@ -42,6 +42,7 @@
         ehcacheManager.getCacheNames().findAll { it -> !it.startsWith('de.laser.')},
         ehcacheManager.getCacheNames().findAll { it -> it.startsWith('de.laser.')}
     ]
+    int cacheContentIdx = 0
 %>
 
 <g:each in="${ehCaches}" var="ehCache">
@@ -81,21 +82,21 @@
                         <g:each in="${cache.getKeys().toSorted()}" var="key">
                             <g:set var="element" value="${cache.get(key)}" />
                             <g:if test="${element}">
-                                <dt>
+                                <dt style="margin-top: 0.5em;">
                                     <g:set var="ceKey" value="${element.getObjectKey() instanceof String ? element.getObjectKey() : element.getObjectKey().id}" />
-                                    ${ceKey} -
+                                    <a href="#" class="cacheContent-toggle" data-cc="${++cacheContentIdx}"><i class="icon info"></i>${ceKey}</a> -
                                     creation: ${DateUtils.getSDF_onlyTime().format(element.getCreationTime())},
                                     lastAccess: ${DateUtils.getSDF_onlyTime().format(element.getLastAccessTime())},
                                     version: ${element.version},
                                     hitCount: ${element.hitCount}
                                 </dt>
-                                <dd>
+                                <dd style="display:none" data-cc="${cacheContentIdx}">
                                     <g:set var="objectValue" value="${element.getObjectValue()}" />
                                     <g:if test="${objectValue.getClass().getSimpleName() != 'Item'}">
                                         ${objectValue}
                                     </g:if>
                                     <g:else>
-                                        ${objectValue.getValue()}
+                                        ${new JsonBuilder(objectValue.getValue()).toString()}
                                     </g:else>
                                 </dd>
                             </g:if>
@@ -132,5 +133,12 @@
 </div>
 
 <hr />
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('.cacheContent-toggle').click( function() {
+        event.preventDefault();
+        $('dd[data-cc=' + $(this).attr('data-cc') + ']').toggle();
+    });
+</laser:script>
 
 <laser:htmlEnd />

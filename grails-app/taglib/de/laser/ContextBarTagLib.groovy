@@ -97,7 +97,7 @@ class ContextBarTagLib {
 
         if (user.isYoda()) {
             text = 'Systemberechtigung: YODA'
-            icon = 'paw'
+            icon = 'dungeon'
         }
         else if (user.isAdmin()) {
             text = 'Systemberechtigung: ADMIN'
