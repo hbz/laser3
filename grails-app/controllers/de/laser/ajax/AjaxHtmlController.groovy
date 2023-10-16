@@ -6,7 +6,6 @@ import de.laser.CustomerTypeService
 import de.laser.DocContext
 import de.laser.GenericOIDService
 import de.laser.PendingChangeService
-import de.laser.AccessService
 import de.laser.AddressbookService
 import de.laser.WekbStatsService
 import de.laser.WorkflowService
@@ -14,7 +13,6 @@ import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.remote.ApiSource
-import de.laser.CacheService
 import de.laser.ContextService
 import de.laser.GokbService
 import de.laser.IssueEntitlement
@@ -50,7 +48,6 @@ import de.laser.ctrl.LicenseControllerService
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.custom.CustomWkhtmltoxService
 import de.laser.utils.DateUtils
-import de.laser.cache.EhcacheWrapper
 import de.laser.cache.SessionCacheWrapper
 import de.laser.utils.SwissKnife
 import de.laser.reporting.report.ReportingCache
@@ -67,7 +64,6 @@ import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.workflow.WfChecklist
 import de.laser.workflow.WfCheckpoint
 import de.laser.workflow.WorkflowHelper
-import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.ss.usermodel.Workbook
 import org.mozilla.universalchardet.UniversalDetector
@@ -85,9 +81,7 @@ import java.nio.charset.Charset
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxHtmlController {
 
-    AccessService accessService
     AddressbookService addressbookService
-    CacheService cacheService
     ContextService contextService
     ControlledListService controlledListService
     CustomWkhtmltoxService wkhtmltoxService // custom

@@ -245,12 +245,6 @@
 
         <% if(! flash.redirectFrom) { flash.clear() } %>
 
-        %{-- ajax login --}%
-
-        <g:if test="${controllerName != 'home'}">
-            <laser:render template="/templates/system/ajaxLogin" />
-        </g:if>
-
         %{-- javascript loading --}%
 
         <laser:javascript src="${currentTheme}.js"/>%{-- dont move --}%

@@ -136,16 +136,31 @@ r2d2 = {
             statusCode: {
                 401: function() {
                     $('*[class^=xEditable]').editable('hide');
-                    showAjaxLoginModal();
+                    loadAjaxLoginModal();
                 }
             }
         });
 
-        function showAjaxLoginModal() {
-            $('#ajaxLoginModal').modal('setting', 'closable', false).modal('show');
+        function loadAjaxLoginModal() {
+            $.ajax({
+                url: JSPC.vars.ajax.openLogin + 'blahbubhadd',
+                success: function (data) {
+                    $('body').append(data);
+
+                    $('#ajaxLoginModal').modal('setting', 'closable', false).modal('show');
+                    $('#ajaxLoginForm').submit(function(event) {
+                        event.preventDefault();
+                        sendAjaxAuth();
+                    });
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    alert("Unbekannter Fehler. Bitte melden Sie sich erneut über die Startseite an.")
+                    window.location.href = '/'
+                }
+            })
         }
 
-        function ajaxAuth() {
+        function sendAjaxAuth() {
             $.ajax({
                 url: $('#ajaxLoginForm').attr('action'),
                 data: $('#ajaxLoginForm').serialize(),
@@ -187,11 +202,6 @@ r2d2 = {
                 }
             })
         }
-
-        $('#ajaxLoginForm').submit(function(event) {
-            event.preventDefault();
-            ajaxAuth();
-        });
     },
 
     initGlobalUiStuff : function() {

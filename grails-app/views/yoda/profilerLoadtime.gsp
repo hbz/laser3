@@ -17,7 +17,7 @@
 
         <div style="position:absolute; right:0">
             <g:select name="archive" id="archive" class="ui dropdown"
-                      from="${allArchives}" optionKey="${{it[0].toString()}}" optionValue="${{it[0].toString() + ' ..... ' + it[1].toString()}}" value="${archive}"/>
+                      from="${allArchives}" optionKey="${{it[0].toString()}}" optionValue="${{it[0].toString() + ' ... ' + it[1].toString()}}" value="${archive}"/>
             <laser:script file="${this.getGroovyPageFileName()}">
                 $('#archive').on('change', function() {
                     var selection = $(this).val()
