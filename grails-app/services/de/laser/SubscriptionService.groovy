@@ -210,16 +210,24 @@ class SubscriptionService {
 
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextOrg)
         result.filterSet = tmpQ[2]
-        List<Subscription> subscriptions
+        Set<Subscription> subscriptions
         subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
         //candidate for ugliest bugfix ever ...
 
+        println(subscriptions.size())
         if(params.sort){
-            String newSort = "oo.sub.${params.sort}"
-            subscriptions = Subscription.executeQuery("select oo.sub from OrgRole oo join oo.org providerAgency where oo.sub.id in (:subscriptions) and oo.roleType in (:providerAgency) order by " + newSort +" "+ params.order + ", providerAgency.name, oo.sub.name " , [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
+            String newSort = "sub.${params.sort}"
+            if(params.sort){
+                newSort = "oo.org.name"
+            }
+
+            subscriptions = Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where (sub.id in (:subscriptions) and oo.roleType in (:providerAgency)) or sub.id in (:subscriptions) order by " + newSort +" "+ params.order + ", oo.org.name, sub.name " , [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
+            //select ooo.sub.id from OrgRole ooo where ooo.roletype in (:providerAgency) and ooo.sub != null
         }else {
             subscriptions = Subscription.executeQuery("select oo.sub from OrgRole oo join oo.org providerAgency where oo.sub.id in (:subscriptions) and oo.roleType in (:providerAgency) order by providerAgency.name, oo.sub.name ", [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
         }
+
+         println("Tsst"+ [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER.id, RDStore.OR_AGENCY.id]])
         result.allSubscriptions = subscriptions
         if(!params.exportXLS)
             result.num_sub_rows = subscriptions.size()
@@ -1211,18 +1219,6 @@ join sub.orgRelations or_sub where
             if(parentIE)
                 new_ie.status = parentIE.status
 
-            if((pickAndChoosePerpetualAccess || sub.hasPerpetualAccess) && new_ie.status != RDStore.TIPP_STATUS_EXPECTED){
-                new_ie.perpetualAccessBySub = sub
-
-                if(!PermanentTitle.findByOwnerAndTipp(sub.subscriber, tipp)){
-                    PermanentTitle permanentTitle = new PermanentTitle(subscription: sub,
-                            issueEntitlement: new_ie,
-                            tipp: tipp,
-                            owner: sub.subscriber).save()
-                }
-
-            }
-
             Date accessStartDate, accessEndDate
             if(issueEntitlementOverwrite) {
                 if(issueEntitlementOverwrite.accessStartDate) {
@@ -1251,6 +1247,18 @@ join sub.orgRelations or_sub where
             new_ie.accessStartDate = accessStartDate
             new_ie.accessEndDate = accessEndDate
             if (new_ie.save()) {
+
+                if((pickAndChoosePerpetualAccess || sub.hasPerpetualAccess) && new_ie.status != RDStore.TIPP_STATUS_EXPECTED){
+                    new_ie.perpetualAccessBySub = sub
+
+                    if(!PermanentTitle.findByOwnerAndTipp(sub.subscriber, tipp)){
+                        PermanentTitle permanentTitle = new PermanentTitle(subscription: sub,
+                                issueEntitlement: new_ie,
+                                tipp: tipp,
+                                owner: sub.subscriber).save()
+                    }
+
+                }
 
                 if(issueEntitlementGroup) {
                     IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(ie: new_ie, ieGroup: issueEntitlementGroup)

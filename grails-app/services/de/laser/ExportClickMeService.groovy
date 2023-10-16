@@ -3652,8 +3652,12 @@ class ExportClickMeService {
                     row.add(createTableCell(format, period))
                 }
                 else if (fieldKey == 'survey.ownerComment') {
-                    SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(participantResult.surveyConfig, participantResult.participant)
-                    row.add(createTableCell(format, surveyOrg.ownerComment))
+                    String ownerComment = ""
+                    if (participantResult.surveyConfig && participantResult.participant) {
+                        SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(participantResult.surveyConfig, participantResult.participant)
+                        ownerComment = surveyOrg.ownerComment
+                    }
+                    row.add(createTableCell(format, ownerComment))
                 }
                 else if (fieldKey == 'survey.periodComment') {
                     String twoComment = participantResult.participantPropertyTwoComment ?: ' '
