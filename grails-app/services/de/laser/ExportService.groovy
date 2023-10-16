@@ -2,16 +2,19 @@ package de.laser
 
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.base.AbstractReport
+import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemGroup
 import de.laser.finance.PriceItem
 import de.laser.helper.Profiler
+import de.laser.http.BasicHttpClient
 import de.laser.remote.ApiSource
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.base.AbstractCoverage
+import de.laser.system.SystemEvent
 import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.stats.Counter4Report
@@ -2073,28 +2076,76 @@ class ExportService {
 	 * @return a {@link Map} containing the revision (either counter4 or counter5) and statsUrl wth the URL to call
 	 */
 	Map<String, String> prepareSushiCall(Map platformRecord) {
-		String revision = null, statsUrl = null
-		if(platformRecord.counterR5SushiApiSupported == "Yes") {
-			revision = 'counter5'
-			statsUrl = platformRecord.counterR5SushiServerUrl
-			if (!platformRecord.counterR5SushiServerUrl.contains('reports')) {
-				if (platformRecord.counterR5SushiServerUrl.endsWith('/'))
-					statsUrl = platformRecord.counterR5SushiServerUrl + 'reports'
-				else statsUrl = platformRecord.counterR5SushiServerUrl + '/reports'
+		String revision = null, statsUrl = null, sushiApiAuthenticationMethod = null
+		if(platformRecord.counterRegistryApiUuid) {
+			String url = "${ConfigMapper.getSushiCounterRegistryUrl()}/${platformRecord.counterRegistryApiUuid}${ConfigMapper.getSushiCounterRegistryDataSuffix()}"
+			BasicHttpClient sushiRegistry = new BasicHttpClient(url)
+			try {
+				Closure success = { resp, json ->
+					if(resp.code() == 200) {
+						if(json.counter_release in ['5', '5.1'])
+							revision = "counter5"
+						statsUrl = json.url
+						if (!json.url.contains('reports')) {
+							if (json.url.endsWith('/'))
+								statsUrl = json.url + 'reports'
+							else statsUrl = json.url + '/reports'
+						}
+						boolean withRequestorId = Boolean.valueOf(json.requestor_id_required), withApiKey = Boolean.valueOf(json.api_key_required), withIpWhitelisting = Boolean.valueOf(json.ip_address_authorization)
+						if(withRequestorId) {
+							if(withApiKey) {
+								sushiApiAuthenticationMethod = AbstractReport.API_AUTH_CUSTOMER_REQUESTOR_API
+							}
+							else sushiApiAuthenticationMethod = AbstractReport.API_AUTH_CUSTOMER_REQUESTOR
+						}
+						else if(withApiKey) {
+							sushiApiAuthenticationMethod = AbstractReport.API_AUTH_CUSTOMER_API
+						}
+						else if(withIpWhitelisting) {
+							sushiApiAuthenticationMethod = AbstractReport.API_IP_WHITELISTING
+						}
+					}
+				}
+				Closure failure = { resp, reader ->
+					Map sysEventPayload = [error: "error on call at COUNTER registry", url: url]
+					SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
+				}
+				sushiRegistry.get(BasicHttpClient.ResponseType.JSON, success, failure)
+			}
+			catch (Exception e) {
+				Map sysEventPayload = [error: "invalid response returned for ${url} - ${e.getMessage()}!", url: url]
+				SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
+				log.error("stack trace: ", e)
+			}
+			finally {
+				sushiRegistry.close()
 			}
 		}
-		else if(platformRecord.counterR4SushiApiSupported == "Yes") {
-			revision = 'counter4'
-			statsUrl = platformRecord.counterR4SushiServerUrl
-			/*
-			if (!platformRecord.counterR4SushiServerUrl.contains('reports')) {
-				if (platformRecord.counterR4SushiServerUrl.endsWith('/'))
-					statsUrl = platformRecord.counterR4SushiServerUrl + 'reports'
-				else statsUrl = platformRecord.counterR4SushiServerUrl + '/reports'
+		//fallback configuration
+		if(!revision) {
+			if(platformRecord.counterR5SushiApiSupported == "Yes") {
+				revision = 'counter5'
+				statsUrl = platformRecord.counterR5SushiServerUrl
+				if (!platformRecord.counterR5SushiServerUrl.contains('reports')) {
+					if (platformRecord.counterR5SushiServerUrl.endsWith('/'))
+						statsUrl = platformRecord.counterR5SushiServerUrl + 'reports'
+					else statsUrl = platformRecord.counterR5SushiServerUrl + '/reports'
+				}
+				sushiApiAuthenticationMethod = platformRecord.sushiApiAuthenticationMethod
 			}
-			*/
+			else if(platformRecord.counterR4SushiApiSupported == "Yes") {
+				revision = 'counter4'
+				statsUrl = platformRecord.counterR4SushiServerUrl
+				/*
+                if (!platformRecord.counterR4SushiServerUrl.contains('reports')) {
+                    if (platformRecord.counterR4SushiServerUrl.endsWith('/'))
+                        statsUrl = platformRecord.counterR4SushiServerUrl + 'reports'
+                    else statsUrl = platformRecord.counterR4SushiServerUrl + '/reports'
+                }
+                */
+			}
 		}
-		[revision: revision, statsUrl: statsUrl]
+		[revision: revision, statsUrl: statsUrl, sushiApiAuthenticationMethod: sushiApiAuthenticationMethod]
 	}
 
 	/**
@@ -2164,14 +2215,13 @@ class ExportService {
 				else if(statsSource.revision == 'counter5') {
 					String url = statsSource.statsUrl + "/${configMap.reportType}"
 					url += "?customer_id=${customerId.value}"
-					switch(platformRecord.sushiApiAuthenticationMethod) {
+					switch(statsSource.sushiApiAuthenticationMethod) {
 						case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR:
 							if(customerId.requestorKey) {
 								url += "&requestor_id=${customerId.requestorKey}"
 							}
 							break
-						case AbstractReport.API_AUTH_CUSTOMER_API:
-						case AbstractReport.API_AUTH_REQUESTOR_API:
+						case [AbstractReport.API_AUTH_CUSTOMER_API, AbstractReport.API_AUTH_REQUESTOR_API]:
 							if(customerId.requestorKey) {
 								url += "&api_key=${customerId.requestorKey}"
 							}

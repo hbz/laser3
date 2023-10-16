@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5325    16.10.2023  dev     3.3         Andreas Feature     LAS:eR nutzt jetzt auch die SUSHI-Konfigurationen aus der Counter-Registry
+
+5324    16.10.2023  dev     3.3         Andreas Feature     fehlerhafte SUSHI-Calls werden in SystemEvents gespeichert
+
 2276    11.10.2023  dev     3.3         David   Feature     Neuer Kundentyp: ORG_ADMINISTRATION
 
 4636    11.10.2023  dev     3.3         David   Feature     SystemEvents per Mail - Refactoring
