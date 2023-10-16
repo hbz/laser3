@@ -284,7 +284,7 @@
                             <g:if test="${!surveyConfig.hasOrgSubscription(participant)}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'surveyResult.newOrg')}">
-                                    <i class="star black large  icon"></i>
+                                    <i class="la-sparkles large icon"></i>
                                 </span>
                             </g:if>
 
