@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org" %>
+<%@ page import="de.laser.system.SystemProfiler; de.laser.Org" %>
 <laser:htmlStart message="menu.yoda.profilerLoadtime">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
@@ -8,7 +8,7 @@
     <ui:crumb message="menu.yoda.profiler" class="active"/>
 </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon message="menu.yoda.profiler" type="yoda" />
+    <ui:h1HeaderWithIcon message="menu.yoda.profiler" type="yoda" total="${SystemProfiler.executeQuery('select count(*) from SystemProfiler')[0]}" />
 
     <nav class="ui secondary menu">
         <g:link controller="yoda" action="profilerLoadtime" class="item active">Ladezeiten</g:link>
@@ -17,7 +17,7 @@
 
         <div style="position:absolute; right:0">
             <g:select name="archive" id="archive" class="ui dropdown"
-                      from="${allArchives}" optionKey="${{it.toString()}}" optionValue="${{it.toString()}}" value="${archive}"/>
+                      from="${allArchives}" optionKey="${{it[0].toString()}}" optionValue="${{it[0].toString() + ' ..... ' + it[1].toString()}}" value="${archive}"/>
             <laser:script file="${this.getGroovyPageFileName()}">
                 $('#archive').on('change', function() {
                     var selection = $(this).val()

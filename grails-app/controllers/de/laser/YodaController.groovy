@@ -336,7 +336,9 @@ class YodaController {
         result.globalMatrixSteps = [0, 2000, 4000, 8000, 12000, 20000, 30000, 45000, 60000]
 
         result.archive = params.archive ?: SystemProfiler.getCurrentArchive()
-        result.allArchives = SystemProfiler.executeQuery('select distinct(archive) from SystemProfiler').collect{ it }
+        result.allArchives = SystemProfiler.executeQuery('select distinct(archive) from SystemProfiler').collect{ it ->
+            [it,  SystemProfiler.executeQuery('select count(*) from SystemProfiler where archive =: archive', [archive: it])[0]]
+        }
 
         List<String> allUri = SystemProfiler.executeQuery('select distinct(uri) from SystemProfiler')
 
