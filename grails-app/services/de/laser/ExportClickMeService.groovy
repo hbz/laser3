@@ -556,8 +556,8 @@ class ExportClickMeService {
                             'subscription.offerRequested'                : [field: 'offerRequested', label: 'Offer Requested', message: 'subscription.offerRequested.label'],
                             'subscription.offerRequestedDate'            : [field: 'offerRequestedDate', label: 'Offer Requested Date', message: 'subscription.offerRequestedDate.label'],
                             'subscription.offerAccepted'                 : [field: 'offerAccepted', label: 'Offer Accepted', message: 'subscription.offerAccepted.label'],
-                            'subscription.manualCancellationDate'        : [field: 'offerNote', label: 'Offer Note', message: 'subscription.offerNote.label'],
-                            'subscription.offerNote'                     : [field: 'priceIncreaseInfo', label: 'Price Increase Info', message: 'subscription.priceIncreaseInfo.label'],
+                            'subscription.offerNote'                     : [field: 'offerNote', label: 'Offer Note', message: 'subscription.offerNote.label'],
+                            'subscription.priceIncreaseInfo'             : [field: 'priceIncreaseInfo', label: 'Price Increase Info', message: 'subscription.priceIncreaseInfo.label'],
                             'subscription.renewalSent'                   : [field: 'renewalSent', label: 'Renewal Sent', message: 'subscription.renewalSent.label'],
                             'subscription.renewalSentDate'               : [field: 'renewalSentDate', label: 'Renewal Sent Date', message: 'subscription.renewalSentDate.label'],
                             'subscription.participantTransferWithSurvey' : [field: 'participantTransferWithSurvey', label: 'Participant Transfe With Survey', message: 'subscription.participantTransferWithSurvey.label'],
@@ -1320,7 +1320,8 @@ class ExportClickMeService {
      */
     Map<String, Object> getExportRenewalFieldsForUI(SurveyConfig surveyConfig) {
 
-        Map<String, Object> fields = EXPORT_RENEWAL_CONFIG as Map
+        Map<String, Object> fields = [:]
+        fields.putAll(EXPORT_RENEWAL_CONFIG)
         Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
@@ -1432,7 +1433,8 @@ class ExportClickMeService {
      */
     Map<String, Object> getExportSubscriptionMembersFieldsForUI(Subscription subscription, Org institution) {
 
-        Map<String, Object> fields = EXPORT_SUBSCRIPTION_MEMBERS_CONFIG as Map
+        Map<String, Object> fields = [:]
+        fields.putAll(EXPORT_SUBSCRIPTION_MEMBERS_CONFIG)
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
         fields.participantIdentifiers.fields.clear()
@@ -1518,9 +1520,9 @@ class ExportClickMeService {
 
         if(showTransferFields){
             EXPORT_SUBSCRIPTION_TRANSFER_CONFIG.keySet().each { String key ->
-                    EXPORT_SUBSCRIPTION_TRANSFER_CONFIG.get(key).fields.each {
-                        exportFields.put(it.key, it.value)
-                    }
+                EXPORT_SUBSCRIPTION_TRANSFER_CONFIG.get(key).fields.each {
+                    exportFields.put(it.key, it.value)
+                }
             }
         }
 
@@ -1586,7 +1588,8 @@ class ExportClickMeService {
      */
     Map<String, Object> getExportSubscriptionFieldsForUI(Org institution, boolean showTransferFields = false) {
 
-        Map<String, Object> fields = EXPORT_SUBSCRIPTION_CONFIG as Map
+        Map<String, Object> fields = [:]
+        fields.putAll(EXPORT_SUBSCRIPTION_CONFIG)
         if(institution.getCustomerType() == CustomerTypeService.ORG_INST_PRO)
             fields.subscription.fields.put('subscription.isAutomaticRenewAnnually', [field: 'isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
         if (!institution.isCustomerType_Consortium()) {
@@ -1746,8 +1749,8 @@ class ExportClickMeService {
      */
     Map<String, Object> getExportConsortiaParticipationFieldsForUI(Org consortium) {
 
-        Map<String, Object> fields = EXPORT_CONSORTIA_PARTICIPATIONS_CONFIG as Map
-
+        Map<String, Object> fields = [:]
+        fields.putAll(EXPORT_CONSORTIA_PARTICIPATIONS_CONFIG)
         Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName
         String localizedValue
@@ -1877,7 +1880,8 @@ class ExportClickMeService {
      */
     Map<String, Object> getExportLicenseFieldsForUI(Org institution) {
 
-        Map<String, Object> fields = EXPORT_LICENSE_CONFIG as Map
+        Map<String, Object> fields = [:]
+        fields.putAll(EXPORT_LICENSE_CONFIG)
         if (!institution.isCustomerType_Consortium()) {
             fields.remove('institutions')
             fields.licenses.fields.put('consortium', [field: null, label: 'Consortium', message: 'consortium.label', defaultChecked: true])
@@ -1976,7 +1980,8 @@ class ExportClickMeService {
     Map<String, Object> getExportCostItemFieldsForUI(Subscription sub = null) {
         Org institution = contextService.getOrg()
 
-        Map<String, Object> fields = EXPORT_COST_ITEM_CONFIG as Map
+        Map<String, Object> fields = [:]
+        fields.putAll(EXPORT_COST_ITEM_CONFIG)
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
         if(institution.getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO]) {
@@ -2151,7 +2156,7 @@ class ExportClickMeService {
     Map<String, Object> getExportOrgFieldsForUI(String orgType) {
 
         Org contextOrg = contextService.getOrg()
-        Map<String, Object> fields, contextParams = [ctx: contextOrg]
+        Map<String, Object> fields = [:], contextParams = [ctx: contextOrg]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
         SortedSet<RefdataValue> contactTypes = new TreeSet<RefdataValue>(), addressTypes = new TreeSet<RefdataValue>()
         contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
@@ -2160,7 +2165,7 @@ class ExportClickMeService {
         addressTypes.addAll(RefdataCategory.getAllRefdataValues(RDConstants.ADDRESS_TYPE))
 
         switch(orgType) {
-            case 'consortium': fields = EXPORT_CONSORTIA_CONFIG as Map
+            case 'consortium': fields.putAll(EXPORT_CONSORTIA_CONFIG)
                 fields.consortiumIdentifiers.fields.clear()
                 IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
                     fields.consortiumIdentifiers.fields << ["consortiumIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
@@ -2182,7 +2187,7 @@ class ExportClickMeService {
                     fields.consortiumAddresses.fields.put("consortiumAddress.${addressType.value}", [field: null, label: addressType.getI10n('value')])
                 }
                 break
-            case 'institution': fields = EXPORT_ORG_CONFIG as Map
+            case 'institution': fields.putAll(EXPORT_ORG_CONFIG)
                 fields.participant.fields << ['participant.subscriptions':[field: null, label: 'Subscriptions',  message: 'subscription.plural']]
                 fields.participantIdentifiers.fields.clear()
                 IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
@@ -2210,7 +2215,7 @@ class ExportClickMeService {
                     fields.participantAddresses.fields.put("participantAddress.${addressType.value}", [field: null, label: addressType.getI10n('value')])
                 }
                 break
-            case 'provider': fields = EXPORT_PROVIDER_CONFIG as Map
+            case 'provider': fields.putAll(EXPORT_PROVIDER_CONFIG)
                 fields.providerIdentifiers.fields.clear()
                 IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_PROVIDER_NS, [sort: 'ns']).each {
                     fields.providerIdentifiers.fields << ["providerIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
@@ -2304,7 +2309,9 @@ class ExportClickMeService {
 
     Map<String, Object> getExportAddressFieldsForUI() {
 
-        Map<String, Object> fields = EXPORT_ADDRESS_CONFIG as Map, filterFields = EXPORT_ADDRESS_FILTER as Map
+        Map<String, Object> fields = [:], filterFields = [:]
+        fields.putAll(EXPORT_ADDRESS_CONFIG)
+        filterFields.putAll(EXPORT_ADDRESS_FILTER)
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
         Org institution = contextService.getOrg()
@@ -2422,7 +2429,8 @@ class ExportClickMeService {
      */
     Map<String, Object> getExportSurveyEvaluationFieldsForUI(SurveyConfig surveyConfig) {
 
-        Map<String, Object> fields = EXPORT_SURVEY_EVALUATION as Map
+        Map<String, Object> fields = [:]
+        fields.putAll(EXPORT_SURVEY_EVALUATION)
         Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
         Org contextOrg = contextService.getOrg()
@@ -2531,7 +2539,8 @@ class ExportClickMeService {
      */
     Map<String, Object> getExportIssueEntitlementFieldsForUI() {
 
-        Map<String, Object> fields = EXPORT_ISSUE_ENTITLEMENT_CONFIG as Map
+        Map<String, Object> fields = [:]
+        fields.putAll(EXPORT_ISSUE_ENTITLEMENT_CONFIG)
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
         if(contextService.getOrg().getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO]) {
@@ -2584,7 +2593,8 @@ class ExportClickMeService {
      */
     Map<String, Object> getExportTippFieldsForUI() {
 
-        Map<String, Object> fields = EXPORT_TIPP_CONFIG as Map
+        Map<String, Object> fields = [:]
+        fields.putAll(EXPORT_TIPP_CONFIG)
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
         IdentifierNamespace.findAllByNsType(TitleInstancePackagePlatform.class.name, [sort: 'ns']).each {
