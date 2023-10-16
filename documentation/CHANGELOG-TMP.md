@@ -7,6 +7,18 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5320    16.10.2023   rc-3.2  3.2.6      Moe     Bug         Hinzufügen von Titel mit Plus Button triggert kein dauerhaften Titel
+
+5321    16.10.2023   rc-3.2  3.2.6      Moe     Bug         Lizenzen ohne Anbieter oder Lieferanten fallen in der Übersicht von Lizenzübertrag vom Tisch
+
+--      16.10.2023   rc-3.2  3.2.6      Moe     Bug         500er by clickMeExcel on survey
+
+--      16.10.2023   rc-3.2  3.2.6      Moe     Bug         Bugfix: currentSubscriptionsTransfer not show any more termination by started survey
+
+5322    16.10.2023   rc-3.2  3.2.6      Moe     Bug         Neue Sicht für Lizenzen mit dauerhaft Flag aber Title, die nicht dauerhaft gesetzt wurden sind
+
+--      16.10.2023   rc-3.2  3.2.6      Moe     Bug         Bugfix show ie 500 error
+
 5309    09.10.2023  rc-3.2  3.2.6       Andreas Bug         falsches Spaltenmapping bei "Kündigungsdatum"
 
 5290    02.10.2023  rc-3.2  3.2.6       Moe     Bug         Warnmeldung bei Ausführung Umfrage beenden
