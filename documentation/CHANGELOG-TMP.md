@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5312    16.10.2023   rc-3.2  3.2.6      Moe     Bug         Umfrage für andere Konsortialstellen sichtbar
+
 5320    16.10.2023   rc-3.2  3.2.6      Moe     Bug         Hinzufügen von Titel mit Plus Button triggert kein dauerhaften Titel
 
 5321    16.10.2023   rc-3.2  3.2.6      Moe     Bug         Lizenzen ohne Anbieter oder Lieferanten fallen in der Übersicht von Lizenzübertrag vom Tisch
