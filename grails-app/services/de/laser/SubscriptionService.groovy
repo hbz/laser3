@@ -1219,18 +1219,6 @@ join sub.orgRelations or_sub where
             if(parentIE)
                 new_ie.status = parentIE.status
 
-            if((pickAndChoosePerpetualAccess || sub.hasPerpetualAccess) && new_ie.status != RDStore.TIPP_STATUS_EXPECTED){
-                new_ie.perpetualAccessBySub = sub
-
-                if(!PermanentTitle.findByOwnerAndTipp(sub.subscriber, tipp)){
-                    PermanentTitle permanentTitle = new PermanentTitle(subscription: sub,
-                            issueEntitlement: new_ie,
-                            tipp: tipp,
-                            owner: sub.subscriber).save()
-                }
-
-            }
-
             Date accessStartDate, accessEndDate
             if(issueEntitlementOverwrite) {
                 if(issueEntitlementOverwrite.accessStartDate) {
@@ -1259,6 +1247,18 @@ join sub.orgRelations or_sub where
             new_ie.accessStartDate = accessStartDate
             new_ie.accessEndDate = accessEndDate
             if (new_ie.save()) {
+
+                if((pickAndChoosePerpetualAccess || sub.hasPerpetualAccess) && new_ie.status != RDStore.TIPP_STATUS_EXPECTED){
+                    new_ie.perpetualAccessBySub = sub
+
+                    if(!PermanentTitle.findByOwnerAndTipp(sub.subscriber, tipp)){
+                        PermanentTitle permanentTitle = new PermanentTitle(subscription: sub,
+                                issueEntitlement: new_ie,
+                                tipp: tipp,
+                                owner: sub.subscriber).save()
+                    }
+
+                }
 
                 if(issueEntitlementGroup) {
                     IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(ie: new_ie, ieGroup: issueEntitlementGroup)
