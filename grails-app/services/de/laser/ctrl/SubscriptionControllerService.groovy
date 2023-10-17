@@ -4480,7 +4480,8 @@ class SubscriptionControllerService {
         Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         Subscription sub = Subscription.get(params.id)
 
-        result.token           = params.token ?: RandomStringUtils.randomAlphanumeric(16) // -> static token
+//        result.token           = params.token ?: RandomStringUtils.randomAlphanumeric(24) // -> static token
+        result.token           = params.token ?: RandomStringUtils.randomAlphanumeric(16) + '#' + params.id // -> static token
         result.cfgQueryList    = SubscriptionReport.getCurrentQueryConfig( sub )
         result.cfgChartsList   = BaseConfig.CHARTS
         result.cfgTimelineList = SubscriptionReport.getCurrentTimelineConfig( sub )

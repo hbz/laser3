@@ -143,7 +143,7 @@ r2d2 = {
 
         function loadAjaxLoginModal() {
             $.ajax({
-                url: JSPC.vars.ajax.openLogin + 'blahbubhadd',
+                url: JSPC.vars.ajax.openLogin,
                 success: function (data) {
                     $('body').append(data);
 

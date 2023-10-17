@@ -1,6 +1,7 @@
 package de.laser.ajax
 
 import de.laser.AlternativeName
+import de.laser.CacheService
 import de.laser.ControlledListService
 import de.laser.CustomerTypeService
 import de.laser.DocContext
@@ -9,6 +10,7 @@ import de.laser.PendingChangeService
 import de.laser.AddressbookService
 import de.laser.WekbStatsService
 import de.laser.WorkflowService
+import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
@@ -32,6 +34,7 @@ import de.laser.Person
 import de.laser.PersonRole
 import de.laser.SubscriptionPackage
 import de.laser.SubscriptionService
+import de.laser.storage.BeanStore
 import de.laser.storage.PropertyStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyConfigProperties
@@ -82,6 +85,7 @@ import java.nio.charset.Charset
 class AjaxHtmlController {
 
     AddressbookService addressbookService
+    CacheService cacheService
     ContextService contextService
     ControlledListService controlledListService
     CustomWkhtmltoxService wkhtmltoxService // custom
@@ -693,17 +697,16 @@ class AjaxHtmlController {
             tab: params.tab
         ]
 
-        SessionCacheWrapper sessionCache = contextService.getSessionCache()
-        Closure getReportingKeys = {
-            sessionCache.list().keySet().findAll{ it.startsWith("MyInstitutionController/reporting/") }
-        }
+        String cachePref = ReportingCache.CTX_GLOBAL + '/' + BeanStore.getContextService().getUser().id // user bound
+        EhcacheWrapper ttl1800 = cacheService.getTTL1800Cache(cachePref)
+
+        List<String> reportingKeys = ttl1800.getKeys().findAll { it.startsWith(cachePref + '_') } as List<String>
+        List<String> reportingTokens = reportingKeys.collect { it.replace(cachePref + '_', '')}
 
         if (params.context == BaseConfig.KEY_MYINST) {
 
             if (params.cmd == 'deleteHistory') {
-                getReportingKeys().each {it ->
-                    sessionCache.remove( it )
-                }
+                reportingTokens.each {it -> ttl1800.remove( it ) }
             }
             else if (params.token) {
                 if (params.cmd == 'addBookmark') {
@@ -724,10 +727,8 @@ class AjaxHtmlController {
                 }
             }
         }
-        result.bookmarks = ReportingFilter.findAllByOwner( contextService.getUser(), [sort: 'lastUpdated', order: 'desc'] )
-
-        result.filterHistory = getReportingKeys().sort { a,b -> sessionCache.get(b).meta.timestamp <=> sessionCache.get(a).meta.timestamp }.take(5)
-        getReportingKeys().findAll{ it -> ! result.filterHistory.contains( it ) }.each { it -> sessionCache.remove(it) }
+        result.bookmarks     = ReportingFilter.findAllByOwner( contextService.getUser(), [sort: 'lastUpdated', order: 'desc'] )
+        result.filterHistory = reportingTokens.sort { a,b -> ttl1800.get(b).meta.timestamp <=> ttl1800.get(a).meta.timestamp }.take(5)
 
         render template: '/myInstitution/reporting/historyAndBookmarks', model: result
     }

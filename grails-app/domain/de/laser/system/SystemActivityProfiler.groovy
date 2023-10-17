@@ -10,7 +10,7 @@ import de.laser.storage.BeanStore
  */
 class SystemActivityProfiler {
 
-    static final String CACHE_KEY_ACTIVE_USER = 'systemActivityProfiler/activeUser'
+    static final String CACHE_KEY_ACTIVE_USER = 'SystemActivityProfiler/activeUser'
 
     Integer userCount
     Date dateCreated

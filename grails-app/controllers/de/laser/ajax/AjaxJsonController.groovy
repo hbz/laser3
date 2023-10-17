@@ -1170,36 +1170,37 @@ class AjaxJsonController {
 
     // ----- reporting -----
 
-    /**
-     * Checks the current state of the reporting cache
-     * @return a {@link Map} reflecting the existence, the filter cache, query cache and details cache states
-     */
-    @Secured(['ROLE_USER'])
-    def checkReportingCache() {
-
-        Map<String, Object> result = [
-            exists: false
-        ]
-
-        if (params.context in [ BaseConfig.KEY_MYINST, BaseConfig.KEY_SUBSCRIPTION ]) {
-            ReportingCache rCache
-
-            if (params.token) {
-                rCache = new ReportingCache( params.context, params.token )
-                result.token = params.token
-            }
-            else {
-                rCache = new ReportingCache( params.context )
-            }
-
-            result.exists       = rCache.exists()
-            result.filterCache  = rCache.get().filterCache ? true : false
-            result.queryCache   = rCache.get().queryCache ? true : false
-            result.detailsCache = rCache.get().detailsCache ? true : false
-        }
-
-        render result as JSON
-    }
+//    /**
+//     * Checks the current state of the reporting cache
+//     * @return a {@link Map} reflecting the existence, the filter cache, query cache and details cache states
+//     */
+//    @Deprecated
+//    @Secured(['ROLE_USER'])
+//    def checkReportingCache() {
+//
+//        Map<String, Object> result = [
+//            exists: false
+//        ]
+//
+//        if (params.context in [ BaseConfig.KEY_MYINST, BaseConfig.KEY_SUBSCRIPTION ]) {
+//            ReportingCache rCache
+//
+//            if (params.token) {
+//                rCache = new ReportingCache( params.context, params.token )
+//                result.token = params.token
+//            }
+//            else {
+//                rCache = new ReportingCache( params.context )
+//            }
+//
+//            result.exists       = rCache.exists()
+//            result.filterCache  = rCache.get().filterCache ? true : false
+//            result.queryCache   = rCache.get().queryCache ? true : false
+//            result.detailsCache = rCache.get().detailsCache ? true : false
+//        }
+//
+//        render result as JSON
+//    }
 
     /**
      * Outputs a chart from the given report parameters
