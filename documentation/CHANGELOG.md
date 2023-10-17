@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3680    17.10.2023  dev     3.3         David   Feature     Reporting: Session-Handling verbessern
+
 2276    11.10.2023  dev     3.3         David   Feature     Neuer Kundentyp: ORG_ADMINISTRATION
 
 4636    11.10.2023  dev     3.3         David   Feature     SystemEvents per Mail - Refactoring

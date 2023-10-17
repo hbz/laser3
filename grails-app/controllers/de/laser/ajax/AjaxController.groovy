@@ -56,7 +56,6 @@ class AjaxController {
 
     GenericOIDService genericOIDService
     ContextService contextService
-    AccessService accessService
     EscapeService escapeService
     FormService formService
     DashboardDueDatesService dashboardDueDatesService

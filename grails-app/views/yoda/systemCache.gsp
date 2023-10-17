@@ -22,7 +22,7 @@
         <dl>
             <g:each in="${contextService.getSessionCache().list()}" var="entry">
                 <dt style="margin-top:0.5em">
-                    <g:link controller="yoda" action="systemCache" params="${[key: entry.key]}" target="_blank"><i class="icon list alternate outline"></i> ${entry.key}</g:link>
+                    <g:link controller="yoda" action="systemCache" params="${[key: entry.key]}" target="_blank"><i class="icon database"></i> ${entry.key}</g:link>
                 </dt>
                 <dd>
                      ${entry.value} <em>(${entry.value.class?.name})</em>
@@ -84,7 +84,7 @@
                             <g:if test="${element}">
                                 <dt style="margin-top: 0.5em;">
                                     <g:set var="ceKey" value="${element.getObjectKey() instanceof String ? element.getObjectKey() : element.getObjectKey().id}" />
-                                    <a href="#" class="cacheContent-toggle" data-cc="${++cacheContentIdx}"><i class="icon info"></i>${ceKey}</a> -
+                                    <a href="#" class="cacheContent-toggle" data-cc="${++cacheContentIdx}"><i class="icon list alternate outline"></i>${ceKey}</a> -
                                     creation: ${DateUtils.getSDF_onlyTime().format(element.getCreationTime())},
                                     lastAccess: ${DateUtils.getSDF_onlyTime().format(element.getLastAccessTime())},
                                     version: ${element.version},

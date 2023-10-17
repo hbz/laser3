@@ -3,7 +3,6 @@ package de.laser.ajax
 import de.laser.AlternativeName
 import de.laser.CustomerTypeService
 import de.laser.GenericOIDService
-import de.laser.AccessService
 import de.laser.CompareService
 import de.laser.ContextService
 import de.laser.ControlledListService
@@ -17,7 +16,6 @@ import de.laser.ReportingLocalService
 import de.laser.SubscriptionDiscountScale
 import de.laser.SubscriptionService
 import de.laser.auth.Role
-import de.laser.ctrl.SubscriptionControllerService
 import de.laser.finance.PriceItem
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
@@ -43,7 +41,6 @@ import de.laser.annotations.DebugInfo
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
-import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -62,7 +59,6 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxJsonController {
 
-    AccessService accessService
     CompareService compareService
     ContextService contextService
     ControlledListService controlledListService
@@ -73,7 +69,6 @@ class AjaxJsonController {
     ReportingGlobalService reportingGlobalService
     ReportingLocalService reportingLocalService
     SubscriptionService subscriptionService
-    SubscriptionControllerService subscriptionControllerService
 
     /**
      * Test call

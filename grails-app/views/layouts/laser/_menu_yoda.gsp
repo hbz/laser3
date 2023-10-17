@@ -30,7 +30,7 @@
 
         <div class="item" role="menuitem" aria-haspopup="true">
             <div class="title">
-                <i class="stopwatch icon"></i> Profiler <i class="dropdown icon"></i>
+                <i class="tachometer alternate icon"></i> Profiler <i class="dropdown icon"></i>
             </div>
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="yoda" action="profilerLoadtime">${message(code:'menu.yoda.profilerLoadtime')}</ui:link>
