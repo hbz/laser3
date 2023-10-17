@@ -3016,18 +3016,20 @@ class MyInstitutionController  {
         }
         SimpleDateFormat sdFormat = DateUtils.getLocalizedSDF_noTime()
         Map<String, Object> queryForFilter = filterService.getTaskQuery(params, sdFormat)
-        int offset = params.offset ? Integer.parseInt(params.offset) : 0
-        result.taskInstanceList = taskService.getTasksByResponsibles(result.user, result.institution, queryForFilter)
-        result.taskInstanceList = taskService.chopOffForPageSize(result.taskInstanceList, result.user, offset)
 
-        result.myTaskInstanceList = taskService.getTasksByCreator(result.user,  queryForFilter, null)
-        result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
+        SwissKnife.setPaginationParams(result, params, result.user as User)
+
+        List<Task> taskInstanceList     = taskService.getTasksByResponsibles(result.user as User, result.institution as Org, queryForFilter)
+        List<Task> myTaskInstanceList   = taskService.getTasksByCreator(result.user as User, queryForFilter)
+
+        result.taskCount    = taskInstanceList.size()
+        result.myTaskCount  = myTaskInstanceList.size()
+
+        result.taskInstanceList = (taskInstanceList + myTaskInstanceList).unique()
 
         Map<String, Object> preCon = taskService.getPreconditions(result.institution)
         result << preCon
 
-        //log.debug(result.taskInstanceList.toString())
-        //log.debug(result.myTaskInstanceList.toString())
         result
     }
 

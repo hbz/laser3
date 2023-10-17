@@ -9,7 +9,7 @@
             <laser:render template="${customerTypeService.getActionsTemplatePath()}"/>
         </ui:controlButtons>
 
-        <ui:h1HeaderWithIcon message="menu.my.tasks" type="task" floated="true" />
+        <ui:h1HeaderWithIcon message="menu.my.tasks" type="task" floated="true" total="${taskCount}/${myTaskCount}" />
 
         <%--<g:if test="${editable}">
             <input type="submit" class="ui left floated  button la-clear-before" value="${message(code:'task.create.new')}" data-ui="modal" data-href="#modalCreateTask" />
@@ -19,11 +19,9 @@
             <form class="ui form">
                 <div class="four fields">
                     <div class="field">
-                        <label>${message(code: 'default.title.label')}</label>
+                        <label for="taskName">${message(code: 'default.title.label')}</label>
                         <div class="ui input">
-                            <input type="text" name="taskName"
-                                   placeholder="${message(code: 'default.search.ph')}"
-                                   value="${params.taskName}"/>
+                            <input type="text" id="taskName" name="taskName" placeholder="${message(code: 'default.search.ph')}" value="${params.taskName}"/>
                         </div>
                     </div>
 

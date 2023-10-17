@@ -20,6 +20,7 @@ import de.laser.utils.LocaleUtils
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
+import de.laser.utils.SwissKnife
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -84,8 +85,8 @@ class SurveyControllerService {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            int offset = params.offset ? Integer.parseInt(params.offset) : 0
-            result.putAll(taskService.getTasks(offset, (User) result.user, (Org) result.institution, result.surveyConfig))
+            SwissKnife.setPaginationParams(result, params, result.user as User)
+            result.taskInstanceList = taskService.getTasks((User) result.user, (Org) result.institution, (SurveyConfig) result.surveyConfig)['cmbTaskInstanceList']
             [result:result,status:STATUS_OK]
         }
     }

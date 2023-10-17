@@ -334,8 +334,8 @@ class SubscriptionControllerService {
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
-            int offset = params.offset ? Integer.parseInt(params.offset) : 0
-            result.putAll(taskService.getTasks(offset, (User) result.user, (Org) result.institution, result.subscription))
+            SwissKnife.setPaginationParams(result, params, result.user as User)
+            result.taskInstanceList = taskService.getTasks((User) result.user, (Org) result.institution, (Subscription) result.subscription)['cmbTaskInstanceList']
             [result:result,status:STATUS_OK]
         }
     }
