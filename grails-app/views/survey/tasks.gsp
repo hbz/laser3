@@ -33,9 +33,6 @@
     : ${message(code: 'task.plural')}
 </h2>
 
-<laser:render template="/templates/tasks/tables" model="${[
-        taskInstanceList: taskInstanceList,
-        myTaskInstanceList: myTaskInstanceList
-]}"/>
+<laser:render template="/templates/tasks/tables" model="${[cmbTaskInstanceList: cmbTaskInstanceList]}"/>
 
 <laser:htmlEnd />

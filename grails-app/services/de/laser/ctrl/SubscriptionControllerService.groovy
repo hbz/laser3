@@ -335,7 +335,7 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         else {
             SwissKnife.setPaginationParams(result, params, result.user as User)
-            result.taskInstanceList = taskService.getTasks((User) result.user, (Org) result.institution, (Subscription) result.subscription)['cmbTaskInstanceList']
+            result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Org) result.institution, (Subscription) result.subscription)['cmbTaskInstanceList']
             [result:result,status:STATUS_OK]
         }
     }

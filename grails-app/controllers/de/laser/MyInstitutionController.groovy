@@ -3025,7 +3025,7 @@ class MyInstitutionController  {
         result.taskCount    = taskInstanceList.size()
         result.myTaskCount  = myTaskInstanceList.size()
 
-        result.taskInstanceList = (taskInstanceList + myTaskInstanceList).unique()
+        result.cmbTaskInstanceList = (taskInstanceList + myTaskInstanceList).unique()
 
         Map<String, Object> preCon = taskService.getPreconditions(result.institution)
         result << preCon

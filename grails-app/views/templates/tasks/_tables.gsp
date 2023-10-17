@@ -1,8 +1,5 @@
 
-<laser:render template="/templates/tasks/table" model="${[taskInstanceList: taskInstanceList.drop((int) offset).take((int) max), taskInstanceCount: taskInstanceList.size()]}"/>
-
-%{--<laser:render template="/templates/tasks/table" model="${[taskInstanceList: taskInstanceList, taskInstanceCount: taskInstanceList.size()]}"/>--}%
-%{--<laser:render template="/templates/tasks/table" model="${[taskInstanceList: myTaskInstanceList, taskInstanceCount: myTaskInstanceList.size()]}"/>--}%
+<laser:render template="/templates/tasks/table" model="${[cmbTaskInstanceList: cmbTaskInstanceList.drop((int) offset).take((int) max), cmbTaskInstanceCount: cmbTaskInstanceList.size()]}"/>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.editTask = function (id) {

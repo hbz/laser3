@@ -1230,7 +1230,7 @@ class OrganisationController  {
             response.sendError(401); return
         }
         SwissKnife.setPaginationParams(result, params, result.user as User)
-        result.taskInstanceList = taskService.getTasks((User) result.user, (Org) result.institution, (Org) result.orgInstance)['cmbTaskInstanceList']
+        result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Org) result.institution, (Org) result.orgInstance)['cmbTaskInstanceList']
 
         result
     }

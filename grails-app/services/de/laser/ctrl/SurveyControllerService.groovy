@@ -86,7 +86,7 @@ class SurveyControllerService {
         }
         else {
             SwissKnife.setPaginationParams(result, params, result.user as User)
-            result.taskInstanceList = taskService.getTasks((User) result.user, (Org) result.institution, (SurveyConfig) result.surveyConfig)['cmbTaskInstanceList']
+            result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Org) result.institution, (SurveyConfig) result.surveyConfig)['cmbTaskInstanceList']
             [result:result,status:STATUS_OK]
         }
     }

@@ -52,9 +52,6 @@
 
         <laser:render template="/templates/tasks/modal_create" />
 
-        <laser:render template="/templates/tasks/tables" model="${[
-                taskInstanceList: taskInstanceList,
-                myTaskInstanceList: myTaskInstanceList
-        ]}"/>
+        <laser:render template="/templates/tasks/tables" model="${[cmbTaskInstanceList: cmbTaskInstanceList]}"/>
 
 <laser:htmlEnd />
