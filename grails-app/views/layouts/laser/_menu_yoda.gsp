@@ -82,11 +82,14 @@
             </div>
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.yoda.globalDataSync')}</ui:link>
-                <div class="item" role="menuitem" aria-haspopup="true">
-                    <div class="title">
-                        ${message(code:'menu.admin.syncManagement.reload')} <i class="dropdown icon"></i>
-                    </div>
-                    <div class="menu" role="menu">
+                <ui:link addItemAttributes="true" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</ui:link>
+                <div class="divider"></div>
+
+%{--                <div class="item" role="menuitem" aria-haspopup="true">--}%
+%{--                    <div class="title">--}%
+%{--                        ${message(code:'menu.admin.syncManagement.reload')} <i class="dropdown icon"></i>--}%
+%{--                    </div>--}%
+%{--                    <div class="menu" role="menu">--}%
                         <ui:link addItemAttributes="true" controller="yoda" action="reloadWekbOrg" params="[componentType:GlobalSourceSyncService.ORG_TYPE_PROVIDER]" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.reloadProvider')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="reloadWekbOrg" params="[componentType:GlobalSourceSyncService.ORG_TYPE_VENDOR]" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.reloadAgencies')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="reloadWekbPlatform" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.reloadPlatform')}</ui:link>
@@ -101,9 +104,10 @@
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'accessType']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateAccessType')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'openAccess']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateOpenAccess')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'titleNamespace']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateTitleNamespace')}</ui:link>
-                    </div>
-                </div>
-                <ui:link addItemAttributes="true" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</ui:link>
+                        <ui:link addItemAttributes="true" controller="yoda" action="reloadWekbChanges" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateWekbChanges')}</ui:link>
+%{--                    </div>--}%
+%{--                </div>--}%
+
                 <%--<ui:link addItemAttributes="true" controller="yoda" action="expungeRemovedTIPPs" onclick="return confirm('${message(code:'confirmation.content.deleteTIPPsWithoutGOKBId')}')">${message(code:'menu.yoda.expungeRemovedTIPPs')}</ui:link>--%>
                 <%--<ui:link addItemAttributes="true" controller="yoda" action="matchPackageHoldings">${message(code:'menu.admin.bulkOps.matchPackageHoldings')}</ui:link>--%>
             </div>

@@ -84,6 +84,7 @@ class YodaController {
     SubscriptionService subscriptionService
     SurveyUpdateService surveyUpdateService
     YodaService yodaService
+    WekbStatsService wekbStatsService
 
     /**
      * Shows the Yoda-dashboard
@@ -942,6 +943,13 @@ class YodaController {
             log.debug("process running, lock is set!")
         }
         redirect controller: 'platform', action: 'list'
+    }
+
+    @Secured(['ROLE_YODA'])
+    def reloadWekbChanges() {
+        log.info('--> reloadWekbChanges')
+        wekbStatsService.updateCache()
+        redirect controller: 'myInstitution', action: 'dashboard'
     }
 
     /**
