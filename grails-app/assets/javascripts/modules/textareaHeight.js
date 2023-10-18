@@ -1,16 +1,20 @@
-// module: assets/javascripts/modules/system.js
+// module: assets/javascripts/modules/textareaHeight.js
 
-setTextareaHeight = {
+textareaHeight = {
 
     go: function () {
         $(function() {
-            setTextareaHeight.init();
+            textareaHeight.init();
         });
     },
 
     init: function () {
+        console.log('textareaHeight.init()')
+
         $('.la-textarea-resize-vertical').each(function() {
-            $(this).height(this.scrollHeight);
+            if (this.scrollHeight > 0) {
+                $(this).height(this.scrollHeight)
+            }
         });
         $('.la-textarea-resize-vertical').on('keyup keypress', function() {
             $(this).height(0);
@@ -19,4 +23,4 @@ setTextareaHeight = {
     }
 }
 
-JSPC.modules.add( 'setTextareaHeight', setTextareaHeight );
+JSPC.modules.add( 'textareaHeight', textareaHeight );
