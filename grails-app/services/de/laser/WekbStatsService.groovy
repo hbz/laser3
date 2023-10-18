@@ -24,7 +24,7 @@ class WekbStatsService {
     GokbService gokbService
     MarkerService markerService
 
-    static final String CACHE_KEY = 'WekbStatsService/wekbChanges'
+    static final String CACHE_KEY = 'WekbStatsService'
 
     /**
      * Gets the current changes from the cache and assembles them in a map of counts being recently performed. Also the count
@@ -43,10 +43,10 @@ class WekbStatsService {
     Map getCurrentChanges() {
         EhcacheWrapper cache = cacheService.getTTL1800Cache(CACHE_KEY)
 
-        if (! cache.get('data')) {
+        if (! cache.get('wekbNews')) {
             return [:]
         }
-        Map result = cache.get('data') as Map
+        Map result = cache.get('wekbNews') as Map
 
         List<String> orgList    = result.org.all.collect{ it.id }
         List<String> pkgList    = result.package.all.collect{ it.id }
@@ -83,7 +83,7 @@ class WekbStatsService {
         EhcacheWrapper cache = cacheService.getTTL1800Cache(CACHE_KEY)
 
         Map<String, Object> result = processData()
-        cache.put('data', result)
+        cache.put('wekbNews', result)
     }
 
     /**

@@ -334,8 +334,8 @@ class SubscriptionControllerService {
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
-            int offset = params.offset ? Integer.parseInt(params.offset) : 0
-            result.putAll(taskService.getTasks(offset, (User) result.user, (Org) result.institution, result.subscription))
+            SwissKnife.setPaginationParams(result, params, result.user as User)
+            result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Org) result.institution, (Subscription) result.subscription)['cmbTaskInstanceList']
             [result:result,status:STATUS_OK]
         }
     }
@@ -4480,7 +4480,8 @@ class SubscriptionControllerService {
         Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         Subscription sub = Subscription.get(params.id)
 
-        result.token           = params.token ?: RandomStringUtils.randomAlphanumeric(16) // -> static token
+//        result.token           = params.token ?: RandomStringUtils.randomAlphanumeric(24) // -> static token
+        result.token           = params.token ?: RandomStringUtils.randomAlphanumeric(16) + '#' + params.id // -> static token
         result.cfgQueryList    = SubscriptionReport.getCurrentQueryConfig( sub )
         result.cfgChartsList   = BaseConfig.CHARTS
         result.cfgTimelineList = SubscriptionReport.getCurrentTimelineConfig( sub )

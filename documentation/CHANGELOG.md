@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5329    17.10.2023  dev     3.3         David   Bug         Paginierung für Aufgaben funktioniert nicht
+
+3680    17.10.2023  dev     3.3         David   Feature     Reporting: Session-Handling verbessern
+
 5325    16.10.2023  dev     3.3         Andreas Feature     LAS:eR nutzt jetzt auch die SUSHI-Konfigurationen aus der Counter-Registry
 
 5324    16.10.2023  dev     3.3         Andreas Feature     fehlerhafte SUSHI-Calls werden in SystemEvents gespeichert

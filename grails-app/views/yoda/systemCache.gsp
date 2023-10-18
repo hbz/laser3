@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils" %>
+<%@ page import="groovy.json.JsonBuilder; de.laser.utils.DateUtils" %>
 
 <laser:htmlStart message="menu.yoda.systemCache" serviceInjection="true"/>
 
@@ -22,7 +22,7 @@
         <dl>
             <g:each in="${contextService.getSessionCache().list()}" var="entry">
                 <dt style="margin-top:0.5em">
-                    <g:link controller="yoda" action="systemCache" params="${[key: entry.key]}" target="_blank"><i class="icon list alternate outline"></i> ${entry.key}</g:link>
+                    <g:link controller="yoda" action="systemCache" params="${[key: entry.key]}" target="_blank"><i class="icon database"></i> ${entry.key}</g:link>
                 </dt>
                 <dd>
                      ${entry.value} <em>(${entry.value.class?.name})</em>
@@ -42,6 +42,7 @@
         ehcacheManager.getCacheNames().findAll { it -> !it.startsWith('de.laser.')},
         ehcacheManager.getCacheNames().findAll { it -> it.startsWith('de.laser.')}
     ]
+    int cacheContentIdx = 0
 %>
 
 <g:each in="${ehCaches}" var="ehCache">
@@ -81,21 +82,21 @@
                         <g:each in="${cache.getKeys().toSorted()}" var="key">
                             <g:set var="element" value="${cache.get(key)}" />
                             <g:if test="${element}">
-                                <dt>
+                                <dt style="margin-top: 0.5em;">
                                     <g:set var="ceKey" value="${element.getObjectKey() instanceof String ? element.getObjectKey() : element.getObjectKey().id}" />
-                                    ${ceKey} -
+                                    <a href="#" class="cacheContent-toggle" data-cc="${++cacheContentIdx}"><i class="icon list alternate outline"></i>${ceKey}</a> -
                                     creation: ${DateUtils.getSDF_onlyTime().format(element.getCreationTime())},
                                     lastAccess: ${DateUtils.getSDF_onlyTime().format(element.getLastAccessTime())},
                                     version: ${element.version},
                                     hitCount: ${element.hitCount}
                                 </dt>
-                                <dd>
+                                <dd style="display:none" data-cc="${cacheContentIdx}">
                                     <g:set var="objectValue" value="${element.getObjectValue()}" />
                                     <g:if test="${objectValue.getClass().getSimpleName() != 'Item'}">
                                         ${objectValue}
                                     </g:if>
                                     <g:else>
-                                        ${objectValue.getValue()}
+                                        ${new JsonBuilder(objectValue.getValue()).toString()}
                                     </g:else>
                                 </dd>
                             </g:if>
@@ -132,5 +133,12 @@
 </div>
 
 <hr />
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('.cacheContent-toggle').click( function() {
+        event.preventDefault();
+        $('dd[data-cc=' + $(this).attr('data-cc') + ']').toggle();
+    });
+</laser:script>
 
 <laser:htmlEnd />

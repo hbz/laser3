@@ -1229,9 +1229,8 @@ class OrganisationController  {
         if (!result) {
             response.sendError(401); return
         }
-
-        int offset = params.offset ? Integer.parseInt(params.offset) : 0
-        result.putAll(taskService.getTasks(offset, (User) result.user, (Org) result.institution, result.orgInstance))
+        SwissKnife.setPaginationParams(result, params, result.user as User)
+        result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Org) result.institution, (Org) result.orgInstance)['cmbTaskInstanceList']
 
         result
     }

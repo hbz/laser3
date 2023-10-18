@@ -84,6 +84,7 @@ class YodaController {
     SubscriptionService subscriptionService
     SurveyUpdateService surveyUpdateService
     YodaService yodaService
+    WekbStatsService wekbStatsService
 
     /**
      * Shows the Yoda-dashboard
@@ -336,7 +337,9 @@ class YodaController {
         result.globalMatrixSteps = [0, 2000, 4000, 8000, 12000, 20000, 30000, 45000, 60000]
 
         result.archive = params.archive ?: SystemProfiler.getCurrentArchive()
-        result.allArchives = SystemProfiler.executeQuery('select distinct(archive) from SystemProfiler').collect{ it }
+        result.allArchives = SystemProfiler.executeQuery('select distinct(archive) from SystemProfiler').collect{ it ->
+            [it,  SystemProfiler.executeQuery('select count(*) from SystemProfiler where archive =: archive', [archive: it])[0]]
+        }
 
         List<String> allUri = SystemProfiler.executeQuery('select distinct(uri) from SystemProfiler')
 
@@ -940,6 +943,13 @@ class YodaController {
             log.debug("process running, lock is set!")
         }
         redirect controller: 'platform', action: 'list'
+    }
+
+    @Secured(['ROLE_YODA'])
+    def reloadWekbChanges() {
+        log.info('--> reloadWekbChanges')
+        wekbStatsService.updateCache()
+        redirect controller: 'myInstitution', action: 'dashboard'
     }
 
     /**
