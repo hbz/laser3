@@ -18,6 +18,7 @@ import de.laser.utils.DateUtils
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
+import org.apache.commons.lang3.RandomStringUtils
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 
@@ -2089,7 +2090,8 @@ class SubscriptionController {
     @Check404()
     def reporting() {
         if (! params.token) {
-            params.token = 'static#' + params.id
+//            params.token = 'static#' + params.id
+            params.token = RandomStringUtils.randomAlphanumeric(16) + '#' + params.id
         }
         Map<String,Object> ctrlResult = subscriptionControllerService.reporting( params )
 

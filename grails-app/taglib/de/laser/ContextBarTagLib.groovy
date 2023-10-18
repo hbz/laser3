@@ -33,12 +33,12 @@ class ContextBarTagLib {
         }
         else if (org.isCustomerType_Inst_Pro()) {
             icon  = 'trophy'
-            color = 'yellow'
+            color = 'grey'
             text  = Role.findByAuthority(CustomerTypeService.ORG_INST_PRO).getI10n('authority')
         }
         else if (org.isCustomerType_Inst()) {
             icon  = 'user circle'
-            color = 'yellow'
+            color = 'grey'
             text  = Role.findByAuthority(CustomerTypeService.ORG_INST_BASIC).getI10n('authority')
         }
         else if (org.isCustomerType_Support()) {
@@ -97,11 +97,11 @@ class ContextBarTagLib {
 
         if (user.isYoda()) {
             text = 'Systemberechtigung: YODA'
-            icon = 'tools'
+            icon = 'dungeon'
         }
         else if (user.isAdmin()) {
             text = 'Systemberechtigung: ADMIN'
-            icon = 'wrench'
+            icon = 'tools'
         }
 
         if (icon) {

@@ -27,7 +27,7 @@
             </tr>
             </thead>
             <tbody>
-            <g:each in="${taskInstanceList}" var="taskInstance">
+            <g:each in="${cmbTaskInstanceList}" var="taskInstance">
                 <g:set var="overwriteEditable" value="${editable || taskService.isTaskEditableBy(taskInstance, contextService.getUser(), contextService.getOrg())}" />
                 <tr>
                     <td>
@@ -100,7 +100,7 @@
             </tbody>
         </table>
 
-        <ui:paginate total="${taskInstanceCount}" params="${params}" />
+        <ui:paginate total="${cmbTaskInstanceCount}" params="${params}" />
 
     </div><!-- .sixteen -->
 </div><!-- .grid -->

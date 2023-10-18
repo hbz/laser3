@@ -18,7 +18,6 @@ import java.text.SimpleDateFormat
 @Transactional
 class TaskService {
 
-    AccessService accessService
     ContextService contextService
     MessageSource messageSource
 
@@ -39,18 +38,17 @@ class TaskService {
 
     /**
      * Loads the user's tasks for the given object
-     * @param offset the pagination offset from which data should be loaded
      * @param user the user whose tasks should be retrieved
      * @param contextOrg the user's context institution
      * @param object the object to which the tasks are attached
      * @return a list of accessible tasks
      */
-    Map<String, Object> getTasks(int offset, User user, Org contextOrg, Object object) {
+    Map<String, Object> getTasks(User user, Org contextOrg, Object object) {
         Map<String, Object> result = [:]
         result.taskInstanceList = getTasksByResponsiblesAndObject(user, contextOrg, object)
-        result.taskInstanceList = chopOffForPageSize(result.taskInstanceList, user, offset)
         result.myTaskInstanceList = getTasksByCreatorAndObject(user,  object)
-        result.myTaskInstanceList = chopOffForPageSize(result.myTaskInstanceList, user, offset)
+        result.cmbTaskInstanceList = (result.taskInstanceList + result.myTaskInstanceList).unique()
+        println result
         result
     }
 
@@ -104,15 +102,10 @@ class TaskService {
      * @param flag should only tasks without tenant appear?
      * @return a list of tasks matching the given criteria
      */
-    List<Task> getTasksByCreator(User user, Map queryMap, String flag) {
+    List<Task> getTasksByCreator(User user, Map queryMap) {
         List<Task> tasks = []
         if (user) {
-            String query
-            if (flag == WITHOUT_TENANT_ONLY) {
-                query = SELECT_WITH_JOIN + 'where t.creator = :user and ru is null and t.responsibleOrg is null'
-            } else {
-                query = SELECT_WITH_JOIN + 'where t.creator = :user'
-            }
+            String query = SELECT_WITH_JOIN + 'where t.creator = :user'
 
             Map<String, Object> params = [user : user]
             if (queryMap){
@@ -131,7 +124,7 @@ class TaskService {
      * @param obj the license to which the tasks are attached
      * @return a complete list of tasks
      */
-    List<Task> getTasksByCreatorAndObject(User user, License obj ) {
+    List<Task> getTasksByCreatorAndObject(User user, License obj) {
         (user && obj)? Task.findAllByCreatorAndLicense(user, obj) : []
     }
 
@@ -141,7 +134,7 @@ class TaskService {
      * @param obj the organisation to which the tasks are attached
      * @return a complete list of tasks
      */
-    List<Task> getTasksByCreatorAndObject(User user, Org obj ) {
+    List<Task> getTasksByCreatorAndObject(User user, Org obj) {
         (user && obj) ?  Task.findAllByCreatorAndOrg(user, obj) : []
     }
 
@@ -151,7 +144,7 @@ class TaskService {
      * @param obj the package to which the tasks are attached
      * @return a complete list of tasks
      */
-    List<Task> getTasksByCreatorAndObject(User user, Package obj ) {
+    List<Task> getTasksByCreatorAndObject(User user, Package obj) {
         (user && obj) ?  Task.findAllByCreatorAndPkg(user, obj) : []
     }
 
@@ -173,26 +166,6 @@ class TaskService {
      */
     List<Task> getTasksByCreatorAndObject(User user, SurveyConfig obj) {
         (user && obj) ?  Task.findAllByCreatorAndSurveyConfig(user, obj) : []
-    }
-
-    /**
-     * Chop everything off beyond the user's pagination limit
-     * @param taskInstanceList the complete list of tasks
-     * @param user the user whose default page size should be taken
-     * @param offset the offset of entries
-     * @return the reduced list of tasks
-     */
-    List<Task> chopOffForPageSize(List taskInstanceList, User user, int offset){
-        int taskInstanceCount = taskInstanceList.size() ?: 0
-        if (taskInstanceCount > user.getPageSizeOrDefault()) {
-            try {
-                taskInstanceList = taskInstanceList.subList(offset, offset + user.getPageSizeOrDefault())
-            }
-            catch (IndexOutOfBoundsException e) {
-                taskInstanceList = taskInstanceList.subList(offset, taskInstanceCount)
-            }
-        }
-        taskInstanceList
     }
 
     /**

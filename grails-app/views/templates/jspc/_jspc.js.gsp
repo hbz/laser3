@@ -9,9 +9,10 @@ JSPC = {
         server: "${de.laser.utils.AppUtils.getCurrentServer()}",
         searchSpotlightSearch: "<g:createLink controller='search' action='spotlightSearch'/>",
         ajax: {
+            openLogin:    "<g:createLink controller='ajaxOpen' action='login'/>",
             openMessages: "<g:createLink controller='ajaxOpen' action='messages'/>",
             openProfiler: "<g:createLink controller='ajaxOpen' action='profiler'/>",
-            jsonLookup: "<g:createLink controller='ajaxJson' action='lookup'/>",
+            jsonLookup:   "<g:createLink controller='ajaxJson' action='lookup'/>",
             htmlDocumentPreview: "<g:createLink controller='ajaxHtml' action='documentPreview'/>"
         },
 %{--        ws: {--}%

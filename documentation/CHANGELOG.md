@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5329    17.10.2023  dev     3.3         David   Bug         Paginierung für Aufgaben funktioniert nicht
+
+3680    17.10.2023  dev     3.3         David   Feature     Reporting: Session-Handling verbessern
+
 5328    16.10.2023  dev     3.3         Andreas Feature     Hinweis, wenn über Titel hinzufügen keine Titel hinzugefügt werden können
 
 5326    16.10.2023  dev     3.3         Andreas Feature     Lizenzen mit dauerhaftem Zugriff erhalten neue Titel unabhängig vom Jahresring 
