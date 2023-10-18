@@ -566,7 +566,7 @@
                     </g:else>
 
                         <g:set var="countOrgsWithTermination" value="${0}"/>
-                        <g:if test="${surveyConfig && surveyConfig.surveyInfo.status in [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED]}">
+                        <g:if test="${surveyConfig && surveyConfig.surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED, RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED]}">
                             <g:set var="countOrgsWithTermination" value="${surveyConfig.countOrgsWithTermination()}"/>
                         </g:if>
 

@@ -806,7 +806,7 @@ class SurveyConfig {
      */
     Integer countOrgsWithTermination(){
         Integer countOrgsWithTermination = 0
-        List<Org> orgNotInsertedItselfList = SurveyOrg.executeQuery("select surOrg.org from SurveyOrg as surOrg where surOrg.surveyConfig = :surveyConfig and surOrg.orgInsertedItself = false", [surveyConfig: this])
+        List<Org> orgNotInsertedItselfList = SurveyOrg.executeQuery("select surOrg.org from SurveyOrg as surOrg where surOrg.surveyConfig = :surveyConfig and surOrg.orgInsertedItself = false and surOrg.finishDate is not null", [surveyConfig: this])
 
         String queryOrgsWithTermination = 'select count(*) from SurveyResult where owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue = :refValue  '
         Map queryMapOrgsWithTermination = [

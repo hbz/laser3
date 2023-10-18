@@ -11,6 +11,20 @@
 
 3680    17.10.2023  dev     3.3         David   Feature     Reporting: Session-Handling verbessern
 
+5312    16.10.2023   rc-3.2  3.2.6      Moe     Bug         Umfrage für andere Konsortialstellen sichtbar
+
+5320    16.10.2023   rc-3.2  3.2.6      Moe     Bug         Hinzufügen von Titel mit Plus Button triggert kein dauerhaften Titel
+
+5321    16.10.2023   rc-3.2  3.2.6      Moe     Bug         Lizenzen ohne Anbieter oder Lieferanten fallen in der Übersicht von Lizenzübertrag vom Tisch
+
+--      16.10.2023   rc-3.2  3.2.6      Moe     Bug         500er by clickMeExcel on survey
+
+--      16.10.2023   rc-3.2  3.2.6      Moe     Bug         Bugfix: currentSubscriptionsTransfer not show any more termination by started survey
+
+5322    16.10.2023   rc-3.2  3.2.6      Moe     Bug         Neue Sicht für Lizenzen mit dauerhaft Flag aber Title, die nicht dauerhaft gesetzt wurden sind
+
+--      16.10.2023   rc-3.2  3.2.6      Moe     Bug         Bugfix show ie 500 error
+
 5328    16.10.2023  dev     3.3         Andreas Feature     Hinweis, wenn über Titel hinzufügen keine Titel hinzugefügt werden können
 
 5326    16.10.2023  dev     3.3         Andreas Feature     Lizenzen mit dauerhaftem Zugriff erhalten neue Titel unabhängig vom Jahresring 

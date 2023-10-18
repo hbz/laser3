@@ -1177,4 +1177,21 @@ SELECT * FROM (
         }
         redirect(action: 'listMailTemplates')
     }
+
+    @Secured(['ROLE_ADMIN'])
+    @Transactional
+    def missingPermantTitlesInSubs() {
+
+        Map<String, Object> result = [:]
+        result.user = contextService.getUser()
+
+        result.subs = Subscription.executeQuery('''
+        select s from IssueEntitlement ie left join ie.subscription s left join s.orgRelations orgR 
+        where ie.status != :removed and s.hasPerpetualAccess = true and orgR.roleType = :orgRole and ie.tipp.status != :removed
+        and ie.tipp.id not in (select pt.tipp.id from PermanentTitle pt where pt.owner = orgR.org and pt.tipp = ie.tipp.id)
+        group by s order by s.name''', [orgRole: RDStore.OR_SUBSCRIBER, removed: RDStore.TIPP_STATUS_REMOVED])
+
+        result.editable = true
+        result
+    }
 }
