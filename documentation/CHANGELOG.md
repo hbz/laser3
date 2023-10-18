@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5330    18.10.2023  dev     3.3         Andreas Feature     Nichtstandard-Reports werden aus der COUNTER 5-Reportauswahl abgelehnt
+
 5329    17.10.2023  dev     3.3         David   Bug         Paginierung für Aufgaben funktioniert nicht
 
 3680    17.10.2023  dev     3.3         David   Feature     Reporting: Session-Handling verbessern

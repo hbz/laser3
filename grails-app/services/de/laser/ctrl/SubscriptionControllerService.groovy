@@ -965,7 +965,10 @@ class SubscriptionControllerService {
 
                         Map<String, Object> availableReports = statsSyncService.fetchJSONData(configMap.statsUrl + queryArguments, true)
                         if(availableReports && availableReports.list) {
-                            allAvailableReports.addAll(availableReports.list.collect { listEntry -> listEntry["Report_ID"].toLowerCase() })
+                            availableReports.list.each { listEntry ->
+                                if(listEntry["Report_ID"].toLowerCase() in Counter5Report.COUNTER_5_REPORTS)
+                                    allAvailableReports.add(listEntry["Report_ID"].toLowerCase())
+                            }
                         }
                     }
                     else if(configMap.revision == AbstractReport.COUNTER_4) {
