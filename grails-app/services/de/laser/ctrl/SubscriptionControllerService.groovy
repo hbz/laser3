@@ -2664,7 +2664,7 @@ class SubscriptionControllerService {
             result.subscriber = result.subscription.getSubscriber()
 
             String basequery
-            Map<String,Object> qry_params = [subscription:result.subscription,tippStatus:tipp_current,issueEntitlementStatus:ie_current]
+            Map<String,Object> qry_params = [subscription:result.subscription,tippStatus:tipp_current,issueEntitlementStatus:ie_removed]
 
             params.subscription = result.subscription
             params.issueEntitlementStatus = ie_current
@@ -2676,8 +2676,8 @@ class SubscriptionControllerService {
 
             result.countAllTitles = TitleInstancePackagePlatform.executeQuery('''select count(*) from TitleInstancePackagePlatform as tipp where 
                                     tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = :subscription ) and 
-                                    ( not exists ( select ie from IssueEntitlement ie where ie.subscription = :subscription and ie.tipp.id = tipp.id and ie.status = :issueEntitlementStatus ) ) ''',
-            [subscription: result.subscription, issueEntitlementStatus: ie_current])[0]
+                                    ( not exists ( select ie from IssueEntitlement ie where ie.subscription = :subscription and ie.tipp.id = tipp.id and ie.status != :issueEntitlementStatus ) ) ''',
+            [subscription: result.subscription, issueEntitlementStatus: ie_removed])[0]
 
             params.tab = params.tab ?: 'allTipps'
 
