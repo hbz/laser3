@@ -86,12 +86,44 @@ class TitleController  {
 
         List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
 
-        result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.status = :status", [status: RDStore.TIPP_STATUS_CURRENT])[0]
-        result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.status = :status", [status: RDStore.TIPP_STATUS_EXPECTED])[0]
-        result.expiredTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.status = :status", [status: RDStore.TIPP_STATUS_RETIRED])[0]
-        result.deletedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.status = :status", [status: RDStore.TIPP_STATUS_DELETED])[0]
+        if(!params.containsKey('fileformat')) {
+            //List counts = TitleInstancePackagePlatform.executeQuery('select new map(count(*) as count, tipp.status as status) '+countQueryString+' group by tipp.status', countQueryParams)
+            List counts = TitleInstancePackagePlatform.executeQuery('select new map(count(*) as count, tipp.status as status) from TitleInstancePackagePlatform tipp where tipp.status != :removed group by tipp.status', [removed: RDStore.TIPP_STATUS_REMOVED])
+            result.allTippsCounts = 0
+            counts.each { row ->
+                switch (row['status']) {
+                    case RDStore.TIPP_STATUS_CURRENT: result.currentTippsCounts = row['count']
+                        break
+                    case RDStore.TIPP_STATUS_EXPECTED: result.plannedTippsCounts = row['count']
+                        break
+                    case RDStore.TIPP_STATUS_RETIRED: result.expiredTippsCounts = row['count']
+                        break
+                    case RDStore.TIPP_STATUS_DELETED: result.deletedTippsCounts = row['count']
+                        break
+                }
+                result.allTippsCounts += row['count']
+            }
+            switch(params.tab) {
+                case 'currentIEs': result.num_tipp_rows = result.currentIECounts
+                    break
+                case 'plannedIEs': result.num_tipp_rows = result.plannedIECounts
+                    break
+                case 'expiredIEs': result.num_tipp_rows = result.expredIECounts
+                    break
+                case 'deletedIEs': result.num_tipp_rows = result.deletedIECounts
+                    break
+                case 'allIEs': result.num_tipp_rows = result.allIECounts
+                    break
+            }
+            /*
+            result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.status = :status", [status: RDStore.TIPP_STATUS_CURRENT])[0]
+            result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.status = :status", [status: RDStore.TIPP_STATUS_EXPECTED])[0]
+            result.expiredTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.status = :status", [status: RDStore.TIPP_STATUS_RETIRED])[0]
+            result.deletedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.status = :status", [status: RDStore.TIPP_STATUS_DELETED])[0]
 
-        result.allTippsCounts = result.currentTippsCounts + result.plannedTippsCounts +  result.expiredTippsCounts + result.deletedTippsCounts
+            result.allTippsCounts = result.currentTippsCounts + result.plannedTippsCounts +  result.expiredTippsCounts + result.deletedTippsCounts
+            */
+        }
 
         result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: params.sort?: 'sortname', order: params.order]) : []
         result.num_tipp_rows = titlesList.size()

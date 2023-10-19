@@ -55,7 +55,7 @@
                 </g:link>
             </g:if>
             <g:else>--%>
-                <g:link class="item kbartExport" params="${params + [exportKBart: true]}">KBART Export</g:link>
+                <a class="item export" href="#kbart" data-fileformat="kbart">KBART Export</a>
             <%--</g:else>--%>
         </ui:exportDropdownItem>
     <%--<ui:exportDropdownItem>
@@ -75,11 +75,7 @@
        value="${RefdataCategory.getAllRefdataValues(RDConstants.TIPP_STATUS) - RDStore.TIPP_STATUS_REMOVED}"/>
 
 <ui:filter>
-    <g:form id="filtering-form" action="currentTitles" controller="myInstitution" method="get" class="ui form">
-
-        <g:set var="filterSub" value="${params.filterSub ? params.list('filterSub') : "all"}"/>
-        <g:set var="filterPvd" value="${params.filterPvd ? params.list('filterPvd') : "all"}"/>
-        <g:set var="filterHostPlat" value="${params.filterHostPlat ? params.list('filterHostPlat') : "all"}"/>
+    <g:form action="currentTitles" controller="myInstitution" class="ui form">
 
 
         <div class="two fields">
@@ -91,14 +87,22 @@
                        placeholder="${message(code: 'default.search.ph')}"/>
             </div>
 
+            <%--
+            Filter i.m.h.o. unnecessary because controlled with subscription status
             <ui:datepicker label="myinst.currentTitles.subs_valid_on" id="validOn" name="validOn"
                            value="${validOn}"/>
-
+            --%>
         </div>
 
         <div class="two fields">
             <div class="field">
                 <label for="filterSub">${message(code: 'subscription.plural')}</label>
+                <div class="ui search selection fluid multiple dropdown" id="filterSub">
+                    <input type="hidden" name="filterSub"/>
+                    <div class="default text"><g:message code="default.select.all.label"/></div>
+                    <i class="dropdown icon"></i>
+                </div>
+                %{--
                 <select id="filterSub" name="filterSub" multiple="" class="ui search selection fluid dropdown">
                     <option <%--<%= (filterSub.contains("all")) ? ' selected' : '' %>--%>
                             value="">${message(code: 'default.select.all.label')}</option>
@@ -109,10 +113,18 @@
                         </option>
                     </g:each>
                 </select>
+                --}%
+
             </div>
 
             <div class="field">
                 <label for="filterPvd">${message(code: 'default.agency.provider.plural.label')}</label>
+                <div class="ui search selection fluid multiple dropdown" id="filterPvd">
+                    <input type="hidden" name="filterPvd"/>
+                    <div class="default text"><g:message code="default.select.all.label"/></div>
+                    <i class="dropdown icon"></i>
+                </div>
+                %{--
                 <select id="filterPvd" name="filterPvd" multiple="" class="ui search selection fluid dropdown">
                     <option <%--<%= (filterPvd.contains("all")) ? 'selected' : '' %>--%>
                             value="">${message(code: 'default.select.all.label')}</option>
@@ -126,12 +138,19 @@
                         </option>
                     </g:each>
                 </select>
+                --}%
             </div>
         </div>
 
         <div class="two fields">
             <div class="field">
-                <label for="filterPvd">${message(code: 'default.host.platforms.label')}</label>
+                <label for="filterHostPlat">${message(code: 'default.host.platforms.label')}</label>
+                <div class="ui search selection fluid multiple dropdown" id="filterHostPlat">
+                    <input type="hidden" name="filterHostPlat"/>
+                    <div class="default text"><g:message code="default.select.all.label"/></div>
+                    <i class="dropdown icon"></i>
+                </div>
+                %{--
                 <select name="filterHostPlat" multiple="" class="ui search selection fluid dropdown">
                     <option <%--<%= (filterHostPlat.contains("all")) ? 'selected' : '' %>--%>
                             value="">${message(code: 'default.select.all.label')}</option>
@@ -146,6 +165,7 @@
                         </option>
                     </g:each>
                 </select>
+                --}%
             </div>
 
             <div class="field">
@@ -282,7 +302,7 @@
                                                 String instanceFilter = ''
                                                 if (institution.isCustomerType_Consortium())
                                                     instanceFilter += ' and sub.instanceOf = null'
-                                                Set<IssueEntitlement> ie_infos = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.org = :context and ie.tipp = :tipp and sub.status = :current and ie.status != :ieStatus' + instanceFilter, [ieStatus: RDStore.TIPP_STATUS_REMOVED, context: institution, tipp: tipp, current: RDStore.SUBSCRIPTION_CURRENT])
+                                                Set<IssueEntitlement> ie_infos = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.org = :context and ie.tipp = :tipp and (sub.status = :current or sub.hasPerpetualAccess = true) and ie.status != :ieStatus' + instanceFilter, [ieStatus: RDStore.TIPP_STATUS_REMOVED, context: institution, tipp: tipp, current: RDStore.SUBSCRIPTION_CURRENT])
                                             %>
 
                                             <g:render template="/templates/title_segment_accordion"
@@ -447,18 +467,56 @@
               model="[modalID: 'individuallyExportTippsModal']"/>
 
 <laser:script>
-    $('.kbartExport').click(function(e) {
+    $('.export').click(function(e) {
         e.preventDefault();
+        $('#individuallyExportTippsModal').modal('hide');
         $('#globalLoadingIndicator').show();
+        //the shorthand ?: is not supported???
+        let fileformat = $(this).attr('data-fileformat') ? $(this).attr('data-fileformat') : $('#fileformat-query').val();
+        let fd;
+        if(fileformat === 'kbart')
+            fd = { fileformat: fileformat };
+        else
+            fd = new FormData($('#individuallyExportTippsModal').find('form')[0]);
+        <g:each in="${params.keySet()}" var="param">
+            fd.${param} = '${params[param]}';
+        </g:each>
         $.ajax({
-            url: "<g:createLink action="currentTitles" params="${params + [exportKBart: true]}"/>",
-            type: 'POST',
-            contentType: false
+            url: "<g:createLink action="currentTitles"/>",
+            data: fd
         }).done(function(response){
             $("#downloadWrapper").html(response);
             $('#globalLoadingIndicator').hide();
         });
     });
+
+    //should be made general
+    JSPC.app.ajaxDropdown = function(selector, url, valuesString) {
+        let values = [];
+        if(valuesString.includes(',')) {
+            values = valuesString.split(',');
+        }
+        else if(valuesString.length > 0) {
+            values.push(valuesString);
+        }
+        selector.dropdown({
+            apiSettings: {
+                url: url,
+                cache: false
+            },
+            clearable: true,
+            minCharacters: 0
+        });
+        if(values.length > 0) {
+            selector.dropdown('queryRemote', '', () => {
+                selector.dropdown('set selected', values);
+            });
+        }
+    }
+
+    JSPC.app.ajaxDropdown($('#filterSub'), '<g:createLink controller="ajaxJson" action="lookupSubscriptions"/>?query={query}&restrictLevel=true', '${params.filterSub}');
+    JSPC.app.ajaxDropdown($('#filterPvd'), '<g:createLink controller="ajaxJson" action="lookupProviders"/>?query={query}', '${params.filterPvd}');
+    JSPC.app.ajaxDropdown($('#filterHostPlat'), '<g:createLink controller="ajaxJson" action="lookupPlatforms"/>?query={query}', '${params.filterHostPlat}');
 </laser:script>
 
 <laser:htmlEnd/>

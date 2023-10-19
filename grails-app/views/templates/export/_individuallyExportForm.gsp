@@ -365,7 +365,7 @@
             </div>
 
             <div class="wide two field">
-                <button class="ui button positive right floated exportButton" value="exportClickMeExcel">Export</button>
+                <button class="ui button positive right floated export" value="exportClickMeExcel">Export</button>
                 <%-- disused
                 <br>
                 <g:hiddenField name="format" value=""/>
