@@ -1604,6 +1604,7 @@ class SubscriptionControllerService {
                         'where p.listPrice is not null and ie.id in (:ieIDs)', [ieIDs: sourceIEs])[0] ?: 0
             }
 
+
             //allIEsStats and holdingIEsStats are left active for possible backswitch
             if(params.tab in ['topUsed']) {
 
@@ -1870,6 +1871,7 @@ class SubscriptionControllerService {
 
             result.subscriberSub = subscriberSub
             result.subscription = baseSub
+            result.allSubscriptions = subscriptions
             result.previousSubscription = previousSubscription
 
 
