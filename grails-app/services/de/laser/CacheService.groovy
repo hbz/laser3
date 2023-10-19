@@ -19,10 +19,17 @@ class CacheService implements ApplicationContextAware {
 
     ApplicationContext applicationContext
 
+    public static final String TTL_300_CACHE     = 'TTL_300_CACHE'
+    public static final String TTL_1800_CACHE    = 'TTL_1800_CACHE'
+    public static final String TTL_3600_CACHE    = 'TTL_3600_CACHE'
+    public static final String SHARED_USER_CACHE = 'SHARED_USER_CACHE'
+    public static final String SHARED_ORG_CACHE  = 'SHARED_ORG_CACHE'
+
     // global caches
 
     private Cache cache_ttl_300
     private Cache cache_ttl_1800
+    private Cache cache_ttl_3600
 
     private Cache shared_user_cache
     private Cache shared_org_cache
@@ -63,10 +70,8 @@ class CacheService implements ApplicationContextAware {
     EhcacheWrapper getTTL300Cache(String cacheKeyPrefix) {
 
         if (! cache_ttl_300) {
-
-            String cacheName = 'TTL_300_CACHE'
             CacheManager cacheManager = getEhcacheManager()
-            cache_ttl_300 = getCache(cacheManager, cacheName)
+            cache_ttl_300 = getCache(cacheManager, TTL_300_CACHE)
 
             cache_ttl_300.getCacheConfiguration().setTimeToLiveSeconds(300)
             cache_ttl_300.getCacheConfiguration().setTimeToIdleSeconds(300)
@@ -83,16 +88,32 @@ class CacheService implements ApplicationContextAware {
     EhcacheWrapper getTTL1800Cache(String cacheKeyPrefix) {
 
         if (! cache_ttl_1800) {
-
-            String cacheName = 'TTL_1800_CACHE'
             CacheManager cacheManager = getEhcacheManager()
-            cache_ttl_1800 = getCache(cacheManager, cacheName)
+            cache_ttl_1800 = getCache(cacheManager, TTL_1800_CACHE)
 
             cache_ttl_1800.getCacheConfiguration().setTimeToLiveSeconds(1800)
             cache_ttl_1800.getCacheConfiguration().setTimeToIdleSeconds(1800)
         }
 
         return new EhcacheWrapper(cache_ttl_1800, cacheKeyPrefix)
+    }
+
+    /**
+     * Sets for the given prefix a global cache which lasts 60 minutes (3600 seconds)
+     * @param cacheKeyPrefix the cache key to set
+     * @return a 30 minutes cache for the given prefix
+     */
+    EhcacheWrapper getTTL3600Cache(String cacheKeyPrefix) {
+
+        if (! cache_ttl_3600) {
+            CacheManager cacheManager = getEhcacheManager()
+            cache_ttl_3600 = getCache(cacheManager, TTL_3600_CACHE)
+
+            cache_ttl_3600.getCacheConfiguration().setTimeToLiveSeconds(3600)
+            cache_ttl_3600.getCacheConfiguration().setTimeToIdleSeconds(3600)
+        }
+
+        return new EhcacheWrapper(cache_ttl_3600, cacheKeyPrefix)
     }
 
     /* --- */
@@ -107,10 +128,8 @@ class CacheService implements ApplicationContextAware {
     EhcacheWrapper getSharedUserCache(User user, String cacheKeyPrefix) {
 
         if (! shared_user_cache) {
-
-            String cacheName = 'SHARED_USER_CACHE'
             CacheManager cacheManager = getEhcacheManager()
-            shared_user_cache = getCache(cacheManager, cacheName)
+            shared_user_cache = getCache(cacheManager, SHARED_USER_CACHE)
 
             shared_user_cache.getCacheConfiguration().setCopyOnRead(true)
         }
@@ -128,10 +147,8 @@ class CacheService implements ApplicationContextAware {
     EhcacheWrapper getSharedOrgCache(Org org, String cacheKeyPrefix) {
 
         if (! shared_org_cache) {
-
-            String cacheName = 'SHARED_ORG_CACHE'
             CacheManager cacheManager = getEhcacheManager()
-            shared_org_cache = getCache(cacheManager, cacheName)
+            shared_org_cache = getCache(cacheManager, SHARED_ORG_CACHE)
 
             shared_org_cache.getCacheConfiguration().setCopyOnRead(true)
         }

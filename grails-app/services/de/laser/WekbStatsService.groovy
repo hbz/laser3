@@ -41,12 +41,12 @@ class WekbStatsService {
      * @return a {@link Map} containing the counts: [all: all, inLaser: in LAS:eR, my: subscribed, marker: bookmarked, created: newly created, updated: updated objects]
      */
     Map getCurrentChanges() {
-        EhcacheWrapper cache = cacheService.getTTL1800Cache(CACHE_KEY)
+        EhcacheWrapper ttl1800 = cacheService.getTTL1800Cache(CACHE_KEY)
 
-        if (! cache.get('wekbNews')) {
+        if (! ttl1800.get('wekbNews')) {
             return [:]
         }
-        Map result = cache.get('wekbNews') as Map
+        Map result = ttl1800.get('wekbNews') as Map
 
         List<String> orgList    = result.org.all.collect{ it.id }
         List<String> pkgList    = result.package.all.collect{ it.id }
@@ -80,10 +80,10 @@ class WekbStatsService {
      * Triggers the update of the cache of the recent changes performed in the we:kb
      */
     void updateCache() {
-        EhcacheWrapper cache = cacheService.getTTL1800Cache(CACHE_KEY)
+        EhcacheWrapper ttl1800 = cacheService.getTTL1800Cache(CACHE_KEY)
 
         Map<String, Object> result = processData()
-        cache.put('wekbNews', result)
+        ttl1800.put('wekbNews', result)
     }
 
     /**
