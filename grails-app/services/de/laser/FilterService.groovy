@@ -1630,10 +1630,8 @@ class FilterService {
                 base_qry += " and "
             }
 
-            base_qry += " ( ( lower(tipp.name) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = tipp.id and ident.value like :identifier ) ) or ((lower(tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(tipp.firstEditor) like :ebookFirstAutorOrFirstEditor)) ) "
-            qry_params.title = "%${params.filter.trim().toLowerCase()}%"
-            qry_params.identifier = "%${params.filter}%"
-            qry_params.ebookFirstAutorOrFirstEditor = "%${params.filter.trim().toLowerCase()}%"
+            base_qry += " ( lower(tipp.name) like lower(:nameFilter) or lower(tipp.firstAuthor) like lower(:nameFilter) or lower(tipp.firstEditor) like lower(:nameFilter) ) "
+            qry_params.nameFilter = "%${params.filter.trim()}%"
             filterSet = true
         }
 
