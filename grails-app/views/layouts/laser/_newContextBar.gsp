@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore; de.laser.UserSetting; de.laser.auth.User; de.laser.auth.Role; de.laser.Org" %>
+<%@ page import="de.laser.GenericOIDService; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.UserSetting; de.laser.auth.User; de.laser.auth.Role; de.laser.Org" %>
 <laser:serviceInjection />
 
 <g:set var="visibilityContextOrgMenu" value="la-show-context-orgMenu" />
@@ -40,11 +40,17 @@
                 <g:if test="${subscription.instanceOf && contextService.getOrg().id == subscription.getConsortia()?.id}">
                     <ui:cbItemInfo display="Sie sehen eine Kindlizenz" icon="child" color="orange" />
                 </g:if>
+                <g:if test="${navPrevSubscription || navNextSubscription}">
+                    <ui:cbItemInfo display="Es existieren Vorgänger/Nachfolger zu dieser Lizenz" icon="arrows exchange" color="blue" />
+                </g:if>
             </g:if>
 
             <g:if test="${controllerName == 'license' && license}">
                 <g:if test="${license.instanceOf && contextService.getOrg().id == license.getLicensingConsortium()?.id}">
                     <ui:cbItemInfo display="Sie sehen einen Einrichtungsvertrag" icon="child" color="green" />
+                </g:if>
+                <g:if test="${navPrevLicense || navNextLicense}">
+                    <ui:cbItemInfo display="Es existieren Vorgänger/Nachfolger zu diesem Vertrag" icon="arrows exchange" color="blue" />
                 </g:if>
             </g:if>
 
@@ -67,6 +73,63 @@
                     <button class="ui icon button la-help-panel-button"><i class="question circle icon"></i></button>
                 </div>
             </g:if>
+
+            %{-- linkify --}%
+
+            <g:if test="${controllerName == 'subscription' && subscription}">
+                <g:set var="linkifyMap" value="${linksGenerationService.getSourcesAndDestinations(subscription, contextUser, RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE))}" />
+              
+                <g:if test="${linkifyMap}">
+                    <div class="item la-cb-action">
+                        <div class="ui simple dropdown button la-js-dont-hide-button icon">
+                            <i class="linkify icon"></i>
+                            <div class="menu">
+                                <g:each in="${linkifyMap}" var="linkifyCat">
+                                    <g:each in="${linkifyCat.getValue()}" var="link">
+                                        <g:set var="linkTarget" value="${link.determineSource() == subscription ? link.determineDestination() : link.determineSource()}" />
+                                        <g:set var="linkPrio" value="${link.determineSource() == subscription ? 0 : 1}" />
+                                        <g:if test="${linkTarget instanceof de.laser.Subscription}">
+                                            <g:set var="linkType" value="${link.linkType.getI10n('value').split("\\|")[linkPrio]}" />
+                                            <g:link controller="subscription" action="show" id="${linkTarget.id}" class="item">${linkTarget} (${linkType})</g:link>
+                                        </g:if>
+                                        <g:elseif test="${linkTarget instanceof de.laser.License}">
+                                            <g:set var="linkType" value="${link.linkType.getI10n('value').split("\\|")[Math.abs(linkPrio-1)]}" />
+                                            <g:link controller="license" action="show" id="${linkTarget.id}" class="item">${linkTarget} (${linkType})</g:link>
+                                        </g:elseif>
+                                    </g:each>
+                                </g:each>
+                            </div>
+                        </div>
+                    </div>
+                </g:if>
+            </g:if>
+            <g:elseif test="${false && controllerName == 'license' && license}">
+                <g:set var="linkifyMap" value="${linksGenerationService.getSourcesAndDestinations(license, contextUser, RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE))}" />
+                
+                <g:if test="${linkifyMap}">
+                    <div class="item la-cb-action">
+                        <div class="ui simple dropdown button la-js-dont-hide-button icon">
+                            <i class="linkify icon"></i>
+                            <div class="menu">
+                                <g:each in="${linkifyMap}" var="linkifyCat">
+                                    <g:each in="${linkifyCat.getValue()}" var="link">
+                                        <g:set var="linkTarget" value="${link.determineSource() == license ? link.determineDestination() : link.determineSource()}" />
+                                        <g:set var="linkPrio" value="${link.determineSource() == license ? 0 : 1}" />
+                                        <g:if test="${linkTarget instanceof de.laser.Subscription}">
+                                            <g:set var="linkType" value="${link.linkType.getI10n('value').split("\\|")[Math.abs(linkPrio-1)]}" />
+                                            <g:link controller="subscription" action="show" id="${linkTarget.id}" class="item">${linkTarget} (${linkType})</g:link>
+                                        </g:if>
+                                        <g:elseif test="${linkTarget instanceof de.laser.License}">
+                                            <g:set var="linkType" value="${link.linkType.getI10n('value').split("\\|")[linkPrio]}" />
+                                            <g:link controller="license" action="show" id="${linkTarget.id}" class="item">${linkTarget} (${linkType})</g:link>
+                                        </g:elseif>
+                                    </g:each>
+                                </g:each>
+                            </div>
+                        </div>
+                    </div>
+                </g:if>
+            </g:elseif>
 
             %{-- edit mode switcher  --}%
 
@@ -168,7 +231,7 @@
 
     .la-cb-info.item + .la-cb-action.item,
     .la-cb-info.item + .la-cb-action-ext.item {
-        margin-left: 2em !important;
+        margin-left: 1em !important;
     }
 
     .la-cb-action.item,
@@ -282,7 +345,7 @@
             );
             $('.la-cb-info.item > .label[data-display]').hover(
                 function() {
-                    JSPC.app.contextBar.$cbInfoDisplay.addClass('active').text($(this).attr('data-display') + ' (INFO) ');
+                    JSPC.app.contextBar.$cbInfoDisplay.addClass('active').text($(this).attr('data-display'));
                 },
                 function() {
                     JSPC.app.contextBar.$cbInfoDisplay.removeClass('active');

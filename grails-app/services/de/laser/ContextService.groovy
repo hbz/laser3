@@ -96,7 +96,7 @@ class ContextService {
      * @return the {@link EhcacheWrapper} matching to the given prefix
      * @see {@link Org}
      */
-    EhcacheWrapper getSharedOrgCache(String cacheKeyPrefix) {
+    EhcacheWrapper getOrgCache(String cacheKeyPrefix) {
         cacheService.getSharedOrgCache(getOrg(), cacheKeyPrefix)
     }
 
