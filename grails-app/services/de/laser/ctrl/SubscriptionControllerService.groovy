@@ -1604,6 +1604,7 @@ class SubscriptionControllerService {
                         'where p.listPrice is not null and ie.id in (:ieIDs)', [ieIDs: sourceIEs])[0] ?: 0
             }
 
+
             //allIEsStats and holdingIEsStats are left active for possible backswitch
             if(params.tab in ['topUsed']) {
 
@@ -1725,128 +1726,6 @@ class SubscriptionControllerService {
                             }
                         }
                     }
-                    /*
-                    Counter5Report.withTransaction {
-                        String customerUID = subscriberSub.getSubscriber().globalUID
-                        Set<String> platforms = subscribedPlatforms.globalUID
-                        Map<String, Object> queryParams = [customer: customerUID, platforms: platforms]
-                        if(dateRanges.dateRange.length() > 0) {
-                            queryParams.startDate = dateRanges.startDate
-                            queryParams.endDate = dateRanges.endDate
-                        }
-                        isCounter5 = Counter5Report.executeQuery('select count(r.id) from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRanges.dateRange, queryParams)[0] > 0
-                        String baseQuery, groupClause = '', reportCount = 'r.reportCount as reportCount'
-                        if(params.tabStat == 'total') {
-                            reportCount = ' sum(r.reportCount) as reportCount '
-                        }
-                        if(isCounter5) {
-                            result.statsAvailable = true
-                            result.revision = 'counter5'
-                            Counter5Report.executeQuery('select lower(r.reportType), r.metricType from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRanges.dateRange+' group by r.reportType, r.metricType, r.accessType', queryParams).each { row ->
-                                reportTypes << row[0]
-                                metricTypes << row[1]
-                            }
-                            //restrict to load only iff report and metric types are set!
-                            if(params.reportType && params.metricType) {
-                                queryParams.reportType = params.reportType
-                                queryParams.metricTypes = params.list('metricType')
-                                Counter5Report.withTransaction {
-                                    //counter4Sums.addAll(Counter4Report.executeQuery('select r.reportFrom, r.metricType, sum(r.reportCount) from Counter4Report r where r.reportType = :reportType and r.metricType = :metricType and r.reportInstitutionUID = :customer and r.reportFrom >= :startDate and r.reportTo <= :endDate group by r.reportFrom, r.metricType', queryParams))
-                                    Set<AbstractReport> reports
-                                    //if(params.tabStat == 'total') {
-                                    reports = Counter5Report.executeQuery('select new map(sum(r.reportCount) as totalCount, r.metricType as metricType, r.onlineIdentifier as onlineIdentifier, r.printIdentifier as printIdentifier, r.doi as doi, r.isbn as isbn, r.proprietaryIdentifier as proprietaryIdentifier) from Counter5Report r where lower(r.reportType) = :reportType and r.metricType in (:metricTypes) and r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRanges.dateRange+'group by r.metricType, r.onlineIdentifier, r.printIdentifier, r.doi, r.isbn, r.proprietaryIdentifier order by totalCount desc', queryParams)
-                                    for(Map report : reports) {
-                                        TitleInstancePackagePlatform tipp = null
-                                        if(report.onlineIdentifier || report.isbn) {
-                                            tipp = titles[IdentifierNamespace.EISSN]?.get(report.onlineIdentifier)
-                                            if(!tipp)
-                                                tipp = titles[IdentifierNamespace.ISBN]?.get(report.onlineIdentifier)
-                                            if(!tipp)
-                                                tipp = titles[IdentifierNamespace.ISBN]?.get(report.isbn)
-                                        }
-                                        if(!tipp && (report.printIdentifier || report.isbn)) {
-                                            tipp = titles[IdentifierNamespace.ISSN]?.get(report.printIdentifier)
-                                            if(!tipp)
-                                                tipp = titles[IdentifierNamespace.PISBN]?.get(report.printIdentifier)
-                                            if(!tipp)
-                                                tipp = titles[IdentifierNamespace.PISBN]?.get(report.isbn)
-                                        }
-                                        if(!tipp && report.doi) {
-                                            tipp = titles[IdentifierNamespace.DOI]?.get(report.doi)
-                                        }
-                                        if(!tipp && report.proprietaryIdentifier) {
-                                            propIdNamespaces.each { String propIdNs ->
-                                                if(!tipp)
-                                                    tipp = titles[propIdNs]?.get(report.proprietaryIdentifier)
-                                            }
-                                        }
-                                        if(tipp) {
-                                            Map<String, Integer> metrics = usages.get(tipp) ?: [:]
-                                            Integer count = metrics.get(report.metricType) ?: 0
-                                            count += report.totalCount
-                                            metrics.put(report.metricType, count)
-                                            usages.put(tipp, metrics)
-                                        }
-                                    }
-                                    //}
-                                }
-                            }
-                        }
-                        else {
-                            result.statsAvailable = Counter4Report.executeQuery('select count(r.id) from Counter4Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRanges.dateRange, queryParams)[0] > 0
-                            result.revision = 'counter4'
-                            Counter4Report.executeQuery('select r.reportType, r.metricType from Counter4Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRanges.dateRange+'group by r.reportType, r.metricType', queryParams).each { row ->
-                                reportTypes << row[0]
-                                metricTypes << row[1]
-                            }
-                            //restrict to load only iff report and metric types are set!
-                            if(params.reportType && params.metricType) {
-                                queryParams.reportType = params.reportType
-                                queryParams.metricTypes = params.list('metricType')
-                                Counter4Report.withTransaction {
-                                    //counter4Sums.addAll(Counter4Report.executeQuery('select r.reportFrom, r.metricType, sum(r.reportCount) from Counter4Report r where r.reportType = :reportType and r.metricType = :metricType and r.reportInstitutionUID = :customer and r.reportFrom >= :startDate and r.reportTo <= :endDate group by r.reportFrom, r.metricType', queryParams))
-                                    Set<AbstractReport> reports
-                                    //if(params.tabStat == 'total') {
-                                        reports = Counter4Report.executeQuery('select new map(sum(r.reportCount) as totalCount, r.metricType as metricType, r.onlineIdentifier as onlineIdentifier, r.printIdentifier as printIdentifier, r.doi as doi, r.isbn as isbn, r.proprietaryIdentifier as proprietaryIdentifier) from Counter4Report r where r.reportType = :reportType and r.metricType in (:metricTypes) and r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRanges.dateRange+'group by r.metricType, r.onlineIdentifier, r.printIdentifier, r.doi, r.isbn, r.proprietaryIdentifier order by totalCount desc', queryParams)
-                                        for(Map report : reports) {
-                                            TitleInstancePackagePlatform tipp = null
-                                            if(report.onlineIdentifier || report.isbn) {
-                                                tipp = titles[IdentifierNamespace.EISSN]?.get(report.onlineIdentifier)
-                                                if(!tipp)
-                                                    tipp = titles[IdentifierNamespace.ISBN]?.get(report.onlineIdentifier)
-                                                if(!tipp)
-                                                    tipp = titles[IdentifierNamespace.ISBN]?.get(report.isbn)
-                                            }
-                                            if(!tipp && (report.printIdentifier || report.isbn)) {
-                                                tipp = titles[IdentifierNamespace.ISSN]?.get(report.printIdentifier)
-                                                if(!tipp)
-                                                    tipp = titles[IdentifierNamespace.PISBN]?.get(report.printIdentifier)
-                                                if(!tipp)
-                                                    tipp = titles[IdentifierNamespace.PISBN]?.get(report.isbn)
-                                            }
-                                            if(!tipp && report.doi) {
-                                                tipp = titles[IdentifierNamespace.DOI]?.get(report.doi)
-                                            }
-                                            if(!tipp && report.proprietaryIdentifier) {
-                                                propIdNamespaces.each { String propIdNs ->
-                                                    if(!tipp)
-                                                        tipp = titles[propIdNs]?.get(report.proprietaryIdentifier)
-                                                }
-                                            }
-                                            if(tipp) {
-                                                Map<String, Integer> metrics = usages.get(tipp) ?: [:]
-                                                Integer count = metrics.get(report.metricType) ?: 0
-                                                count += report.totalCount
-                                                metrics.put(report.metricType, count)
-                                                usages.put(tipp, metrics)
-                                            }
-                                        }
-                                    //}
-                                }
-                            }
-                        }
-                    }
-                    */
                     result.total = usages.size()
                     if(params.sort == 'count' && params.order == 'asc')
                         result.topList = usageTopList.sort { Map.Entry<TitleInstancePackagePlatform, Integer> tippA, Map.Entry<TitleInstancePackagePlatform, Integer> tippB -> tippA.getValue() <=> tippB.getValue() }.drop(result.offset).take(result.max)
@@ -1870,6 +1749,7 @@ class SubscriptionControllerService {
 
             result.subscriberSub = subscriberSub
             result.subscription = baseSub
+            result.allSubscriptions = subscriptions
             result.previousSubscription = previousSubscription
 
 
@@ -2202,7 +2082,7 @@ class SubscriptionControllerService {
         result.package = Package.get(params.package)
         Locale locale = LocaleUtils.getCurrentLocale()
         boolean unlinkPkg
-        if(params.confirmed) {
+        if(params.confirmed && !subscriptionService.checkThreadRunning('PackageUnlink_'+result.subscription.id)) {
             Set<Subscription> subList = []
             if(params.containsKey('option')) {
                 AuditConfig.removeConfig(result.subscription, 'holdingSelection')
@@ -2216,13 +2096,15 @@ class SubscriptionControllerService {
                 subList << result.subscription
                 subList.addAll(Subscription.findAllByInstanceOf(result.subscription))
             }
-            if(packageService.unlinkFromSubscription(result.package, subList.id, result.institution, unlinkPkg)){
-                result.message = messageSource.getMessage('subscription.details.unlink.successfully',null,locale)
-                [result:result,status:STATUS_OK]
-            }else {
-                result.error = messageSource.getMessage('subscription.details.unlink.notSuccessfully',null,locale)
-                [result:result,status:STATUS_ERROR]
-            }
+            executorService.execute({
+                Thread.currentThread().setName('PackageUnlink_'+result.subscription.id)
+                if(packageService.unlinkFromSubscription(result.package, subList.id, result.institution, unlinkPkg)){
+                    result.message = messageSource.getMessage('subscription.details.unlink.successfully',null,locale)
+                }else {
+                    result.error = messageSource.getMessage('subscription.details.unlink.notSuccessfully',null,locale)
+                }
+            })
+            [result:result,status:STATUS_OK]
         }
         else {
             String query = "select ie.id from IssueEntitlement ie, Package pkg where ie.subscription =:sub and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "

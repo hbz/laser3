@@ -476,8 +476,10 @@
         let fd;
         if(fileformat === 'kbart')
             fd = { fileformat: fileformat };
-        else
-            fd = new FormData($('#individuallyExportTippsModal').find('form')[0]);
+        else {
+            let nativeForm = new FormData($('#individuallyExportTippsModal').find('form')[0]);
+            nativeForm.forEach((value, key) => fd[key] = value);
+        }
         <g:each in="${params.keySet()}" var="param">
             fd.${param} = '${params[param]}';
         </g:each>

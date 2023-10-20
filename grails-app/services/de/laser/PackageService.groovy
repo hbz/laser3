@@ -154,8 +154,13 @@ class PackageService {
             Map<String,Object> queryParams = [sub: subList, pkg_id: pkg.id]
             //delete matches
             //IssueEntitlement.withSession { Session session ->
-            String updateQuery = "update IssueEntitlement ie set ie.status.id = ${RDStore.TIPP_STATUS_REMOVED.id} where ie.subscription.id in (:sub) and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
-            IssueEntitlement.executeUpdate(updateQuery, queryParams)
+            int offset = 0, step = 60000, total = IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.subscription.id in (:sub) and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) and ie.status.id != :removed', queryParams+[removed: RDStore.TIPP_STATUS_REMOVED.id])[0]
+            for(offset; offset < total; offset+=step) {
+                log.debug("now processing entries ${offset}-${(offset+step)-1} out of ${total} records")
+                Set<Long> idSet = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription.id in (:sub) and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) and ie.status.id != :removed', queryParams+[removed: RDStore.TIPP_STATUS_REMOVED.id], [max: step, offset: offset])
+                String updateQuery = "update IssueEntitlement ie set ie.status.id = :removed where ie.id in (:idSet)"
+                IssueEntitlement.executeUpdate(updateQuery, [idSet: idSet, removed: RDStore.TIPP_STATUS_REMOVED.id])
+            }
             if (deletePackage) {
                 removePackagePendingChanges(pkg, subList, true)
                 SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp where sp.pkg.id = :pkg_id and sp.subscription.id in (:sub)',queryParams).each { SubscriptionPackage delPkg ->

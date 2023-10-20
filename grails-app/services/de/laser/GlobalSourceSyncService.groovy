@@ -922,7 +922,15 @@ class GlobalSourceSyncService extends AbstractLockableService {
             Set<Subscription> subsConcerned = Subscription.executeQuery('select s from Subscription s join s.packages sp where s.endDate is not null and s.endDate >= :now and s.holdingSelection = :entire and sp.pkg = :pkg', [now: now, entire: RDStore.SUBSCRIPTION_HOLDING_ENTIRE, pkg: tipp.pkg])
             //we may need to switch to native sql ...
             subsConcerned.each { Subscription s ->
-                IssueEntitlement.construct([subscription: s, tipp: tipp])
+                IssueEntitlement ie = IssueEntitlement.construct([subscription: s, tipp: tipp])
+                if(s.hasPerpetualAccess) {
+                    Org owner = s.getSubscriber()
+                    PermanentTitle perm = PermanentTitle.findByOwnerAndTipp(owner, tipp)
+                    if(!perm) {
+                        perm = new PermanentTitle(owner: owner, tipp: tipp, subscription: s, issueEntitlement: ie)
+                        perm.save()
+                    }
+                }
             }
         }
     }
