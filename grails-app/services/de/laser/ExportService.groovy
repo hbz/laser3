@@ -2647,6 +2647,7 @@ class ExportService {
 			//countQuery = "select count(*) as countTotal from title_instance_package_platform join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id where ${queryClauseParts.where}"
 		}
 		//int count = sql.rows(countQuery, queryClauseParts.params)[0]['countTotal'] as int, max = 100000
+		//log.debug(queryBase)
 		List rows = []
 		/* kept in case of further experiments
 		if(count > 300000) {
@@ -2657,6 +2658,7 @@ class ExportService {
 		}
 		else*/
 		rows.addAll(sql.rows(queryBase, queryClauseParts.params))
+		export.columnData = rows
 		/*
 		Map<String, Object> data = getTitleData(configMap+[format: 'kbart'], entitlementInstance, sql)
         titleHeaders.addAll(data.otherTitleIdentifierNamespaces.idns_ns)
@@ -2681,7 +2683,6 @@ class ExportService {
 			}
 		}
 		*/
-		export.columnData = rows
 		/*
 		Set<IdentifierNamespace> otherTitleIdentifierNamespaces = getOtherIdentifierNamespaces(entitlementIDs,entitlementInstance)
 		titleHeaders.addAll(otherTitleIdentifierNamespaces.collect { IdentifierNamespace ns -> "${ns.ns}_identifer"})
