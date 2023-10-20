@@ -7,7 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5335    20.10.2023  dev     3.3         David   Feature     Verknüpfungen zwischen Objekten in Kontextleiste aufnehmen
+
 5333    19.10.2023  rc-3.2  3.2.6       Andreas Bug         Speicherleck bei Abfragen behoben
+
 5330    18.10.2023  dev     3.3         Andreas Feature     Nichtstandard-Reports werden aus der COUNTER 5-Reportauswahl abgelehnt
 
 5329    17.10.2023  dev     3.3         David   Bug         Paginierung für Aufgaben funktioniert nicht

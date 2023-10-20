@@ -40,18 +40,18 @@
                 <g:if test="${subscription.instanceOf && contextService.getOrg().id == subscription.getConsortia()?.id}">
                     <ui:cbItemInfo display="Sie sehen eine Kindlizenz" icon="child" color="orange" />
                 </g:if>
-                <g:if test="${navPrevSubscription || navNextSubscription}">
-                    <ui:cbItemInfo display="Es existieren Vorgänger/Nachfolger zu dieser Lizenz" icon="arrows exchange" color="blue" />
-                </g:if>
+%{--                <g:if test="${navPrevSubscription || navNextSubscription}">--}%
+%{--                    <ui:cbItemInfo display="Es existieren Vorgänger/Nachfolger zu dieser Lizenz" icon="arrows exchange" color="blue" />--}%
+%{--                </g:if>--}%
             </g:if>
 
             <g:if test="${controllerName == 'license' && license}">
                 <g:if test="${license.instanceOf && contextService.getOrg().id == license.getLicensingConsortium()?.id}">
                     <ui:cbItemInfo display="Sie sehen einen Einrichtungsvertrag" icon="child" color="green" />
                 </g:if>
-                <g:if test="${navPrevLicense || navNextLicense}">
-                    <ui:cbItemInfo display="Es existieren Vorgänger/Nachfolger zu diesem Vertrag" icon="arrows exchange" color="blue" />
-                </g:if>
+%{--                <g:if test="${navPrevLicense || navNextLicense}">--}%
+%{--                    <ui:cbItemInfo display="Es existieren Vorgänger/Nachfolger zu diesem Vertrag" icon="arrows exchange" color="blue" />--}%
+%{--                </g:if>--}%
             </g:if>
 
             %{-- content indicator --}%
