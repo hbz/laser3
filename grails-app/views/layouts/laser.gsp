@@ -131,7 +131,9 @@
 
                                     <ui:link addItemAttributes="true" controller="logout">${message(code:'menu.user.logout')}</ui:link>
                                     <div class="divider"></div>
-                                    <div class="header">Version: ${AppUtils.getMeta('info.app.version')} – ${AppUtils.getMeta('info.app.build.date')}</div>
+                                    <div class="header">
+                                        Version: ${AppUtils.getMeta('info.app.version')} – ${AppUtils.getMeta('info.app.build.date')}
+                                    </div>
                                     <div class="header">
                                         ${SystemActivityProfiler.getNumberOfActiveUsers()} Benutzer online
                                     </div>

@@ -697,15 +697,15 @@ class AjaxHtmlController {
         ]
 
         String cachePref = ReportingCache.CTX_GLOBAL + '/' + BeanStore.getContextService().getUser().id // user bound
-        EhcacheWrapper ttl1800 = cacheService.getTTL1800Cache(cachePref)
+        EhcacheWrapper ttl3600 = cacheService.getTTL3600Cache(cachePref)
 
-        List<String> reportingKeys = ttl1800.getKeys().findAll { it.startsWith(cachePref + '_') } as List<String>
+        List<String> reportingKeys = ttl3600.getKeys().findAll { it.startsWith(cachePref + '_') } as List<String>
         List<String> reportingTokens = reportingKeys.collect { it.replace(cachePref + '_', '')}
 
         if (params.context == BaseConfig.KEY_MYINST) {
 
             if (params.cmd == 'deleteHistory') {
-                reportingTokens.each {it -> ttl1800.remove( it ) }
+                reportingTokens.each {it -> ttl3600.remove( it ) }
             }
             else if (params.token) {
                 if (params.cmd == 'addBookmark') {
@@ -727,7 +727,7 @@ class AjaxHtmlController {
             }
         }
         result.bookmarks     = ReportingFilter.findAllByOwner( contextService.getUser(), [sort: 'lastUpdated', order: 'desc'] )
-        result.filterHistory = reportingTokens.sort { a,b -> ttl1800.get(b).meta.timestamp <=> ttl1800.get(a).meta.timestamp }.take(5)
+        result.filterHistory = reportingTokens.sort { a,b -> ttl3600.get(b).meta.timestamp <=> ttl3600.get(a).meta.timestamp }.take(5)
 
         render template: '/myInstitution/reporting/historyAndBookmarks', model: result
     }

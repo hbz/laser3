@@ -260,13 +260,13 @@ class ContextService {
         User user = getUser()
         Org org = getOrg()
 
-        EhcacheWrapper cache = cacheService.getTTL1800Cache('ContextService/checkCachedNavPerms')
+        EhcacheWrapper ttl1800 = cacheService.getTTL1800Cache('ContextService/checkCachedNavPerms')
 
         Map<String, Boolean> permsMap = [:]
         String permsKey = '' + user.id + ':' + user.formalOrg.id + ':' + user.formalRole.id + '#' + org.id
 
-        if (cache.get(permsKey)) {
-            permsMap = cache.get(permsKey) as Map<String, Boolean>
+        if (ttl1800.get(permsKey)) {
+            permsMap = ttl1800.get(permsKey) as Map<String, Boolean>
         }
 
         String perm =  attrs.instRole + ':' + attrs.orgPerm + ':' + attrs.affiliationOrg + ':' + attrs.specRole
@@ -289,7 +289,7 @@ class ContextService {
                 }
             }
             permsMap.put(perm, check)
-            cache.put(permsKey, permsMap)
+            ttl1800.put(permsKey, permsMap)
         }
 
         check

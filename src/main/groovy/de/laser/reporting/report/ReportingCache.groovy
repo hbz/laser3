@@ -14,12 +14,12 @@ class ReportingCache {
     static final CTX_GLOBAL         = 'MyInstitutionController/reporting'
     static final CTX_SUBSCRIPTION   = 'SubscriptionController/reporting'
 
-    EhcacheWrapper ehcw
+    EhcacheWrapper ttl3600
     String token
 
     ReportingCache(String ctx, String token) {
         this.token = token
-        ehcw  = BeanStore.getCacheService().getTTL1800Cache(ctx + '/' + BeanStore.getContextService().getUser().id) // user bound
+        ttl3600  = BeanStore.getCacheService().getTTL3600Cache(ctx + '/' + BeanStore.getContextService().getUser().id) // user bound
     }
 
     // ---
@@ -48,15 +48,15 @@ class ReportingCache {
     // ---
 
     Map<String, Object> get() {
-        ehcw.get(token) as Map<String, Object>
+        ttl3600.get(token) as Map<String, Object>
     }
 
     def put(Map<String, Object> value) {
-        ehcw.put(token , value)
+        ttl3600.put(token , value)
     }
 
     def remove() {
-        ehcw.remove(token)
+        ttl3600.remove(token)
     }
 
     boolean exists () {

@@ -138,21 +138,21 @@ class PropertyDefinitionGroup {
         def currentObject = genericOIDService.resolveOID(params.oid)
 
         CacheService cacheService = BeanStore.getCacheService()
-        EhcacheWrapper cache
+        EhcacheWrapper ttl300
 
-        cache = cacheService.getTTL300Cache("PropertyDefinitionGroup/refdataFind/${currentObject.id}")
+        ttl300 = cacheService.getTTL300Cache("PropertyDefinitionGroup/refdataFind/${currentObject.id}")
 
-        if (! cache.get('propDefs')) {
+        if (! ttl300.get('propDefs')) {
             List<PropertyDefinition> propDefs = currentObject.getPropertyDefinitions()
 
             List cacheContent = []
             propDefs.each { it ->
                 cacheContent.add([id:"${it.id}", en:"${it.name_en}", de:"${it.name_de}"])
             }
-            cache.put('propDefs', cacheContent)
+            ttl300.put('propDefs', cacheContent)
         }
 
-        cache.get('propDefs').each { it ->
+        ttl300.get('propDefs').each { it ->
             switch (LocaleUtils.getCurrentLang()) {
                 case 'en':
                     if (params.q == '*' || it.en?.toLowerCase()?.contains(params.q?.toLowerCase())) {

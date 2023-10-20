@@ -413,6 +413,112 @@ class ExportClickMeService {
             ]
     ]
 
+    static Map<String, Object> EXPORT_SUBSCRIPTION_SUPPORT_CONFIG = [
+            subscription: [
+                    label: 'Subscription',
+                    message: 'subscription.label',
+                    fields: [
+                            'subscription.name'                         : [field: 'name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
+                            'subscription.startDate'                    : [field: 'startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
+                            'subscription.endDate'                      : [field: 'endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
+                            'subscription.manualCancellationDate'       : [field: 'manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
+                            'subscription.isMultiYear'                  : [field: 'isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label', defaultChecked: 'true'],
+                            'subscription.referenceYear'                : [field: 'referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.export.label', defaultChecked: 'true'],
+                            //'subscription.isAutomaticRenewAnnually'     : [field: 'isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'], //to be shown for PRO users only!
+                            'subscription.status'                       : [field: 'status', label: 'Status', message: 'subscription.status.label', defaultChecked: 'true'],
+                            'subscription.kind'                         : [field: 'kind', label: 'Kind', message: 'subscription.kind.label', defaultChecked: 'true'],
+                            'subscription.form'                         : [field: 'form', label: 'Form', message: 'subscription.form.export.label', defaultChecked: 'true'],
+                            'subscription.resource'                     : [field: 'resource', label: 'Resource', message: 'subscription.resource.label'],
+                            'subscription.hasPerpetualAccess'           : [field: 'hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
+                            'subscription.hasPublishComponent'          : [field: 'hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
+                            'subscription.holdingSelection'             : [field: 'holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.export.label'],
+                            'subscription.notes'                        : [field: null, label: 'Notes', message: 'default.notes.label'],
+                            'subscription.notes.shared'                 : [field: null, label: 'Notes', message: 'license.notes.shared'],
+                            'subscription.uuid'                         : [field: 'globalUID', label: 'Laser-UUID',  message: null],
+                    ]
+            ],
+
+            licenses: [
+                    label: 'License',
+                    message: 'license.label',
+                    fields: [
+                            'license.name'            : [field: 'licenses.reference', label: 'Name', message: 'exportClickMe.license.name', defaultChecked: 'true' ],
+                            'license.status'          : [field: 'licenses.status', label: 'Status', message: 'exportClickMe.license.status'],
+                            'license.licenseCategory' : [field: 'licenses.licenseCategory', label: 'License Category', message: 'license.licenseCategory.label'],
+                            'license.startDate'       : [field: 'licenses.startDate', label: 'Start Date', message: 'exportClickMe.license.startDate'],
+                            'license.endDate'         : [field: 'licenses.endDate', label: 'End Date', message: 'exportClickMe.license.endDate'],
+                            'license.openEnded'       : [field: 'licenses.openEnded', label: 'Open Ended', message: 'license.openEnded.label'],
+                            'license.notes'           : [field: null, label: 'Notes', message: 'default.notes.label'],
+                            'license.uuid'            : [field: 'licenses.globalUID', label: 'Laser-UUID',  message: null],
+                    ]
+            ],
+
+            institutions: [
+                    label: 'Consortium members',
+                    message: 'consortium.member.plural',
+                    fields: ['memberCount': [field: null, label: 'Count', message: 'default.count.label'],
+                             'multiYearCount': [field: null, label: 'Count multi-year', message: 'default.count.multiYear.label']
+                    ]
+            ],
+
+            participantIdentifiers : [
+                    label: 'Identifiers',
+                    message: 'exportClickMe.participantIdentifiers',
+                    fields: [:],
+            ],
+            participantCustomerIdentifiers : [
+                    label: 'Customer Identifier',
+                    message: 'exportClickMe.participantCustomerIdentifiers',
+                    fields: [:],
+            ],
+
+            subProperties : [
+                    label: 'Public properties',
+                    message: 'default.properties',
+                    fields: [:]
+            ],
+
+            mySubProperties : [
+                    label: 'My properties',
+                    message: 'default.properties.my',
+                    fields: [:]
+            ],
+
+            subCostItems : [
+                    label: 'Cost Items',
+                    message: 'subscription.costItems.label',
+                    subTabs: [],
+                    fields: [
+                            'costItemsElements' : [:],
+                            /*
+                                    'costItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
+                                    'costItem.reference'                        : [field: 'costItem.reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
+                                    'costItem.budgetCodes'                      : [field: 'costItem.budgetcodes', label: 'Budget Code', message: 'financials.budgetCode'],
+                                    'costItem.costItemElementConfiguration'     : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
+                                    'costItem.costItemStatus'                   : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
+                                    'costItem.costInBillingCurrency'            : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
+                                    'costItem.billingCurrency'                  : [field: 'costItem.billingCurrency', label: 'Billing Currency', message: 'default.currency.label'],
+                                    'costItem.costInBillingCurrencyAfterTax'    : [field: 'costItem.costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount'],
+                                    'costItem.currencyRate'                     : [field: 'costItem.currencyRate', label: 'Exchange Rate', message: 'financials.newCosts.exchangeRate'],
+                                    'costItem.taxType'                          : [field: 'costItem.taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType'],
+                                    'costItem.taxRate'                          : [field: 'costItem.taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate'],
+                                    'costItem.costInLocalCurrency'              : [field: 'costItem.costInLocalCurrency', label: 'Cost In Local Currency', message: 'financials.costInLocalCurrency'],
+                                    'costItem.costInLocalCurrencyAfterTax'      : [field: 'costItem.costInLocalCurrencyAfterTax', label: 'Cost in Local Currency after taxation', message: 'financials.costInLocalCurrencyAfterTax'],
+
+                                    'costItem.datePaid'                         : [field: 'costItem.datePaid', label: 'Financial Year', message: 'financials.financialYear'],
+                                    'costItem.financialYear'                    : [field: 'costItem.financialYear', label: 'Date Paid', message: 'financials.datePaid'],
+                                    'costItem.invoiceDate'                      : [field: 'costItem.invoiceDate', label: 'Invoice Date', message: 'financials.invoiceDate'],
+                                    'costItem.startDate'                        : [field: 'costItem.startDate', label: 'Date From', message: 'financials.dateFrom'],
+                                    'costItem.endDate'                          : [field: 'costItem.endDate', label: 'Date To', message: 'financials.dateTo'],
+
+                                    'costItem.costDescription'                  : [field: 'costItem.costDescription', label: 'Description', message: 'default.description.label'],
+                                    'costItem.invoiceNumber'                    : [field: 'costItem.invoice.invoiceNumber', label: 'Invoice Number', message: 'financials.invoice_number'],
+                                    'costItem.orderNumber'                      : [field: 'costItem.order.orderNumber', label: 'Order Number', message: 'financials.order_number']
+                            */
+                    ]
+            ]
+    ]
+
     static Map<String, Object> EXPORT_CONSORTIA_PARTICIPATIONS_CONFIG = [
             subscription: [
                     label: 'Subscription',
@@ -554,6 +660,115 @@ class ExportClickMeService {
             ]
     ]
 
+    static Map<String, Object> EXPORT_CONSORTIA_PARTICIPATIONS_SUPPORT_CONFIG = [
+            subscription: [
+                    label: 'Subscription',
+                    message: 'subscription.label',
+                    fields: [
+                            'subscription.name'                         : [field: 'sub.name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
+                            'subscription.startDate'                    : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
+                            'subscription.endDate'                      : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
+                            'subscription.manualCancellationDate'       : [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
+                            'subscription.isMultiYear'                  : [field: 'sub.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label', defaultChecked: 'true'],
+                            'subscription.referenceYear'                : [field: 'sub.referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.export.label', defaultChecked: 'true'],
+                            'subscription.status'                       : [field: 'sub.status', label: 'Status', message: 'subscription.status.label', defaultChecked: 'true'],
+                            'subscription.kind'                         : [field: 'sub.kind', label: 'Kind', message: 'subscription.kind.label', defaultChecked: 'true'],
+                            'subscription.form'                         : [field: 'sub.form', label: 'Form', message: 'subscription.form.export.label', defaultChecked: 'true'],
+                            'subscription.resource'                     : [field: 'sub.resource', label: 'Resource', message: 'subscription.resource.label'],
+                            'subscription.hasPerpetualAccess'           : [field: 'sub.hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
+                            'subscription.hasPublishComponent'          : [field: 'sub.hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
+                            'subscription.holdingSelection'             : [field: 'sub.holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.export.label'],
+                            'subscription.notes'                        : [field: null, label: 'Notes', message: 'default.notes.label'],
+                            'subscription.notes.shared'                 : [field: null, label: 'Notes', message: 'license.notes.shared'],
+                            'subscription.uuid'                         : [field: 'sub.globalUID', label: 'Laser-UUID',  message: null],
+                    ]
+            ],
+
+            licenses: [
+                    label: 'License',
+                    message: 'license.label',
+                    fields: [
+                            'license.name'            : [field: 'licenses.reference', label: 'Name', message: 'exportClickMe.license.name', defaultChecked: 'true' ],
+                            'license.status'          : [field: 'licenses.status', label: 'Status', message: 'exportClickMe.license.status'],
+                            'license.licenseCategory' : [field: 'licenses.licenseCategory', label: 'License Category', message: 'license.licenseCategory.label'],
+                            'license.startDate'       : [field: 'licenses.startDate', label: 'Start Date', message: 'exportClickMe.license.startDate'],
+                            'license.endDate'         : [field: 'licenses.endDate', label: 'End Date', message: 'exportClickMe.license.endDate'],
+                            'license.openEnded'       : [field: 'licenses.openEnded', label: 'Open Ended', message: 'license.openEnded.label'],
+                            'license.notes'           : [field: null, label: 'Notes', message: 'default.notes.label'],
+                            'license.uuid'            : [field: 'licenses.globalUID', label: 'Laser-UUID',  message: null],
+                    ]
+            ],
+
+            participant : [
+                    label: 'Participant',
+                    message: 'surveyParticipants.label',
+                    fields: [
+                            'participant.sortname'          : [field: 'orgs.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
+                            'participant.name'              : [field: 'orgs.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
+                            'participant.funderType'        : [field: 'orgs.funderType', label: 'Funder Type', message: 'org.funderType.label'],
+                            'participant.funderHskType'     : [field: 'orgs.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
+                            'participant.libraryType'       : [field: 'orgs.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
+                            /*
+                            'participantContact.General contact person'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
+                            'participantContact.Functional Contact Billing Adress'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
+                            'participant.postAdress'        : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
+                            'participant.billingAdress'     : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
+                             */
+                            'participant.eInvoice'          : [field: 'orgs.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
+                            'participant.eInvoicePortal'    : [field: 'orgs.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
+                            'participant.linkResolverBaseURL'    : [field: 'orgs.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
+                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers']
+                    ]
+            ],
+
+            participantIdentifiers : [
+                    label: 'Identifiers',
+                    message: 'exportClickMe.participantIdentifiers',
+                    fields: [:],
+
+            ],
+            participantCustomerIdentifiers : [
+                    label: 'Customer Identifier',
+                    message: 'exportClickMe.participantCustomerIdentifiers',
+                    fields: [:],
+
+            ],
+
+            participantContacts : [
+                    label: 'Contacts',
+                    message: 'org.contacts.label',
+                    subTabs: [],
+                    fields: [:]
+            ],
+
+            participantAddresses : [
+                    label: 'Addresses',
+                    message: 'org.addresses.label',
+                    fields: [:]
+            ],
+
+            subProperties : [
+                    label: 'Public properties',
+                    message: 'default.properties',
+                    fields: [:]
+            ],
+
+            mySubProperties : [
+                    label: 'My properties',
+                    message: 'default.properties.my',
+                    fields: [:]
+            ],
+
+            subCostItems : [
+                    label: 'Cost Items',
+                    message: 'subscription.costItems.label',
+                    subTabs: [],
+                    fields: [
+                            'costItemsElements' : [:]
+                    ]
+            ]
+    ]
+
     static Map<String, Object> EXPORT_SUBSCRIPTION_TRANSFER_CONFIG = [
             subscriptionTransfer: [
                     label: 'Transfer',
@@ -643,6 +858,43 @@ class ExportClickMeService {
                     message: 'exportClickMe.participantIdentifiers',
                     fields: [:],
 
+            ],
+
+            licProperties : [
+                    label: 'Public properties',
+                    message: 'default.properties',
+                    fields: [:]
+            ],
+
+            myLicProperties : [
+                    label: 'My properties',
+                    message: 'default.properties.my',
+                    fields: [:]
+            ]
+    ]
+
+    static Map<String, Object> EXPORT_LICENSE_SUPPORT_CONFIG = [
+            licenses: [
+                    label: 'License',
+                    message: 'license.label',
+                    fields: [
+                            'license.reference'       : [field: 'reference', label: 'Name', message: 'exportClickMe.license.name', defaultChecked: 'true'],
+                            'license.status'          : [field: 'status', label: 'Status', message: 'exportClickMe.license.status', defaultChecked: 'true'],
+                            'license.licenseCategory' : [field: 'licenseCategory', label: 'License Category', message: 'license.licenseCategory.label', defaultChecked: 'true'],
+                            'license.startDate'       : [field: 'startDate', label: 'Start Date', message: 'exportClickMe.license.startDate', defaultChecked: 'true'],
+                            'license.endDate'         : [field: 'endDate', label: 'End Date', message: 'exportClickMe.license.endDate', defaultChecked: 'true'],
+                            'license.openEnded'       : [field: 'openEnded', label: 'Open Ended', message: 'license.openEnded.label', defaultChecked: 'true'],
+                            'license.notes'           : [field: null, label: 'Notes', message: 'default.notes.label'],
+                            'license.notes.shared'    : [field: null, label: 'Notes', message: 'license.notes.shared'],
+                            'license.uuid'            : [field: 'globalUID', label: 'Laser-UUID',  message: null],
+                            'subscription.name'       : [field: 'subscription.name', label: 'Name', message: 'license.details.linked_subs', defaultChecked: 'true']
+                    ]
+            ],
+
+            participantIdentifiers : [
+                    label: 'Identifiers',
+                    message: 'exportClickMe.participantIdentifiers',
+                    fields: [:],
             ],
 
             licProperties : [
@@ -839,6 +1091,61 @@ class ExportClickMeService {
                             'participant.exportEZProxys'    : [field: null, label: 'Export EZProxys', message: 'subscriptionDetails.members.exportEZProxys', separateSheet: 'true'],
                             'participant.exportShibboleths' : [field: null, label: 'Export Shibboleths', message: 'subscriptionDetails.members.exportShibboleths', separateSheet: 'true'],
                             'participant.exportMailDomains' : [field: null, label: 'Export Mail Domains', message: 'subscriptionDetails.members.exportMailDomains', separateSheet: 'true'],
+                    ]
+            ],
+            participantIdentifiers : [
+                    label: 'Identifiers',
+                    message: 'exportClickMe.participantIdentifiers',
+                    fields: [:]
+            ],
+            participantCustomerIdentifiers : [
+                    label: 'Customer Identifiers',
+                    message: 'exportClickMe.participantCustomerIdentifiers',
+                    fields: [:]
+            ],
+            participantContacts : [
+                    label: 'Contacts',
+                    message: 'org.contacts.label',
+                    subTabs: [],
+                    fields: [:]
+            ],
+            participantAddresses : [
+                    label: 'Addresses',
+                    message: 'org.addresses.label',
+                    fields: [:]
+            ],
+            participantProperties : [
+                    label: 'Properties',
+                    message: 'default.properties',
+                    fields: [:]
+            ],
+            myParticipantProperties : [
+                    label: 'Properties',
+                    message: 'default.properties.my',
+                    fields: [:]
+            ]
+    ]
+
+    static Map<String, Object> EXPORT_ORG_SUPPORT_CONFIG = [
+            participant : [
+                    label: 'Participant',
+                    message: 'surveyParticipants.label',
+                    fields: [
+                            'participant.sortname'          : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
+                            'participant.name'              : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
+                            'participant.funderType'        : [field: 'funderType', label: 'Funder Type', message: 'org.funderType.label'],
+                            'participant.funderHskType'     : [field: 'funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
+                            'participant.libraryType'       : [field: 'libraryType', label: 'Library Type', message: 'org.libraryType.label'],
+                            /*
+                            'participantContact.General contact person'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
+                            'participantContact.Functional Contact Billing Adress'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
+                            'participant.postAdress'        : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
+                            'participant.billingAdress'     : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
+                             */
+                            'participant.eInvoice'          : [field: 'eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
+                            'participant.eInvoicePortal'    : [field: 'eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
+                            'participant.linkResolverBaseURL'    : [field: 'linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
+                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
                     ]
             ],
             participantIdentifiers : [
@@ -1555,16 +1862,18 @@ class ExportClickMeService {
                 break
         }
 
-        EXPORT_SUBSCRIPTION_CONFIG.keySet().each { String key ->
+        Map<String, Object> config = institution.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_SUBSCRIPTION_SUPPORT_CONFIG : EXPORT_SUBSCRIPTION_CONFIG
+
+        config.keySet().each { String key ->
             if(key == 'institutions') {
                 if (institution.isCustomerType_Consortium()) {
-                    EXPORT_SUBSCRIPTION_CONFIG.get(key).fields.each {
+                    config.get(key).fields.each {
                         exportFields.put(it.key, it.value)
                     }
                 }
             }
             else {
-                EXPORT_SUBSCRIPTION_CONFIG.get(key).fields.each {
+                config.get(key).fields.each {
                     exportFields.put(it.key, it.value)
                 }
             }
@@ -1641,7 +1950,8 @@ class ExportClickMeService {
     Map<String, Object> getExportSubscriptionFieldsForUI(Org institution, boolean showTransferFields = false) {
 
         Map<String, Object> fields = [:]
-        fields.putAll(EXPORT_SUBSCRIPTION_CONFIG)
+        fields.putAll(institution.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_SUBSCRIPTION_SUPPORT_CONFIG : EXPORT_SUBSCRIPTION_CONFIG)
+
         if(institution.getCustomerType() == CustomerTypeService.ORG_INST_PRO)
             fields.subscription.fields.put('subscription.isAutomaticRenewAnnually', [field: 'isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
         if (!institution.isCustomerType_Consortium()) {
@@ -1680,8 +1990,10 @@ class ExportClickMeService {
         Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg join sp.subscription s join s.orgRelations oo where oo.org = :ctx '+consortiaFilter+') order by plat.name', [ctx:institution]).each { Platform plat ->
             fields.participantCustomerIdentifiers.fields << ["participantCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
         }
-        IdentifierNamespace.findAllByNsType(IdentifierNamespace.NS_PACKAGE, [sort: 'ns']).each { IdentifierNamespace idns ->
-            fields.packages.fields << ["packageIdentifiers.${idns.id}":[field: null, label: idns.ns]]
+        if (fields.packages) {
+            IdentifierNamespace.findAllByNsType(IdentifierNamespace.NS_PACKAGE, [sort: 'ns']).each { IdentifierNamespace idns ->
+                fields.packages.fields << ["packageIdentifiers.${idns.id}": [field: null, label: idns.ns]]
+            }
         }
 
         Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc", [ctx:institution,availableTypes:[PropertyDefinition.SUB_PROP]])
@@ -1745,8 +2057,10 @@ class ExportClickMeService {
                 break
         }
 
-        EXPORT_CONSORTIA_PARTICIPATIONS_CONFIG.keySet().each { String key ->
-            EXPORT_CONSORTIA_PARTICIPATIONS_CONFIG.get(key).fields.each {
+        Map<String, Object> config = consortium.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_CONSORTIA_PARTICIPATIONS_SUPPORT_CONFIG : EXPORT_CONSORTIA_PARTICIPATIONS_CONFIG
+
+        config.keySet().each { String key ->
+            config.get(key).fields.each {
                 exportFields.put(it.key, it.value)
             }
         }
@@ -1802,7 +2116,8 @@ class ExportClickMeService {
     Map<String, Object> getExportConsortiaParticipationFieldsForUI(Org consortium) {
 
         Map<String, Object> fields = [:]
-        fields.putAll(EXPORT_CONSORTIA_PARTICIPATIONS_CONFIG)
+        fields.putAll(consortium.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_CONSORTIA_PARTICIPATIONS_SUPPORT_CONFIG : EXPORT_CONSORTIA_PARTICIPATIONS_CONFIG)
+
         Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName
         String localizedValue
@@ -1826,8 +2141,10 @@ class ExportClickMeService {
         Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg join sp.subscription s join s.orgRelations oo where oo.org = :ctx and s.instanceOf = null) order by plat.name', [ctx:consortium]).each { Platform plat ->
             fields.participantCustomerIdentifiers.fields << ["participantCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
         }
-        IdentifierNamespace.findAllByNsType(IdentifierNamespace.NS_PACKAGE, [sort: 'ns']).each { IdentifierNamespace idns ->
-            fields.packages.fields << ["packageIdentifiers.${idns.id}":[field: null, label: idns.ns]]
+        if (fields.packages) {
+            IdentifierNamespace.findAllByNsType(IdentifierNamespace.NS_PACKAGE, [sort: 'ns']).each { IdentifierNamespace idns ->
+                fields.packages.fields << ["packageIdentifiers.${idns.id}": [field: null, label: idns.ns]]
+            }
         }
 
         SortedSet<RefdataValue> contactTypes = new TreeSet<RefdataValue>(), addressTypes = new TreeSet<RefdataValue>()
@@ -1895,16 +2212,18 @@ class ExportClickMeService {
                 break
         }
 
-        EXPORT_LICENSE_CONFIG.keySet().each { String key ->
+        Map<String, Object> config = institution.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_LICENSE_SUPPORT_CONFIG : EXPORT_LICENSE_CONFIG
+
+        config.keySet().each { String key ->
             if(key == 'institutions') {
                 if (institution.isCustomerType_Consortium()) {
-                    EXPORT_LICENSE_CONFIG.get(key).fields.each {
+                    config.get(key).fields.each {
                         exportFields.put(it.key, it.value)
                     }
                 }
             }
             else {
-                EXPORT_LICENSE_CONFIG.get(key).fields.each {
+                config.get(key).fields.each {
                     exportFields.put(it.key, it.value)
                 }
             }
@@ -1938,7 +2257,8 @@ class ExportClickMeService {
     Map<String, Object> getExportLicenseFieldsForUI(Org institution) {
 
         Map<String, Object> fields = [:]
-        fields.putAll(EXPORT_LICENSE_CONFIG)
+        fields.putAll(institution.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_LICENSE_SUPPORT_CONFIG : EXPORT_LICENSE_CONFIG)
+
         if (!institution.isCustomerType_Consortium()) {
             fields.remove('institutions')
             fields.licenses.fields.put('consortium', [field: null, label: 'Consortium', message: 'consortium.label', defaultChecked: true])
@@ -2098,6 +2418,9 @@ class ExportClickMeService {
      */
     Map<String, Object> getExportOrgFields(String config) {
 
+//        println 'getExportOrgFields'
+//        println config
+
         Org contextOrg = contextService.getOrg()
         Map<String, Object> exportFields = [:], contextParams = [ctx: contextOrg]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
@@ -2130,8 +2453,10 @@ class ExportClickMeService {
                 }
                 break
             case 'institution':
-                EXPORT_ORG_CONFIG.keySet().each {
-                    EXPORT_ORG_CONFIG.get(it).fields.each {
+                Map<String, Object> config2 = contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_ORG_SUPPORT_CONFIG : EXPORT_ORG_CONFIG
+
+                config2.keySet().each {
+                    config2.get(it).fields.each {
                         exportFields.put(it.key, it.value)
                     }
                 }
@@ -2218,6 +2543,9 @@ class ExportClickMeService {
      */
     Map<String, Object> getExportOrgFieldsForUI(String orgType) {
 
+//        println 'orgType'
+//        println orgType
+
         Org contextOrg = contextService.getOrg()
         Map<String, Object> fields = [:], contextParams = [ctx: contextOrg]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
@@ -2256,7 +2584,9 @@ class ExportClickMeService {
                     fields.consortiumAddresses.fields.put("consortiumAddress.${addressType.value}", [field: null, label: addressType.getI10n('value')])
                 }
                 break
-            case 'institution': fields.putAll(EXPORT_ORG_CONFIG)
+            case 'institution':
+                fields.putAll(contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_ORG_SUPPORT_CONFIG : EXPORT_ORG_CONFIG)
+
                 fields.participant.fields << ['participant.subscriptions':[field: null, label: 'Subscriptions',  message: 'subscription.plural']]
                 fields.participantIdentifiers.fields.clear()
                 IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {

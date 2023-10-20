@@ -42,8 +42,8 @@ class SystemActivityProfiler {
      */
     static void addActiveUser(User user) {
         if (user) {
-            EhcacheWrapper cache = BeanStore.getCacheService().getTTL1800Cache(CACHE_KEY_ACTIVE_USER)
-            cache.put(user.id.encodeAsMD5() as String, System.currentTimeMillis())
+            EhcacheWrapper ttl1800 = BeanStore.getCacheService().getTTL1800Cache(CACHE_KEY_ACTIVE_USER)
+            ttl1800.put(user.id.encodeAsMD5() as String, System.currentTimeMillis())
         }
     }
 
@@ -53,8 +53,8 @@ class SystemActivityProfiler {
      */
     static void removeActiveUser(User user) {
         if (user) {
-            EhcacheWrapper cache = BeanStore.getCacheService().getTTL1800Cache(CACHE_KEY_ACTIVE_USER)
-            cache.remove(user.id.encodeAsMD5() as String)
+            EhcacheWrapper ttl1800 = BeanStore.getCacheService().getTTL1800Cache(CACHE_KEY_ACTIVE_USER)
+            ttl1800.remove(user.id.encodeAsMD5() as String)
         }
     }
 
@@ -64,12 +64,12 @@ class SystemActivityProfiler {
      * @return a {@link List} of user hash keys who have been active
      */
     static List<String> getActiveUsers(long ms) {
-        EhcacheWrapper cache = BeanStore.getCacheService().getTTL1800Cache( CACHE_KEY_ACTIVE_USER )
+        EhcacheWrapper ttl1800 = BeanStore.getCacheService().getTTL1800Cache( CACHE_KEY_ACTIVE_USER )
         List result = []
-        cache.getKeys().each{ k ->
+        ttl1800.getKeys().each{ k ->
             try {
                 String key = k.replaceFirst( CACHE_KEY_ACTIVE_USER + EhcacheWrapper.SEPARATOR, '' )
-                if (System.currentTimeMillis() - (cache.get(key) as Long) <= ms) {
+                if (System.currentTimeMillis() - (ttl1800.get(key) as Long) <= ms) {
                     result.add( key )
                 }
             } catch (Exception e) {
