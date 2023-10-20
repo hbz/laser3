@@ -48,8 +48,11 @@
             <ui:msg icon="ui info icon" class="info" header="${message(code: 'default.usage.counter4reportInfo.header')}" message="default.usage.counter4reportInfo.text" noClose="true"/>
         </g:if>
         <g:form action="renewEntitlementsWithSurvey" name="stats" class="ui form" method="get">
-            <g:hiddenField name="id" value="${subscription.id}"/>
             <g:hiddenField name="revision" value="${revision}"/>
+            <g:hiddenField name="exportXLSStats" value="true"/>
+            <g:each in="${params.keySet()}" var="param">
+                <g:hiddenField name="${param}" value="${params.get(param)}"/>
+            </g:each>
             <div class="four fields" id="filterDropdownWrapper">
                 <g:if test="${platformInstanceRecords.size() > 1}">
                     <div class="field">
@@ -137,7 +140,8 @@
     });
     $("#generateReport").on('click', function() {
         $('#globalLoadingIndicator').show();
-        let fd = new FormData($('#stats')[0]);
+        $('#individuallyExportModal').modal('hide');
+        let fd = new FormData($('#individuallyExportModal').find('form')[0]);
         $.ajax({
             url: "<g:createLink action="renewEntitlementsWithSurvey"/>",
             data: fd,
@@ -145,7 +149,7 @@
             processData: false,
             contentType: false
         }).done(function(response){
-            $("#reportWrapper").html(response);
+            $("#downloadWrapper").html(response);
             $('#globalLoadingIndicator').hide();
         });
     });

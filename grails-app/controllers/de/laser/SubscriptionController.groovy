@@ -1484,14 +1484,51 @@ class SubscriptionController {
         SXSSFWorkbook wb
         if(params.exportXLSStats) {
             if(params.reportType) {
-                exportResult = exportService.generateReport(params, true,  true, true)
-            }
-            if(exportResult) {
-                wb = exportResult.result
-                ctrlResult = [status: SubscriptionControllerService.STATUS_OK]
+                ctrlResult = subscriptionControllerService.renewEntitlementsWithSurvey(this, params)
+                params.loadFor = params.tab
+                //exportResult = exportService.generateReport(params, true,  true, true)
+                String token = "report_${params.reportType}_${params.platform}_${ctrlResult.result.subscriber.id}_${ctrlResult.result.subscriberSub.id}"
+                if(params.metricType) {
+                    token += '_'+params.list('metricType').join('_')
+                }
+                if(params.accessType) {
+                    token += '_'+params.list('accessType').join('_')
+                }
+                if(params.accessMethod) {
+                    token += '_'+params.list('accessMethod').join('_')
+                }
+                String dir = ConfigMapper.getStatsReportSaveLocation() ?: '/usage'
+                File folder = new File(dir)
+                if (!folder.exists()) {
+                    folder.mkdir()
+                }
+                File f = new File(dir+'/'+token)
+                Map<String, String> fileResult = [token: token]
+                if(!f.exists()) {
+                    exportResult = exportService.generateReport(params, true, true, true)
+                    if(exportResult.containsKey('result')) {
+                        wb = exportResult.result
+                        FileOutputStream fos = new FileOutputStream(dir+'/'+token)
+                        //--> to document
+                        wb.write(fos)
+                        fos.flush()
+                        fos.close()
+                        wb.dispose()
+                        render template: '/templates/usageReport', model: fileResult
+                        return
+                    }
+                    else {
+                        Map<String, Object> errorMap = [error: exportResult.error]
+                        render template: '/templates/usageReport', model: errorMap
+                        return
+                    }
+                }
+                else {
+                    render template: '/templates/usageReport', model: fileResult
+                    return
+                }
             }
             else {
-                ctrlResult = subscriptionControllerService.renewEntitlementsWithSurvey(this, params)
                 flash.error = message(code: 'default.stats.error.noReportSelected')
             }
         }
