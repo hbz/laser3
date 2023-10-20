@@ -300,8 +300,8 @@
                                             <%
                                                 String instanceFilter = ''
                                                 if (institution.isCustomerType_Consortium())
-                                                    instanceFilter += ' and pvd.instanceOf = null'
-                                                Set<IssueEntitlement> ie_infos = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription pvd join pvd.orgRelations oo where oo.org = :context and ie.tipp = :tipp and (pvd.status = :current or pvd.hasPerpetualAccess = true) and ie.status != :ieStatus' + instanceFilter, [ieStatus: RDStore.TIPP_STATUS_REMOVED, context: institution, tipp: tipp, current: RDStore.SUBSCRIPTION_CURRENT])
+                                                    instanceFilter += ' and sub.instanceOf = null'
+                                                Set<IssueEntitlement> ie_infos = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.org = :context and ie.tipp = :tipp and (sub.status = :current or sub.hasPerpetualAccess = true) and ie.status != :ieStatus' + instanceFilter, [ieStatus: RDStore.TIPP_STATUS_REMOVED, context: institution, tipp: tipp, current: RDStore.SUBSCRIPTION_CURRENT])
                                             %>
 
                                         <g:render template="/templates/title_segment_accordion"
@@ -470,17 +470,17 @@
         $('#globalLoadingIndicator').show();
         //the shorthand ?: is not supported???
         let fileformat = $(this).attr('data-fileformat') ? $(this).attr('data-fileformat') : $('#fileformat-query').val();
-        let fd
+        let fd;
         if(fileformat === 'kbart')
             fd = { fileformat: fileformat };
         else
             fd = new FormData($('#individuallyExportTippsModal').find('form')[0]);
+        <g:each in="${params.keySet()}" var="param">
+            fd.${param} = '${params[param]}';
+        </g:each>
         $.ajax({
-            url: "<g:createLink action="currentTitles" params="${params}"/>",
-            data: fd,
-            type: 'POST',
-            processData: false,
-            contentType: false
+            url: "<g:createLink action="currentTitles"/>",
+            data: fd
         }).done(function(response){
             $("#downloadWrapper").html(response);
             $('#globalLoadingIndicator').hide();

@@ -58,7 +58,7 @@ class SurveyControllerService {
 
         result.editable = result.surveyInfo.isEditable() ?: false
 
-        if(!(result.user.isAdmin() || result.user.isYoda() || result.surveyInfo.owner == contextService.getOrg().id))
+        if(!(result.user.isAdmin() || result.user.isYoda() || result.surveyInfo.owner.id == result.contextOrg.id))
         {
             return [result:null,status:STATUS_ERROR]
         }

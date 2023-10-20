@@ -1479,7 +1479,7 @@ class MyInstitutionController  {
             orgRoles << RDStore.OR_SUBSCRIBER_CONS
         }
 
-        // Set Date Restriction
+        /* Set Date Restriction
         Date checkedDate = null
 
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -1557,7 +1557,6 @@ class MyInstitutionController  {
         ]
 
         /*
-        needed?
         if(checkedDate) {
             queryFilter << ' ( :checkedDate >= coalesce(ie.accessStartDate,sub.startDate,tipp.accessStartDate) or (ie.accessStartDate is null and sub.startDate is null and tipp.accessStartDate is null) ) and ( :checkedDate <= coalesce(ie.accessEndDate,sub.endDate,tipp.accessEndDate) or (ie.accessEndDate is null and sub.endDate is null and tipp.accessEndDate is null)  or (sub.hasPerpetualAccess = true))'
             queryFilter << ' (ie.accessStartDate <= :checkedDate or ' +
@@ -1583,12 +1582,12 @@ class MyInstitutionController  {
                                 ')' +
                             ')'
             qryParams.checkedDate = checkedDate
-        }
-        */
+        }*/
 
         if ((params.filter) && (params.filter.length() > 0)) {
-            queryFilter << "genfunc_filter_matcher(tipp.name, :titlestr) = true"
-            qryParams.titlestr = params.get('filter').toString()
+            //genfunc_filter_matcher needs rework because it causes memory leak
+            queryFilter << "( lower(tipp.name) like lower(:titlestr) or lower(tipp.firstAuthor) like lower(:titlestr) or lower(tipp.firstEditor) like lower(:titlestr) )"
+            qryParams.titlestr = "%${params.get('filter').toString()}%"
         }
 
         if (filterSub) {
@@ -1731,7 +1730,7 @@ class MyInstitutionController  {
         */
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-256")
         String filename = "${message(code:'export.my.currentTitles')}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}",
-                tokenBase = "${result.user}${params.keySet().join('')}${params.fileformat}"
+                tokenBase = "${result.user}${params.values().join('')}${params.fileformat}"
         messageDigest.update(tokenBase.getBytes())
         String token = messageDigest.digest().encodeHex()
 
