@@ -2418,8 +2418,8 @@ class ExportClickMeService {
      */
     Map<String, Object> getExportOrgFields(String config) {
 
-        println 'getExportOrgFields'
-        println config
+//        println 'getExportOrgFields'
+//        println config
 
         Org contextOrg = contextService.getOrg()
         Map<String, Object> exportFields = [:], contextParams = [ctx: contextOrg]
@@ -2543,8 +2543,8 @@ class ExportClickMeService {
      */
     Map<String, Object> getExportOrgFieldsForUI(String orgType) {
 
-        println 'orgType'
-        println orgType
+//        println 'orgType'
+//        println orgType
 
         Org contextOrg = contextService.getOrg()
         Map<String, Object> fields = [:], contextParams = [ctx: contextOrg]
