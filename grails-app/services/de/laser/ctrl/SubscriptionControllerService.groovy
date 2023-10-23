@@ -198,10 +198,11 @@ class SubscriptionControllerService {
                 //def task_usage = task {
                 // usage
                 prf.setBenchmark('before platform query')
-                Set suppliers = Platform.executeQuery('select plat.id from IssueEntitlement ie join ie.tipp tipp join tipp.platform plat where ie.subscription = :sub', [sub: result.subscription])
+                Set suppliers = Platform.executeQuery('select plat.id from IssueEntitlement ie join ie.tipp tipp join tipp.platform plat where ie.subscription = :sub and ie.status != :removed', [sub: result.subscription, removed: RDStore.TIPP_STATUS_REMOVED])
                 if (suppliers.size() > 1) {
                     log.debug('Found different content platforms for this subscription, cannot show usage')
-                } else {
+                }
+                else if(suppliers.size() == 1) {
                     prf.setBenchmark('before loading platform')
                     Long supplier_id = suppliers[0]
                     PlatformProperty platform = PlatformProperty.executeQuery('select pp from PlatformProperty pp join pp.type pd where pp.owner.id = :owner and pd.name = :name and pd.descr = :descr', [owner: supplier_id, name: 'NatStat Supplier ID', descr: PropertyDefinition.PLA_PROP])[0]
