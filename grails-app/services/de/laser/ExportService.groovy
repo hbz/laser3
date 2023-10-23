@@ -751,9 +751,9 @@ class ExportService {
 		Set<Subscription> refSubs
 		Org customer = result.subscription.getSubscriber()
 		if (params.statsForSurvey == true) {
-			if(params.loadFor == 'allTippsStats')
+			if(params.loadFor == 'allTipps')
 				refSubs = [result.subscription.instanceOf] //look at statistics of the whole set of titles, i.e. of the consortial parent subscription
-			else if(params.loadFor == 'holdingIEsStats')
+			else if(params.loadFor == 'holdingIEs')
 				refSubs = result.subscription._getCalculatedPrevious() //look at the statistics of the member, i.e. the member's stock of the previous year
 		}
 		else if(subscriptionService.getCurrentIssueEntitlementIDs(result.subscription).size() > 0){

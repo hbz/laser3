@@ -15,6 +15,7 @@ import org.springframework.context.MessageSource
 @Transactional
 class PackageService {
 
+    BatchUpdateService batchUpdateService
     ContextService contextService
     DeletionService deletionService
     LinkGenerator grailsLinkGenerator
@@ -155,8 +156,7 @@ class PackageService {
             Map<String,Object> queryParams = [sub: subList, pkg_id: pkg.id]
             //delete matches
             //IssueEntitlement.withSession { Session session ->
-            String updateQuery = "update IssueEntitlement ie set ie.status.id = ${RDStore.TIPP_STATUS_REMOVED.id} where ie.subscription.id in (:sub) and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
-            IssueEntitlement.executeUpdate(updateQuery, queryParams)
+            batchUpdateService.clearIssueEntitlements(queryParams)
             if (deletePackage) {
                 removePackagePendingChanges(pkg, subList, true)
                 SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp where sp.pkg.id = :pkg_id and sp.subscription.id in (:sub)',queryParams).each { SubscriptionPackage delPkg ->
