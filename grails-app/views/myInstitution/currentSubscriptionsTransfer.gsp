@@ -564,10 +564,11 @@
                                 <g:if test="${finishProcess >= 0}">
                                     <g:link controller="survey" action="surveyEvaluation"
                                             id="${surveyConfig.surveyInfo.id}">
-                                        <g:formatNumber number="${finishProcess}"
+                                        ${finish}/${total}
+                                        (<g:formatNumber number="${finishProcess}"
                                                         type="number"
                                                         maxFractionDigits="2"
-                                                        minFractionDigits="2"/>%
+                                                        minFractionDigits="2"/>%)
                                     </g:link>
                                 </g:if>
                             </td>

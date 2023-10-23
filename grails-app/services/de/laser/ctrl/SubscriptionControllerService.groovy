@@ -307,6 +307,8 @@ class SubscriptionControllerService {
             List bm = prf.stopBenchmark()
             result.benchMark = bm
 
+            result.permanentTilesProcessRunning = result.subscription.instanceOf ? subscriptionService.checkThreadRunning('permanentTilesProcess_'+result.subscription.instanceOf.id) : subscriptionService.checkThreadRunning('permanentTilesProcess_'+result.subscription.id)
+
             [result:result,status:STATUS_OK]
         }
     }
@@ -2286,6 +2288,8 @@ class SubscriptionControllerService {
                 }
                 result.allIECounts += row['count']
             }
+
+            result.permanentTilesProcessRunning = result.subscription.instanceOf ? subscriptionService.checkThreadRunning('permanentTilesProcess_'+result.subscription.instanceOf.id) : subscriptionService.checkThreadRunning('permanentTilesProcess_'+result.subscription.id)
 
             [result:result,status:STATUS_OK]
         }
