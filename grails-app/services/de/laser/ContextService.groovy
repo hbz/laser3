@@ -108,7 +108,7 @@ class ContextService {
         return new SessionCacheWrapper()
     }
 
-    String getFormalCacheKey() {
+    String getFormalCacheKeyToken() {
         User user = getUser()
         '[' + user.id + ':' + user.formalOrg.id + ':' + user.formalRole.id + ']'
     }
@@ -268,7 +268,7 @@ class ContextService {
         EhcacheWrapper ttl1800 = cacheService.getTTL1800Cache('ContextService/checkCachedNavPerms')
 
         Map<String, Boolean> permsMap = [:]
-        String permsKey = getFormalCacheKey()
+        String permsKey = getFormalCacheKeyToken()
 
         if (ttl1800.get(permsKey)) {
             permsMap = ttl1800.get(permsKey) as Map<String, Boolean>
