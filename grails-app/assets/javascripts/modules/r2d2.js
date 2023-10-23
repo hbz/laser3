@@ -49,27 +49,27 @@ r2d2 = {
             },
             text: {
                 days: [
-                    JSPC.dict.get('loc.weekday.short.Sunday', JSPC.currLanguage),
-                    JSPC.dict.get('loc.weekday.short.Monday', JSPC.currLanguage),
-                    JSPC.dict.get('loc.weekday.short.Tuesday', JSPC.currLanguage),
-                    JSPC.dict.get('loc.weekday.short.Wednesday', JSPC.currLanguage),
-                    JSPC.dict.get('loc.weekday.short.Thursday', JSPC.currLanguage),
-                    JSPC.dict.get('loc.weekday.short.Friday', JSPC.currLanguage),
-                    JSPC.dict.get('loc.weekday.short.Saturday', JSPC.currLanguage)
+                    JSPC.dict.get('loc.weekday.short.Sunday', JSPC.vars.language),
+                    JSPC.dict.get('loc.weekday.short.Monday', JSPC.vars.language),
+                    JSPC.dict.get('loc.weekday.short.Tuesday', JSPC.vars.language),
+                    JSPC.dict.get('loc.weekday.short.Wednesday', JSPC.vars.language),
+                    JSPC.dict.get('loc.weekday.short.Thursday', JSPC.vars.language),
+                    JSPC.dict.get('loc.weekday.short.Friday', JSPC.vars.language),
+                    JSPC.dict.get('loc.weekday.short.Saturday', JSPC.vars.language)
                 ],
                 months: [
-                    JSPC.dict.get('loc.January', JSPC.currLanguage),
-                    JSPC.dict.get('loc.February', JSPC.currLanguage),
-                    JSPC.dict.get('loc.March', JSPC.currLanguage),
-                    JSPC.dict.get('loc.April', JSPC.currLanguage),
-                    JSPC.dict.get('loc.May', JSPC.currLanguage),
-                    JSPC.dict.get('loc.June', JSPC.currLanguage),
-                    JSPC.dict.get('loc.July', JSPC.currLanguage),
-                    JSPC.dict.get('loc.August', JSPC.currLanguage),
-                    JSPC.dict.get('loc.September', JSPC.currLanguage),
-                    JSPC.dict.get('loc.October', JSPC.currLanguage),
-                    JSPC.dict.get('loc.November', JSPC.currLanguage),
-                    JSPC.dict.get('loc.December', JSPC.currLanguage)
+                    JSPC.dict.get('loc.January', JSPC.vars.language),
+                    JSPC.dict.get('loc.February', JSPC.vars.language),
+                    JSPC.dict.get('loc.March', JSPC.vars.language),
+                    JSPC.dict.get('loc.April', JSPC.vars.language),
+                    JSPC.dict.get('loc.May', JSPC.vars.language),
+                    JSPC.dict.get('loc.June', JSPC.vars.language),
+                    JSPC.dict.get('loc.July', JSPC.vars.language),
+                    JSPC.dict.get('loc.August', JSPC.vars.language),
+                    JSPC.dict.get('loc.September', JSPC.vars.language),
+                    JSPC.dict.get('loc.October', JSPC.vars.language),
+                    JSPC.dict.get('loc.November', JSPC.vars.language),
+                    JSPC.dict.get('loc.December', JSPC.vars.language)
                 ]
             }
         },
@@ -216,7 +216,7 @@ r2d2 = {
             $temp.val($.trim($(element).text())).select();
             document.execCommand("copy");
             clearTimeout(timeout);
-            $(element).html(JSPC.dict.get('copied', JSPC.currLanguage));
+            $(element).html(JSPC.dict.get('copied', JSPC.vars.language));
             var timeout = setTimeout(function() {
                 $(element).html(html);
             }, 2000); // change the HTML after 2 seconds
@@ -234,8 +234,8 @@ r2d2 = {
         //JS Library readmore.js
         $('.la-readmore').readmore({
             speed: 75,
-            lessLink: '<a href="#">' + JSPC.dict.get('link.readless', JSPC.currLanguage) + '</a>',
-            moreLink: '<a href="#">' + JSPC.dict.get('link.readmore', JSPC.currLanguage) + '</a>',
+            lessLink: '<a href="#">' + JSPC.dict.get('link.readless', JSPC.vars.language) + '</a>',
+            moreLink: '<a href="#">' + JSPC.dict.get('link.readmore', JSPC.vars.language) + '</a>',
             collapsedHeight: 115
         });
         //overwriting the template for input search (spotlight)
@@ -247,7 +247,7 @@ r2d2 = {
             if (message !== undefined && type !== undefined) {
                 html += '' + '<div class="message ' + type + '">';
                 if (type == 'empty') {
-                    html += '' + '<div class="header">' + JSPC.dict.get('search.API.heading.noResults', JSPC.currLanguage) + '</div class="header">' + '<div class="description">' + message + '</div class="description">';
+                    html += '' + '<div class="header">' + JSPC.dict.get('search.API.heading.noResults', JSPC.vars.language) + '</div class="header">' + '<div class="description">' + message + '</div class="description">';
                 } else {
                     html += ' <div class="description">' + message + '</div>';
                 }
@@ -260,14 +260,14 @@ r2d2 = {
 
         $('.ui.search.spotlight').search({
             error : {
-                source          : '"' + JSPC.dict.get('search.API.source', JSPC.currLanguage) + '"',
+                source          : '"' + JSPC.dict.get('search.API.source', JSPC.vars.language) + '"',
                 noResults       : '',
-                logging         : '"' + JSPC.dict.get('search.API.logging', JSPC.currLanguage) + '"',
-                noEndpoint      : '"' + JSPC.dict.get('search.API.noEndpoint', JSPC.currLanguage) + '"',
-                noTemplate      : '"' + JSPC.dict.get('search.API.noTemplate', JSPC.currLanguage) + '"',
-                serverError     : '"' + JSPC.dict.get('search.API.serverError', JSPC.currLanguage) + '"',
-                maxResults      : '"' + JSPC.dict.get('search.API.maxResults', JSPC.currLanguage) + '"',
-                method          : '"' + JSPC.dict.get('search.API.method', JSPC.currLanguage) + '"'
+                logging         : '"' + JSPC.dict.get('search.API.logging', JSPC.vars.language) + '"',
+                noEndpoint      : '"' + JSPC.dict.get('search.API.noEndpoint', JSPC.vars.language) + '"',
+                noTemplate      : '"' + JSPC.dict.get('search.API.noTemplate', JSPC.vars.language) + '"',
+                serverError     : '"' + JSPC.dict.get('search.API.serverError', JSPC.vars.language) + '"',
+                maxResults      : '"' + JSPC.dict.get('search.API.maxResults', JSPC.vars.language) + '"',
+                method          : '"' + JSPC.dict.get('search.API.method', JSPC.vars.language) + '"'
             },
 
             type: 'category',
@@ -353,16 +353,16 @@ r2d2 = {
                             identifier: $inputInput.attr('data-validate'),
                             rules: [
                                 {
-                                    type: "empty", prompt: JSPC.dict.get('pagination.keyboardInput.validation.integer', JSPC.currLanguage)
+                                    type: "empty", prompt: JSPC.dict.get('pagination.keyboardInput.validation.integer', JSPC.vars.language)
                                 },
                                 {
-                                    type: "integer", prompt: JSPC.dict.get('pagination.keyboardInput.validation.integer', JSPC.currLanguage)
+                                    type: "integer", prompt: JSPC.dict.get('pagination.keyboardInput.validation.integer', JSPC.vars.language)
                                 },
                                 {
-                                    type: "smallerEqualThanTotal[" + stepsValue + "]", prompt: JSPC.dict.get('pagination.keyboardInput.validation.smaller', JSPC.currLanguage)
+                                    type: "smallerEqualThanTotal[" + stepsValue + "]", prompt: JSPC.dict.get('pagination.keyboardInput.validation.smaller', JSPC.vars.language)
                                 },
                                 {
-                                    type: "biggerThan[0]", prompt: JSPC.dict.get('pagination.keyboardInput.validation.biggerZero', JSPC.currLanguage)
+                                    type: "biggerThan[0]", prompt: JSPC.dict.get('pagination.keyboardInput.validation.biggerZero', JSPC.vars.language)
                                 }
                             ]
                         }
@@ -399,8 +399,8 @@ r2d2 = {
         console.log("r2d2.initGlobalXEditableStuff()");
 
         $.fn.editable.defaults.mode = 'inline'
-        $.fn.editableform.buttons = '<button aria-label="' + JSPC.dict.get('xEditable.button.ok', JSPC.currLanguage) + '" type="submit" class="ui icon button editable-submit"><i aria-hidden="true" class="check icon"></i></button>' +
-            '<button aria-label="' + JSPC.dict.get('xEditable.button.cancel', JSPC.currLanguage) + '" type="button" class="ui icon button editable-cancel"><i aria-hidden="true" class="times icon"></i></button>'
+        $.fn.editableform.buttons = '<button aria-label="' + JSPC.dict.get('xEditable.button.ok', JSPC.vars.language) + '" type="submit" class="ui icon button editable-submit"><i aria-hidden="true" class="check icon"></i></button>' +
+            '<button aria-label="' + JSPC.dict.get('xEditable.button.cancel', JSPC.vars.language) + '" type="button" class="ui icon button editable-cancel"><i aria-hidden="true" class="times icon"></i></button>'
         $.fn.editableform.template =
             '<form class="ui form editableform">' +
             '	<div class="control-group">' +
@@ -418,7 +418,7 @@ r2d2 = {
         $.fn.editableform.loading =
             '<div class="ui active inline loader"></div>'
 
-        // TODO $.fn.datepicker.defaults.language = JSPC.vars.locale
+        // TODO $.fn.datepicker.defaults.language = JSPC.vars.language
     },
 
 
@@ -430,7 +430,7 @@ r2d2 = {
         $(ctxSel + ' .xEditableValue').editable({
 
             highlight: false,
-            language: JSPC.vars.locale,
+            language: JSPC.vars.language,
             format:   JSPC.vars.dateFormat,
             validate: function(value) {
                 if ($(this).attr('data-format') && value) {
@@ -550,7 +550,7 @@ r2d2 = {
         });
 
         $(ctxSel + ' .simpleHiddenValue').editable({
-            language: JSPC.vars.locale,
+            language: JSPC.vars.language,
             format:   JSPC.vars.dateFormat,
             url: function(params) {
                 var hidden_field_id = $(this).data('hidden-id');
@@ -705,7 +705,7 @@ r2d2 = {
             selectOnKeydown: false,
             fullTextSearch: 'exact',
             clearable: true,
-            message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage)}
+            message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.vars.language)}
         });
 
         // FILTER
@@ -724,7 +724,7 @@ r2d2 = {
             selectOnKeydown: false,
             fullTextSearch: 'exact',
             clearable: true,
-            message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage)},
+            message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.vars.language)},
             onChange: function(value, text, $choice){
                 (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
             }
@@ -734,7 +734,7 @@ r2d2 = {
             forceSelection: false,
             hideAdditions: false,
             clearable: true,
-            message: {addResult:JSPC.dict.get('dropdown.message.addResult', JSPC.currLanguage)},
+            message: {addResult:JSPC.dict.get('dropdown.message.addResult', JSPC.vars.language)},
             onChange: function(value, text, $choice){
                 (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
             }
@@ -820,25 +820,25 @@ r2d2 = {
 
                 switch (how) {
                     case "delete":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.delete', JSPC.currLanguage) + '<i aria-hidden="true" class="trash alternate outline icon"></i>');
+                        $jscb.html(JSPC.dict.get('confirm.dialog.delete', JSPC.vars.language) + '<i aria-hidden="true" class="trash alternate outline icon"></i>');
                         break;
                     case "unlink":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.unlink', JSPC.currLanguage) + '<i aria-hidden="true" class="la-chain broken icon"></i>');
+                        $jscb.html(JSPC.dict.get('confirm.dialog.unlink', JSPC.vars.language) + '<i aria-hidden="true" class="la-chain broken icon"></i>');
                         break;
                     case "share":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.share', JSPC.currLanguage) + '<i aria-hidden="true" class="la-share icon"></i>');
+                        $jscb.html(JSPC.dict.get('confirm.dialog.share', JSPC.vars.language) + '<i aria-hidden="true" class="la-share icon"></i>');
                         break;
                     case "inherit":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.inherit', JSPC.currLanguage) + '<i aria-hidden="true" class="thumbtack icon"></i>');
+                        $jscb.html(JSPC.dict.get('confirm.dialog.inherit', JSPC.vars.language) + '<i aria-hidden="true" class="thumbtack icon"></i>');
                         break;
                     case "ok":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.ok', JSPC.currLanguage) + '<i aria-hidden="true" class="check icon"></i>');
+                        $jscb.html(JSPC.dict.get('confirm.dialog.ok', JSPC.vars.language) + '<i aria-hidden="true" class="check icon"></i>');
                         break;
                     case "concludeBinding":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.concludeBinding', JSPC.currLanguage) + '<i aria-hidden="true" class="check icon"></i>');
+                        $jscb.html(JSPC.dict.get('confirm.dialog.concludeBinding', JSPC.vars.language) + '<i aria-hidden="true" class="check icon"></i>');
                         break;
                     case "clearUp":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.clearUp', JSPC.currLanguage) + '<i aria-hidden="true" class="bath icon"></i>');
+                        $jscb.html(JSPC.dict.get('confirm.dialog.clearUp', JSPC.vars.language) + '<i aria-hidden="true" class="bath icon"></i>');
                         break;
                     default:
                         $('').html('Entfernen<i aria-hidden="true" class="x icon"></i>');

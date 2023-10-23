@@ -107,7 +107,7 @@ deckSaver = {
             deckSaver.configs.areaThatIsAffected.find('.button').removeClass('hidden');
 
             deckSaver.configs.toggleButton.removeAttr("data-content");
-            deckSaver.configs.toggleButton.attr("data-content", JSPC.dict.get('statusbar.showButtons.tooltip', JSPC.currLanguage));
+            deckSaver.configs.toggleButton.attr("data-content", JSPC.dict.get('statusbar.showButtons.tooltip', JSPC.vars.language));
             tooltip.initializePopup_deprecated(deckSaver.configs.toggleButton);
             deckSaver.configs.toggleIcon.removeClass("slash");
             deckSaver.configs.toggleButton.addClass('active');
@@ -117,7 +117,7 @@ deckSaver = {
             deckSaver.enableXeditable('.xEditableManyToOne');
             deckSaver.enableXeditable('.xEditableBoolean');
 
-            $('.la-action-info').css('text-align', 'left').text(JSPC.dict.get('default.actions.label', JSPC.currLanguage))
+            $('.la-action-info').css('text-align', 'left').text(JSPC.dict.get('default.actions.label', JSPC.vars.language))
 
             $('.la-js-toggle-hideThis').addClass('hidden');    // generic toggle selector - erms-4688
             $('.la-js-toggle-showThis').removeClass('hidden'); // generic toggle selector - erms-4688
@@ -151,7 +151,7 @@ deckSaver = {
             deckSaver.configs.areaThatIsAffected.not('.ui.modal').find('.button').not('.ui.modal .button, .la-js-dont-hide-button').addClass('hidden');
 
             deckSaver.configs.toggleButton.removeAttr("data-content");
-            deckSaver.configs.toggleButton.attr("data-content", JSPC.dict.get('statusbar.hideButtons.tooltip', JSPC.currLanguage));
+            deckSaver.configs.toggleButton.attr("data-content", JSPC.dict.get('statusbar.hideButtons.tooltip', JSPC.vars.language));
             tooltip.initializePopup_deprecated(deckSaver.configs.toggleButton);
 
             deckSaver.configs.toggleIcon.addClass("slash");
@@ -162,7 +162,7 @@ deckSaver = {
             deckSaver.disableXeditable('.xEditableManyToOne');
             deckSaver.disableXeditable('.xEditableBoolean');
 
-            $('.la-action-info').css('text-align', 'right').text(JSPC.dict.get('default.informations', JSPC.currLanguage))
+            $('.la-action-info').css('text-align', 'right').text(JSPC.dict.get('default.informations', JSPC.vars.language))
 
             $('.la-js-toggle-hideThis').removeClass('hidden'); // generic toggle selector - erms-4688
             $('.la-js-toggle-showThis').addClass('hidden');    // generic toggle selector - erms-4688

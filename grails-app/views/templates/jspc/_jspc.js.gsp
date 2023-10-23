@@ -1,11 +1,10 @@
 // templates/jspc/_jspc.js.gsp
 
 JSPC = {
-    currLanguage : $('html').attr('lang'),
 
     vars : { // -- var injection
         dateFormat: "${message(code:'default.date.format.notime').toLowerCase()}",
-        locale: "${message(code:'default.locale.label')}",
+        language: "${message(code:'default.locale.label')}",
         server: "${de.laser.utils.AppUtils.getCurrentServer()}",
         searchSpotlightSearch: "<g:createLink controller='search' action='spotlightSearch'/>",
         ajax: {
@@ -15,6 +14,7 @@ JSPC = {
             jsonLookup:   "<g:createLink controller='ajaxJson' action='lookup'/>",
             htmlDocumentPreview: "<g:createLink controller='ajaxHtml' action='documentPreview'/>"
         },
+        jquery: jQuery().jquery
 %{--        ws: {--}%
 %{--            stompUrl: "${createLink(uri: de.laser.custom.CustomWebSocketMessageBrokerConfig.WS_STOMP)}",--}%
 %{--            topicStatusUrl: "${de.laser.custom.CustomWebSocketMessageBrokerConfig.WS_TOPIC_STATUS}",--}%

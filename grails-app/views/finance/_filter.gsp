@@ -335,7 +335,7 @@
                 },
                 clearable: true,
                 minCharacters: 0,
-                message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage)},
+                message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.vars.language)},
                 onChange: function (value, text, $selectedItem) {
                     value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
                 }
