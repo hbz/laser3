@@ -239,7 +239,7 @@ main.ui.container.main {
 
 /* -- workflows -- */
 
-a.icon.button.wfModalLink { background-color: white; }
+a.icon.button.wfModalLink       { background-color: white; }
 a.icon.button.wfModalLink:hover { background-color: #eeeeee; }
 
 div.column.wf-centered {
@@ -248,34 +248,11 @@ div.column.wf-centered {
     justify-content: center;
 }
 
-div.wf-details div.ui.segment {
-    padding-top:1.5em;
-    padding-bottom:1.5em;
-}
-div.wf-details .ui.list > .item.positive .icon.plus,
-div.wf-details .ui.list > .item.positive .icon.check:not(.square) {
-    color: #b5c334;
-}
-div.wf-details .ui.list > .item.negative .icon.caret.right {
-    color: #d12e34;
-}
-div.wf-buttonGroup {
-    border-bottom: 1px dotted grey;
-    padding: 0 0 2px;
-    margin: 0 3px;
-}
-
 /* -- new header icons -- */
 
-h1.header.icon > i.key {
-    background-color:#d12e34; border-color:#d12e34; color:white;
-}
-h1.header.icon > i.hdd {
-    background-color:#b5c334; border-color:#b5c334; color:white;
-}
-h1.header.icon > i.tools {
-    background-color:#f3a43b; border-color:#f3a43b; color:white;
-}
+h1.header.icon > i.key      { background-color:#d12e34; border-color:#d12e34; color:white; }
+h1.header.icon > i.hdd      { background-color:#b5c334; border-color:#b5c334; color:white; }
+h1.header.icon > i.tools    { background-color:#f3a43b; border-color:#f3a43b; color:white; }
 
 /* -- simple color helper - fallback if no fomantic style is available -- */
 
