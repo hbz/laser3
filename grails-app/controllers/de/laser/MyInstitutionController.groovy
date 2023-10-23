@@ -869,7 +869,7 @@ class MyInstitutionController  {
 		Profiler prf = new Profiler()
 		prf.setBenchmark('init')
 
-        EhcacheWrapper cache = contextService.getSharedOrgCache('MyInstitutionController/currentProviders')
+        EhcacheWrapper cache = contextService.getOrgCache('MyInstitutionController/currentProviders')
         List<Long> orgIds = []
 
         if (cache.get('orgIds')) {

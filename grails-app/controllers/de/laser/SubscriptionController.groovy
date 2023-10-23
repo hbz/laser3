@@ -100,7 +100,7 @@ class SubscriptionController {
                 ]
                 ctrlResult.result.struct = [pageStruct.width, pageStruct.height, pageStruct.pageSize + ' ' + pageStruct.orientation]
                 byte[] pdf = wkhtmltoxService.makePdf(
-                        view: '/subscription/subscriptionPdf',
+                        view: customerTypeService.getCustomerTypeDependingView('/subscription/subscriptionPdf'),
                         model: ctrlResult.result,
                         pageSize: pageStruct.pageSize,
                         orientation: pageStruct.orientation,

@@ -223,7 +223,7 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def getLinks() {
-        Map<String,Object> result = [user:contextService.getUser(),contextOrg:contextService.getOrg(),subscriptionLicenseLink:params.subscriptionLicenseLink]
+        Map<String, Object> result = [user:contextService.getUser(), contextOrg:contextService.getOrg(), subscriptionLicenseLink:params.subscriptionLicenseLink]
         def entry = genericOIDService.resolveOID(params.entry)
         result.entry = entry
         result.editable = entry.isEditableBy(result.user)
