@@ -12,7 +12,7 @@
                             <g:link controller="package" action="show" id="${subPkg.pkg.id}">${subPkg.pkg.name} ${raw(subPkg.getIEandPackageSize())}</g:link>
 
                             <div class="right floated content">
-                                <button class="ui negative button la-modern-button la-selectable-button unlinkPackages" ${!editable ? 'disabled="disabled"' : ''}
+                                <button class="ui negative button la-modern-button la-selectable-button unlinkPackages" ${!editable || isUnlinkingRunning ? 'disabled="disabled"' : ''}
                                         data-package="${subPkg.pkg.id}" data-subscription="${subPkg.subscription.id}">
                                     <i class="unlink icon"></i>
                                 </button>
@@ -27,7 +27,7 @@
         </div>
     </g:if>
 
-    <g:if test="${isLinkingRunning}">
+    <g:if test="${isLinkingRunning || isUnlinkingRunning}">
         <div class="ui icon warning message">
             <i class="info icon"></i>
             <div class="content">
@@ -79,12 +79,12 @@
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
                     <div class="ui buttons">
-                        <button class="ui green button" ${!editable || isLinkingRunning  ? 'disabled="disabled"' : ''} type="submit"
+                        <button class="ui green button" ${!editable || isLinkingRunning || isUnlinkingRunning  ? 'disabled="disabled"' : ''} type="submit"
                                 name="processOption"
                                 value="linkwithoutIE">${message(code: 'subscriptionsManagement.linkwithoutIE')}</button>
 
                         <div class="or" data-text="${message(code: 'default.or')}"></div>
-                        <button class="ui green button" ${!editable || isLinkingRunning ? 'disabled="disabled"' : ''} type="submit"
+                        <button class="ui green button" ${!editable || isLinkingRunning || isUnlinkingRunning ? 'disabled="disabled"' : ''} type="submit"
                                 name="processOption"
                                 value="linkwithIE">${message(code: 'subscriptionsManagement.linkwithIE')}</button>
                     </div>
@@ -93,7 +93,7 @@
                     <div class="ui buttons">
                         <button class="ui button negative js-open-confirm-modal"
                                 data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.unlinkInfo.onlyIE.confirm')}"
-                                data-confirm-term-how="ok" ${!editable || isLinkingRunning  ? 'disabled="disabled"' : ''} type="submit"
+                                data-confirm-term-how="ok" ${!editable || isLinkingRunning || isUnlinkingRunning ? 'disabled="disabled"' : ''} type="submit"
                                 name="processOption"
                                 data-confirm-id="processLinkPackagesMembers"
                                 value="unlinkIEonly">${message(code: 'subscriptionsManagement.unlinkInfo.onlyIE')}</button>
@@ -101,7 +101,7 @@
                         <div class="or" data-text="${message(code: 'default.or')}"></div>
                         <button class="ui button negative js-open-confirm-modal"
                                 data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.unlinkInfo.withIE.confirm')}"
-                                data-confirm-term-how="ok" ${!editable || isLinkingRunning  ? 'disabled="disabled"' : ''} type="submit"
+                                data-confirm-term-how="ok" ${!editable || isLinkingRunning || isUnlinkingRunning ? 'disabled="disabled"' : ''} type="submit"
                                 name="processOption"
                                 data-confirm-id="processLinkPackagesMembers"
                                 value="unlinkwithIE">${message(code: 'subscriptionsManagement.unlinkInfo.withIE')}</button>
