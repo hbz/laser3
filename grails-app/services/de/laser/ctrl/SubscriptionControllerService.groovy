@@ -910,16 +910,24 @@ class SubscriptionControllerService {
      * reports. That does not work for platforms supporting COUNTER 4 only; then, the full set of reports will be
      * returned. In order to determine the COUNTER revision supported and the SUSHI API URL, the we:kb is being queried
      * to fetch the SUSHI configuration data
-     * @param subscribedPlatforms the platforms which are linked from the subscription to which usage data should be retrieved
      * @param configMap the request parameter map
      * @return a {@link SortedSet} of supported reports
      * @see Subscription
      * @see Platform
      */
-    SortedSet getAvailableReports(Set<Platform> subscribedPlatforms, Map<String, Object> configMap) {
+    SortedSet getAvailableReports(Map<String, Object> configMap) {
         SortedSet<String> allAvailableReports = new TreeSet<String>()
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        subscribedPlatforms.each { Platform platform ->
+        Set<Package> subscribedPackages = configMap.subscription.packages.pkg
+        Map<RefdataValue, String> contentTypes = RefdataCategory.getAllRefdataValues([RDConstants.PACKAGE_CONTENT_TYPE, RDConstants.TITLE_MEDIUM]).collectEntries { RefdataValue rdv -> [rdv, rdv.value] }
+        subscribedPackages.each { Package pkg ->
+            RefdataValue contentType = pkg.contentType
+            if(!contentType) {
+                List titleTypes = TitleInstancePackagePlatform.executeQuery('select tipp.medium from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status != :removed group by tipp.medium', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED])
+                if(titleTypes.size() == 1)
+                    contentType = titleTypes[0]
+            }
+            Platform platform = pkg.nominalPlatform
             Map<String, Object> queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/sushiSources", [:])
             Map platformRecord
             if (queryResult.warning) {
@@ -967,14 +975,37 @@ class SubscriptionControllerService {
                         Map<String, Object> availableReports = statsSyncService.fetchJSONData(configMap.statsUrl + queryArguments, true)
                         if(availableReports && availableReports.list) {
                             availableReports.list.each { listEntry ->
-                                if(listEntry["Report_ID"].toLowerCase() in Counter5Report.COUNTER_5_REPORTS)
-                                    allAvailableReports.add(listEntry["Report_ID"].toLowerCase())
+                                String reportType = listEntry["Report_ID"].toLowerCase()
+                                if(reportType in Counter5Report.COUNTER_5_REPORTS) {
+                                    if(reportType in Counter5Report.COUNTER_5_PLATFORM_REPORTS)
+                                        allAvailableReports.add(reportType)
+                                    else {
+                                        switch(contentTypes.get(contentType)) {
+                                            case 'Book': if(reportType in Counter5Report.COUNTER_5_BOOK_REPORTS)
+                                                allAvailableReports.add(reportType)
+                                                break
+                                            case 'Journal': if(reportType in Counter5Report.COUNTER_5_JOURNAL_REPORTS)
+                                                allAvailableReports.add(reportType)
+                                                break
+                                            default: allAvailableReports.add(reportType)
+                                                break
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                     else if(configMap.revision == AbstractReport.COUNTER_4) {
                         //unfortunately! I need to alert that there is no possibility to check whether the API supports the report!
-                        allAvailableReports.addAll(Counter4Report.COUNTER_4_REPORTS)
+                        switch(contentTypes.get(contentType)) {
+                            case 'Book': allAvailableReports.addAll(Counter4Report.COUNTER_4_BOOK_REPORTS)
+                                break
+                            case 'Journal': allAvailableReports.addAll(Counter4Report.COUNTER_4_JOURNAL_REPORTS)
+                                break
+                            default: allAvailableReports.addAll(Counter4Report.COUNTER_4_REPORTS)
+                                break
+                        }
+                        allAvailableReports.addAll(Counter4Report.COUNTER_4_PLATFORM_REPORTS)
                     }
                 }
             }
@@ -1698,7 +1729,7 @@ class SubscriptionControllerService {
                     refSub = subscriberSub
                 Map<String, Object> dateRanges = getDateRange(params, refSub)
                 result.monthsInRing = dateRanges.monthsInRing
-                SortedSet<String> reportTypes = getAvailableReports(subscribedPlatforms, result)
+                SortedSet<String> reportTypes = getAvailableReports(result)
                 result.reportTypes = reportTypes
                 if(params.reportType) {
                     result.putAll(loadFilterList(params))
