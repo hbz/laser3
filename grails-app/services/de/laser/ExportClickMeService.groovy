@@ -429,9 +429,6 @@ class ExportClickMeService {
                             'subscription.kind'                         : [field: 'kind', label: 'Kind', message: 'subscription.kind.label', defaultChecked: 'true'],
                             'subscription.form'                         : [field: 'form', label: 'Form', message: 'subscription.form.export.label', defaultChecked: 'true'],
                             'subscription.resource'                     : [field: 'resource', label: 'Resource', message: 'subscription.resource.label'],
-                            'subscription.hasPerpetualAccess'           : [field: 'hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
-                            'subscription.hasPublishComponent'          : [field: 'hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
-                            'subscription.holdingSelection'             : [field: 'holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.export.label'],
                             'subscription.notes'                        : [field: null, label: 'Notes', message: 'default.notes.label'],
                             'subscription.notes.shared'                 : [field: null, label: 'Notes', message: 'license.notes.shared'],
                             'subscription.uuid'                         : [field: 'globalUID', label: 'Laser-UUID',  message: null],
@@ -456,8 +453,9 @@ class ExportClickMeService {
             institutions: [
                     label: 'Consortium members',
                     message: 'consortium.member.plural',
-                    fields: ['memberCount': [field: null, label: 'Count', message: 'default.count.label'],
-                             'multiYearCount': [field: null, label: 'Count multi-year', message: 'default.count.multiYear.label']
+                    fields: [
+                            'memberCount':      [field: null, label: 'Count', message: 'default.count.label'],
+                            'multiYearCount':   [field: null, label: 'Count multi-year', message: 'default.count.multiYear.label']
                     ]
             ],
 
@@ -675,9 +673,6 @@ class ExportClickMeService {
                             'subscription.kind'                         : [field: 'sub.kind', label: 'Kind', message: 'subscription.kind.label', defaultChecked: 'true'],
                             'subscription.form'                         : [field: 'sub.form', label: 'Form', message: 'subscription.form.export.label', defaultChecked: 'true'],
                             'subscription.resource'                     : [field: 'sub.resource', label: 'Resource', message: 'subscription.resource.label'],
-                            'subscription.hasPerpetualAccess'           : [field: 'sub.hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
-                            'subscription.hasPublishComponent'          : [field: 'sub.hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
-                            'subscription.holdingSelection'             : [field: 'sub.holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.export.label'],
                             'subscription.notes'                        : [field: null, label: 'Notes', message: 'default.notes.label'],
                             'subscription.notes.shared'                 : [field: null, label: 'Notes', message: 'license.notes.shared'],
                             'subscription.uuid'                         : [field: 'sub.globalUID', label: 'Laser-UUID',  message: null],
