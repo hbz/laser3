@@ -308,45 +308,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         Map<String, Object> changes = super.beforeUpdateHandler()
         log.debug ("beforeUpdate() " + changes.toMapString())
 
-        if ((this._getCalculatedType() in [CalculatedType.TYPE_LOCAL, CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_CONSORTIAL])
-                && changes.oldMap.containsKey('hasPerpetualAccess')
-                && changes.newMap.containsKey('hasPerpetualAccess')
-                && changes.oldMap.hasPerpetualAccess != changes.newMap.hasPerpetualAccess) {
-            if(changes.newMap.hasPerpetualAccess == true) {
-                Set<RefdataValue> status = [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED]
-                List<Long> ieIDs = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is null and ie.status in (:status)', [sub: this, status: status])
-                if (ieIDs.size() > 0) {
-                    log.debug("beforeUpdate() set perpetualAccessBySub of ${ieIDs.size()} IssueEntitlements to sub:" + this)
-                    Org owner = this.subscriber
-
-                    ieIDs.each { Long ieID ->
-                        IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.perpetualAccessBySub = :sub where ie.id = :ieID ", [sub: this, ieID: ieID])
-
-                        IssueEntitlement issueEntitlement = IssueEntitlement.get(ieID)
-                        TitleInstancePackagePlatform titleInstancePackagePlatform = issueEntitlement.tipp
-
-                        if(!PermanentTitle.findByOwnerAndTipp(owner, titleInstancePackagePlatform)){
-                            PermanentTitle permanentTitle = new PermanentTitle(subscription: this,
-                                    issueEntitlement: issueEntitlement,
-                                    tipp: titleInstancePackagePlatform,
-                                    owner: owner).save()
-                        }
-                    }
-                }
-            }else {
-                List<Long> ieIDs = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is not null', [sub: this])
-                if (ieIDs.size() > 0) {
-                    log.debug("beforeUpdate() set perpetualAccessBySub of ${ieIDs.size()} IssueEntitlements to null:" + this)
-                    ieIDs.collate(32767).each {
-                        IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.perpetualAccessBySub = null where ie.id in (:idList)", [idList: it])
-                        PermanentTitle.executeUpdate("delete PermanentTitle pt where pt.issueEntitlement.id in (:idList)", [idList: it])
-                    }
-
-
-                }
-            }
-        }
-
         BeanStore.getAuditService().beforeUpdateHandler(this, changes.oldMap, changes.newMap)
     }
     @Override

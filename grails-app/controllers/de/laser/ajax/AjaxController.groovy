@@ -1965,17 +1965,43 @@ class AjaxController {
                         } else {
                             binding_properties[params.name] = params.value
                         }
-                        bindData(target_object, binding_properties)
 
-                        target_object.save(failOnError: true)
+                        if(target_object instanceof Subscription && params.name == 'hasPerpetualAccess'){
+                            if(!subscriptionService.checkThreadRunning('permanentTilesProcess_'+target_object.id)) {
+                                if (params.value == true && target_object.hasPerpetualAccess != params.value) {
+                                    subscriptionService.setPermanentTitlesBySubscription(target_object)
+                                }
+                                if (params.value == false && target_object.hasPerpetualAccess != params.value) {
+                                    subscriptionService.removePermanentTitlesBySubscription(target_object)
+                                }
+                                bindData(target_object, binding_properties)
 
+                                target_object.save(failOnError: true)
 
-                        if (target_object."${params.name}" instanceof BigDecimal) {
-                            result = NumberFormat.getInstance( LocaleUtils.getCurrentLocale() ).format(target_object."${params.name}")
-                            //is for that German users do not cry about comma-dot-change
-                        } else {
-                            result = target_object."${params.name}"
+                                if (target_object."${params.name}" instanceof BigDecimal) {
+                                    result = NumberFormat.getInstance( LocaleUtils.getCurrentLocale() ).format(target_object."${params.name}")
+                                    //is for that German users do not cry about comma-dot-change
+                                } else {
+                                    result = target_object."${params.name}"
+                                }
+                            }else {
+                                result = [status: 'error', msg: "${message(code: 'subscription.details.permanentTilesProcessRunning.info')}"]
+                                render result as JSON
+                                return
+                            }
+                        }else {
+                            bindData(target_object, binding_properties)
+
+                            target_object.save(failOnError: true)
+
+                            if (target_object."${params.name}" instanceof BigDecimal) {
+                                result = NumberFormat.getInstance( LocaleUtils.getCurrentLocale() ).format(target_object."${params.name}")
+                                //is for that German users do not cry about comma-dot-change
+                            } else {
+                                result = target_object."${params.name}"
+                            }
                         }
+
                         break
                 }
 
