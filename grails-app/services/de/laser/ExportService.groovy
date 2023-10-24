@@ -798,7 +798,7 @@ class ExportService {
 		int rowno = 0
 		//revision 4
 		if(params.revision == AbstractReport.COUNTER_4) {
-			prf.setBenchmark('data fetched from provider')
+			prf.setBenchmark('before SUSHI call')
 			Map<String, Object> queryParams = [reportType: reportType, customer: customer, platform: platform]
 			if(params.metricType) {
 				queryParams.metricTypes = params.list('metricType')
@@ -807,6 +807,7 @@ class ExportService {
 			queryParams.endDate = dateRangeParams.endDate
 			//the data
 			Map<String, Object> requestResponse = getReports(queryParams)
+			prf.setBenchmark('data fetched from provider')
 			if(requestResponse.containsKey('reports')) {
 				Set<String> availableMetrics = requestResponse.reports.'**'.findAll { node -> node.name() == 'MetricType' }.collect { node -> node.text()}.toSet()
 				workbook = new XSSFWorkbook()
@@ -1196,6 +1197,7 @@ class ExportService {
 		}
 		//revision 5
 		else if(params.revision == AbstractReport.COUNTER_5) {
+			prf.setBenchmark('before SUSHI call')
 			Map<String, Object> queryParams = [reportType: reportType, customer: customer, platform: platform]
 			if(params.metricType) {
 				queryParams.metricTypes = params.list('metricType').join('%7C')
@@ -2083,26 +2085,33 @@ class ExportService {
 			try {
 				Closure success = { resp, json ->
 					if(resp.code() == 200) {
-						if(json.counter_release in ['5', '5.1'])
-							revision = "counter5"
-						statsUrl = json.url
-						if (!json.url.contains('reports')) {
-							if (json.url.endsWith('/'))
-								statsUrl = json.url + 'reports'
-							else statsUrl = json.url + '/reports'
-						}
-						boolean withRequestorId = Boolean.valueOf(json.requestor_id_required), withApiKey = Boolean.valueOf(json.api_key_required), withIpWhitelisting = Boolean.valueOf(json.ip_address_authorization)
-						if(withRequestorId) {
-							if(withApiKey) {
-								sushiApiAuthenticationMethod = AbstractReport.API_AUTH_CUSTOMER_REQUESTOR_API
+						if(json.containsKey('sushi_services')) {
+							Map sushiConfig = json.sushi_services[0]
+							if(sushiConfig.counter_release in ['5', '5.1'])
+								revision = "counter5"
+							statsUrl = sushiConfig.url
+							if (!sushiConfig.url.contains('reports')) {
+								if (sushiConfig.url.endsWith('/'))
+									statsUrl = sushiConfig.url + 'reports'
+								else statsUrl = sushiConfig.url + '/reports'
 							}
-							else sushiApiAuthenticationMethod = AbstractReport.API_AUTH_CUSTOMER_REQUESTOR
+							boolean withRequestorId = Boolean.valueOf(sushiConfig.requestor_id_required), withApiKey = Boolean.valueOf(sushiConfig.api_key_required), withIpWhitelisting = Boolean.valueOf(sushiConfig.ip_address_authorization)
+							if(withRequestorId) {
+								if(withApiKey) {
+									sushiApiAuthenticationMethod = AbstractReport.API_AUTH_CUSTOMER_REQUESTOR_API
+								}
+								else sushiApiAuthenticationMethod = AbstractReport.API_AUTH_CUSTOMER_REQUESTOR
+							}
+							else if(withApiKey) {
+								sushiApiAuthenticationMethod = AbstractReport.API_AUTH_CUSTOMER_API
+							}
+							else if(withIpWhitelisting) {
+								sushiApiAuthenticationMethod = AbstractReport.API_IP_WHITELISTING
+							}
 						}
-						else if(withApiKey) {
-							sushiApiAuthenticationMethod = AbstractReport.API_AUTH_CUSTOMER_API
-						}
-						else if(withIpWhitelisting) {
-							sushiApiAuthenticationMethod = AbstractReport.API_IP_WHITELISTING
+						else {
+							Map sysEventPayload = [error: "platform has no SUSHI configuration", url: url]
+							SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
 						}
 					}
 				}

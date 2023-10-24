@@ -181,9 +181,11 @@ class SubscriptionController {
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         result.flagContentGokb = true // gokbService.executeQuery
         Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: result.subscription])
+        /*
         if(!subscribedPlatforms) {
             subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription", [subscription: result.subscription])
         }
+        */
         Set<Subscription> refSubs = [result.subscription, result.subscription.instanceOf]
         result.platformInstanceRecords = [:]
         result.platforms = subscribedPlatforms
@@ -191,7 +193,8 @@ class SubscriptionController {
         result.keyPairs = []
         if(!params.containsKey('tab'))
             params.tab = subscribedPlatforms[0].id.toString()
-        subscribedPlatforms.each { Platform platformInstance ->
+        result.subscription.packages.each { SubscriptionPackage sp ->
+            Platform platformInstance = sp.pkg.nominalPlatform
             if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_LOCAL]) {
                 //create dummies for that they may be xEdited - OBSERVE BEHAVIOR for eventual performance loss!
                 CustomerIdentifier keyPair = CustomerIdentifier.findByPlatformAndCustomer(platformInstance, result.subscription.getSubscriber())
@@ -240,7 +243,7 @@ class SubscriptionController {
                 result.reportTypes = []
                 CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriber(), platformInstance)
                 if(ci?.value) {
-                    SortedSet allAvailableReports = subscriptionControllerService.getAvailableReports([platformInstance].toSet(), result)
+                    SortedSet allAvailableReports = subscriptionControllerService.getAvailableReports(result)
                     if(allAvailableReports)
                         result.reportTypes.addAll(allAvailableReports)
                     else {
