@@ -2,9 +2,19 @@
 
 JSPC = {
 
-    config : { // -- var injection
+    app : { // -- dynamic logic container
+    },
+
+    callbacks : {
+        modal : { // -- dynamic storage; search modalCallbackFunction@r2d2.js for more information
+            onShow : {},
+            onVisible : {}
+        }
+    },
+
+    config : { // -- static var injection
         dateFormat: "${message(code:'default.date.format.notime').toLowerCase()}",
-        language:   "${message(code:'default.locale.label')}",
+        language:   "${message(code:'default.locale.label').toLowerCase()}",
         server:     "${de.laser.utils.AppUtils.getCurrentServer()}",
         searchSpotlightSearch: "<g:createLink controller='search' action='spotlightSearch'/>",
         ajax: {
@@ -46,16 +56,6 @@ JSPC = {
                 }
                 else { console.error ('> module NOT found ? ' + label ); }
             }
-        }
-    },
-
-    app : { // -- dynamic logic container
-    },
-
-    callbacks : {
-        modal : { // -- dynamic storage; search modalCallbackFunction@r2d2.js for more information
-            onShow : {},
-            onVisible : {}
         }
     },
 
