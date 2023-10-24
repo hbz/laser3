@@ -35,6 +35,9 @@
     </div>
 
     <div data-tab="first" class="ui bottom attached tab segment active" style="border-top: 1px solid #d4d4d5;">
+        ${globalMatrix1}
+        ----------------------------
+
 
         <table class="ui celled la-js-responsive-table la-table la-hover-table compact table" id="heatTable">
             <thead>
@@ -51,10 +54,12 @@
                 </g:if>
                 <th>avg</th>
                 <th><i class="icon fire"></i></th>
+                <th><i class="icon chartline"></i></th>
             </tr>
             </thead>
             <tbody>
-            <g:each in="${globalHeatMap}" var="uri, stat">
+            <g:each in="${globalHeatMap}" var="uri, stat" status="j">
+
                 <g:set var="avg" value="${((double) stat[2] / 1000).round(2)}" />
                 <g:set var="heat" value="${((double) stat[0]).round(2)}" />
 
@@ -107,6 +112,7 @@
                             <span class="ui circular label"> ${heat} </span>
                         </g:else>
                     </td>
+                    <td><div id="${j+1}" style="width: 100px;height:40px"></div></td>
                 </tr>
             </g:each>
             </tbody>
@@ -277,5 +283,5 @@
         cursor: pointer;
     }
 </style>
-
+<laser:render template="sparklinesProfile" />
 <laser:htmlEnd />
