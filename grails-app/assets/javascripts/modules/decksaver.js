@@ -105,7 +105,7 @@ deckSaver = {
             $('.ui .form').not('.ui.modal .ui.form').removeClass('hidden');
             deckSaver.configs.areaThatIsAffected.find('.button').removeClass('hidden');
 
-            deckSaver.configs.toggleButton.attr("data-content", JSPC.dict.get('statusbar.showButtons.tooltip', JSPC.vars.language));
+            deckSaver.configs.toggleButton.attr("data-content", JSPC.dict.get('statusbar.showButtons.tooltip', JSPC.config.language));
             deckSaver._initializePopup(deckSaver.configs.toggleButton);
 
             deckSaver.configs.toggleIcon.removeClass("slash");
@@ -116,7 +116,7 @@ deckSaver = {
             deckSaver.enableXeditable('.xEditableManyToOne');
             deckSaver.enableXeditable('.xEditableBoolean');
 
-            $('.la-action-info').css('text-align', 'left').text(JSPC.dict.get('default.actions.label', JSPC.vars.language))
+            $('.la-action-info').css('text-align', 'left').text(JSPC.dict.get('default.actions.label', JSPC.config.language))
 
             $('.la-js-toggle-hideThis').addClass('hidden');    // generic toggle selector - erms-4688
             $('.la-js-toggle-showThis').removeClass('hidden'); // generic toggle selector - erms-4688
@@ -149,7 +149,7 @@ deckSaver = {
 
             deckSaver.configs.areaThatIsAffected.not('.ui.modal').find('.button').not('.ui.modal .button, .la-js-dont-hide-button').addClass('hidden');
 
-            deckSaver.configs.toggleButton.attr("data-content", JSPC.dict.get('statusbar.hideButtons.tooltip', JSPC.vars.language));
+            deckSaver.configs.toggleButton.attr("data-content", JSPC.dict.get('statusbar.hideButtons.tooltip', JSPC.config.language));
             deckSaver._initializePopup(deckSaver.configs.toggleButton);
 
             deckSaver.configs.toggleIcon.addClass("slash");
@@ -160,7 +160,7 @@ deckSaver = {
             deckSaver.disableXeditable('.xEditableManyToOne');
             deckSaver.disableXeditable('.xEditableBoolean');
 
-            $('.la-action-info').css('text-align', 'right').text(JSPC.dict.get('default.informations', JSPC.vars.language))
+            $('.la-action-info').css('text-align', 'right').text(JSPC.dict.get('default.informations', JSPC.config.language))
 
             $('.la-js-toggle-hideThis').removeClass('hidden'); // generic toggle selector - erms-4688
             $('.la-js-toggle-showThis').addClass('hidden');    // generic toggle selector - erms-4688

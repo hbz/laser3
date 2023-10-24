@@ -24,7 +24,7 @@ wysiwyg = {
 
         $wrapper.trumbowyg ({
             btns: btns,
-            lang: JSPC.vars.language,
+            lang: JSPC.config.language,
             svgPath: '/assets/trumbowyg/ui/icons.svg',
             resetCss: true,
             removeformatPasted: false,  // if false -> fallback

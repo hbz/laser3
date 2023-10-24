@@ -2,7 +2,7 @@
 
 JSPC = {
 
-    vars : { // -- var injection
+    config : { // -- var injection
         dateFormat: "${message(code:'default.date.format.notime').toLowerCase()}",
         language:   "${message(code:'default.locale.label')}",
         server:     "${de.laser.utils.AppUtils.getCurrentServer()}",
@@ -42,7 +42,7 @@ JSPC = {
                 if (JSPC.modules.registry.get (label)) {
                     console.debug ('%c> running module ' + label + ' (' + (++i) + ')', 'color:grey');
                     JSPC.modules.registry.get (label).go();
-                    if ('LOCAL' == JSPC.vars.server) { why.tap(); }
+                    if ('LOCAL' == JSPC.config.server) { why.tap(); }
                 }
                 else { console.error ('> module NOT found ? ' + label ); }
             }
