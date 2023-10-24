@@ -84,6 +84,7 @@ class SubscriptionControllerService {
     FinanceService financeService
     FormService formService
     GenericOIDService genericOIDService
+    GlobalService globalService
     GlobalSourceSyncService globalSourceSyncService
     GokbService gokbService
     LinksGenerationService linksGenerationService
@@ -305,6 +306,8 @@ class SubscriptionControllerService {
 
             List bm = prf.stopBenchmark()
             result.benchMark = bm
+
+            result.permanentTilesProcessRunning = result.subscription.instanceOf ? subscriptionService.checkThreadRunning('permanentTilesProcess_'+result.subscription.instanceOf.id) : subscriptionService.checkThreadRunning('permanentTilesProcess_'+result.subscription.id)
 
             [result:result,status:STATUS_OK]
         }
@@ -962,6 +965,10 @@ class SubscriptionControllerService {
                                 if(ci.requestorKey && platformRecord.centralApiKey) {
                                     queryArguments += "&requestor_id=${ci.requestorKey}&api_key=${platformRecord.centralApiKey}"
                                 }
+                                else if(ci.requestorKey && !platformRecord.centralApiKey) {
+                                    //the next fancy solution ... this time: Statista!
+                                    queryArguments += "&requestor_id=${ci.value}&api_key=${ci.requestorKey}"
+                                }
                                 break
                             case AbstractReport.API_IP_WHITELISTING:
                                 break
@@ -1020,7 +1027,7 @@ class SubscriptionControllerService {
      * @return a {@link Map} containing sets of metricTypes, accessTypes (for Master Reports) and accessMethods (for Master Reports)
      */
     Map<String, Object> loadFilterList(GrailsParameterMap params) {
-        SortedSet metricTypes = new TreeSet<String>(), accessTypes = new TreeSet<String>(), accessMethods = new TreeSet<String>()
+        Set metricTypes = [], accessTypes = [], accessMethods = []
         try {
             if(params.reportType in Counter4Report.COUNTER_4_REPORTS)
                 metricTypes.addAll(Counter4Report.METRIC_TYPES.valueOf(params.reportType).metricTypes)
@@ -1454,6 +1461,7 @@ class SubscriptionControllerService {
                     result.subscription.syncAllShares(synShareTargetList)
 
                     if(packagesToProcess) {
+                        globalService.cleanUpGorm() //needed for that the subscriptions are present in the moment of the parallel process
                         executorService.execute({
                             Thread.currentThread().setName("PackageTransfer_"+result.subscription.id)
                             packagesToProcess.each { Package pkg ->
@@ -1848,7 +1856,7 @@ class SubscriptionControllerService {
                     checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}")
                 }
 
-                if (params.kbartPreselect && params.tab == 'allTipps') {
+                if (params.kbartPreselect) {
                     //checkedCache.put('checked', [:])
 
                     MultipartFile kbartFile = params.kbartPreselect
@@ -1866,9 +1874,9 @@ class SubscriptionControllerService {
                                             IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
 
                                             if (!issueEntitlementGroup) {
-                                                IssueEntitlementGroup.withTransaction {
-                                                    issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: result.surveyConfig.issueEntitlementGroupName).save()
-                                                }
+                                                issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: result.surveyConfig.issueEntitlementGroupName)
+                                                if(!issueEntitlementGroup.save())
+                                                    log.error(issueEntitlementGroup.getErrors().getAllErrors().toListString())
                                             }
 
                                             if (issueEntitlementGroup && subscriptionService.addEntitlement(subscriberSub, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
@@ -2363,6 +2371,8 @@ class SubscriptionControllerService {
                 }
                 result.allIECounts += row['count']
             }
+
+            result.permanentTilesProcessRunning = result.subscription.instanceOf ? subscriptionService.checkThreadRunning('permanentTilesProcess_'+result.subscription.instanceOf.id) : subscriptionService.checkThreadRunning('permanentTilesProcess_'+result.subscription.id)
 
             [result:result,status:STATUS_OK]
         }

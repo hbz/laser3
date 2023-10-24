@@ -21,6 +21,7 @@ import de.laser.OrgTypeService
 import de.laser.OrganisationService
 import de.laser.PropertyService
 import de.laser.ShareService
+import de.laser.SubscriptionService
 import de.laser.SubscriptionsQueryService
 import de.laser.SystemService
 import de.laser.UserService
@@ -153,6 +154,9 @@ class BeanStore {
     }
     static ShareService getShareService() {
         Holders.grailsApplication.mainContext.getBean('shareService') as ShareService
+    }
+    static SubscriptionService getSubscriptionService() {
+        Holders.grailsApplication.mainContext.getBean('subscriptionService') as SubscriptionService
     }
     static SubscriptionsQueryService getSubscriptionsQueryService() {
         Holders.grailsApplication.mainContext.getBean('subscriptionsQueryService') as SubscriptionsQueryService
