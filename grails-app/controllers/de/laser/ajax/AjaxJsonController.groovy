@@ -736,6 +736,24 @@ class AjaxJsonController {
     }
 
     /**
+     * Retrieves a list of platforms for dropdown display
+     * @return the result of {@link de.laser.ControlledListService#getPlatforms(grails.web.servlet.mvc.GrailsParameterMap)}
+     */
+    @Secured(['ROLE_USER'])
+    def lookupPlatforms() {
+        render controlledListService.getPlatforms(params) as JSON
+    }
+
+    /**
+     * Retrieves a list of providers for dropdown display
+     * @return the result of {@link de.laser.ControlledListService#getProviders(grails.web.servlet.mvc.GrailsParameterMap)}
+     */
+    @Secured(['ROLE_USER'])
+    def lookupProviders() {
+        render controlledListService.getProviders(params) as JSON
+    }
+
+    /**
      * Retrieves a list of subscription packages for dropdown display
      * @return the result of {@link de.laser.ControlledListService#getSubscriptionPackages(java.util.Map)}
      */
@@ -787,6 +805,132 @@ class AjaxJsonController {
             Map empty = [results: []]
             render empty as JSON
         }
+    }
+
+    @Secured(['ROLE_USER'])
+    def getAllPossibleSeries() {
+        Map result = [:]
+        switch(params.by) {
+            case 'pkg': result.results = controlledListService.getAllPossibleSeriesByPackage(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
+                break
+            case 'status': result.results = controlledListService.getAllPossibleSeriesByStatus(params)
+                break
+            case 'sub': result.results = controlledListService.getAllPossibleSeriesBySub(genericOIDService.resolveOID(params.obj), params.query)
+                break
+        }
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def getAllPossibleSubjects() {
+        Map result = [:]
+        switch(params.by) {
+            case 'pkg': result.results = controlledListService.getAllPossibleSubjectsByPackage(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
+                break
+            case 'status': result.results = controlledListService.getAllPossibleSubjectsByStatus(params)
+                break
+            case 'sub': result.results = controlledListService.getAllPossibleSubjectsBySub(genericOIDService.resolveOID(params.obj), params.query)
+                break
+        }
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def getAllPossibleDdcs() {
+        Map result = [:]
+        switch(params.by) {
+            case 'pkg': result.results = controlledListService.getAllPossibleDdcsByPackage(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
+                break
+            case 'status': result.results = controlledListService.getAllPossibleDdcsByStatus(params)
+                break
+            case 'sub': result.results = controlledListService.getAllPossibleDdcsBySub(genericOIDService.resolveOID(params.obj), params.query)
+                break
+        }
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def getAllPossibleLanguages() {
+        Map result = [:]
+        switch(params.by) {
+            case 'pkg': result.results = controlledListService.getAllPossibleLanguagesByPackage(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
+                break
+            case 'status': result.results = controlledListService.getAllPossibleLanguagesByStatus(params)
+                break
+            case 'sub': result.results = controlledListService.getAllPossibleLanguagesBySub(genericOIDService.resolveOID(params.obj), params.query)
+                break
+        }
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def getAllPossibleDateFirstOnlineYears() {
+        Map result = [:]
+        switch(params.by) {
+            case 'pkg': result.results = controlledListService.getAllPossibleDateFirstOnlineYearByPackage(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
+                break
+            case 'status': result.results = controlledListService.getAllPossibleDateFirstOnlineYearByStatus(params)
+                break
+            case 'sub': result.results = controlledListService.getAllPossibleDateFirstOnlineYearBySub(genericOIDService.resolveOID(params.obj), params.query)
+                break
+        }
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def getAllPossibleMediumTypes() {
+        Map result = [:]
+        switch(params.by) {
+            case 'pkg': result.results = controlledListService.getAllPossibleMediumTypesByPackage(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
+                break
+            case 'status': result.results = controlledListService.getAllPossibleMediumTypesByStatus(params)
+                break
+            case 'sub': result.results = controlledListService.getAllPossibleMediumTypesBySub(genericOIDService.resolveOID(params.obj), params.query)
+                break
+        }
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def getAllPossibleTitleTypes() {
+        Map result = [:]
+        switch(params.by) {
+            case 'pkg': result.results = controlledListService.getAllPossibleTitleTypesByPackage(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
+                break
+            case 'status': result.results = controlledListService.getAllPossibleTitleTypesByStatus(params)
+                break
+            case 'sub': result.results = controlledListService.getAllPossibleTitleTypesBySub(genericOIDService.resolveOID(params.obj), params.query)
+                break
+        }
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def getAllPossiblePublishers() {
+        Map result = [:]
+        switch(params.by) {
+            case 'pkg': result.results = controlledListService.getAllPossiblePublisherByPackage(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
+                break
+            case 'status': result.results = controlledListService.getAllPossiblePublisherByStatus(params)
+                break
+            case 'sub': result.results = controlledListService.getAllPossiblePublisherBySub(genericOIDService.resolveOID(params.obj), params.query)
+                break
+        }
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def getAllPossibleCoverageDepths() {
+        Map result = [:]
+        switch(params.by) {
+            case 'pkg': result.results = controlledListService.getAllPossibleCoverageDepthsByPackage(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
+                break
+            case 'status': result.results = controlledListService.getAllPossibleCoverageDepthsByStatus(params)
+                break
+            case 'sub': result.results = controlledListService.getAllPossibleCoverageDepthsBySub(genericOIDService.resolveOID(params.obj), params.query)
+                break
+        }
+        render result as JSON
     }
 
     /**

@@ -29,6 +29,17 @@
 
 <laser:render template="nav"/>
 
+<g:if test="${permanentTilesProcessRunning}">
+    <div class="ui icon warning message">
+        <i class="info icon"></i>
+        <div class="content">
+            <div class="header">Info</div>
+
+            <p>${message(code: 'subscription.details.permanentTilesProcessRunning.info')}</p>
+        </div>
+    </div>
+</g:if>
+
 <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
     <laser:render template="message"/>
 </g:if>
@@ -205,7 +216,9 @@
 <div class="ui bottom attached tab active segment">
    <div class="ui grid">
        <div class="row">
-           <div class="column" id="filterWrapper">
+           <%--<div class="column" id="filterWrapper"></div>--%>
+           <div class="column">
+               <laser:render template="/templates/filter/tipp_ieFilter"/>
            </div>
         </div><!--.row-->
     </div><!--.grid-->
@@ -859,6 +872,7 @@
         });
     });
 
+    <%--
     JSPC.app.loadFilter = function() {
         $.ajax({
             url: "<g:createLink action="getTippIeFilter"/>",
@@ -873,5 +887,6 @@
     }
 
     JSPC.app.loadFilter();
+    --%>
 </laser:script>
 <laser:htmlEnd/>

@@ -296,6 +296,7 @@ class ManagementService {
         else {
             if(controller instanceof SubscriptionController) {
                 result.isLinkingRunning = subscriptionService.checkThreadRunning('PackageTransfer_'+result.subscription.id)
+                result.isUnlinkingRunning = subscriptionService.checkThreadRunning('PackageUnlink_'+result.subscription.id)
                 result.validPackages = Package.executeQuery('select sp from SubscriptionPackage sp where sp.subscription = :subscription', [subscription: result.subscription])
                 result.filteredSubscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription)
                 if(result.filteredSubscriptions)
@@ -304,6 +305,7 @@ class ManagementService {
 
             if(controller instanceof MyInstitutionController) {
                 result.isLinkingRunning = subscriptionService.checkThreadRunning('PackageTransfer_'+result.user.id)
+                result.isUnlinkingRunning = subscriptionService.checkThreadRunning('PackageUnlink_'+result.user.id)
                 result.validPackages = Package.findAllByGokbIdIsNotNullAndPackageStatusNotEqual(RDStore.PACKAGE_STATUS_DELETED)
 
                 result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
@@ -325,14 +327,16 @@ class ManagementService {
      */
     void processLinkPackages(def controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
-        String threadName
+        String threadName, unlinkName
         if(controller instanceof SubscriptionController) {
             threadName = "PackageTransfer_${result.subscription.id}"
+            unlinkName = "PackageUnlink_${result.subscription.id}"
         }
         else if(controller instanceof MyInstitutionController) {
             threadName = "PackageTransfer_${result.user.id}"
+            unlinkName = "PackageUnlink_${result.user.id}"
         }
-        if (result.editable && formService.validateToken(params) && !subscriptionService.checkThreadRunning(threadName)) {
+        if (result.editable && formService.validateToken(params) && !subscriptionService.checkThreadRunning(threadName) && !subscriptionService.checkThreadRunning(unlinkName)) {
             FlashScope flash = getCurrentFlashScope()
             Locale locale = LocaleUtils.getCurrentLocale()
             Set<Subscription> subscriptions, permittedSubs = []

@@ -72,17 +72,24 @@
         </g:if>
 
 
+        <ui:exportDropdownItem>
+            <a class="item" data-ui="modal" href="#individuallyExportModal">
+                ${message(code: 'renewEntitlementsWithSurvey.selectableTitles')} + ${message(code: 'default.stats.label')}
+            </a>
+            %{--
+            <g:link class="item statsExport action="renewEntitlementsWithSurvey"
+                    id="${subscriberSub.id}"
+                    params="${[surveyConfigID : surveyConfig.id,
+                               exportForImport: true,
+                               tab            : 'allTipps',
+                               revision: revision]}">
+                ${message(code: 'renewEntitlementsWithSurvey.selectableTitles')} + ${message(code: 'default.stats.label')}
+            </g:link>--}%
+        </ui:exportDropdownItem>
+
+
+
 %{--        <g:if test="${showStatisticByParticipant && params.tab == 'topUsed'}">
-            <ui:exportDropdownItem>
-                <g:link class="item statsExport" action="renewEntitlementsWithSurvey"
-                        id="${subscriberSub.id}"
-                        params="${[surveyConfigID : surveyConfig.id,
-                                   exportForImport: true,
-                                   tab            : 'allTipps',
-                                   revision: revision]}">
-                    ${message(code: 'renewEntitlementsWithSurvey.selectableTitles')} + ${message(code: 'default.stats.label')}
-                </g:link>
-            </ui:exportDropdownItem>
         </g:if>
 
         <g:if test="${showStatisticByParticipant && params.tab == 'topUsed'}">
@@ -321,7 +328,7 @@
             </div>
         </g:if>
 
-
+        %{--
         <g:if test="${params.tab in ['topUsed']}">
             <g:if test="${usages && usages.size() > 0}">
                 <laser:render template="/templates/survey/entitlementTableSurveyWithStats"
@@ -341,10 +348,11 @@
                 <g:message code="renewEntitlementsWithSurvey.stats.button"/>
             </g:link>
         </g:elseif>
-        <g:elseif test="${params.tab == 'allTipps'}">
+        --}%
+        <g:if test="${params.tab == 'allTipps'}">
             <laser:render template="/templates/survey/tippTableSurvey"
                           model="${[titlesList: titlesList, showPackage: true, showPlattform: true]}"/>
-        </g:elseif>
+        </g:if>
         <g:else>
             <laser:render template="/templates/survey/entitlementTableSurvey"
                       model="${[ies: [sourceIEs: sourceIEs], showPackage: true, showPlattform: true]}"/>
@@ -393,6 +401,8 @@
     <ui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params}"
                     max="${max}" total="${num_rows}"/>
 </g:if>
+
+<laser:render template="export/exportUsageForSurvey" />
 
 <laser:script file="${this.getGroovyPageFileName()}">
 

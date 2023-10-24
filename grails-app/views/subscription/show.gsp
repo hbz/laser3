@@ -7,6 +7,8 @@
     <div style="padding: 1em 0;">
         <p>sub.type: ${subscription.type}</p>
 
+        <p>sub.subscriber: ${subscription.subscriber}</p>
+
         <p>sub.instanceOf: <g:if test="${subscription.instanceOf}"><g:link action="show"
                                                                            id="${subscription.instanceOf.id}">${subscription.instanceOf.name}</g:link>
             ${subscription.instanceOf.getAllocationTerm()}
@@ -39,6 +41,17 @@
                   navPrev="${navPrevSubscription}"/>
 
 <laser:render template="nav"/>
+
+<g:if test="${permanentTilesProcessRunning}">
+    <div class="ui icon warning message">
+        <i class="info icon"></i>
+        <div class="content">
+            <div class="header">Info</div>
+
+            <p>${message(code: 'subscription.details.permanentTilesProcessRunning.info')}</p>
+        </div>
+    </div>
+</g:if>
 
 <ui:objectStatus object="${subscription}" status="${subscription.status}"/>
 <laser:render template="message"/>

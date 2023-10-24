@@ -740,9 +740,9 @@ class ExportService {
 		Set<Subscription> refSubs
 		Org customer = result.subscription.getSubscriber()
 		if (params.statsForSurvey == true) {
-			if(params.loadFor == 'allTippsStats')
+			if(params.loadFor == 'allTipps')
 				refSubs = [result.subscription.instanceOf] //look at statistics of the whole set of titles, i.e. of the consortial parent subscription
-			else if(params.loadFor == 'holdingIEsStats')
+			else if(params.loadFor == 'holdingIEs')
 				refSubs = result.subscription._getCalculatedPrevious() //look at the statistics of the member, i.e. the member's stock of the previous year
 		}
 		else if(subscriptionService.getCurrentIssueEntitlementIDs(result.subscription).size() > 0){
@@ -1337,12 +1337,11 @@ class ExportService {
 				rowno = 14
 				Map<String, Object> data = [:]
 				switch(reportType.toLowerCase()) {
-					case Counter5Report.PLATFORM_MASTER_REPORT:
-					case Counter5Report.PLATFORM_USAGE:
+					case [Counter5Report.PLATFORM_MASTER_REPORT, Counter5Report.PLATFORM_USAGE]:
 						data = [:]
 						List reportItems = []
 						if(requestResponse.items.size() > 1) {
-							reportItems.addAll(requestResponse.items.findAll{ Map itemCand -> itemCand.Platform == platform.name })
+							reportItems.addAll(requestResponse.items.findAll{ Map itemCand -> platform.name.toLowerCase().contains(itemCand.Platform.toLowerCase()) || itemCand.Platform.toLowerCase().contains(platform.name.toLowerCase()) })
 						}
 						else {
 							reportItems.addAll(requestResponse.items)
@@ -2158,6 +2157,10 @@ class ExportService {
 							if(customerId.requestorKey && platformRecord.centralApiKey) {
 								url += "&requestor_id=${customerId.requestorKey}&api_key=${platformRecord.centralApiKey}"
 							}
+							else if(customerId.requestorKey && !platformRecord.centralApiKey) {
+								//the next fancy solution ... this time: Statista!
+								url += "&requestor_id=${customerId.value}&api_key=${customerId.requestorKey}"
+							}
 							break
 						case AbstractReport.API_IP_WHITELISTING:
 							break
@@ -2647,6 +2650,7 @@ class ExportService {
 			//countQuery = "select count(*) as countTotal from title_instance_package_platform join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id where ${queryClauseParts.where}"
 		}
 		//int count = sql.rows(countQuery, queryClauseParts.params)[0]['countTotal'] as int, max = 100000
+		//log.debug(queryBase)
 		List rows = []
 		/* kept in case of further experiments
 		if(count > 300000) {
@@ -2657,6 +2661,7 @@ class ExportService {
 		}
 		else*/
 		rows.addAll(sql.rows(queryBase, queryClauseParts.params))
+		export.columnData = rows
 		/*
 		Map<String, Object> data = getTitleData(configMap+[format: 'kbart'], entitlementInstance, sql)
         titleHeaders.addAll(data.otherTitleIdentifierNamespaces.idns_ns)
@@ -2681,7 +2686,6 @@ class ExportService {
 			}
 		}
 		*/
-		export.columnData = rows
 		/*
 		Set<IdentifierNamespace> otherTitleIdentifierNamespaces = getOtherIdentifierNamespaces(entitlementIDs,entitlementInstance)
 		titleHeaders.addAll(otherTitleIdentifierNamespaces.collect { IdentifierNamespace ns -> "${ns.ns}_identifer"})

@@ -518,7 +518,7 @@ class SubscriptionController {
     })
     def deleteDocuments() {
         docstoreService.unifiedDeleteDocuments(params)
-        redirect controller: 'subscription', action: params.redirectAction, id: params.instanceId
+        redirect controller: 'subscription', action: params.redirectAction, id: params.instanceId, params: [tab: params.redirectTab]
     }
 
     //--------------------------------- consortia members section ----------------------------------------------
@@ -924,7 +924,7 @@ class SubscriptionController {
                     fos.flush()
                     fos.close()
                 }
-                Map fileResult = [token: filename]
+                Map fileResult = [token: filename, fileformat: 'kbart']
                 render template: '/templates/bulkItemDownload', model: fileResult
                 return
             }
@@ -1036,7 +1036,7 @@ class SubscriptionController {
                     out.flush()
                     out.close()
                 }
-                Map fileResult = [token: filename]
+                Map fileResult = [token: filename, fileformat: 'kbart']
                 render template: '/templates/bulkItemDownload', model: fileResult
                 return
             }
@@ -1482,16 +1482,75 @@ class SubscriptionController {
         Map<String,Object> ctrlResult, exportResult
         params.statsForSurvey = true
         SXSSFWorkbook wb
-        if(params.exportXLSStats) {
+        if(params.exportForImport) {
             if(params.reportType) {
-                exportResult = exportService.generateReport(params, true,  true, true)
-            }
-            if(exportResult) {
-                wb = exportResult.result
-                ctrlResult = [status: SubscriptionControllerService.STATUS_OK]
+                ctrlResult = subscriptionControllerService.renewEntitlementsWithSurvey(this, params)
+                params.loadFor = params.tab
+                String token = "renewal_${params.reportType}_${params.platform}_${ctrlResult.result.subscriber.id}_${ctrlResult.result.subscriberSub.id}"
+                if(params.metricType) {
+                    token += '_'+params.list('metricType').join('_')
+                }
+                if(params.accessType) {
+                    token += '_'+params.list('accessType').join('_')
+                }
+                if(params.accessMethod) {
+                    token += '_'+params.list('accessMethod').join('_')
+                }
+                String dir = ConfigMapper.getStatsReportSaveLocation() ?: '/usage'
+                File folder = new File(dir)
+                if (!folder.exists()) {
+                    folder.mkdir()
+                }
+                File f = new File(dir+'/'+token)
+                Map<String, String> fileResult = [token: token]
+                if(!f.exists()) {
+                    //if needed for exportXLSStats - in that case, a new if block has to be built
+                    //exportResult = exportService.generateReport(params, true, true, true)
+                    List monthsInRing = []
+                    Calendar startTime = GregorianCalendar.getInstance(), endTime = GregorianCalendar.getInstance()
+                    if (ctrlResult.result.subscriberSub.startDate && ctrlResult.result.subscriberSub.endDate) {
+                        startTime.setTime(ctrlResult.result.subscriberSub.startDate)
+                        if (ctrlResult.result.subscriberSub.endDate < new Date())
+                            endTime.setTime(ctrlResult.result.subscriberSub.endDate)
+                    }
+                    else if (ctrlResult.result.subscriberSub.startDate) {
+                        startTime.setTime(ctrlResult.result.subscriberSub.startDate)
+                        endTime.setTime(new Date())
+                    }
+                    while (startTime.before(endTime)) {
+                        monthsInRing << startTime.getTime()
+                        startTime.add(Calendar.MONTH, 1)
+                    }
+                    List<String> perpetuallyPurchasedTitleURLs = TitleInstancePackagePlatform.executeQuery('select tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (select oo.sub from OrgRole oo where oo.org = :org and oo.roleType in (:roleTypes)) and tipp.status = :tippStatus and ie.status = :tippStatus and ie.perpetualAccessBySub is not null',
+                            [org: ctrlResult.result.subscriber, tippStatus: RDStore.TIPP_STATUS_CURRENT, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS]])
+                    Map<String, Object> queryMap = params.clone()
+                    queryMap.metricTypes = params.metricType
+                    queryMap.accessTypes = params.accessType
+                    queryMap.accessMethods = params.accessMethod
+                    queryMap.platform = Platform.get(params.platform)
+                    queryMap.sub = ctrlResult.result.subscription
+                    queryMap.ieStatus = RDStore.TIPP_STATUS_CURRENT
+                    queryMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id
+                    Map<String, List> export = exportService.generateTitleExportCustom(queryMap, IssueEntitlement.class.name, monthsInRing.sort { Date monthA, Date monthB -> monthA <=> monthB }, ctrlResult.result.subscriber, perpetuallyPurchasedTitleURLs)
+                    export.titles << "Pick"
+                    Map sheetData = [:]
+                    sheetData[g.message(code: 'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow: export.titles, columnData: export.rows]
+                    wb = exportService.generateXLSXWorkbook(sheetData)
+                    FileOutputStream fos = new FileOutputStream(dir+'/'+token)
+                    //--> to document
+                    wb.write(fos)
+                    fos.flush()
+                    fos.close()
+                    wb.dispose()
+                    render template: '/templates/usageReport', model: fileResult
+                    return
+                }
+                else {
+                    render template: '/templates/usageReport', model: fileResult
+                    return
+                }
             }
             else {
-                ctrlResult = subscriptionControllerService.renewEntitlementsWithSurvey(this, params)
                 flash.error = message(code: 'default.stats.error.noReportSelected')
             }
         }
@@ -1558,10 +1617,11 @@ class SubscriptionController {
                     out.flush()
                     out.close()
                 }
-                Map fileResult = [token: filename]
+                Map fileResult = [token: filename, fileformat: 'kbart']
                 render template: '/templates/bulkItemDownload', model: fileResult
                 return
             }
+            /*
             if (params.exportForImport) {
 
                 List monthsInRing = []
@@ -1597,7 +1657,8 @@ class SubscriptionController {
                 wb.dispose()
                 return
             }
-            else if (params.exportXLS) {
+            */
+            if (params.exportXLS) {
                 List<String> perpetuallyPurchasedTitleURLs = TitleInstancePackagePlatform.executeQuery('select tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (select oo.sub from OrgRole oo where oo.org = :org and oo.roleType in (:roleTypes)) and tipp.status = :tippStatus and ie.status = :tippStatus and ie.perpetualAccessBySub is not null',
                         [org: ctrlResult.result.subscriber, tippStatus: RDStore.TIPP_STATUS_CURRENT, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS]])
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")

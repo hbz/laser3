@@ -57,6 +57,7 @@ import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.web.multipart.MultipartFile
 
 import javax.servlet.ServletOutputStream
+import java.security.MessageDigest
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 
@@ -1417,27 +1418,29 @@ class MyInstitutionController  {
 		prf.setBenchmark('init')
 
         if(params.tab){
-            if(params.tab == 'currentIEs'){
-                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-            }else if(params.tab == 'plannedIEs'){
-                params.status = [RDStore.TIPP_STATUS_EXPECTED.id.toString()]
-            }else if(params.tab == 'expiredIEs'){
-                params.status = [RDStore.TIPP_STATUS_RETIRED.id.toString()]
-            }else if(params.tab == 'deletedIEs'){
-                params.status = [RDStore.TIPP_STATUS_DELETED.id.toString()]
-            }else if(params.tab == 'allIEs'){
-                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_EXPECTED.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString(), RDStore.TIPP_STATUS_DELETED.id.toString()]
+            switch(params.tab) {
+                case 'currentIEs': params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                    break
+                case 'plannedIEs': params.status = [RDStore.TIPP_STATUS_EXPECTED.id.toString()]
+                    break
+                case 'expiredIEs': params.status = [RDStore.TIPP_STATUS_RETIRED.id.toString()]
+                    break
+                case 'deletedIEs': params.status = [RDStore.TIPP_STATUS_DELETED.id.toString()]
+                    break
+                case 'allIEs': params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_EXPECTED.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString(), RDStore.TIPP_STATUS_DELETED.id.toString()]
+                    break
             }
         }
         else if(params.list('status').size() == 1) {
-            if(params.list('status')[0] == RDStore.TIPP_STATUS_CURRENT.id.toString()){
-                params.tab = 'currentIEs'
-            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_RETIRED.id.toString()){
-                params.tab = 'expiredIEs'
-            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_EXPECTED.id.toString()){
-                params.tab = 'plannedIEs'
-            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_DELETED.id.toString()){
-                params.tab = 'deletedIEs'
+            switch(params.list('status')[0]) {
+                case RDStore.TIPP_STATUS_CURRENT.id.toString(): params.tab = 'currentIEs'
+                    break
+                case RDStore.TIPP_STATUS_RETIRED.id.toString(): params.tab = 'expiredIEs'
+                    break
+                case RDStore.TIPP_STATUS_EXPECTED.id.toString(): params.tab = 'plannedIEs'
+                    break
+                case RDStore.TIPP_STATUS_DELETED.id.toString(): params.tab = 'deletedIEs'
+                    break
             }
         }else{
             if(params.list('status').size() > 1){
@@ -1449,20 +1452,18 @@ class MyInstitutionController  {
         }
 
         Set<RefdataValue> orgRoles = []
-        String instanceFilter = ""
-        List<String> queryFilter = []
+        List<String> queryFilter = [], subscriptionQueryFilter = []
 
-        if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if (contextService.getOrg().isCustomerType_Consortium()) {
             orgRoles << RDStore.OR_SUBSCRIPTION_CONSORTIA
-            queryFilter << " sub.instanceOf is null "
-            instanceFilter += "and sub.instanceOf is null"
+            subscriptionQueryFilter << " sub.instanceOf = null "
         }
         else {
             orgRoles << RDStore.OR_SUBSCRIBER
             orgRoles << RDStore.OR_SUBSCRIBER_CONS
         }
 
-        // Set Date Restriction
+        /* Set Date Restriction
         Date checkedDate = null
 
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -1479,30 +1480,69 @@ class MyInstitutionController  {
             checkedDate = sdf.parse(params.validOn)
             log.debug("Getting titles as of ${checkedDate} (given)")
         }
+        */
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        List filterSub = params.list("filterSub")
-        if (filterSub == "all")
-            filterSub = null
-        List filterPvd = params.list("filterPvd")
-        if (filterPvd == "all")
-            filterPvd = null
-        List filterHostPlat = params.list("filterHostPlat")
-        if (filterHostPlat == "all")
-            filterHostPlat = null
+        List<Subscription> filterSub = []
+        if(params.containsKey('filterSub')) {
+            //it is unclear for me why it is unable to use the params.list() method resp. why Grails does not recognise the filter param as list ...
+            if(params.filterSub.contains(',')) {
+                params.filterSub.split(',').each { String oid ->
+                    Subscription sub = genericOIDService.resolveOID(oid)
+                    if(sub) {
+                        filterSub << sub
+                    }
+                }
+            }
+            else {
+                Subscription sub = genericOIDService.resolveOID(params.filterSub)
+                if (sub) {
+                    filterSub << sub
+                }
+            }
+        }
+        List<Org> filterPvd = []
+        if(params.containsKey('filterPvd')) {
+            if(params.filterPvd.contains(',')) {
+                params.filterPvd.split(',').each { String oid ->
+                    Org pvd = genericOIDService.resolveOID(oid)
+                    if(pvd)
+                        filterPvd << pvd
+                }
+            }
+            else {
+                Org pvd = genericOIDService.resolveOID(params.filterPvd)
+                if(pvd)
+                    filterPvd << pvd
+            }
+        }
+        List<Platform> filterHostPlat = []
+        if(params.containsKey('filterHostPlat')) {
+            if(params.filterHostPlat.contains(',')) {
+                params.filterHostPlat.split(',').each { String oid ->
+                    Platform hostPlat = genericOIDService.resolveOID(oid)
+                    if(hostPlat)
+                        filterHostPlat << hostPlat
+                }
+            }
+            else {
+                Platform hostPlat = genericOIDService.resolveOID(params.filterHostPlat)
+                if(hostPlat)
+                    filterHostPlat << hostPlat
+            }
+        }
         log.debug("Using params: ${params}")
 
         Map<String,Object> qryParams = [
                 institution: result.institution,
-                //ieStatus: RDStore.TIPP_STATUS_REMOVED,
-                current: RDStore.SUBSCRIPTION_CURRENT,
-                orgRoles: orgRoles
+                //removed: RDStore.TIPP_STATUS_REMOVED
         ]
 
+        /*
         if(checkedDate) {
             queryFilter << ' ( :checkedDate >= coalesce(ie.accessStartDate,sub.startDate,tipp.accessStartDate) or (ie.accessStartDate is null and sub.startDate is null and tipp.accessStartDate is null) ) and ( :checkedDate <= coalesce(ie.accessEndDate,sub.endDate,tipp.accessEndDate) or (ie.accessEndDate is null and sub.endDate is null and tipp.accessEndDate is null)  or (sub.hasPerpetualAccess = true))'
-            /*queryFilter << ' (ie.accessStartDate <= :checkedDate or ' +
+            queryFilter << ' (ie.accessStartDate <= :checkedDate or ' +
                               '(ie.accessStartDate is null and ' +
                                 '(sub.startDate <= :checkedDate or ' +
                                   '(sub.startDate is null and ' +
@@ -1523,44 +1563,75 @@ class MyInstitutionController  {
                                       ')' +
                                   ')' +
                                 ')' +
-                            ')'*/
+                            ')'
             qryParams.checkedDate = checkedDate
-        }
+        }*/
 
         if ((params.filter) && (params.filter.length() > 0)) {
-            queryFilter << "genfunc_filter_matcher(tipp.name, :titlestr) = true "
-            qryParams.titlestr = params.get('filter').toString()
+            //genfunc_filter_matcher needs rework because it causes memory leak
+            queryFilter << "( lower(tipp.name) like lower(:titlestr) or lower(tipp.firstAuthor) like lower(:titlestr) or lower(tipp.firstEditor) like lower(:titlestr) )"
+            qryParams.titlestr = "%${params.get('filter').toString()}%"
         }
 
         if (filterSub) {
-            queryFilter << "sub in (" + filterSub.join(", ") + ")"
+            subscriptionQueryFilter << "sub in (:selSubs)"
+            qryParams.selSubs = filterSub
+        }
+        else {
+            //temp restriction on current subscriptions
+            subscriptionQueryFilter << "(sub.status = :subStatus or sub.hasPerpetualAccess = true)"
+            qryParams.subStatus = RDStore.SUBSCRIPTION_CURRENT
         }
 
         if (filterHostPlat) {
-            queryFilter << "tipp.platform in (" + filterHostPlat.join(", ") + ")"
+            subscriptionQueryFilter << "pkg.nominalPlatform in (:platforms)"
+            qryParams.platforms = filterHostPlat
         }
+
+        if (filterPvd) {
+            subscriptionQueryFilter << "pkg in (select op.pkg from OrgRole op where op.org in (:selPvd) and op.roleType in (:provTypes))"
+            qryParams.selPvd = filterPvd
+            qryParams.provTypes = [RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER]
+        }
+
+        List<String> countQueryFilter = queryFilter.clone()
+        Map<String, Object> countQueryParams = qryParams.clone()
+
+        if(params.status != '' && params.status != null && params.list('status')) {
+            List<Long> status = []
+            params.list('status').each { String statusId ->
+                status << RefdataValue.get(statusId)
+            }
+            queryFilter << "tipp.status in (:status)"
+            qryParams.status = status
+        }
+        countQueryFilter << "tipp.status != :removed"
+        countQueryParams.removed = RDStore.TIPP_STATUS_REMOVED
 
         //String havingClause = params.filterMultiIE ? 'having count(ie.ie_id) > 1' : ''
 
-        String orderByClause
-        if ((params.sort != null) && (params.sort.length() > 0)) {
-            orderByClause = " order by ${params.sort} ${params.order} "
+
+        //String qryString = "from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join sub.orgRelations oo join ie.status status where sub.status = :current and oo.roleType in (:orgRoles) and oo.org = :institution "
+        String qryString = "from TitleInstancePackagePlatform tipp where exists (select ie.id from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo join sub.packages sp join sp.pkg pkg where ie.tipp = tipp and oo.org = :institution "
+        if(subscriptionQueryFilter)
+            qryString += ' and '+subscriptionQueryFilter.join(' and ')
+        qryString += ')'
+        String countQueryString = qryString
+        if(queryFilter) {
+            qryString += ' and ' + queryFilter.join(' and ')
         }
-        else {
-            if (params.order == 'desc') {
-                orderByClause = 'order by tipp.sortname desc, tipp.name desc'
-            } else {
-                orderByClause = 'order by tipp.sortname asc, tipp.name asc'
-            }
+        if(countQueryFilter) {
+            countQueryString += ' and ' + countQueryFilter.join(' and ')
         }
 
-        String qryString = "from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join sub.orgRelations oo join ie.status status where sub.status = :current and oo.roleType in (:orgRoles) and oo.org = :institution "
-        if(queryFilter)
-            qryString += ' and '+queryFilter.join(' and ')
-
-        Map<String,Object> qryParamsClone = qryParams.clone()
-        if(!params.containsKey('fileformat') && !params.containsKey('exportKBart')) {
-            List counts = IssueEntitlement.executeQuery('select new map(count(*) as count, status as status) '+ qryString+ ' and status != :ieStatus group by status', qryParamsClone+[ieStatus: RDStore.TIPP_STATUS_REMOVED])
+        /*
+        if (filterPvd) {
+            qryString = " from IssueEntitlement ie join ie.tipp tipp join tipp.pkg pkg join pkg.orgs oo where oo.roleType in (:cpRole) and oo.org.id in ("+filterPvd.id.join(", ")+") and ie.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :contextOrg and oo.roleType in (:roleTypes) and (sub.status = :current or sub.hasPerpetualAccess = true)) "
+            qryParams = [cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER], contextOrg: result.institution, roleTypes: orgRoles, current: RDStore.SUBSCRIPTION_CURRENT, removed: RDStore.TIPP_STATUS_REMOVED]
+        }
+        */
+        if(!params.containsKey('fileformat')) {
+            List counts = IssueEntitlement.executeQuery('select new map(count(*) as count, tipp.status as status) '+countQueryString+' group by tipp.status', countQueryParams)
             result.allIECounts = 0
             counts.each { row ->
                 switch (row['status']) {
@@ -1575,6 +1646,18 @@ class MyInstitutionController  {
                 }
                 result.allIECounts += row['count']
             }
+            switch(params.tab) {
+                case 'currentIEs': result.num_ti_rows = result.currentIECounts
+                    break
+                case 'plannedIEs': result.num_ti_rows = result.plannedIECounts
+                    break
+                case 'expiredIEs': result.num_ti_rows = result.expredIECounts
+                    break
+                case 'deletedIEs': result.num_ti_rows = result.deletedIECounts
+                    break
+                case 'allIEs': result.num_ti_rows = result.allIECounts
+                    break
+            }
             /*result.currentIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status = :status and ie.status != :ieStatus', qryParamsClone + [status: RDStore.TIPP_STATUS_CURRENT, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
             result.plannedIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status = :status and ie.status != :ieStatus', qryParamsClone + [status: RDStore.TIPP_STATUS_EXPECTED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
             result.expiredIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status = :status and ie.status != :ieStatus', qryParamsClone + [status: RDStore.TIPP_STATUS_RETIRED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
@@ -1582,125 +1665,111 @@ class MyInstitutionController  {
             result.allIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status in (:status) and ie.status != :ieStatus', qryParamsClone + [status: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED], ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]*/
         }
 
-        if(params.status != '' && params.status != null && params.list('status')) {
-            List<Long> status = []
-            params.list('status').each { String statusId ->
-                status << Long.parseLong(statusId)
-            }
-            qryString += " and ie.tipp.status.id in (:status) "
-            qryParams.status = status
-
+        //add order by clause because of group by clause in the count query
+        String orderByClause
+        if ((params.sort != null) && (params.sort.length() > 0)) {
+            orderByClause = " order by ${params.sort} ${params.order} "
         }
+        else {
+            if (params.order == 'desc') {
+                orderByClause = ' order by tipp.sortname desc, tipp.name desc'
+            } else {
+                orderByClause = ' order by tipp.sortname asc, tipp.name asc'
+            }
+        }
+        qryString += orderByClause
+        //log.debug(qryString)
 
         Map<String, Object> selectedFields = [:]
-        Set<Long> currentIssueEntitlements = []
-        Set<Long> tippIDs = []
-        if(params.fileformat) {
-            String consFilter = ""
-            Set<RefdataValue> roleTypes = []
-            if(customerTypeService.isConsortium(result.contextCustomerType)) {
-                consFilter = " and sub.instanceOf = null "
-                roleTypes << RDStore.OR_SUBSCRIPTION_CONSORTIA
-            }
-            else roleTypes.addAll([RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])
-            //load proxies instead of full objects ... maybe this gonna bring performance?
-            tippIDs.addAll(TitleInstancePackagePlatform.executeQuery("select tipp.id from IssueEntitlement ie join ie.tipp tipp where ie.status != :ieStatus and ie.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :contextOrg and oo.roleType in (:roleTypes) and (sub.status = :current or sub.hasPerpetualAccess = true)"+consFilter+")", [ieStatus: RDStore.TIPP_STATUS_REMOVED, contextOrg: result.institution, roleTypes: roleTypes, current: RDStore.SUBSCRIPTION_CURRENT], [sort: 'sortname']))
-            //tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(titleIDs, [sort: 'sortname']))
+        Set<Long> allTitles = []
+        if(params.containsKey('fileformat') && params.fileformat != 'kbart') {
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
         }
-        else if(!params.containsKey('fileformat') && !params.containsKey('exportKBart')) {
-
-            String query = ''
-            Map queryMap = [:]
-            //second filter needed because double-join on same table does deliver me empty results
-            if (filterPvd) {
-                query = " from IssueEntitlement ie join ie.tipp tipp join tipp.pkg pkg join pkg.orgs oo where oo.roleType in (:cpRole) and oo.org.id in ("+filterPvd.join(", ")+") "
-                queryMap = [cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER]]
-            }
-            else {
-                query = qryString
-                queryMap = qryParams
-
-            }
-
-            currentIssueEntitlements.addAll(IssueEntitlement.executeQuery('select ie.id '+query, queryMap))
-            Set<TitleInstancePackagePlatform> allTitles = TitleInstancePackagePlatform.executeQuery('select tipp from IssueEntitlement ie join ie.tipp tipp where ie.id in (select ie.id ' + query + ') and ie.status != :ieStatus group by tipp, ie.id '+orderByClause,[ieStatus: RDStore.TIPP_STATUS_REMOVED]+queryMap, [max: result.max, offset: result.offset])
-            result.subscriptions = Subscription.executeQuery('select distinct(sub) from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.roleType in (:orgRoles) and oo.org = :institution and (sub.status = :current or sub.hasPerpetualAccess = true) '+instanceFilter+" order by sub.name asc",[
-                    institution: result.institution,
-                    current: RDStore.SUBSCRIPTION_CURRENT,
-                    orgRoles: orgRoles])
-            if(result.subscriptions.size() > 0) {
-                //Set<Long> allIssueEntitlements = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription in (:currentSubs)',[currentSubs:result.subscriptions])
-                result.providers = Org.executeQuery('select org.id,org.name from TitleInstancePackagePlatform tipp join tipp.pkg pkg join pkg.orgs oo join oo.org org where tipp.id in (select tipp.id '+qryString+') group by org.id order by org.name asc',qryParams)
-                result.hostplatforms = Platform.executeQuery('select plat.id,plat.name from TitleInstancePackagePlatform tipp join tipp.platform plat where tipp.id in (select tipp.id '+qryString+') group by plat.id order by plat.name asc',qryParams)
-            }
-            result.num_ti_rows = TitleInstancePackagePlatform.executeQuery('select count(*) from IssueEntitlement ie join ie.tipp tipp where ie.id in (select ie.id ' + query + ') and ie.status != :ieStatus ',[ieStatus: RDStore.TIPP_STATUS_REMOVED]+queryMap)[0]
-            result.titles = allTitles
-
-            result.filterSet = params.filterSet || defaultSet
+        else if(!params.containsKey('fileformat')) {
+            allTitles.addAll(TitleInstancePackagePlatform.executeQuery('select tipp.id '+qryString,qryParams))
+            result.titles = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:tippIDs)'+orderByClause, [tippIDs: allTitles.drop(result.offset).take(result.max)])
         }
 
-        String filename = "${message(code:'export.my.currentTitles')}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
+        MessageDigest messageDigest = MessageDigest.getInstance("SHA-256")
+        String filename = "${message(code:'export.my.currentTitles')}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}",
+               tokenBase = "${result.user}${params.values().join('')}${params.fileformat}"
+        messageDigest.update(tokenBase.getBytes())
+        String token = messageDigest.digest().encodeHex()
 
 		List bm = prf.stopBenchmark()
 		result.benchMark = bm
-        if(params.exportKBart) {
+        if(params.containsKey('fileformat')) {
             String dir = GlobalService.obtainFileStorageLocation()
-            File f = new File(dir+'/'+filename)
-            if(!f.exists()) {
-                Map<String, Object> configMap = [:]
-                configMap.putAll(params)
-                configMap.validOn = checkedDate.getTime()
-                String consFilter = result.institution.isCustomerType_Consortium() ? ' and s.instanceOf is null' : ''
-                configMap.pkgIds = SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes)'+consFilter, [context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS]])
-                FileOutputStream out = new FileOutputStream(f)
-                Map<String,List> tableData = exportService.generateTitleExportKBART(configMap, IssueEntitlement.class.name)
-                out.withWriter { writer ->
-                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
-                }
-                out.flush()
-                out.close()
+            File f = new File(dir+'/'+token)
+            Map fileResult
+            switch(params.fileformat) {
+                case 'kbart':
+                    if(!f.exists()) {
+                        Map<String, Object> configMap = params.clone()
+                        //configMap.validOn = checkedDate.getTime()
+                        if(filterSub)
+                            configMap.subscriptions = filterSub
+                        else configMap.defaultSubscriptionFilter = true
+                            //configMap.subscriptions = SubscriptionPackage.executeQuery('select s.id from Subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes) and s.status = :current'+instanceFilter, [current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS]]).toSet()
+                        FileOutputStream out = new FileOutputStream(f)
+                        Map<String,List> tableData = exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name)
+                        out.withWriter { writer ->
+                            writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
+                        }
+                        out.flush()
+                        out.close()
+                    }
+                    fileResult = [token: token, filenameDisplay: filename, fileformat: 'kbart']
+                    break
+                case 'xlsx':
+                    if(!f.exists()) {
+                        allTitles.addAll(TitleInstancePackagePlatform.executeQuery('select tipp.id '+qryString,qryParams))
+                        SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(allTitles, selectedFields, ExportClickMeService.FORMAT.XLS)
+                        FileOutputStream out = new FileOutputStream(f)
+                        wb.write(out)
+                        out.flush()
+                        out.close()
+                        wb.dispose()
+                        /*
+                        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
+                        response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        Map<String, Object> configMap = [:]
+                        configMap.putAll(params)
+                        configMap.validOn = checkedDate.getTime()
+                        String consFilter = result.institution.isCustomerType_Consortium() ? ' and s.instanceOf is null' : ''
+                        configMap.pkgIds = SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes)'+consFilter, [context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS]])
+                        Map<String,List> export = exportService.generateTitleExportCustom(configMap, IssueEntitlement.class.name) //all subscriptions, all packages
+                        Map sheetData = [:]
+                        sheetData[message(code:'menu.my.titles')] = [titleRow:export.titles,columnData:export.rows]
+                        SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
+                        workbook.write(response.outputStream)
+
+                        response.outputStream.flush()
+                        response.outputStream.close()
+                        */
+                    }
+                    fileResult = [token: token, filenameDisplay: filename, fileformat: 'xlsx']
+                    break
+                case 'csv':
+                    //response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
+                    //response.contentType = "text/csv"
+                    //ServletOutputStream out = response.outputStream
+                    if(!f.exists()) {
+                        allTitles.addAll(TitleInstancePackagePlatform.executeQuery('select tipp.id '+qryString,qryParams))
+                        FileOutputStream out = new FileOutputStream(f)
+                        out.withWriter { writer ->
+                            writer.write(exportClickMeService.exportTipps(allTitles,selectedFields,ExportClickMeService.FORMAT.CSV))
+                        }
+                        out.flush()
+                        out.close()
+                    }
+                    fileResult = [token: token, filenameDisplay: filename, fileformat: 'csv']
+                    break
             }
-            Map fileResult = [token: filename]
             render template: '/templates/bulkItemDownload', model: fileResult
-            return
         }
-        else if(params.fileformat == 'xlsx') {
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(tippIDs, selectedFields, ExportClickMeService.FORMAT.XLS)
-            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            /*
-            Map<String, Object> configMap = [:]
-            configMap.putAll(params)
-            configMap.validOn = checkedDate.getTime()
-            String consFilter = result.institution.isCustomerType_Consortium() ? ' and s.instanceOf is null' : ''
-            configMap.pkgIds = SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes)'+consFilter, [context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS]])
-            Map<String,List> export = exportService.generateTitleExportCustom(configMap, IssueEntitlement.class.name) //all subscriptions, all packages
-            Map sheetData = [:]
-            sheetData[message(code:'menu.my.titles')] = [titleRow:export.titles,columnData:export.rows]
-            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
-            workbook.write(response.outputStream)
-            */
-
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
-            return
-        }
-        else if(params.fileformat == 'csv') {
-            response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
-            response.contentType = "text/csv"
-
-            ServletOutputStream out = response.outputStream
-            out.withWriter { writer ->
-                writer.write(exportClickMeService.exportTipps(tippIDs,selectedFields,ExportClickMeService.FORMAT.CSV))
-            }
-            out.flush()
-            out.close()
-        }
-        else
-            result
+        else result
     }
 
     @DebugInfo(isInstUser_or_ROLEADMIN = true)
