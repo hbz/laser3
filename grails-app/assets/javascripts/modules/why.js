@@ -30,7 +30,7 @@ why = {
     },
 
     tap: function () {
-        console.log('why.tap: ' + (1 + why.el_keys.length))
+        console.debug('%cwhy.tap ' + (1 + why.el_keys.length), 'color:grey')
         why._executeTap ()
     },
 

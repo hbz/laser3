@@ -1,12 +1,21 @@
 // templates/jspc/_jspc.js.gsp
 
 JSPC = {
-    currLanguage : $('html').attr('lang'),
 
-    vars : { // -- var injection
+    app : { // -- dynamic logic container
+    },
+
+    callbacks : {
+        modal : { // -- dynamic storage; search modalCallbackFunction@r2d2.js for more information
+            onShow : {},
+            onVisible : {}
+        }
+    },
+
+    config : { // -- static var injection
         dateFormat: "${message(code:'default.date.format.notime').toLowerCase()}",
-        locale: "${message(code:'default.locale.label')}",
-        server: "${de.laser.utils.AppUtils.getCurrentServer()}",
+        language:   "${message(code:'default.locale.label').toLowerCase()}",
+        server:     "${de.laser.utils.AppUtils.getCurrentServer()}",
         searchSpotlightSearch: "<g:createLink controller='search' action='spotlightSearch'/>",
         ajax: {
             openLogin:    "<g:createLink controller='ajaxOpen' action='login'/>",
@@ -15,6 +24,7 @@ JSPC = {
             jsonLookup:   "<g:createLink controller='ajaxJson' action='lookup'/>",
             htmlDocumentPreview: "<g:createLink controller='ajaxHtml' action='documentPreview'/>"
         },
+        jquery: jQuery().jquery
 %{--        ws: {--}%
 %{--            stompUrl: "${createLink(uri: de.laser.custom.CustomWebSocketMessageBrokerConfig.WS_STOMP)}",--}%
 %{--            topicStatusUrl: "${de.laser.custom.CustomWebSocketMessageBrokerConfig.WS_TOPIC_STATUS}",--}%
@@ -42,20 +52,10 @@ JSPC = {
                 if (JSPC.modules.registry.get (label)) {
                     console.debug ('%c> running module ' + label + ' (' + (++i) + ')', 'color:grey');
                     JSPC.modules.registry.get (label).go();
-                    if ('LOCAL' == JSPC.vars.server) { why.tap(); }
+                    if ('LOCAL' == JSPC.config.server) { why.tap(); }
                 }
                 else { console.error ('> module NOT found ? ' + label ); }
             }
-        }
-    },
-
-    app : { // -- dynamic logic container
-    },
-
-    callbacks : {
-        modal : { // -- dynamic storage; search modalCallbackFunction@r2d2.js for more information
-            onShow : {},
-            onVisible : {}
         }
     },
 

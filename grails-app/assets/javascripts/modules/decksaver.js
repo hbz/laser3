@@ -72,23 +72,22 @@ deckSaver = {
     },
 
     removePopupFromClone: function () {
-        var clone = $('.la-clone');
-        var clonePopup = $(clone).popup('get popup');
+        let clonePopup = $('.la-clone').popup('get popup');
         $(clonePopup).each(function () {
             $(this).remove();
         })
     },
 
     enableXeditable: function (cssClass) {
-        var selection = $(cssClass).not('.ui.modal' + ' ' + cssClass);
+        let selection = $(cssClass).not('.ui.modal' + ' ' + cssClass);
         selection.editable('option', 'disabled', false);
     },
 
     disableXeditable: function (cssClass) {
-
-        var selection = $(cssClass).not('.ui.modal' + ' ' + cssClass);
+        let selection = $(cssClass).not('.ui.modal' + ' ' + cssClass);
         selection.editable('option', 'disabled', true);
     },
+
     toggleEditableElements: function () {
 
         if (deckSaver.configs.editMode) {
@@ -106,9 +105,9 @@ deckSaver = {
             $('.ui .form').not('.ui.modal .ui.form').removeClass('hidden');
             deckSaver.configs.areaThatIsAffected.find('.button').removeClass('hidden');
 
-            deckSaver.configs.toggleButton.removeAttr("data-content");
-            deckSaver.configs.toggleButton.attr("data-content", JSPC.dict.get('statusbar.showButtons.tooltip', JSPC.currLanguage));
-            tooltip.initializePopup_deprecated(deckSaver.configs.toggleButton);
+            deckSaver.configs.toggleButton.attr("data-content", JSPC.dict.get('statusbar.showButtons.tooltip', JSPC.config.language));
+            deckSaver._initializePopup(deckSaver.configs.toggleButton);
+
             deckSaver.configs.toggleIcon.removeClass("slash");
             deckSaver.configs.toggleButton.addClass('active');
 
@@ -117,7 +116,7 @@ deckSaver = {
             deckSaver.enableXeditable('.xEditableManyToOne');
             deckSaver.enableXeditable('.xEditableBoolean');
 
-            $('.la-action-info').css('text-align', 'left').text(JSPC.dict.get('default.actions.label', JSPC.currLanguage))
+            $('.la-action-info').css('text-align', 'left').text(JSPC.dict.get('default.actions.label', JSPC.config.language))
 
             $('.la-js-toggle-hideThis').addClass('hidden');    // generic toggle selector - erms-4688
             $('.la-js-toggle-showThis').removeClass('hidden'); // generic toggle selector - erms-4688
@@ -130,17 +129,17 @@ deckSaver = {
 
             deckSaver.configs.icon = $(".la-js-editmode-icon");
             deckSaver.configs.icon.each(function () {
-                var container = $(this).closest('.la-js-editmode-container');
-                var button = $(this).closest('.button');
-                var clone = $(this).clone();
+                let container = $(this).closest('.la-js-editmode-container');
+                let button = $(this).closest('.button');
+                let clone = $(this).clone();
                 clone.appendTo(container);
                 clone.addClass('la-clone grey');
 
                 //transfer the tooltip-content from button to cloned icon
-                var dataContent = button.attr("data-content");
+                let dataContent = button.attr("data-content");
 
                 clone.attr('data-content', dataContent);
-                tooltip.initializePopup_deprecated(clone);
+                deckSaver._initializePopup(clone);
             });
 
             $('.card').not('.ui.modal .card').removeClass('hidden');
@@ -150,9 +149,8 @@ deckSaver = {
 
             deckSaver.configs.areaThatIsAffected.not('.ui.modal').find('.button').not('.ui.modal .button, .la-js-dont-hide-button').addClass('hidden');
 
-            deckSaver.configs.toggleButton.removeAttr("data-content");
-            deckSaver.configs.toggleButton.attr("data-content", JSPC.dict.get('statusbar.hideButtons.tooltip', JSPC.currLanguage));
-            tooltip.initializePopup_deprecated(deckSaver.configs.toggleButton);
+            deckSaver.configs.toggleButton.attr("data-content", JSPC.dict.get('statusbar.hideButtons.tooltip', JSPC.config.language));
+            deckSaver._initializePopup(deckSaver.configs.toggleButton);
 
             deckSaver.configs.toggleIcon.addClass("slash");
             deckSaver.configs.toggleButton.removeClass('active');
@@ -162,12 +160,38 @@ deckSaver = {
             deckSaver.disableXeditable('.xEditableManyToOne');
             deckSaver.disableXeditable('.xEditableBoolean');
 
-            $('.la-action-info').css('text-align', 'right').text(JSPC.dict.get('default.informations', JSPC.currLanguage))
+            $('.la-action-info').css('text-align', 'right').text(JSPC.dict.get('default.informations', JSPC.config.language))
 
             $('.la-js-toggle-hideThis').removeClass('hidden'); // generic toggle selector - erms-4688
             $('.la-js-toggle-showThis').addClass('hidden');    // generic toggle selector - erms-4688
         }
-    }
+    },
+
+    _initializePopup: function(obj) {
+        $('.la-popup-tooltip').each(function() {
+            $(this).attr('aria-label', $(this).attr('data-content')); // add aria-label
+        });
+        $(obj).next('.ui.popup').remove();
+        $(obj).popup({
+            hoverable: true,
+            inline     : false,
+            lastResort: true,
+            movePopup: false,
+            boundary: 'body',
+            delay: {
+                show: 300,
+                hide: 500
+            },
+
+            onShow: function() {
+                // generate a random ID
+                let id =  'wcag_' + Math.random().toString(36).substr(2, 9);
+
+                //add role=tooltip and the generated ID to the tooltip-div (generated from semantic)
+                $(this).children('.content').attr({role:'tooltip',id:id});
+            },
+        });
+    },
 }
 
 JSPC.modules.add( 'deckSaver', deckSaver );
