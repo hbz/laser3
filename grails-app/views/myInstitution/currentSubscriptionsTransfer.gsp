@@ -443,7 +443,7 @@
                                                                                          class="plus small icon"></i>
                             </button>
                             <laser:render template="/templates/documents/modal"
-                                          model="${[newModalId: "modalCreateDocumentOffer" + s.id, ownobj: s, owntp: 'subscription']}"/>
+                                          model="${[newModalId: "modalCreateDocumentOffer" + s.id, ownobj: s, owntp: 'subscription', selectedDocType: RDStore.DOC_TYPE_OFFER.value]}"/>
 
                             <%
                                 Set<DocContext> documentSet = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType', [subscription: s, docType: RDStore.DOC_TYPE_OFFER])
@@ -643,7 +643,7 @@
                                                                                            class="plus small icon"></i>
                             </button>
                             <laser:render template="/templates/documents/modal"
-                                          model="${[newModalId: "modalCreateDocumentRenewal" + s.id, ownobj: s, owntp: 'subscription']}"/>
+                                          model="${[newModalId: "modalCreateDocumentRenewal" + s.id, ownobj: s, owntp: 'subscription', selectedDocType: RDStore.DOC_TYPE_RENEWAL.value]}"/>
 
                             <%
                                 Set<DocContext> documentSet2 = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType', [subscription: s, docType: RDStore.DOC_TYPE_RENEWAL])
