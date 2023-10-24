@@ -35,10 +35,6 @@
     </div>
 
     <div data-tab="first" class="ui bottom attached tab segment active" style="border-top: 1px solid #d4d4d5;">
-        ${globalMatrix1}
-        ----------------------------
-
-
         <table class="ui celled la-js-responsive-table la-table la-hover-table compact table" id="heatTable">
             <thead>
             <tr>
