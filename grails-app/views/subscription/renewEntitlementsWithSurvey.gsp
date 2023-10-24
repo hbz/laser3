@@ -71,21 +71,22 @@
             </ui:exportDropdownItem>
         </g:if>
 
+
         <ui:exportDropdownItem>
             <a class="item" data-ui="modal" href="#individuallyExportModal">
                 ${message(code: 'renewEntitlementsWithSurvey.selectableTitles')} + ${message(code: 'default.stats.label')}
             </a>
             %{--
-            <g:link class="item statsExport" action="renewEntitlementsWithSurvey"
+            <g:link class="itetion="renewEntitlementsWithSurvey"
                     id="${subscriberSub.id}"
                     params="${[surveyConfigID : surveyConfig.id,
                                exportForImport: true,
                                tab            : 'allTipps',
                                revision: revision]}">
                 ${message(code: 'renewEntitlementsWithSurvey.selectableTitles')} + ${message(code: 'default.stats.label')}
-            </g:link>
-            --}%
+            </g:link>--}%
         </ui:exportDropdownItem>
+
 
 
 %{--        <g:if test="${showStatisticByParticipant && params.tab == 'topUsed'}">

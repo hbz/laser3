@@ -49,7 +49,7 @@
         </g:if>
         <g:form action="renewEntitlementsWithSurvey" name="stats" class="ui form" method="get">
             <g:hiddenField name="revision" value="${revision}"/>
-            <g:hiddenField name="exportXLSStats" value="true"/>
+            <g:hiddenField name="exportForImport" value="true"/>
             <g:each in="${params.keySet()}" var="param">
                 <g:hiddenField name="${param}" value="${params.get(param)}"/>
             </g:each>
@@ -93,7 +93,6 @@
         </g:form>
     </g:if>
     <g:elseif test="${dummyCIs}">
-        <%-- continue here: backend implementation; create tokens for the table --%>
         Es fehlen Kundennummer/Requestor-ID-Schlüsselpaare. Hier können Sie die fehlenden Schlüsselpaare nachtragen. Laden Sie bitte anschließend die Seite neu.
         <table>
             <thead>
@@ -116,6 +115,9 @@
             </tbody>
         </table>
     </g:elseif>
+    <div id="localLoadingIndicator" hidden="hidden">
+        <div class="ui inline medium text loader active">Aktualisiere Daten ..</div>
+    </div>
     <div id="reportWrapper"></div>
 </ui:modal>
 <laser:script>
@@ -128,6 +130,7 @@
             data: {
                 reportType: $(this).val(),
                 platforms: platforms,
+                multiple: false,
                 customer: '${subscriber.globalUID}',
                 subscription: ${subscriberSub.id}
             }
@@ -139,8 +142,7 @@
         });
     });
     $("#generateReport").on('click', function() {
-        $('#globalLoadingIndicator').show();
-        $('#individuallyExportModal').modal('hide');
+        $('#localLoadingIndicator').show();
         let fd = new FormData($('#individuallyExportModal').find('form')[0]);
         $.ajax({
             url: "<g:createLink action="renewEntitlementsWithSurvey"/>",
@@ -149,8 +151,8 @@
             processData: false,
             contentType: false
         }).done(function(response){
-            $("#downloadWrapper").html(response);
-            $('#globalLoadingIndicator').hide();
+            $("#reportWrapper").html(response);
+            $('#localLoadingIndicator').hide();
         });
     });
 </laser:script>

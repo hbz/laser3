@@ -2625,7 +2625,7 @@ join sub.orgRelations or_sub where
         if(subscription.packages.pkg) {
 
             ArrayList<String> rows = stream.text.split('\n')
-            Map<String, Integer> colMap = [zdbCol: -1, onlineIdentifierCol: -1, printIdentifierCol: -1, pick: -1]
+            Map<String, Integer> colMap = [zdbCol: -1, onlineIdentifierCol: -1, printIdentifierCol: -1, pick: -1, titleUrlCol: -1, titleIdCol: -1, doiCol: -1, doiTitleCol : -1]
             //read off first line of KBART file
             rows[0].split('\t').eachWithIndex { headerCol, int c ->
                 switch (headerCol.toLowerCase().trim()) {
@@ -2639,6 +2639,12 @@ join sub.orgRelations or_sub where
                         break
                     case "online identifier": colMap.onlineIdentifierCol = c
                         break
+                    case "title_url": colMap.titleUrlCol = c
+                        break
+                    case "title_id": colMap.titleIdCol = c
+                        break
+                    case "doi_identifier": colMap.doiCol = c
+                        break
                     case "doi": colMap.doiTitleCol = c
                         break
                     case "pick": colMap.pick = c
@@ -2649,15 +2655,26 @@ join sub.orgRelations or_sub where
             rows.remove(0)
             //now, assemble the identifiers available to highlight
             Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNsAndNsType('zdb', TitleInstancePackagePlatform.class.name),
-                                                           eissn: IdentifierNamespace.findByNsAndNsType('eissn', TitleInstancePackagePlatform.class.name), isbn: IdentifierNamespace.findByNsAndNsType('isbn', TitleInstancePackagePlatform.class.name),
-                                                           issn : IdentifierNamespace.findByNsAndNsType('issn', TitleInstancePackagePlatform.class.name), eisbn: IdentifierNamespace.findByNsAndNsType('eisbn', TitleInstancePackagePlatform.class.name),
-                                                           doi  : IdentifierNamespace.findByNsAndNsType('doi', TitleInstancePackagePlatform.class.name)]
+                                                           eissn: IdentifierNamespace.findByNsAndNsType('eissn', TitleInstancePackagePlatform.class.name),
+                                                           isbn: IdentifierNamespace.findByNsAndNsType('isbn', TitleInstancePackagePlatform.class.name),
+                                                           issn : IdentifierNamespace.findByNsAndNsType('issn', TitleInstancePackagePlatform.class.name),
+                                                           eisbn: IdentifierNamespace.findByNsAndNsType('eisbn', TitleInstancePackagePlatform.class.name),
+                                                           doi  : IdentifierNamespace.findByNsAndNsType('doi', TitleInstancePackagePlatform.class.name),
+                                                           title_id: IdentifierNamespace.findByNsAndNsType('title_id', TitleInstancePackagePlatform.class.name)]
             rows.eachWithIndex { row, int i ->
                 log.debug("now processing entitlement ${i}")
                 ArrayList<String> cols = row.split('\t')
                 Map<String, Object> idCandidate
-                if (colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol]) {
+                String titleUrl = null
+                TitleInstancePackagePlatform tipp = null
+                if(colMap.titleIdCol >= 0 && cols[colMap.titleIdCol]) {
+                    idCandidate = [namespaces: namespaces.title_id, value: cols[colMap.titleIdCol]]
+                } else if (colMap.titleUrlCol >= 0 && cols[colMap.titleUrlCol]) {
+                    titleUrl = cols[colMap.titleUrlCol].replace("\r", "")
+                } else if (colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol]) {
                     idCandidate = [namespaces: [namespaces.eissn, namespaces.eisbn], value: cols[colMap.onlineIdentifierCol]]
+                } else if (colMap.doiCol >= 0 && cols[colMap.doiCol]) {
+                    idCandidate = [namespaces: [namespaces.doi], value: cols[colMap.doiCol]]
                 } else if (colMap.doiTitleCol >= 0 && cols[colMap.doiTitleCol]) {
                     idCandidate = [namespaces: [namespaces.doi], value: cols[colMap.doiTitleCol]]
                 } else if (colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol]) {
@@ -2665,14 +2682,21 @@ join sub.orgRelations or_sub where
                 } else if (colMap.zdbCol >= 0 && cols[colMap.zdbCol]) {
                     idCandidate = [namespaces: [namespaces.zdb], value: cols[colMap.zdbCol]]
                 }
-                if (((colMap.zdbCol >= 0 && cols[colMap.zdbCol].trim().isEmpty()) || colMap.zdbCol < 0) &&
+                if (!titleUrl && ((colMap.titleIdCol >= 0 && cols[colMap.titleIdCol].trim().isEmpty()) || colMap.titleIdCol < 0) &&
+                        ((colMap.zdbCol >= 0 && cols[colMap.zdbCol].trim().isEmpty()) || colMap.zdbCol < 0) &&
                         ((colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol].trim().isEmpty()) || colMap.onlineIdentifierCol < 0) &&
-                        ((colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol].trim().isEmpty()) || colMap.printIdentifierCol < 0)) {
+                        ((colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol].trim().isEmpty()) || colMap.printIdentifierCol < 0) &&
+                        ((colMap.doiCol >= 0 && cols[colMap.doiCol].trim().isEmpty()) || colMap.doiCol < 0)) {
                 } else {
-
-                    List<TitleInstancePackagePlatform> titles = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp join tipp.ids ident where ident.ns in :namespaces and ident.value = :value and tipp.pkg in (:pkgs) and tipp.status = :tippStatus', [tippStatus: RDStore.TIPP_STATUS_CURRENT, namespaces: idCandidate.namespaces, value: idCandidate.value, pkgs: subscription.packages.pkg])
-                    if (titles.size() > 0) {
-                            TitleInstancePackagePlatform tipp = titles[0]
+                    if (titleUrl) {
+                        tipp = TitleInstancePackagePlatform.findByHostPlatformURL(titleUrl)
+                    }
+                    if (idCandidate.value && !tipp) {
+                        List<TitleInstancePackagePlatform> titles = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp join tipp.ids ident where ident.ns in :namespaces and ident.value = :value and tipp.pkg in (:pkgs) and tipp.status = :tippStatus', [tippStatus: RDStore.TIPP_STATUS_CURRENT, namespaces: idCandidate.namespaces, value: idCandidate.value, pkgs: subscription.packages.pkg])
+                        if(titles.size() == 1)
+                            tipp = titles[0]
+                    }
+                    if (tipp) {
                             count++
 
                             colMap.each { String colName, int colNo ->

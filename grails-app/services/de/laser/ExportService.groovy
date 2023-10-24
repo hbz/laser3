@@ -1337,12 +1337,11 @@ class ExportService {
 				rowno = 14
 				Map<String, Object> data = [:]
 				switch(reportType.toLowerCase()) {
-					case Counter5Report.PLATFORM_MASTER_REPORT:
-					case Counter5Report.PLATFORM_USAGE:
+					case [Counter5Report.PLATFORM_MASTER_REPORT, Counter5Report.PLATFORM_USAGE]:
 						data = [:]
 						List reportItems = []
 						if(requestResponse.items.size() > 1) {
-							reportItems.addAll(requestResponse.items.findAll{ Map itemCand -> itemCand.Platform == platform.name })
+							reportItems.addAll(requestResponse.items.findAll{ Map itemCand -> platform.name.toLowerCase().contains(itemCand.Platform.toLowerCase()) || itemCand.Platform.toLowerCase().contains(platform.name.toLowerCase()) })
 						}
 						else {
 							reportItems.addAll(requestResponse.items)
@@ -2157,6 +2156,10 @@ class ExportService {
 						case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR_API:
 							if(customerId.requestorKey && platformRecord.centralApiKey) {
 								url += "&requestor_id=${customerId.requestorKey}&api_key=${platformRecord.centralApiKey}"
+							}
+							else if(customerId.requestorKey && !platformRecord.centralApiKey) {
+								//the next fancy solution ... this time: Statista!
+								url += "&requestor_id=${customerId.value}&api_key=${customerId.requestorKey}"
 							}
 							break
 						case AbstractReport.API_IP_WHITELISTING:
