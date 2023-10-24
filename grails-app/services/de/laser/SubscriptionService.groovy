@@ -31,15 +31,20 @@ import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
 import org.springframework.web.multipart.MultipartFile
 
+import java.sql.Array
+import java.sql.Connection
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.time.Year
+import java.util.concurrent.ExecutorService
 
 @Transactional
 class SubscriptionService {
+    AuditService auditService
     ComparisonService comparisonService
     ContextService contextService
     EscapeService escapeService
+    ExecutorService executorService
     FilterService filterService
     GenericOIDService genericOIDService
     GokbService gokbService
@@ -52,6 +57,7 @@ class SubscriptionService {
     SurveyService surveyService
     UserService userService
     OrgTypeService orgTypeService
+
 
     /**
      * ex MyInstitutionController.currentSubscriptions()
@@ -946,7 +952,7 @@ join sub.orgRelations or_sub where
             // [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id, ownerId: ownerId]
             sql.withBatch('insert into permanent_title (pt_version, pt_ie_fk, pt_date_created, pt_subscription_fk, pt_last_updated, pt_tipp_fk, pt_owner_fk) select ' +
                     '0, ie_id, now(), ie_subscription_fk, now(), ie_tipp_fk, (select or_org_fk from org_role where or_sub_fk = :subId and or_roletype_fk = :subscrRole) from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id ' +
-                    'where tipp_pkg_fk = :pkgId and ie_subscription_fk = :parentId and ie_status_rv_fk != :removed and not exists(select pt_id from permanent_title where pt_subscription_fk = :subId and pt_ie_fk = ie_id and pt_tipp_fk = tipp_id and pt_owner_fk = (select or_org_fk from org_role where or_sub_fk = :subId and or_roletype_fk = :subscrRole))') { BatchingPreparedStatementWrapper stmt ->
+                    'where tipp_pkg_fk = :pkgId and ie_subscription_fk = :parentId and ie_status_rv_fk != :removed and not exists(select pt_id from permanent_title where pt_tipp_fk = tipp_id and pt_owner_fk = (select or_org_fk from org_role where or_sub_fk = :subId and or_roletype_fk = :subscrRole))') { BatchingPreparedStatementWrapper stmt ->
                 memberSubs.each { Subscription memberSub ->
                     stmt.addBatch([subId: memberSub.id, parentId: subscription.id, pkgId: pkg.id, removed: RDStore.TIPP_STATUS_REMOVED.id, subscrRole: RDStore.OR_SUBSCRIBER_CONS.id])
                 }
@@ -2646,7 +2652,7 @@ join sub.orgRelations or_sub where
         if(subscription.packages.pkg) {
 
             ArrayList<String> rows = stream.text.split('\n')
-            Map<String, Integer> colMap = [zdbCol: -1, onlineIdentifierCol: -1, printIdentifierCol: -1, pick: -1]
+            Map<String, Integer> colMap = [zdbCol: -1, onlineIdentifierCol: -1, printIdentifierCol: -1, pick: -1, titleUrlCol: -1, titleIdCol: -1, doiCol: -1, doiTitleCol : -1]
             //read off first line of KBART file
             rows[0].split('\t').eachWithIndex { headerCol, int c ->
                 switch (headerCol.toLowerCase().trim()) {
@@ -2660,6 +2666,12 @@ join sub.orgRelations or_sub where
                         break
                     case "online identifier": colMap.onlineIdentifierCol = c
                         break
+                    case "title_url": colMap.titleUrlCol = c
+                        break
+                    case "title_id": colMap.titleIdCol = c
+                        break
+                    case "doi_identifier": colMap.doiCol = c
+                        break
                     case "doi": colMap.doiTitleCol = c
                         break
                     case "pick": colMap.pick = c
@@ -2670,15 +2682,26 @@ join sub.orgRelations or_sub where
             rows.remove(0)
             //now, assemble the identifiers available to highlight
             Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNsAndNsType('zdb', TitleInstancePackagePlatform.class.name),
-                                                           eissn: IdentifierNamespace.findByNsAndNsType('eissn', TitleInstancePackagePlatform.class.name), isbn: IdentifierNamespace.findByNsAndNsType('isbn', TitleInstancePackagePlatform.class.name),
-                                                           issn : IdentifierNamespace.findByNsAndNsType('issn', TitleInstancePackagePlatform.class.name), eisbn: IdentifierNamespace.findByNsAndNsType('eisbn', TitleInstancePackagePlatform.class.name),
-                                                           doi  : IdentifierNamespace.findByNsAndNsType('doi', TitleInstancePackagePlatform.class.name)]
+                                                           eissn: IdentifierNamespace.findByNsAndNsType('eissn', TitleInstancePackagePlatform.class.name),
+                                                           isbn: IdentifierNamespace.findByNsAndNsType('isbn', TitleInstancePackagePlatform.class.name),
+                                                           issn : IdentifierNamespace.findByNsAndNsType('issn', TitleInstancePackagePlatform.class.name),
+                                                           eisbn: IdentifierNamespace.findByNsAndNsType('eisbn', TitleInstancePackagePlatform.class.name),
+                                                           doi  : IdentifierNamespace.findByNsAndNsType('doi', TitleInstancePackagePlatform.class.name),
+                                                           title_id: IdentifierNamespace.findByNsAndNsType('title_id', TitleInstancePackagePlatform.class.name)]
             rows.eachWithIndex { row, int i ->
                 log.debug("now processing entitlement ${i}")
                 ArrayList<String> cols = row.split('\t')
                 Map<String, Object> idCandidate
-                if (colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol]) {
+                String titleUrl = null
+                TitleInstancePackagePlatform tipp = null
+                if(colMap.titleIdCol >= 0 && cols[colMap.titleIdCol]) {
+                    idCandidate = [namespaces: namespaces.title_id, value: cols[colMap.titleIdCol]]
+                } else if (colMap.titleUrlCol >= 0 && cols[colMap.titleUrlCol]) {
+                    titleUrl = cols[colMap.titleUrlCol].replace("\r", "")
+                } else if (colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol]) {
                     idCandidate = [namespaces: [namespaces.eissn, namespaces.eisbn], value: cols[colMap.onlineIdentifierCol]]
+                } else if (colMap.doiCol >= 0 && cols[colMap.doiCol]) {
+                    idCandidate = [namespaces: [namespaces.doi], value: cols[colMap.doiCol]]
                 } else if (colMap.doiTitleCol >= 0 && cols[colMap.doiTitleCol]) {
                     idCandidate = [namespaces: [namespaces.doi], value: cols[colMap.doiTitleCol]]
                 } else if (colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol]) {
@@ -2686,14 +2709,21 @@ join sub.orgRelations or_sub where
                 } else if (colMap.zdbCol >= 0 && cols[colMap.zdbCol]) {
                     idCandidate = [namespaces: [namespaces.zdb], value: cols[colMap.zdbCol]]
                 }
-                if (((colMap.zdbCol >= 0 && cols[colMap.zdbCol].trim().isEmpty()) || colMap.zdbCol < 0) &&
+                if (!titleUrl && ((colMap.titleIdCol >= 0 && cols[colMap.titleIdCol].trim().isEmpty()) || colMap.titleIdCol < 0) &&
+                        ((colMap.zdbCol >= 0 && cols[colMap.zdbCol].trim().isEmpty()) || colMap.zdbCol < 0) &&
                         ((colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol].trim().isEmpty()) || colMap.onlineIdentifierCol < 0) &&
-                        ((colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol].trim().isEmpty()) || colMap.printIdentifierCol < 0)) {
+                        ((colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol].trim().isEmpty()) || colMap.printIdentifierCol < 0) &&
+                        ((colMap.doiCol >= 0 && cols[colMap.doiCol].trim().isEmpty()) || colMap.doiCol < 0)) {
                 } else {
-
-                    List<TitleInstancePackagePlatform> titles = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp join tipp.ids ident where ident.ns in :namespaces and ident.value = :value and tipp.pkg in (:pkgs) and tipp.status = :tippStatus', [tippStatus: RDStore.TIPP_STATUS_CURRENT, namespaces: idCandidate.namespaces, value: idCandidate.value, pkgs: subscription.packages.pkg])
-                    if (titles.size() > 0) {
-                            TitleInstancePackagePlatform tipp = titles[0]
+                    if (titleUrl) {
+                        tipp = TitleInstancePackagePlatform.findByHostPlatformURL(titleUrl)
+                    }
+                    if (idCandidate.value && !tipp) {
+                        List<TitleInstancePackagePlatform> titles = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp join tipp.ids ident where ident.ns in :namespaces and ident.value = :value and tipp.pkg in (:pkgs) and tipp.status = :tippStatus', [tippStatus: RDStore.TIPP_STATUS_CURRENT, namespaces: idCandidate.namespaces, value: idCandidate.value, pkgs: subscription.packages.pkg])
+                        if(titles.size() == 1)
+                            tipp = titles[0]
+                    }
+                    if (tipp) {
                             count++
 
                             colMap.each { String colName, int colNo ->
@@ -3021,6 +3051,67 @@ join sub.orgRelations or_sub where
         Set<String> settingKeysAndNots = PendingChangeConfiguration.SETTING_KEYS+PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key+PendingChangeConfiguration.NOTIFICATION_SUFFIX }
         doneChild = AuditConfig.executeUpdate('delete from AuditConfig ac where ac.referenceId in (select ac.referenceId from AuditConfig ac where ac.referenceField = :freezeHoldingAudit) and ac.referenceField in (:settingKeysAndNots)', [freezeHoldingAudit: SubscriptionPackage.FREEZE_HOLDING, settingKeysAndNots: settingKeysAndNots]) > 0
         done || doneChild
+    }
+
+    void setPermanentTitlesBySubscription(Subscription subscription) {
+        if (subscription._getCalculatedType() in [CalculatedType.TYPE_LOCAL, CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_CONSORTIAL]) {
+            if(!checkThreadRunning('permanentTilesProcess_' + subscription.id)) {
+                executorService.execute({
+                    Thread.currentThread().setName('permanentTilesProcess_' + subscription.id)
+                    Long ownerId = subscription.subscriber.id
+                    Long subId = subscription.id
+                    Sql sql = GlobalService.obtainSqlConnection()
+                    Connection connection = sql.dataSource.getConnection()
+
+                    List<Long> status = [RDStore.TIPP_STATUS_CURRENT.id, RDStore.TIPP_STATUS_RETIRED.id, RDStore.TIPP_STATUS_DELETED.id]
+                    int countIeIDs = IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is null and ie.status.id in (:status)', [sub: subscription, status: status])[0]
+                    log.debug("setPermanentTitlesBySubscription -> set perpetualAccessBySub of ${countIeIDs} IssueEntitlements to sub: " + subscription.id)
+
+                    sql.executeUpdate('update issue_entitlement set ie_perpetual_access_by_sub_fk = :subId where ie_perpetual_access_by_sub_fk is null and ie_subscription_fk = :subId and ie_status_rv_fk = any(:idSet)', [idSet: connection.createArrayOf('bigint', [RDStore.TIPP_STATUS_CURRENT.id, RDStore.TIPP_STATUS_RETIRED.id, RDStore.TIPP_STATUS_DELETED.id].toArray()), subId: subId])
+                    sql.executeInsert("insert into permanent_title (pt_version, pt_ie_fk, pt_date_created, pt_subscription_fk, pt_last_updated, pt_tipp_fk, pt_owner_fk) select 0, ie_id, now(), " + subId + ", now(), ie_tipp_fk, " + ownerId + " from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_status_rv_fk != :removed and ie_status_rv_fk = tipp_status_rv_fk and ie_subscription_fk = :subId and not exists(select pt_id from permanent_title where pt_tipp_fk = tipp_id and pt_owner_fk = :ownerId)", [subId: subId, removed: RDStore.TIPP_STATUS_REMOVED.id, ownerId: ownerId])
+
+                    if (subscription.instanceOf == null && auditService.getAuditConfig(subscription, 'hasPerpetualAccess')) {
+                        Set depending = Subscription.findAllByInstanceOf(subscription)
+                        depending.eachWithIndex { dependingObj, i ->
+                            subId = dependingObj.id
+                            ownerId = dependingObj.subscriber.id
+                            countIeIDs = IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is null and ie.status.id in (:status)', [sub: dependingObj, status: status])[0]
+                            log.debug("setPermanentTitlesBySubscription (${i+1}/${depending.size()}) -> set perpetualAccessBySub of ${countIeIDs} IssueEntitlements to sub: " + dependingObj.id)
+
+                            sql.executeUpdate('update issue_entitlement set ie_perpetual_access_by_sub_fk = :subId where ie_perpetual_access_by_sub_fk is null and ie_subscription_fk = :subId and ie_status_rv_fk = any(:idSet)', [idSet: connection.createArrayOf('bigint', [RDStore.TIPP_STATUS_CURRENT.id, RDStore.TIPP_STATUS_RETIRED.id, RDStore.TIPP_STATUS_DELETED.id].toArray()), subId: subId])
+                            sql.executeInsert("insert into permanent_title (pt_version, pt_ie_fk, pt_date_created, pt_subscription_fk, pt_last_updated, pt_tipp_fk, pt_owner_fk) select 0, ie_id, now(), " + subId + ", now(), ie_tipp_fk, " + ownerId + " from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_status_rv_fk != :removed and ie_status_rv_fk = tipp_status_rv_fk and ie_subscription_fk = :subId and not exists(select pt_id from permanent_title where pt_tipp_fk = tipp_id and pt_owner_fk = :ownerId)", [subId: subId, removed: RDStore.TIPP_STATUS_REMOVED.id, ownerId: ownerId])
+
+                        }
+                    }
+                    sql.close()
+                })
+            }
+        }
+    }
+
+    void removePermanentTitlesBySubscription(Subscription subscription) {
+        if (subscription._getCalculatedType() in [CalculatedType.TYPE_LOCAL, CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_CONSORTIAL]) {
+            if(!checkThreadRunning('permanentTilesProcess_' + subscription.id)) {
+                executorService.execute({
+                    Thread.currentThread().setName('permanentTilesProcess_' + subscription.id)
+                    int countIeIDs = IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is not null', [sub: subscription])[0]
+                    log.debug("removePermanentTitlesBySubscription -> set perpetualAccessBySub of ${countIeIDs} IssueEntitlements to null: " + subscription.id)
+                    IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.perpetualAccessBySub = null where ie.subscription = :sub and ie.perpetualAccessBySub is not null", [sub: subscription])
+                    PermanentTitle.executeUpdate("delete PermanentTitle pt where pt.issueEntitlement.id in (select ie.id from IssueEntitlement ie where ie.subscription = :sub)", [sub: subscription])
+
+                    if (subscription.instanceOf == null && auditService.getAuditConfig(subscription, 'hasPerpetualAccess')) {
+                        Set depending = Subscription.findAllByInstanceOf(subscription)
+                        depending.eachWithIndex { dependingObj, i->
+                            countIeIDs = IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is not null', [sub: dependingObj])[0]
+                            log.debug("removePermanentTitlesBySubscription (${i+1}/${depending.size()}) -> set perpetualAccessBySub of ${countIeIDs} IssueEntitlements to null: " + dependingObj.id)
+                            IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.perpetualAccessBySub = null where ie.subscription = :sub and ie.perpetualAccessBySub is not null", [sub: dependingObj])
+                            PermanentTitle.executeUpdate("delete PermanentTitle pt where pt.issueEntitlement.id in (select ie.id from IssueEntitlement ie where ie.subscription = :sub)", [sub: dependingObj])
+
+                        }
+                    }
+                })
+            }
+        }
     }
 
 }
