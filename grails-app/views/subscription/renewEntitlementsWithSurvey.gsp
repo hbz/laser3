@@ -77,7 +77,7 @@
                 ${message(code: 'renewEntitlementsWithSurvey.selectableTitles')} + ${message(code: 'default.stats.label')}
             </a>
             %{--
-            <g:link class="itetion="renewEntitlementsWithSurvey"
+            <g:link class="item statsExport action="renewEntitlementsWithSurvey"
                     id="${subscriberSub.id}"
                     params="${[surveyConfigID : surveyConfig.id,
                                exportForImport: true,
