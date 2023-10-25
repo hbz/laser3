@@ -1,4 +1,4 @@
-<div class="ui flyout la-help-panel" style="padding:50px 0 10px 0;overflow:scroll">
+<div class="ui flyout" id="help-content" style="padding:50px 0 10px 0;overflow:scroll">
 
     <h1 class="ui header">Erklärung der Icons</h1>
 

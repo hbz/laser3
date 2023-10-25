@@ -34,8 +34,8 @@ deckSaver = {
     },
 
     init: function() {
-        deckSaver.configs.toggleButton = $(".ui.toggle.button")
-        deckSaver.configs.toggleIcon = $(".ui.toggle.button .icon")
+        deckSaver.configs.toggleButton = $("#decksaver-toggle")
+        deckSaver.configs.toggleIcon = $("#decksaver-toggle .icon")
 
         deckSaver.configs.areaThatIsAffected = $(".la-show-context-orgMenu") // $("#collapseableSubDetails")
         deckSaver.configs.card = {

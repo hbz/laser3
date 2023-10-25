@@ -70,18 +70,30 @@
 
             <g:if test="${(controllerName=='subscription' && actionName=='show') || (controllerName=='dev' && actionName=='frontend')}">
                 <div class="item la-cb-action">
-                    <button class="ui icon button la-help-panel-button"><i class="question circle icon"></i></button>
+                    <button class="ui icon button" id="help-toggle"><i class="question circle icon"></i></button>
                 </div>
             </g:if>
+
+            %{-- subscription transfer  --}%
+
+%{--            <g:if test="${controllerName=='subscription' && actionName=='show' && (editable || contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ))}">--}%
+%{--                <ui:cbItemToggleAction id="subscriptionTransfer-toggle" status="active" icon="history horizontally flipped" tooltip="${message(code:'statusbar.showSubscriptionTransfer.tooltip')}" />--}%
+%{--                <div class="item la-cb-action">--}%
+%{--                    <button class="ui icon button la-popup-tooltip la-delay" id="subscriptionTransfer-toggle"--}%
+%{--                            data-content="${message(code:'statusbar.showSubscriptionTransfer.tooltip')}" data-position="bottom left">--}%
+%{--                        <i class="history horizontally flipped icon"></i>--}%
+%{--                    </button>--}%
+%{--                </div>--}%
+%{--            </g:if>--}%
 
             %{-- edit mode switcher  --}%
 
             <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription' || controllerName=='license') && actionName=='show' && (editable || contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))}">
                 <g:if test="${contextUser?.getSettingsValue(UserSetting.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES)?.value=='Yes'}">
-                    <ui:cbItemToggleAction status="active" icon="pencil alternate" tooltip="${message(code:'statusbar.showButtons.tooltip')}" />
+                    <ui:cbItemToggleAction id="decksaver-toggle" status="active" icon="pencil alternate" tooltip="${message(code:'statusbar.showButtons.tooltip')}" />
                 </g:if>
                 <g:else>
-                    <ui:cbItemToggleAction status="inactive" icon="pencil alternate slash" tooltip="${message(code:'statusbar.hideButtons.tooltip')}" />
+                    <ui:cbItemToggleAction id="decksaver-toggle" status="inactive" icon="pencil alternate slash" tooltip="${message(code:'statusbar.hideButtons.tooltip')}" />
                 </g:else>
             </g:if>
 
@@ -141,7 +153,7 @@
                 <g:set var="linkifyMap" value="${linksGenerationService.getSourcesAndDestinations(subscription, contextUser, RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE))}" />
 
                 <g:if test="${linkifyMap}">
-                    <div class="item la-cb-action-ext">
+                    <div class="item la-cb-action">
                         <div class="ui simple dropdown button la-js-dont-hide-button icon">
                             <i class="linkify icon"></i>
                             <div class="menu">
@@ -183,7 +195,7 @@
                 <g:set var="linkifyMap" value="${linksGenerationService.getSourcesAndDestinations(license, contextUser, RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE))}" />
 
                 <g:if test="${linkifyMap}">
-                    <div class="item la-cb-action-ext">
+                    <div class="item la-cb-action">
                         <div class="ui simple dropdown button la-js-dont-hide-button icon">
                             <i class="linkify icon"></i>
                             <div class="menu">
@@ -355,6 +367,13 @@
     };
     JSPC.app.initLaToggle();
 
+    $('#subscriptionTransfer-toggle').on('click', function() {
+%{--        $('#subscriptionTransfer-content').toggle();--}%
+        alert("!");
+    });
+    $('#help-toggle').click(function() {
+        $('#help-content').flyout('toggle');
+    });
 
     JSPC.app.contextBar = {
 

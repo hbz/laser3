@@ -80,10 +80,6 @@ verticalNavi = {
         })
         .sidebar('attach events', '.la-menue-button')
         .sidebar('setting', 'dimPage', false);
-
-        $('.la-help-panel-button').click(function() {
-            $('.la-help-panel').flyout('toggle');
-        });
     }
 }
 

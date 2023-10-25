@@ -137,11 +137,16 @@ class ContextBarTagLib {
         String icon = attrs.icon ?: ''
 
         out << '<div class="item la-cb-action">'
-        out <<     '<button class="ui icon button ' + status + ' toggle la-toggle-advanced la-popup-tooltip la-delay" ' // toggle -> JS
+        if (attrs.id) {
+            out << '<button id="' + attrs.id + '" class="ui icon button ' + status + ' toggle la-toggle-advanced la-popup-tooltip la-delay" '
+            // toggle -> JS
+        } else {
+            out << '<button class="ui icon button ' + status + ' toggle la-toggle-advanced la-popup-tooltip la-delay" ' // toggle -> JS
+        }
         if (attrs.reload) {
             out <<      'data-reload="' + attrs.reload + '" '
         }
-        out <<          'data-content="' + tooltip + '" data-position="bottom center">'
+        out <<          'data-content="' + tooltip + '" data-position="bottom right">'
         out <<              '<i class="icon ' + icon + '"></i>'
         out <<     '</button>'
         out << '</div>'
@@ -150,10 +155,6 @@ class ContextBarTagLib {
     // <ui:cbItemMarkerAction org="optional" package="optional" platform="optional" simple="true|false" />
 
     def cbItemMarkerAction = { attrs, body ->
-
-        if (! AppUtils.isPreviewOnly()) {
-            return
-        }
 
         MarkerSupport obj   = (attrs.org ?: attrs.package ?: attrs.platform) as MarkerSupport
         boolean isMarked    = obj.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)
