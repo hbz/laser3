@@ -53,10 +53,6 @@
 <laser:render template="message"/>
 <laser:render template="/templates/meta/identifier" model="${[object: subscription, editable: editable]}"/>
 
-<g:if test="${subscription._getCalculatedType() in [Subscription.TYPE_CONSORTIAL, Subscription.TYPE_ADMINISTRATIVE] && subscription._getCalculatedPrevious()}">
-    <laser:render template="${customerTypeService.getCustomerTypeDependingView('subscriptionTransferInfo')}" model="${[calculatedPreviousList: subscription._getCalculatedPrevious()]}" />
-</g:if>
-
 <ui:messages data="${flash}"/>
 <laser:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" />
 

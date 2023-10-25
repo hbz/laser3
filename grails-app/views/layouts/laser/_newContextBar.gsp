@@ -70,7 +70,7 @@
 
             %{-- subscription transfer  --}%
 
-            <g:if test="${controllerName=='subscription' && actionName=='show' && (editable || contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ))}">
+            <g:if test="${controllerName=='subscription' && (editable || contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ))}">
                 <g:if test="${subscription && subscription._getCalculatedType() in [Subscription.TYPE_CONSORTIAL, Subscription.TYPE_ADMINISTRATIVE] && subscription._getCalculatedPrevious()}">
                     <div class="item la-cb-action">
                         <button class="ui icon button la-toggle-ui la-popup-tooltip la-delay" id="subscriptionTransfer-toggle"
