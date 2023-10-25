@@ -43,6 +43,9 @@
             <g:elseif test="${identifier && identifier.ns.ns == IdentifierNamespace.WIBID}">
                 <input type="text" id="value" name="value" value="${identifier?.value == IdentifierNamespace.UNKNOWN ? '' : identifier?.value}" placeholder="${message(code: 'identifier.wibid.info')}" pattern="^(WIB)?\d{1,4}" required/>
             </g:elseif>
+            <g:elseif test="${identifier && identifier.ns.ns == IdentifierNamespace.EZB_ORG_ID}">
+                <input type="text" id="value" name="value" value="${identifier?.value == IdentifierNamespace.UNKNOWN ? '' : identifier?.value}" placeholder="${message(code: 'identifier.ezb.info')}" pattern="${IdentifierNamespace.findByNs(IdentifierNamespace.EZB_ORG_ID).validationRegex}" required/>
+            </g:elseif>
             <g:else>
                 <input type="text" id="value" name="value" value="${identifier?.value == IdentifierNamespace.UNKNOWN ? '' : identifier?.value}" required/>
             </g:else>
@@ -64,6 +67,11 @@
         }
         else return true;
     };
+    $.fn.form.settings.rules.ezbRegex = function() {
+        if($("#namespace").val() === '${IdentifierNamespace.findByNs(IdentifierNamespace.EZB_ORG_ID).id}' || $("#namespace").val() === '${IdentifierNamespace.findByNs(IdentifierNamespace.EZB_ORG_ID).getI10n('name')}')
+            return $("#value").val().match(/${IdentifierNamespace.findByNs(IdentifierNamespace.EZB_ORG_ID).validationRegex}/);
+        else return true;
+    };
 
     $('#identifier').form({
         on: 'blur',
@@ -75,6 +83,15 @@
                     {
                         type: 'wibidRegex',
                         prompt: '<g:message code="validation.wibidMatch"/>'
+                    }
+                ]
+            }
+            ezb_regex: {
+                identifier: 'value',
+                rules: [
+                    {
+                        type: 'ezbRegex',
+                        prompt: '<g:message code="validation.ezbMatch"/>'
                     }
                 ]
             }
