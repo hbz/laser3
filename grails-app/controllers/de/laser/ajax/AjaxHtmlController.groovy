@@ -343,7 +343,7 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def loadFilterList() {
         Map<String, Object> result = subscriptionControllerService.loadFilterList(params)
-        result.noMultiple = params.noMultiple == 'true'
+        result.multiple = params.multiple ? Boolean.valueOf(params.multiple) : true
         render template: "/templates/filter/statsFilter", model: result
     }
 

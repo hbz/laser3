@@ -7,7 +7,17 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5342    23.10.2023  rc-3.2  3.2.6       Andreas Bug         Teilnehmer konnten nicht mit Paketen hinzugefügt werden
+
+5341    23.10.2023  rc-3.2  3.2.6       Moe     Bug         Setzen von dauerhafte Titel im Hintergrund laufen lassen
+
+5340    23.10.2023  dev     3.3         Andreas Feature     Filterung der auswählbaren Report-Typen
+
+5338    20.10.2023  rc-3.2  3.2.6       Andreas Bug         Umlagerung des Paketentknüpfungsprozesses
+
 5335    20.10.2023  dev     3.3         David   Feature     Verknüpfungen zwischen Objekten in Kontextleiste aufnehmen
+
+5331    20.10.2023  rc-3.2  3.2.6       Andreas Bug         Statistik kann zur Gesamttitelliste exportiert werden
 
 5333    19.10.2023  rc-3.2  3.2.6       Andreas Bug         Speicherleck bei Abfragen behoben
 

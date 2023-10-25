@@ -432,7 +432,7 @@
                                                                                          class="plus small icon"></i>
                             </button>
                             <laser:render template="/templates/documents/modal"
-                                          model="${[newModalId: "modalCreateDocumentOffer" + s.id, ownobj: s, owntp: 'subscription']}"/>
+                                          model="${[newModalId: "modalCreateDocumentOffer" + s.id, ownobj: s, owntp: 'subscription', selectedDocType: RDStore.DOC_TYPE_OFFER.value]}"/>
 
                             <%
                                 Set<DocContext> documentSet = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType', [subscription: s, docType: RDStore.DOC_TYPE_OFFER])
@@ -553,10 +553,11 @@
                                 <g:if test="${finishProcess >= 0}">
                                     <g:link controller="survey" action="surveyEvaluation"
                                             id="${surveyConfig.surveyInfo.id}">
-                                        <g:formatNumber number="${finishProcess}"
+                                        ${finish}/${total}
+                                        (<g:formatNumber number="${finishProcess}"
                                                         type="number"
                                                         maxFractionDigits="2"
-                                                        minFractionDigits="2"/>%
+                                                        minFractionDigits="2"/>%)
                                     </g:link>
                                 </g:if>
                             </td>
@@ -631,7 +632,7 @@
                                                                                            class="plus small icon"></i>
                             </button>
                             <laser:render template="/templates/documents/modal"
-                                          model="${[newModalId: "modalCreateDocumentRenewal" + s.id, ownobj: s, owntp: 'subscription']}"/>
+                                          model="${[newModalId: "modalCreateDocumentRenewal" + s.id, ownobj: s, owntp: 'subscription', selectedDocType: RDStore.DOC_TYPE_RENEWAL.value]}"/>
 
                             <%
                                 Set<DocContext> documentSet2 = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType', [subscription: s, docType: RDStore.DOC_TYPE_RENEWAL])

@@ -413,7 +413,7 @@
                 data: {
                     reportType: reportType,
                     platforms: platforms,
-                    noMultiple: true,
+                    multiple: false,
                     subscription: ${subscription.id},
                 }
             }).done(function(response) {
