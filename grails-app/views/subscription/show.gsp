@@ -9,8 +9,8 @@
 
         <p>sub.subscriber: ${subscription.subscriber}</p>
 
-        <p>sub.instanceOf: <g:if test="${subscription.instanceOf}"><g:link action="show"
-                                                                           id="${subscription.instanceOf.id}">${subscription.instanceOf.name}</g:link>
+        <p>sub.instanceOf: <g:if test="${subscription.instanceOf}">
+            <g:link action="show" id="${subscription.instanceOf.id}">${subscription.instanceOf.name}</g:link>
             ${subscription.instanceOf.getAllocationTerm()}
         </g:if></p>
 
@@ -41,6 +41,10 @@
 <ui:objectStatus object="${subscription}" status="${subscription.status}"/>
 <laser:render template="message"/>
 <laser:render template="/templates/meta/identifier" model="${[object: subscription, editable: editable]}"/>
+
+<g:if test="${subscription._getCalculatedType() in [Subscription.TYPE_CONSORTIAL, Subscription.TYPE_ADMINISTRATIVE] && subscription._getCalculatedPrevious()}">
+    <laser:render template="${customerTypeService.getCustomerTypeDependingView('subscriptionTransferInfo')}" model="${[calculatedPreviousList: subscription._getCalculatedPrevious()]}" />
+</g:if>
 
 <ui:messages data="${flash}"/>
 <laser:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" />

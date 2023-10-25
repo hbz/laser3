@@ -138,10 +138,10 @@ class ContextBarTagLib {
 
         out << '<div class="item la-cb-action">'
         if (attrs.id) {
-            out << '<button id="' + attrs.id + '" class="ui icon button ' + status + ' toggle la-toggle-advanced la-popup-tooltip la-delay" '
+            out << '<button id="' + attrs.id + '" class="ui icon button ' + status + ' toggle la-toggle-green-red la-popup-tooltip la-delay" '
             // toggle -> JS
         } else {
-            out << '<button class="ui icon button ' + status + ' toggle la-toggle-advanced la-popup-tooltip la-delay" ' // toggle -> JS
+            out << '<button class="ui icon button ' + status + ' toggle la-toggle-green-red la-popup-tooltip la-delay" ' // toggle -> JS
         }
         if (attrs.reload) {
             out <<      'data-reload="' + attrs.reload + '" '

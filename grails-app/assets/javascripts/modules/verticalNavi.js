@@ -69,8 +69,6 @@ verticalNavi = {
                 .sidebar('attach events', '.la-menue-button')
                 .sidebar('setting', 'dimPage', false);
             }
-
-
         });
 
         $('#mainMenue.ui.accordion').accordion();
