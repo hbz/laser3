@@ -5,6 +5,10 @@
 
 <div class="ui orange segment" id="subscriptionTransfer-content">
 
+    TODO ..
+
+    <g:if test="${false}">
+
     <g:each in="${calculatedPreviousList}" var="s">
         <g:set var="editable" value="${s.isEditableBy(contextService.getUser())}" />%{-- TODO --}%
 
@@ -458,6 +462,8 @@
         </div>
 
     </g:each>
+
+    </g:if>
 </div>
 
 <style>
