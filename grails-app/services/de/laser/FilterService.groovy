@@ -1931,7 +1931,10 @@ class FilterService {
                     params.pkgIds = connection.createArrayOf('bigint', pkgIds.toArray())
                     whereClauses << "tipp_pkg_fk = any(:pkgIds)"
                 }
-                whereClauses << subFilter
+
+                if(subFilter) {
+                    whereClauses << subFilter
+                }
                 if(configMap.asAt && configMap.asAt.length() > 0) {
                     Date dateFilter = DateUtils.getLocalizedSDF_noTime().parse(configMap.asAt)
                     params.asAt = new Timestamp(dateFilter.getTime())

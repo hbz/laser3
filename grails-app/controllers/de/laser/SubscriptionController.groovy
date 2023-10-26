@@ -1610,7 +1610,12 @@ class SubscriptionController {
                 File f = new File(dir+'/'+filename)
                 if(!f.exists()) {
                     FileOutputStream out = new FileOutputStream(f)
-                    Map<String, List> tableData = exportService.generateTitleExportKBART(queryMap, IssueEntitlement.class.name)
+                    String domainClName = IssueEntitlement.class.name
+                    if(params.tab == 'allTipps') {
+                        queryMap.remove('sub')
+                        domainClName = TitleInstancePackagePlatform.class.name
+                    }
+                    Map<String, List> tableData = exportService.generateTitleExportKBART(queryMap, domainClName)
                     out.withWriter { Writer writer ->
                         writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
                     }
@@ -1663,7 +1668,7 @@ class SubscriptionController {
                         [org: ctrlResult.result.subscriber, tippStatus: RDStore.TIPP_STATUS_CURRENT, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS]])
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                Map<String, List> export = exportService.generateTitleExportCustom(queryMap, IssueEntitlement.class.name, [], null, perpetuallyPurchasedTitleURLs)
+                Map<String, List> export = exportService.generateTitleExportCustom(queryMap, TitleInstancePackagePlatform.class.name, [], null, perpetuallyPurchasedTitleURLs)
                 Map sheetData = [:]
 
                 export.titles << message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs.export')
