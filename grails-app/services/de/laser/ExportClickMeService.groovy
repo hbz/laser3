@@ -3650,7 +3650,10 @@ class ExportClickMeService {
                         period = participantResult.resultOfParticipation.costItem.startDate ? sdf.format(participantResult.resultOfParticipation.costItem.startDate) : " "
                         period = participantResult.resultOfParticipation.costItem.endDate ? period + " - " + sdf.format(participantResult.resultOfParticipation.costItem.endDate) : " "
                     }
-
+                    if(onlySubscription && participantResult.costItem) {
+                        period = participantResult.costItem.startDate ? sdf.format(participantResult.costItem.startDate) : " "
+                        period = participantResult.costItem.endDate ? period + " - " + sdf.format(participantResult.costItem.endDate) : " "
+                    }
                     row.add(createTableCell(format, period))
                 }
                 else if (fieldKey == 'survey.ownerComment') {
