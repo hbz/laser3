@@ -1,4 +1,4 @@
-<%@ page import="de.laser.GenericOIDService; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.UserSetting; de.laser.auth.User; de.laser.auth.Role; de.laser.Org" %>
+<%@ page import="de.laser.Subscription; de.laser.GenericOIDService; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.UserSetting; de.laser.auth.User; de.laser.auth.Role; de.laser.Org" %>
 <laser:serviceInjection />
 
 <g:set var="visibilityContextOrgMenu" value="la-show-context-orgMenu" />
@@ -40,18 +40,12 @@
                 <g:if test="${subscription.instanceOf && contextService.getOrg().id == subscription.getConsortia()?.id}">
                     <ui:cbItemInfo display="Sie sehen eine Kindlizenz" icon="child" color="orange" />
                 </g:if>
-%{--                <g:if test="${navPrevSubscription || navNextSubscription}">--}%
-%{--                    <ui:cbItemInfo display="Es existieren Vorgänger/Nachfolger zu dieser Lizenz" icon="arrows exchange" color="blue" />--}%
-%{--                </g:if>--}%
             </g:if>
 
             <g:if test="${controllerName == 'license' && license}">
                 <g:if test="${license.instanceOf && contextService.getOrg().id == license.getLicensingConsortium()?.id}">
                     <ui:cbItemInfo display="Sie sehen einen Einrichtungsvertrag" icon="child" color="green" />
                 </g:if>
-%{--                <g:if test="${navPrevLicense || navNextLicense}">--}%
-%{--                    <ui:cbItemInfo display="Es existieren Vorgänger/Nachfolger zu diesem Vertrag" icon="arrows exchange" color="blue" />--}%
-%{--                </g:if>--}%
             </g:if>
 
             %{-- content indicator --}%
@@ -70,18 +64,31 @@
 
             <g:if test="${(controllerName=='subscription' && actionName=='show') || (controllerName=='dev' && actionName=='frontend')}">
                 <div class="item la-cb-action">
-                    <button class="ui icon button la-help-panel-button"><i class="question circle icon"></i></button>
+                    <button class="ui icon button la-toggle-ui" id="help-toggle"><i class="question circle icon"></i></button>
                 </div>
+            </g:if>
+
+            %{-- subscription transfer  --}%
+
+            <g:if test="${controllerName=='subscription' && (editable || contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ))}">
+                <g:if test="${subscription && subscription._getCalculatedType() in [Subscription.TYPE_CONSORTIAL, Subscription.TYPE_ADMINISTRATIVE] && subscription._getCalculatedPrevious()}">
+                    <div class="item la-cb-action">
+                        <button class="ui icon button la-toggle-ui la-popup-tooltip la-delay" id="subscriptionTransfer-toggle"
+                                data-content="${message(code:'statusbar.showSubscriptionTransfer.tooltip')}" data-position="bottom left">
+                            <i class="history horizontally flipped icon"></i>
+                        </button>
+                    </div>
+                </g:if>
             </g:if>
 
             %{-- edit mode switcher  --}%
 
             <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription' || controllerName=='license') && actionName=='show' && (editable || contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))}">
                 <g:if test="${contextUser?.getSettingsValue(UserSetting.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES)?.value=='Yes'}">
-                    <ui:cbItemToggleAction status="active" icon="pencil alternate" tooltip="${message(code:'statusbar.showButtons.tooltip')}" />
+                    <ui:cbItemToggleAction id="decksaver-toggle" status="active" icon="pencil alternate" tooltip="${message(code:'statusbar.showButtons.tooltip')}" />
                 </g:if>
                 <g:else>
-                    <ui:cbItemToggleAction status="inactive" icon="pencil alternate slash" tooltip="${message(code:'statusbar.hideButtons.tooltip')}" />
+                    <ui:cbItemToggleAction id="decksaver-toggle" status="inactive" icon="pencil alternate slash" tooltip="${message(code:'statusbar.hideButtons.tooltip')}" />
                 </g:else>
             </g:if>
 
@@ -89,11 +96,11 @@
 
             <g:if test="${(params.mode)}">
                 <g:if test="${params.mode=='advanced'}">
-                    <ui:cbItemToggleAction status="active" icon="plus square" tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}"
+                    <ui:cbItemToggleAction id="advancedMode-toggle" status="active" icon="plus square" tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}"
                                                reload="${g.createLink(action: actionName, params: params + ['mode':'basic'])}" />
                 </g:if>
                 <g:else>
-                    <ui:cbItemToggleAction status="inactive" icon="plus square slash" tooltip="${message(code:'statusbar.showBasicView.tooltip')}"
+                    <ui:cbItemToggleAction id="advancedMode-toggle" status="inactive" icon="plus square slash" tooltip="${message(code:'statusbar.showBasicView.tooltip')}"
                                                reload="${g.createLink(action: actionName, params: params + ['mode':'advanced'])}" />
                 </g:else>
             </g:if>
@@ -288,14 +295,14 @@
 
     /* -- overrides -- */
 
-    .la-contextBar .la-cb-action.item .la-toggle-advanced.active {
-        background-color: #98b500 !important;
-    }
-    .la-contextBar .la-cb-action.item .la-toggle-advanced.inactive {
-        background-color: #D95F3D !important;
-    }
     .la-contextBar .la-cb-action.item .toggle .icon {
         color: #fff !important;
+    }
+    .la-contextBar .la-cb-action.item .la-toggle-green-red.active {
+        background-color: #98b500 !important;
+    }
+    .la-contextBar .la-cb-action.item .la-toggle-green-red.inactive {
+        background-color: #D95F3D !important;
     }
 </style>
 
@@ -328,33 +335,6 @@
 </style>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    JSPC.app.initLaToggle = function() {
-        let $button = $('.button.la-toggle-advanced');
-        let reload = $button.attr('data-reload');
-
-        var handler = {
-            activate: function() {
-                $icon = $(this).find('.icon');
-                if ($(this).hasClass("inactive")) {
-                    $(this).removeClass('inactive').addClass('active')
-                    $icon.removeClass("slash");
-                    if (reload) {
-                        window.location.href = reload
-                    }
-                }
-                else {
-                    $(this).removeClass('active').addClass('inactive')
-                    $icon.addClass("slash");
-                    if (reload) {
-                        window.location.href = reload
-                    }
-                }
-            }
-        };
-        $button.on('click', handler.activate);
-    };
-    JSPC.app.initLaToggle();
-
 
     JSPC.app.contextBar = {
 
@@ -400,6 +380,49 @@
 
                 $('.la-context-org, .la-advanced-view').fadeIn(150);
             }, 100);
+
+            $('.button.la-toggle-green-red').on('click', function() {
+                let $button = $(this);
+                let $icon = $button.find('.icon');
+
+                if ($button.hasClass("inactive")) {
+                    $button.removeClass('inactive').addClass('active')
+                    $icon.removeClass("slash");
+                }
+                else {
+                    $button.removeClass('active').addClass('inactive')
+                    $icon.addClass("slash");
+                }
+            });
+
+            $('#advancedMode-toggle').on('click', function() {
+                let $button = $(this);
+                let reload = $button.attr('data-reload');
+                if (reload) {
+                    window.location.href = reload
+                }
+            });
+
+            $('.button.la-toggle-ui').on('click', function() {
+                $(this).toggleClass('active');
+            });
+
+            $('#help-toggle').on('click', function() {
+                $('#help-content').flyout('toggle');
+            });
+
+            $('#subscriptionTransfer-toggle').on('click', function() {
+                let $button = $(this);
+                let $content = $('#subscriptionTransfer-content')
+                if ($button.hasClass('active')) {
+                    $content.show();
+                    let padding = 45 + $content.height() + $('main.main nav.breadcrumb').height();
+                    $('main.main').css('padding-top', padding)
+                } else {
+                    $content.hide();
+                    $('main.main').css('padding-top', 0)
+                }
+            });
         }
     }
 

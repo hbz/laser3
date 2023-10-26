@@ -1,278 +1,28 @@
+<!-- template: meta/subscriptionTransferInfo -->
 <%@ page import="de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Subscription; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.Org; de.laser.CustomerTypeService; de.laser.Doc; de.laser.survey.SurveyOrg;" %>
 
-<laser:htmlStart message="menu.my.currentSubscriptionsTransfer" serviceInjection="true"/>
+<laser:serviceInjection />
 
-<ui:breadcrumbs>
-    <ui:crumb message="menu.my.currentSubscriptionsTransfer" class="active"/>
-</ui:breadcrumbs>
+<div class="ui orange segment" id="subscriptionTransfer-content">
 
-<ui:controlButtons>
-    <ui:exportDropdown>
-        <ui:exportDropdownItem>
-            <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
-        </ui:exportDropdownItem>
-    </ui:exportDropdown>
-</ui:controlButtons>
+    TODO ..
 
-<ui:h1HeaderWithIcon message="menu.my.currentSubscriptionsTransfer" total="${num_sub_rows}" floated="true"/>
+    <g:if test="${false}">
 
-<g:if test="${params.referenceYears}">
-    <div class="ui large label la-annual-rings"><g:link action="currentSubscriptionsTransfer"
-                                                        params="${[referenceYears: (Integer.parseInt(params.referenceYears).value - 1).toString()]}"
-                                                        class="item"><i class="arrow left icon"
-                                                                        aria-hidden="true"></i></g:link><span
-            class="la-annual-rings-text">${params.referenceYears}</span><g:link action="currentSubscriptionsTransfer"
-                                                                                params="${[referenceYears: (Integer.parseInt(params.referenceYears).value + 1).toString()]}"
-                                                                                class="item"><i class="arrow right icon"
-                                                                                                aria-hidden="true"></i></g:link>
-    </div>
-</g:if>
+    <g:each in="${calculatedPreviousList}" var="s">
+        <g:set var="editable" value="${s.isEditableBy(contextService.getUser())}" />%{-- TODO --}%
 
-<ui:messages data="${flash}"/>
+        <p class="ui header">
+            ${s}
+            ,
+            ${message(code: 'subscription.referenceYear.export.label')}: ${s.referenceYear}
+        </p>
 
-<ui:filter>
-    <g:form action="${actionName}" controller="${controllerName}" method="get" class="ui small form clearing">
-        <input type="hidden" name="isSiteReloaded" value="yes"/>
+        <div class="content">
 
-        <div class="four fields">
-            <% /* 1-1 */ %>
-            <div class="field">
-                <label for="search-title">${message(code: 'default.search.text')}
-                    <span data-position="right center" class="la-popup-tooltip la-delay"
-                          data-content="${message(code: 'default.search.tooltip.subscription')}">
-                        <i class="question circle icon"></i>
-                    </span>
-                </label>
-
-                <div class="ui input">
-                    <input type="text" id="search-title" name="q"
-                           placeholder="${message(code: 'default.search.ph')}"
-                           value="${params.q}"/>
-                </div>
-            </div>
-            <% /* 1-2 */ %>
-            <div class="field">
-                <label for="identifier">${message(code: 'default.search.identifier')}
-                    <span data-position="right center" class="la-popup-tooltip la-delay"
-                          data-content="${message(code: 'default.search.tooltip.subscription.identifier')}">
-                        <i class="question circle icon"></i>
-                    </span>
-                </label>
-
-                <div class="ui input">
-                    <input type="text" id="identifier" name="identifier"
-                           placeholder="${message(code: 'default.search.identifier.ph')}"
-                           value="${params.identifier}"/>
-                </div>
-            </div>
-            <% /* 1-3 */ %>
-            <div class="field">
-                <ui:datepicker label="default.valid_on.label" id="validOn" name="validOn"
-                               placeholder="filter.placeholder" value="${validOn}"/>
-            </div>
-            <% /* 1-4 */ %>
-            <div class="field">
-                <label>${message(code: 'menu.my.providers')}</label>
-                <g:select class="ui dropdown search" name="provider"
-                          from="${providers}"
-                          optionKey="id"
-                          optionValue="name"
-                          value="${params.provider}"
-                          noSelection="${['': message(code: 'default.select.choose.label')]}"/>
-            </div>
-        </div>
-
-        <div class="four fields">
-
-            <% /* 2-1 and 2-2 */ %>
-            <laser:render template="/templates/properties/genericFilter"
-                          model="[propList: propList, label: message(code: 'subscription.property.search')]"/>
-            <% /* 2-3 */ %>
-            <div class="field">
-                <label for="form"><g:message code="subscription.form.label"/></label>
-                <select id="form" name="form" multiple="" class="ui search selection fluid dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
-
-                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}" var="form">
-                        <option <%=(params.list('form').contains(form.id.toString())) ? 'selected="selected"' : ''%>
-                                value="${form.id}">
-                            ${form.getI10n('value')}
-                        </option>
-                    </g:each>
-                </select>
-            </div>
-            <% /* 2-4 */ %>
-            <div class="field">
-                <label for="resource"><g:message code="subscription.resource.label"/></label>
-                <select id="resource" name="resource" multiple="" class="ui search selection fluid dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
-
-                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"
-                            var="resource">
-                        <option <%=(params.list('resource').contains(resource.id.toString())) ? 'selected="selected"' : ''%>
-                                value="${resource.id}">
-                            ${resource.getI10n('value')}
-                        </option>
-                    </g:each>
-                </select>
-            </div>
-
-        </div>
-
-        <div class="four fields">
-            <% /* 3-1 */ %>
-            <div class="field">
-                <label for="subKinds">${message(code: 'myinst.currentSubscriptions.subscription_kind')}</label>
-                <select id="subKinds" name="subKinds" multiple="" class="ui search selection fluid dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
-
-                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)}" var="subKind">
-                        <option <%=(params.list('subKinds').contains(subKind.id.toString())) ? 'selected="selected"' : ''%>
-                                value="${subKind.id}">
-                            ${subKind.getI10n('value')}
-                        </option>
-                    </g:each>
-                </select>
-
-            </div>
-            <% /* 3-2 */ %>
-            <div class="field">
-                <label>${message(code: 'subscription.isPublicForApi.label')}</label>
-                <ui:select class="ui fluid dropdown" name="isPublicForApi"
-                           from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
-                           optionKey="id"
-                           optionValue="value"
-                           value="${params.isPublicForApi}"
-                           noSelection="${['': message(code: 'default.select.choose.label')]}"/>
-            </div>
-            <% /* 3-3 */ %>
-            <div class="field">
-                <label>${message(code: 'subscription.hasPerpetualAccess.label')}</label>
-                <ui:select class="ui fluid dropdown" name="hasPerpetualAccess"
-                           from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
-                           optionKey="id"
-                           optionValue="value"
-                           value="${params.hasPerpetualAccess}"
-                           noSelection="${['': message(code: 'default.select.choose.label')]}"/>
-            </div>
-            <% /* 3-4 */ %>
-            <div class="field">
-                <label>${message(code: 'subscription.hasPublishComponent.label')}</label>
-                <ui:select class="ui fluid dropdown" name="hasPublishComponent"
-                           from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
-                           optionKey="id"
-                           optionValue="value"
-                           value="${params.hasPublishComponent}"
-                           noSelection="${['': message(code: 'default.select.choose.label')]}"/>
-            </div>
-        </div>
-
-        <div class="four fields">
-            <div class="field">
-                <label>${message(code: 'subscription.holdingSelection.label')}</label>
-                <select id="holdingSelection" name="holdingSelection" multiple=""
-                        class="ui search selection fluid dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
-
-                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}"
-                            var="holdingSelection">
-                        <option <%=(params.list('holdingSelection').contains(holdingSelection.id.toString())) ? 'selected="selected"' : ''%>
-                                value="${holdingSelection.id}">
-                            ${holdingSelection.getI10n('value')}
-                        </option>
-                    </g:each>
-                </select>
-            </div>
-
-            <div class="field">
-                <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
-
-                <div class="inline fields la-filter-inline">
-                    <div class="inline field">
-                        <div class="ui checkbox">
-                            <label for="checkSubRunTimeMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.multiYear')}</label>
-                            <input id="checkSubRunTimeMultiYear" name="subRunTimeMultiYear" type="checkbox"
-                                   <g:if test="${params.subRunTimeMultiYear}">checked=""</g:if>
-                                   tabindex="0">
-                        </div>
-                    </div>
-
-                    <div class="inline field">
-                        <div class="ui checkbox">
-                            <label for="checkSubRunTimeNoMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.NoMultiYear')}</label>
-                            <input id="checkSubRunTimeNoMultiYear" name="subRunTime" type="checkbox"
-                                   <g:if test="${params.subRunTime}">checked=""</g:if>
-                                   tabindex="0">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <% /* 4-2 */ %>
-        <%-- TODO [ticket=2276] provisoric, name check is in order to prevent id mismatch --%>
-            <g:if test="${contextService.getOrg().isCustomerType_Inst_Pro()}">
-                <div class="field">
-                    <fieldset id="subscritionType">
-                        <label>${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
-
-                        <div class="inline fields la-filter-inline">
-                            <%
-                                List subTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE) - RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE
-                            %>
-                            <g:each in="${subTypes}" var="subType">
-                                <div class="inline field">
-                                    <div class="ui checkbox">
-                                        <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
-                                        <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox"
-                                               value="${subType.id}"
-                                            <g:if test="${params.list('subTypes').contains(subType.id.toString())}">checked=""</g:if>
-                                               tabindex="0">
-                                    </div>
-                                </div>
-                            </g:each>
-                        </div>
-                    </fieldset>
-                </div>
-            </g:if>
-            <g:else>
-                <div class="field"></div>
-            </g:else>
-
-            <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
-                <div class="field">
-                    <fieldset>
-                        <legend id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</legend>
-
-                        <g:select from="${allConsortia}" id="consortial" class="ui fluid search selection dropdown"
-                                  optionKey="${{ Org.class.name + ':' + it.id }}"
-                                  optionValue="${{ it.getName() }}"
-                                  name="consortia"
-                                  noSelection="${['': message(code: 'default.select.choose.label')]}"
-                                  value="${params.consortia}"/>
-                    </fieldset>
-                </div>
-            </g:if>
-            <div class="field la-field-right-aligned">
-                <a href="${createLink(controller: controllerName, action: actionName, params: [id: params.id, resetFilter: true, tab: params.tab])}"
-                   class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-                <input type="submit" class="ui primary button" value="${message(code: 'default.button.filter.label')}">
-            </div>
-
-        </div>
-
-    </g:form>
-</ui:filter>
-
-<div class="subscription-results subscription-results la-clear-before">
-    <g:if test="${subscriptions}">
-    %{--<div class="ui very long scrolling container">
-        <table class="ui stuck unstackable celled sortable table">--}%
-        <div class="">
             <table class="ui compact monitor stackable celled sortable table la-table la-js-responsive-table">
                 <thead>
                 <tr>
-%{--                    <th scope="col" rowspan="3" class="center aligned">
-                        ${message(code: 'sidewide.number')}
-                    </th>--}%
                     <g:sortableColumn scope="col" rowspan="3" params="${params}" property="providerAgency"
                                       title="${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}"/>
 
@@ -376,11 +126,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <g:each in="${subscriptions}" var="s" status="i">
                     <tr>
-%{--                        <td class="center aligned">
-                            ${(params.int('offset') ?: 0) + i + 1}
-                        </td>--}%
                         <td>
                         <%-- as of ERMS-584, these queries have to be deployed onto server side to make them sortable --%>
                             <g:each in="${s.providers}" var="org">
@@ -432,7 +178,7 @@
                                                                                          class="plus small icon"></i>
                             </button>
                             <laser:render template="/templates/documents/modal"
-                                          model="${[newModalId: "modalCreateDocumentOffer" + s.id, ownobj: s, owntp: 'subscription', selectedDocType: RDStore.DOC_TYPE_OFFER.value]}"/>
+                                          model="${[newModalId: "modalCreateDocumentOffer" + s.id, ownobj: s, owntp: 'subscription']}"/>
 
                             <%
                                 Set<DocContext> documentSet = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType', [subscription: s, docType: RDStore.DOC_TYPE_OFFER])
@@ -454,9 +200,9 @@
                                                 <g:else>
                                                     ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
                                                 </g:else>
-                                               %{-- <g:if test="${docctx.getDocType()}">
-                                                    (${docctx.getDocType().getI10n("value")})
-                                                </g:if>--}%
+                                            %{-- <g:if test="${docctx.getDocType()}">
+                                                 (${docctx.getDocType().getI10n("value")})
+                                             </g:if>--}%
 
                                             </div>
 
@@ -553,11 +299,10 @@
                                 <g:if test="${finishProcess >= 0}">
                                     <g:link controller="survey" action="surveyEvaluation"
                                             id="${surveyConfig.surveyInfo.id}">
-                                        ${finish}/${total}
-                                        (<g:formatNumber number="${finishProcess}"
+                                        <g:formatNumber number="${finishProcess}"
                                                         type="number"
                                                         maxFractionDigits="2"
-                                                        minFractionDigits="2"/>%)
+                                                        minFractionDigits="2"/>%
                                     </g:link>
                                 </g:if>
                             </td>
@@ -600,16 +345,16 @@
                                 <laser:script file="${this.getGroovyPageFileName()}">
                                     $('body #discountScale').editable('destroy').editable({
                                         tpl: '<select class="ui dropdown"></select>'
-                                            }).on('shown', function() {
-                                            r2d2.initDynamicUiStuff('body');
+                                                        }).on('shown', function() {
+                                                        r2d2.initDynamicUiStuff('body');
 
-                                            $('.ui.dropdown')
-                                                .dropdown({
-                                                clearable: true
-                                            })
-                                            ;
-                                            }).on('hidden', function() {
-                                            });
+                                                        $('.ui.dropdown')
+                                                            .dropdown({
+                                                            clearable: true
+                                                        })
+                                                        ;
+                                                        }).on('hidden', function() {
+                                                        });
                                 </laser:script>
                             </g:if>
 
@@ -632,7 +377,7 @@
                                                                                            class="plus small icon"></i>
                             </button>
                             <laser:render template="/templates/documents/modal"
-                                          model="${[newModalId: "modalCreateDocumentRenewal" + s.id, ownobj: s, owntp: 'subscription', selectedDocType: RDStore.DOC_TYPE_RENEWAL.value]}"/>
+                                          model="${[newModalId: "modalCreateDocumentRenewal" + s.id, ownobj: s, owntp: 'subscription']}"/>
 
                             <%
                                 Set<DocContext> documentSet2 = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType', [subscription: s, docType: RDStore.DOC_TYPE_RENEWAL])
@@ -654,9 +399,9 @@
                                                 <g:else>
                                                     ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
                                                 </g:else>
-                                               %{-- <g:if test="${docctx.getDocType()}">
-                                                    (${docctx.getDocType().getI10n("value")})
-                                                </g:if>--}%
+                                            %{-- <g:if test="${docctx.getDocType()}">
+                                                 (${docctx.getDocType().getI10n("value")})
+                                             </g:if>--}%
                                             </div>
 
                                             <div class="right aligned five wide column la-column-left-lessPadding la-border-left">
@@ -711,28 +456,22 @@
                             <ui:xEditableBoolean owner="${s}" field="participantTransferWithSurvey"/>
                         </td>
                     </tr>
-                </g:each>
                 </tbody>
             </table>
-        </div>
-    </g:if>
-    <g:else>
-    %{-- <g:if test="${filterSet}">
-         <br/><strong><g:message code="filter.result.empty.object"
-                                 args="${[message(code: "subscription.plural")]}"/></strong>
-     </g:if>
-     <g:else>--}%
-        <br/><strong><g:message code="result.empty.object"
-                                args="${[message(code: "subscription.plural")]}"/></strong>
-    %{--</g:else>--}%
-    </g:else>
 
+        </div>
+
+    </g:each>
+
+    </g:if>
 </div>
 
-<g:if test="${subscriptions}">
-    <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}" max="${max}" total="${num_sub_rows}"/>
-</g:if>
-
-<laser:render template="export/individuallyExportModalSubsTransfer" model="[modalID: 'individuallyExportModal']"/>
-
-<laser:htmlEnd/>
+<style>
+    #subscriptionTransfer-content {
+        position: fixed !important;
+        top: 100px;
+        z-index: 100;
+        display: none;
+    }
+</style>
+<!-- template: meta/subscriptionTransferInfo -->
