@@ -9,8 +9,7 @@
         <g:set var="editable" value="${s.isEditableBy(contextService.getUser())}" />%{-- TODO --}%
 
         <p class="ui header">
-            ${s}
-            ,
+            ${s},
             ${message(code: 'subscription.referenceYear.export.label')}: ${s.referenceYear ?: 'ohne'}
         </p>
 
@@ -82,19 +81,19 @@
                                 <g:link controller="organisation" action="show" id="${org.id}">
                                     ${fieldValue(bean: org, field: "name")}
                                     <g:if test="${org.sortname}">
-                                        <br/>
-                                        (${fieldValue(bean: org, field: "sortname")})
+                                        <br/> (${fieldValue(bean: org, field: "sortname")})
                                     </g:if>
-                                </g:link><br/>
+                                </g:link>
+                                <br/>
                             </g:each>
                             <g:each in="${s.agencies}" var="org">
                                 <g:link controller="organisation" action="show" id="${org.id}">
                                     ${fieldValue(bean: org, field: "name")}
                                     <g:if test="${org.sortname}">
-                                        <br/>
-                                        (${fieldValue(bean: org, field: "sortname")})
+                                        <br/> (${fieldValue(bean: org, field: "sortname")})
                                     </g:if> (${message(code: 'default.agency.label')})
-                                </g:link><br/>
+                                </g:link>
+                                <br/>
                             </g:each>
                         </td>
                         <td>
@@ -118,18 +117,11 @@
                             <g:formatDate formatName="default.date.format.notime" date="${s.manualCancellationDate}"/>
                         </td>
                         <td class="${s.offerRequested ? 'positive' : 'negative'}">
-                            <ui:xEditableBoolean owner="${s}" field="offerRequested"/>
+                            ${s.offerRequested ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
                             <br/>
-                            <ui:xEditable owner="${s}" field="offerRequestedDate" type="date"/>
+                            <g:formatDate format="default.date.format.notime" date="${s.offerRequestedDate}"/>
                         </td>
                         <td>
-                            <button type="button" class="ui icon small button blue la-modern-button" data-ui="modal"
-                                    data-href="${"#modalCreateDocumentOffer" + s.id}"><i aria-hidden="true"
-                                                                                         class="plus small icon"></i>
-                            </button>
-                            <laser:render template="/templates/documents/modal"
-                                          model="${[newModalId: "modalCreateDocumentOffer" + s.id, ownobj: s, owntp: 'subscription']}"/>
-
                             <%
                                 Set<DocContext> documentSet = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType', [subscription: s, docType: RDStore.DOC_TYPE_OFFER])
                                 documentSet = documentSet.sort { it.owner?.title }
@@ -151,68 +143,26 @@
                                             %{-- <g:if test="${docctx.getDocType()}">
                                                  (${docctx.getDocType().getI10n("value")})
                                              </g:if>--}%
-
                                             </div>
 
                                             <div class="right aligned five wide column la-column-left-lessPadding la-border-left">
-
-                                                <g:if test="${!(editable)}">
-                                                <%-- 1 --%>
-                                                    <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue tiny button la-modern-button la-js-dont-hide-button" target="_blank">
-                                                        <i class="download small icon"></i>
-                                                    </g:link>
-                                                </g:if>
-                                                <g:else>
-                                                    <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
-                                                    <%-- 1 --%>
-                                                        <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                                class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
-                                                                target="_blank"><i class="download small icon"></i></g:link>
-
-                                                    <%-- 2 --%>
-                                                        <laser:render template="/templates/documents/modal"
-                                                                      model="[ownobj: s, owntp: 'subscription', docctx: docctx, doc: docctx.owner]"/>
-                                                        <button type="button"
-                                                                class="ui icon blue tiny button la-modern-button"
-                                                                data-ui="modal"
-                                                                data-href="#modalEditDocument_${docctx.id}"
-                                                                aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                                            <i class="pencil small icon"></i>
-                                                        </button>
-                                                    </g:if>
-
-                                                <%-- 4 --%>
-                                                    <g:if test="${docctx.owner.owner?.id == contextOrg.id && !docctx.isShared}">
-                                                        <g:link controller="${ajaxCallController ?: controllerName}"
-                                                                action="deleteDocuments"
-                                                                class="ui icon negative tiny button la-modern-button js-open-confirm-modal"
-                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
-                                                                data-confirm-term-how="delete"
-                                                                params='[instanceId: "${s.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
-                                                                role="button"
-                                                                aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                            <i class="trash alternate outline small icon"></i>
-                                                        </g:link>
-                                                    </g:if>
-                                                </g:else>%{-- (editable || editable2) --}%
+                                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue tiny button la-modern-button la-js-dont-hide-button" target="_blank">
+                                                    <i class="download small icon"></i>
+                                                </g:link>
                                             </div>
                                         </div>
                                     </div>
                                 </g:if>
                             </g:each>
                             <div class="ui small feed content">
-                                <div class="ui grid summary">
-                                    <div class="sixteen wide column">
-                                        <ui:xEditable owner="${s}" field="offerNote"/>
-                                    </div>
-                                </div>
+                                ${s.offerNote}
                             </div>
                         </td>
                         <td class="${s.offerAccepted ? 'positive' : 'negative'}">
-                            <ui:xEditableBoolean owner="${s}" field="offerAccepted"/>
+                            ${s.offerAccepted ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
                         </td>
                         <td>
-                            <ui:xEditable owner="${s}" field="priceIncreaseInfo" type="textarea"/>
+                            ${s.priceIncreaseInfo}
                         </td>
 
                         <g:set var="surveyConfig" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(s, true)}"/>
@@ -240,16 +190,14 @@
                             <td class="${finish == total ? 'positive' : ''}">
                                 <g:if test="${finishProcess >= 0}">
                                     <g:link controller="survey" action="surveyEvaluation" id="${surveyConfig.surveyInfo.id}">
-                                        <g:formatNumber number="${finishProcess}"
-                                                        type="number"
-                                                        maxFractionDigits="2"
-                                                        minFractionDigits="2"/>%
+                                        <g:formatNumber number="${finishProcess}" type="number" maxFractionDigits="2" minFractionDigits="2"/>%
                                     </g:link>
                                 </g:if>
                             </td>
-                        </g:if><g:else>
-                        <td></td>
-                    </g:else>
+                        </g:if>
+                        <g:else>
+                            <td></td>
+                        </g:else>
 
                         <g:set var="countOrgsWithTermination" value="${0}"/>
                         <g:if test="${surveyConfig && surveyConfig.surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED, RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED]}">
@@ -265,59 +213,29 @@
                         </td>
                         <td>
                             <g:if test="${s.discountScales.size() > 0}">
-                                <a href="#" id="discountScale" class="xEditableManyToOne editable editable-click"
-                                   data-onblur="ignore" data-pk="${s.class.name}:${s.id}" data-confirm-term-how="ok"
-                                   data-type="select" data-name="discountScale"
-                                   data-source="/ajaxJson/getSubscriptionDiscountScaleList?sub=${s.id}"
-                                   data-url="/ajax/editableSetValue"
-                                   data-emptytext="${message(code: 'default.button.edit.label')}">
-
-                                    <g:if test="${s.discountScale}">
-                                        ${s.discountScale.name} : ${s.discountScale.discount}
-                                        <g:if test="${s.discountScale.note}">
-                                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${s.discountScale.note}">
-                                                <i class="info circle icon blue"></i>
-                                            </span>
-                                        </g:if>
+                                <g:if test="${s.discountScale}">
+                                    ${s.discountScale.name} : ${s.discountScale.discount}
+                                    <g:if test="${s.discountScale.note}">
+                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${s.discountScale.note}">
+                                            <i class="info circle icon blue"></i>
+                                        </span>
                                     </g:if>
-                                </a>
-                                <laser:script file="${this.getGroovyPageFileName()}">
-                                    $('body #discountScale').editable('destroy').editable({
-                                        tpl: '<select class="ui dropdown"></select>'
-                                                        }).on('shown', function() {
-                                                        r2d2.initDynamicUiStuff('body');
-
-                                                        $('.ui.dropdown')
-                                                            .dropdown({
-                                                            clearable: true
-                                                        })
-                                                        ;
-                                                        }).on('hidden', function() {
-                                                        });
-                                </laser:script>
+                                </g:if>
                             </g:if>
-
                         </td>
 
                         <td class="${s.reminderSent ? 'positive' : 'negative'}">
-                            <ui:xEditableBoolean owner="${s}" field="reminderSent"/>
+                            ${s.reminderSent ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
                             <br/>
-                            <ui:xEditable owner="${s}" field="reminderSentDate" type="date"/>
+                            <g:formatDate format="default.date.format.notime" date="${s.reminderSentDate}"/>
                         </td>
 
                         <td class="${s.renewalSent ? 'positive' : 'negative'}">
-                            <ui:xEditableBoolean owner="${s}" field="renewalSent"/>
+                            ${s.renewalSent ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
                             <br/>
-                            <ui:xEditable owner="${s}" field="renewalSentDate" type="date"/>
+                            <g:formatDate format="default.date.format.notime" date="${s.renewalSentDate}"/>
                         </td>
                         <td>
-                            <button type="button" class="ui icon tiny button blue la-modern-button" data-ui="modal"
-                                    data-href="${"#modalCreateDocumentRenewal" + s.id}"><i aria-hidden="true"
-                                                                                           class="plus small icon"></i>
-                            </button>
-                            <laser:render template="/templates/documents/modal"
-                                          model="${[newModalId: "modalCreateDocumentRenewal" + s.id, ownobj: s, owntp: 'subscription']}"/>
-
                             <%
                                 Set<DocContext> documentSet2 = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType', [subscription: s, docType: RDStore.DOC_TYPE_RENEWAL])
                                 documentSet2 = documentSet2.sort { it.owner?.title }
@@ -342,47 +260,9 @@
                                             </div>
 
                                             <div class="right aligned five wide column la-column-left-lessPadding la-border-left">
-
-                                                <g:if test="${!(editable)}">
-                                                <%-- 1 --%>
-                                                    <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                            class="ui icon blue tiny button la-modern-button la-js-dont-hide-button" target="_blank">
-                                                        <i class="download small icon"></i>
-                                                    </g:link>
-                                                </g:if>
-                                                <g:else>
-                                                    <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
-                                                    <%-- 1 --%>
-                                                        <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                                class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
-                                                                target="_blank"><i class="download small icon"></i></g:link>
-
-                                                    <%-- 2 --%>
-                                                        <laser:render template="/templates/documents/modal"
-                                                                      model="[ownobj: s, owntp: 'subscription', docctx: docctx, doc: docctx.owner]"/>
-                                                        <button type="button"
-                                                                class="ui icon blue tiny button la-modern-button"
-                                                                data-ui="modal"
-                                                                data-href="#modalEditDocument_${docctx.id}"
-                                                                aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                                            <i class="pencil small icon"></i>
-                                                        </button>
-                                                    </g:if>
-
-                                                <%-- 4 --%>
-                                                    <g:if test="${docctx.owner.owner?.id == contextOrg.id && !docctx.isShared}">
-                                                        <g:link controller="${ajaxCallController ?: controllerName}"
-                                                                action="deleteDocuments"
-                                                                class="ui icon negative tiny button la-modern-button js-open-confirm-modal"
-                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
-                                                                data-confirm-term-how="delete"
-                                                                params='[instanceId: "${s.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
-                                                                role="button"
-                                                                aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                            <i class="trash alternate outline small icon"></i>
-                                                        </g:link>
-                                                    </g:if>
-                                                </g:else>%{-- (editable || editable2) --}%
+                                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue tiny button la-modern-button la-js-dont-hide-button" target="_blank">
+                                                    <i class="download small icon"></i>
+                                                </g:link>
                                             </div>
                                         </div>
                                     </div>
@@ -391,7 +271,7 @@
                         </td>
 
                         <td class="${s.participantTransferWithSurvey ? 'positive' : 'negative'}">
-                            <ui:xEditableBoolean owner="${s}" field="participantTransferWithSurvey"/>
+                            ${s.participantTransferWithSurvey ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
                         </td>
                     </tr>
                 </tbody>
