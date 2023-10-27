@@ -250,7 +250,7 @@
 
 <g:if test="${editable || contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
     <g:if test="${subscription._getCalculatedType() in [Subscription.TYPE_CONSORTIAL, Subscription.TYPE_ADMINISTRATIVE] && subscription._getCalculatedPrevious()}">
-        <laser:render template="${customerTypeService.getCustomerTypeDependingView('subscriptionTransferInfo')}" model="${[calculatedPreviousList: subscription._getCalculatedPrevious()]}" />
+        <laser:render template="subscriptionTransferInfo" model="${[calculatedPreviousList: subscription._getCalculatedPrevious()]}" />
     </g:if>
 </g:if>
 

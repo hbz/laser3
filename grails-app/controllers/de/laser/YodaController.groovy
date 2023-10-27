@@ -16,6 +16,7 @@ import de.laser.remote.ApiSource
 import de.laser.remote.ElasticsearchSource
 import de.laser.remote.FTControl
 import de.laser.remote.GlobalRecordSource
+import de.laser.reporting.report.ReportingCache
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
 import de.laser.stats.LaserStatsCursor
@@ -205,35 +206,43 @@ class YodaController {
         result.appContext = getApplicationContext()
 
         result.hibernateSession = sessionFactory
-
         result.ehcacheManager = cacheService.getEhcacheManager()
 
-        if (params.key) {
-            JSON entry = contextService.getSessionCache().get(params.key) as JSON
+        if (params.cmd && params.type) {
 
-            entry.prettyPrint = true
-            response.setContentType("application/json")
-            response.outputStream << entry
+            if (params.cmd == 'clearCache') {
+                if (params.type == 'session') {
+                    contextService.getSessionCache().clear()
+                }
+                else if (params.type == 'ehcache' && params.cache) {
+                    cacheService.clear(cacheService.getCache(result.ehcacheManager, params.cache))
+                }
 
-            return
-        }
-        else if (params.cmd?.equals('clearCache')) {
-            def cache
-            if (params.type?.equals('session')) {
-                cache = contextService.getSessionCache()
-                cache.clear()
+                params.remove('cmd')
+                params.remove('type')
+                params.remove('cache')
+
+                redirect controller: 'yoda', action: 'systemCache', params: params
+                return
             }
-            else if (params.type?.equals('ehcache')) {
-                cache = cacheService.getCache(result.ehcacheManager, params.cache)
-                cacheService.clear(cache)
+            else if (params.cmd == 'get') {
+                JSON entry
+
+                if (params.type == 'reporting' && params.token) {
+                    ReportingCache rCache = new ReportingCache(ReportingCache.CTX_GLOBAL, params.token as String)
+                    entry = rCache.get() as JSON
+                }
+                else if (params.type == 'session' && params.key) {
+                    entry = contextService.getSessionCache().get(params.key) as JSON
+                }
+                if (entry) {
+                    entry.prettyPrint = true
+                    response.setContentType("application/json")
+                    response.outputStream << entry
+
+                    return
+                }
             }
-
-            params.remove('cmd')
-            params.remove('type')
-            params.remove('cache')
-
-            redirect controller: 'yoda', action: 'systemCache', params: params
-            return
         }
 
         result
