@@ -427,13 +427,16 @@
                             <ui:xEditable owner="${s}" field="offerRequestedDate" type="date"/>
                         </td>
                         <td>
-                            <button type="button" class="ui icon tiny button blue la-modern-button"
-                                    data-ownerid="${s.id}"
-                                    data-ownerclass="${s.class.name}"
-                                    data-doctype="${RDStore.DOC_TYPE_OFFER.value}"
-                                    data-ui="modal"
-                                    data-href="#modalCreateDocument"><i aria-hidden="true" class="plus small icon"></i>
-                            </button>
+                            <g:if test="${editable}">
+                                <button type="button" class="ui icon tiny button blue la-modern-button"
+                                        data-ownerid="${s.id}"
+                                        data-ownerclass="${s.class.name}"
+                                        data-doctype="${RDStore.DOC_TYPE_OFFER.value}"
+                                        data-ui="modal"
+                                        data-href="#modalCreateDocument"><i aria-hidden="true"
+                                                                            class="plus small icon"></i>
+                                </button>
+                            </g:if>
 
                             <%
                                 Set<DocContext> documentSet = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType', [subscription: s, docType: RDStore.DOC_TYPE_OFFER])
@@ -628,13 +631,15 @@
                             <ui:xEditable owner="${s}" field="renewalSentDate" type="date"/>
                         </td>
                         <td>
-                            <button type="button" class="ui icon tiny button blue la-modern-button"
-                                    data-ownerid="${s.id}"
-                                    data-ownerclass="${s.class.name}"
-                                    data-doctype="${RDStore.DOC_TYPE_RENEWAL.value}"
-                                    data-ui="modal"
-                                    data-href="#modalCreateDocument"><i aria-hidden="true" class="plus small icon"></i>
-                            </button>
+                            <g:if test="${editable}">
+                                <button type="button" class="ui icon tiny button blue la-modern-button"
+                                        data-ownerid="${s.id}"
+                                        data-ownerclass="${s.class.name}"
+                                        data-doctype="${RDStore.DOC_TYPE_RENEWAL.value}"
+                                        data-ui="modal"
+                                        data-href="#modalCreateDocument"><i aria-hidden="true" class="plus small icon"></i>
+                                </button>
+                            </g:if>
 
                             <%
                                 Set<DocContext> documentSet2 = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType', [subscription: s, docType: RDStore.DOC_TYPE_RENEWAL])
@@ -737,9 +742,10 @@
 
 <laser:render template="export/individuallyExportModalSubsTransfer" model="[modalID: 'individuallyExportModal']"/>
 
-
-<laser:render template="/templates/documents/modal"
-              model="${[newModalId: "modalCreateDocument", owntp: 'subscription']}"/>
+<g:if test="${editable}">
+    <laser:render template="/templates/documents/modal"
+                  model="${[newModalId: "modalCreateDocument", owntp: 'subscription']}"/>
+</g:if>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.callbacks.modal.onShow.modalCreateDocument = function(trigger) {
