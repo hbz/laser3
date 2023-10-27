@@ -338,7 +338,8 @@ class BootStrapService {
                                     nsType        : line[5].trim() ?: null,
                                     urlPrefix     : line[6].trim() ?: null,
                                     isUnique      : Boolean.parseBoolean(line[7].trim()),
-                                    isHidden      : Boolean.parseBoolean(line[8].trim())
+                                    isHidden      : Boolean.parseBoolean(line[8].trim()),
+                                    validationRegex: line[9].trim() ?: null
                             ]
                             result.add(map)
                         }
