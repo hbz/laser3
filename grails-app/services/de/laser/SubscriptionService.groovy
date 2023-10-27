@@ -220,20 +220,18 @@ class SubscriptionService {
         subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
         //candidate for ugliest bugfix ever ...
 
-        println(subscriptions.size())
         if(params.sort){
             String newSort = "sub.${params.sort}"
-            if(params.sort){
+            if(params.sort == 'providerAgency'){
                 newSort = "oo.org.name"
             }
 
             subscriptions = Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where (sub.id in (:subscriptions) and oo.roleType in (:providerAgency)) or sub.id in (:subscriptions) order by " + newSort +" "+ params.order + ", oo.org.name, sub.name " , [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
             //select ooo.sub.id from OrgRole ooo where ooo.roletype in (:providerAgency) and ooo.sub != null
         }else {
-            subscriptions = Subscription.executeQuery("select oo.sub from OrgRole oo join oo.org providerAgency where oo.sub.id in (:subscriptions) and oo.roleType in (:providerAgency) order by providerAgency.name, oo.sub.name ", [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
+            subscriptions = Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where (sub.id in (:subscriptions) and oo.roleType in (:providerAgency)) or sub.id in (:subscriptions) order by oo.org.name, sub.name ", [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
         }
 
-         println("Tsst"+ [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER.id, RDStore.OR_AGENCY.id]])
         result.allSubscriptions = subscriptions
         if(!params.exportXLS)
             result.num_sub_rows = subscriptions.size()
