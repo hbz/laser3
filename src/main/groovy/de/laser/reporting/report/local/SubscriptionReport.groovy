@@ -288,8 +288,22 @@ class SubscriptionReport {
                 }
 
                 // keep all data for correct processing and only then limit
-                result.data = (result.data as List).takeRight(NUMBER_OF_TIMELINE_ELEMENTS)
-                result.dataDetails = (result.dataDetails as List).takeRight(NUMBER_OF_TIMELINE_ELEMENTS)
+
+                int timelineFromIdx = 0
+                result.data.eachWithIndex{ List entry, int idx ->
+                    if (entry[0] == id) { timelineFromIdx = idx }
+                }
+                int timelineToIdx = (timelineFromIdx + NUMBER_OF_TIMELINE_ELEMENTS)
+
+                if ((result.data.size() <= NUMBER_OF_TIMELINE_ELEMENTS) || timelineToIdx > result.data.size()) {
+                    result.data = (result.data as List).takeRight(NUMBER_OF_TIMELINE_ELEMENTS)
+                    result.dataDetails = (result.dataDetails as List).takeRight(NUMBER_OF_TIMELINE_ELEMENTS)
+                }
+                else {
+                    result.data = (result.data as List).subList(timelineFromIdx, timelineToIdx)
+                    result.dataDetails = (result.dataDetails as List).subList(timelineFromIdx, timelineToIdx)
+                }
+
             }
 
             else if (prefix == 'tipp') {
@@ -571,7 +585,7 @@ class SubscriptionReport {
         tmp = sub
         while (tmp) {
             tmp = getNext(tmp)
-            if (tmp) { result.push(tmp) }
+            if (tmp) { result.add(tmp) }
         }
         result
     }

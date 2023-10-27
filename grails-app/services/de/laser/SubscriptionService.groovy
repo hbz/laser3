@@ -107,7 +107,7 @@ class SubscriptionService {
         viableOrgs.add(contextOrg)
 
         String consortiaFilter = ''
-        if(contextOrg.isCustomerType_Consortium())
+        if(contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Support())
             consortiaFilter = 'and s.instanceOf = null'
 
         Set<Year> availableReferenceYears = Subscription.executeQuery('select s.referenceYear from OrgRole oo join oo.sub s where s.referenceYear != null and oo.org = :contextOrg '+consortiaFilter+' order by s.referenceYear', [contextOrg: contextOrg])
@@ -142,7 +142,7 @@ class SubscriptionService {
         }
 
         prf.setBenchmark('get base query')
-        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextOrg)
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, '', contextOrg)
         result.filterSet = tmpQ[2]
         List<Subscription> subscriptions
         prf.setBenchmark('fetch subscription data')
@@ -161,7 +161,7 @@ class SubscriptionService {
         /* deactivated as statistics key is submitted nowhere, as of July 16th, '20
         if (OrgSetting.get(contextOrg, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSetting){
             result.statsWibid = contextOrg.getIdentifierByType('wibid')?.value
-            result.usageMode = contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? 'package' : 'institution'
+            result.usageMode = contextService.getOrg().isCustomerType_Consortium() ? 'package' : 'institution'
         }
          */
         prf.setBenchmark('end properties')
@@ -176,12 +176,12 @@ class SubscriptionService {
     }
 
     /**
-     * ex MyInstitutionController.currentSubscriptions()
-     * Gets the current subscriptions for the given institution
+     * ex {@link MyInstitutionController#currentSubscriptions()}
+     * Gets the current subscription transfers for the given institution
      * @param params the request parameter map
      * @param contextUser the user whose settings should be considered
      * @param contextOrg the institution whose subscriptions should be accessed
-     * @return a result map containing a list of subscriptions and other site parameters
+     * @return a result map containing a list of subscription transfers and other site parameters
      */
     Map<String,Object> getMySubscriptionTransfer(GrailsParameterMap params, User contextUser, Org contextOrg) {
         Map<String,Object> result = [:]
@@ -214,7 +214,7 @@ class SubscriptionService {
         }
 
 
-        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextOrg)
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, '', contextOrg)
         result.filterSet = tmpQ[2]
         Set<Subscription> subscriptions
         subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
@@ -231,7 +231,6 @@ class SubscriptionService {
         }else {
             subscriptions = Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where (sub.id in (:subscriptions) and oo.roleType in (:providerAgency)) or sub.id in (:subscriptions) order by oo.org.name, sub.name ", [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
         }
-
         result.allSubscriptions = subscriptions
         if(!params.exportXLS)
             result.num_sub_rows = subscriptions.size()
@@ -296,7 +295,8 @@ class SubscriptionService {
         Map<Subscription,Set<License>> linkedLicenses = [:]
 
         if('withCostItems' in tableConf) {
-            query = "select new map((case when ci.owner = :org then ci else null end) as cost, subT as sub, roleT.org as org) " +
+            //database-side filtering; delivers strange duplicates: (case when ci.owner = :org then ci else null end) --> transpose into server filtering (again... beware of performance loss!)
+            query = "select new map(ci as cost, subT as sub, roleT.org as orgs) " +
                     " from CostItem ci right outer join ci.sub subT join subT.instanceOf subK " +
                     " join subK.orgRelations roleK join subT.orgRelations roleTK join subT.orgRelations roleT " +
                     " where roleK.org = :org and roleK.roleType = :rdvCons " +
@@ -337,17 +337,26 @@ class SubscriptionService {
             query += " and roleT.org.id = :member "
             qarams.put('member', params.long('member'))
         }
+        /*
+        this performance improvement is not needed any more! Keep it nonetheless for the case of ...
         else if(!params.filterSet) {
             query += " and roleT.org.id = :member "
             qarams.put('member', result.filterConsortiaMembers[0].id)
             params.member = result.filterConsortiaMembers[0].id
             result.defaultSet = true
         }
+        */
 
         if (params.identifier?.length() > 0) {
             query += " and exists (select ident from Identifier ident join ident.org ioorg " +
                     " where ioorg = roleT.org and LOWER(ident.value) like LOWER(:identifier)) "
             qarams.put('identifier', "%${params.identifier}%")
+        }
+
+        Map costFilter = params.findAll{ it -> it.toString().startsWith('iex:subCostItem.') }
+        if(costFilter) {
+            query += " and (ci.costItemElement.id in (:elems) or ci is null)" //otherwise, subscriptions without cost items will be omitted due to not-null join
+            qarams.put('elems', costFilter.keySet().collect { String selElem -> Long.parseLong(selElem.split('\\.')[2]) })
         }
 
         if (params.validOn?.size() > 0) {
@@ -464,9 +473,7 @@ class SubscriptionService {
             }
 
 
-                Set costs = CostItem.executeQuery(
-                    query + " " + orderQuery, qarams
-            )
+                Set costs = CostItem.executeQuery(query + " " + orderQuery, qarams).findAll { row -> row.cost == null || row.cost.owner.id == contextOrg.id } //very ugly and subject of performance loss; keep an eye on that!
             prf.setBenchmark('read off costs')
             //post filter; HQL cannot filter that parameter out
             result.costs = costs
@@ -488,7 +495,7 @@ join sub.orgRelations or_sub where
             result.totalCount = costs.size()
             result.totalMembers = []
             costs.each { row ->
-                result.totalMembers << row.org
+                result.totalMembers << row.orgs
             }
             if(params.fileformat) {
                 result.entries = costs
@@ -558,7 +565,7 @@ join sub.orgRelations or_sub where
             params.joinQuery = "join s.orgRelations so"
         }
 
-        if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if (contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()) {
             tmpQ = _getSubscriptionsConsortiaQuery(params)
             result.addAll(Subscription.executeQuery(queryStart + tmpQ[0], tmpQ[1]))
 
@@ -587,7 +594,7 @@ join sub.orgRelations or_sub where
         List result = []
         List tmpQ
 
-        if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if (contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()) {
             tmpQ = _getSubscriptionsConsortiaQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
             if (params.showSubscriber) {
@@ -621,7 +628,7 @@ join sub.orgRelations or_sub where
         List result = []
         List tmpQ
 
-        if(contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)) {
+        if(contextService.getOrg().isCustomerType_Inst_Pro()) {
 
             tmpQ = _getSubscriptionsConsortialLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
@@ -642,7 +649,7 @@ join sub.orgRelations or_sub where
         List result = []
         List tmpQ
 
-        if(contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)) {
+        if(contextService.getOrg().isCustomerType_Inst_Pro()) {
 
             tmpQ = _getSubscriptionsConsortialLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
@@ -667,7 +674,7 @@ join sub.orgRelations or_sub where
         queryParams.showParentsAndChildsSubs = params.showSubscriber
         queryParams.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
         String joinQuery = params.joinQuery ?: ""
-        List result = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.getOrg(), joinQuery)
+        List result = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, joinQuery)
         result
     }
 
@@ -684,7 +691,7 @@ join sub.orgRelations or_sub where
         queryParams.orgRole = RDStore.OR_SUBSCRIBER.value
         queryParams.subTypes = RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id
         String joinQuery = params.joinQuery ?: ""
-        subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.getOrg(), joinQuery)
+        subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, joinQuery)
     }
 
     /**
@@ -700,7 +707,7 @@ join sub.orgRelations or_sub where
         queryParams.orgRole = RDStore.OR_SUBSCRIBER.value
         queryParams.subTypes = RDStore.SUBSCRIPTION_TYPE_LOCAL.id
         String joinQuery = params.joinQuery ?: ""
-        subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.getOrg(), joinQuery)
+        subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, joinQuery)
     }
 
     /**
@@ -1183,13 +1190,15 @@ join sub.orgRelations or_sub where
     }
 
     /**
-     * Substitution call for {@link #addEntitlement(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, boolean, java.lang.Object)}
+     * Adds the selected issue entitlement to the given subscription; if submitted, the holding may be enriched with individually negotiated data
      * @param sub the subscription to which the title should be added
      * @param gokbId the we:kb ID of the title
      * @param issueEntitlementOverwrite eventually cached imported local data
      * @param withPriceData should price data be added as well?
      * @param set ie in issueEntitlementGroup
      * @return true if the adding was successful, false otherwise
+     * @throws EntitlementCreationException
+     * @see de.laser.ctrl.SubscriptionControllerService#addEntitlements(de.laser.SubscriptionController, grails.web.servlet.mvc.GrailsParameterMap)
      */
     boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, pickAndChoosePerpetualAccess, issueEntitlementGroup) throws EntitlementCreationException {
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(gokbId)
@@ -1414,12 +1423,14 @@ join sub.orgRelations or_sub where
     }
 
     /**
-     * Adds the given set of issue entitlements to the given subscription. The entitlement data may come directly from the package or be overwritten by individually negotiated content
+     * Adds the given set of issue entitlements to the given subscription. The entitlement data may come directly from the package or be overwritten by individually negotiated content.
+     * Because of the amount of data, the insert is done by native SQL
      * @param target the {@link Subscription} to which the entitlements should be attached
      * @param issueEntitlementOverwrites the {@link Map} containing the data to submit for each issue entitlement
      * @param checkMap the {@link Map} containing identifiers of titles which have been selected for the enrichment
      * @param withPriceData should price data be added as well?
      * @param pickAndChoosePerpetualAccess are the given titles purchased perpetually?
+     * @param sql the SQL connection to the database
      */
     void bulkAddEntitlements(Subscription sub, Map<String, Object> issueEntitlementOverwrites, Map<String, String> checkMap, withPriceData, pickAndChoosePerpetualAccess, Sql sql) {
         Object[] keys = checkMap.keySet().toArray()
@@ -1775,6 +1786,12 @@ join sub.orgRelations or_sub where
                 [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE])
     }
 
+    /**
+     * Called from views
+     * Checks if statistics are provided by at least one of the given platforms
+     * @param subscribedPlatforms the {@link Platform}s to verify
+     * @return true if at least one of the platforms provides usage statistics data, false if none
+     */
     boolean areStatsAvailable(Collection<Platform> subscribedPlatforms) {
         ApiSource wekbSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         boolean result = false
@@ -1794,7 +1811,19 @@ join sub.orgRelations or_sub where
     }
 
     /**
-     * (Un-)links the given subscription to the given license
+     * Unsets the given customer number
+     * @param id the customer number ID to unser
+     * @return true if the unsetting was successful, false otherwise
+     */
+    boolean deleteCustomerIdentifier(Long id) {
+        CustomerIdentifier ci = CustomerIdentifier.get(id)
+        ci.value = null
+        ci.requestorKey = null
+        ci.save()
+    }
+
+    /**
+     * (Un-)links the given subscription to/from the given license
      * @param sub the subscription to be linked
      * @param newLicense the license to link
      * @param unlink should the link being created or dissolved?
@@ -1870,7 +1899,7 @@ join sub.orgRelations or_sub where
         Org contextOrg = contextService.getOrg()
         RefdataValue comboType
         String[] parentSubType
-        if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if (contextService.getOrg().isCustomerType_Consortium()) {
             comboType = RDStore.COMBO_TYPE_CONSORTIUM
             parentSubType = [RDStore.SUBSCRIPTION_KIND_CONSORTIAL.getI10n('value')]
         }
@@ -1900,7 +1929,7 @@ join sub.orgRelations or_sub where
                 case "konsortiallizenz":
                 case "parent subscription":
                 case "consortial subscription":
-                    if(contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC))
+                    if(contextService.getOrg().isCustomerType_Consortium())
                         colMap.instanceOf = c
                     break
                 case "status": colMap.status = c
@@ -2333,7 +2362,7 @@ join sub.orgRelations or_sub where
                     sub.refresh() //needed for dependency processing
                     //create the org role associations
                     RefdataValue parentRoleType, memberRoleType
-                    if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+                    if (contextService.getOrg().isCustomerType_Consortium()) {
                         parentRoleType = RDStore.OR_SUBSCRIPTION_CONSORTIA
                         memberRoleType = RDStore.OR_SUBSCRIBER_CONS
                     }
@@ -3001,10 +3030,12 @@ join sub.orgRelations or_sub where
 
     /**
      * Cronjob-triggered.
-     * Processes subscriptions which have been marked with holdings to be freezed after their end time and sets all pending change
+     * Processes subscriptions which have been marked with holdings to be frozen after their end time and sets all pending change
      * configurations to reject
      * @return true if the execution was successful, false otherwise
+     * @deprecated is implicitlely done by {@link GlobalSourceSyncService#updateRecords(java.util.List, int, java.util.Set)} where only subscriptions are being considered whose end date has not been reached yet and {@link Subscription#holdingSelection} is set to Entire
      */
+    @Deprecated
     boolean freezeSubscriptionHoldings() {
         boolean done, doneChild
         Date now = new Date()

@@ -157,13 +157,7 @@
         %{-- context bar --}%
 
         <sec:ifAnyGranted roles="ROLE_USER">
-            <g:if test="${AppUtils.isPreviewOnly()}">
-                <laser:render template="/layouts/laser/newContextBar" />
-            </g:if>
-            <g:else>
-                <laser:render template="/layouts/laser/contextBar" />
-            </g:else>
-
+            <laser:render template="/layouts/laser/newContextBar" />
         </sec:ifAnyGranted>
 
         %{-- global content container --}%
