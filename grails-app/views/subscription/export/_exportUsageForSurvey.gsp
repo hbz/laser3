@@ -115,6 +115,9 @@
             </tbody>
         </table>
     </g:elseif>
+    <g:else>
+        <b><g:message code="renewEntitlementsWithSurvey.noIEsStats"/></b>
+    </g:else>
     <div id="localLoadingIndicator" hidden="hidden">
         <div class="ui inline medium text loader active">Aktualisiere Daten ..</div>
     </div>

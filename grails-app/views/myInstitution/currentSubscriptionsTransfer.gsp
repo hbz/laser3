@@ -290,7 +290,6 @@
                         ${message(code: 'subscription.offer.table.th')}
                     </th>
 
-
                     <th scope="col" rowspan="3" class="center aligned">
                         ${message(code: 'subscription.priceIncreaseInfo.label')}
                     </th>

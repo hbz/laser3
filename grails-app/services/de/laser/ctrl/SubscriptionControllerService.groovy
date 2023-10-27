@@ -3782,7 +3782,6 @@ class SubscriptionControllerService {
                         result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList(params.list('targetSubs').collect { it -> Long.parseLong(it) }) : null
 
                         if (result.targetSubs) {
-                            println(result.targetSubs)
                             result.targetSubs.each { Subscription sub ->
                                 result.copyDiscountScales.each { SubscriptionDiscountScale subscriptionDiscountScale ->
                                     SubscriptionDiscountScale subDisSc = new SubscriptionDiscountScale(name: subscriptionDiscountScale.name,
