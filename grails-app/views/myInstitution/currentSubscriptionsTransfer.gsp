@@ -745,7 +745,7 @@
 <g:if test="${editable}">
     <laser:render template="/templates/documents/modal"
                   model="${[newModalId: "modalCreateDocument", owntp: 'subscription']}"/>
-</g:if>
+
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.callbacks.modal.onShow.modalCreateDocument = function(trigger) {
@@ -755,5 +755,7 @@
         $('#modalCreateDocument select[name=doctype]').dropdown('set selected', $(trigger).attr('data-doctype'))
     }
 </laser:script>
+
+</g:if>
 
 <laser:htmlEnd/>
