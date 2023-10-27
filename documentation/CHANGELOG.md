@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5360    27.10.2023  dev     3.3         Moe     Bug         Lizenzübertrag-Sicht überarbeiten
+
 5344    27.10.2023  dev     3.3         David   Feature     In Kontextleiste per Klick Lizenzübertraginformationen anzeigen
 
 5361    26.10.2023  dev     3.3         David   Bug         Reporting: Falsche Jahresabfolge
