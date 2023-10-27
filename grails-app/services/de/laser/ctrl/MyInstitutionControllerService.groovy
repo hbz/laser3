@@ -116,6 +116,7 @@ class MyInstitutionControllerService {
 //            result.currentWorkflowsCount = result.myCurrentWorkflows.size() + result.allCurrentWorkflows.size()
 //            result.currentWorkflows      = workflows.take(contextService.getUser().getPageSizeOrDefault())
 
+        prf.setBenchmark('workflows')
         if (workflowService.hasUserPerm_edit()) {
             if (params.cmd) {
                 String[] cmd = params.cmd.split(':')
@@ -144,7 +145,7 @@ class MyInstitutionControllerService {
         result.surveys = activeSurveyConfigs.groupBy {it?.id}
         result.countSurvey = result.surveys.size()
         */
-
+        prf.setBenchmark('wekbChanges')
         result.wekbChanges = wekbStatsService.getCurrentChanges()
 
         result.benchMark = prf.stopBenchmark()
