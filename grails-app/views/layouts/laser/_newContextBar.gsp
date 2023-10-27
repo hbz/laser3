@@ -75,7 +75,7 @@
                     <div class="item la-cb-action">
                         <button class="ui icon button la-toggle-ui la-popup-tooltip la-delay" id="subscriptionTransfer-toggle"
                                 data-content="${message(code:'statusbar.showSubscriptionTransfer.tooltip')}" data-position="bottom left">
-                            <i class="history horizontally flipped icon"></i>
+                            <i class="clipboard icon"></i>
                         </button>
                     </div>
                 </g:if>
