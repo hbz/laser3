@@ -352,7 +352,7 @@ class DashboardDueDatesService {
         liste
     }
 
-    int getDashboardDueDates(User user, Org org, isHidden, isDone){
+    int countDashboardDueDates(User user, Org org, isHidden, isDone){
         return DashboardDueDate.executeQuery(
                 """select count(*) from DashboardDueDate as das join das.dueDateObject ddo 
                 where das.responsibleUser = :user and das.responsibleOrg = :org and das.isHidden = :isHidden and ddo.isDone = :isDone""",
