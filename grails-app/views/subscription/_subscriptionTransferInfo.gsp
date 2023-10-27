@@ -3,8 +3,7 @@
 
 <laser:serviceInjection />
 
-<div class="ui orange segment" id="subscriptionTransfer-content">
-
+<div class="ui yellow segment" id="subscriptionTransfer-content">
     <g:each in="${calculatedPreviousList}" var="s">
         <g:set var="editable" value="${s.isEditableBy(contextService.getUser())}" />%{-- TODO --}%
 
@@ -14,7 +13,6 @@
         </p>
 
         <div class="content">
-
             <table class="ui compact monitor stackable celled sortable table la-table la-js-responsive-table">
                 <thead>
                 <tr>
@@ -78,7 +76,7 @@
                         <td>
                         <%-- as of ERMS-584, these queries have to be deployed onto server side to make them sortable --%>
                             <g:each in="${s.providers}" var="org">
-                                <g:link controller="organisation" action="show" id="${org.id}">
+                                <g:link controller="organisation" action="show" id="${org.id}" target="_blank">
                                     ${fieldValue(bean: org, field: "name")}
                                     <g:if test="${org.sortname}">
                                         <br/> (${fieldValue(bean: org, field: "sortname")})
@@ -87,7 +85,7 @@
                                 <br/>
                             </g:each>
                             <g:each in="${s.agencies}" var="org">
-                                <g:link controller="organisation" action="show" id="${org.id}">
+                                <g:link controller="organisation" action="show" id="${org.id}" target="_blank">
                                     ${fieldValue(bean: org, field: "name")}
                                     <g:if test="${org.sortname}">
                                         <br/> (${fieldValue(bean: org, field: "sortname")})
@@ -97,7 +95,7 @@
                             </g:each>
                         </td>
                         <td>
-                            <g:link controller="subscription" class="la-main-object" action="show" id="${s.id}">
+                            <g:link controller="subscription" class="la-main-object" action="show" id="${s.id}" target="_blank">
                                 <g:if test="${s.name}">
                                     ${s.name}
                                 </g:if>
@@ -172,7 +170,7 @@
                         </g:if>
                         <td class="${surveyClass}">
                             <g:if test="${surveyConfig}">
-                                <g:link controller="survey" action="show" id="${surveyConfig.surveyInfo.id}">
+                                <g:link controller="survey" action="show" id="${surveyConfig.surveyInfo.id}" target="_blank">
                                     <g:formatDate formatName="default.date.format.notime" date="${surveyConfig.surveyInfo.startDate}"/>
                                     <br/>
                                     <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label')}:">
@@ -189,7 +187,7 @@
                             <g:set var="finishProcess" value="${(finish != 0 && total != 0) ? (finish / total) * 100 : 0}"/>
                             <td class="${finish == total ? 'positive' : ''}">
                                 <g:if test="${finishProcess >= 0}">
-                                    <g:link controller="survey" action="surveyEvaluation" id="${surveyConfig.surveyInfo.id}">
+                                    <g:link controller="survey" action="surveyEvaluation" id="${surveyConfig.surveyInfo.id}" target="_blank">
                                         <g:formatNumber number="${finishProcess}" type="number" maxFractionDigits="2" minFractionDigits="2"/>%
                                     </g:link>
                                 </g:if>
@@ -206,7 +204,7 @@
 
                         <td class="${countOrgsWithTermination > 0 && countOrgsWithTermination <= 10 ? 'warning' : (countOrgsWithTermination > 10 ? 'negative' : '')}">
                             <g:if test="${surveyConfig && countOrgsWithTermination >= 0}">
-                                <g:link controller="survey" action="renewalEvaluation" id="${surveyConfig.surveyInfo.id}">
+                                <g:link controller="survey" action="renewalEvaluation" id="${surveyConfig.surveyInfo.id}" target="_blank">
                                     ${countOrgsWithTermination}
                                 </g:link>
                             </g:if>
@@ -248,8 +246,7 @@
                                                 <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
                                                 <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                                 <g:if test="${supportedMimeType}">
-                                                    <a href="#documentPreview"
-                                                       data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
+                                                    <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
                                                 </g:if>
                                                 <g:else>
                                                     ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
@@ -278,11 +275,12 @@
             </table>
 
         </div>
-
     </g:each>
-
 </div>
 
+<laser:script file="${this.getGroovyPageFileName()}">
+    docs.init('#subscriptionTransfer-content');
+</laser:script>
 <style>
     #subscriptionTransfer-content {
         position: fixed !important;
