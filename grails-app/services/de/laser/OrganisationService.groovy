@@ -251,4 +251,12 @@ class OrganisationService {
         records
     }
 
+    Map<String, Object> getNamespacesWithValidations() {
+        Map<String, Object> result = [:]
+        Locale locale = LocaleUtils.getCurrentLocale()
+        IdentifierNamespace.findAllByValidationRegexIsNotNull().each { IdentifierNamespace idns ->
+            result[idns.id] = [pattern: idns.validationRegex, prompt: messageSource.getMessage("validation.${idns.ns.replaceAll(' ','_')}Match", null, locale), placeholder: messageSource.getMessage("identifier.${idns.ns.replaceAll(' ','_')}.info", null, locale)]
+        }
+        result
+    }
 }
