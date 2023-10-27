@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5343    27.10.2023  dev     3.3         Andreas Feature     neue allgemeine Merkmale aufgenommen
+
 5344    27.10.2023  dev     3.3         David   Feature     In Kontextleiste per Klick Lizenzübertraginformationen anzeigen
 
 5361    26.10.2023  dev     3.3         David   Bug         Reporting: Falsche Jahresabfolge

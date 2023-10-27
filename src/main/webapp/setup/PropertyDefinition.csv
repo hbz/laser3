@@ -246,6 +246,8 @@ Subscription Property,Perpetual access,Archivzugriff,Perpetual access,de.laser.R
 Subscription Property,Pick&Choose package,Pick&Choose-Paket,Pick&Choose package,java.lang.String,,,,,Handelt es sich um ein Paket mit Einzeltitelauswahl (Pick & Choose)?,,,,,
 Subscription Property,Price advantage kind,Preisvorteil Art,Price advantage kind,java.lang.String,,,true,,Was für einen Preisvorteil gibt es?,,,,,
 Subscription Property,Price category,Preiskategorie,Price category,java.lang.String,,,true,,Lizenzbezogene Preiskategorie einer teilnehmenden Einrichtung,Subscription-related price category of a participating institution,,,,
+Subscription Property,Price category ACM OPEN,Preiskategorie ACM OPEN,Price category ACM OPEN,java.lang.String,,,,,Dies ist Ihre abgestimmte Preisgruppe.,This is your determined price group.,,,,,
+Subscription Property,Price category ACM DL Subscription,Preiskategorie ACM DL Subskription,Price category ACM DL Subscription,java.lang.String,,,,,Dies ist Ihre abgestimmte Preisgruppe.,This is your determined price group.,,,,,
 Subscription Property,Price category Bautechnik digital,Preiskategorie Bautechnik digital,Price category Bautchnik digital,de.laser.RefdataValue,category.bautabellen,,,,Preiskategorie ist abhängig von der Studierendenzahl im Bauwesen,Price category depends on the count of students in constructions,,,,
 Subscription Property,Price depending on,Preis abhängig von,Price depending on,java.lang.String,,,true,,Ist der Preis von etwas abhängig?,,,,,
 Subscription Property,Price increase,Preissteigerung,Price increase,java.lang.String,,,,,Preissteigerung.,,,,,
