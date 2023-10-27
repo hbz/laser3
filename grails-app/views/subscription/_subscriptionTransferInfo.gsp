@@ -117,7 +117,7 @@
                         <td class="${s.offerRequested ? 'positive' : 'negative'}">
                             ${s.offerRequested ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
                             <br/>
-                            <g:formatDate format="default.date.format.notime" date="${s.offerRequestedDate}"/>
+                            <g:formatDate formatName="default.date.format.notime" date="${s.offerRequestedDate}"/>
                         </td>
                         <td>
                             <%
@@ -225,13 +225,13 @@
                         <td class="${s.reminderSent ? 'positive' : 'negative'}">
                             ${s.reminderSent ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
                             <br/>
-                            <g:formatDate format="default.date.format.notime" date="${s.reminderSentDate}"/>
+                            <g:formatDate formatName="default.date.format.notime" date="${s.reminderSentDate}"/>
                         </td>
 
                         <td class="${s.renewalSent ? 'positive' : 'negative'}">
                             ${s.renewalSent ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
                             <br/>
-                            <g:formatDate format="default.date.format.notime" date="${s.renewalSentDate}"/>
+                            <g:formatDate formatName="default.date.format.notime" date="${s.renewalSentDate}"/>
                         </td>
                         <td>
                             <%
