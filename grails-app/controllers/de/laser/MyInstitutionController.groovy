@@ -2518,7 +2518,7 @@ class MyInstitutionController  {
             }
         }
 
-        if(notProcessedMandatoryProperties.size() > 0){
+        if(!noParticipation && notProcessedMandatoryProperties.size() > 0){
             flash.error = message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')]) as String
         }
         else if(noParticipation || allResultHaveValue){
