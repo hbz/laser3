@@ -33,6 +33,7 @@
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="organisation" action="index">${message(code:'menu.admin.allOrganisations')}</ui:link>
                 <ui:link addItemAttributes="true" controller="admin" action="manageOrganisations">${message(code:'menu.admin.manageOrganisations')}</ui:link>
+                <ui:link addItemAttributes="true" controller="admin" action="mergeOrganisations">${message(code:'menu.admin.mergeOrganisations')}</ui:link>
             </div>
         </div>
 

@@ -49,6 +49,7 @@ class AdminController  {
     GenericOIDService genericOIDService
     GlobalSourceSyncService globalSourceSyncService
     MailService mailService
+    OrganisationService organisationService
     PropertyService propertyService
     RefdataService refdataService
     SessionFactory sessionFactory
@@ -726,6 +727,19 @@ class AdminController  {
         result.allConsortia = Org.executeQuery(
                 "select o from OrgSetting os join os.org o where os.key = 'CUSTOMER_TYPE' and (os.roleValue.authority  = 'ORG_CONSORTIUM_BASIC' or os.roleValue.authority  = 'ORG_CONSORTIUM_PRO') order by o.sortname, o.name"
         )
+        result
+    }
+
+    /**
+     * Call to view a list of organisations which may be merged. Currently only providers and agencies are being supported
+     * because of possible conflicts with the user data registered to institutions
+     */
+    @Secured(['ROLE_ADMIN'])
+    def mergeOrganisations() {
+        Map<String, Object> result = [:]
+        if(params.containsKey('source') && params.containsKey('target')) {
+            result = organisationService.mergeOrganisations(genericOIDService.resolveOID(params.source), genericOIDService.resolveOID(params.target), false)
+        }
         result
     }
 
