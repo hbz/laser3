@@ -1750,12 +1750,6 @@ class SurveyService {
         countIes
     }
 
-    /**
-     * Calculates the sum of list prices of titles in the group attached to the given survey and subscription
-     * @param subscription the {@link Subscription} to whose titles the issue entitlement group has been defined
-     * @param surveyConfig the {@link SurveyConfig} for which the issue entitlement group has been defined
-     * @return the sum of {@link de.laser.finance.PriceItem#listPrice}s of the titles belonging to the given {@link IssueEntitlementGroup}
-     */
     BigDecimal sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig, RefdataValue currency) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         BigDecimal sumListPrice = issueEntitlementGroup ?
@@ -1765,13 +1759,6 @@ class SurveyService {
         sumListPrice
     }
 
-    /**
-     * Calculates the sum of list prices of titles in the group attached to the given survey and subscription.
-     * Regarded are only titles with status = Current
-     * @param subscription the {@link Subscription} to whose titles the issue entitlement group has been defined
-     * @param surveyConfig the {@link SurveyConfig} for which the issue entitlement group has been defined
-     * @return the sum of {@link de.laser.finance.PriceItem#listPrice}s of the titles belonging to the given {@link IssueEntitlementGroup}
-     */
     BigDecimal sumListPriceInCurrencyOfCurrentIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig, RefdataValue currency) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         BigDecimal sumListPrice = issueEntitlementGroup ?
