@@ -1,8 +1,10 @@
 <%@ page import="de.laser.IssueEntitlementGroup; de.laser.titles.BookInstance; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
 <div class="sixteen wide column">
     <g:set var="counter" value="${offset + 1}"/>
-    <g:set var="sumlistPrice" value="${0}"/>
-    <g:set var="sumlocalPrice" value="${0}"/>
+    <g:set var="sumlistPriceEuro" value="${0}"/>
+    <g:set var="sumlistPriceUSD" value="${0}"/>
+    <g:set var="sumlistPriceGBP" value="${0}"/>
+   %{-- <g:set var="sumlocalPrice" value="${0}"/>--}%
 
 
 
@@ -96,7 +98,15 @@
                                             </div>
                                         </g:if>
                                     </div>
-                                    <g:set var="sumlistPrice" value="${sumlistPrice + (priceItem.listPrice ?: 0)}"/>
+                                    <g:if test="${priceItem.listCurrency == RDStore.CURRENCY_EUR}">
+                                        <g:set var="sumlistPriceEuro" value="${sumlistPriceEuro + (priceItem.listPrice ?: 0)}"/>
+                                    </g:if>
+                                    <g:if test="${priceItem.listCurrency == RDStore.CURRENCY_USD}">
+                                        <g:set var="sumlistPriceUSD" value="${sumlistPriceUSD + (priceItem.listPrice ?: 0)}"/>
+                                    </g:if>
+                                    <g:if test="${priceItem.listCurrency == RDStore.CURRENCY_GBP}">
+                                        <g:set var="sumlistPriceGBP" value="${sumlistPriceGBP + (priceItem.listPrice ?: 0)}"/>
+                                    </g:if>
                                 </g:each>
                             </g:if>
                             <g:else>
@@ -122,9 +132,17 @@
                                         <g:if test="${priceItem.listPrice && (i < ie.priceItems.size() - 1)}">
                                             <hr>
                                         </g:if>
-                                        <g:set var="sumlistPrice" value="${sumlistPrice + (priceItem.listPrice ?: 0)}"/>
+                                       %{-- <g:if test="${priceItem.listCurrency == RDStore.CURRENCY_EUR}">
+                                            <g:set var="sumlistPriceEuro" value="${sumlistPriceEuro + (priceItem.listPrice ?: 0)}"/>
+                                        </g:if>
+                                        <g:if test="${priceItem.listCurrency == RDStore.CURRENCY_USD}">
+                                            <g:set var="sumlistPriceUSD" value="${sumlistPriceUSD + (priceItem.listPrice ?: 0)}"/>
+                                        </g:if>
+                                        <g:if test="${priceItem.listCurrency == RDStore.CURRENCY_GBP}">
+                                            <g:set var="sumlistPriceGBP" value="${sumlistPriceGBP + (priceItem.listPrice ?: 0)}"/>
+                                        </g:if>
                                         <g:set var="sumlocalPrice"
-                                               value="${sumlocalPrice + (priceItem.localPrice ?: 0)}"/>
+                                               value="${sumlocalPrice + (priceItem.localPrice ?: 0)}"/>--}%
                                     </g:each>
                                 </g:if>
                             </g:else>
@@ -372,19 +390,81 @@
                     </div>
                 </div>--}%
 
-                <div class="item">
-                    <div class="contet">
-                        <strong><g:message code="renewEntitlementsWithSurvey.totalCostOnPage"/>:</strong> <g:formatNumber
-                            number="${sumlistPrice}" type="currency"/><br/>
+
+                <g:if test="${sumlistPriceEuro > 0}">
+                    <div class="item">
+                        <div class="contet">
+                            <strong><g:message code="renewEntitlementsWithSurvey.totalCostOnPage"/>:</strong> <g:formatNumber
+                                number="${sumlistPriceEuro}" type="currency" currencyCode="EUR"/><br/>
+                        </div>
                     </div>
-                </div>
+                </g:if>
+                <g:if test="${sumlistPriceUSD > 0}">
+                    <div class="item">
+                        <div class="contet">
+                            <strong><g:message code="renewEntitlementsWithSurvey.totalCostOnPage"/>:</strong> <g:formatNumber
+                                number="${sumlistPriceUSD}" type="currency" currencyCode="USD"/><br/>
+                        </div>
+                    </div>
+                    <g:set var="sumlistPriceUSD" value="${sumlistPriceUSD + (priceItem.listPrice ?: 0)}"/>
+                </g:if>
+                <g:if test="${sumlistPriceGBP > 0}">
+                    <div class="item">
+                        <div class="contet">
+                            <strong><g:message code="renewEntitlementsWithSurvey.totalCostOnPage"/>:</strong> <g:formatNumber
+                                number="${sumlistPriceGBP}" type="currency" currencyCode="GBP"/><br/>
+                        </div>
+                    </div>
+                </g:if>
                 %{--<g:message code="tipp.price.localPrice"/>: <g:formatNumber number="${sumlocalPrice}" type="currency"/>--}%
-                <div class="item">
-                    <div class="contet">
-                        <strong><g:message code="renewEntitlementsWithSurvey.totalCost"/>:</strong> <g:formatNumber
-                            number="${iesTotalListPriceSum}" type="currency"/>
+                <g:if test="${tippsListPriceSumEUR > 0}">
+                    <div class="item">
+                        <div class="contet">
+                            <strong><g:message code="renewEntitlementsWithSurvey.totalCost"/>:</strong> <g:formatNumber
+                                number="${tippsListPriceSumEUR}" type="currency" currencyCode="EUR"/><br/>
+                        </div>
                     </div>
-                </div>
+                </g:if>
+                <g:if test="${tippsListPriceSumUSD > 0}">
+                    <div class="item">
+                        <div class="contet">
+                            <strong><g:message code="renewEntitlementsWithSurvey.totalCost"/>:</strong> <g:formatNumber
+                                number="${tippsListPriceSumUSD}" type="currency" currencyCode="USD"/><br/>
+                        </div>
+                    </div>
+                </g:if>
+                <g:if test="${tippsListPriceSumGBP > 0}">
+                    <div class="item">
+                        <div class="contet">
+                            <strong><g:message code="renewEntitlementsWithSurvey.totalCost"/>:</strong> <g:formatNumber
+                                number="${tippsListPriceSumGBP}" type="currency" currencyCode="GBP"/><br/>
+                        </div>
+                    </div>
+                </g:if>
+                <g:if test="${iesTotalListPriceSumEUR > 0}">
+                    <div class="item">
+                        <div class="contet">
+                            <strong><g:message code="renewEntitlementsWithSurvey.totalCost"/>:</strong> <g:formatNumber
+                                number="${iesTotalListPriceSumEUR}" type="currency" currencyCode="EUR"/><br/>
+                        </div>
+                    </div>
+                </g:if>
+                <g:if test="${iesTotalListPriceSumUSD > 0}">
+                    <div class="item">
+                        <div class="contet">
+                            <strong><g:message code="renewEntitlementsWithSurvey.totalCost"/>:</strong> <g:formatNumber
+                                number="${iesTotalListPriceSumUSD}" type="currency" currencyCode="USD"/><br/>
+                        </div>
+                    </div>
+                </g:if>
+                <g:if test="${iesTotalListPriceSumGBP > 0}">
+                    <div class="item">
+                        <div class="contet">
+                            <strong><g:message code="renewEntitlementsWithSurvey.totalCost"/>:</strong> <g:formatNumber
+                                number="${iesTotalListPriceSumGBP}" type="currency" currencyCode="GBP"/><br/>
+                        </div>
+                    </div>
+                </g:if>
 
             </div>
         </div>
