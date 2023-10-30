@@ -7,11 +7,13 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5366    30.10.2023  rc-3.2  3.2.7       Andreas Bug         Listen wurden teilweise nicht korrekt aufgelöst
+
 5353    26.10.2023  rc-3.2  3.2.7       Moe     Bug         Lizenzübertragung
 
 --      26.10.2023  rc-3.2  3.2.7       Moe     Bug         Lizenzkosten auch in Titel-Umfrage anzeigen
 
---      26.10.2023  rc-3.2  3.2.7       Moe     Bug         Titel hinzufügen standäßig nicht anhacken von 'Zu Einrichtungslizenzen hinzufügen'
+--      26.10.2023  rc-3.2  3.2.7       Moe     Bug         Titel hinzufügen standardmäßig nicht anhaken von 'Zu Einrichtungslizenzen hinzufügen'
 
 --      26.10.2023  rc-3.2  3.2.7       Moe     Bug         Umfrage-Export funktioniert nicht richtig
 
