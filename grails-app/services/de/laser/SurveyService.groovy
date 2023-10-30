@@ -1750,20 +1750,33 @@ class SurveyService {
         countIes
     }
 
-    BigDecimal sumListPriceIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
+    /**
+     * Calculates the sum of list prices of titles in the group attached to the given survey and subscription
+     * @param subscription the {@link Subscription} to whose titles the issue entitlement group has been defined
+     * @param surveyConfig the {@link SurveyConfig} for which the issue entitlement group has been defined
+     * @return the sum of {@link de.laser.finance.PriceItem#listPrice}s of the titles belonging to the given {@link IssueEntitlementGroup}
+     */
+    BigDecimal sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig, RefdataValue currency) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         BigDecimal sumListPrice = issueEntitlementGroup ?
-                IssueEntitlementGroupItem.executeQuery("select sum(p.listPrice) from PriceItem p where p.issueEntitlement in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)",
-                        [ieGroup: issueEntitlementGroup])[0]
+                IssueEntitlementGroupItem.executeQuery("select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency and p.issueEntitlement in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)",
+                        [ieGroup: issueEntitlementGroup, currency: currency])[0]
                 : 0.0
         sumListPrice
     }
 
-    BigDecimal sumListPriceCurrentIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
+    /**
+     * Calculates the sum of list prices of titles in the group attached to the given survey and subscription.
+     * Regarded are only titles with status = Current
+     * @param subscription the {@link Subscription} to whose titles the issue entitlement group has been defined
+     * @param surveyConfig the {@link SurveyConfig} for which the issue entitlement group has been defined
+     * @return the sum of {@link de.laser.finance.PriceItem#listPrice}s of the titles belonging to the given {@link IssueEntitlementGroup}
+     */
+    BigDecimal sumListPriceInCurrencyOfCurrentIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig, RefdataValue currency) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         BigDecimal sumListPrice = issueEntitlementGroup ?
-                IssueEntitlementGroupItem.executeQuery("select sum(p.listPrice) from PriceItem p where p.issueEntitlement in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup) and p.issueEntitlement.status = :status",
-                        [ieGroup: issueEntitlementGroup, status: RDStore.TIPP_STATUS_CURRENT])[0]
+                IssueEntitlementGroupItem.executeQuery("select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency and p.issueEntitlement in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup) and p.issueEntitlement.status = :status",
+                        [ieGroup: issueEntitlementGroup, status: RDStore.TIPP_STATUS_CURRENT, currency: currency])[0]
                 : 0.0
         sumListPrice
     }
