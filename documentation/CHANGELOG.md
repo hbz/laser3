@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5318    30.10.2023  dev     3.3         Moe     Bug         Meine Umfragen - Registerkarten - Zahlen stimmen nicht nach Blättern
+
 5360    27.10.2023  dev     3.3         Moe     Bug         Lizenzübertrag-Sicht überarbeiten
 
 5343    27.10.2023  dev     3.3         Andreas Feature     neue allgemeine Merkmale aufgenommen
