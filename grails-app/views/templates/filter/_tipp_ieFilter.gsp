@@ -120,9 +120,9 @@
             </div>
 
             <div class="field">
-                <label for="subject_reference">${message(code: 'titleInstance.subjectReference.label')}</label>
-                <div class="ui search selection fluid multiple dropdown" id="subject_reference">
-                    <input type="hidden" name="subject_reference"/>
+                <label for="subject_references">${message(code: 'titleInstance.subjectReference.label')}</label>
+                <div class="ui search selection fluid multiple dropdown" id="subject_references">
+                    <input type="hidden" name="subject_references"/>
                     <div class="default text"><g:message code="default.select.choose.label"/></div>
                     <i class="dropdown icon"></i>
                 </div>
@@ -523,7 +523,7 @@
         --%>
     </g:elseif>
     JSPC.app.ajaxDropdown($('#series_names'), '<g:createLink controller="ajaxJson" action="getAllPossibleSeries" params="${params}"/>&by='+by+'&obj='+obj+'&forTitles='+forTitles+'&query={query}', '${params.series_names}');
-    JSPC.app.ajaxDropdown($('#subject_reference'), '<g:createLink controller="ajaxJson" action="getAllPossibleSubjects" params="${params}"/>&by='+by+'&obj='+obj+'&forTitles='+forTitles+'&query={query}', '${params.subject_reference}');
+    JSPC.app.ajaxDropdown($('#subject_references'), '<g:createLink controller="ajaxJson" action="getAllPossibleSubjects" params="${params}"/>&by='+by+'&obj='+obj+'&forTitles='+forTitles+'&query={query}', '${params.subject_references}');
     JSPC.app.ajaxDropdown($('#ddcs'), '<g:createLink controller="ajaxJson" action="getAllPossibleDdcs" params="${params}"/>&by='+by+'&obj='+obj+'&forTitles='+forTitles+'&query={query}', '${params.ddcs}');
     JSPC.app.ajaxDropdown($('#languages'), '<g:createLink controller="ajaxJson" action="getAllPossibleLanguages" params="${params}"/>&by='+by+'&obj='+obj+'&forTitles='+forTitles+'&query={query}', '${params.languages}');
     JSPC.app.ajaxDropdown($('#yearsFirstOnline'), '<g:createLink controller="ajaxJson" action="getAllPossibleDateFirstOnlineYears" params="${params}"/>&by='+by+'&obj='+obj+'&forTitles='+forTitles+'&query={query}', '${params.yearsFirstOnline}');
