@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      30.10.2023  rc-3.2  3.2.7       Moe     Bug         Summen falsch in Titel-Umfragen
+
+5366    30.10.2023  rc-3.2  3.2.7       Andreas Bug         Listen wurden teilweise nicht korrekt aufgelöst
+
+5166    30.10.2023  dev     3.3         Moe     Feature     Pflichtmerkmale in Umfrage bei "Nein"
+
+5318    30.10.2023  dev     3.3         Moe     Bug         Meine Umfragen - Registerkarten - Zahlen stimmen nicht nach Blättern
+
 5360    27.10.2023  dev     3.3         Moe     Bug         Lizenzübertrag-Sicht überarbeiten
 
 5343    27.10.2023  dev     3.3         Andreas Feature     neue allgemeine Merkmale aufgenommen
@@ -19,7 +27,7 @@
 
 --      26.10.2023  rc-3.2  3.2.7       Moe     Bug         Lizenzkosten auch in Titel-Umfrage anzeigen
 
---      26.10.2023  rc-3.2  3.2.7       Moe     Bug         Titel hinzufügen standäßig nicht anhacken von 'Zu Einrichtungslizenzen hinzufügen'
+--      26.10.2023  rc-3.2  3.2.7       Moe     Bug         Titel hinzufügen standardmäßig nicht anhaken von 'Zu Einrichtungslizenzen hinzufügen'
 
 --      26.10.2023  rc-3.2  3.2.7       Moe     Bug         Umfrage-Export funktioniert nicht richtig
 
