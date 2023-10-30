@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5370    30.10.2023  dev     3.3         Andreas Bug         Identifier-Regex-Prüfung sorgte für HibernateException
+
+5354    30.10.2023  dev     3.3         Andreas Feature     globale Kopierfunktion auf Postanschriften erweitert
+
 5346    30.10.2023  dev     3.3         Andreas Feature     Sicht zur Zusammenlegung von Anbietern und Lieferanten gebaut
 
 --      30.10.2023  rc-3.2  3.2.7       Moe     Bug         Summen falsch in Titel-Umfragen

@@ -330,7 +330,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
 
         // -- moved from def afterInsert = { .. }
         if (this.ns?.ns in IdentifierNamespace.CORE_ORG_NS) {
-            if (this.value == IdentifierNamespace.UNKNOWN) {
+            if (this.value == IdentifierNamespace.UNKNOWN && !this.ns.validationRegex.contains('Unknown')) {
                 this.value = ''
                 if(!this.save()) {
                     log.error(this.getErrors().getAllErrors().toListString())
