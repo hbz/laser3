@@ -62,7 +62,7 @@
 
             %{-- help panel --}%
 
-            <g:if test="${(controllerName=='subscription' && actionName=='show') || (controllerName=='dev' && actionName=='frontend')}">
+            <g:if test="${(controllerName=='subscription' && actionName=='show') || (controllerName=='myInstitution' && actionName=='financeImport') || (controllerName=='myInstitution' && actionName=='subscriptionImport') || (controllerName=='dev' && actionName=='frontend')}">
                 <div class="item la-cb-action">
                     <button class="ui icon button la-toggle-ui" id="help-toggle"><i class="question circle icon"></i></button>
                 </div>
