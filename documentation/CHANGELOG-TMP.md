@@ -5,7 +5,9 @@
     Changelog for version A.B.C = all tickets in A.B.C-1
 
 
-**Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
+**Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords*
+
+5371    31.10.2023  rc-3.2  3.2.7       Moe     Bug         Export Gesamttitelliste Thieme Titelumfrage scheitert
 
 --      31.10.2023  rc-3.2  3.2.7       Moe     Bug         Bei Titel hinzufügen im KBart Upload mit dem Titel Matching
 
