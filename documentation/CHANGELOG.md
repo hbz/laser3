@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5364    31.10.2023  dev     3.3         Andreas Feature     Kostentemplate für Lizenzen generieren
+
 5370    30.10.2023  dev     3.3         Andreas Bug         Identifier-Regex-Prüfung sorgte für HibernateException
 
 5354    30.10.2023  dev     3.3         Andreas Feature     globale Kopierfunktion auf Postanschriften erweitert
