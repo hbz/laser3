@@ -153,6 +153,7 @@ class MyInstitutionControllerService {
         result.institution = org
         result.contextOrg = org
         result.contextCustomerType = org.getCustomerType()
+        result.subId = params.subId
         result.tooltip = messageSource.getMessage('license.filter.member', null, LocaleUtils.getCurrentLocale())
         if(org.isCustomerType_Consortium())
             result.tooltip = messageSource.getMessage('license.member', null, LocaleUtils.getCurrentLocale())

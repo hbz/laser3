@@ -109,6 +109,11 @@
             <g:if test="${(contextCustomerType == CustomerTypeService.ORG_INST_PRO && !subscription.instanceOf) || customerTypeService.isConsortium( contextCustomerType )}">
                 <ui:actionsDropdownItem controller="subscription" action="copyElementsIntoSubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription)]}" message="myinst.copyElementsIntoSubscription" />
             </g:if>
+            <g:if test="${customerTypeService.isConsortium( contextCustomerType ) && !subscription.instanceOf}">
+                <div class="divider"></div>
+                <ui:actionsDropdownItem controller="myInstitution" action="generateFinanceImportWorksheet" params="${[id:subscription.id]}" message="myinst.financeImport.subscription.template"/>
+                <ui:actionsDropdownItem controller="myInstitution" action="financeImport" params="${[id:subscription.id]}" message="menu.institutions.financeImport" />
+            </g:if>
         </g:if>
 
             <g:if test="${contextCustomerType == CustomerTypeService.ORG_INST_PRO && subscription.instanceOf}">
