@@ -1541,6 +1541,81 @@ class SubscriptionControllerService {
 
             //result.subscriptionIDs = []
 
+            result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
+            //result.showStatisticByParticipant = surveyService.showStatisticByParticipant(result.surveyConfig.subscription, result.subscriber)
+
+            result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(subscriberSub, result.surveyConfig)
+            result.countAllTipps = baseSub.packages ? TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.status = :status and pkg in (:pkgs)", [pkgs: baseSub.packages.pkg, status: RDStore.TIPP_STATUS_CURRENT])[0] : 0
+
+
+            if (result.editable) {
+                SessionCacheWrapper sessionCache = contextService.getSessionCache()
+                Map<String, Object> checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}")
+
+                if (!checkedCache) {
+                    sessionCache.put("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}", ["checked": [:]])
+                    checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}")
+                }
+
+                if (params.kbartPreselect) {
+                    //checkedCache.put('checked', [:])
+
+                    MultipartFile kbartFile = params.kbartPreselect
+                    InputStream stream = kbartFile.getInputStream()
+                    result.selectProcess = subscriptionService.tippSelectForSurvey(stream, baseSub, result.surveyConfig, subscriberSub)
+
+                    if (result.selectProcess.selectedTipps) {
+
+                        Integer countTippsToAdd = 0
+                        result.selectProcess.selectedTipps.each {
+                            TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findById(it.key)
+                            if(tipp) {
+                                try {
+
+                                    IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
+
+                                    if (!issueEntitlementGroup) {
+                                        issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: result.surveyConfig.issueEntitlementGroupName)
+                                        if(!issueEntitlementGroup.save())
+                                            log.error(issueEntitlementGroup.getErrors().getAllErrors().toListString())
+                                    }
+
+                                    if (issueEntitlementGroup && subscriptionService.addEntitlement(subscriberSub, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
+                                        log.debug("Added tipp ${tipp.gokbId} to sub ${subscriberSub.id}")
+                                        ++countTippsToAdd
+                                    }
+                                }
+                                catch (EntitlementCreationException e) {
+                                    log.debug("Error: Adding tipp ${tipp} to sub ${subscriberSub.id}: " + e.getMessage())
+                                    result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps', null, LocaleUtils.getCurrentLocale())
+                                    [result: result, status: STATUS_ERROR]
+                                }
+
+                            }
+                        }
+                        if(countTippsToAdd > 0){
+                            Object[] args = [countTippsToAdd]
+                            result.message = messageSource.getMessage('renewEntitlementsWithSurvey.tippsToAdd',args,LocaleUtils.getCurrentLocale())
+                        }
+                    }
+
+                    params.remove("kbartPreselect")
+                    params.tab = 'selectedIEs'
+                }
+
+                result.checkedCache = checkedCache.get('checked')
+                result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
+
+                result.allChecked = ""
+                if (params.tab == 'allTipps' && result.countAllTipps > 0 && result.countAllTipps == result.checkedCount) {
+                    result.allChecked = "checked"
+                }
+                if (params.tab == 'selectedIEs' && result.countSelectedIEs > 0 && result.countSelectedIEs == result.checkedCount) {
+                    result.allChecked = "checked"
+                }
+            }
+
+
             Set<Subscription> subscriptions = []
             if(result.surveyConfig.pickAndChoosePerpetualAccess) {
                 subscriptions = linksGenerationService.getSuccessionChain(subscriberSub, 'sourceSubscription')
@@ -1759,8 +1834,6 @@ class SubscriptionControllerService {
                 params.tab = oldTab
             }
 
-            result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(subscriberSub, result.surveyConfig)
-            result.countAllTipps = result.subscription.packages ? TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.status = :status and pkg in (:pkgs)", [pkgs: result.subscription.packages.pkg, status: RDStore.TIPP_STATUS_CURRENT])[0] : 0
 
             result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(result.subscription, false)
 
@@ -1778,76 +1851,6 @@ class SubscriptionControllerService {
 
             if(result.surveyInfo.owner.id ==  result.contextOrg.id) {
                 result.participant = result.subscriber
-            }
-
-            result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
-            //result.showStatisticByParticipant = surveyService.showStatisticByParticipant(result.surveyConfig.subscription, result.subscriber)
-
-
-            if (result.editable) {
-                SessionCacheWrapper sessionCache = contextService.getSessionCache()
-                Map<String, Object> checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}")
-
-                if (!checkedCache) {
-                    sessionCache.put("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}", ["checked": [:]])
-                    checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}")
-                }
-
-                if (params.kbartPreselect) {
-                    //checkedCache.put('checked', [:])
-
-                    MultipartFile kbartFile = params.kbartPreselect
-                    InputStream stream = kbartFile.getInputStream()
-                    result.selectProcess = subscriptionService.tippSelectForSurvey(stream, result.subscription, result.surveyConfig, subscriberSub)
-
-                        if (result.selectProcess.selectedTipps) {
-
-                                Integer countTippsToAdd = 0
-                            result.selectProcess.selectedTipps.each {
-                                    TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findById(it.key)
-                                    if(tipp) {
-                                        try {
-
-                                            IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
-
-                                            if (!issueEntitlementGroup) {
-                                                issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: result.surveyConfig.issueEntitlementGroupName)
-                                                if(!issueEntitlementGroup.save())
-                                                    log.error(issueEntitlementGroup.getErrors().getAllErrors().toListString())
-                                            }
-
-                                            if (issueEntitlementGroup && subscriptionService.addEntitlement(subscriberSub, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
-                                                log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
-                                                ++countTippsToAdd
-                                            }
-                                        }
-                                        catch (EntitlementCreationException e) {
-                                            log.debug("Error: Adding tipp ${tipp} to sub ${subscriberSub.id}: " + e.getMessage())
-                                            result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps', null, LocaleUtils.getCurrentLocale())
-                                            [result: result, status: STATUS_ERROR]
-                                        }
-
-                                    }
-                                }
-                                if(countTippsToAdd > 0){
-                                    Object[] args = [countTippsToAdd]
-                                    result.message = messageSource.getMessage('renewEntitlementsWithSurvey.tippsToAdd',args,LocaleUtils.getCurrentLocale())
-                                }
-                        }
-
-                    params.remove("kbartPreselect")
-                }
-
-                result.checkedCache = checkedCache.get('checked')
-                result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
-
-                result.allChecked = ""
-                if (params.tab == 'allTipps' && result.countAllTipps > 0 && result.countAllTipps == result.checkedCount) {
-                    result.allChecked = "checked"
-                }
-                if (params.tab == 'selectedIEs' && result.countSelectedIEs > 0 && result.countSelectedIEs == result.checkedCount) {
-                    result.allChecked = "checked"
-                }
             }
 
             [result:result,status:STATUS_OK]
