@@ -1601,6 +1601,7 @@ class SubscriptionControllerService {
 
                     params.remove("kbartPreselect")
                     params.tab = 'selectedIEs'
+                    result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(subscriberSub, result.surveyConfig)
                 }
 
                 result.checkedCache = checkedCache.get('checked')
