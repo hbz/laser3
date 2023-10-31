@@ -1736,7 +1736,7 @@ class FilterService {
             if(qry_params.size() > 0){
                 base_qry += " and "
             }
-            base_qry += " lower(tipp.seriesName) in (:series_names)"
+            base_qry += " lower(tipp.seriesName) in (:series_names) "
             qry_params.series_names = listReaderWrapper(params, 'series_names').collect { ""+it.toLowerCase()+"" }
             filterSet = true
         }
@@ -1809,7 +1809,7 @@ class FilterService {
             if(qry_params.size() > 0){
                 base_qry += " and "
             }
-            base_qry += " exists (select tc.id from tipp.coverages tc where lower(tc.coverageDepth) in (:coverageDepth))"
+            base_qry += " exists (select tc.id from tipp.coverages tc where lower(tc.coverageDepth) in (:coverageDepth)) "
             qry_params.coverageDepth = listReaderWrapper(params, 'coverageDepth').collect { it.toLowerCase() }
             filterSet = true
         }
@@ -1818,7 +1818,7 @@ class FilterService {
             if(qry_params.size() > 0){
                 base_qry += " and "
             }
-            base_qry += " lower(tipp.titleType) in (:title_types)"
+            base_qry += " lower(tipp.titleType) in (:title_types) "
             qry_params.title_types = listReaderWrapper(params, 'title_types').collect { ""+it.toLowerCase()+"" }
             filterSet = true
         }
@@ -1836,7 +1836,7 @@ class FilterService {
             if(qry_params.size() > 0){
                 base_qry += " and "
             }
-            base_qry += " gokbId in (:gokbIds)"
+            base_qry += " gokbId in (:gokbIds) "
             qry_params.gokbIds = listReaderWrapper(params, 'gokbIds')
         }
 
