@@ -2774,7 +2774,7 @@ class SubscriptionControllerService {
                                 match = TitleInstancePackagePlatform.findByHostPlatformURL(titleUrl)
                             }
                             if(idCandidate.value && !match) {
-                                List<TitleInstancePackagePlatform> matches = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:pkgs) and id.value = :value and id.ns in (:namespaces)', [pkgs: subPkgs, value: idCandidate.value.replace("\r",""), namespaces: idCandidate.namespaces])
+                                List<TitleInstancePackagePlatform> matches = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:pkgs) and id.value = :value and id.ns in (:namespaces) and tipp.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, pkgs: subPkgs, value: idCandidate.value.replace("\r",""), namespaces: idCandidate.namespaces])
                                 if(matches)
                                     match = matches[0]
                             }

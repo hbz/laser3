@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      31.10.2023  rc-3.2  3.2.7       Moe     Bug         Bei Titel hinzufügen im KBart Upload mit dem Titel Matching
+
 --      30.10.2023  rc-3.2  3.2.7       Moe     Bug         Summen falsch in Titel-Umfragen
 
 5366    30.10.2023  rc-3.2  3.2.7       Andreas Bug         Listen wurden teilweise nicht korrekt aufgelöst
