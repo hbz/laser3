@@ -3740,6 +3740,11 @@ class ExportService {
 			identifierMap.putAll(preprocessIdentifierRows(identifiers))
 			coverageMap.putAll(preprocessRows(coverages, 'ic_ie_fk'))
 			priceItemMap.putAll(preprocessPriceItemRows(priceItems, 'pi_ie_fk'))
+		}
+		else {
+			coreTitleIdentifierNamespaces = []
+			otherTitleIdentifierNamespaces = []
+		}
 			if(showStatsInMonthRings && subscriber) {
 				List<GroovyRowResult> platformData = sql.rows("select plat_title_namespace, plat_guid from platform join title_instance_package_platform on plat_id = tipp_plat_fk join issue_entitlement on ie_tipp_fk = tipp_id ${queryData.subJoin} where ${queryData.where} group by plat_guid, plat_title_namespace", queryData.params)
 				List<Object> platforms = []
@@ -3894,12 +3899,8 @@ class ExportService {
 							[customer: subscriber.globalUID, platforms: connection.createArrayOf('varchar', platforms.toArray()), startDate: startDate, endDate: endDate, defaultReports: connection.createArrayOf('varchar', defaultReports.toArray()), defaultMetric: 'ft_total'])
 				}
 				*/
-			}
 		}
-		else {
-			coreTitleIdentifierNamespaces = []
-			otherTitleIdentifierNamespaces = []
-		}
+
 		[titles: titles, coverageMap: coverageMap, priceItemMap: priceItemMap, identifierMap: identifierMap, reportMap: reportMap,
 		 coreTitleIdentifierNamespaces: coreTitleIdentifierNamespaces, otherTitleIdentifierNamespaces: otherTitleIdentifierNamespaces]
 	}
