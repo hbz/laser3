@@ -2831,7 +2831,6 @@ class SurveyController {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
      Map<String,Object> editSurveyCostItem() {
-        println('editSurveyCostItem')
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if(result.status == SubscriptionControllerService.STATUS_ERROR) {
             if (!result.result) {
