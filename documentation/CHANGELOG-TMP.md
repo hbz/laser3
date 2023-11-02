@@ -5,13 +5,23 @@
     Changelog for version A.B.C = all tickets in A.B.C-1
 
 
-**Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
+**Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords*
+
+5369    31.10.2023  rc-3.2  3.2.7       Moe     Bug         Titelumfrage: Export der ausgewählten Titel fehlt
+
+5371    31.10.2023  rc-3.2  3.2.7       Moe     Bug         Export Gesamttitelliste Thieme Titelumfrage scheitert
+
+--      31.10.2023  rc-3.2  3.2.7       Moe     Bug         Bei Titel hinzufügen im KBart Upload mit dem Titel Matching
+
+--      30.10.2023  rc-3.2  3.2.7       Moe     Bug         Summen falsch in Titel-Umfragen
+
+5366    30.10.2023  rc-3.2  3.2.7       Andreas Bug         Listen wurden teilweise nicht korrekt aufgelöst
 
 5353    26.10.2023  rc-3.2  3.2.7       Moe     Bug         Lizenzübertragung
 
 --      26.10.2023  rc-3.2  3.2.7       Moe     Bug         Lizenzkosten auch in Titel-Umfrage anzeigen
 
---      26.10.2023  rc-3.2  3.2.7       Moe     Bug         Titel hinzufügen standäßig nicht anhacken von 'Zu Einrichtungslizenzen hinzufügen'
+--      26.10.2023  rc-3.2  3.2.7       Moe     Bug         Titel hinzufügen standardmäßig nicht anhaken von 'Zu Einrichtungslizenzen hinzufügen'
 
 --      26.10.2023  rc-3.2  3.2.7       Moe     Bug         Umfrage-Export funktioniert nicht richtig
 

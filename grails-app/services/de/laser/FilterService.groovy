@@ -1308,13 +1308,13 @@ class FilterService {
             filterSet = true
         }
 
-        if (params.languages && params.languages != "" && params.list('languages')) {
+        if (params.languages && params.languages != "" && listReaderWrapper(params, 'languages')) {
             base_qry += " and exists ( select lang.id from Language lang where lang.tipp = tipp and lang.language.id in (:languages) ) "
             qry_params.languages = params.list('languages').collect { String key -> Long.parseLong(key) }
             filterSet = true
         }
 
-        if (params.subject_references && params.subject_references != "" && params.list('subject_references')) {
+        if (params.subject_references && params.subject_references != "" && listReaderWrapper(params, 'subject_references')) {
             Set<String> subjectQuery = []
             params.list('subject_references').each { String subReference ->
                 subjectQuery << "genfunc_filter_matcher(tipp.subjectReference, '${subReference.toLowerCase()}') = true"
@@ -1323,7 +1323,7 @@ class FilterService {
             filterSet = true
         }
 
-        if (params.series_names && params.series_names != "" && params.list('series_names')) {
+        if (params.series_names && params.series_names != "" && listReaderWrapper(params, 'series_names')) {
             base_qry += " and lower(ie.tipp.seriesName) in (:series_names)"
             qry_params.series_names = params.list('series_names').collect { ""+it.toLowerCase()+"" }
             filterSet = true
@@ -1351,7 +1351,7 @@ class FilterService {
 
         if(params.yearsFirstOnline) {
             base_qry += " and (Year(tipp.dateFirstOnline) in (:yearsFirstOnline)) "
-            qry_params.yearsFirstOnline = params.list('yearsFirstOnline').collect { Integer.parseInt(it) }
+            qry_params.yearsFirstOnline = listReaderWrapper(params, 'yearsFirstOnline').collect { Integer.parseInt(it) }
         }
 
         if (params.identifier) {
@@ -1363,14 +1363,14 @@ class FilterService {
         if (params.publishers) {
             //(exists (select orgRole from OrgRole orgRole where orgRole.tipp = ie.tipp and orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and orgRole.org.name in (:publishers)) )
             base_qry += "and lower(tipp.publisherName) in (:publishers) "
-            qry_params.publishers = params.list('publishers').collect { it.toLowerCase() }
+            qry_params.publishers = listReaderWrapper(params, 'publishers').collect { it.toLowerCase() }
             filterSet = true
         }
 
 
         if (params.title_types && params.title_types != "" && listReaderWrapper(params, 'title_types')) {
             base_qry += " and lower(tipp.titleType) in (:title_types)"
-            qry_params.title_types = params.list('title_types').collect { ""+it.toLowerCase()+"" }
+            qry_params.title_types = listReaderWrapper(params, 'title_types').collect { ""+it.toLowerCase()+"" }
             filterSet = true
         }
 
@@ -1395,10 +1395,10 @@ class FilterService {
         if (params.hasPerpetualAccess && params.hasPerpetualAccessBySubs) {
             if(params.hasPerpetualAccess == RDStore.YN_NO.id.toString()) {
                 base_qry += "and ie.tipp.hostPlatformURL not in (select ie2.tipp.hostPlatformURL from IssueEntitlement as ie2 where ie2.perpetualAccessBySub in (:subs)) "
-                qry_params.subs = params.list('hasPerpetualAccessBySubs')
+                qry_params.subs = listReaderWrapper(params, 'hasPerpetualAccessBySubs')
             }else {
                 base_qry += "and ie.tipp.hostPlatformURL in (select ie2.tipp.hostPlatformURL from IssueEntitlement as ie2 where ie2.perpetualAccessBySub in (:subs)) "
-                qry_params.subs = params.list('hasPerpetualAccessBySubs')
+                qry_params.subs = listReaderWrapper(params, 'hasPerpetualAccessBySubs')
             }
             filterSet = true
         }
@@ -1736,7 +1736,7 @@ class FilterService {
             if(qry_params.size() > 0){
                 base_qry += " and "
             }
-            base_qry += " lower(tipp.seriesName) in (:series_names)"
+            base_qry += " lower(tipp.seriesName) in (:series_names) "
             qry_params.series_names = listReaderWrapper(params, 'series_names').collect { ""+it.toLowerCase()+"" }
             filterSet = true
         }
@@ -1809,7 +1809,7 @@ class FilterService {
             if(qry_params.size() > 0){
                 base_qry += " and "
             }
-            base_qry += " exists (select tc.id from tipp.coverages tc where lower(tc.coverageDepth) in (:coverageDepth))"
+            base_qry += " exists (select tc.id from tipp.coverages tc where lower(tc.coverageDepth) in (:coverageDepth)) "
             qry_params.coverageDepth = listReaderWrapper(params, 'coverageDepth').collect { it.toLowerCase() }
             filterSet = true
         }
@@ -1818,7 +1818,7 @@ class FilterService {
             if(qry_params.size() > 0){
                 base_qry += " and "
             }
-            base_qry += " lower(tipp.titleType) in (:title_types)"
+            base_qry += " lower(tipp.titleType) in (:title_types) "
             qry_params.title_types = listReaderWrapper(params, 'title_types').collect { ""+it.toLowerCase()+"" }
             filterSet = true
         }
@@ -1836,7 +1836,7 @@ class FilterService {
             if(qry_params.size() > 0){
                 base_qry += " and "
             }
-            base_qry += " gokbId in (:gokbIds)"
+            base_qry += " gokbId in (:gokbIds) "
             qry_params.gokbIds = listReaderWrapper(params, 'gokbIds')
         }
 
@@ -2203,13 +2203,21 @@ class FilterService {
      * @return a list containing the parameter values
      */
     List listReaderWrapper(Map params, String key) {
-        if(params instanceof GrailsParameterMap)
-            return params.list(key)
+        List result
+        if(params instanceof GrailsParameterMap) {
+            result = params.list(key)
+            //there are some cases when list does not resolve properly
+            if(result[0] instanceof String && result[0].contains(',')) {
+                List newResult = result[0].split(',')
+                result = newResult
+            }
+        }
         //.respondsTo('size') is a substitute for instanceof Ljava.lang.String;
         else if(params[key] instanceof List || (params[key].respondsTo('size') && !(params[key] instanceof String))) {
-            return params[key]
+            result = params[key]
         }
-        else return [params[key]]
+        else result = [params[key]]
+        result
     }
 
 }
