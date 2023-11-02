@@ -220,20 +220,18 @@ class SubscriptionService {
         subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
         //candidate for ugliest bugfix ever ...
 
-        println(subscriptions.size())
         if(params.sort){
             String newSort = "sub.${params.sort}"
-            if(params.sort){
+            if(params.sort == 'providerAgency'){
                 newSort = "oo.org.name"
             }
 
             subscriptions = Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where (sub.id in (:subscriptions) and oo.roleType in (:providerAgency)) or sub.id in (:subscriptions) order by " + newSort +" "+ params.order + ", oo.org.name, sub.name " , [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
             //select ooo.sub.id from OrgRole ooo where ooo.roletype in (:providerAgency) and ooo.sub != null
         }else {
-            subscriptions = Subscription.executeQuery("select oo.sub from OrgRole oo join oo.org providerAgency where oo.sub.id in (:subscriptions) and oo.roleType in (:providerAgency) order by providerAgency.name, oo.sub.name ", [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
+            subscriptions = Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where (sub.id in (:subscriptions) and oo.roleType in (:providerAgency)) or sub.id in (:subscriptions) order by oo.org.name, sub.name ", [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
         }
 
-         println("Tsst"+ [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER.id, RDStore.OR_AGENCY.id]])
         result.allSubscriptions = subscriptions
         if(!params.exportXLS)
             result.num_sub_rows = subscriptions.size()
@@ -946,7 +944,7 @@ join sub.orgRelations or_sub where
             //"insert into permanent_title (pt_version, pt_ie_fk, pt_date_created, pt_subscription_fk, pt_last_updated, pt_tipp_fk, pt_owner_fk) select 0, ie_id, now(), "+subId+", now(), ie_tipp_fk, "+ownerId+" from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :removed and ie_status_rv_fk = tipp_status_rv_fk and ie_subscription_fk = :subId and not exists(select pt_id from permanent_title where pt_subscription_fk = :subId and pt_ie_fk = ie_id and pt_tipp_fk = tipp_id and pt_owner_fk = :ownerId)"
             // [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id, ownerId: ownerId]
             sql.withBatch('insert into permanent_title (pt_version, pt_ie_fk, pt_date_created, pt_subscription_fk, pt_last_updated, pt_tipp_fk, pt_owner_fk) select ' +
-                    '0, ie_id, now(), ie_subscription_fk, now(), ie_tipp_fk, (select or_org_fk from org_role where or_sub_fk = :subId and or_roletype_fk = :subscrRole) from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id ' +
+                    '0, (select ie_id from issue_entitlement where ie_subscription_fk = :subId and ie_tipp_fk = tipp_id and ie_status_rv_fk = tipp_status_rv_fk), now(), :subId, now(), ie_tipp_fk, (select or_org_fk from org_role where or_sub_fk = :subId and or_roletype_fk = :subscrRole) from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id ' +
                     'where tipp_pkg_fk = :pkgId and ie_subscription_fk = :parentId and ie_status_rv_fk != :removed and not exists(select pt_id from permanent_title where pt_tipp_fk = tipp_id and pt_owner_fk = (select or_org_fk from org_role where or_sub_fk = :subId and or_roletype_fk = :subscrRole))') { BatchingPreparedStatementWrapper stmt ->
                 memberSubs.each { Subscription memberSub ->
                     stmt.addBatch([subId: memberSub.id, parentId: subscription.id, pkgId: pkg.id, removed: RDStore.TIPP_STATUS_REMOVED.id, subscrRole: RDStore.OR_SUBSCRIBER_CONS.id])

@@ -1,7 +1,9 @@
 <%@page import="de.laser.titles.BookInstance; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
 <div class="eight wide column">
     <g:set var="counter" value="${1}"/>
-    <g:set var="sumlistPrice" value="${0}"/>
+    <g:set var="sumlistPriceEuro" value="${0}"/>
+    <g:set var="sumlistPriceUSD" value="${0}"/>
+    <g:set var="sumlistPriceGBP" value="${0}"/>
     <g:set var="sumlocalPrice" value="${0}"/>
 
     <g:if test="${side == 'target' && targetInfoMessage}">
@@ -70,7 +72,15 @@
                                         field="endDate" type="date"
                                         owner="${priceItem}"/>  <g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
                                         <g:if test="${i < ie.priceItems.size() - 1}"><hr></g:if>
-                                        <g:set var="sumlistPrice" value="${sumlistPrice + (priceItem.listPrice ?: 0)}"/>
+                                        <g:if test="${priceItem.listCurrency == RDStore.CURRENCY_EUR}">
+                                            <g:set var="sumlistPriceEuro" value="${sumlistPriceEuro + (priceItem.listPrice ?: 0)}"/>
+                                        </g:if>
+                                        <g:if test="${priceItem.listCurrency == RDStore.CURRENCY_USD}">
+                                            <g:set var="sumlistPriceUSD" value="${sumlistPriceUSD + (priceItem.listPrice ?: 0)}"/>
+                                        </g:if>
+                                        <g:if test="${priceItem.listCurrency == RDStore.CURRENCY_GBP}">
+                                            <g:set var="sumlistPriceGBP" value="${sumlistPriceGBP + (priceItem.listPrice ?: 0)}"/>
+                                        </g:if>
                                         <g:set var="sumlocalPrice" value="${sumlocalPrice + (priceItem.localPrice ?: 0)}"/>
                                     </g:each>
                                 </g:if>
@@ -92,7 +102,15 @@
                                         field="endDate" type="date"
                                         owner="${priceItem}"/>  <g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
                                         <g:if test="${i < targetIE.priceItems.size() - 1}"><hr></g:if>
-                                        <g:set var="sumlistPrice" value="${sumlistPrice + (priceItem.listPrice ?: 0)}"/>
+                                        <g:if test="${priceItem.listCurrency == RDStore.CURRENCY_EUR}">
+                                            <g:set var="sumlistPriceEuro" value="${sumlistPriceEuro + (priceItem.listPrice ?: 0)}"/>
+                                        </g:if>
+                                        <g:if test="${priceItem.listCurrency == RDStore.CURRENCY_USD}">
+                                            <g:set var="sumlistPriceUSD" value="${sumlistPriceUSD + (priceItem.listPrice ?: 0)}"/>
+                                        </g:if>
+                                        <g:if test="${priceItem.listCurrency == RDStore.CURRENCY_GBP}">
+                                            <g:set var="sumlistPriceGBP" value="${sumlistPriceGBP + (priceItem.listPrice ?: 0)}"/>
+                                        </g:if>
                                         <g:set var="sumlocalPrice" value="${sumlocalPrice + (priceItem.localPrice ?: 0)}"/>
                                     </g:each>
                                 </g:if>
@@ -135,7 +153,19 @@
                 <th></th>
                 <th></th>
                 <th><g:message code="financials.export.sums"/> <br />
-                    <g:message code="tipp.price.listPrice"/>: <g:formatNumber number="${sumlistPrice}" type="currency"/><br />
+                    <g:message code="tipp.price.listPrice"/>:
+                    <g:if test="${sumlistPriceEuro > 0}">
+                        <g:formatNumber
+                                number="${sumlistPriceEuro}" type="currency" currencyCode="EUR"/><br/>
+                    </g:if>
+                    <g:if test="${sumlistPriceUSD > 0}">
+                        <g:formatNumber
+                                number="${sumlistPriceUSD}" type="currency" currencyCode="USD"/><br/>
+                    </g:if>
+                    <g:if test="${sumlistPriceGBP > 0}">
+                        <g:formatNumber
+                                number="${sumlistPriceGBP}" type="currency" currencyCode="GBP"/><br/>
+                    </g:if>
                     %{--<g:message code="tipp.price.localPrice"/>: <g:formatNumber number="${sumlocalPrice}" type="currency"/>--}%
                 </th>
                 <th></th>
