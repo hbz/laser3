@@ -59,6 +59,14 @@
                                tab           : 'allTipps']}">${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}</g:link>
         </ui:exportDropdownItem>
 
+        <ui:exportDropdownItem>
+            <g:link class="item" action="renewEntitlementsWithSurvey"
+                    id="${subscriberSub.id}"
+                    params="${[surveyConfigID: surveyConfig.id,
+                               exportXLS   : true,
+                               tab           : 'selectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}</g:link>
+        </ui:exportDropdownItem>
+
         <g:if test="${countCurrentPermanentTitles > 0}">
             <ui:exportDropdownItem>
                 <g:link class="item" action="renewEntitlementsWithSurvey"
