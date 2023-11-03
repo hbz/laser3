@@ -1650,7 +1650,7 @@ class FilterService {
             }
             base_qry += " tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = :subscription ) and " +
                     "( not exists ( select ie from IssueEntitlement ie where ie.subscription = :subscription and ie.tipp.id = tipp.id and ie.status = :issueEntitlementStatus ) )"
-            qry_params.subscription = params.subscription
+            qry_params.subscription = params.subscription instanceof Subscription ? params.subscription : Subscription.get(params.subscription)
             qry_params.issueEntitlementStatus = params.issueEntitlementStatus
         }
 

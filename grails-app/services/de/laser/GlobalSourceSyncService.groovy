@@ -1566,7 +1566,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 */
                 if(platform.save()) {
                     //update platforms
-                    Map<String, Object> packagesOfPlatform = fetchRecordJSON(false, [componentType: 'Package', platform: platformRecord.uuid])
+                    Map<String, Object> packagesOfPlatform = fetchRecordJSON(false, [componentType: 'Package', platformUuid: platformRecord.uuid])
                     if(packagesOfPlatform && packagesOfPlatform.count > 0) {
                         Package.executeUpdate('update Package pkg set pkg.nominalPlatform = :plat where pkg.gokbId in (:uuids)', [uuids: packagesOfPlatform.records.uuid, plat: platform])
                     }

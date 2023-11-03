@@ -35,66 +35,79 @@
         </div>
     </g:if>
 
-<ui:greySegment>
-    <h3 class="ui dividing header"><g:message code="subscription.details.addEntitlements.header"/></h3>
+<ui:modal id="KBARTUploadForm" message="subscription.details.addEntitlements.header" msgSave="${message(code: 'subscription.details.addEntitlements.preselect')}">
     <ui:msg header="${message(code:"message.attention")}" message="subscription.details.addEntitlements.warning" />
 
-    <g:form class="ui form" controller="subscription" action="addEntitlements"
-        params="${[sort: params.sort, order: params.order, filter: params.filter, pkgFilter: params.pkgfilter, startsBefore: params.startsBefore, endsAfter: params.endAfter, id: subscription.id]}"
-        method="post" enctype="multipart/form-data">
+    <g:form class="ui form" method="post" enctype="multipart/form-data">
         <div class="field">
             <div class="ui action input">
                 <input type="text" readonly="readonly"
                        placeholder="${message(code: 'template.addDocument.selectFile')}">
                 <input type="file" id="kbartPreselect" name="kbartPreselect" accept="text/tab-separated-values"
                        style="display: none;">
-
                 <div class="ui icon button">
                     <i class="attach icon"></i>
                 </div>
             </div>
         </div>
-
-        <div class="one fields">
+        <g:if test="${institution.isCustomerType_Consortium()}">
             <div class="field">
-                <div class="ui checkbox toggle">
-                    <g:checkBox name="preselectValues" value="${preselectValues}" checked="true" readonly="readonly"/>
-                    <label><g:message code="subscription.details.addEntitlements.preselectValues"/></label>
-                </div>
-
-                <div class="ui checkbox toggle">
-                    <g:checkBox name="preselectCoverageDates" value="${preselectCoverageDates}"/>
-                    <label><g:message code="subscription.details.addEntitlements.preselectCoverageDates"/></label>
-                </div>
-
-                <div class="ui checkbox toggle">
-                    <g:checkBox name="uploadPriceInfo" value="${uploadPriceInfo}"/>
-                    <label><g:message code="subscription.details.addEntitlements.uploadPriceInfo"/></label>
+                <div class="ui right floated checkbox toggle">
+                    <g:checkBox name="withChildrenKBART"/>
+                    <label><g:message code="subscription.details.addEntitlements.withChildren"/></label>
                 </div>
             </div>
-
+        </g:if>
+        <div class="ui two fields">
+            <g:if test="${subscription.ieGroups}">
+                <div class="field">
+                    <label for="issueEntitlementGroupKBART">${message(code: 'issueEntitlementGroup.entitlementsRenew.selected.add')}:</label>
+                    <select name="issueEntitlementGroupKBARTID" id="issueEntitlementGroupKBART"
+                            class="ui search dropdown">
+                        <option value="">${message(code: 'default.select.choose.label')}</option>
+                            <g:each in="${subscription.ieGroups.sort { it.name }}" var="titleGroup">
+                                <option value="${titleGroup.id}">
+                                    ${titleGroup.name} (${titleGroup.countCurrentTitles()})
+                                </option>
+                            </g:each>
+                    </select>
+                </div>
+            </g:if>
+            <div class="field">
+                <label for="issueEntitlementGroupNewKBART">${message(code: 'issueEntitlementGroup.entitlementsRenew.selected.new')}:</label>
+                <input type="text" id="issueEntitlementGroupNewKBART" name="issueEntitlementGroupNewKBART" value="">
+            </div>
         </div>
+    </g:form>
+    <laser:script file="${this.getGroovyPageFileName()}">
+        $('.action .icon.button').click(function () {
+            $(this).parent('.action').find('input:file').click();
+        });
 
-        <div class="field la-field-right-aligned">
-            <input type="submit"
-                   value="${message(code: 'subscription.details.addEntitlements.preselect')}"
-                   class="ui button"/>
-        </div>
+        $('input:file', '.ui.action.input').on('change', function (e) {
+            var name = e.target.files[0].name;
+            $('input:text', $(e.target).parent()).val(name);
+        });
 
-</g:form>
-<laser:script file="${this.getGroovyPageFileName()}">
-    $('.action .icon.button').click(function () {
-        $(this).parent('.action').find('input:file').click();
-    });
-
-    $('input:file', '.ui.action.input').on('change', function (e) {
-        var name = e.target.files[0].name;
-        $('input:text', $(e.target).parent()).val(name);
-    });
-</laser:script>
-</ui:greySegment>
-<br>
-<br>
+        $('#KBARTUploadForm form').submit(function(e) {
+            e.preventDefault();
+            let kbart = $('#kbartPreselect').prop('files')[0];
+            let formData = new FormData();
+            formData.append('kbartFile', kbart);
+            $.ajax({
+                url: '<g:createLink controller="subscription" action="selectEntitlementsFromKBART" params="${[id: subscription.id]}"/>',
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: formData,
+                type: 'post',
+                success: function(response) {
+                    console.log('processing either successful or not; output response!');
+                }
+            });
+        });
+    </laser:script>
+</ui:modal>
 
 <ui:modal id="linkToIssueEntitlementGroup" message="subscription.details.addEntitlements.add_selectedToIssueEntitlementGroup"
           refreshModal="true"
@@ -102,8 +115,6 @@
 
     <g:form action="processAddEntitlements" class="ui form">
         <input type="hidden" name="id" value="${subscription.id}"/>
-        <g:hiddenField name="preselectCoverageDates" value="${preselectCoverageDates}"/>
-        <g:hiddenField name="uploadPriceInfo" value="${uploadPriceInfo}"/>
         <g:hiddenField name="process" value="withTitleGroup"/>
 
         <div class="ui two fields">
@@ -126,8 +137,8 @@
             </g:if>
 
             <div class="field">
-                <label for="issueEntitlementGroup">${message(code: 'issueEntitlementGroup.entitlementsRenew.selected.new')}:</label>
-                <input type="text" name="issueEntitlementGroupNew" value="">
+                <label for="issueEntitlementGroupNew">${message(code: 'issueEntitlementGroup.entitlementsRenew.selected.new')}:</label>
+                <input type="text" id="issueEntitlementGroupNew" name="issueEntitlementGroupNew" value="">
             </div>
 
         </div>
@@ -139,11 +150,11 @@
 <ui:tabs actionName="${actionName}">
     %{-- num_tipp_rows instead of countAllTipps because otherwise, there are misleading counts --}%
     <ui:tabsItem controller="subscription" action="addEntitlements"
-                 params="[id: subscription.id, tab: 'allTipps', uploadPriceInfo: uploadPriceInfo ? 'on' : '', preselectCoverageDates: preselectCoverageDates ? 'on' : '']"
+                 params="[id: subscription.id, tab: 'allTipps']"
                  text="${message(code: "subscription.details.addEntitlements.allTipps")}" tab="allTipps"
                  counts="${num_tipp_rows}"/>
     <ui:tabsItem controller="subscription" action="addEntitlements"
-                 params="[id: subscription.id, tab: 'selectedTipps', uploadPriceInfo: uploadPriceInfo ? 'on' : '', preselectCoverageDates: preselectCoverageDates ? 'on' : '']"
+                 params="[id: subscription.id, tab: 'selectedTipps']"
                  text="${message(code: "subscription.details.addEntitlements.selectedTipps")}" tab="selectedTipps"
                  counts="${countSelectedTipps}"/>
 </ui:tabs>
@@ -152,8 +163,6 @@
 
 <g:form action="processAddEntitlements" class="ui form">
     <input type="hidden" name="id" value="${subscription.id}"/>
-    <g:hiddenField name="preselectCoverageDates" value="${preselectCoverageDates}"/>
-    <g:hiddenField name="uploadPriceInfo" value="${uploadPriceInfo}"/>
 
     <g:if test="${tipps}">
         <div class="field">
@@ -558,7 +567,7 @@
 
     $(".ieOverwrite").change(function() {
         $.ajax({
-            url: "<g:createLink controller="ajax" action="updateIssueEntitlementOverwrite" />",
+            url: "<g:createLink controller="ajax" action="updateIssueEntitlementSelect" />",
             data: {
                 sub: ${subscription.id},
                 key: $(this).parents("tr").attr("data-gokbId"),

@@ -535,45 +535,14 @@ class AjaxController {
      * @return a {@link Map} reflecting the success status
      */
   @Secured(['ROLE_USER'])
-  def updateIssueEntitlementOverwrite() {
+  def updateIssueEntitlementSelect() {
       Map success = [success:false]
       EhcacheWrapper cache = contextService.getUserCache("/subscription/${params.referer}/${params.sub}")
-      Map issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
+      Set issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
       if(!issueEntitlementCandidates)
-          issueEntitlementCandidates = [:]
-      def ieCandidate = issueEntitlementCandidates.get(params.key)
-      if(!ieCandidate)
-          ieCandidate = [:]
-      if(params.coverage != 'false') {
-          def ieCoverage
-          Pattern pattern = Pattern.compile("(\\w+)(\\d+)")
-          Matcher matcher = pattern.matcher(params.prop)
-          if(matcher.find()) {
-              String prop = matcher.group(1)
-              int covStmtKey = Integer.parseInt(matcher.group(2))
-              if(!ieCandidate.coverages){
-                  ieCandidate.coverages = []
-                  ieCoverage = [:]
-              }
-              else
-                  ieCoverage = ieCandidate.coverages[covStmtKey]
-              if(prop in ['startDate','endDate']) {
-                  SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-                  ieCoverage[prop] = sdf.parse(params.propValue)
-              }
-              else {
-                  ieCoverage[prop] = params.propValue
-              }
-              ieCandidate.coverages[covStmtKey] = ieCoverage
-          }
-          else {
-              log.error("something wrong with the regex matching ...")
-          }
-      }
-      else {
-          ieCandidate[params.prop] = params.propValue
-      }
-      issueEntitlementCandidates.put(params.key,ieCandidate)
+          issueEntitlementCandidates = []
+      if(!issueEntitlementCandidates.add(params.key))
+          issueEntitlementCandidates.remove(params.key)
       if(cache.put('issueEntitlementCandidates',issueEntitlementCandidates))
           success.success = true
       render success as JSON
