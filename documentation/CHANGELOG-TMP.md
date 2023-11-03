@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords*
 
+--      01.11.2023  rc-3.2  3.2.7       Moe     Bug         500er be ClickMeExcel vom Titel-Export
+
+--      01.11.2023  rc-3.2  3.2.7       Moe     Bug         Titelumfrage: Export der Statistik geht nicht
+
 5369    31.10.2023  rc-3.2  3.2.7       Moe     Bug         Titelumfrage: Export der ausgewählten Titel fehlt
 
 5371    31.10.2023  rc-3.2  3.2.7       Moe     Bug         Export Gesamttitelliste Thieme Titelumfrage scheitert

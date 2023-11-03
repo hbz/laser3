@@ -268,7 +268,6 @@
                                 number="${sumlistPriceUSD}" type="currency" currencyCode="USD"/><br/>
                         </div>
                     </div>
-                    <g:set var="sumlistPriceUSD" value="${sumlistPriceUSD + (priceItem.listPrice ?: 0)}"/>
                 </g:if>
                 <g:if test="${sumlistPriceGBP > 0}">
                     <div class="item">

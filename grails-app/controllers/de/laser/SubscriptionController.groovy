@@ -1521,8 +1521,16 @@ class SubscriptionController {
                         monthsInRing << startTime.getTime()
                         startTime.add(Calendar.MONTH, 1)
                     }
-                    List<String> perpetuallyPurchasedTitleURLs = TitleInstancePackagePlatform.executeQuery('select tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (select oo.sub from OrgRole oo where oo.org = :org and oo.roleType in (:roleTypes)) and tipp.status = :tippStatus and ie.status = :tippStatus and ie.perpetualAccessBySub is not null',
-                            [org: ctrlResult.result.subscriber, tippStatus: RDStore.TIPP_STATUS_CURRENT, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS]])
+                    //List<String> perpetuallyPurchasedTitleURLs = TitleInstancePackagePlatform.executeQuery('select tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (select oo.sub from OrgRole oo where oo.org = :org and oo.roleType in (:roleTypes)) and tipp.status = :tippStatus and ie.status = :tippStatus and ie.perpetualAccessBySub is not null',
+                     //       [org: ctrlResult.result.subscriber, tippStatus: RDStore.TIPP_STATUS_CURRENT, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS]])
+                    List<String> perpetuallyPurchasedTitleURLs = PermanentTitle.executeQuery('select pt.tipp.hostPlatformURL from PermanentTitle pt where pt.owner = :owner and pt.tipp.id in (select ti.id from TitleInstancePackagePlatform as ti where ti.pkg in (:pkgs))',
+                            [owner: ctrlResult.result.subscriber, pkgs: ctrlResult.result.subscription.packages?.pkg])
+                    IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(ctrlResult.result.surveyConfig, ctrlResult.result.subscriberSub)
+                    if (issueEntitlementGroup) {
+                        perpetuallyPurchasedTitleURLs.addAll(IssueEntitlementGroupItem.executeQuery("select ie.tipp.hostPlatformURL from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup",
+                                [ieGroup: issueEntitlementGroup]))
+                    }
+
                     Map<String, Object> queryMap = params.clone()
                     queryMap.metricTypes = params.metricType
                     queryMap.accessTypes = params.accessType
@@ -1531,8 +1539,22 @@ class SubscriptionController {
                     queryMap.sub = ctrlResult.result.subscription
                     queryMap.ieStatus = RDStore.TIPP_STATUS_CURRENT
                     queryMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id
-                    Map<String, List> export = exportService.generateTitleExportCustom(queryMap, IssueEntitlement.class.name, monthsInRing.sort { Date monthA, Date monthB -> monthA <=> monthB }, ctrlResult.result.subscriber, perpetuallyPurchasedTitleURLs)
+                    Map<String, List> export = exportService.generateTitleExportCustom(queryMap, TitleInstancePackagePlatform.class.name, monthsInRing.sort { Date monthA, Date monthB -> monthA <=> monthB }, ctrlResult.result.subscriber, perpetuallyPurchasedTitleURLs)
+
+                    export.titles << message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs.export')
                     export.titles << "Pick"
+
+                    String refYes = RDStore.YN_YES.getI10n('value')
+                    String refNo = RDStore.YN_NO.getI10n('value')
+                    export.rows.eachWithIndex { def field, int index ->
+                        if(export.rows[index][0] && export.rows[index][0].style == 'negative'){
+                            export.rows[index] << [field: refNo, style: 'negative']
+                        }else {
+                            export.rows[index] << [field: refYes, style: null]
+                        }
+
+                    }
+
                     Map sheetData = [:]
                     sheetData[g.message(code: 'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow: export.titles, columnData: export.rows]
                     wb = exportService.generateXLSXWorkbook(sheetData)
@@ -1669,6 +1691,9 @@ class SubscriptionController {
                     domainClName = IssueEntitlement.class.name
                     queryMap.remove('ieStatus')
                     queryMap.notStatus = RDStore.TIPP_STATUS_REMOVED.id.toString()
+                }
+                if(params.tab == 'currentPerpetualAccessIEs') {
+                    domainClName = IssueEntitlement.class.name
                 }
 
                 List<String> perpetuallyPurchasedTitleURLs = PermanentTitle.executeQuery('select pt.tipp.hostPlatformURL from PermanentTitle pt where pt.owner = :owner and pt.tipp.id in (select ti.id from TitleInstancePackagePlatform as ti where ti.pkg in (:pkgs))',
