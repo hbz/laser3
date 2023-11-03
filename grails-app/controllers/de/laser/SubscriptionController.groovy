@@ -1536,8 +1536,8 @@ class SubscriptionController {
                     queryMap.accessTypes = params.accessType
                     queryMap.accessMethods = params.accessMethod
                     queryMap.platform = Platform.get(params.platform)
-                    queryMap.sub = ctrlResult.result.subscription
-                    queryMap.ieStatus = RDStore.TIPP_STATUS_CURRENT
+                    //queryMap.sub = ctrlResult.result.subscription
+                    queryMap.status = RDStore.TIPP_STATUS_CURRENT.id
                     queryMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id
                     Map<String, List> export = exportService.generateTitleExportCustom(queryMap, TitleInstancePackagePlatform.class.name, monthsInRing.sort { Date monthA, Date monthB -> monthA <=> monthB }, ctrlResult.result.subscriber, perpetuallyPurchasedTitleURLs)
 
