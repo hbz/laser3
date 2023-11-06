@@ -1174,8 +1174,7 @@ class SubscriptionController {
             pkgIds.addAll(Package.executeQuery('select tipp.pkg.id from TitleInstancePackagePlatform tipp where tipp.gokbId in (:wekbIds)', [wekbIds: result.selectedTitles]))
             executorService.execute({
                 Thread.currentThread().setName("EntitlementEnrichment_${result.subscription.id}")
-                Sql sql = GlobalService.obtainSqlConnection()
-                subscriptionService.bulkAddEntitlements(result.subscription, result.selectedTitles, false, sql)
+                subscriptionService.bulkAddEntitlements(result.subscription, result.selectedTitles, false)
                 if(configMap.withChildrenKBART == 'on') {
                     childSubIds.each { Long childSubId ->
                         pkgIds.each { Long pkgId ->
@@ -1691,6 +1690,9 @@ class SubscriptionController {
                 ctrlResult.result
             }
         }
+        else if(params.containsKey('kbartPreselect')) {
+            render template: 'entitlementProcessResult', model: ctrlResult.result
+        }
         else {
             Map queryMap = [:]
             String filename
@@ -1826,7 +1828,8 @@ class SubscriptionController {
                         return
                     }
                 else ctrlResult.result
-            }else {
+            }
+            else {
                 ctrlResult.result
             }
         }

@@ -52,7 +52,9 @@
             </div>
         </g:if>
     </g:form>
-
+    <div class="localLoadingIndicator" hidden="hidden">
+        <div class="ui inline medium text loader active">Aktualisiere Daten ..</div>
+    </div>
     <div id="processResultWrapper"></div>
     <laser:script file="${this.getGroovyPageFileName()}">
         $('.action .icon.button').click(function () {
@@ -66,6 +68,7 @@
 
         $('#KBARTUploadForm form').submit(function(e) {
             e.preventDefault();
+            $('.localLoadingIndicator').show();
             //let kbart = $('#kbartPreselect').prop('files')[0];
             let formData = new FormData(this);
             //formData.append('kbartFile', kbart);
@@ -77,6 +80,7 @@
                 data: formData,
                 type: 'post',
                 success: function(response) {
+                    $('.localLoadingIndicator').hide();
                     $('#processResultWrapper').html(response);
                 }
             });

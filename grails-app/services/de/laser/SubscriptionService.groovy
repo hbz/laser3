@@ -1446,9 +1446,10 @@ join sub.orgRelations or_sub where
      * @param selectedTitles the {@link Map} containing identifiers of titles which have been selected for the enrichment
      * @param withPriceData should price data be added as well?
      * @param pickAndChoosePerpetualAccess are the given titles purchased perpetually?
-     * @param sql the SQL connection to the database
+     * @param issueEntitlementGroup if set, titles are being assigned to an issue entitlement group
      */
-    void bulkAddEntitlements(Subscription sub, Set <String> selectedTitles, boolean pickAndChoosePerpetualAccess, Sql sql) {
+    void bulkAddEntitlements(Subscription sub, Set <String> selectedTitles, boolean pickAndChoosePerpetualAccess, IssueEntitlementGroup ieGroup = null) {
+        Sql sql = GlobalService.obtainSqlConnection()
         Object[] keys = selectedTitles.toArray()
         sql.withTransaction {
             sql.executeUpdate('update issue_entitlement set ie_status_rv_fk = :current from title_instance_package_platform where ie_tipp_fk = tipp_id and ie_status_rv_fk = :expected and tipp_gokb_id = any(:keys) and ie_subscription_fk = :subId', [current: RDStore.TIPP_STATUS_CURRENT.id, expected: RDStore.TIPP_STATUS_EXPECTED.id, keys: sql.connection.createArrayOf('varchar', keys), subId: sub.id])
@@ -1470,6 +1471,14 @@ join sub.orgRelations or_sub where
                 sql.withBatch("insert into issue_entitlement (ie_version, ie_guid, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_status_rv_fk, ie_access_start_date, ie_access_end_date, ie_perpetual_access_by_sub_fk) " +
                         "select 0, concat('issueentitlement:',gen_random_uuid()), now(), now(), ${sub.id}, tipp_id, tipp_status_rv_fk, tipp_access_start_date, tipp_access_end_date, ${configMap.perpetualAccessBySub} from title_instance_package_platform where tipp_gokb_id = :wekbId") { BatchingStatementWrapper stmt ->
                     stmt.addBatch([wekbId: configMap.wekbId])
+                }
+            }
+            if(ieGroup) {
+                ieDirectMapSet.each { Map<String, Object> configMap ->
+                    sql.withBatch("insert into issue_entitlement_group_item (igi_version, igi_date_created, igi_last_updated, igi_ie_fk, igi_ie_group_fk) " +
+                            "select 0, now(), now(), ie_id, ${ieGroup.id} from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_gokb_id = :wekbId and ie_subscription_fk = :subId") { stmt ->
+                        stmt.addBatch([wekbId: configMap.wekbId, subId: sub.id])
+                    }
                 }
             }
             if(sub.hasPerpetualAccess) {
@@ -2388,8 +2397,8 @@ join sub.orgRelations or_sub where
 
         Integer count = 0
         Integer countSelectTipps = 0
-        Map<String, Object> selectedTipps = [:]
         Org contextOrg = contextService.getOrg()
+        Set selectedTipps = [], truncatedRows = []
 
         //List<Long> subscriptionIDs = surveyService.subscriptionsOfOrg(newSub.getSubscriber())
         if(subscription.packages.pkg) {
@@ -2397,7 +2406,7 @@ join sub.orgRelations or_sub where
             ArrayList<String> rows = stream.text.split('\n')
             Map<String, Integer> colMap = [zdbCol: -1, onlineIdentifierCol: -1, printIdentifierCol: -1, pick: -1, titleUrlCol: -1, titleIdCol: -1, doiCol: -1, doiTitleCol : -1]
             //read off first line of KBART file
-            List titleRow = rows.remove(0).split('\t'), truncatedRows = []
+            List titleRow = rows.remove(0).split('\t')
             titleRow.eachWithIndex { headerCol, int c ->
                 switch (headerCol.toLowerCase().trim()) {
                     case "zdb_id": colMap.zdbCol = c
@@ -2487,7 +2496,7 @@ join sub.orgRelations or_sub where
                                                 }
 
                                                 if (!ieInNewSub && allowedToSelect) {
-                                                    selectedTipps[tipp.id.toString()] = 'checked'
+                                                    selectedTipps << tipp.gokbId
                                                     countSelectTipps++
                                                 }
                                             }

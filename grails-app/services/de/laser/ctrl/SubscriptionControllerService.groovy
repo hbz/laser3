@@ -1877,42 +1877,23 @@ class SubscriptionControllerService {
                     MultipartFile kbartFile = params.kbartPreselect
                     InputStream stream = kbartFile.getInputStream()
                     result.selectProcess = subscriptionService.tippSelectForSurvey(stream, result.subscription, result.surveyConfig, subscriberSub)
+                    if (result.selectProcess.selectedTipps) {
+                        executorService.execute({
+                            IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
 
-                        if (result.selectProcess.selectedTipps) {
+                            if (!issueEntitlementGroup) {
+                                issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: result.surveyConfig.issueEntitlementGroupName)
+                                if (!issueEntitlementGroup.save())
+                                    log.error(issueEntitlementGroup.getErrors().getAllErrors().toListString())
+                            }
 
-                            Integer countTippsToAdd = 0
-                            result.selectProcess.selectedTipps.each {
-                                    TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findById(it.key)
-                                    if(tipp) {
-                                        try {
-
-                                            IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
-
-                                            if (!issueEntitlementGroup) {
-                                                issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: result.surveyConfig.issueEntitlementGroupName)
-                                                if(!issueEntitlementGroup.save())
-                                                    log.error(issueEntitlementGroup.getErrors().getAllErrors().toListString())
-                                            }
-
-                                            if (issueEntitlementGroup && subscriptionService.addEntitlement(subscriberSub, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
-                                                log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
-                                                ++countTippsToAdd
-                                            }
-                                        }
-                                        catch (EntitlementCreationException e) {
-                                            log.debug("Error: Adding tipp ${tipp} to sub ${subscriberSub.id}: " + e.getMessage())
-                                            result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps', null, LocaleUtils.getCurrentLocale())
-                                            [result: result, status: STATUS_ERROR]
-                                        }
-
-                                    }
-                                }
-                                if(countTippsToAdd > 0){
-                                    Object[] args = [countTippsToAdd]
-                                    result.message = messageSource.getMessage('renewEntitlementsWithSurvey.tippsToAdd',args,LocaleUtils.getCurrentLocale())
-                                }
-                        }
-
+                            if (issueEntitlementGroup) {
+                                subscriptionService.bulkAddEntitlements(subscriberSub, result.selectProcess.selectedTipps, result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)
+                            }
+                        })
+                        result.success = true
+                        [result: result, status: STATUS_OK]
+                    }
                 }
                 else {
                     result.checkedCache = checkedCache.get('checked')
@@ -2702,8 +2683,7 @@ class SubscriptionControllerService {
                     pkgIds.addAll(Package.executeQuery('select tipp.pkg.id from TitleInstancePackagePlatform tipp where tipp.gokbId in (:wekbIds)', [wekbIds: checked.keySet()]))
                     executorService.execute({
                         Thread.currentThread().setName("EntitlementEnrichment_${result.subscription.id}")
-                        Sql sql = GlobalService.obtainSqlConnection()
-                        subscriptionService.bulkAddEntitlements(result.subscription, issueEntitlementCandidates, checked, false, sql)
+                        subscriptionService.bulkAddEntitlements(result.subscription, issueEntitlementCandidates, false)
                         if(params.withChildren == 'on') {
                             childSubIds.each { Long childSubId ->
                                 pkgIds.each { Long pkgId ->
