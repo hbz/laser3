@@ -1161,17 +1161,17 @@ class SubscriptionController {
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
-    def selectEntitlementsFromKBART() {
+    def selectEntitlementsWithKBART() {
         Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
-        result.putAll(subscriptionService.selectEntitlementsFromKBART(params.kbartFile, result.subscription))
-        String filename = params.kbartFile.originalFilename
+        result.putAll(subscriptionService.selectEntitlementsWithKBART(params.kbartPreselect, result.subscription))
+        String filename = params.kbartPreselect.originalFilename
         if (result.selectedTitles) {
             Map<String, Object> configMap = params.clone()
             Set<Long> childSubIds = [], pkgIds = []
             if(configMap.withChildrenKBART == 'on') {
                 childSubIds.addAll(result.subscription.getDerivedSubscriptions().id)
             }
-            pkgIds.addAll(Package.executeQuery('select tipp.pkg.id from TitleInstancePackagePlatform tipp where tipp.gokbId in (:wekbIds)', [wekbIds: checked.keySet()]))
+            pkgIds.addAll(Package.executeQuery('select tipp.pkg.id from TitleInstancePackagePlatform tipp where tipp.gokbId in (:wekbIds)', [wekbIds: result.selectedTitles]))
             executorService.execute({
                 Thread.currentThread().setName("EntitlementEnrichment_${result.subscription.id}")
                 Sql sql = GlobalService.obtainSqlConnection()
@@ -1184,7 +1184,7 @@ class SubscriptionController {
                     }
                 }
 
-                if(globalService.isset(configMap.issueEntitlementGroupNewKBART) || globalService.isset(configMap.issueEntitlementGroupKBARTID)) {
+                if(globalService.isset(configMap, 'issueEntitlementGroupNewKBART') || globalService.isset(configMap, 'issueEntitlementGroupKBARTID')) {
                     IssueEntitlementGroup issueEntitlementGroup
                     if (configMap.issueEntitlementGroupNewKBART) {
 
@@ -1222,6 +1222,7 @@ class SubscriptionController {
                     }
                 }
             })
+            result.success = true
         }
         if (result.wrongTitles) {
             //background of this procedure: the editor adding titles via KBART wishes to receive a "counter-KBART" which will then be sent to the provider for verification
@@ -1234,9 +1235,12 @@ class SubscriptionController {
             }
             fos.flush()
             fos.close()
-            result.errorFile = "${filename}_matchingErrors"
+            result.token = "${filename}_matchingErrors"
+            result.fileformat = "kbart"
+            result.errorCount = result.wrongTitles.size()
+            result.errorKBART = true
         }
-        result
+        render template: 'entitlementProcessResult', model: result
     }
 
     /**

@@ -1863,12 +1863,12 @@ class SubscriptionControllerService {
 
 
             if (result.editable) {
-                SessionCacheWrapper sessionCache = contextService.getSessionCache()
-                Map<String, Object> checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}")
+                EhcacheWrapper userCache = contextService.getUserCache("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}")
+                Map<String, Object> checkedCache = userCache.get('selectedTitles')
 
                 if (!checkedCache) {
-                    sessionCache.put("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}", ["checked": [:]])
-                    checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}")
+                    userCache.put("selectedTitles", ["checked": [:]])
+                    checkedCache = userCache.get("selectedTitles")
                 }
 
                 if (params.kbartPreselect) {
@@ -1880,7 +1880,7 @@ class SubscriptionControllerService {
 
                         if (result.selectProcess.selectedTipps) {
 
-                                Integer countTippsToAdd = 0
+                            Integer countTippsToAdd = 0
                             result.selectProcess.selectedTipps.each {
                                     TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findById(it.key)
                                     if(tipp) {
@@ -1913,19 +1913,20 @@ class SubscriptionControllerService {
                                 }
                         }
 
-                    params.remove("kbartPreselect")
+                }
+                else {
+                    result.checkedCache = checkedCache.get('checked')
+                    result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
+
+                    result.allChecked = ""
+                    if (params.tab == 'allTipps' && result.countAllTipps > 0 && result.countAllTipps == result.checkedCount) {
+                        result.allChecked = "checked"
+                    }
+                    if (params.tab == 'selectedIEs' && result.countSelectedIEs > 0 && result.countSelectedIEs == result.checkedCount) {
+                        result.allChecked = "checked"
+                    }
                 }
 
-                result.checkedCache = checkedCache.get('checked')
-                result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
-
-                result.allChecked = ""
-                if (params.tab == 'allTipps' && result.countAllTipps > 0 && result.countAllTipps == result.checkedCount) {
-                    result.allChecked = "checked"
-                }
-                if (params.tab == 'selectedIEs' && result.countSelectedIEs > 0 && result.countSelectedIEs == result.checkedCount) {
-                    result.allChecked = "checked"
-                }
             }
 
             [result:result,status:STATUS_OK]
