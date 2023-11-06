@@ -1504,8 +1504,6 @@ class SubscriptionController {
                 File f = new File(dir+'/'+token)
                 Map<String, String> fileResult = [token: token]
                 if(!f.exists()) {
-                    //if needed for exportXLSStats - in that case, a new if block has to be built
-                    //exportResult = exportService.generateReport(params, true, true, true)
                     List monthsInRing = []
                     Calendar startTime = GregorianCalendar.getInstance(), endTime = GregorianCalendar.getInstance()
                     if (ctrlResult.result.subscriberSub.startDate && ctrlResult.result.subscriberSub.endDate) {
@@ -1531,7 +1529,11 @@ class SubscriptionController {
                                 [ieGroup: issueEntitlementGroup]))
                     }
 
-                    Map<String, Object> queryMap = params.clone()
+                    Map<String, Object> queryMap = [:]
+                    queryMap.sort = 'tipp.sortname'
+                    queryMap.order = 'asc'
+                    queryMap.revision = params.revision
+                    queryMap.reportType = params.reportType
                     queryMap.metricTypes = params.metricType
                     queryMap.accessTypes = params.accessType
                     queryMap.accessMethods = params.accessMethod
@@ -1593,22 +1595,13 @@ class SubscriptionController {
             Map queryMap = [:]
             String filename
             if(params.tab == 'allTipps') {
-                queryMap = [sub: ctrlResult.result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: ctrlResult.result.subscription.packages?.pkg?.id]
-                if(params.reportType)
-                    queryMap.reportType = params.reportType
-                if(params.metricType)
-                    queryMap.metricTypes = params.metricType
-                if(params.accessType)
-                    queryMap.accessTypes = params.accessType
-                if(params.accessMethod)
-                    queryMap.accessMethods = params.accessMethod
+                queryMap = [status: [RDStore.TIPP_STATUS_CURRENT.id], pkgIds: ctrlResult.result.subscription.packages?.pkg?.id]
                 filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.selectableTitles') + '_' + ctrlResult.result.subscription.dropdownNamingConvention())
             }
             if(params.tab == 'selectedIEs') {
                 queryMap = [sub: ctrlResult.result.subscriberSub, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: ctrlResult.result.subscription.packages?.pkg?.id, titleGroup: ctrlResult.result.titleGroup]
                 filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect') + '_' + ctrlResult.result.subscriberSub.dropdownNamingConvention())
             }
-            queryMap.platform = Platform.get(params.platform)
 
             if(params.tab == 'currentPerpetualAccessIEs') {
                 Set<Subscription> subscriptions = []
@@ -1634,7 +1627,6 @@ class SubscriptionController {
                     FileOutputStream out = new FileOutputStream(f)
                     String domainClName = IssueEntitlement.class.name
                     if(params.tab == 'allTipps') {
-                        queryMap.remove('sub')
                         domainClName = TitleInstancePackagePlatform.class.name
                     }
                     Map<String, List> tableData = exportService.generateTitleExportKBART(queryMap, domainClName)
@@ -1647,53 +1639,10 @@ class SubscriptionController {
                 Map fileResult = [token: filename, fileformat: 'kbart']
                 render template: '/templates/bulkItemDownload', model: fileResult
                 return
-            }
-            /*
-            if (params.exportForImport) {
-
-                List monthsInRing = []
-                if(ctrlResult.result.showStatisticByParticipant) {
-                    Calendar startTime = GregorianCalendar.getInstance(), endTime = GregorianCalendar.getInstance()
-                    if (ctrlResult.result.subscriberSub.startDate && ctrlResult.result.subscriberSub.endDate) {
-                        startTime.setTime(ctrlResult.result.subscriberSub.startDate)
-                        if (ctrlResult.result.subscriberSub.endDate < new Date())
-                            endTime.setTime(ctrlResult.result.subscriberSub.endDate)
-                    } else if (ctrlResult.result.subscriberSub.startDate) {
-                        startTime.setTime(ctrlResult.result.subscriberSub.startDate)
-                        endTime.setTime(new Date())
-                    }
-                    while (startTime.before(endTime)) {
-                        monthsInRing << startTime.getTime()
-                        startTime.add(Calendar.MONTH, 1)
-                    }
-                }
-                List<String> perpetuallyPurchasedTitleURLs = TitleInstancePackagePlatform.executeQuery('select tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (select oo.sub from OrgRole oo where oo.org = :org and oo.roleType in (:roleTypes)) and tipp.status = :tippStatus and ie.status = :tippStatus and ie.perpetualAccessBySub is not null',
-                [org: ctrlResult.result.subscriber, tippStatus: RDStore.TIPP_STATUS_CURRENT, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS]])
-
-                response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
-                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                Map<String, List> export = exportService.generateTitleExportCustom(queryMap, IssueEntitlement.class.name, monthsInRing.sort { Date monthA, Date monthB -> monthA <=> monthB }, ctrlResult.result.subscriber, perpetuallyPurchasedTitleURLs)
-                export.titles << "Pick"
-
-                Map sheetData = [:]
-                sheetData[g.message(code: 'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow: export.titles, columnData: export.rows]
-                wb = exportService.generateXLSXWorkbook(sheetData)
-                wb.write(response.outputStream)
-                response.outputStream.flush()
-                response.outputStream.close()
-                wb.dispose()
-                return
-            }
-            */
-            if (params.exportXLS) {
-                String domainClName = TitleInstancePackagePlatform.class.name
-                if(params.tab == 'selectedIEs') {
-                    domainClName = IssueEntitlement.class.name
-                    queryMap.remove('ieStatus')
-                    queryMap.notStatus = RDStore.TIPP_STATUS_REMOVED.id.toString()
-                }
-                if(params.tab == 'currentPerpetualAccessIEs') {
-                    domainClName = IssueEntitlement.class.name
+            }else if (params.exportXLS) {
+                String domainClName = IssueEntitlement.class.name
+                if(params.tab == 'allTipps') {
+                    domainClName = TitleInstancePackagePlatform.class.name
                 }
 
                 List<String> perpetuallyPurchasedTitleURLs = PermanentTitle.executeQuery('select pt.tipp.hostPlatformURL from PermanentTitle pt where pt.owner = :owner and pt.tipp.id in (select ti.id from TitleInstancePackagePlatform as ti where ti.pkg in (:pkgs))',
@@ -1732,18 +1681,8 @@ class SubscriptionController {
                 response.outputStream.close()
                 wb.dispose()
                 return
-            } else if (params.exportXLSStats) {
-                    if(wb) {
-                        response.setHeader "Content-disposition", "attachment; filename=report_${DateUtils.getSDF_yyyyMMdd().format(new Date())}.xlsx"
-                        response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                        wb.write(response.outputStream)
-                        response.outputStream.flush()
-                        response.outputStream.close()
-                        wb.dispose()
-                        return
-                    }
-                else ctrlResult.result
-            }else {
+            }
+            else {
                 ctrlResult.result
             }
         }
