@@ -566,7 +566,7 @@ class FinanceController  {
         }
         else {
             if(params.subId) {
-                redirect mapping: 'subfinance', controller: 'finance', action: 'index', params: [id: params.subId]
+                redirect mapping: 'subfinance', controller: 'finance', action: 'index', params: [sub: params.subId]
                 return
             }
             else {

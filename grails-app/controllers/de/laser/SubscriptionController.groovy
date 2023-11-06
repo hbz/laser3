@@ -17,14 +17,17 @@ import de.laser.survey.SurveyConfig
 import de.laser.utils.DateUtils
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import groovy.sql.Sql
 import groovy.time.TimeCategory
 import org.apache.commons.lang3.RandomStringUtils
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
+import org.springframework.transaction.TransactionStatus
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
 import java.time.Year
+import java.util.concurrent.ExecutorService
 
 /**
  * This controller is responsible for the subscription handling. Many of the controller calls do
@@ -41,12 +44,14 @@ class SubscriptionController {
     DeletionService deletionService
     DocstoreService docstoreService
     EscapeService escapeService
+    ExecutorService executorService
     ExportClickMeService exportClickMeService
     ExportService exportService
     GenericOIDService genericOIDService
+    GlobalService globalService
     GokbService gokbService
     LinksGenerationService linksGenerationService
-    ManagementService managementService
+    PackageService packageService
     SubscriptionControllerService subscriptionControllerService
     SubscriptionService subscriptionService
     SurveyService surveyService
@@ -1034,7 +1039,7 @@ class SubscriptionController {
         ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
     def addEntitlements() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.addEntitlements(this,params)
+        Map<String,Object> ctrlResult = subscriptionControllerService.addEntitlements(params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if(!ctrlResult.result) {
                 response.sendError(401)
@@ -1043,8 +1048,7 @@ class SubscriptionController {
         }
         else {
             String filename = "${escapeService.escapeString(ctrlResult.result.subscription.dropdownNamingConvention())}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
-            Map<String, Object> configMap = [:]
-            configMap.putAll(params)
+            Map<String, Object> configMap = params.clone()
             configMap.remove("subscription")
             configMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id //GORM sometimes does not initialise the sorted set
             ArrayList<TitleInstancePackagePlatform> tipps = []
@@ -1147,6 +1151,95 @@ class SubscriptionController {
             flash.message = message(code: 'default.deleted.message',args: args) as String
         }
         redirect action: 'index', id: params.sub
+    }
+
+    /**
+     * Call to preselect and add the selected entitlements via a KBART file
+     * @return the issue entitlement holding view
+     */
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+    })
+    def selectEntitlementsWithKBART() {
+        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
+        result.putAll(subscriptionService.selectEntitlementsWithKBART(params.kbartPreselect, result.subscription))
+        String filename = params.kbartPreselect.originalFilename
+        if (result.selectedTitles) {
+            Map<String, Object> configMap = params.clone()
+            Set<Long> childSubIds = [], pkgIds = []
+            if(configMap.withChildrenKBART == 'on') {
+                childSubIds.addAll(result.subscription.getDerivedSubscriptions().id)
+            }
+            pkgIds.addAll(Package.executeQuery('select tipp.pkg.id from TitleInstancePackagePlatform tipp where tipp.gokbId in (:wekbIds)', [wekbIds: result.selectedTitles]))
+            executorService.execute({
+                Thread.currentThread().setName("EntitlementEnrichment_${result.subscription.id}")
+                subscriptionService.bulkAddEntitlements(result.subscription, result.selectedTitles, false)
+                if(configMap.withChildrenKBART == 'on') {
+                    childSubIds.each { Long childSubId ->
+                        pkgIds.each { Long pkgId ->
+                            packageService.bulkAddHolding(sql, childSubId, pkgId, result.subscription.hasPerpetualAccess, result.subscription.id)
+                        }
+                    }
+                }
+
+                if(globalService.isset(configMap, 'issueEntitlementGroupNewKBART') || globalService.isset(configMap, 'issueEntitlementGroupKBARTID')) {
+                    IssueEntitlementGroup issueEntitlementGroup
+                    if (configMap.issueEntitlementGroupNewKBART) {
+
+                        IssueEntitlementGroup.withTransaction {
+                            issueEntitlementGroup = IssueEntitlementGroup.findBySubAndName(result.subscription, params.issueEntitlementGroupNewKBART) ?: new IssueEntitlementGroup(sub: result.subscription, name: configMap.issueEntitlementGroupNewKBART).save()
+                        }
+                    }
+
+                    if (configMap.issueEntitlementGroupKBARTID && configMap.issueEntitlementGroupKBARTID != '') {
+                        issueEntitlementGroup = IssueEntitlementGroup.findById(Long.parseLong(configMap.issueEntitlementGroupKBARTID))
+                    }
+
+                    if (issueEntitlementGroup) {
+                        issueEntitlementGroup.refresh()
+                        Object[] keys = result.selectedTitles.toArray()
+                        keys.each { String gokbUUID ->
+                            IssueEntitlement.withTransaction { TransactionStatus ts ->
+                                TitleInstancePackagePlatform titleInstancePackagePlatform = TitleInstancePackagePlatform.findByGokbId(gokbUUID)
+                                if (titleInstancePackagePlatform) {
+                                    IssueEntitlement ie = IssueEntitlement.findBySubscriptionAndTipp(result.subscription, titleInstancePackagePlatform)
+
+                                    if (issueEntitlementGroup && !IssueEntitlementGroupItem.findByIe(ie)) {
+                                        IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
+                                                ie: ie,
+                                                ieGroup: issueEntitlementGroup)
+
+                                        if (!issueEntitlementGroupItem.save()) {
+                                            log.error("Problem saving IssueEntitlementGroupItem by manual adding ${issueEntitlementGroupItem.getErrors().getAllErrors().toListString()}")
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                }
+            })
+            result.success = true
+        }
+        if (result.wrongTitles) {
+            //background of this procedure: the editor adding titles via KBART wishes to receive a "counter-KBART" which will then be sent to the provider for verification
+            String dir = GlobalService.obtainFileStorageLocation()
+            File f = new File(dir+"/${filename}_matchingErrors")
+            String returnKBART = exportService.generateSeparatorTableString(result.titleRow, result.wrongTitles, '\t')
+            FileOutputStream fos = new FileOutputStream(f)
+            fos.withWriter { Writer w ->
+                w.write(returnKBART)
+            }
+            fos.flush()
+            fos.close()
+            result.token = "${filename}_matchingErrors"
+            result.fileformat = "kbart"
+            result.errorCount = result.wrongTitles.size()
+            result.errorKBART = true
+        }
+        render template: 'entitlementProcessResult', model: result
     }
 
     /**
@@ -1597,6 +1690,9 @@ class SubscriptionController {
                 ctrlResult.result
             }
         }
+        else if(params.containsKey('kbartPreselect')) {
+            render template: 'entitlementProcessResult', model: ctrlResult.result
+        }
         else {
             Map queryMap = [:]
             String filename
@@ -1732,7 +1828,8 @@ class SubscriptionController {
                         return
                     }
                 else ctrlResult.result
-            }else {
+            }
+            else {
                 ctrlResult.result
             }
         }

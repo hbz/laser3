@@ -111,6 +111,9 @@
             </ui:exportDropdownItem>
         </g:if>--}%
     </ui:exportDropdown>
+    <ui:actionsDropdown>
+        <ui:actionsDropdownItem data-ui="modal" id="selectEntitlementsWithKBART" href="#KBARTUploadForm" message="subscription.details.addEntitlements.menu"/>
+    </ui:actionsDropdown>
 </ui:controlButtons>
 
 <ui:h1HeaderWithIcon text="${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.name}">
@@ -187,7 +190,9 @@
     </ui:msg>
 </g:if>
 
+<laser:render template="KBARTSelectionUploadFormModal"/>
 
+<%--
 <g:if test="${(params.tab == 'allTipps') && editable}">
 
     <ui:greySegment>
@@ -245,6 +250,7 @@
         </laser:script>
     </ui:greySegment>
 </g:if>
+--%>
 
 
 <div class="row">
