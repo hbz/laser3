@@ -177,11 +177,14 @@
 
     <ui:tabs actionName="${actionName}">
         <ui:tabsItem controller="myInstitution" action="currentSurveys"
+                     params="${tmpParams+[id: params.id, tab: 'open']}" text="${message(code: "surveys.tabs.open")}" tab="open"
+                     counts="${countSurveys.open}"/>
+       %{-- <ui:tabsItem controller="myInstitution" action="currentSurveys"
                         params="${tmpParams+[id: params.id, tab: 'new']}" text="${message(code: "surveys.tabs.new")}" tab="new"
                         counts="${countSurveys.new}"/>
         <ui:tabsItem controller="myInstitution" action="currentSurveys"
                         params="${tmpParams+[id: params.id, tab: 'processed']}" text="${message(code: "surveys.tabs.processed")}" tab="processed"
-                        counts="${countSurveys.processed}"/>
+                        counts="${countSurveys.processed}"/>--}%
         <ui:tabsItem controller="myInstitution" action="currentSurveys"
                         params="${tmpParams+[id: params.id, tab: 'finish']}" text="${message(code: "surveys.tabs.finish")}" tab="finish"
                         counts="${countSurveys.finish}"/>

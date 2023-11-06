@@ -865,6 +865,12 @@ class FilterService {
             queryParams << [endDate : params.endDate]
         }
 
+        if(params.tab == "open"){
+            query << "surOrg.org = :org and surOrg.finishDate is null and surInfo.status = :status"
+            queryParams << [status: RDStore.SURVEY_SURVEY_STARTED]
+            queryParams << [org : org]
+        }
+
         if(params.tab == "new"){
             query << "((surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status and" +
                     " exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.dateCreated = surResult.lastUpdated and surOrg.finishDate is null and surConfig.pickAndChoose = true and surResult.participant = :org)) " +
@@ -1940,9 +1946,9 @@ class FilterService {
                     params.asAt = new Timestamp(dateFilter.getTime())
                     whereClauses << "((:asAt >= tipp_access_start_date or tipp_access_start_date is null) and (:asAt <= tipp_access_end_date or tipp_access_end_date is null))"
                 }
-                if(configMap.status != null && !configMap.status.isEmpty()) {
-                    params.tippStatus = configMap.status instanceof String ? Long.parseLong(configMap.status) : configMap.status //already id
-                    whereClauses << "tipp_status_rv_fk = :tippStatus"
+                if(configMap.status != null && configMap.status != '') {
+                    params.tippStatus = connection.createArrayOf('bigint', listReaderWrapper(configMap, 'status').toArray())
+                    whereClauses << "tipp_status_rv_fk = any(:tippStatus)"
                 }
                 else if(configMap.notStatus != null && !configMap.notStatus.isEmpty()) {
                     params.tippStatus = configMap.notStatus instanceof String ? Long.parseLong(configMap.notStatus) : configMap.status //already id

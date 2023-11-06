@@ -1138,9 +1138,11 @@ class SurveyService {
         GrailsParameterMap tmpParams = (GrailsParameterMap) parameterMap.clone()
         if (contextOrg.isCustomerType_Consortium_Pro()) {
 
-            result = _setSurveyParticipantCounts(result, 'new', tmpParams, participant, contextOrg)
+            result = _setSurveyParticipantCounts(result, 'open', tmpParams, participant, contextOrg)
 
-            result = _setSurveyParticipantCounts(result, 'processed', tmpParams, participant, contextOrg)
+            //result = _setSurveyParticipantCounts(result, 'new', tmpParams, participant, contextOrg)
+
+            //result = _setSurveyParticipantCounts(result, 'processed', tmpParams, participant, contextOrg)
 
             result = _setSurveyParticipantCounts(result, 'finish', tmpParams, participant, contextOrg)
 
@@ -1151,9 +1153,11 @@ class SurveyService {
 
         }else {
 
-            result = _setSurveyParticipantCounts(result, 'new', tmpParams, participant, null)
+            result = _setSurveyParticipantCounts(result, 'open', tmpParams, participant, null)
 
-            result = _setSurveyParticipantCounts(result, 'processed', tmpParams, participant, null)
+            //result = _setSurveyParticipantCounts(result, 'new', tmpParams, participant, null)
+
+            //result = _setSurveyParticipantCounts(result, 'processed', tmpParams, participant, null)
 
             result = _setSurveyParticipantCounts(result, 'finish', tmpParams, participant, null)
 
