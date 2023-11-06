@@ -48,7 +48,19 @@
             </dl>
             <dl>
                 <dt class="control-label">${message(code: 'tipp.price.listPrice')}</dt>
-                <dd><g:formatNumber number="${sumListPriceSelectedIEs}" type="currency"/></dd>
+                <dd>
+                    <g:if test="${sumListPriceSelectedIEsEUR > 0}">
+                        <g:formatNumber
+                                number="${sumListPriceSelectedIEsEUR}" type="currency" currencyCode="EUR"/><br/>
+                    </g:if>
+                    <g:if test="${sumListPriceSelectedIEsUSD > 0}">
+                        <g:formatNumber
+                                number="${sumListPriceSelectedIEsUSD}" type="currency" currencyCode="USD"/><br/>
+                    </g:if>
+                    <g:if test="${sumListPriceSelectedIEsGBP > 0}">
+                        <g:formatNumber
+                                number="${sumListPriceSelectedIEsGBP}" type="currency" currencyCode="GBP"/><br/>
+                    </g:if>
             </dl>
         </div>
     </div>

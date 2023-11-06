@@ -63,12 +63,16 @@ class ControlledListService {
                 filter.put("query",params.query)
                 queryString += " and (genfunc_filter_matcher(o.name,:query) = true or genfunc_filter_matcher(o.sortname,:query) = true or exists(select alt from o.altnames alt where genfunc_filter_matcher(alt.name,:query) = true)) "
             }
-            Set providers = Org.executeQuery(queryString+" order by o.sortname asc",filter)
-            providers.each { p ->
+            Set<Org> providers = Org.executeQuery(queryString+" order by o.sortname asc",filter)
+            providers.each { Org p ->
                 if(params.tableView)
                     result.results.add(p)
-                else
-                    result.results.add([name:p.name,value:genericOIDService.getOID(p)])
+                else {
+                    String nameString = p.name
+                    if(p.gokbId)
+                        nameString += ' (we:kb)'
+                    result.results.add([name:nameString,value:genericOIDService.getOID(p)])
+                }
             }
         }
         result

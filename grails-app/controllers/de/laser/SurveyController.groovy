@@ -2055,7 +2055,9 @@ class SurveyController {
 
                    }*/
 
-                    result.sumListPriceSelectedIEs = surveyService.sumListPriceIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
+                    result.sumListPriceSelectedIEsEUR = surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_EUR)
+                    result.sumListPriceSelectedIEsUSD = surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_USD)
+                    result.sumListPriceSelectedIEsGBP = surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_GBP)
 
 
                     /* result.iesFixListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
@@ -2177,7 +2179,9 @@ class SurveyController {
 
                    }*/
 
-                    result.sumListPriceSelectedIEs = surveyService.sumListPriceIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
+                    result.sumListPriceSelectedIEsEUR = surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_EUR)
+                    result.sumListPriceSelectedIEsUSD = surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_USD)
+                    result.sumListPriceSelectedIEsGBP = surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_GBP)
 
 
                     /* result.iesFixListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
@@ -2839,7 +2843,6 @@ class SurveyController {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
      Map<String,Object> editSurveyCostItem() {
-        println('editSurveyCostItem')
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if(result.status == SubscriptionControllerService.STATUS_ERROR) {
             if (!result.result) {

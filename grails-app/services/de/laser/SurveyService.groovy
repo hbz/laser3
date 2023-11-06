@@ -893,17 +893,15 @@ class SurveyService {
 
         Org contextOrg = contextService.getOrg()
 
-        GrailsParameterMap tmpParams = (GrailsParameterMap) parameterMap.clone()
+        result = _setSurveyConfigCounts(result, 'created', parameterMap, contextOrg)
 
-        result = _setSurveyConfigCounts(result, 'created', tmpParams, contextOrg)
+        result = _setSurveyConfigCounts(result, 'active', parameterMap, contextOrg)
 
-        result = _setSurveyConfigCounts(result, 'active', tmpParams, contextOrg)
+        result = _setSurveyConfigCounts(result, 'finish', parameterMap, contextOrg)
 
-        result = _setSurveyConfigCounts(result, 'finish', tmpParams, contextOrg)
+        result = _setSurveyConfigCounts(result, 'inEvaluation', parameterMap, contextOrg)
 
-        result = _setSurveyConfigCounts(result, 'inEvaluation', tmpParams, contextOrg)
-
-        result = _setSurveyConfigCounts(result, 'completed', tmpParams, contextOrg)
+        result = _setSurveyConfigCounts(result, 'completed', parameterMap, contextOrg)
 
         return result
     }
@@ -924,9 +922,11 @@ class SurveyService {
 
         cloneParameterMap.tab = tab
         cloneParameterMap.remove('max')
+        cloneParameterMap.remove('offset')
 
         fsq = filterService.getSurveyConfigQueryConsortia(cloneParameterMap, sdFormat, owner)
-        result."${tab}" =  SurveyInfo.executeQuery(fsq.query, fsq.queryParams, cloneParameterMap).size()
+        String queryWithoutOrderBy = fsq.query.split('order by')[0]
+        result."${tab}" =  SurveyInfo.executeQuery("select count(*) "+queryWithoutOrderBy, fsq.queryParams, cloneParameterMap)[0]
 
         return result
     }
@@ -1800,11 +1800,11 @@ class SurveyService {
      * @param surveyConfig the {@link SurveyConfig} for which the issue entitlement group has been defined
      * @return the sum of {@link de.laser.finance.PriceItem#listPrice}s of the titles belonging to the given {@link IssueEntitlementGroup}
      */
-    BigDecimal sumListPriceIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
+    BigDecimal sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig, RefdataValue currency) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         BigDecimal sumListPrice = issueEntitlementGroup ?
-                IssueEntitlementGroupItem.executeQuery("select sum(p.listPrice) from PriceItem p where p.issueEntitlement in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)",
-                        [ieGroup: issueEntitlementGroup])[0]
+                IssueEntitlementGroupItem.executeQuery("select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency and p.issueEntitlement in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)",
+                        [ieGroup: issueEntitlementGroup, currency: currency])[0]
                 : 0.0
         sumListPrice
     }
@@ -1816,11 +1816,11 @@ class SurveyService {
      * @param surveyConfig the {@link SurveyConfig} for which the issue entitlement group has been defined
      * @return the sum of {@link de.laser.finance.PriceItem#listPrice}s of the titles belonging to the given {@link IssueEntitlementGroup}
      */
-    BigDecimal sumListPriceCurrentIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
+    BigDecimal sumListPriceInCurrencyOfCurrentIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig, RefdataValue currency) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         BigDecimal sumListPrice = issueEntitlementGroup ?
-                IssueEntitlementGroupItem.executeQuery("select sum(p.listPrice) from PriceItem p where p.issueEntitlement in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup) and p.issueEntitlement.status = :status",
-                        [ieGroup: issueEntitlementGroup, status: RDStore.TIPP_STATUS_CURRENT])[0]
+                IssueEntitlementGroupItem.executeQuery("select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency and p.issueEntitlement in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup) and p.issueEntitlement.status = :status",
+                        [ieGroup: issueEntitlementGroup, status: RDStore.TIPP_STATUS_CURRENT, currency: currency])[0]
                 : 0.0
         sumListPrice
     }

@@ -561,12 +561,18 @@ class FinanceController  {
     def importCostItems() {
         Map<String,Object> ctrlResult = financeService.importCostItems(params)
         if(ctrlResult.status == FinanceService.STATUS_ERROR) {
-            redirect controller: 'myInstitution', action: 'financeImport'
+            redirect controller: 'myInstitution', action: 'financeImport', params: [id: params.subId]
             return
         }
         else {
-            redirect action: 'index'
-            return
+            if(params.subId) {
+                redirect mapping: 'subfinance', controller: 'finance', action: 'index', params: [id: params.subId]
+                return
+            }
+            else {
+                redirect action: 'index'
+                return
+            }
         }
     }
 

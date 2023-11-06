@@ -11,6 +11,7 @@ import de.laser.IssueEntitlement
 import de.laser.License
 import de.laser.LicenseService
 import de.laser.LinksGenerationService
+import de.laser.OrganisationService
 import de.laser.ReportingGlobalService
 import de.laser.ReportingLocalService
 import de.laser.SubscriptionDiscountScale
@@ -66,6 +67,7 @@ class AjaxJsonController {
     GenericOIDService genericOIDService
     LicenseService licenseService
     LinksGenerationService linksGenerationService
+    OrganisationService organisationService
     ReportingGlobalService reportingGlobalService
     ReportingLocalService reportingLocalService
     SubscriptionService subscriptionService
@@ -944,6 +946,18 @@ class AjaxJsonController {
                 break
         }
         render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def loadOrganisationForMerge() {
+        Map<String, Object> mergeInfo = [:]
+        if(params.containsKey('source') && params.source.length() > 0) {
+            mergeInfo = organisationService.mergeOrganisations(genericOIDService.resolveOID(params.source), null, true)
+        }
+        else if(params.containsKey('target') && params.target.length() > 0) {
+            mergeInfo = organisationService.mergeOrganisations(genericOIDService.resolveOID(params.target), null, true)
+        }
+        render mergeInfo as JSON
     }
 
     /**

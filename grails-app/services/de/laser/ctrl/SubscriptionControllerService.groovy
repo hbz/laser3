@@ -1643,8 +1643,14 @@ class SubscriptionControllerService {
                 result.filterSet = query.filterSet
                 List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
 
-                result.tippsListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
-                        'where p.listPrice is not null and tipp.status.id = :tiStatus and tipp.id in (' + query.query + ' )', [tiStatus: RDStore.TIPP_STATUS_CURRENT.id]+query.queryParams)[0] ?: 0
+                result.tippsListPriceSumEUR = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
+                        'where p.listPrice is not null and p.listCurrency = :currency and tipp.status.id = :tiStatus and tipp.id in (' + query.query + ' )', [currency: RDStore.CURRENCY_EUR, tiStatus: RDStore.TIPP_STATUS_CURRENT.id]+query.queryParams)[0] ?: 0
+
+                result.tippsListPriceSumUSD = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
+                        'where p.listPrice is not null and p.listCurrency = :currency and tipp.status.id = :tiStatus and tipp.id in (' + query.query + ' )', [currency: RDStore.CURRENCY_USD, tiStatus: RDStore.TIPP_STATUS_CURRENT.id]+query.queryParams)[0] ?: 0
+
+                result.tippsListPriceSumGBP = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
+                        'where p.listPrice is not null and p.listCurrency = :currency and tipp.status.id = :tiStatus and tipp.id in (' + query.query + ' )', [currency: RDStore.CURRENCY_GBP, tiStatus: RDStore.TIPP_STATUS_CURRENT.id]+query.queryParams)[0] ?: 0
 
                 result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: params.sort, order: params.order]) : []
                 result.num_rows = titlesList.size()
@@ -1667,7 +1673,9 @@ class SubscriptionControllerService {
                     result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs, [sort: params.sort, order: params.order, offset: result.offset, max: result.max]) : []
                     result.num_rows = sourceIEs ? IssueEntitlement.countByIdInList(sourceIEs) : 0
 
-                    result.iesTotalListPriceSum = surveyService.sumListPriceCurrentIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
+                    result.iesTotalListPriceSumEUR = surveyService.sumListPriceInCurrencyOfCurrentIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_EUR)
+                    result.iesTotalListPriceSumUSD = surveyService.sumListPriceInCurrencyOfCurrentIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_USD)
+                    result.iesTotalListPriceSumGBP = surveyService.sumListPriceInCurrencyOfCurrentIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_GBP)
 
                 }
             } else if (params.tab == 'currentPerpetualAccessIEs') {
@@ -1686,8 +1694,14 @@ class SubscriptionControllerService {
                 result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs, [sort: params.sort, order: params.order, offset: result.offset, max: result.max]) : []
                 result.num_rows = sourceIEs ? IssueEntitlement.countByIdInList(sourceIEs) : 0
 
-                result.iesTotalListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                        'where p.listPrice is not null and ie.id in (:ieIDs)', [ieIDs: sourceIEs])[0] ?: 0
+                result.iesTotalListPriceSumEUR = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
+                        'where p.listPrice is not null and p.listCurrency = :currency and ie.id in (:ieIDs)', [currency: RDStore.CURRENCY_EUR, ieIDs: sourceIEs])[0] ?: 0
+
+                result.iesTotalListPriceSumUSD = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
+                        'where p.listPrice is not null and p.listCurrency = :currency and ie.id in (:ieIDs)', [currency: RDStore.CURRENCY_USD, ieIDs: sourceIEs])[0] ?: 0
+
+                result.iesTotalListPriceSumGBP = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
+                        'where p.listPrice is not null and p.listCurrency = :currency and ie.id in (:ieIDs)', [currency: RDStore.CURRENCY_GBP, ieIDs: sourceIEs])[0] ?: 0
             }
 
 
@@ -3782,7 +3796,6 @@ class SubscriptionControllerService {
                         result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList(params.list('targetSubs').collect { it -> Long.parseLong(it) }) : null
 
                         if (result.targetSubs) {
-                            println(result.targetSubs)
                             result.targetSubs.each { Subscription sub ->
                                 result.copyDiscountScales.each { SubscriptionDiscountScale subscriptionDiscountScale ->
                                     SubscriptionDiscountScale subDisSc = new SubscriptionDiscountScale(name: subscriptionDiscountScale.name,

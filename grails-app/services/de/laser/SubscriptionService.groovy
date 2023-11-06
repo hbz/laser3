@@ -222,14 +222,14 @@ class SubscriptionService {
 
         if(params.sort){
             String newSort = "sub.${params.sort}"
-            if(params.sort){
+            if(params.sort == 'providerAgency'){
                 newSort = "oo.org.name"
             }
 
             subscriptions = Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where (sub.id in (:subscriptions) and oo.roleType in (:providerAgency)) or sub.id in (:subscriptions) order by " + newSort +" "+ params.order + ", oo.org.name, sub.name " , [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
             //select ooo.sub.id from OrgRole ooo where ooo.roletype in (:providerAgency) and ooo.sub != null
         }else {
-            subscriptions = Subscription.executeQuery("select oo.sub from OrgRole oo join oo.org providerAgency where oo.sub.id in (:subscriptions) and oo.roleType in (:providerAgency) order by providerAgency.name, oo.sub.name ", [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
+            subscriptions = Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where (sub.id in (:subscriptions) and oo.roleType in (:providerAgency)) or sub.id in (:subscriptions) order by oo.org.name, sub.name ", [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
         }
         result.allSubscriptions = subscriptions
         if(!params.exportXLS)

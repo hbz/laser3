@@ -2135,26 +2135,24 @@ class MyInstitutionController  {
     })
     def generateFinanceImportWorksheet() {
         Subscription subscription = Subscription.get(params.id)
-        Set<String> keys = ["title","element","elementSign","referenceCodes","budgetCode","status","invoiceTotal",
-                            "currency","exchangeRate","taxType","taxRate","value","subscription","package",
-                            "issueEntitlement","datePaid","financialYear","dateFrom","dateTo","invoiceDate",
-                            "description","invoiceNumber","orderNumber"]
-        Set<List<String>> identifierRows = []
+        Set<String> keys = ["subscription","package","issueEntitlement","budgetCode","referenceCodes","orderNumber","invoiceNumber","status",
+                            "element","elementSign","currency","invoiceTotal","exchangeRate","value","taxType","taxRate","invoiceDate","financialYear","title","description","datePaid","dateFrom","dateTo"]
+        Set<List<String>> subscriptionRows = []
         Set<String> colHeaders = []
-        subscription.derivedSubscriptions.each { subChild ->
+        colHeaders.addAll(keys.collect { String entry -> message(code:"myinst.financeImport.${entry}") })
+        Subscription.executeQuery('select sub from OrgRole oo join oo.sub sub join oo.org org where sub.instanceOf = :parent order by org.sortname', [parent: subscription]).each { Subscription subChild ->
             List<String> row = []
             keys.eachWithIndex { String entry, int i ->
-                colHeaders << message(code:"myinst.financeImport.${entry}")
                 if(entry == "subscription") {
                     row[i] = subChild.globalUID
                 }
                 else row[i] = ""
             }
-            identifierRows << row
+            subscriptionRows << row
         }
-        String template = exportService.generateSeparatorTableString(colHeaders,identifierRows,",")
-        response.setHeader("Content-disposition", "attachment; filename=\"bulk_upload_template_${escapeService.escapeString(subscription.name)}.csv\"")
-        response.contentType = "text/csv"
+        String template = exportService.generateSeparatorTableString(colHeaders,subscriptionRows,"\t")
+        response.setHeader("Content-disposition", "attachment; filename=\"${escapeService.escapeString(subscription.name)}_finances.tsv\"")
+        response.contentType = "text/tsv"
         ServletOutputStream out = response.outputStream
         out.withWriter { writer ->
             writer.write(template)
@@ -2182,7 +2180,7 @@ class MyInstitutionController  {
                     Map<String,Map> financialData = financeService.financeImport(tsvFile)
                     result.candidates = financialData.candidates
                     result.budgetCodes = financialData.budgetCodes
-                    result.criticalErrors = [/*'ownerMismatchError',*/'noValidSubscription','multipleSubError','packageWithoutSubscription','noValidPackage','multipleSubPkgError',
+                    result.criticalErrors = [/*'ownerMismatchError',*/'noValidSubscription','multipleSubError','packageWithoutSubscription','noValidPackage','multipleSubPkgError','noCurrencyError','invalidCurrencyError',
                                              'packageNotInSubscription','entitlementWithoutPackageOrSubscription','noValidTitle','multipleTitleError','noValidEntitlement','multipleEntitlementError',
                                              'entitlementNotInSubscriptionPackage','multipleOrderError','multipleInvoiceError','invalidCurrencyError','invoiceTotalInvalid','valueInvalid','exchangeRateInvalid',
                                              'invalidTaxType','invalidYearFormat','noValidStatus','noValidElement','noValidSign']
@@ -2427,12 +2425,14 @@ class MyInstitutionController  {
 
                 }*/
 
-                result.sumListPriceSelectedIEs = surveyService.sumListPriceIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
+                result.sumListPriceSelectedIEsEUR = surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_EUR)
+                result.sumListPriceSelectedIEsUSD = surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_USD)
+                result.sumListPriceSelectedIEsGBP = surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_GBP)
 
 
-               /* result.iesFixListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                        'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
-                        [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
+                /* result.iesFixListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
+                         'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
+                         [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
                 result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
                 result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(result.subscription, false)
 
@@ -2518,7 +2518,7 @@ class MyInstitutionController  {
             }
         }
 
-        if(notProcessedMandatoryProperties.size() > 0){
+        if(!noParticipation && notProcessedMandatoryProperties.size() > 0){
             flash.error = message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')]) as String
         }
         else if(noParticipation || allResultHaveValue){

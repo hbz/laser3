@@ -9,9 +9,37 @@
 
 5349    06.11.2023  dev     3.3         David   Feature     Reporting: Verteilung Verträge - Lizenz
 
+5370    30.10.2023  dev     3.3         Andreas Bug         Identifier-Regex-Prüfung sorgte für HibernateException
+
+5354    30.10.2023  dev     3.3         Andreas Feature     globale Kopierfunktion auf Postanschriften erweitert
+
+5346    30.10.2023  dev     3.3         Andreas Feature     Sicht zur Zusammenlegung von Anbietern und Lieferanten gebaut
+
+--      30.10.2023  rc-3.2  3.2.7       Moe     Bug         Summen falsch in Titel-Umfragen
+
+5366    30.10.2023  rc-3.2  3.2.7       Andreas Bug         Listen wurden teilweise nicht korrekt aufgelöst
+
+5166    30.10.2023  dev     3.3         Moe     Feature     Pflichtmerkmale in Umfrage bei "Nein"
+
+5318    30.10.2023  dev     3.3         Moe     Bug         Meine Umfragen - Registerkarten - Zahlen stimmen nicht nach Blättern
+
+5360    27.10.2023  dev     3.3         Moe     Bug         Lizenzübertrag-Sicht überarbeiten
+
+5343    27.10.2023  dev     3.3         Andreas Feature     neue allgemeine Merkmale aufgenommen
+
 5344    27.10.2023  dev     3.3         David   Feature     In Kontextleiste per Klick Lizenzübertraginformationen anzeigen
 
 5361    26.10.2023  dev     3.3         David   Bug         Reporting: Falsche Jahresabfolge
+
+5353    26.10.2023  rc-3.2  3.2.7       Moe     Bug         Lizenzübertragung
+
+--      26.10.2023  rc-3.2  3.2.7       Moe     Bug         Lizenzkosten auch in Titel-Umfrage anzeigen
+
+--      26.10.2023  rc-3.2  3.2.7       Moe     Bug         Titel hinzufügen standardmäßig nicht anhaken von 'Zu Einrichtungslizenzen hinzufügen'
+
+--      26.10.2023  rc-3.2  3.2.7       Moe     Bug         Umfrage-Export funktioniert nicht richtig
+
+5345    25.10.2023  dev     3.3         Andreas Feature     Validierungsmuster für EZB-Identifier eingebaut
 
 5342    23.10.2023  rc-3.2  3.2.6       Andreas Bug         Teilnehmer konnten nicht mit Paketen hinzugefügt werden
 

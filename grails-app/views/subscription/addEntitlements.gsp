@@ -172,7 +172,7 @@
         <g:if test="${institution.isCustomerType_Consortium()}">
             <div class="field">
                 <div class="ui right floated checkbox toggle">
-                    <g:checkBox name="withChildren" value="${withChildren}" checked="true"/>
+                    <g:checkBox name="withChildren" value="${withChildren}"/>
                     <label><g:message code="subscription.details.addEntitlements.withChildren"/></label>
                 </div>
             </div>

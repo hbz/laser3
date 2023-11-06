@@ -27,7 +27,13 @@
        </div>
 
         <div class="field ${identifier && identifier.ns.ns == IdentifierNamespace.LEIT_ID ? 'required' : ''}">
-            <label for="value">${message(code: 'default.identifier.label')}:</label>
+            <label for="value">${message(code: 'default.identifier.label')}:
+                <i id="idExpl">
+                    <g:if test="${identifier && identifier.ns.id in namespacesWithValidations.keySet()}">
+                        ${namespacesWithValidations.get(identifier.ns.id).prompt}
+                    </g:if>
+                </i>
+            </label>
 
             <g:if test="${identifier && identifier.ns.ns == IdentifierNamespace.LEIT_ID}">
 
@@ -40,9 +46,17 @@
                     <input type="text" name="leitID3" value="${leitID.leitID3}" placeholder="${message(code: 'identifier.leitID.leitID3.info')} (${message(code: 'default.mandatory.tooltip')})" minlength="2" maxlength="2" pattern="[0-9]{2,2}" required>
                 </div>
             </g:if>
+            <g:if test="${identifier && identifier.ns.id in namespacesWithValidations.keySet()}">
+                <input type="text" id="value" name="value" data-prompt="${message(code: "validation.${identifier.ns.ns}Match")}" value="${identifier.value == IdentifierNamespace.UNKNOWN ? '' : identifier.value}" placeholder="${message(code: "identifier.${identifier.ns.ns.replaceAll(' ', '_')}.info")}" pattern="${identifier.ns.validationRegex}" required/>
+            </g:if>
+            <%--
             <g:elseif test="${identifier && identifier.ns.ns == IdentifierNamespace.WIBID}">
                 <input type="text" id="value" name="value" value="${identifier?.value == IdentifierNamespace.UNKNOWN ? '' : identifier?.value}" placeholder="${message(code: 'identifier.wibid.info')}" pattern="^(WIB)?\d{1,4}" required/>
             </g:elseif>
+            <g:elseif test="${identifier && identifier.ns.ns == IdentifierNamespace.EZB_ORG_ID}">
+                <input type="text" id="value" name="value" value="${identifier?.value == IdentifierNamespace.UNKNOWN ? '' : identifier?.value}" placeholder="${message(code: 'identifier.ezb.info')}" pattern="${IdentifierNamespace.findByNs(IdentifierNamespace.EZB_ORG_ID).validationRegex}" required/>
+            </g:elseif>
+            --%>
             <g:else>
                 <input type="text" id="value" name="value" value="${identifier?.value == IdentifierNamespace.UNKNOWN ? '' : identifier?.value}" required/>
             </g:else>
@@ -58,23 +72,48 @@
 </ui:modal>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    $.fn.form.settings.rules.wibidRegex = function() {
-        if($("#namespace").val() === '${IdentifierNamespace.findByNs(IdentifierNamespace.WIBID).id}' || $("#namespace").val() === '${IdentifierNamespace.findByNs(IdentifierNamespace.WIBID).getI10n('name')}') {
-            return $("#value").val().match(/^(WIB)?\d{1,4}/);
+    let dictionary = {};
+    let pattern;
+    <g:each in="${namespacesWithValidations}" var="entry">
+        <g:set var="key" value="${entry.getKey()}"/>
+        <g:set var="ns" value="${entry.getValue()}"/>
+        pattern = '${ns.pattern}';
+        dictionary["id${key}"] = {pattern: pattern.replaceAll('&#92;','\\'), prompt: '${ns.prompt}', placeholder: '${ns.placeholder}'.replaceAll('&quot;','"')};
+    </g:each>
+
+    $.fn.form.settings.rules.identifierRegex = function() {
+        if(dictionary.hasOwnProperty("id"+$("#namespace").val())) {
+            //"${IdentifierNamespace.findByNs(IdentifierNamespace.EZB_ORG_ID).validationRegex}".replaceAll('&#92;','\\')
+            return $("#value").val().match($("#value").attr("pattern"));
         }
         else return true;
     };
+
+    $('#namespace').change(function() {
+        if(dictionary.hasOwnProperty("id"+$(this).val())) {
+            let dictEntry = dictionary["id"+$(this).val()];
+            $("#value").attr("pattern", dictEntry.pattern);
+            $("#value").attr("placeholder", dictEntry.placeholder);
+            $("#idExpl").text(dictEntry.prompt);
+            $("#idExpl").show();
+        }
+        else {
+            $("#value").removeAttr("pattern");
+            $("#value").removeAttr("placeholder");
+            $("#idExpl").hide();
+        }
+    });
 
     $('#identifier').form({
         on: 'blur',
         inline: true,
         fields: {
-            wibid_regex: {
+            regex: {
                 identifier: 'value',
                 rules: [
                     {
-                        type: 'wibidRegex',
-                        prompt: '<g:message code="validation.wibidMatch"/>'
+                        type: 'identifierRegex',
+                        prompt: '${message(code: 'validation.generic')}'
                     }
                 ]
             }

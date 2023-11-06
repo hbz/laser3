@@ -637,7 +637,10 @@ class OrganisationController  {
             if(org.ids.find { Identifier id -> id.ns == IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_KR) })
                 nsList = nsList - IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_KR)
         }
-        render template: '/templates/identifier/modal_create', model: [orgInstance: org, nsList: nsList]
+
+        Map<String, Object> namespacesWithValidations = organisationService.getNamespacesWithValidations()
+
+        render template: '/templates/identifier/modal_create', model: [orgInstance: org, nsList: nsList, namespacesWithValidations: namespacesWithValidations]
     }
 
     /**
@@ -650,13 +653,15 @@ class OrganisationController  {
         Identifier identifier = Identifier.get(params.identifier)
         Org org = identifier?.org
 
+        Map<String, Object> namespacesWithValidations = organisationService.getNamespacesWithValidations()
+
         if (! identifier) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.search.identifier'), params.identifier]) as String
             redirect(url: request.getHeader('referer'))
             return
         }
 
-        render template: '/templates/identifier/modal_create', model: [orgInstance: org, identifier: identifier]
+        render template: '/templates/identifier/modal_create', model: [orgInstance: org, identifier: identifier, namespacesWithValidations: namespacesWithValidations]
     }
 
     /**
