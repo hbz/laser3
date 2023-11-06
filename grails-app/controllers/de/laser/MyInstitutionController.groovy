@@ -2272,7 +2272,7 @@ class MyInstitutionController  {
 
         //SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        params.tab = params.tab ?: 'new'
+        params.tab = params.tab ?: 'open'
 
         //if(params.tab != 'new'){
             params.sort = 'surInfo.endDate DESC, LOWER(surInfo.name)'
@@ -4026,7 +4026,7 @@ join sub.orgRelations or_sub where
 
         result.participant = Org.get(Long.parseLong(params.id))
 
-        params.tab = params.tab ?: 'new'
+        params.tab = params.tab ?: 'open'
 
         if(params.tab != 'new'){
             params.sort = 'surInfo.endDate DESC, LOWER(surInfo.name)'
