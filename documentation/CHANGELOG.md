@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5377    06.11.2023  dev     3.3         Andreas Feature     Admin-Sicht zur Lösung temporärer Dateien
+
 5358    06.11.2023  dev     3.3         Andreas Feature     Umrüstung der KBART-Vorauswahl
 
 5364    31.10.2023  dev     3.3         Andreas Feature     Kostentemplate für Lizenzen generieren

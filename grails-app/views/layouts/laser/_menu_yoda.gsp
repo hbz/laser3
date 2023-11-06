@@ -68,7 +68,7 @@
             </div>
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="yoda" action="statsSync">${message(code:'menu.admin.stats.sync')}</ui:link>
-                <ui:link addItemAttributes="true" controller="yoda" action="manageStatsSources">Übersicht der Statistik-Cursor</ui:link>
+                <ui:link addItemAttributes="true" controller="yoda" action="manageTempUsageFiles">${message(code:'menu.admin.stats.cache')}</ui:link>
                 <%--<ui:link addItemAttributes="true" controller="yoda" action="fetchStats" params="[(FormService.FORM_SERVICE_TOKEN): formService.getNewToken(), incremental: true]">${message(code:'menu.admin.stats.fetch.incremental')}</ui:link>--%>
                 <%--<ui:link addItemAttributes="true" controller="yoda" action="fetchStats" params="[(FormService.FORM_SERVICE_TOKEN): formService.getNewToken(), incremental: false]">${message(code:'menu.admin.stats.fetch')}</ui:link>--%>
             </div>
