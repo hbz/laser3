@@ -865,6 +865,12 @@ class FilterService {
             queryParams << [endDate : params.endDate]
         }
 
+        if(params.tab == "open"){
+            query << "surOrg.org = :org and surOrg.finishDate is null and surInfo.status = :status"
+            queryParams << [status: RDStore.SURVEY_SURVEY_STARTED]
+            queryParams << [org : org]
+        }
+
         if(params.tab == "new"){
             query << "((surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status and" +
                     " exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.dateCreated = surResult.lastUpdated and surOrg.finishDate is null and surConfig.pickAndChoose = true and surResult.participant = :org)) " +

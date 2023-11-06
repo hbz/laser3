@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords*
 
+--      06.11.2023  rc-3.2  3.2.8       Moe     Bug         Titel-Umfrage wird nicht bei meinen Umfragen angezeigt
+
 5379    06.11.2023  rc-3.2  3.2.8       Moe     Bug         Erweiterte Suche: "Tote" Plattformen als Ergebnis
 
 --      01.11.2023  rc-3.2  3.2.7       Moe     Bug         500er be ClickMeExcel vom Titel-Export
