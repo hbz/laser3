@@ -1537,312 +1537,179 @@ class SubscriptionControllerService {
 
             params.tab = params.tab ?: 'allTipps'
 
-            result.preselectValues = params.preselectValues == 'on'
-
-            //result.subscriptionIDs = []
-
-            result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
-            //result.showStatisticByParticipant = surveyService.showStatisticByParticipant(result.surveyConfig.subscription, result.subscriber)
-
-            result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(subscriberSub, result.surveyConfig)
-            result.countAllTipps = baseSub.packages ? TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.status = :status and pkg in (:pkgs)", [pkgs: baseSub.packages.pkg, status: RDStore.TIPP_STATUS_CURRENT])[0] : 0
-
-
-            if (result.editable) {
-                SessionCacheWrapper sessionCache = contextService.getSessionCache()
-                Map<String, Object> checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}")
-
-                if (!checkedCache) {
-                    sessionCache.put("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}", ["checked": [:]])
-                    checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}")
-                }
-
-                if (params.kbartPreselect) {
-                    //checkedCache.put('checked', [:])
-
-                    MultipartFile kbartFile = params.kbartPreselect
-                    InputStream stream = kbartFile.getInputStream()
-                    result.selectProcess = subscriptionService.tippSelectForSurvey(stream, baseSub, result.surveyConfig, subscriberSub)
-
-                    if (result.selectProcess.selectedTipps) {
-
-                        Integer countTippsToAdd = 0
-                        result.selectProcess.selectedTipps.each {
-                            TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findById(it.key)
-                            if(tipp) {
-                                try {
-
-                                    IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
-
-                                    if (!issueEntitlementGroup) {
-                                        issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: result.surveyConfig.issueEntitlementGroupName)
-                                        if(!issueEntitlementGroup.save())
-                                            log.error(issueEntitlementGroup.getErrors().getAllErrors().toListString())
-                                    }
-
-                                    if (issueEntitlementGroup && subscriptionService.addEntitlement(subscriberSub, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
-                                        log.debug("Added tipp ${tipp.gokbId} to sub ${subscriberSub.id}")
-                                        ++countTippsToAdd
-                                    }
-                                }
-                                catch (EntitlementCreationException e) {
-                                    log.debug("Error: Adding tipp ${tipp} to sub ${subscriberSub.id}: " + e.getMessage())
-                                    result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps', null, LocaleUtils.getCurrentLocale())
-                                    [result: result, status: STATUS_ERROR]
-                                }
-
-                            }
-                        }
-                        if(countTippsToAdd > 0){
-                            Object[] args = [countTippsToAdd]
-                            result.message = messageSource.getMessage('renewEntitlementsWithSurvey.tippsToAdd',args,LocaleUtils.getCurrentLocale())
-                        }
-                    }
-
-                    params.remove("kbartPreselect")
-                    params.tab = 'selectedIEs'
-                    result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(subscriberSub, result.surveyConfig)
-                }
-
-                result.checkedCache = checkedCache.get('checked')
-                result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
-
-                result.allChecked = ""
-                if (params.tab == 'allTipps' && result.countAllTipps > 0 && result.countAllTipps == result.checkedCount) {
-                    result.allChecked = "checked"
-                }
-                if (params.tab == 'selectedIEs' && result.countSelectedIEs > 0 && result.countSelectedIEs == result.checkedCount) {
-                    result.allChecked = "checked"
-                }
-            }
-
-
             Set<Subscription> subscriptions = []
-            if(result.surveyConfig.pickAndChoosePerpetualAccess) {
+            if (result.surveyConfig.pickAndChoosePerpetualAccess) {
                 subscriptions = linksGenerationService.getSuccessionChain(subscriberSub, 'sourceSubscription')
                 //subscriptions << subscriberSub
                 //result.subscriptionIDs = surveyService.subscriptionsOfOrg(result.subscriber)
-            }
-            else {
+            } else {
                 //subscriptions << previousSubscription
                 subscriptions << subscriberSub
 
             }
 
-            if (params.hasPerpetualAccess) {
-                    params.hasPerpetualAccessBySubs = subscriptions
-            }
+            if(!params.exportForImport) {
+                result.preselectValues = params.preselectValues == 'on'
 
-            List<Long> sourceIEs = []
-            if(params.tab == 'allTipps') {
-                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-                params.sort = params.sort ?: 'tipp.sortname'
-                params.order = params.order ?: 'asc'
-                Map<String, Object> query = filterService.getTippQuery(params, baseSub.packages.pkg)
-                result.filterSet = query.filterSet
-                List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+                //result.subscriptionIDs = []
 
-                result.tippsListPriceSumEUR = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
-                        'where p.listPrice is not null and p.listCurrency = :currency and tipp.status.id = :tiStatus and tipp.id in (' + query.query + ' )', [currency: RDStore.CURRENCY_EUR, tiStatus: RDStore.TIPP_STATUS_CURRENT.id]+query.queryParams)[0] ?: 0
+                result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
+                //result.showStatisticByParticipant = surveyService.showStatisticByParticipant(result.surveyConfig.subscription, result.subscriber)
 
-                result.tippsListPriceSumUSD = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
-                        'where p.listPrice is not null and p.listCurrency = :currency and tipp.status.id = :tiStatus and tipp.id in (' + query.query + ' )', [currency: RDStore.CURRENCY_USD, tiStatus: RDStore.TIPP_STATUS_CURRENT.id]+query.queryParams)[0] ?: 0
+                result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(subscriberSub, result.surveyConfig)
+                result.countAllTipps = baseSub.packages ? TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.status = :status and pkg in (:pkgs)", [pkgs: baseSub.packages.pkg, status: RDStore.TIPP_STATUS_CURRENT])[0] : 0
 
-                result.tippsListPriceSumGBP = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
-                        'where p.listPrice is not null and p.listCurrency = :currency and tipp.status.id = :tiStatus and tipp.id in (' + query.query + ' )', [currency: RDStore.CURRENCY_GBP, tiStatus: RDStore.TIPP_STATUS_CURRENT.id]+query.queryParams)[0] ?: 0
 
-                result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: params.sort, order: params.order]) : []
-                result.num_rows = titlesList.size()
+                if (result.editable) {
+                    SessionCacheWrapper sessionCache = contextService.getSessionCache()
+                    Map<String, Object> checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}")
 
-                if(baseSub.packages){
-                    result.packageInstance = baseSub.packages.pkg[0]
+                    if (!checkedCache) {
+                        sessionCache.put("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}", ["checked": [:]])
+                        checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}")
+                    }
+
+                    if (params.kbartPreselect) {
+                        //checkedCache.put('checked', [:])
+
+                        MultipartFile kbartFile = params.kbartPreselect
+                        InputStream stream = kbartFile.getInputStream()
+                        result.selectProcess = subscriptionService.tippSelectForSurvey(stream, baseSub, result.surveyConfig, subscriberSub)
+
+                        if (result.selectProcess.selectedTipps) {
+
+                            Integer countTippsToAdd = 0
+                            result.selectProcess.selectedTipps.each {
+                                TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findById(it.key)
+                                if (tipp) {
+                                    try {
+
+                                        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
+
+                                        if (!issueEntitlementGroup) {
+                                            issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: result.surveyConfig.issueEntitlementGroupName)
+                                            if (!issueEntitlementGroup.save())
+                                                log.error(issueEntitlementGroup.getErrors().getAllErrors().toListString())
+                                        }
+
+                                        if (issueEntitlementGroup && subscriptionService.addEntitlement(subscriberSub, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
+                                            log.debug("Added tipp ${tipp.gokbId} to sub ${subscriberSub.id}")
+                                            ++countTippsToAdd
+                                        }
+                                    }
+                                    catch (EntitlementCreationException e) {
+                                        log.debug("Error: Adding tipp ${tipp} to sub ${subscriberSub.id}: " + e.getMessage())
+                                        result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps', null, LocaleUtils.getCurrentLocale())
+                                        [result: result, status: STATUS_ERROR]
+                                    }
+
+                                }
+                            }
+                            if (countTippsToAdd > 0) {
+                                Object[] args = [countTippsToAdd]
+                                result.message = messageSource.getMessage('renewEntitlementsWithSurvey.tippsToAdd', args, LocaleUtils.getCurrentLocale())
+                            }
+                        }
+
+                        params.remove("kbartPreselect")
+                        params.tab = 'selectedIEs'
+                        result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(subscriberSub, result.surveyConfig)
+                    }
+
+                    result.checkedCache = checkedCache.get('checked')
+                    result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
+
+                    result.allChecked = ""
+                    if (params.tab == 'allTipps' && result.countAllTipps > 0 && result.countAllTipps == result.checkedCount) {
+                        result.allChecked = "checked"
+                    }
+                    if (params.tab == 'selectedIEs' && result.countSelectedIEs > 0 && result.countSelectedIEs == result.checkedCount) {
+                        result.allChecked = "checked"
+                    }
                 }
 
-            }else if(params.tab == 'selectedIEs') {
-                IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
-                if(issueEntitlementGroup) {
+                if (params.hasPerpetualAccess) {
+                    params.hasPerpetualAccessBySubs = subscriptions
+                }
+
+                List<Long> sourceIEs = []
+                if (params.tab == 'allTipps') {
+                    params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
                     params.sort = params.sort ?: 'tipp.sortname'
                     params.order = params.order ?: 'asc'
-                    params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-                    result.titleGroup = issueEntitlementGroup.id.toString()
-                    params.titleGroup = result.titleGroup
-                    Map query = filterService.getIssueEntitlementQuery(params, subscriberSub)
-                    sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
+                    Map<String, Object> query = filterService.getTippQuery(params, baseSub.packages.pkg)
+                    result.filterSet = query.filterSet
+                    List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
 
+                    result.tippsListPriceSumEUR = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
+                            'where p.listPrice is not null and p.listCurrency = :currency and tipp.status.id = :tiStatus and tipp.id in (' + query.query + ' )', [currency: RDStore.CURRENCY_EUR, tiStatus: RDStore.TIPP_STATUS_CURRENT.id] + query.queryParams)[0] ?: 0
+
+                    result.tippsListPriceSumUSD = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
+                            'where p.listPrice is not null and p.listCurrency = :currency and tipp.status.id = :tiStatus and tipp.id in (' + query.query + ' )', [currency: RDStore.CURRENCY_USD, tiStatus: RDStore.TIPP_STATUS_CURRENT.id] + query.queryParams)[0] ?: 0
+
+                    result.tippsListPriceSumGBP = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
+                            'where p.listPrice is not null and p.listCurrency = :currency and tipp.status.id = :tiStatus and tipp.id in (' + query.query + ' )', [currency: RDStore.CURRENCY_GBP, tiStatus: RDStore.TIPP_STATUS_CURRENT.id] + query.queryParams)[0] ?: 0
+
+                    result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: params.sort, order: params.order]) : []
+                    result.num_rows = titlesList.size()
+
+                    if (baseSub.packages) {
+                        result.packageInstance = baseSub.packages.pkg[0]
+                    }
+
+                } else if (params.tab == 'selectedIEs') {
+                    IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
+                    if (issueEntitlementGroup) {
+                        params.sort = params.sort ?: 'tipp.sortname'
+                        params.order = params.order ?: 'asc'
+                        params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                        result.titleGroup = issueEntitlementGroup.id.toString()
+                        params.titleGroup = result.titleGroup
+                        Map query = filterService.getIssueEntitlementQuery(params, subscriberSub)
+                        sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
+
+                        result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs, [sort: params.sort, order: params.order, offset: result.offset, max: result.max]) : []
+                        result.num_rows = sourceIEs ? IssueEntitlement.countByIdInList(sourceIEs) : 0
+
+                        result.iesTotalListPriceSumEUR = surveyService.sumListPriceInCurrencyOfCurrentIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_EUR)
+                        result.iesTotalListPriceSumUSD = surveyService.sumListPriceInCurrencyOfCurrentIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_USD)
+                        result.iesTotalListPriceSumGBP = surveyService.sumListPriceInCurrencyOfCurrentIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_GBP)
+
+                    }
+                } else if (params.tab == 'currentPerpetualAccessIEs') {
+                    params.sort = params.sort ?: 'tipp.sortname'
+                    params.order = params.order ?: 'asc'
+                    GrailsParameterMap parameterMap = params.clone()
+                    Map query = [:]
+                    if (subscriptions) {
+                        parameterMap.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                        parameterMap.hasPerpetualAccess = true
+                        parameterMap.hasPerpetualAccessBySubs = subscriptions
+                        query = filterService.getIssueEntitlementQuery(parameterMap, subscriptions)
+                        //List<Long> previousIes = previousSubscription ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
+                        sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
+                    }
                     result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs, [sort: params.sort, order: params.order, offset: result.offset, max: result.max]) : []
                     result.num_rows = sourceIEs ? IssueEntitlement.countByIdInList(sourceIEs) : 0
 
-                    result.iesTotalListPriceSumEUR = surveyService.sumListPriceInCurrencyOfCurrentIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_EUR)
-                    result.iesTotalListPriceSumUSD = surveyService.sumListPriceInCurrencyOfCurrentIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_USD)
-                    result.iesTotalListPriceSumGBP = surveyService.sumListPriceInCurrencyOfCurrentIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_GBP)
+                    result.iesTotalListPriceSumEUR = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
+                            'where p.listPrice is not null and p.listCurrency = :currency and ie.id in (:ieIDs)', [currency: RDStore.CURRENCY_EUR, ieIDs: sourceIEs])[0] ?: 0
 
+                    result.iesTotalListPriceSumUSD = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
+                            'where p.listPrice is not null and p.listCurrency = :currency and ie.id in (:ieIDs)', [currency: RDStore.CURRENCY_USD, ieIDs: sourceIEs])[0] ?: 0
+
+                    result.iesTotalListPriceSumGBP = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
+                            'where p.listPrice is not null and p.listCurrency = :currency and ie.id in (:ieIDs)', [currency: RDStore.CURRENCY_GBP, ieIDs: sourceIEs])[0] ?: 0
                 }
-            } else if (params.tab == 'currentPerpetualAccessIEs') {
-                params.sort = params.sort ?: 'tipp.sortname'
-                params.order = params.order ?: 'asc'
-                GrailsParameterMap parameterMap = params.clone()
-                Map query = [:]
-                if(subscriptions) {
-                    parameterMap.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-                    parameterMap.hasPerpetualAccess = true
-                    parameterMap.hasPerpetualAccessBySubs = subscriptions
-                    query = filterService.getIssueEntitlementQuery(parameterMap, subscriptions)
-                    //List<Long> previousIes = previousSubscription ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
-                    sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
-                }
-                result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs, [sort: params.sort, order: params.order, offset: result.offset, max: result.max]) : []
-                result.num_rows = sourceIEs ? IssueEntitlement.countByIdInList(sourceIEs) : 0
 
-                result.iesTotalListPriceSumEUR = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                        'where p.listPrice is not null and p.listCurrency = :currency and ie.id in (:ieIDs)', [currency: RDStore.CURRENCY_EUR, ieIDs: sourceIEs])[0] ?: 0
-
-                result.iesTotalListPriceSumUSD = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                        'where p.listPrice is not null and p.listCurrency = :currency and ie.id in (:ieIDs)', [currency: RDStore.CURRENCY_USD, ieIDs: sourceIEs])[0] ?: 0
-
-                result.iesTotalListPriceSumGBP = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                        'where p.listPrice is not null and p.listCurrency = :currency and ie.id in (:ieIDs)', [currency: RDStore.CURRENCY_GBP, ieIDs: sourceIEs])[0] ?: 0
-            }
-
-
-            //allIEsStats and holdingIEsStats are left active for possible backswitch
-            if(params.tab in ['topUsed']) {
-
-                if(!params.tabStat)
-                    params.tabStat = 'total'
-
-                String oldTab = params.tab
-                params.loadFor = oldTab
-                params.tab = params.tabStat
-                Set<Subscription> refSubs = subscriptions
-                subscriptions << baseSub
-                subscriptions << subscriberSub
-                Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription in (:subscriptions)", [subscriptions: refSubs])
-                Set<IdentifierNamespace> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name)] as Set<IdentifierNamespace>,
-                                         propIdNamespaces = IdentifierNamespace.findAllByNsInList(subscribedPlatforms.titleNamespace)
-                if(!subscribedPlatforms) {
-                    subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subscriptions)", [subscriptions: refSubs])
-                }
-                if(subscribedPlatforms) {
-                    namespaces.addAll(propIdNamespaces)
-                }
-                result.platformInstanceRecords = [:]
-                result.platforms = subscribedPlatforms
-                result.platformsJSON = subscribedPlatforms.globalUID as JSON
-                ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-                subscribedPlatforms.each { Platform platformInstance ->
-                    Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
-                    if (queryResult.error && queryResult.error == 404) {
-                        result.wekbServerUnavailable = message(code: 'wekb.error.404')
-                    }
-                    else if (queryResult.warning) {
-                        List records = queryResult.warning.result
-                        if(records[0]) {
-                            records[0].lastRun = platformInstance.counter5LastRun ?: platformInstance.counter4LastRun
-                            records[0].id = platformInstance.id
-                            result.platformInstanceRecords[platformInstance.gokbId] = records[0]
-                        }
-                    }
-                }
-                Subscription refSub
-                if(params.loadFor in ['allTippsStats', 'topUsed'])
-                    refSub = baseSub
-                else if(params.loadFor == 'holdingIEsStats')
-                    refSub = subscriberSub
-                Map<String, Object> dateRanges = getDateRange(params, refSub)
-                result.monthsInRing = dateRanges.monthsInRing
-                SortedSet<String> reportTypes = getAvailableReports(subscribedPlatforms, result)
-                result.reportTypes = reportTypes
-                if(params.reportType) {
-                    result.putAll(loadFilterList(params))
-                    Map<String, Map<String, TitleInstancePackagePlatform>> titles = [:] //structure: namespace -> value -> tipp
-                    Set<TitleInstancePackagePlatform> titlesSorted = [] //fallback structure to preserve sorting
-                    fetchTitles(params, refSubs, namespaces, 'ids').each { Map titleMap ->
-                        titlesSorted << titleMap.tipp
-                        Map<String, TitleInstancePackagePlatform> innerMap = titles.get(titleMap.namespace)
-                        if(!innerMap)
-                            innerMap = [:]
-                        innerMap.put(titleMap.value, titleMap.tipp)
-                        titles.put(titleMap.namespace, innerMap)
-                    }
-                    Map<TitleInstancePackagePlatform, Object> usages = [:]
-                    Map<TitleInstancePackagePlatform, Integer> usageTopList = [:]
-                    if(params.platform) {
-                        Platform platform = Platform.get(params.platform)
-                        IdentifierNamespace propIdNamespace = IdentifierNamespace.findByNs(platform.titleNamespace)
-                        Map<String, Object> queryParams = [reportType: params.reportType, customer: subscriberSub.getSubscriber(), platform: platform]
-                        if(params.metricType) {
-                            queryParams.metricTypes = params.list('metricType').join('%7C')
-                        }
-                        if(params.accessType) {
-                            queryParams.accessTypes = params.list('accessType').join('%7C')
-                        }
-                        if(params.accessMethod) {
-                            queryParams.accessMethods = params.list('accessMethod').join('%7C')
-                        }
-                        queryParams.startDate = dateRanges.startDate
-                        queryParams.endDate = dateRanges.endDate
-                        Map<String, Object> requestResponse = exportService.getReports(queryParams)
-                        if(result.platformInstanceRecords.get(platform.gokbId).counterR5SushiApiSupported == "Yes") {
-                            for(Map reportItem : requestResponse.items) {
-                                Map<String, String> identifierMap = exportService.buildIdentifierMap(reportItem, AbstractReport.COUNTER_5)
-                                TitleInstancePackagePlatform tipp = matchReport(titles, propIdNamespace, identifierMap)
-                                if(tipp) {
-                                    for(Map performance : reportItem.Performance) {
-                                        for(Map instance : performance.Instance) {
-                                            Map<String, Integer> metrics = usages.containsKey(tipp) ? usages.get(tipp): [:]
-                                            Integer topCount = usageTopList.containsKey(tipp) ? usageTopList.get(tipp) : 0
-                                            Integer metricCount = metrics.get(instance.Metric_Type) ?: 0, count = instance.Count as Integer
-                                            metricCount += count
-                                            metrics.put(instance.Metric_Type, metricCount)
-                                            if(metricCount > topCount)
-                                                usageTopList.put(tipp, metricCount)
-                                            usages.put(tipp, metrics)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        else if(result.platformInstanceRecords.get(platform.gokbId).counterR4SushiApiSupported == RDStore.YN_YES.value) {
-                            for(GPathResult reportItem : requestResponse.reports) {
-                                Map<String, String> identifierMap = exportService.buildIdentifierMap(reportItem, AbstractReport.COUNTER_4)
-                                TitleInstancePackagePlatform tipp = matchReport(titles, propIdNamespace, identifierMap)
-                                if(tipp) {
-                                    for(GPathResult performance : reportItem.'ns2:ItemPerformance') {
-                                        for(GPathResult instance : performance.'ns2:Instance') {
-                                            Map<String, Integer> metrics = usages.containsKey(tipp) ? usages.get(tipp): [:]
-                                            Integer topCount = usageTopList.containsKey(tipp) ? usageTopList.get(tipp) : 0
-                                            if((params.metricType && params.metricType == instance.'ns2:MetricType'.text()) || !params.metricType) {
-                                                Integer metricCount = metrics.get(instance.'ns2:MetricType') ?: 0, count = Integer.parseInt(instance.'ns2:Count'.text())
-                                                metricCount += count
-                                                metrics.put(instance.'ns2:MetricType', metricCount)
-                                                if(metricCount > topCount)
-                                                    usageTopList.put(tipp, metricCount)
-                                                usages.put(tipp, metrics)
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    result.total = usages.size()
-                    if(params.sort == 'count' && params.order == 'asc')
-                        result.topList = usageTopList.sort { Map.Entry<TitleInstancePackagePlatform, Integer> tippA, Map.Entry<TitleInstancePackagePlatform, Integer> tippB -> tippA.getValue() <=> tippB.getValue() }.drop(result.offset).take(result.max)
-                    else
-                        result.topList = usageTopList.sort { Map.Entry<TitleInstancePackagePlatform, Integer> tippA, Map.Entry<TitleInstancePackagePlatform, Integer> tippB -> tippB.getValue() <=> tippA.getValue() }.drop(result.offset).take(result.max)
-                    result.usages = usages
-                }
-                params.tab = oldTab
-            }
-
-
-            result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(result.subscription, false)
+                result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(result.subscription, false)
 
 /*            if (result.surveyConfig.pickAndChoosePerpetualAccess) {
                 result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)
             } else {
                 result.countCurrentIEs = subscriptionService.countCurrentIssueEntitlements(result.subscription)
             }*/
+            }
 
             result.subscriberSub = subscriberSub
             result.subscription = baseSub
