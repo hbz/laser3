@@ -241,14 +241,14 @@
             <p>
                 Gelistet werden alle relevanten Verträge - also Verträge, die Lizenzen konkret zugeordnet werden können.
             </p>
-            <p> Lizenzen ohne ausgewiesenen Vertrag werden in der Gruppe ${raw(icon_pink)}<strong>* ohne Vertrag</strong> zusammmen gefasst. </p>
+            <p> Lizenzen ohne ausgewiesenen Vertrag werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Vertrag</strong> zusammmen gefasst. </p>
         </g:if>
         <g:else>
             <p class="ui header"> Licenses of subscriptions </p>
             <p>
                 All relevant licenses are listed - i.e. licenses that can be specifically assigned to subscriptions.
             </p>
-            <p> Subscriptions without a designated license are summarized in the group ${raw(icon_pink)}<strong>* no License</strong>. </p>
+            <p> Subscriptions without a designated license are summarized in the group <i class="icon circle pink"></i><strong>* no License</strong>. </p>
         </g:else>
     </div>
 
@@ -259,7 +259,7 @@
                 Gelistet werden alle relevanten Anbieter - also Anbieter, die Lizenzen konkret zugeordnet werden können.
                 Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen und Anbieter.
             </p>
-            <p> Lizenzen ohne ausgewiesenen Anbieter werden in der Gruppe ${raw(icon_pink)}<strong>* ohne Anbieter</strong> zusammmen gefasst. </p>
+            <p> Lizenzen ohne ausgewiesenen Anbieter werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Anbieter</strong> zusammmen gefasst. </p>
         </g:if>
         <g:else>
             <p class="ui header"> Providers of subscriptions </p>
@@ -267,7 +267,7 @@
                 All relevant providers are listed - i.e. providers that can be specifically assigned to subscriptions.
                 The basic search determines the number of subscriptions and providers considered.
             </p>
-            <p> Subscriptions without a designated provider are summarized in the group ${raw(icon_pink)}<strong>* no Provider</strong>. </p>
+            <p> Subscriptions without a designated provider are summarized in the group <i class="icon circle pink"></i><strong>* no Provider</strong>. </p>
         </g:else>
     </div>
 
@@ -280,7 +280,7 @@
                 Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen, Einrichtungslizenzen und Anbieter.
             </p>
             <p>
-                Einrichtungslizenzen ohne ausgewiesenen Anbieter oder ohne passende Übereinstimmung werden in der Gruppe ${raw(icon_pink)}<strong>* keine Übereinstimmung</strong> zusammmen gefasst.
+                Einrichtungslizenzen ohne ausgewiesenen Anbieter oder ohne passende Übereinstimmung werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Übereinstimmung</strong> zusammmen gefasst.
             </p>
         </g:if>
         <g:else>
@@ -291,7 +291,7 @@
                 The basic search determines the number of subscriptions, participant subscriptions and providers considered.
             </p>
             <p>
-                Participant subscriptions without a designated provider or without a suitable match are grouped together in the ${raw(icon_pink)}<strong>* no Match</strong>.
+                Participant subscriptions without a designated provider or without a suitable match are grouped together in the <i class="icon circle pink"></i><strong>* no Match</strong>.
             </p>
         </g:else>
     </div>
@@ -305,10 +305,10 @@
             </p>
             <p>
                 Dabei sind folgende Varianten möglich: <br />
-                ${icon_blue} Die Plattform kann direkt über eine Referenz aus dem Lizenz-Bestand ermittelt werden, <br />
-                ${icon_green} Der einer Lizenz zugeordnete Anbieter verweist auf eine Plattform <br />
+                <i class="icon circle blue"></i> Die Plattform kann direkt über eine Referenz aus dem Lizenz-Bestand ermittelt werden, <br />
+                <i class="icon circle green"></i> Der einer Lizenz zugeordnete Anbieter verweist auf eine Plattform <br />
             </p>
-            <p> Lizenzen ohne ermittelbare Plattform werden in der Gruppe ${raw(icon_pink)}<strong>* ohne Plattform</strong> zusammmen gefasst. </p>
+            <p> Lizenzen ohne ermittelbare Plattform werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Plattform</strong> zusammmen gefasst. </p>
         </g:if>
         <g:else>
             <p class="ui header"> Platforms of subscriptions </p>
@@ -318,10 +318,10 @@
             </p>
             <p>
                 The following variants are possible: <br />
-                ${icon_blue} The platform can be determined directly by a reference from the subscription entitlements, <br />
-                ${icon_green} The provider assigned to a subscription refers to a platform <br />
+                <i class="icon circle blue"></i> The platform can be determined directly by a reference from the subscription entitlements, <br />
+                <i class="icon circle green"></i> The provider assigned to a subscription refers to a platform <br />
             </p>
-            <p> Subscriptions without assignable platforms are summarized in the group ${raw(icon_pink)}<strong>* without Platform</strong>. </p>
+            <p> Subscriptions without assignable platforms are summarized in the group <i class="icon circle pink"></i><strong>* without Platform</strong>. </p>
         </g:else>
     </div>
 
@@ -513,8 +513,8 @@
                 </ol>
             </p>
             <p>
-                Pakete ohne entsprechende Merkmale werden in der Gruppe ${raw(icon_pink)}<strong>* keine Angabe</strong> zusammmen gefasst. <br />
-                Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche Pakete werden unter ${icon_teal}<strong>* kein web:kb Objekt</strong> gelistet. <br />
+                Pakete ohne entsprechende Merkmale werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> zusammmen gefasst. <br />
+                Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche Pakete werden unter <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
             </p>
         </g:if>
         <g:else>
@@ -529,8 +529,8 @@
                 </ol>
             </p>
             <p>
-                Packages without corresponding properties are summarized in the group ${raw(icon_pink)}<strong>* no Information</strong>. <br />
-                Relevant data is missing without a <strong>we:kb</strong> counterpart - such packages are listed under ${icon_teal}<strong>* no web:kb object</strong>. <br />
+                Packages without corresponding properties are summarized in the group <i class="icon circle pink"></i><strong>* no Information</strong>. <br />
+                Relevant data is missing without a <strong>we:kb</strong> counterpart - such packages are listed under <i class="icon circle teal"></i><strong>* no web:kb object</strong>. <br />
             </p>
         </g:else>
     </div>
