@@ -2683,71 +2683,73 @@ class SubscriptionControllerService {
                         } else isUniqueListpriceColumn = true
                     }
                     Set<String> selectedTippIds = []
+                    List truncatedRows = []
                     TitleInstancePackagePlatform match
                     rows.eachWithIndex { row, int i ->
-                        log.debug("now processing record ${i}")
+                        log.debug("now processing record ${i+1}")
                         String titleUrl = null
                         match = null
                         Map<String, Object> ieCandidate = [:]
                         ArrayList<String> cols = row.split('\t')
-                        Map<String, Object> idCandidate = [:]
-                        String ieCandIdentifier
-                        if (colMap.titleIdCol >= 0 && !cols[colMap.titleIdCol]?.trim()?.isEmpty()) {
-                            identifiers.titleIds.add(cols[colMap.titleIdCol])
-                            idCandidate = [namespaces: namespaces.title_id, value: cols[colMap.titleIdCol]]
-                            if (issueEntitlementOverwrite[cols[colMap.titleIdCol]])
-                                ieCandidate = issueEntitlementOverwrite[cols[colMap.titleIdCol]]
-                            else ieCandIdentifier = cols[colMap.titleIdCol]
-                        }
-                        if (colMap.zdbCol >= 0 && !cols[colMap.zdbCol]?.trim()?.isEmpty()) {
-                            identifiers.zdbIds.add(cols[colMap.zdbCol])
-                            idCandidate = [namespaces: namespaces.zdb, value: cols[colMap.zdbCol]]
-                            if (ieCandIdentifier == null && issueEntitlementOverwrite[cols[colMap.zdbCol]])
-                                ieCandidate = issueEntitlementOverwrite[cols[colMap.zdbCol]]
-                            else ieCandIdentifier = cols[colMap.zdbCol]
-                        }
-                        if (colMap.onlineIdentifierCol >= 0 && !cols[colMap.onlineIdentifierCol]?.trim()?.isEmpty()) {
-                            identifiers.onlineIds.add(cols[colMap.onlineIdentifierCol])
-                            idCandidate = [namespaces: [], value: cols[colMap.onlineIdentifierCol]]
-                            idCandidate.namespaces.add(namespaces.eissn)
-                            idCandidate.namespaces.add(namespaces.eisbn)
-                            if (ieCandIdentifier == null && !issueEntitlementOverwrite[cols[colMap.onlineIdentifierCol]])
-                                ieCandIdentifier = cols[colMap.onlineIdentifierCol]
-                            else if (issueEntitlementOverwrite[cols[colMap.onlineIdentifierCol]])
-                                ieCandidate = issueEntitlementOverwrite[cols[colMap.onlineIdentifierCol]]
-                        }
-                        if (colMap.printIdentifierCol >= 0 && !cols[colMap.printIdentifierCol]?.trim()?.isEmpty()) {
-                            identifiers.printIds.add(cols[colMap.printIdentifierCol])
-                            idCandidate = [namespaces: [], value: cols[colMap.printIdentifierCol]]
-                            idCandidate.namespaces.add(namespaces.issn)
-                            idCandidate.namespaces.add(namespaces.isbn)
-                            if (ieCandIdentifier == null && !issueEntitlementOverwrite[cols[colMap.printIdentifierCol]])
-                                ieCandIdentifier = cols[colMap.printIdentifierCol]
-                            else if (issueEntitlementOverwrite[cols[colMap.printIdentifierCol]])
-                                ieCandidate = issueEntitlementOverwrite[cols[colMap.printIdentifierCol]]
-                        }
-                        if (colMap.doiCol >= 0 && !cols[colMap.doiCol]?.trim()?.isEmpty()) {
-                            identifiers.doiIds.add(cols[colMap.doiCol])
-                            idCandidate = [namespaces: namespaces.doi, value: cols[colMap.doiCol]]
-                            if (issueEntitlementOverwrite[cols[colMap.doiCol]])
-                                ieCandidate = issueEntitlementOverwrite[cols[colMap.doiCol]]
-                            else ieCandIdentifier = cols[colMap.doiCol]
-                        }
+                        if(cols.size() == titleRow.size()) {
+                            Map<String, Object> idCandidate = [:]
+                            String ieCandIdentifier
+                            if (colMap.titleIdCol >= 0 && !cols[colMap.titleIdCol]?.trim()?.isEmpty()) {
+                                identifiers.titleIds.add(cols[colMap.titleIdCol])
+                                idCandidate = [namespaces: namespaces.title_id, value: cols[colMap.titleIdCol]]
+                                if (issueEntitlementOverwrite[cols[colMap.titleIdCol]])
+                                    ieCandidate = issueEntitlementOverwrite[cols[colMap.titleIdCol]]
+                                else ieCandIdentifier = cols[colMap.titleIdCol]
+                            }
+                            if (colMap.zdbCol >= 0 && !cols[colMap.zdbCol]?.trim()?.isEmpty()) {
+                                identifiers.zdbIds.add(cols[colMap.zdbCol])
+                                idCandidate = [namespaces: namespaces.zdb, value: cols[colMap.zdbCol]]
+                                if (ieCandIdentifier == null && issueEntitlementOverwrite[cols[colMap.zdbCol]])
+                                    ieCandidate = issueEntitlementOverwrite[cols[colMap.zdbCol]]
+                                else ieCandIdentifier = cols[colMap.zdbCol]
+                            }
+                            if (colMap.onlineIdentifierCol >= 0 && !cols[colMap.onlineIdentifierCol]?.trim()?.isEmpty()) {
+                                identifiers.onlineIds.add(cols[colMap.onlineIdentifierCol])
+                                idCandidate = [namespaces: [], value: cols[colMap.onlineIdentifierCol]]
+                                idCandidate.namespaces.add(namespaces.eissn)
+                                idCandidate.namespaces.add(namespaces.eisbn)
+                                if (ieCandIdentifier == null && !issueEntitlementOverwrite[cols[colMap.onlineIdentifierCol]])
+                                    ieCandIdentifier = cols[colMap.onlineIdentifierCol]
+                                else if (issueEntitlementOverwrite[cols[colMap.onlineIdentifierCol]])
+                                    ieCandidate = issueEntitlementOverwrite[cols[colMap.onlineIdentifierCol]]
+                            }
+                            if (colMap.printIdentifierCol >= 0 && !cols[colMap.printIdentifierCol]?.trim()?.isEmpty()) {
+                                identifiers.printIds.add(cols[colMap.printIdentifierCol])
+                                idCandidate = [namespaces: [], value: cols[colMap.printIdentifierCol]]
+                                idCandidate.namespaces.add(namespaces.issn)
+                                idCandidate.namespaces.add(namespaces.isbn)
+                                if (ieCandIdentifier == null && !issueEntitlementOverwrite[cols[colMap.printIdentifierCol]])
+                                    ieCandIdentifier = cols[colMap.printIdentifierCol]
+                                else if (issueEntitlementOverwrite[cols[colMap.printIdentifierCol]])
+                                    ieCandidate = issueEntitlementOverwrite[cols[colMap.printIdentifierCol]]
+                            }
+                            if (colMap.doiCol >= 0 && !cols[colMap.doiCol]?.trim()?.isEmpty()) {
+                                identifiers.doiIds.add(cols[colMap.doiCol])
+                                idCandidate = [namespaces: namespaces.doi, value: cols[colMap.doiCol]]
+                                if (issueEntitlementOverwrite[cols[colMap.doiCol]])
+                                    ieCandidate = issueEntitlementOverwrite[cols[colMap.doiCol]]
+                                else ieCandIdentifier = cols[colMap.doiCol]
+                            }
 
-                        if (colMap.titleUrlCol >= 0 && !cols[colMap.titleUrlCol]?.trim()?.isEmpty()) {
-                            titleUrl = cols[colMap.titleUrlCol].replace("\r", "")
-                        }
+                            if (colMap.titleUrlCol >= 0 && !cols[colMap.titleUrlCol]?.trim()?.isEmpty()) {
+                                titleUrl = cols[colMap.titleUrlCol].replace("\r", "")
+                            }
 
-                        if (!titleUrl && ((colMap.titleIdCol >= 0 && cols[colMap.titleIdCol].trim().isEmpty()) || colMap.titleIdCol < 0) &&
-                                ((colMap.zdbCol >= 0 && cols[colMap.zdbCol].trim().isEmpty()) || colMap.zdbCol < 0) &&
-                                ((colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol].trim().isEmpty()) || colMap.onlineIdentifierCol < 0) &&
-                                ((colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol].trim().isEmpty()) || colMap.printIdentifierCol < 0) &&
-                                ((colMap.doiCol >= 0 && cols[colMap.doiCol].trim().isEmpty()) || colMap.doiCol < 0)) {
-                            unidentifiedTitles << cols
-                        } else {
-                            //make checks ...
-                            //is title in LAS:eR?
-                            /*
+                            if (!titleUrl && ((colMap.titleIdCol >= 0 && cols[colMap.titleIdCol].trim().isEmpty()) || colMap.titleIdCol < 0) &&
+                                    ((colMap.zdbCol >= 0 && cols[colMap.zdbCol].trim().isEmpty()) || colMap.zdbCol < 0) &&
+                                    ((colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol].trim().isEmpty()) || colMap.onlineIdentifierCol < 0) &&
+                                    ((colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol].trim().isEmpty()) || colMap.printIdentifierCol < 0) &&
+                                    ((colMap.doiCol >= 0 && cols[colMap.doiCol].trim().isEmpty()) || colMap.doiCol < 0)) {
+                                unidentifiedTitles << cols
+                            } else {
+                                //make checks ...
+                                //is title in LAS:eR?
+                                /*
                             should be changed due to excessive performance loss
                             String ieQuery = "select tipp from TitleInstancePackagePlatform tipp where tipp.pkg in (:subPkgs) and "
                             Map ieQueryParams = [subPkgs: subPkgs]
@@ -2774,122 +2776,128 @@ class SubscriptionControllerService {
                             log.debug("after matchingTipps ${System.currentTimeMillis()-start} msecs")
                              */
 
-                            if(titleUrl) {
-                                match = TitleInstancePackagePlatform.findByHostPlatformURL(titleUrl)
-                            }
-                            if(idCandidate.value && !match) {
-                                List<TitleInstancePackagePlatform> matches = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:pkgs) and id.value = :value and id.ns in (:namespaces) and tipp.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, pkgs: subPkgs, value: idCandidate.value.replace("\r",""), namespaces: idCandidate.namespaces])
-                                if(matches)
-                                    match = matches[0]
-                            }
-
-                            if (match) {
-                                String tippKey = match.gokbId
-                            //if ((idCandidate.value && titleIdentifierMap.containsKey(idCandidate.value.replace("\r", ""))) || titleIdentifierMap.containsKey(titleUrl)) {
-                                //String tippKey = titleIdentifierMap.containsKey(titleUrl) ? titleIdentifierMap.get(titleUrl) : titleIdentifierMap.get(idCandidate.value.replace("\r", ""))
-                                //is title already added?
-                                if (addedTipps.contains(tippKey)) {
-                                    displayErrorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${messageSource.getMessage('subscription.details.addEntitlements.titleAlreadyAdded', null, locale)}")
+                                if (titleUrl) {
+                                    match = TitleInstancePackagePlatform.findByHostPlatformURL(titleUrl)
                                 }
-                                /*
+                                if (idCandidate.value && !match) {
+                                    List<TitleInstancePackagePlatform> matches = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:pkgs) and id.value = :value and id.ns in (:namespaces) and tipp.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, pkgs: subPkgs, value: idCandidate.value.replace("\r", ""), namespaces: idCandidate.namespaces])
+                                    if (matches)
+                                        match = matches[0]
+                                }
+
+                                if (match) {
+                                    String tippKey = match.gokbId
+                                    //if ((idCandidate.value && titleIdentifierMap.containsKey(idCandidate.value.replace("\r", ""))) || titleIdentifierMap.containsKey(titleUrl)) {
+                                    //String tippKey = titleIdentifierMap.containsKey(titleUrl) ? titleIdentifierMap.get(titleUrl) : titleIdentifierMap.get(idCandidate.value.replace("\r", ""))
+                                    //is title already added?
+                                    if (addedTipps.contains(tippKey)) {
+                                        displayErrorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${messageSource.getMessage('subscription.details.addEntitlements.titleAlreadyAdded', null, locale)}")
+                                    }
+                                    /*
                                 else {
                                     //TEST!
                                     match = TitleInstancePackagePlatform.findByGokbId(tippKey)
                                 }
                                 */
-                            }
-                            else {
-                               /* if(matchingTipps)
+                                } else {
+                                    /* if(matchingTipps)
                                     errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol > -1 ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${messageSource.getMessage('subscription.details.addEntitlements.titleNotInPackage', null, locale)}")
                                 else
                                     errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol > -1 ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${messageSource.getMessage('subscription.details.addEntitlements.titleNotInERMS', null, locale)}")
                           */
-                                returnErrorList << cols
-                            }
-                        }
-                        List<Map> ieCoverages
-                        if (ieCandidate.coverages)
-                            ieCoverages = ieCandidate.coverages
-                        else ieCoverages = []
-                        Map covStmt = [:]
-                        colMap.each { String colName, int colNo ->
-                            if (colNo > -1 && cols[colNo]) {
-                                String cellEntry = cols[colNo].trim()
-                                if (result.preselectCoverageDates) {
-                                    switch (colName) {
-                                        case "dateFirstInPrintCol": ieCandidate.dateFirstInPrint = cellEntry
-                                            break
-                                        case "dateFirstOnlineCol": ieCandidate.dateFirstOnline = cellEntry
-                                            break
-                                        case "startDateCol": covStmt.startDate = cellEntry
-                                            break
-                                        case "startVolumeCol": covStmt.startVolume = cellEntry
-                                            break
-                                        case "startIssueCol": covStmt.startIssue = cellEntry
-                                            break
-                                        case "endDateCol": covStmt.endDate = cellEntry
-                                            break
-                                        case "endVolumeCol": covStmt.endVolume = cellEntry
-                                            break
-                                        case "endIssueCol": covStmt.endIssue = cellEntry
-                                            break
-                                        case "accessStartDateCol": ieCandidate.accessStartDate = cellEntry
-                                            break
-                                        case "accessEndDateCol": ieCandidate.accessEndDate = cellEntry
-                                            break
-                                        case "embargoCol": covStmt.embargo = cellEntry
-                                            break
-                                        case "coverageDepthCol": covStmt.coverageDepth = cellEntry
-                                            break
-                                        case "coverageNotesCol": covStmt.coverageNote = cellEntry
-                                            break
-                                    }
+                                    returnErrorList << cols
                                 }
-                                if (result.uploadPriceInfo && isUniqueListpriceColumn) {
-                                    try {
+                            }
+                            List<Map> ieCoverages
+                            if (ieCandidate.coverages)
+                                ieCoverages = ieCandidate.coverages
+                            else ieCoverages = []
+                            Map covStmt = [:]
+                            colMap.each { String colName, int colNo ->
+                                if (colNo > -1 && cols[colNo]) {
+                                    String cellEntry = cols[colNo].trim()
+                                    if (result.preselectCoverageDates) {
                                         switch (colName) {
-                                            //locally negotiated price items do not have list prices; thus the mapping redundant mapping
-                                            case "listPriceCol": ieCandidate.localPrice = escapeService.parseFinancialValue(cellEntry)
+                                            case "dateFirstInPrintCol": ieCandidate.dateFirstInPrint = cellEntry
                                                 break
-                                            case "listCurrencyCol": ieCandidate.localCurrency = RefdataValue.getByValueAndCategory(cellEntry, RDConstants.CURRENCY)?.value
+                                            case "dateFirstOnlineCol": ieCandidate.dateFirstOnline = cellEntry
                                                 break
-                                            case "listPriceEurCol": ieCandidate.localPrice = escapeService.parseFinancialValue(cellEntry)
-                                                ieCandidate.localCurrency = RDStore.CURRENCY_EUR.value
+                                            case "startDateCol": covStmt.startDate = cellEntry
                                                 break
-                                            case "listPriceUsdCol": ieCandidate.localPrice = escapeService.parseFinancialValue(cellEntry)
-                                                ieCandidate.localCurrency = RDStore.CURRENCY_USD.value
+                                            case "startVolumeCol": covStmt.startVolume = cellEntry
                                                 break
-                                            case "listPriceGbpCol": ieCandidate.localPrice = escapeService.parseFinancialValue(cellEntry)
-                                                ieCandidate.localCurrency = RDStore.CURRENCY_GBP.value
+                                            case "startIssueCol": covStmt.startIssue = cellEntry
                                                 break
-                                            case "localPriceCol": ieCandidate.localPrice = escapeService.parseFinancialValue(cellEntry)
+                                            case "endDateCol": covStmt.endDate = cellEntry
                                                 break
-                                            case "localCurrencyCol": ieCandidate.localCurrency = RefdataValue.getByValueAndCategory(cellEntry, RDConstants.CURRENCY)?.value
+                                            case "endVolumeCol": covStmt.endVolume = cellEntry
                                                 break
-                                            case "priceDateCol": ieCandidate.priceDate = cellEntry
+                                            case "endIssueCol": covStmt.endIssue = cellEntry
+                                                break
+                                            case "accessStartDateCol": ieCandidate.accessStartDate = cellEntry
+                                                break
+                                            case "accessEndDateCol": ieCandidate.accessEndDate = cellEntry
+                                                break
+                                            case "embargoCol": covStmt.embargo = cellEntry
+                                                break
+                                            case "coverageDepthCol": covStmt.coverageDepth = cellEntry
+                                                break
+                                            case "coverageNotesCol": covStmt.coverageNote = cellEntry
                                                 break
                                         }
                                     }
-                                    catch (NumberFormatException e) {
-                                        log.error("Unparseable number ${cellEntry}")
+                                    if (result.uploadPriceInfo && isUniqueListpriceColumn) {
+                                        try {
+                                            switch (colName) {
+                                            //locally negotiated price items do not have list prices; thus the mapping redundant mapping
+                                                case "listPriceCol": ieCandidate.localPrice = escapeService.parseFinancialValue(cellEntry)
+                                                    break
+                                                case "listCurrencyCol": ieCandidate.localCurrency = RefdataValue.getByValueAndCategory(cellEntry, RDConstants.CURRENCY)?.value
+                                                    break
+                                                case "listPriceEurCol": ieCandidate.localPrice = escapeService.parseFinancialValue(cellEntry)
+                                                    ieCandidate.localCurrency = RDStore.CURRENCY_EUR.value
+                                                    break
+                                                case "listPriceUsdCol": ieCandidate.localPrice = escapeService.parseFinancialValue(cellEntry)
+                                                    ieCandidate.localCurrency = RDStore.CURRENCY_USD.value
+                                                    break
+                                                case "listPriceGbpCol": ieCandidate.localPrice = escapeService.parseFinancialValue(cellEntry)
+                                                    ieCandidate.localCurrency = RDStore.CURRENCY_GBP.value
+                                                    break
+                                                case "localPriceCol": ieCandidate.localPrice = escapeService.parseFinancialValue(cellEntry)
+                                                    break
+                                                case "localCurrencyCol": ieCandidate.localCurrency = RefdataValue.getByValueAndCategory(cellEntry, RDConstants.CURRENCY)?.value
+                                                    break
+                                                case "priceDateCol": ieCandidate.priceDate = cellEntry
+                                                    break
+                                            }
+                                        }
+                                        catch (NumberFormatException e) {
+                                            log.error("Unparseable number ${cellEntry}")
+                                        }
                                     }
                                 }
                             }
-                        }
-                        if(covStmt) {
-                            ieCoverages.add(covStmt)
-                            ieCandidate.coverages = ieCoverages
-                        }
-                        if(result.subscription && match) {
-                            boolean participantPerpetualAccessToTitle = match.gokbId in perpetualAccessList
-                            //surveyService.hasParticipantPerpetualAccessToTitle3(result.subscriber, match)
-                            if(!participantPerpetualAccessToTitle) {
-                                issueEntitlementOverwrite[match.gokbId] = ieCandidate
-                                selectedTippIds << match.gokbId
+                            if (covStmt) {
+                                ieCoverages.add(covStmt)
+                                ieCandidate.coverages = ieCoverages
                             }
+                            if (result.subscription && match) {
+                                boolean participantPerpetualAccessToTitle = match.gokbId in perpetualAccessList
+                                //surveyService.hasParticipantPerpetualAccessToTitle3(result.subscriber, match)
+                                if (!participantPerpetualAccessToTitle) {
+                                    issueEntitlementOverwrite[match.gokbId] = ieCandidate
+                                    selectedTippIds << match.gokbId
+                                }
+                            }
+                        }else {
+                            truncatedRows << i
                         }
                     }
                     result.checked = [:]
+                    if(truncatedRows.size() > 0){
+                        Object[] args = [truncatedRows.join(', ')]
+                        result.error = messageSource.getMessage('subscription.details.addEntitlements.truncatedRows', args, locale)
+                    }
                     result.issueEntitlementOverwrite = issueEntitlementOverwrite
                     selectedTippIds.removeAll(addedTipps)
                     selectedTippIds.each { String wekbId ->

@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords*
 
+--      06.11.2023  rc-3.2  3.2.8       Moe     Bug         Nicht richtige Verarbeitung von Zeilenumbrüche im KBArt-Upload 
+
 --      06.11.2023  rc-3.2  3.2.8       Moe     Bug         Titel-Umfrage wird nicht bei meinen Umfragen angezeigt
 
 5379    06.11.2023  rc-3.2  3.2.8       Moe     Bug         Erweiterte Suche: "Tote" Plattformen als Ergebnis
