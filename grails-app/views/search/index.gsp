@@ -300,7 +300,7 @@
                                         <g:each in="${object.platforms?.sort { it.name }}" var="platform">
                                             <div class="item">
                                             <g:link controller="platform" action="show"
-                                                    id="${platform.id}">${platform.name}</g:link>
+                                                    id="${platform.dbId}">${platform.name}</g:link>
                                             </div>
                                         </g:each>
                                     </div>

@@ -5,7 +5,17 @@
     Changelog for version A.B.C = all tickets in A.B.C-1
 
 
-**Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
+**Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords*
+
+--      06.11.2023  rc-3.2  3.2.8       Moe     Bug         Nicht richtige Verarbeitung von Zeilenumbrüche im KBArt-Upload 
+
+--      06.11.2023  rc-3.2  3.2.8       Moe     Bug         Titel-Umfrage wird nicht bei meinen Umfragen angezeigt
+
+5379    06.11.2023  rc-3.2  3.2.8       Moe     Bug         Erweiterte Suche: "Tote" Plattformen als Ergebnis
+
+--      01.11.2023  rc-3.2  3.2.7       Moe     Bug         500er be ClickMeExcel vom Titel-Export
+
+--      01.11.2023  rc-3.2  3.2.7       Moe     Bug         Titelumfrage: Export der Statistik geht nicht
 
 5382    07.11.2023  dev     3.3         David   Feature     Reporting: Zuordnungsjahr von Lizenzen
 
@@ -14,6 +24,12 @@
 5377    06.11.2023  dev     3.3         Andreas Feature     Admin-Sicht zur Lösung temporärer Dateien
 
 5358    06.11.2023  dev     3.3         Andreas Feature     Umrüstung der KBART-Vorauswahl
+
+5369    31.10.2023  rc-3.2  3.2.7       Moe     Bug         Titelumfrage: Export der ausgewählten Titel fehlt
+
+5371    31.10.2023  rc-3.2  3.2.7       Moe     Bug         Export Gesamttitelliste Thieme Titelumfrage scheitert
+
+--      31.10.2023  rc-3.2  3.2.7       Moe     Bug         Bei Titel hinzufügen im KBart Upload mit dem Titel Matching
 
 5364    31.10.2023  dev     3.3         Andreas Feature     Kostentemplate für Lizenzen generieren
 

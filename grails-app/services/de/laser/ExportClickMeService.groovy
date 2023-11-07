@@ -5043,7 +5043,7 @@ class ExportClickMeService {
                 if (fieldKey.startsWith('tippIdentifiers.')) {
                     if (result) {
                         Long id = Long.parseLong(fieldKey.split("\\.")[1])
-                        List<Identifier> identifierList = Identifier.executeQuery("select ident from Identifier ident where ident.tipp = :tipp and ident.ns.id in (:namespaces)", [tipp: result.tipp, namespaces: [id]])
+                        List<Identifier> identifierList = Identifier.executeQuery("select ident from Identifier ident where ident.tipp = :tipp and ident.ns.id in (:namespaces)", [tipp: result, namespaces: [id]])
                         if (identifierList) {
                             row.add(createTableCell(format, identifierList.value.join(";")))
                         } else {
