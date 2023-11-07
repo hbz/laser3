@@ -1150,6 +1150,8 @@ class SurveyService {
 
             result = _setSurveyParticipantCounts(result, 'termination', tmpParams, participant, contextOrg)
 
+            //result = _setSurveyParticipantCounts(result, 'all', tmpParams, participant, contextOrg)
+
 
         }else {
 
@@ -1164,6 +1166,8 @@ class SurveyService {
             result = _setSurveyParticipantCounts(result, 'notFinish', tmpParams, participant, null)
 
             result = _setSurveyParticipantCounts(result, 'termination', tmpParams, participant, null)
+
+            //result = _setSurveyParticipantCounts(result, 'all', tmpParams, participant, contextOrg)
         }
         return result
     }
@@ -1865,6 +1869,11 @@ class SurveyService {
     String surveyMailTextAsString(SurveyInfo surveyInfo, boolean reminder = false) {
         Locale language = new Locale("de")
         groovyPageRenderer.render view: '/mailTemplates/text/notificationSurvey', model: [language: language, survey: surveyInfo, reminder: reminder]
+    }
+
+    String surveysMailTextAsString(List<SurveyInfo> surveys, boolean reminder = false) {
+        Locale language = new Locale("de")
+        groovyPageRenderer.render view: '/mailTemplates/text/notificationSurveys', model: [language: language, surveys: surveys, reminder: reminder]
     }
 
 }
