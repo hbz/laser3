@@ -478,7 +478,12 @@
             nativeForm.forEach((value, key) => fd[key] = value);
         }
         <g:each in="${params.keySet()}" var="param">
-            fd.${param} = '${params[param]}';
+            <g:if test="${params[param] instanceof ArrayList}">
+                fd.${param} = ['${params[param].join("','")}']
+            </g:if>
+            <g:else>
+                fd.${param} = '${params[param]}';
+            </g:else>
         </g:each>
         $.ajax({
             url: "<g:createLink action="currentTitles"/>",

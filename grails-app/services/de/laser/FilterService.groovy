@@ -1847,7 +1847,7 @@ class FilterService {
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
-                base_qry += "order by ${params.sort} ${params.order} "
+                base_qry += "order by ${params.sort} ${params.order}, tipp.sortname "
         }
         else {
             base_qry += "order by tipp.sortname"

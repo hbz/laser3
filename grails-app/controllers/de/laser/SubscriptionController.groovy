@@ -1638,6 +1638,13 @@ class SubscriptionController {
                         startTime.setTime(ctrlResult.result.subscriberSub.startDate)
                         endTime.setTime(new Date())
                     }
+                    else {
+                        //test access e.g.
+                        startTime.set(Calendar.MONTH, 0)
+                        startTime.set(Calendar.DAY_OF_MONTH, 1)
+                        startTime.add(Calendar.YEAR, -1)
+                        endTime.setTime(new Date())
+                    }
                     while (startTime.before(endTime)) {
                         monthsInRing << startTime.getTime()
                         startTime.add(Calendar.MONTH, 1)

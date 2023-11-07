@@ -60,6 +60,7 @@ import java.text.SimpleDateFormat
 class MyInstitutionController  {
 
     AddressbookService addressbookService
+    CacheService cacheService
     ContextService contextService
     ComparisonService comparisonService
     CustomerTypeService customerTypeService
@@ -1484,7 +1485,6 @@ class MyInstitutionController  {
 
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         boolean defaultSet = false
-        /*
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date())
             checkedDate = sdf.parse(result.validOn)
@@ -1501,22 +1501,16 @@ class MyInstitutionController  {
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        List<Subscription> filterSub = []
+        List<Long> filterSub = []
         if(params.containsKey('filterSub')) {
             //it is unclear for me why it is unable to use the params.list() method resp. why Grails does not recognise the filter param as list ...
             if(params.filterSub.contains(',')) {
                 params.filterSub.split(',').each { String oid ->
-                    Subscription sub = genericOIDService.resolveOID(oid)
-                    if(sub) {
-                        filterSub << sub
-                    }
+                    filterSub << Long.parseLong(oid.split(':')[1])
                 }
             }
-            else {
-                Subscription sub = genericOIDService.resolveOID(params.filterSub)
-                if (sub) {
-                    filterSub << sub
-                }
+            else if(params.filterSub.length() > 0) {
+                filterSub << Long.parseLong(params.filterSub.split(':')[1])
             }
         }
         List<Org> filterPvd = []
@@ -1551,7 +1545,7 @@ class MyInstitutionController  {
         }
         log.debug("Using params: ${params}")
 
-        Map<String,Object> qryParams = [
+        Map<String,Object> qryParams = [:], subQryParams = [
                 institution: result.institution,
                 //removed: RDStore.TIPP_STATUS_REMOVED
         ]
@@ -1591,26 +1585,29 @@ class MyInstitutionController  {
         }
 
         if (filterSub) {
-            subscriptionQueryFilter << "sub in (:selSubs)"
-            qryParams.selSubs = filterSub
+            subscriptionQueryFilter << "sub.id in (:selSubs)"
+            subQryParams.selSubs = filterSub
         }
         else {
             //temp restriction on current subscriptions
             subscriptionQueryFilter << "(sub.status = :subStatus or sub.hasPerpetualAccess = true)"
-            qryParams.subStatus = RDStore.SUBSCRIPTION_CURRENT
+            subQryParams.subStatus = RDStore.SUBSCRIPTION_CURRENT
         }
-
+        String pkgJoin = ""
         if (filterHostPlat) {
+            pkgJoin = "join sub.packages sp join sp.pkg pkg"
             subscriptionQueryFilter << "pkg.nominalPlatform in (:platforms)"
-            qryParams.platforms = filterHostPlat
+            subQryParams.platforms = filterHostPlat
         }
 
         if (filterPvd) {
+            pkgJoin = "join sub.packages sp join sp.pkg pkg"
             subscriptionQueryFilter << "pkg in (select op.pkg from OrgRole op where op.org in (:selPvd) and op.roleType in (:provTypes))"
-            qryParams.selPvd = filterPvd
-            qryParams.provTypes = [RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER]
+            subQryParams.selPvd = filterPvd
+            subQryParams.provTypes = [RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER]
         }
-
+        qryParams.subIds = Subscription.executeQuery("select sub.id from Subscription sub join sub.orgRelations oo "+pkgJoin+" where oo.org = :institution and "+subscriptionQueryFilter.join(" and "), subQryParams)
+        prf.setBenchmark('before sub IDs')
         List<String> countQueryFilter = queryFilter.clone()
         Map<String, Object> countQueryParams = qryParams.clone()
 
@@ -1619,20 +1616,18 @@ class MyInstitutionController  {
             params.list('status').each { String statusId ->
                 status << RefdataValue.get(statusId)
             }
-            queryFilter << "tipp.status in (:status)"
+            queryFilter << "ie.status in (:status)"
             qryParams.status = status
         }
-        countQueryFilter << "tipp.status != :removed"
+        countQueryFilter << "ie.status != :removed"
         countQueryParams.removed = RDStore.TIPP_STATUS_REMOVED
 
         //String havingClause = params.filterMultiIE ? 'having count(ie.ie_id) > 1' : ''
 
 
-        //String qryString = "from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join sub.orgRelations oo join ie.status status where sub.status = :current and oo.roleType in (:orgRoles) and oo.org = :institution "
-        String qryString = "from TitleInstancePackagePlatform tipp where exists (select ie.id from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo join sub.packages sp join sp.pkg pkg where ie.tipp = tipp and oo.org = :institution "
-        if(subscriptionQueryFilter)
-            qryString += ' and '+subscriptionQueryFilter.join(' and ')
-        qryString += ')'
+        String qryString = "from IssueEntitlement ie join ie.tipp tipp where ie.subscription.id in (:subIds) "
+        //String qryString = "from TitleInstancePackagePlatform tipp where exists (select ie.id from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo join sub.packages sp join sp.pkg pkg where ie.tipp = tipp and oo.org = :institution "
+
         String countQueryString = qryString
         if(queryFilter) {
             qryString += ' and ' + queryFilter.join(' and ')
@@ -1647,8 +1642,20 @@ class MyInstitutionController  {
             qryParams = [cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER], contextOrg: result.institution, roleTypes: orgRoles, current: RDStore.SUBSCRIPTION_CURRENT, removed: RDStore.TIPP_STATUS_REMOVED]
         }
         */
+        MessageDigest messageDigest = MessageDigest.getInstance("SHA-256")
+        Map<String, Object> cachingKeys = params.clone()
+        cachingKeys.remove("offset")
+        cachingKeys.remove("max")
+        String checksum = "${result.user.id}_${cachingKeys.entrySet().join('_')}"
+        messageDigest.update(checksum.getBytes())
+        EhcacheWrapper subCache = cacheService.getTTL300Cache("/myInstitution/currentTitles/subCache/${messageDigest.digest().encodeHex()}")
         if(!params.containsKey('fileformat')) {
-            List counts = IssueEntitlement.executeQuery('select new map(count(*) as count, tipp.status as status) '+countQueryString+' group by tipp.status', countQueryParams)
+            prf.setBenchmark('before counts')
+            List counts = subCache.get('counts')
+            if(!counts) {
+                counts = IssueEntitlement.executeQuery('select new map(count(*) as count, ie.status as status) ' + countQueryString + ' group by ie.status', countQueryParams)
+                subCache.put('counts', counts)
+            }
             result.allIECounts = 0
             counts.each { row ->
                 switch (row['status']) {
@@ -1685,7 +1692,7 @@ class MyInstitutionController  {
         //add order by clause because of group by clause in the count query
         String orderByClause
         if ((params.sort != null) && (params.sort.length() > 0)) {
-            orderByClause = " order by ${params.sort} ${params.order} "
+            orderByClause = " order by ${params.sort} ${params.order}, tipp.sortname "
         }
         else {
             if (params.order == 'desc') {
@@ -1698,39 +1705,25 @@ class MyInstitutionController  {
         //log.debug(qryString)
 
         Map<String, Object> selectedFields = [:]
-        Set<Long> allTitles = []
-        if(params.containsKey('fileformat') && params.fileformat != 'kbart') {
-            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
-            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-        }
-        else if(!params.containsKey('fileformat')) {
-            allTitles.addAll(TitleInstancePackagePlatform.executeQuery('select tipp.id '+qryString,qryParams))
-            result.titles = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:tippIDs)'+orderByClause, [tippIDs: allTitles.drop(result.offset).take(result.max)])
-        }
-        /*
-        else if(!params.containsKey('fileformat') && !params.containsKey('exportKBart')) {
-
-            //currentIssueEntitlements.addAll(IssueEntitlement.executeQuery('select ie.id '+query, queryMap))
-            Set<TitleInstancePackagePlatform> allTitles = TitleInstancePackagePlatform.executeQuery('select tipp.id from IssueEntitlement ie join ie.tipp tipp where ie.id in (select ie.id ' + qryString + ') and ie.status != :removed group by tipp, ie.id '+orderByClause,qryParams)
-            result.subscriptions = Subscription.executeQuery('select distinct(sub) from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.roleType in (:orgRoles) and oo.org = :institution and (sub.status = :current or sub.hasPerpetualAccess = true) '+instanceFilter+" order by sub.name asc",[
-                    institution: result.institution,
-                    current: RDStore.SUBSCRIPTION_CURRENT,
-                    orgRoles: orgRoles])
-            if(result.subscriptions.size() > 0) {
-                //Set<Long> allIssueEntitlements = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription in (:currentSubs)',[currentSubs:result.subscriptions])
-                result.providers = Org.executeQuery('select org.id,org.name from TitleInstancePackagePlatform tipp join tipp.pkg pkg join pkg.orgs oo join oo.org org where tipp.id in (select tipp.id '+qryString+') group by org.id order by org.name asc',qryParams)
-                result.hostplatforms = Platform.executeQuery('select plat.id,plat.name from TitleInstancePackagePlatform tipp join tipp.platform plat where tipp.id in (select tipp.id '+qryString+') group by plat.id order by plat.name asc',qryParams)
+        Set<Long> allTitles = subCache.get("titleIDs") ?: []
+        if(qryParams.containsKey("subIds")) {
+            if(params.containsKey('fileformat') && params.fileformat != 'kbart') {
+                Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+                selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
             }
-            result.num_ti_rows = allTitles.size()
-            result.titles = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:tippIDs) '+orderByClause, [tippIDs: allTitles.drop(result.offset).take(result.max)])
-            //result.num_ti_rows = TitleInstancePackagePlatform.executeQuery('select count(*) from IssueEntitlement ie join ie.tipp tipp where ie.id in (select ie.id ' + query + ') and ie.status != :ieStatus ',[ieStatus: RDStore.TIPP_STATUS_REMOVED]+queryMap)[0]
-
-            result.filterSet = params.filterSet || defaultSet
+            else if(!params.containsKey('fileformat')) {
+                prf.setBenchmark('before tipp IDs')
+                if(!allTitles) {
+                    allTitles = TitleInstancePackagePlatform.executeQuery('select tipp.id '+qryString,qryParams)
+                    subCache.put("titleIDs", allTitles)
+                }
+                prf.setBenchmark('before full objects')
+                result.titles = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:tippIDs)'+orderByClause, [tippIDs: allTitles.drop(result.offset).take(result.max)])
+            }
         }
-        */
-        MessageDigest messageDigest = MessageDigest.getInstance("SHA-256")
+
         String filename = "${message(code:'export.my.currentTitles')}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}",
-                tokenBase = "${result.user}${params.values().join('')}${params.fileformat}"
+               tokenBase = "${result.user}${params.values().join('')}${params.fileformat}"
         messageDigest.update(tokenBase.getBytes())
         String token = messageDigest.digest().encodeHex()
 
@@ -1764,7 +1757,10 @@ class MyInstitutionController  {
                     break
                 case 'xlsx':
                     if(!f.exists()) {
-                        allTitles.addAll(TitleInstancePackagePlatform.executeQuery('select tipp.id '+qryString,qryParams))
+                        if(!allTitles) {
+                            allTitles = TitleInstancePackagePlatform.executeQuery('select tipp.id '+qryString,qryParams)
+                            subCache.put("titleIDs", allTitles)
+                        }
                         SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(allTitles, selectedFields, ExportClickMeService.FORMAT.XLS)
                         FileOutputStream out = new FileOutputStream(f)
                         wb.write(out)
@@ -1796,7 +1792,10 @@ class MyInstitutionController  {
                     //response.contentType = "text/csv"
                     //ServletOutputStream out = response.outputStream
                     if(!f.exists()) {
-                        allTitles.addAll(TitleInstancePackagePlatform.executeQuery('select tipp.id '+qryString,qryParams))
+                        if(!allTitles) {
+                            allTitles = TitleInstancePackagePlatform.executeQuery('select tipp.id '+qryString,qryParams)
+                            subCache.put("titleIDs", allTitles)
+                        }
                         FileOutputStream out = new FileOutputStream(f)
                         out.withWriter { writer ->
                             writer.write(exportClickMeService.exportTipps(allTitles,selectedFields,ExportClickMeService.FORMAT.CSV))
@@ -1805,33 +1804,6 @@ class MyInstitutionController  {
                         out.close()
                     }
                     fileResult = [token: token, filenameDisplay: filename, fileformat: 'csv']
-                    break
-                case 'pdf':
-                    if(!f.exists()) {
-                        allTitles.addAll(TitleInstancePackagePlatform.executeQuery('select tipp.id '+qryString,qryParams))
-                        Map<String, Object> pdfOutput = exportClickMeService.exportTipps(allTitles,selectedFields,ExportClickMeService.FORMAT.PDF)
-                        Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.mainHeader.size()*15, height: 35]
-                        if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
-                        else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
-                        else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
-                        else if (pageStruct.width > 85)    { pageStruct.pageSize = 'A3' }
-                        pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
-                        byte[] pdf = wkhtmltoxService.makePdf(
-                                view: '/templates/export/_individuallyExportPdf',
-                                model: pdfOutput,
-                                pageSize: pageStruct.pageSize,
-                                orientation: pageStruct.orientation,
-                                marginLeft: 10,
-                                marginRight: 10,
-                                marginTop: 15,
-                                marginBottom: 15
-                        )
-                        FileOutputStream out = new FileOutputStream(f)
-                        out.withStream { it << pdf }
-                        out.flush()
-                        out.close()
-                    }
-                    fileResult = [token: token, filenameDisplay: filename, fileformat: 'pdf']
                     break
             }
             render template: '/templates/bulkItemDownload', model: fileResult
