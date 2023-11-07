@@ -64,6 +64,22 @@ class SubscriptionQuery extends BaseQuery {
                     result
             )
         }
+        else if ( suffix in ['referenceYear']) {
+
+            handleGenericQuery(
+                    params.query,
+                    'select s.referenceYear, s.referenceYear, count(*) from Subscription s where s.id in (:idList) and s.referenceYear != null group by s.referenceYear order by s.referenceYear',
+                    'select s.id from Subscription s where s.id in (:idList) and s.referenceYear = :d order by s.name',
+                    'select s.id from Subscription s where s.id in (:idList) and s.referenceYear is null order by s.name',
+                    idList,
+                    result
+            )
+            result.dataDetails.each { dd ->
+                if (dd.id) {
+                    dd.id = Long.parseLong(dd.id.toString()) // year -> long
+                }
+            }
+        }
         else if ( suffix in ['x']) {
 
             if (params.query in ['subscription-x-annual']) {

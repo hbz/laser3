@@ -19,7 +19,7 @@ class SubscriptionInstCfg extends BaseConfig {
                             'inst-sub-local'
                     ],
                     fields : [
-                            'annual'                : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, spec: BaseConfig.FIELD_IS_MULTIPLE ],    // TODO custom_impl
+                            'annual'                : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, spec: BaseConfig.FIELD_IS_MULTIPLE ],    // TODO custom_impl
                             'endDateLimit'          : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'form'                  : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
                             'hasPerpetualAccess'    : [ type: BaseConfig.FIELD_TYPE_PROPERTY ],
@@ -29,6 +29,7 @@ class SubscriptionInstCfg extends BaseConfig {
                             'kind'                  : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
                             'propertyKey'           : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'propertyValue'         : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                            'referenceYear'         : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'resource'              : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
                             'startDateLimit'        : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'status'                : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
@@ -40,7 +41,7 @@ class SubscriptionInstCfg extends BaseConfig {
                             default : [
                                     [ 'form', 'kind', 'status' ],
                                     [ 'resource', 'hasPublishComponent', 'hasPerpetualAccess' ],
-                                    [ 'isPublicForApi', 'isMultiYear' ],
+                                    [ 'isPublicForApi', 'isMultiYear', 'referenceYear' ],
                                     [ 'startDateLimit', 'endDateLimit', 'annual' ],
                                     [ 'propertyKey', 'propertyValue' ]
                             ]
@@ -52,6 +53,7 @@ class SubscriptionInstCfg extends BaseConfig {
                                              'subscription-kind' :                   [ 'generic.sub.kind' ],
                                              'subscription-resource' :               [ 'generic.sub.resource' ],
                                              'subscription-status' :                 [ 'generic.sub.status' ],
+                                             'subscription-referenceYear' :          [ 'generic.sub.referenceYear' ],
                                              'subscription-isMultiYear' :            [ 'generic.sub.isMultiYear' ],
                                              'subscription-manualCancellationDate' : [ 'generic.sub.manualCancellationDate' ],
                                              'subscription-*' :                      [ 'generic.all' ]

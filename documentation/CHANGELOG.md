@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5382    07.11.2023  dev     3.3         David   Feature     Reporting: Zuordnungsjahr von Lizenzen
+
 5349    06.11.2023  dev     3.3         David   Feature     Reporting: Verteilung Verträge - Lizenz
 
 5370    30.10.2023  dev     3.3         Andreas Bug         Identifier-Regex-Prüfung sorgte für HibernateException
