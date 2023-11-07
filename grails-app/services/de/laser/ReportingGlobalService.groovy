@@ -317,7 +317,7 @@ class ReportingGlobalService {
             ReportingCache rCache = new ReportingCache( ReportingCache.CTX_GLOBAL, params.token )
 
             //println 'AjaxHtmlController.chartDetails()'
-            rCache.readQueryCache().dataDetails.each{ it ->
+            rCache.readQueryCache().dataDetails.each { it ->
                 if (it.get('id') == params.long('id')) {
                     idList = it.get('idList')
                     return

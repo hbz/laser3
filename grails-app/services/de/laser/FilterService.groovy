@@ -865,6 +865,12 @@ class FilterService {
             queryParams << [endDate : params.endDate]
         }
 
+        if(params.tab == "open"){
+            query << "surOrg.org = :org and surOrg.finishDate is null and surInfo.status = :status"
+            queryParams << [status: RDStore.SURVEY_SURVEY_STARTED]
+            queryParams << [org : org]
+        }
+
         if(params.tab == "new"){
             query << "((surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status and" +
                     " exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.dateCreated = surResult.lastUpdated and surOrg.finishDate is null and surConfig.pickAndChoose = true and surResult.participant = :org)) " +
@@ -1736,7 +1742,7 @@ class FilterService {
             if(qry_params.size() > 0){
                 base_qry += " and "
             }
-            base_qry += " lower(tipp.seriesName) in (:series_names)"
+            base_qry += " lower(tipp.seriesName) in (:series_names) "
             qry_params.series_names = listReaderWrapper(params, 'series_names').collect { ""+it.toLowerCase()+"" }
             filterSet = true
         }
@@ -1809,7 +1815,7 @@ class FilterService {
             if(qry_params.size() > 0){
                 base_qry += " and "
             }
-            base_qry += " exists (select tc.id from tipp.coverages tc where lower(tc.coverageDepth) in (:coverageDepth))"
+            base_qry += " exists (select tc.id from tipp.coverages tc where lower(tc.coverageDepth) in (:coverageDepth)) "
             qry_params.coverageDepth = listReaderWrapper(params, 'coverageDepth').collect { it.toLowerCase() }
             filterSet = true
         }
@@ -1818,7 +1824,7 @@ class FilterService {
             if(qry_params.size() > 0){
                 base_qry += " and "
             }
-            base_qry += " lower(tipp.titleType) in (:title_types)"
+            base_qry += " lower(tipp.titleType) in (:title_types) "
             qry_params.title_types = listReaderWrapper(params, 'title_types').collect { ""+it.toLowerCase()+"" }
             filterSet = true
         }
@@ -1836,7 +1842,7 @@ class FilterService {
             if(qry_params.size() > 0){
                 base_qry += " and "
             }
-            base_qry += " gokbId in (:gokbIds)"
+            base_qry += " gokbId in (:gokbIds) "
             qry_params.gokbIds = listReaderWrapper(params, 'gokbIds')
         }
 
@@ -1938,15 +1944,9 @@ class FilterService {
                     params.asAt = new Timestamp(dateFilter.getTime())
                     whereClauses << "((:asAt >= tipp_access_start_date or tipp_access_start_date is null) and (:asAt <= tipp_access_end_date or tipp_access_end_date is null))"
                 }
-                if(configMap.status instanceof List) {
-                    List<Object> statusKeys = []
-                    statusKeys.addAll(configMap.status)
-                    params.tippStatus = connection.createArrayOf('bigint', statusKeys.toArray())
+                if(configMap.status != null && configMap.status != '') {
+                    params.tippStatus = connection.createArrayOf('bigint', listReaderWrapper(configMap, 'status').toArray())
                     whereClauses << "tipp_status_rv_fk = any(:tippStatus)"
-                }
-                else if(configMap.status != null && !configMap.status.isEmpty()) {
-                    params.tippStatus = configMap.status instanceof String ? Long.parseLong(configMap.status) : configMap.status //already id
-                    whereClauses << "tipp_status_rv_fk = :tippStatus"
                 }
                 else if(configMap.notStatus != null && !configMap.notStatus.isEmpty()) {
                     params.tippStatus = configMap.notStatus instanceof String ? Long.parseLong(configMap.notStatus) : configMap.status //already id
