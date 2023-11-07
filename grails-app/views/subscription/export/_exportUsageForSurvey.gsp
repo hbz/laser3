@@ -118,7 +118,7 @@
     <g:else>
         <b><g:message code="renewEntitlementsWithSurvey.noIEsStats"/></b>
     </g:else>
-    <div id="localLoadingIndicator" hidden="hidden">
+    <div class="localLoadingIndicator" hidden="hidden">
         <div class="ui inline medium text loader active">Aktualisiere Daten ..</div>
     </div>
     <div id="reportWrapper"></div>
@@ -145,7 +145,7 @@
         });
     });
     $("#generateReport").on('click', function() {
-        $('#localLoadingIndicator').show();
+        $('.localLoadingIndicator').show();
         let fd = new FormData($('#individuallyExportModal').find('form')[0]);
         $.ajax({
             url: "<g:createLink action="renewEntitlementsWithSurvey"/>",
@@ -155,7 +155,7 @@
             contentType: false
         }).done(function(response){
             $("#reportWrapper").html(response);
-            $('#localLoadingIndicator').hide();
+            $('.localLoadingIndicator').hide();
         });
     });
 </laser:script>

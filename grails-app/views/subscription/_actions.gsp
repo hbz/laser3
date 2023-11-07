@@ -128,6 +128,9 @@
                 <ui:actionsDropdownItem controller="subscription" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
                 <g:if test="${subscription.packages}">
                     <ui:actionsDropdownItem controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
+                    <g:if test="${actionName == 'addEntitlements'}">
+                        <ui:actionsDropdownItem data-ui="modal" id="selectEntitlementsWithKBART" href="#KBARTUploadForm" message="subscription.details.addEntitlements.menu"/>
+                    </g:if>
                     <ui:actionsDropdownItem controller="subscription" action="manageEntitlementGroup" params="${[id:params.id]}" message="subscription.details.manageEntitlementGroup.label" />
                     <ui:actionsDropdownItem controller="subscription" action="index" notActive="true" params="${[id:params.id, issueEntitlementEnrichment: true]}" message="subscription.details.issueEntitlementEnrichment.label" />
                 </g:if>
