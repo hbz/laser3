@@ -51,6 +51,7 @@ import javax.servlet.ServletOutputStream
 import java.lang.annotation.Annotation
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
+import java.nio.file.Files
 import java.sql.Timestamp
 import java.time.LocalDate
 import java.util.concurrent.ExecutorService
@@ -673,6 +674,34 @@ class YodaController {
             }
         }
         redirect controller: 'home'
+    }
+
+    @Secured(['ROLE_YODA'])
+    Map<String, Object> manageTempUsageFiles() {
+        File dir = new File(GlobalService.obtainFileStorageLocation())
+        List<File> tempFiles = dir.listFiles()
+        //tempFiles.sort { File f -> Files.getAttribute(f.toPath(), 'creationTime') }
+        [tempFiles: tempFiles]
+    }
+
+    @Secured(['ROLE_YODA'])
+    def deleteTempFile() {
+        if(params.containsKey('filename')) {
+            File f = new File(GlobalService.obtainFileStorageLocation() + '/' + params.filename)
+            try {
+                f.delete()
+            }
+            catch (IOException e) {
+                log.error("unable to delete file: ${GlobalService.obtainFileStorageLocation() + '/' + params.filename}")
+            }
+        }
+        else if(params.containsKey('emptyDir')) {
+            File f = new File(GlobalService.obtainFileStorageLocation())
+            f.deleteDir()
+            f.mkdir()
+        }
+        //tempFiles.sort { File f -> Files.getAttribute(f.toPath(), 'creationTime') }
+        redirect action: 'manageTempUsageFiles'
     }
 
     /**

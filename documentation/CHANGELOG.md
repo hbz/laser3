@@ -17,6 +17,12 @@
 
 --      01.11.2023  rc-3.2  3.2.7       Moe     Bug         Titelumfrage: Export der Statistik geht nicht
 
+5382    07.11.2023  dev     3.3         David   Feature     Reporting: Zuordnungsjahr von Lizenzen
+
+5349    06.11.2023  dev     3.3         David   Feature     Reporting: Verteilung Verträge - Lizenz
+
+5377    06.11.2023  dev     3.3         Andreas Feature     Admin-Sicht zur Lösung temporärer Dateien
+
 5358    06.11.2023  dev     3.3         Andreas Feature     Umrüstung der KBART-Vorauswahl
 
 5369    31.10.2023  rc-3.2  3.2.7       Moe     Bug         Titelumfrage: Export der ausgewählten Titel fehlt

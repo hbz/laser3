@@ -65,6 +65,7 @@ class BaseConfig {
     static String CI_GENERIC_CUSTOMER_TYPE      = 'customerType'
     static String CI_GENERIC_LEGAL_INFO         = 'legalInfo'
     static String CI_GENERIC_ANNUAL             = 'annual'
+    static String CI_GENERIC_REFERENCE_YEAR     = 'referenceYear'
     static String CI_GENERIC_ENDDATE_LIMIT      = 'endDateLimit'
     static String CI_GENERIC_STARTDATE_LIMIT    = 'startDateLimit'
     static String CI_GENERIC_SUBJECT_GROUP      = 'subjectGroup'
@@ -245,6 +246,13 @@ class BaseConfig {
             return [
                     label: messageSource.getMessage(ck + 'annual.label', null, locale),
                     from: (y+2..y-4).collect{[ id: it, value_de: it, value_en: it] } + [ id: 0 as Long, value_de: 'Alle ohne Ablauf', value_en: 'Open-Ended']
+            ]
+        }
+        else if (key == CI_GENERIC_REFERENCE_YEAR) {
+            Long y = Year.now().value // frontend
+            return [
+                    label: messageSource.getMessage(ck + 'referenceYear.label', null, locale),
+                    from: (y+2..y-4).collect{[ id: it, value_de: it, value_en: it] }
             ]
         }
         else if (key == CI_GENERIC_ENDDATE_LIMIT) {
