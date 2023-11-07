@@ -1654,7 +1654,7 @@ class SubscriptionController {
                     queryMap.sub = ctrlResult.result.subscription
                     queryMap.ieStatus = RDStore.TIPP_STATUS_CURRENT
                     queryMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id
-                    Map<String, List> export = exportService.generateTitleExportCustom(queryMap, IssueEntitlement.class.name, monthsInRing.sort { Date monthA, Date monthB -> monthA <=> monthB }, ctrlResult.result.subscriber, perpetuallyPurchasedTitleURLs)
+                    Map<String, List> export = exportService.generateTitleExportCustom(queryMap, TitleInstancePackagePlatform.class.name, monthsInRing.sort { Date monthA, Date monthB -> monthA <=> monthB }, ctrlResult.result.subscriber, perpetuallyPurchasedTitleURLs)
                     export.titles << "Pick"
                     Map sheetData = [:]
                     sheetData[g.message(code: 'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow: export.titles, columnData: export.rows]

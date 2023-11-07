@@ -1895,20 +1895,20 @@ class FilterService {
                 String subFilter
                 if(configMap.sub) {
                     params.subscription = configMap.sub.id
-                    join += " join issue_entitlement on ie_tipp_fk = tipp_id"
-                    subFilter = "ie_subscription_fk = :subscription"
+                    join += " join subscription_package on sp_pkg_fk = tipp_pkg_fk"
+                    subFilter = "sp_sub_fk = :subscription"
                 }
                 else if(configMap.subscription) {
                     params.subscription = configMap.subscription.id
-                    join += " join issue_entitlement on ie_tipp_fk = tipp_id"
-                    subFilter = "ie_subscription_fk = :subscription"
+                    join += " join subscription_package on sp_pkg_fk = tipp_pkg_fk"
+                    subFilter = "sp_sub_fk = :subscription"
                 }
                 else if(configMap.subscriptions) {
                     List<Object> subIds = []
                     subIds.addAll(configMap.subscriptions.id)
                     params.subscriptions = connection.createArrayOf('bigint', subIds.toArray())
-                    join += " join issue_entitlement on ie_tipp_fk = tipp_id"
-                    subFilter = "ie_subscription_fk = any(:subscriptions)"
+                    join += " join subscription_package on sp_pkg_fk = tipp_pkg_fk"
+                    subFilter = "sp_sub_fk = any(:subscriptions)"
                 }
                 else if(configMap.defaultSubscriptionFilter) {
                     String consFilter = ""
@@ -1938,7 +1938,13 @@ class FilterService {
                     params.asAt = new Timestamp(dateFilter.getTime())
                     whereClauses << "((:asAt >= tipp_access_start_date or tipp_access_start_date is null) and (:asAt <= tipp_access_end_date or tipp_access_end_date is null))"
                 }
-                if(configMap.status != null && !configMap.status.isEmpty()) {
+                if(configMap.status instanceof List) {
+                    List<Object> statusKeys = []
+                    statusKeys.addAll(configMap.status)
+                    params.tippStatus = connection.createArrayOf('bigint', statusKeys.toArray())
+                    whereClauses << "tipp_status_rv_fk = any(:tippStatus)"
+                }
+                else if(configMap.status != null && !configMap.status.isEmpty()) {
                     params.tippStatus = configMap.status instanceof String ? Long.parseLong(configMap.status) : configMap.status //already id
                     whereClauses << "tipp_status_rv_fk = :tippStatus"
                 }
