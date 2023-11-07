@@ -1847,7 +1847,7 @@ class FilterService {
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
-                base_qry += "order by ${params.sort} ${params.order} "
+                base_qry += "order by ${params.sort} ${params.order}, tipp.sortname "
         }
         else {
             base_qry += "order by tipp.sortname"
@@ -1901,20 +1901,20 @@ class FilterService {
                 String subFilter
                 if(configMap.sub) {
                     params.subscription = configMap.sub.id
-                    join += " join issue_entitlement on ie_tipp_fk = tipp_id"
-                    subFilter = "ie_subscription_fk = :subscription"
+                    join += " join subscription_package on sp_pkg_fk = tipp_pkg_fk"
+                    subFilter = "sp_sub_fk = :subscription"
                 }
                 else if(configMap.subscription) {
                     params.subscription = configMap.subscription.id
-                    join += " join issue_entitlement on ie_tipp_fk = tipp_id"
-                    subFilter = "ie_subscription_fk = :subscription"
+                    join += " join subscription_package on sp_pkg_fk = tipp_pkg_fk"
+                    subFilter = "sp_sub_fk = :subscription"
                 }
                 else if(configMap.subscriptions) {
                     List<Object> subIds = []
                     subIds.addAll(configMap.subscriptions.id)
                     params.subscriptions = connection.createArrayOf('bigint', subIds.toArray())
-                    join += " join issue_entitlement on ie_tipp_fk = tipp_id"
-                    subFilter = "ie_subscription_fk = any(:subscriptions)"
+                    join += " join subscription_package on sp_pkg_fk = tipp_pkg_fk"
+                    subFilter = "sp_sub_fk = any(:subscriptions)"
                 }
                 else if(configMap.defaultSubscriptionFilter) {
                     String consFilter = ""

@@ -382,22 +382,22 @@ class SubscriptionControllerService {
             Set<IdentifierNamespace> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name)] as Set<IdentifierNamespace>
             IdentifierNamespace propIdNamespace = IdentifierNamespace.findByNs(platform.titleNamespace)
             namespaces.add(propIdNamespace)
-            Set<Subscription> refSubs
+            Subscription refSub
             prf.setBenchmark('before subscription determination')
             if(subscriptionService.getCurrentIssueEntitlementIDs(result.subscription).size() > 0){
-                refSubs = [result.subscription]
+                refSub = result.subscription
             }
-            else refSubs = [result.subscription.instanceOf]
+            else refSub = result.subscription.instanceOf
             Map<String, Object> c4counts = [:], c4allYearCounts = [:], c5counts = [:], c5allYearCounts = [:], countSumsPerYear = [:]
             SortedSet datePoints = new TreeSet(), allYears = new TreeSet()
             String sort, groupKey
             Org customer = result.subscription.getSubscriber()
             result.customer = customer
-            if(platform && refSubs) {
+            if(platform && refSub) {
                 Map<String, Map<String, TitleInstancePackagePlatform>> titles = [:] //structure: namespace -> value -> tipp
                 //Set<TitleInstancePackagePlatform> titlesSorted = [] //fallback structure to preserve sorting
                 if(params.reportType in Counter4Report.COUNTER_4_TITLE_REPORTS || params.reportType in Counter5Report.COUNTER_5_TITLE_REPORTS) {
-                    fetchTitles(params, refSubs, namespaces, 'ids').each { Map titleMap ->
+                    fetchTitles(params, refSub, namespaces, 'ids').each { Map titleMap ->
                         //titlesSorted << titleMap.tipp
                         Map<String, TitleInstancePackagePlatform> innerMap = titles.get(titleMap.namespace)
                         if(!innerMap)
@@ -765,20 +765,26 @@ class SubscriptionControllerService {
      * Assembles a set of titles currently contained in the given subscriptions' holding. Either the full objects are
      * being queried or a map of identifiers for identifier matching without needing further queries or loops
      * @param params the filter parameter map
-     * @param refSubs the {@link Subscription}s whose entitlements should be queried
+     * @param refSub the {@link Subscription} whose entitlements should be queried; if none existent, the underlying package's are being queried
      * @param namespaces the {@link IdentifierNamespace}s
      * @param fetchWhat
      * @return
      */
-    Set fetchTitles(GrailsParameterMap params, Set<Subscription> refSubs, Set<IdentifierNamespace> namespaces, String fetchWhat) {
+    Set fetchTitles(GrailsParameterMap params, Subscription refSub, Set<IdentifierNamespace> namespaces, String fetchWhat) {
         Set result = []
         String query
-        Map<String, Object> queryParams = [refSubs: refSubs, current: RDStore.TIPP_STATUS_CURRENT]//current for now
-        if(fetchWhat == 'fullObjects')
-            query = "select tipp from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:refSubs) and ie.status = :current "
+        Map<String, Object> queryParams = [refSub: refSub, current: RDStore.TIPP_STATUS_CURRENT]//current for now
+        if(fetchWhat == 'fullObjects') {
+            query = "select tipp from TitleInstancePackagePlatform tipp where tipp.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription = :refSub) and tipp.status = :current "
+            if(subscriptionService.countCurrentIssueEntitlements(refSub) > 0)
+                query = "select tipp from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :refSubs and ie.status = :current "
+        }
         else if(fetchWhat == 'ids') {
+            String tippQry = "(select tipp from TitleInstancePackagePlatform tipp where tipp.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription = :refSub) and tipp.status = :current)"
+            if(subscriptionService.countCurrentIssueEntitlements(refSub) > 0)
+                tippQry = "(select ie.tipp from IssueEntitlement ie where ie.subscription = :refSub and ie.status = :current)"
             //!!!!!! MAY BE A PERFORMANCE BOTTLENECK! OBSERVE CLOSELY !!!!!!!!!
-            query = "select new map(id.value as value, id.ns.ns as namespace, id.tipp as tipp) from Identifier id join id.tipp tipp where id.ns in (:namespaces) and tipp in (select ie.tipp from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.status = :current ) "
+            query = "select new map(id.value as value, id.ns.ns as namespace, id.tipp as tipp) from Identifier id join id.tipp tipp where id.ns in (:namespaces) and tipp in ${tippQry} "
             queryParams.namespaces = namespaces
         }
         if(params.data != 'fetchAll') {
@@ -1758,7 +1764,7 @@ class SubscriptionControllerService {
                     result.putAll(loadFilterList(params))
                     Map<String, Map<String, TitleInstancePackagePlatform>> titles = [:] //structure: namespace -> value -> tipp
                     Set<TitleInstancePackagePlatform> titlesSorted = [] //fallback structure to preserve sorting
-                    fetchTitles(params, refSubs, namespaces, 'ids').each { Map titleMap ->
+                    fetchTitles(params, refSub, namespaces, 'ids').each { Map titleMap ->
                         titlesSorted << titleMap.tipp
                         Map<String, TitleInstancePackagePlatform> innerMap = titles.get(titleMap.namespace)
                         if(!innerMap)

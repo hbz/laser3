@@ -1638,6 +1638,13 @@ class SubscriptionController {
                         startTime.setTime(ctrlResult.result.subscriberSub.startDate)
                         endTime.setTime(new Date())
                     }
+                    else {
+                        //test access e.g.
+                        startTime.set(Calendar.MONTH, 0)
+                        startTime.set(Calendar.DAY_OF_MONTH, 1)
+                        startTime.add(Calendar.YEAR, -1)
+                        endTime.setTime(new Date())
+                    }
                     while (startTime.before(endTime)) {
                         monthsInRing << startTime.getTime()
                         startTime.add(Calendar.MONTH, 1)
@@ -1665,8 +1672,6 @@ class SubscriptionController {
                     queryMap.status = RDStore.TIPP_STATUS_CURRENT.id
                     queryMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id
                     Map<String, List> export = exportService.generateTitleExportCustom(queryMap, TitleInstancePackagePlatform.class.name, monthsInRing.sort { Date monthA, Date monthB -> monthA <=> monthB }, ctrlResult.result.subscriber, perpetuallyPurchasedTitleURLs)
-
-                    export.titles << message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs.export')
                     export.titles << "Pick"
 
                     String refYes = RDStore.YN_YES.getI10n('value')

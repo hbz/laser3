@@ -748,18 +748,18 @@ class ExportService {
         Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
 		if(!result)
 			return null
-		Set<Subscription> refSubs
+		Subscription refSub
 		Org customer = result.subscription.getSubscriber()
 		if (params.statsForSurvey == true) {
 			if(params.loadFor == 'allTipps')
-				refSubs = [result.subscription.instanceOf] //look at statistics of the whole set of titles, i.e. of the consortial parent subscription
+				refSub = result.subscription.instanceOf //look at statistics of the whole set of titles, i.e. of the consortial parent subscription
 			else if(params.loadFor == 'holdingIEs')
-				refSubs = result.subscription._getCalculatedPrevious() //look at the statistics of the member, i.e. the member's stock of the previous year
+				refSub = result.subscription._getCalculatedPrevious() //look at the statistics of the member, i.e. the member's stock of the previous year
 		}
-		else if(subscriptionService.getCurrentIssueEntitlementIDs(result.subscription).size() > 0){
-			refSubs = [result.subscription]
+		else if(subscriptionService.countCurrentIssueEntitlements(result.subscription) > 0){
+			refSub = result.subscription
 		}
-		else refSubs = [result.subscription.instanceOf]
+		else refSub = result.subscription.instanceOf
 		prf.setBenchmark('get platforms')
 		Platform platform = Platform.get(params.platform)
 		prf.setBenchmark('get namespaces')
@@ -778,7 +778,7 @@ class ExportService {
 		Set<TitleInstancePackagePlatform> titlesSorted = [] //fallback structure to preserve sorting
 		prf.setBenchmark('prepare title identifier map')
         if(reportType in Counter4Report.COUNTER_4_TITLE_REPORTS || reportType in Counter5Report.COUNTER_5_TITLE_REPORTS) {
-			subscriptionControllerService.fetchTitles(params, refSubs, namespaces, 'ids').each { Map titleMap ->
+			subscriptionControllerService.fetchTitles(params, refSub, namespaces, 'ids').each { Map titleMap ->
 				//debug only! DO NOT COMMIT!
 				//if(titleMap.tipp.id == 862496) {
 				titlesSorted << titleMap.tipp
