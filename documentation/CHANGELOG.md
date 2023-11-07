@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5382    07.11.2023  dev     3.3         David   Feature     Reporting: Zuordnungsjahr von Lizenzen
+
+5349    06.11.2023  dev     3.3         David   Feature     Reporting: Verteilung Verträge - Lizenz
+
 5377    06.11.2023  dev     3.3         Andreas Feature     Admin-Sicht zur Lösung temporärer Dateien
 
 5358    06.11.2023  dev     3.3         Andreas Feature     Umrüstung der KBART-Vorauswahl

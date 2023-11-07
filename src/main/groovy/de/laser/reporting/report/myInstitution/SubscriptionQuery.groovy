@@ -1,6 +1,7 @@
 package de.laser.reporting.report.myInstitution
 
 import de.laser.ContextService
+import de.laser.License
 import de.laser.Org
 import de.laser.Platform
 import de.laser.Subscription
@@ -62,6 +63,22 @@ class SubscriptionQuery extends BaseQuery {
                     idList,
                     result
             )
+        }
+        else if ( suffix in ['referenceYear']) {
+
+            handleGenericQuery(
+                    params.query,
+                    'select s.referenceYear, s.referenceYear, count(*) from Subscription s where s.id in (:idList) and s.referenceYear != null group by s.referenceYear order by s.referenceYear',
+                    'select s.id from Subscription s where s.id in (:idList) and s.referenceYear = :d order by s.name',
+                    'select s.id from Subscription s where s.id in (:idList) and s.referenceYear is null order by s.name',
+                    idList,
+                    result
+            )
+            result.dataDetails.each { dd ->
+                if (dd.id) {
+                    dd.id = Long.parseLong(dd.id.toString()) // year -> long
+                }
+            }
         }
         else if ( suffix in ['x']) {
 
@@ -167,6 +184,31 @@ class SubscriptionQuery extends BaseQuery {
                 List<Long> noDataList = nonMatchingIdList ? Subscription.executeQuery('select s.id from Subscription s where s.id in (:idList)', [idList: nonMatchingIdList]) : []
 
                 handleGenericNonMatchingData2Values_TMP(params.query, BaseQuery.NO_PLATFORM_LABEL, noDataList, result)
+            }
+            else if (params.query in ['subscription-x-license']) {
+
+                result.data = License.executeQuery(
+                        'select lk.sourceLicense.id, lk.sourceLicense.reference, count(*) from Links lk where lk.destinationSubscription.id in (:idList) and lk.linkType = :type ' +
+                                'and exists ( select ro from lk.sourceLicense.orgRelations ro where ro.org = :ctx and ro.roleType in (:roleTypes) ) ' +
+                                'group by lk.sourceLicense.id, lk.sourceLicense.reference order by lk.sourceLicense.reference',
+                        [idList: idList, type: RDStore.LINKTYPE_LICENSE, ctx: contextService.getOrg(), roleTypes: [RDStore.OR_LICENSING_CONSORTIUM, RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]]
+                )
+                result.data.each { d ->
+                    result.dataDetails.add([
+                            query : params.query,
+                            id    : d[0],
+                            label : d[1],
+                            idList: Subscription.executeQuery(
+                                    'select lk.destinationSubscription.id from Links lk where lk.destinationSubscription.id in (:idList) and lk.sourceLicense.id = :d order by lk.destinationSubscription.name',
+                                    [idList: idList, d: d[0]]
+                            )
+                    ])
+                }
+
+                List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
+                List<Long> noDataList = nonMatchingIdList ? Subscription.executeQuery('select s.id from Subscription s where s.id in (:idList)', [idList: nonMatchingIdList]) : []
+
+                handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_LICENSE_LABEL, noDataList, result)
             }
             else if (params.query in ['subscription-x-property']) {
 
