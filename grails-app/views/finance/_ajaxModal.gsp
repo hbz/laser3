@@ -25,6 +25,8 @@
                 on: 'click'
             });
         </laser:script>
+
+        <g:link class="ui blue right right floated mini button" controller="finance" action="showCostItem" id="${costItem.id}" target="_blank"><g:message code="default.show.label" args="[g.message(code: 'costItem.label')]"/></g:link>
     </g:if>
 
         <g:form class="ui small form clearing segment la-form" name="editCost_${idSuffix}" url="${formUrl}">

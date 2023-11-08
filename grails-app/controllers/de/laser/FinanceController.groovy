@@ -2,6 +2,7 @@ package de.laser
 
 
 import de.laser.ctrl.FinanceControllerService
+import de.laser.ctrl.SubscriptionControllerService
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemElementConfiguration
@@ -493,6 +494,26 @@ class FinanceController  {
         result.formUrl = g.createLink(controller:'finance', action:'createOrUpdateCostItem', params:[showView: params.showView, offset: params.offset])
         result.idSuffix = "edit_${params.id}"
         render(template: "/finance/ajaxModal", model: result)
+    }
+
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
+    })
+    Object showCostItem() {
+        Map<String, Object> result = financeControllerService.getResultGenerics(params)
+        if(!result.editable) {
+                response.sendError(401)
+                return
+        }
+        else {
+            result.costItem = CostItem.get(params.id)
+            if (result.costItem.taxKey)
+                result.taxKey = result.costItem.taxKey
+            result.formUrl = g.createLink(controller: 'finance', action: 'createOrUpdateCostItem', params: [showView: params.showView, offset: params.offset])
+            result.idSuffix = "edit_${params.id}"
+            result
+        }
     }
 
     /**

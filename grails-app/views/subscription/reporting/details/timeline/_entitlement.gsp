@@ -23,7 +23,8 @@
                     ${message(code:'sidewide.number')}
                 </th>
                 <th scope="col">${message(code:'tipp.name')}</th>
-                <th scope="col">${message(code:'tipp.titleType')} / ${message(code:'tipp.medium')}</th>
+                <th scope="col">${message(code:'package.label')}</th>
+%{--                <th scope="col">${message(code:'tipp.titleType')} / ${message(code:'tipp.medium')}</th>--}%
             </tr>
             </thead>
             <tbody>
@@ -45,12 +46,15 @@
                             <g:link controller="issueEntitlement" action="show" id="${ieId}" target="_blank">${tipp.name}</g:link>
                         </td>
                         <td>
-                            ${tipp.titleType}
-                            <g:if test="${tipp.medium}">
-                                <g:if test="${tipp.titleType}"> / </g:if>
-                                ${tipp.medium.getI10n('value')}
-                            </g:if>
+                            <g:link controller="package" action="show" id="${tipp.pkg.id}" target="_blank">${tipp.pkg.name}</g:link>
                         </td>
+%{--                        <td>--}%
+%{--                            ${tipp.titleType}--}%
+%{--                            <g:if test="${tipp.medium}">--}%
+%{--                                <g:if test="${tipp.titleType}"> / </g:if>--}%
+%{--                                ${tipp.medium.getI10n('value')}--}%
+%{--                            </g:if>--}%
+%{--                        </td>--}%
                     </tr>
                 </g:each>
             </tbody>
@@ -67,7 +71,8 @@
                     ${message(code:'sidewide.number')}
                 </th>
                 <th scope="col">${message(code:'tipp.name')}</th>
-                <th scope="col">${message(code:'tipp.titleType')} / ${message(code:'tipp.medium')}</th>
+                <th scope="col">${message(code:'package.label')}</th>
+%{--                <th scope="col">${message(code:'tipp.titleType')} / ${message(code:'tipp.medium')}</th>--}%
             </tr>
             </thead>
             <tbody>
@@ -84,12 +89,15 @@
                             <g:link controller="issueEntitlement" action="show" id="${ieId2}" target="_blank">${tipp.name}</g:link>
                         </td>
                         <td>
-                            ${tipp.titleType}
-                            <g:if test="${tipp.medium}">
-                                <g:if test="${tipp.titleType}"> / </g:if>
-                                ${tipp.medium.getI10n('value')}
-                            </g:if>
+                            <g:link controller="package" action="show" id="${tipp.pkg.id}" target="_blank">${tipp.pkg.name}</g:link>
                         </td>
+%{--                        <td>--}%
+%{--                            ${tipp.titleType}--}%
+%{--                            <g:if test="${tipp.medium}">--}%
+%{--                                <g:if test="${tipp.titleType}"> / </g:if>--}%
+%{--                                ${tipp.medium.getI10n('value')}--}%
+%{--                            </g:if>--}%
+%{--                        </td>--}%
                     </tr>
                 </g:each>
             </tbody>

@@ -35,6 +35,10 @@
             <g:hiddenField name="selectedOrgs" value="${org.id}"/>
         </g:each>
 
+        <g:each in="${surveyList}" var="survey">
+            <g:hiddenField name="selectedSurveys" value="${survey.id}"/>
+        </g:each>
+
         <g:if test="${userSurveyNotificationMails}">
             <div class="ui segment">
                 <h3 class="ui header">${message(code: 'mail.sendMail.standard')}</h3>
@@ -168,6 +172,13 @@
                         <g:message code="default.button.back"/>
                     </g:link>
                 </g:else>
+            </g:if>
+
+            <g:if test="${org}">
+                    <g:link class="ui button left floated" controller="myInstitution" action="manageParticipantSurveys"
+                            id="${org.id}">
+                        <g:message code="default.button.back"/>
+                    </g:link>
             </g:if>
 
             <button class="ui icon button right floated" type="submit">
