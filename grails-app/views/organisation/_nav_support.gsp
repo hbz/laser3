@@ -19,11 +19,11 @@
     </g:if>
     <g:if test="${!isProviderOrAgency}">
         <g:if test="${inContextOrg}">
-            <ui:securedSubNavItem instRole="INST_ADM" controller="myInstitution" action="users" message="org.nav.users" />
+            <ui:securedSubNavItem instRole="INST_ADM" controller="myInstitution" action="users" message="org.nav.users.shy" />
         </g:if>
         <g:else>
             <sec:ifAnyGranted roles="ROLE_ADMIN">
-                <ui:subNavItem controller="organisation" action="users" params="${breadcrumbParams}" message="org.nav.users"/>
+                <ui:subNavItem controller="organisation" action="users" params="${breadcrumbParams}" message="org.nav.users.shy"/>
             </sec:ifAnyGranted>
         </g:else>
     </g:if>

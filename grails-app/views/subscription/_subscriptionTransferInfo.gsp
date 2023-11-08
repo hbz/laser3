@@ -18,7 +18,7 @@
                 <tr>
                     <th scope="col" rowspan="3">${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}</th>
                     <th scope="col" rowspan="3">${message(code: 'subscription')}</th>
-                    <th scope="col" rowspan="2" class="la-smaller-table-head">${message(code: 'default.startDate.label')}</th>
+                    <th scope="col" rowspan="2" class="la-smaller-table-head">${message(code: 'default.startDate.label.shy')}</th>
                     <th scope="col" rowspan="3">${message(code: 'subscription.manualCancellationDate.label')}</th>
                     <th colspan="3" class="la-smaller-table-head center aligned">${message(code: 'subscription.offer.table.th')}</th>
                     <th scope="col" rowspan="3" class="center aligned">${message(code: 'subscription.priceIncreaseInfo.label')}</th>
@@ -65,7 +65,7 @@
                     <th scope="col" rowspan="2" class="center aligned two wide">${message(code: 'subscriptionsManagement.documents')}</th>
                 </tr>
                 <tr>
-                    <th scope="col" rowspan="1" class="la-smaller-table-head">${message(code: 'default.endDate.label')}</th>
+                    <th scope="col" rowspan="1" class="la-smaller-table-head">${message(code: 'default.endDate.label.shy')}</th>
                     <th scope="col" class="la-smaller-table-head">${message(code: 'subscription.offerRequestedDate.table.th')}</th>
                     <th scope="col" class="la-smaller-table-head">${message(code: 'subscription.reminderSentDate.table.th')}</th>
                     <th scope="col" class="la-smaller-table-head">${message(code: 'subscription.renewalSentDate.table.th')}</th>
@@ -107,7 +107,7 @@
                         <td>
                             <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/>
                             <br/>
-                            <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label')}:">
+                            <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label.shy')}:">
                                 <g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/>
                             </span>
                         </td>
@@ -173,7 +173,7 @@
                                 <g:link controller="survey" action="show" id="${surveyConfig.surveyInfo.id}" target="_blank">
                                     <g:formatDate formatName="default.date.format.notime" date="${surveyConfig.surveyInfo.startDate}"/>
                                     <br/>
-                                    <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label')}:">
+                                    <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label.shy')}:">
                                         <g:formatDate formatName="default.date.format.notime" date="${surveyConfig.surveyInfo.endDate}"/>
                                     </span>
                                 </g:link>

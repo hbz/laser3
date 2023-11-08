@@ -38,7 +38,7 @@
                         <g:if test="${'showProviders' in tableConfig}">
                             <g:sortableColumn scope="col" params="${params}" property="providerAgency" title="${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}" rowspan="2" />
                         </g:if>
-                        <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label')}"/>
+                        <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label.shy')}"/>
                         <g:if test="${params.orgRole in ['Subscription Consortia']}">
                             <th scope="col" rowspan="2" class="center aligned">
                                 <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.numberOfLicenses.label')}" data-position="top center">
@@ -59,7 +59,7 @@
                         <th scope="col" rowspan="2" class="two">${message(code:'default.actions.label')}</th>
                     </tr>
                     <tr>
-                        <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.endDate" title="${message(code: 'default.endDate.label')}"/>
+                        <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.endDate" title="${message(code: 'default.endDate.label.shy')}"/>
                     </tr>
                 </thead>
                 <tbody>
@@ -177,7 +177,7 @@
                         --%>
                         <td>
                             <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/><br/>
-                            <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label')}:"><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></span>
+                            <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label.shy')}:"><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></span>
                         </td>
                         <g:if test="${params.orgRole == 'Subscription Consortia'}">
                             <g:set var="childSubIds" value="${Subscription.executeQuery('select s.id from Subscription s where s.instanceOf = :parent',[parent:s])}"/>

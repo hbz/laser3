@@ -136,7 +136,7 @@
                                   rowspan="2"/>
 
                 <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.startDate"
-                                  title="${message(code: 'default.startDate.label')}"/>
+                                  title="${message(code: 'default.startDate.label.shy')}"/>
 
 
                 <th scope="col" rowspan="2">
@@ -155,7 +155,7 @@
 
             <tr>
                 <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.endDate"
-                                  title="${message(code: 'default.endDate.label')}"/>
+                                  title="${message(code: 'default.endDate.label.shy')}"/>
             </tr>
             </thead>
             <g:each in="${subscriptions}" var="s" status="i">

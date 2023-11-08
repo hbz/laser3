@@ -128,7 +128,7 @@
                                   rowspan="2"/>
 
                 <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.startDate"
-                                  title="${message(code: 'default.startDate.label')}"/>
+                                  title="${message(code: 'default.startDate.label.shy')}"/>
 
 
                 <th scope="col" rowspan="2">
@@ -147,7 +147,7 @@
 
             <tr>
                 <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.endDate"
-                                  title="${message(code: 'default.endDate.label')}"/>
+                                  title="${message(code: 'default.endDate.label.shy')}"/>
             </tr>
             </thead>
             <g:each in="${subscriptions}" var="s" status="i">
@@ -215,7 +215,7 @@
                         </td>
                         <td>
                             <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/><br />
-                            <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label')}:">
+                            <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label.shy')}:">
                                 <g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/>
                             </span>
                         </td>

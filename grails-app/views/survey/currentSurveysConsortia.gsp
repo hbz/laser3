@@ -190,7 +190,7 @@
             <th rowspan="2" scope="col">${message(code: 'surveyInfo.type.label')}</th>
             <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}"
                               property="surInfo.startDate"
-                              title="${message(code: 'default.startDate.label')}"/>
+                              title="${message(code: 'default.startDate.label.shy')}"/>
             <th rowspan="2" scope="col">${message(code: 'default.status.label')}</th>
             <th rowspan="2" scope="col">${message(code: 'surveyProperty.plural.label')}</th>
 
@@ -222,7 +222,7 @@
         <tr>
             <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}"
                               property="surInfo.endDate"
-                              title="${message(code: 'default.endDate.label')}"/>
+                              title="${message(code: 'default.endDate.label.shy')}"/>
         </tr>
         </thead>
         <g:each in="${surveys}" var="survey" status="i">
@@ -272,7 +272,7 @@
                 <td>
                     <g:formatDate formatName="default.date.format.notime" date="${surveyInfo.startDate}"/>
                     <br />
-                    <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label')}:">
+                    <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label.shy')}:">
                         <g:formatDate formatName="default.date.format.notime" date="${surveyInfo.endDate}"/>
                     </span>
                 </td>

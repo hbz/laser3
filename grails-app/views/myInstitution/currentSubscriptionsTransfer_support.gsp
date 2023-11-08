@@ -273,7 +273,7 @@
 
                     <g:sortableColumn scope="col" rowspan="2" class="la-smaller-table-head" params="${params}"
                                       property="startDate"
-                                      title="${message(code: 'default.startDate.label')}"/>
+                                      title="${message(code: 'default.startDate.label.shy')}"/>
 
                     <g:sortableColumn scope="col" rowspan="3" params="${params}" property="manualCancellationDate"
                                       title="${message(code: 'subscription.manualCancellationDate.label')}"/>
@@ -353,7 +353,7 @@
                 <tr>
                     <g:sortableColumn scope="col" rowspan="1" class="la-smaller-table-head" params="${params}"
                                       property="endDate"
-                                      title="${message(code: 'default.endDate.label')}"/>
+                                      title="${message(code: 'default.endDate.label.shy')}"/>
                     <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}"
                                       property="offerRequestedDate"
                                       title="${message(code: 'subscription.offerRequestedDate.table.th')}"/>
@@ -406,7 +406,7 @@
                         </td>
                         <td>
                             <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/><br/>
-                            <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label')}:">
+                            <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label.shy')}:">
                                 <g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/>
                             </span>
                         </td>
@@ -521,7 +521,7 @@
                             <g:if test="${surveyConfig}">
                                 <g:link controller="survey" action="show" id="${surveyConfig.surveyInfo.id}">
                                     <g:formatDate formatName="default.date.format.notime" date="${surveyConfig.surveyInfo.startDate}"/><br/>
-                                    <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label')}:">
+                                    <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label.shy')}:">
                                         <g:formatDate
                                             formatName="default.date.format.notime"
                                             date="${surveyConfig.surveyInfo.endDate}"/>
