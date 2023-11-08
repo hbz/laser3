@@ -220,7 +220,6 @@ assets {
             'javascript/**',
             'laser/**',
             // vendor/*
-            'bulma/**',
             'crypto-js-4.1.1/**',
             'echarts/**',
             // 'spring-websocket/**', // tmp deactivated
