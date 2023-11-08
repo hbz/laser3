@@ -4036,6 +4036,7 @@ join sub.orgRelations or_sub where
             return
         }else {
             result.surveyResults = result.surveyResults.groupBy {it.id[1]}
+            result.surveyResultsCount =result.surveyResults.size()
             result.countSurveys = surveyService._getSurveyParticipantCounts_New(result.participant, params)
 
             result

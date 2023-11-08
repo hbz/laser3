@@ -9,6 +9,10 @@
 
 5386    08.11.2023  dev     3.3         David   Feature     Trennzeichen in den Übersetzungsdateien
 
+5365    08.11.2023  dev     3.3         Moe     Feature     Kostensicht
+
+5337    07.11.2023  dev     3.3         Moe     Feature     Reminder Umfrage-Mail von Teilnehmer aus verschicken
+
 5381    07.11.2023  dev     3.3         Andreas Feature     Caching von kostenintensiven Resultaten Teil eins
 
 5378    07.11.2023  dev     3.3         Andreas Feature     Verkaufsebene als Fallback für Titel zur Titelnutzung implementiert
