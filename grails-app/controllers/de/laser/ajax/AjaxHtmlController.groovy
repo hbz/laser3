@@ -4,6 +4,8 @@ import de.laser.AlternativeName
 import de.laser.CacheService
 import de.laser.ControlledListService
 import de.laser.CustomerTypeService
+import de.laser.DiscoverySystemFrontend
+import de.laser.DiscoverySystemIndex
 import de.laser.DocContext
 import de.laser.GenericOIDService
 import de.laser.PendingChangeService
@@ -124,13 +126,23 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def addObject() {
         def resultObj, owner
-        String field
         switch(params.object) {
             case "altname": owner= Org.get(params.owner)
                 resultObj = AlternativeName.construct([org: owner, name: 'Unknown'])
-                field = "name"
                 if(resultObj) {
-                    render template: '/templates/ajax/newXEditable', model: [wrapper: params.object, ownObj: resultObj, field: field, overwriteEditable: true]
+                    render template: '/templates/ajax/newXEditable', model: [wrapper: params.object, ownObj: resultObj, objOID: genericOIDService.getOID(resultObj), field: "name", overwriteEditable: true]
+                }
+                break
+            case "frontend": owner= Org.get(params.owner)
+                resultObj = new DiscoverySystemFrontend([org: owner, frontend: RDStore.GENERIC_NULL_VALUE]).save()
+                if(resultObj) {
+                    render template: '/templates/ajax/newXEditable', model: [wrapper: params.object, ownObj: resultObj, objOID: genericOIDService.getOID(resultObj), field: "frontend", config: RDConstants.DISCOVERY_SYSTEM_FRONTEND, overwriteEditable: true]
+                }
+                break
+            case "index": owner= Org.get(params.owner)
+                resultObj = new DiscoverySystemIndex([org: owner, index: RDStore.GENERIC_NULL_VALUE]).save()
+                if(resultObj) {
+                    render template: '/templates/ajax/newXEditable', model: [wrapper: params.object, ownObj: resultObj, objOID: genericOIDService.getOID(resultObj), field: "index", config: RDConstants.DISCOVERY_SYSTEM_INDEX, overwriteEditable: true]
                 }
                 break
             case "coverage": //TODO

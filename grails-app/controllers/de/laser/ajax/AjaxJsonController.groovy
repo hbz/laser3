@@ -2,6 +2,8 @@ package de.laser.ajax
 
 import de.laser.AlternativeName
 import de.laser.CustomerTypeService
+import de.laser.DiscoverySystemFrontend
+import de.laser.DiscoverySystemIndex
 import de.laser.GenericOIDService
 import de.laser.CompareService
 import de.laser.ContextService
@@ -1011,6 +1013,10 @@ class AjaxJsonController {
         Map<String, Object> objId = [id: params.long("objId")]
         switch(params.object) {
             case "altname": removed = AlternativeName.executeUpdate('delete from AlternativeName altname where altname.id = :id', objId)
+                break
+            case "frontend": removed = DiscoverySystemFrontend.executeUpdate('delete from DiscoverySystemFrontend dsf where dsf.id = :id', objId)
+                break
+            case "index": removed = DiscoverySystemIndex.executeUpdate('delete from DiscoverySystemIndex dsi where dsi.id = :id', objId)
                 break
             case "coverage": //TODO migrate SubscriptionController.removeCoverage()
                 break
