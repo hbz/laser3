@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords*
 
+5344    08.11.2023  dev     3.3         Moe     Feature     In Kontextleiste per Klick Lizenzübertraginformationen anzeigen 
+
 5365    08.11.2023  dev     3.3         Moe     Feature     Kostensicht
 
 5337    07.11.2023  dev     3.3         Moe     Feature     Reminder Umfrage-Mail von Teilnehmer aus verschicken

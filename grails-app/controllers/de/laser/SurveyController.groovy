@@ -5383,4 +5383,24 @@ class SurveyController {
         redirect(url: request.getHeader('referer'))
 
     }
+
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    Map<String,Object> showExportModalRenewal() {
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        if(result.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!result.result) {
+                response.sendError(401)
+                return
+            }
+        }
+        if (!result.editable) {
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
+        }
+        render template: "/survey/export/individuallyExportRenewModal", model: [modalID: 'individuallyRenewalExportModal', surveyConfig: result.surveyConfig, surveyInfo: result.surveyInfo,
+                                                                                modalTextHeader: 'Excel-Export ('+ g.message(code: 'subscription.referenceYear.label')+': '+ result.surveyConfig.subscription.referenceYear+')']
+
+    }
 }
