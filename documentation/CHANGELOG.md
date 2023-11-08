@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords*
 
+5386    08.11.2023  dev     3.3         David   Feature     Trennzeichen in den Übersetzungsdateien
+
 5381    07.11.2023  dev     3.3         Andreas Feature     Caching von kostenintensiven Resultaten Teil eins
 
 5378    07.11.2023  dev     3.3         Andreas Feature     Verkaufsebene als Fallback für Titel zur Titelnutzung implementiert
