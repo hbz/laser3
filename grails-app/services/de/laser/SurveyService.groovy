@@ -509,8 +509,8 @@ class SurveyService {
                                    messageSource.getMessage('default.currency.label', null, locale),
                                    messageSource.getMessage('financials.newCosts.taxTypeAndRate', null, locale),
                                    messageSource.getMessage('financials.costInBillingCurrencyAfterTax', null, locale),
-                                   messageSource.getMessage('default.startDate.export.label', null, locale),
-                                   messageSource.getMessage('default.endDate.export.label', null, locale),
+                                   messageSource.getMessage('default.startDate.label', null, locale),
+                                   messageSource.getMessage('default.endDate.label', null, locale),
                                    messageSource.getMessage('surveyConfigsInfo.newPrice.comment', null, locale)])
                 }
 
@@ -594,8 +594,8 @@ class SurveyService {
                            messageSource.getMessage('default.currency.label', null, locale),
                            messageSource.getMessage('financials.newCosts.taxTypeAndRate', null, locale),
                            messageSource.getMessage('financials.costInBillingCurrencyAfterTax', null, locale),
-                           messageSource.getMessage('default.startDate.export.label', null, locale),
-                           messageSource.getMessage('default.endDate.export.label', null, locale),
+                           messageSource.getMessage('default.startDate.label', null, locale),
+                           messageSource.getMessage('default.endDate.label', null, locale),
                            messageSource.getMessage('surveyConfigsInfo.newPrice.comment', null, locale)])
 
 

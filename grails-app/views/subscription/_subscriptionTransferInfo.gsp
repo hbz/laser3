@@ -9,7 +9,7 @@
 
         <p class="ui header">
             ${s},
-            ${message(code: 'subscription.referenceYear.export.label')}: ${s.referenceYear ?: 'ohne'}
+            ${message(code: 'subscription.referenceYear.label')}: ${s.referenceYear ?: 'ohne'}
         </p>
 
         <div class="content">
