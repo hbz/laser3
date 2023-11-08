@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfig; de.laser.Org;de.laser.RefdataCategory;de.laser.survey.SurveyInfo;de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem;de.laser.survey.SurveyResult" %>
+<%@ page import="de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.Org;de.laser.RefdataCategory;de.laser.survey.SurveyInfo;de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem;de.laser.survey.SurveyResult" %>
 <laser:htmlStart message="manageParticipantSurveys.header" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -13,7 +13,7 @@
     </ui:exportDropdown>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon message="manageParticipantSurveys.header" total="${countSurveys.values().sum { it }}" floated="true" />
+<ui:h1HeaderWithIcon message="manageParticipantSurveys.header" total="${surveyResultsCount}" floated="true" />
 
 <ui:messages data="${flash}"/>
 
@@ -162,23 +162,38 @@
                             counts="${countSurveys?.notFinish}"/>
         </ui:tabs>
 
+<g:form action="createOwnMail" controller="mail" method="post" class="ui form"
+        params="[id: params.id]">
+
+    <g:hiddenField name="objectType" value="${participant.class.name}"/>
+    <g:hiddenField name="originalAction" value="${actionName}"/>
 
     <div class="ui bottom attached tab segment active">
         <table class="ui celled sortable table la-js-responsive-table la-table">
             <thead>
             <tr>
+                <g:if test="${editable && params.tab == 'open'}">
+                <th>
+                        <g:checkBox name="surveyListToggler" id="surveyListToggler" checked="false"/>
+                </th>
+                </g:if>
                 <th rowspan="2" class="center aligned">
                     ${message(code: 'sidewide.number')}
                 </th>
-                <g:sortableColumn params="${params}" property="surveyInfo.name"
+                <g:sortableColumn params="${params}" property="surInfo.name"
                                   title="${message(code: 'surveyInfo.slash.name')}"/>
-                <g:sortableColumn params="${params}" property="surveyInfo.type"
+                <g:sortableColumn params="${params}" property="surInfo.type"
                                   title="${message(code: 'surveyInfo.type.label')}"/>
-                <g:sortableColumn params="${params}" property="surveyInfo.endDate"
+                <g:sortableColumn params="${params}" property="surInfo.endDate"
                                   title="${message(code: 'default.endDate.label')}"/>
                 <th><g:message code="surveyInfo.finished"/></th>
                 <g:if test="${params.tab == 'finish'}">
                     <th><g:message code="surveyInfo.finishedDate"/></th>
+                </g:if>
+                <g:if test="${params.tab == 'open'}">
+                    <th>
+                        ${message(code: 'surveyOrg.reminderMailDate')}
+                    </th>
                 </g:if>
                 <th class="la-action-info">${message(code: 'default.actions.label')}</th>
             </tr>
@@ -193,6 +208,11 @@
                        value="${surveyConfig.surveyInfo}"/>
 
                 <tr>
+                    <g:if test="${editable && params.tab == 'open'}">
+                        <td>
+                            <g:checkBox name="selectedSurveys" value="${surveyInfo.id}" checked="false"/>
+                        </td>
+                    </g:if>
                     <td class="center aligned">
                         ${(params.int('offset') ?: 0) + i + 1}
                     </td>
@@ -226,11 +246,17 @@
                     </td>
 
                     <td class="center aligned">
-                        <uiSurvey:finishIcon participant="${Org.get(params.id)}" surveyConfig="${surveyConfig}" surveyOwnerView="${true}"/>
+                        <uiSurvey:finishIcon participant="${participant}" surveyConfig="${surveyConfig}" surveyOwnerView="${true}"/>
                     </td>
                     <g:if test="${params.tab == 'finish'}">
                         <td class="center aligned">
-                            <uiSurvey:finishDate participant="${Org.get(params.id)}" surveyConfig="${surveyConfig}"/>
+                            <uiSurvey:finishDate participant="${participant}" surveyConfig="${surveyConfig}"/>
+                        </td>
+                    </g:if>
+                    <g:if test="${params.tab == 'open'}">
+                        <td>
+                            <g:set var="surveyOrg" value="${SurveyOrg.findByOrgAndSurveyConfig(participant, surveyConfig)}"/>
+                            <ui:xEditable owner="${surveyOrg}" type="date" field="reminderMailDate"/>
                         </td>
                     </g:if>
                     <td>
@@ -250,7 +276,25 @@
 
             </g:each>
         </table>
+        <g:if test="${editable && params.tab == 'open'}">
+            <div class="eight wide field" style="text-align: left;">
+                <button name="openOption" type="submit" value="ReminderMail" class="ui button">
+                    ${message(code: 'openParticipantsAgain.reminder')}
+                </button>
+            </div>
+        </g:if>
     </div>
+</g:form>
 </div>
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('#surveyListToggler').click(function () {
+        if ($(this).prop('checked')) {
+            $("tr[class!=disabled] input[name=selectedSurveys]").prop('checked', true)
+        } else {
+            $("tr[class!=disabled] input[name=selectedSurveys]").prop('checked', false)
+        }
+    })
+</laser:script>
 
 <laser:htmlEnd />

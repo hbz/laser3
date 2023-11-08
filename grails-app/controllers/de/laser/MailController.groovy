@@ -38,15 +38,6 @@ class MailController {
         result.contextOrg = contextOrg
         result.contextCustomerType = contextOrg.getCustomerType()
 
-        result.orgList = []
-
-        if (params.list('selectedOrgs')) {
-            List idList = params.list('selectedOrgs')
-            result.orgList = idList.isEmpty() ? [] : Org.findAllByIdInList(idList)
-        }
-
-        result.object = null
-
         result.objectId = params.objectId ?: params.id
         result.objectType = params.objectType
 
@@ -65,6 +56,13 @@ class MailController {
                     result.surveyConfig = result.surveyInfo.surveyConfigs[0]
 
                     result.editable = (result.surveyInfo && result.surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED]) ? result.surveyInfo.isEditable() : false
+
+                    result.orgList = []
+
+                    if (params.list('selectedOrgs')) {
+                        List idList = params.list('selectedOrgs')
+                        result.orgList = idList.isEmpty() ? [] : Org.findAllByIdInList(idList)
+                    }
 
                     if(!result.orgList){
                         flash.error = message(code: 'default.no.selected.org')
@@ -110,6 +108,58 @@ class MailController {
                             }
                             redirect(url: request.getHeader("referer"))
                             return
+                        }
+                    } else {
+                        flash.error = message(code: 'default.noPermissions')
+                        redirect(url: request.getHeader("referer"))
+                        return
+                    }
+
+                    break
+                case Org.class.name:
+
+                    result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+
+                    if (!result.editable) {
+                        flash.error = g.message(code: "default.notAutorized.message")
+                        redirect(url: request.getHeader('referer'))
+                    }
+
+                    result.surveyList = []
+
+                    if (params.list('selectedSurveys')) {
+                        List idList = params.list('selectedSurveys')
+                        result.surveyList = idList.isEmpty() ? [] : SurveyInfo.findAllByIdInList(idList)
+                    }
+
+                    if(!result.surveyList){
+                        flash.error = message(code: 'default.no.selected.org')
+                        redirect(url: request.getHeader("referer"))
+                        return
+                    }
+
+                    result.org = Org.get(Long.parseLong(result.objectId))
+
+                    result.orgList =[result.org]
+
+                    result.reminderMail = (params.openOption == 'ReminderMail')  ?: false
+
+                    if (result.editable) {
+
+                        if(result.reminderMail) {
+                            result << mailSendService.mailSendConfigBySurveys(result.surveyList, result.reminderMail)
+
+                            List<User> formalUserList = result.org ? User.findAllByFormalOrg(result.org) : []
+                            List<String> userSurveyNotification = []
+
+                            formalUserList.each { fu ->
+                                if (fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
+                                        fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES) {
+                                    userSurveyNotification << fu.email
+                                }
+                            }
+
+                            result.userSurveyNotificationMails = userSurveyNotification ? userSurveyNotification.join('; ') : ''
                         }
                     } else {
                         flash.error = message(code: 'default.noPermissions')
@@ -187,6 +237,40 @@ class MailController {
                     String surveyView = reminderMail ? 'participantsReminder' : 'openParticipantsAgain'
 
                     redirect(action: surveyView, controller: 'survey', id: result.surveyInfo.id, params:[tab: params.tab])
+                    return
+                    break
+                case Org.class.name:
+                    result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+
+                    if (!result.editable) {
+                        flash.error = g.message(code: "default.notAutorized.message")
+                        redirect(url: request.getHeader('referer'))
+                    }
+
+                    result.surveyList = []
+
+                    if (params.list('selectedSurveys')) {
+                        List idList = params.list('selectedSurveys')
+                        result.surveyList = idList.isEmpty() ? [] : SurveyInfo.findAllByIdInList(idList)
+                    }
+
+                    if(!result.surveyList){
+                        flash.error = message(code: 'default.no.selected.org')
+                        redirect(url: request.getHeader("referer"))
+                        return
+                    }
+
+                    result.org = Org.get(Long.parseLong(result.objectId))
+
+                    boolean reminderMail = params.reminderMail == 'false' ? false : true
+
+                    if(result.editable) {
+                        result << mailSendService.mailSendProcessBySurveys(result.surveyList, reminderMail, result.org, params)
+                    }else {
+                        flash.error = message(code: 'default.notAutorized.message')
+                    }
+
+                    redirect(action: 'manageParticipantSurveys', controller: 'myInstitution', id: result.org.id, params:[tab: params.tab])
                     return
                     break
             }

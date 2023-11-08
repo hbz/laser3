@@ -19,7 +19,7 @@
 <g:if test="${reminder}">
     <g:message code="email.survey.reminder.general.text" locale="${language}"/>
     <br />
-    ${escapeService.replaceUmlaute(survey.type.getI10n('value', language))} - ${escapeService.replaceUmlaute(survey.name)} (<g:formatDate format="${message(code: 'default.date.format.notime', locale: language)}" date="${survey.startDate}"/> - <g:formatDate format="${message(code: 'default.date.format.notime', locale: language)}" date="${survey.endDate}"/>) ${survey.surveyConfigs[0].subscription ? (survey.surveyConfigs[0].subscription.getProviders() ? escapeService.replaceUmlaute(survey.surveyConfigs[0].subscription.getProviders().name[0]) : '') : ''}}
+    ${escapeService.replaceUmlaute(survey.type.getI10n('value', language))} - ${escapeService.replaceUmlaute(survey.name)} (<g:formatDate format="${message(code: 'default.date.format.notime', locale: language)}" date="${survey.startDate}"/> - <g:formatDate format="${message(code: 'default.date.format.notime', locale: language)}" date="${survey.endDate}"/>) ${survey.surveyConfigs[0].subscription ? (survey.surveyConfigs[0].subscription.getProviders() ? escapeService.replaceUmlaute(survey.surveyConfigs[0].subscription.getProviders().name[0]) : '') : ''}
     <br />
     ${linkToSurvey}
     <br />
@@ -40,7 +40,7 @@
     <g:if test="${renewalSurvey}">
         <g:message code="email.survey.renewal.text" locale="${language}"/>
         <br />
-        ${escapeService.replaceUmlaute(survey.name)} (<g:formatDate format="${message(code: 'default.date.format.notime', locale: language)}" date="${survey.startDate}"/> - <g:formatDate format="${message(code: 'default.date.format.notime', locale: language)}" date="${survey.endDate}"/>) ${survey.surveyConfigs[0].subscription ? (survey.surveyConfigs[0].subscription.getProviders() ? escapeService.replaceUmlaute(survey.surveyConfigs[0].subscription.getProviders().name[0]) : '') : ''}}
+        ${escapeService.replaceUmlaute(survey.name)} (<g:formatDate format="${message(code: 'default.date.format.notime', locale: language)}" date="${survey.startDate}"/> - <g:formatDate format="${message(code: 'default.date.format.notime', locale: language)}" date="${survey.endDate}"/>) ${survey.surveyConfigs[0].subscription ? (survey.surveyConfigs[0].subscription.getProviders() ? escapeService.replaceUmlaute(survey.surveyConfigs[0].subscription.getProviders().name[0]) : '') : ''}
         <br />
         <br />
         <g:message code="email.survey.renewal.text2" locale="${language}"/>
@@ -54,7 +54,7 @@
         <g:if test="${survey.type == RDStore.SURVEY_TYPE_INTEREST}">
             <g:message code="email.survey.general.text" locale="${language}"/>
             <br />
-            ${escapeService.replaceUmlaute(survey.name)} (<g:formatDate format="${message(code: 'default.date.format.notime', locale: language)}" date="${survey.startDate}"/> - <g:formatDate format="${message(code: 'default.date.format.notime', locale: language)}" date="${survey.endDate}"/>) ${survey.surveyConfigs[0].subscription ? (survey.surveyConfigs[0].subscription.getProviders() ? escapeService.replaceUmlaute(survey.surveyConfigs[0].subscription.getProviders().name[0]) : '') : ''}}
+            ${escapeService.replaceUmlaute(survey.name)} (<g:formatDate format="${message(code: 'default.date.format.notime', locale: language)}" date="${survey.startDate}"/> - <g:formatDate format="${message(code: 'default.date.format.notime', locale: language)}" date="${survey.endDate}"/>) ${survey.surveyConfigs[0].subscription ? (survey.surveyConfigs[0].subscription.getProviders() ? escapeService.replaceUmlaute(survey.surveyConfigs[0].subscription.getProviders().name[0]) : '') : ''}
             <br />
             <br />
             <g:message code="email.survey.general.text2" locale="${language}"/>
@@ -62,7 +62,7 @@
         <g:elseif test="${survey.type == RDStore.SURVEY_TYPE_SUBSCRIPTION}">
             <g:message code="email.survey.subscription.text" locale="${language}"/>
             <br />
-            ${escapeService.replaceUmlaute(survey.name)} (<g:formatDate format="${message(code: 'default.date.format.notime', locale: language)}" date="${survey.startDate}"/> - <g:formatDate format="${message(code: 'default.date.format.notime', locale: language)}" date="${survey.endDate}"/>) ${survey.surveyConfigs[0].subscription ? (survey.surveyConfigs[0].subscription.getProviders() ? escapeService.replaceUmlaute(survey.surveyConfigs[0].subscription.getProviders().name[0]) : '') : ''}}
+            ${escapeService.replaceUmlaute(survey.name)} (<g:formatDate format="${message(code: 'default.date.format.notime', locale: language)}" date="${survey.startDate}"/> - <g:formatDate format="${message(code: 'default.date.format.notime', locale: language)}" date="${survey.endDate}"/>) ${survey.surveyConfigs[0].subscription ? (survey.surveyConfigs[0].subscription.getProviders() ? escapeService.replaceUmlaute(survey.surveyConfigs[0].subscription.getProviders().name[0]) : '') : ''}
             <br />
             <br />
             <g:message code="email.survey.subscription.text2" locale="${language}"/>

@@ -902,6 +902,12 @@ class FilterService {
             queryParams << [org : org]
         }
 
+        if(params.tab == "all"){
+            query << "surInfo.status in (:status) and surOrg.org = :org"
+            queryParams << [status: [RDStore.SURVEY_SURVEY_STARTED, RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED]]
+            queryParams << [org : org]
+        }
+
         if(params.consortiaOrg) {
             query << "surInfo.owner = :owner"
             queryParams << [owner: params.consortiaOrg]
