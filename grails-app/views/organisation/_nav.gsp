@@ -6,16 +6,16 @@
     %>
 
     <ui:subNavItem controller="organisation" action="show" params="${breadcrumbParams}" message="org.nav.details"/>
-    <ui:subNavItem controller="organisation" action="ids" params="${breadcrumbParams}" message="${isProviderOrAgency ? 'org.nav.ids' : 'org.nav.idsCidsHyphen'}"/>
+    <ui:subNavItem controller="organisation" action="ids" params="${breadcrumbParams}" message="${isProviderOrAgency ? 'org.nav.ids' : 'org.nav.idsCids.shy'}"/>
     <g:if test="${inContextOrg}">
-        <ui:subNavItem controller="organisation" action="myPublicContacts" params="${[id: institution.id]}" message="menu.institutions.publicContactsHyphen" />
+        <ui:subNavItem controller="organisation" action="myPublicContacts" params="${[id: institution.id]}" message="menu.institutions.publicContacts.shy" />
     </g:if>
     <g:elseif test="${(customerTypeService.isConsortium( contextCustomerType ) && !isProviderOrAgency)}">
-        <ui:subNavItem controller="organisation" action="myPublicContacts" params="${breadcrumbParams}" message="menu.institutions.publicContactsHyphen" />
+        <ui:subNavItem controller="organisation" action="myPublicContacts" params="${breadcrumbParams}" message="menu.institutions.publicContacts.shy" />
     </g:elseif>
     <g:else>
         <g:if test="${!isProviderOrAgency}">
-            <ui:subNavItem controller="organisation" action="myPublicContacts" message="menu.institutions.publicContactsHyphen" disabled="true" />
+            <ui:subNavItem controller="organisation" action="myPublicContacts" message="menu.institutions.publicContacts.shy" disabled="true" />
         </g:if>
     </g:else>
     <g:if test="${!isProviderOrAgency}">
