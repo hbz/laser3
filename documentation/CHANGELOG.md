@@ -5,7 +5,9 @@
     Changelog for version A.B.C = all tickets in A.B.C-1
 
 
-**Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords*
+**Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
+
+5359    09.11.2023  dev     3.3         Andreas Feature     Discovery-Systeme in das Einrichtungsprofil eingearbeitet
 
 5386    08.11.2023  dev     3.3         David   Feature     Trennzeichen in den Übersetzungsdateien
 
