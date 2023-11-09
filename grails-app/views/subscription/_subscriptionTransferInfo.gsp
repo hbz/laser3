@@ -1,7 +1,7 @@
 <!-- template: meta/subscriptionTransferInfo -->
 <%@ page import="de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Subscription; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.Org; de.laser.CustomerTypeService; de.laser.Doc; de.laser.survey.SurveyOrg;" %>
 
-<laser:serviceInjection/>
+<laser:serviceInjection />
 
 <div class="ui yellow segment" id="subscriptionTransfer-content">
     <div class="content">
@@ -9,16 +9,13 @@
             <thead>
             <tr>
                 <th scope="col" rowspan="3">${message(code: 'subscription.referenceYear.short.label')}</th>
-                <th scope="col"
-                    rowspan="3">${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}</th>
+                <th scope="col" rowspan="3">${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}</th>
                 <th scope="col" rowspan="3">${message(code: 'subscription')}</th>
-                <th scope="col" rowspan="2"
-                    class="la-smaller-table-head">${message(code: 'default.startDate.label')}</th>
-                <th scope="col" rowspan="3">${message(code: 'subscription.manualCancellationDate.label')}</th>
+                <th scope="col" rowspan="2" class="la-smaller-table-head">${message(code: 'default.startDate.label.shy')}</th>
+                <th scope="col" rowspan="3">${message(code: 'subscription.manualCancellationDate.label.shy')}</th>
                 <th colspan="3"
                     class="la-smaller-table-head center aligned">${message(code: 'subscription.offer.table.th')}</th>
-                <th scope="col" rowspan="3"
-                    class="center aligned">${message(code: 'subscription.priceIncreaseInfo.label')}</th>
+                <th scope="col" rowspan="3" class="center aligned">${message(code: 'subscription.priceIncreaseInfo.label')}</th>
 
                 <th scope="col" rowspan="3" class="center aligned">
                     <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'survey.label')}"
@@ -361,13 +358,12 @@
     tooltip.init('#subscriptionTransfer-content');
     }, 1000);
 </laser:script>
-
 <style>
-#subscriptionTransfer-content {
-    position: fixed !important;
-    top: 100px;
-    z-index: 100;
-    display: none;
-}
+    #subscriptionTransfer-content {
+        position: fixed !important;
+        top: 100px;
+        z-index: 100;
+        display: none;
+    }
 </style>
 <!-- template: meta/subscriptionTransferInfo -->

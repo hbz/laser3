@@ -35,12 +35,12 @@
                 </tr>
                 <tr>
                     <th><g:checkBox name="subscription.copyStart" value="${true}"/></th>
-                    <th>${message(code: 'default.startDate.label')}</th>
+                    <th>${message(code: 'default.startDate.label.shy')}</th>
                     <td><ui:datepicker class="wide eight" id="subscription.start_date" name="subscription.start_date" placeholder="default.date.label" value="${permissionInfo?.sub_startDate}" required="" /></td>
                 </tr>
                 <tr>
                     <th><g:checkBox name="subscription.copyEnd" value="${true}"/></th>
-                    <th>${message(code: 'default.endDate.label')}</th>
+                    <th>${message(code: 'default.endDate.label.shy')}</th>
                     <td><ui:datepicker class="wide eight" id="subscription.end_date" name="subscription.end_date" placeholder="default.date.label" value="${permissionInfo?.sub_endDate}" /></td>
                 </tr>
                 <tr>

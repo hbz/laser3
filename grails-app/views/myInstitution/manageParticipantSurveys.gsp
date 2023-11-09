@@ -185,7 +185,7 @@
                 <g:sortableColumn params="${params}" property="surInfo.type"
                                   title="${message(code: 'surveyInfo.type.label')}"/>
                 <g:sortableColumn params="${params}" property="surInfo.endDate"
-                                  title="${message(code: 'default.endDate.label')}"/>
+                                  title="${message(code: 'default.endDate.label.shy')}"/>
                 <th><g:message code="surveyInfo.finished"/></th>
                 <g:if test="${params.tab == 'finish'}">
                     <th><g:message code="surveyInfo.finishedDate"/></th>

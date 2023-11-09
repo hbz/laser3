@@ -16,8 +16,8 @@
           <thead>
             <tr>
               <th>${message(code:'financials.invoice_number')}</th>
-              <th>${message(code:'default.startDate.label')}</th>
-              <th>${message(code:'default.endDate.label')}</th>
+              <th>${message(code:'default.startDate.label.shy')}</th>
+              <th>${message(code:'default.endDate.label.shy')}</th>
               <th>${message(code:'financials.invoice_total')}</th>
             </tr>
           </thead>

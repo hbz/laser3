@@ -12,18 +12,18 @@
                 <thead>
                 <tr>
                     <th>${message(code: 'subscription')}</th>
-                    <th>${message(code: 'default.startDate.label')}</th>
-                    <th>${message(code: 'default.endDate.label')}</th>
-                    <th>${message(code: 'subscription.referenceYear.label')}</th>
+                    <th>${message(code: 'default.startDate.label.shy')}</th>
+                    <th>${message(code: 'default.endDate.label.shy')}</th>
+                    <th>${message(code: 'subscription.referenceYear.label.shy')}</th>
                     <th>${message(code: 'default.status.label')}</th>
                     <th>${message(code: 'subscription.kind.label')}</th>
-                    <th>${message(code: 'subscription.form.label')}</th>
+                    <th>${message(code: 'subscription.form.label.shy')}</th>
                     <th>${message(code: 'subscription.resource.label')}</th>
                     <th>${message(code: 'subscription.isPublicForApi.label')}</th>
                     <th>${message(code: 'subscription.hasPerpetualAccess.label')}</th>
-                    <th>${message(code: 'subscription.hasPublishComponent.label')}</th>
+                    <th>${message(code: 'subscription.hasPublishComponent.label.shy')}</th>
                     <g:if test="${subscription.packages}">
-                        <th>${message(code: 'subscription.holdingSelection.label')}</th>
+                        <th>${message(code: 'subscription.holdingSelection.label.shy')}</th>
                     </g:if>
                     <th>${message(code: 'default.actions.label')}</th>
                 </tr>
@@ -346,17 +346,17 @@
                     <g:if test="${controllerName == "myInstitution"}">
                         <th>${message(code: 'default.subscription.label')}</th>
                     </g:if>
-                    <th>${message(code: 'default.startDate.label')}</th>
-                    <th>${message(code: 'default.endDate.label')}</th>
-                    <th>${message(code: 'subscription.referenceYear.label')}</th>
+                    <th>${message(code: 'default.startDate.label.shy')}</th>
+                    <th>${message(code: 'default.endDate.label.shy')}</th>
+                    <th>${message(code: 'subscription.referenceYear.label.shy')}</th>
                     <th>${message(code: 'default.status.label')}</th>
                     <th>${message(code: 'subscription.kind.label')}</th>
-                    <th>${message(code: 'subscription.form.label')}</th>
+                    <th>${message(code: 'subscription.form.label.shy')}</th>
                     <th>${message(code: 'subscription.resource.label')}</th>
                     <th>${message(code: 'subscription.isPublicForApi.label')}</th>
                     <th>${message(code: 'subscription.hasPerpetualAccess.label')}</th>
-                    <th>${message(code: 'subscription.hasPublishComponent.label')}</th>
-                    <th>${message(code: 'subscription.holdingSelection.label')}</th>
+                    <th>${message(code: 'subscription.hasPublishComponent.label.shy')}</th>
+                    <th>${message(code: 'subscription.holdingSelection.label.shy')}</th>
                     <g:if test="${contextService.getOrg().isCustomerType_Inst_Pro()}">
                         <th>${message(code: 'subscription.isAutomaticRenewAnnually.label')}</th>
                     </g:if>

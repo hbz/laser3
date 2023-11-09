@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords*
 
+5386    08.11.2023  dev     3.3         David   Feature     Trennzeichen in den Übersetzungsdateien
+
 5344    08.11.2023  dev     3.3         Moe     Feature     In Kontextleiste per Klick Lizenzübertraginformationen anzeigen 
 
 5365    08.11.2023  dev     3.3         Moe     Feature     Kostensicht
