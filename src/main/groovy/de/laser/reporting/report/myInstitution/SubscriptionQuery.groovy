@@ -210,6 +210,31 @@ class SubscriptionQuery extends BaseQuery {
 
                 handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_LICENSE_LABEL, noDataList, result)
             }
+            else if (params.query in ['subscription-x-licenseCategory']) {
+
+                result.data = License.executeQuery(
+                        'select lk.sourceLicense.licenseCategory.id, lk.sourceLicense.licenseCategory.value_de, count(*) from Links lk where lk.destinationSubscription.id in (:idList) and lk.linkType = :type ' +
+                                'and exists ( select ro from lk.sourceLicense.orgRelations ro where ro.org = :ctx and ro.roleType in (:roleTypes) ) ' +
+                                'group by lk.sourceLicense.licenseCategory.id, lk.sourceLicense.licenseCategory.value_de order by lk.sourceLicense.licenseCategory.value_de',
+                        [idList: idList, type: RDStore.LINKTYPE_LICENSE, ctx: contextService.getOrg(), roleTypes: [RDStore.OR_LICENSING_CONSORTIUM, RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]]
+                )
+                result.data.each { d ->
+                    result.dataDetails.add([
+                            query : params.query,
+                            id    : d[0],
+                            label : d[1],
+                            idList: Subscription.executeQuery(
+                                    'select lk.destinationSubscription.id from Links lk where lk.destinationSubscription.id in (:idList) and lk.sourceLicense.licenseCategory.id = :d order by lk.destinationSubscription.name',
+                                    [idList: idList, d: d[0]]
+                            )
+                    ])
+                }
+
+                List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
+                List<Long> noDataList = nonMatchingIdList ? Subscription.executeQuery('select s.id from Subscription s where s.id in (:idList)', [idList: nonMatchingIdList]) : []
+
+                handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_LICENSE_LABEL, noDataList, result)
+            }
             else if (params.query in ['subscription-x-property']) {
 
                 handleGenericPropertyXQuery(
