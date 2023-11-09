@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigMapper
 import de.laser.storage.BeanStore
 import grails.gorm.transactions.Transactional
@@ -16,6 +17,9 @@ import javax.sql.DataSource
 @Transactional
 class GlobalService {
 
+    static final long LONG_PROCESS_LIMBO = 5 //2 minutes, other values are for debug only, do not commit!
+
+    CacheService cacheService
     SessionFactory sessionFactory
 
     /**
@@ -83,5 +87,10 @@ class GlobalService {
     static Sql obtainStorageSqlConnection() {
         DataSource dataSource = BeanStore.getStorageDataSource()
         new Sql(dataSource)
+    }
+
+    void notifyBackgroundProcessFinish(long userId, String cacheKey, String mess) {
+        EhcacheWrapper cache = cacheService.getTTL1800Cache("finish_${userId}")
+        cache.put(cacheKey, mess)
     }
 }

@@ -2,7 +2,7 @@ package de.laser.ctrl
 
 import de.laser.*
 import de.laser.auth.User
-import de.laser.utils.AppUtils
+import de.laser.cache.EhcacheWrapper
 import de.laser.utils.DateUtils
 import de.laser.helper.Profiler
 import de.laser.storage.RDStore
@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat
 @Transactional
 class MyInstitutionControllerService {
 
+    CacheService cacheService
     ContextService contextService
     DashboardDueDatesService dashboardDueDatesService
     FilterService filterService
@@ -69,6 +70,16 @@ class MyInstitutionControllerService {
         }
 
         def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
+
+        //completed processes
+        Set<String> processes = []
+        EhcacheWrapper cache = cacheService.getTTL1800Cache("finish_${result.user.id}")
+        if(cache) {
+            cache.getKeys().each { String key ->
+                processes << cache.get(key.split("finish_${result.user.id}_")[1])
+            }
+        }
+        result.completedProcesses = processes
 
         // systemAnnouncements
         prf.setBenchmark('system announcements')

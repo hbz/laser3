@@ -2108,9 +2108,11 @@ class SubscriptionControllerService {
                 log.debug("linkPackage. Global Record Source URL: " +source.uri)
                 globalSourceSyncService.source = source
                 globalSourceSyncService.defineMapFields()
+
                 //to be deployed in parallel thread
                 executorService.execute({
                     Thread.currentThread().setName("PackageTransfer_"+result.subscription.id)
+                    long start = System.currentTimeSeconds()
                     if(!Package.findByGokbId(pkgUUID)) {
                         try {
                             Map<String,Object> queryResult = globalSourceSyncService.fetchRecordJSON(false,[componentType:'TitleInstancePackagePlatform',tippPackageUuid:pkgUUID,max:5000,sort:'lastUpdated'])
@@ -2151,6 +2153,9 @@ class SubscriptionControllerService {
                         }
                         //subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                     }
+                    if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
+                        globalService.notifyBackgroundProcessFinish(result.user.id, "PackageTransfer_${result.subscription.id}", messageSource.getMessage('subscription.details.linkPackage.thread.completed', [result.subscription.name] as Object[], LocaleUtils.getCurrentLocale()))
+                    }
                 })
             }
 
@@ -2186,9 +2191,14 @@ class SubscriptionControllerService {
                 subList.addAll(Subscription.findAllByInstanceOf(result.subscription))
             }
             executorService.execute({
-                Thread.currentThread().setName('PackageUnlink_'+result.subscription.id)
+                String threadName = 'PackageUnlink_'+result.subscription.id
+                Thread.currentThread().setName(threadName)
+                long start = System.currentTimeSeconds()
                 if(packageService.unlinkFromSubscription(result.package, subList.id, result.institution, unlinkPkg)){
                     result.message = messageSource.getMessage('subscription.details.unlink.successfully',null,locale)
+                    if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
+                        globalService.notifyBackgroundProcessFinish(result.user.id, threadName, messageSource.getMessage('subscription.details.unlink.thread.completed', [result.subscription.name] as Object[], locale))
+                    }
                 }else {
                     result.error = messageSource.getMessage('subscription.details.unlink.notSuccessfully',null,locale)
                 }

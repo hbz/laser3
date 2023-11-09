@@ -47,6 +47,7 @@ class CopyElementsService {
     ExecutorService executorService
     FormService formService
     GenericOIDService genericOIDService
+    GlobalService globalService
     LicenseService licenseService
     MessageSource messageSource
     PackageService packageService
@@ -845,6 +846,7 @@ class CopyElementsService {
     Map copyObjectElements_PackagesEntitlements(Map params) {
         Map<String, Object> result = [:]
         FlashScope flash = getCurrentFlashScope()
+        long userId = contextService.getUser().id
 
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         Object targetObject = params.targetObjectId ? genericOIDService.resolveOID(params.targetObjectId) : null
@@ -869,6 +871,7 @@ class CopyElementsService {
                 flash.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null, LocaleUtils.getCurrentLocale())
                 executorService.execute({
                     try {
+                        long start = System.currentTimeSeconds()
                         Thread.currentThread().setName("PackageTransfer_${targetObject.id}")
                         if (params.subscription?.deletePackageIds) {
                             List<SubscriptionPackage> packagesToDelete = params.list('subscription.deletePackageIds').collect { genericOIDService.resolveOID(it) }
@@ -888,6 +891,9 @@ class CopyElementsService {
                         if (params.subscription?.deleteTitleGroups) {
                             List<IssueEntitlementGroup> deleteTitleGroups = params.list('subscription.deleteTitleGroups').collect { genericOIDService.resolveOID(it) }
                             deleteIssueEntitlementGroupItem(deleteTitleGroups)
+                        }
+                        if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
+                            globalService.notifyBackgroundProcessFinish(userId, "PackageTransfer_${targetObject.id}", messageSource.getMessage('subscription.details.linkPackage.thread.completed', [targetObject.name] as Object[], LocaleUtils.getCurrentLocale()))
                         }
                     }
                     catch (Exception e) {
