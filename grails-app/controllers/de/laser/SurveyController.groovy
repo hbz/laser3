@@ -58,11 +58,10 @@ class SurveyController {
     CopyElementsService copyElementsService
     CustomWkhtmltoxService wkhtmltoxService
     DocstoreService docstoreService
-    EscapeService escapeService
     ExecutorService executorService
     ExportClickMeService exportClickMeService
-    ExportService exportService
     GenericOIDService genericOIDService
+    GlobalService globalService
     FilterService filterService
     FinanceControllerService financeControllerService
     FinanceService financeService
@@ -4776,11 +4775,12 @@ class SurveyController {
                 packagesToProcess << SubscriptionPackage.get(spId).pkg
             }
         }
-
-        if(packagesToProcess.size() > 0 && !subscriptionService.checkThreadRunning('PackageTransfer_'+result.parentSuccessorSubscription.id)) {
+        String threadName = 'PackageTransfer_'+result.parentSuccessorSubscription.id
+        if(packagesToProcess.size() > 0 && !subscriptionService.checkThreadRunning(threadName)) {
             boolean withEntitlements = params.linkWithEntitlements == 'on'
             executorService.execute({
-                Thread.currentThread().setName('PackageTransfer_'+result.parentSuccessorSubscription.id)
+                Thread.currentThread().setName()
+                long start = System.currentTimeSeconds()
                 packagesToProcess.each { pkg ->
                     subscriptionService.addToMemberSubscription(result.parentSuccessorSubscription, result.newSubs, pkg, withEntitlements)
                     /*result.newSubs.each { Subscription memberSub ->
@@ -4790,6 +4790,9 @@ class SurveyController {
                             else
                                 subscriptionService.addToSubscription(memberSub, pkg, false)
                     }*/
+                }
+                if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
+                    globalService.notifyBackgroundProcessFinish(result.user.id, threadName, message(code: 'subscription.details.linkPackage.thread.completed', args: [result.parentSuccessorSubscription.name] as Object[]))
                 }
             })
         }

@@ -2023,6 +2023,9 @@ class MyInstitutionController  {
                 response.sendError(401)
                 return
             }
+            if (ctrlResult.result.completedProcesses.size() > 0) {
+                flash.message = ctrlResult.result.completedProcesses.join('<br>')
+            }
 
             return ctrlResult.result
         }

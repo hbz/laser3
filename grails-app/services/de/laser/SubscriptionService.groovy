@@ -46,6 +46,7 @@ class SubscriptionService {
     ExecutorService executorService
     FilterService filterService
     GenericOIDService genericOIDService
+    GlobalService globalService
     GokbService gokbService
     LinksGenerationService linksGenerationService
     MessageSource messageSource
@@ -2814,10 +2815,10 @@ join sub.orgRelations or_sub where
     void setPermanentTitlesBySubscription(Subscription subscription) {
         if (subscription._getCalculatedType() in [CalculatedType.TYPE_LOCAL, CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_CONSORTIAL]) {
             if(!checkThreadRunning('permanentTilesProcess_' + subscription.id)) {
+                Long userId = contextService.getUser().id
                 executorService.execute({
                     Thread.currentThread().setName('permanentTilesProcess_' + subscription.id)
-                    Long ownerId = subscription.subscriber.id
-                    Long subId = subscription.id
+                    Long ownerId = subscription.subscriber.id, subId = subscription.id, start = System.currentTimeSeconds()
                     Sql sql = GlobalService.obtainSqlConnection()
                     Connection connection = sql.dataSource.getConnection()
 
@@ -2842,6 +2843,9 @@ join sub.orgRelations or_sub where
                         }
                     }
                     sql.close()
+                    if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
+                        globalService.notifyBackgroundProcessFinish(userId, 'permanentTilesProcess_' + subscription.id, messageSource.getMessage('subscription.details.unmarkPermanentTitles.completed' ,[subscription.name] as Object[], LocaleUtils.getCurrentLocale()))
+                    }
                 })
             }
         }
@@ -2850,7 +2854,9 @@ join sub.orgRelations or_sub where
     void removePermanentTitlesBySubscription(Subscription subscription) {
         if (subscription._getCalculatedType() in [CalculatedType.TYPE_LOCAL, CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_CONSORTIAL]) {
             if(!checkThreadRunning('permanentTilesProcess_' + subscription.id)) {
+                long userId = contextService.getUser().id
                 executorService.execute({
+                    long start = System.currentTimeSeconds()
                     Thread.currentThread().setName('permanentTilesProcess_' + subscription.id)
                     int countIeIDs = IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is not null', [sub: subscription])[0]
                     log.debug("removePermanentTitlesBySubscription -> set perpetualAccessBySub of ${countIeIDs} IssueEntitlements to null: " + subscription.id)
@@ -2866,6 +2872,9 @@ join sub.orgRelations or_sub where
                             PermanentTitle.executeUpdate("delete PermanentTitle pt where pt.issueEntitlement.id in (select ie.id from IssueEntitlement ie where ie.subscription = :sub)", [sub: dependingObj])
 
                         }
+                    }
+                    if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
+                        globalService.notifyBackgroundProcessFinish(userId, 'permanentTilesProcess_' + subscription.id, messageSource.getMessage('subscription.details.unmarkPermanentTitles.completed' ,[subscription.name] as Object[], LocaleUtils.getCurrentLocale()))
                     }
                 })
             }

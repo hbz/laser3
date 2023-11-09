@@ -9,6 +9,8 @@
 
 5385    09.11.2023  dev     3.3         Andreas Feature     EZB-Ausgaben abgeschaltet
 
+5372    09.11.2023  dev     3.3         Andreas Feature     Benachrichtigung von Massenprozessen implementiert
+
 5359    09.11.2023  dev     3.3         Andreas Feature     Discovery-Systeme in das Einrichtungsprofil eingearbeitet
 
 5182    09.11.2023  dev     3.3         Andreas Feature     Verfahrensverzeichnis aktualisiert

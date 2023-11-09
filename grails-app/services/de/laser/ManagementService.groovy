@@ -356,7 +356,9 @@ class ManagementService {
                 if(selectedSub.isEditableBy(result.user))
                     permittedSubs << selectedSub
             }
+            long userId = contextService.getUser().id
             executorService.execute({
+                long start = System.currentTimeSeconds()
                 Thread.currentThread().setName(threadName)
                 pkgsToProcess.each { Package pkg ->
                     permittedSubs.each { Subscription selectedSub ->
@@ -386,6 +388,9 @@ class ManagementService {
                             }
 
                     }
+                }
+                if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
+                    globalService.notifyBackgroundProcessFinish(userId, threadName, messageSource.getMessage('subscription.details.linkPackage.thread.completed', [result.subscription.name] as Object[], LocaleUtils.getCurrentLocale()))
                 }
             })
 
