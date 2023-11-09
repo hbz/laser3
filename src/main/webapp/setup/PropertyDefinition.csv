@@ -185,6 +185,7 @@ Subscription Property,Distribution,Verbreitung,Distribution,java.lang.String,,,t
 Subscription Property,Due date for volume discount,Mengenrabatt Stichtag,Due date for volume discount,java.util.Date,,,,,Wann ist der Stichtag für die Findung der erreichten Rabattstufe?,,,,,
 Subscription Property,Due date for title selection,Titelauswahl (Stichtag),Due date for title selection,java.util.Date,,,,,Bis wann müssen die ausgewählten Titel dem Anbieter gemeldet werden?,Until when must the selected titles be submitted to the provider?,,,,
 Subscription Property,eduPersonEntitlement,Entitlement KfL-Portal,Entitlement KfL portal,java.net.URL,,,true,,das Shibboleth-Entitlement,the Shibboleth entitlement,,,,
+Subscription Property,e-invoice,E-Rechnung,e-invoice,de.laser.RefdataValue,y.n.r,,,,Ist eine E-Rechnung möglich/gewünscht?,Is an e-invoice possible/desired?,,,,
 Subscription Property,Existing consortia,Bestehende Konsortien,Existing consortia,de.laser.RefdataValue,y.n,,,,,,,,,
 Subscription Property,EZB Collection Transfer,EZB Kollektionsdatenweitergabe an Drittsysteme erlaubt?,EZB Collection Transfer,de.laser.RefdataValue,y.n,,,,Ist die Kollektionsdatenweitergabe an Drittsysteme erlaubt?,,,,,
 Subscription Property,EZB tagging (yellow),EZB Gelbschaltung,EZB tagging (yellow),de.laser.RefdataValue,y.n,,,,Wird eine Gelbschaltung in der EZB vorgenommen?,,,,,

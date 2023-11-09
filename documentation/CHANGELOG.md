@@ -7,7 +7,11 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5385    09.11.2023  dev     3.3         Andreas Feature     EZB-Ausgaben abgeschaltet
+
 5359    09.11.2023  dev     3.3         Andreas Feature     Discovery-Systeme in das Einrichtungsprofil eingearbeitet
+
+5182    09.11.2023  dev     3.3         Andreas Feature     Verfahrensverzeichnis aktualisiert
 
 5386    08.11.2023  dev     3.3         David   Feature     Trennzeichen in den Übersetzungsdateien
 
