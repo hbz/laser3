@@ -23,8 +23,8 @@
                     <g:if test="${query == 'license-x-property'}">
                         <th>${message(code:'reporting.details.property.value')}</th>
                     </g:if>
-                <th>${message(code:'default.startDate.label')}</th>
-                <th>${message(code:'default.endDate.label')}</th>
+                <th>${message(code:'default.startDate.label.shy')}</th>
+                <th>${message(code:'default.endDate.label.shy')}</th>
             </tr>
         </thead>
         <tbody>

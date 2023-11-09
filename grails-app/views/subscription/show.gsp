@@ -81,7 +81,7 @@
                         </dl>
 
                         <dl>
-                            <dt class="control-label">${message(code: 'subscription.manualCancellationDate.label')}</dt>
+                            <dt class="control-label">${message(code: 'subscription.manualCancellationDate.label.shy')}</dt>
                             <dd><ui:xEditable owner="${subscription}" field="manualCancellationDate" type="date"/></dd>
                             <g:if test="${editable}">
                                 <dd class="la-js-editmode-container"><ui:auditButton

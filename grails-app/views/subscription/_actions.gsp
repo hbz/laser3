@@ -256,9 +256,11 @@
     <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: subscription, owntp: 'subscription']]}" />
 </g:if>
 
-<g:if test="${editable || contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
-    <g:if test="${subscription._getCalculatedType() in [Subscription.TYPE_CONSORTIAL, Subscription.TYPE_ADMINISTRATIVE] && subscription._getCalculatedPrevious()}">
-        <laser:render template="subscriptionTransferInfo" model="${[calculatedPreviousList: subscription._getCalculatedPrevious()]}" />
-    </g:if>
+<g:if test="${subscription._getCalculatedType() == Subscription.TYPE_CONSORTIAL}">
+    <g:set var="previous" value="${subscription._getCalculatedPrevious()}"/>
+    <g:set var="successor" value="${subscription._getCalculatedSuccessor()}"/>
+    <laser:render template="subscriptionTransferInfo"
+                  model="${[calculatedSubList: previous + [subscription] + successor]}"/>
 </g:if>
+
 
