@@ -284,7 +284,7 @@
                                       title="${message(code: 'default.startDate.label.shy')}"/>
 
                     <g:sortableColumn scope="col" rowspan="3" params="${params}" property="manualCancellationDate"
-                                      title="${message(code: 'subscription.manualCancellationDate.label')}"/>
+                                      title="${message(code: 'subscription.manualCancellationDate.label.shy')}"/>
 
                     <th colspan="3" class="la-smaller-table-head center aligned">
                         ${message(code: 'subscription.offer.table.th')}
