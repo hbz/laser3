@@ -259,8 +259,7 @@
 <g:if test="${subscription._getCalculatedType() == Subscription.TYPE_CONSORTIAL}">
     <g:set var="previous" value="${subscription._getCalculatedPrevious()}"/>
     <g:set var="successor" value="${subscription._getCalculatedSuccessor()}"/>
-    <laser:render template="subscriptionTransferInfo"
-                  model="${[calculatedSubList: previous + [subscription] + successor]}"/>
+    <laser:render template="subscriptionTransferInfo" model="${[calculatedSubList: successor + [subscription] + previous]}"/>
 </g:if>
 
 

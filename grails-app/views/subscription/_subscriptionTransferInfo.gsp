@@ -18,28 +18,22 @@
                 <th scope="col" rowspan="3" class="center aligned">${message(code: 'subscription.priceIncreaseInfo.label')}</th>
 
                 <th scope="col" rowspan="3" class="center aligned">
-                    <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'survey.label')}"
-                       data-position="top center">
+                    <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'survey.label')}" data-position="top center">
                         <i class="chart pie large icon"></i>
                     </a>
                 </th>
                 <th scope="col" rowspan="3" class="center aligned">
-                    <a href="#" class="la-popup-tooltip la-delay"
-                       data-content="${message(code: 'subscription.survey.evaluation.label')}"
-                       data-position="top center">
+                    <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.survey.evaluation.label')}" data-position="top center">
                         <i class="comments large icon"></i>
                     </a>
                 </th>
                 <th scope="col" rowspan="3" class="center aligned">
-                    <a href="#" class="la-popup-tooltip la-delay"
-                       data-content="${message(code: 'subscription.survey.cancellation.label')}"
-                       data-position="top center">
+                    <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.survey.cancellation.label')}" data-position="top center">
                         <i class="times circle large icon"></i>
                     </a>
                 </th>
                 <th scope="col" rowspan="3" class="center aligned">
-                    <a href="#" class="la-popup-tooltip la-delay"
-                       data-content="${message(code: 'subscription.discountScale.label')}" data-position="top center">
+                    <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.discountScale.label')}" data-position="top center">
                         <i class="percentage large icon"></i>
                     </a>
                 </th>
@@ -66,25 +60,18 @@
                 </th>
             </tr>
             <tr>
-                <th scope="col"
-                    class="la-smaller-table-head">${message(code: 'subscription.offerRequested.table.th')}</th>
-                <th scope="col" rowspan="2"
-                    class="center aligned two wide">${message(code: 'subscriptionsManagement.documents')}</th>
+                <th scope="col" class="la-smaller-table-head">${message(code: 'subscription.offerRequested.table.th')}</th>
+                <th scope="col" rowspan="2" class="center aligned two wide">${message(code: 'subscriptionsManagement.documents')}</th>
                 <th scope="col" rowspan="2">${message(code: 'subscription.offerAccepted.table.th')}</th>
-                <th scope="col"
-                    class="la-smaller-table-head">${message(code: 'subscription.reminderSent.table.th')}</th>
+                <th scope="col" class="la-smaller-table-head">${message(code: 'subscription.reminderSent.table.th')}</th>
                 <th scope="col" class="la-smaller-table-head">${message(code: 'subscription.renewalSent.table.th')}</th>
-                <th scope="col" rowspan="2"
-                    class="center aligned two wide">${message(code: 'subscriptionsManagement.documents')}</th>
+                <th scope="col" rowspan="2" class="center aligned two wide">${message(code: 'subscriptionsManagement.documents')}</th>
             </tr>
             <tr>
                 <th scope="col" rowspan="1" class="la-smaller-table-head">${message(code: 'default.endDate.label')}</th>
-                <th scope="col"
-                    class="la-smaller-table-head">${message(code: 'subscription.offerRequestedDate.table.th')}</th>
-                <th scope="col"
-                    class="la-smaller-table-head">${message(code: 'subscription.reminderSentDate.table.th')}</th>
-                <th scope="col"
-                    class="la-smaller-table-head">${message(code: 'subscription.renewalSentDate.table.th')}</th>
+                <th scope="col" class="la-smaller-table-head">${message(code: 'subscription.offerRequestedDate.table.th')}</th>
+                <th scope="col" class="la-smaller-table-head">${message(code: 'subscription.reminderSentDate.table.th')}</th>
+                <th scope="col" class="la-smaller-table-head">${message(code: 'subscription.renewalSentDate.table.th')}</th>
             </tr>
             </thead>
         <tbody>
@@ -151,8 +138,7 @@
                                     <div class="ui grid summary">
                                         <div class="eleven wide column la-column-right-lessPadding">
                                             <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
-                                            <g:set var="supportedMimeType"
-                                                   value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
+                                            <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                             <g:if test="${supportedMimeType}">
                                                 <a href="#documentPreview"
                                                    data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
@@ -218,10 +204,8 @@
                         <g:set var="finishProcess" value="${(finish != 0 && total != 0) ? (finish / total) * 100 : 0}"/>
                         <td class="${finish == total ? 'positive' : ''}">
                             <g:if test="${finishProcess >= 0}">
-                                <g:link controller="survey" action="surveyEvaluation" id="${surveyConfig.surveyInfo.id}"
-                                        target="_blank">
-                                    <g:formatNumber number="${finishProcess}" type="number" maxFractionDigits="2"
-                                                    minFractionDigits="2"/>%
+                                <g:link controller="survey" action="surveyEvaluation" id="${surveyConfig.surveyInfo.id}" target="_blank">
+                                    <g:formatNumber number="${finishProcess}" type="number" maxFractionDigits="2" minFractionDigits="2"/>%
                                 </g:link>
                             </g:if>
                         </td>
@@ -237,8 +221,7 @@
 
                     <td class="${countOrgsWithTermination > 0 && countOrgsWithTermination <= 10 ? 'warning' : (countOrgsWithTermination > 10 ? 'negative' : '')}">
                         <g:if test="${surveyConfig && countOrgsWithTermination >= 0}">
-                            <g:link controller="survey" action="renewalEvaluation" id="${surveyConfig.surveyInfo.id}"
-                                    target="_blank">
+                            <g:link controller="survey" action="renewalEvaluation" id="${surveyConfig.surveyInfo.id}" target="_blank">
                                 ${countOrgsWithTermination}
                             </g:link>
                         </g:if>
@@ -248,8 +231,7 @@
                             <g:if test="${s.discountScale}">
                                 ${s.discountScale.name} : ${s.discountScale.discount}
                                 <g:if test="${s.discountScale.note}">
-                                    <span data-position="top left" class="la-popup-tooltip la-delay"
-                                          data-content="${s.discountScale.note}">
+                                    <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${s.discountScale.note}">
                                         <i class="info circle icon blue"></i>
                                     </span>
                                 </g:if>
