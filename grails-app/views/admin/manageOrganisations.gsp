@@ -14,6 +14,7 @@
             <laser:render template="/templates/filter/orgFilter"
                       model="[
                               tmplConfigShow: [['name', 'identifier', 'type', 'customerType'],
+                                               ['discoverySystemsFrontend', 'discoverySystemsIndex'],
                                                ['country&region', 'libraryNetwork', 'sector', 'libraryType']],
                               tmplConfigFormFilter: true
                       ]"/>

@@ -55,6 +55,7 @@
                           model="[
                                   tmplConfigShow: [['name', 'identifier', 'type'],
                                                    ['country&region', 'libraryNetwork'],
+                                                   ['discoverySystemsFrontend', 'discoverySystemsIndex'],
                                                    ['sector', 'libraryType', 'subjectGroup']],
                                   tmplConfigFormFilter: true
                           ]"/>

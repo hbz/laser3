@@ -108,6 +108,16 @@ class FilterService {
             queryParams << [subjectGroup : params.list("subjectGroup").collect {Long.parseLong(it)}]
         }
 
+        if (params.discoverySystemsFrontend?.size() > 0) {
+            query << "exists (select dsf from DiscoverySystemFrontend as dsf where dsf.org.id = o.id and dsf.frontend.id in (:frontends))"
+            queryParams << [frontends : params.list("discoverySystemsFrontend").collect {Long.parseLong(it)}]
+        }
+
+        if (params.discoverySystemsIndex?.size() > 0) {
+            query << "exists (select dsi from DiscoverySystemIndex as dsi where dsi.org.id = o.id and dsi.index.id in (:indices))"
+            queryParams << [indices : params.list("discoverySystemsIndex").collect {Long.parseLong(it)}]
+        }
+
         if (params.libraryNetwork?.size() > 0) {
             query << "o.libraryNetwork.id in (:libraryNetwork)"
             List<String> selLibraryNetworks = params.list("libraryNetwork")
@@ -232,6 +242,16 @@ class FilterService {
         if (params.subjectGroup?.size() > 0) {
             query << "exists (select osg from OrgSubjectGroup as osg where osg.org.id = o.id and osg.subjectGroup.id in (:subjectGroup))"
             queryParams << [subjectGroup : listReaderWrapper(params, "subjectGroup").collect {Long.parseLong(it)}]
+        }
+
+        if (params.discoverySystemsFrontend?.size() > 0) {
+            query << "exists (select dsf from DiscoverySystemFrontend as dsf where dsf.org.id = o.id and dsf.frontend.id in (:frontends))"
+            queryParams << [frontends : listReaderWrapper(params, "discoverySystemsFrontend").collect {Long.parseLong(it)}]
+        }
+
+        if (params.discoverySystemsIndex?.size() > 0) {
+            query << "exists (select dsi from DiscoverySystemIndex as dsi where dsi.org.id = o.id and dsi.index.id in (:indices))"
+            queryParams << [indices : listReaderWrapper(params, "discoverySystemsIndex").collect {Long.parseLong(it)}]
         }
 
         if (params.libraryNetwork?.size() > 0) {

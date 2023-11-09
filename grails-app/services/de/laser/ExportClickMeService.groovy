@@ -97,6 +97,8 @@ class ExportClickMeService {
                                 'participant.eInvoicePortal'    : [field: 'participant.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
                                 'participant.linkResolverBaseURL'    : [field: 'participant.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
                                 'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
+                                'participant.discoverySystemsFrontend' : [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
+                                'participant.discoverySystemsIndex' : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label'],
                                 'participant.uuid'              : [field: 'participant.globalUID', label: 'Laser-UUID',  message: null],
                             ]
                     ],
@@ -198,7 +200,9 @@ class ExportClickMeService {
                             'participant.eInvoice'          : [field: 'orgs.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
                             'participant.eInvoicePortal'    : [field: 'orgs.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
                             'participant.linkResolverBaseURL'    : [field: 'orgs.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
-                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers']
+                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
+                            'participant.discoverySystemsFrontend' : [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
+                            'participant.discoverySystemsIndex' : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label']
                     ]
             ],
             participantContacts : [
@@ -574,7 +578,9 @@ class ExportClickMeService {
                             'participant.eInvoice'          : [field: 'orgs.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
                             'participant.eInvoicePortal'    : [field: 'orgs.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
                             'participant.linkResolverBaseURL'    : [field: 'orgs.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
-                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers']
+                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
+                            'participant.discoverySystemsFrontend' : [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
+                            'participant.discoverySystemsIndex' : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label']
                     ]
             ],
 
@@ -1007,6 +1013,8 @@ class ExportClickMeService {
                             'participant.eInvoicePortal'    : [field: 'sub.subscriber.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
                             'participant.linkResolverBaseURL'    : [field: 'linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
                             'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
+                            'participant.discoverySystemsFrontend' : [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
+                            'participant.discoverySystemsIndex' : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label'],
                             'participant.uuid'              : [field: 'sub.subscriber.globalUID', label: 'Laser-UUID',  message: null],
                     ]
             ],
@@ -1075,6 +1083,8 @@ class ExportClickMeService {
                             'participant.eInvoicePortal'    : [field: 'eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
                             'participant.linkResolverBaseURL'    : [field: 'linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
                             'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
+                            'participant.discoverySystemsFrontend' : [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
+                            'participant.discoverySystemsIndex' : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label']
                     ]
             ],
             participantAccessPoints : [
@@ -4372,6 +4382,9 @@ class ExportClickMeService {
                 else if (fieldKey == 'participant.readerNumbers') {
                     _setOrgFurtherInformation(org, row, fieldKey, format)
                 }
+                else if (fieldKey.contains('discoverySystems')) {
+                    _setOrgFurtherInformation(org, row, fieldKey, format)
+                }
                 else if (fieldKey.startsWith('participantIdentifiers.')) {
                     _setOrgFurtherInformation(org, row, fieldKey, format)
                 }
@@ -4753,7 +4766,7 @@ class ExportClickMeService {
                     else
                         _setOrgFurtherInformation(result, row, fieldKey, null)
                 }*/
-                else if (fieldKey.contains('altnames')) {
+                else if (fieldKey.contains('altnames') || fieldKey.contains('discoverySystems')) {
                     _setOrgFurtherInformation(result, row, fieldKey, format)
                 }
                 else if (fieldKey == 'participant.subscriptions') {
@@ -5382,6 +5395,26 @@ class ExportClickMeService {
             if (org) {
                 if(org.altnames) {
                     row.add(createTableCell(format, org.altnames.collect { AlternativeName alt -> alt.name }.join('\n')))
+                }
+                else row.add(createTableCell(format, ' '))
+            }
+            else {
+                row.add(createTableCell(format, ' '))
+            }
+        } else if (fieldKey.contains('discoverySystemsFrontend')) {
+            if (org) {
+                if(org.discoverySystemFrontends) {
+                    row.add(createTableCell(format, org.discoverySystemFrontends.collect { DiscoverySystemFrontend dsf -> dsf.frontend.getI10n('value') }.join('\n')))
+                }
+                else row.add(createTableCell(format, ' '))
+            }
+            else {
+                row.add(createTableCell(format, ' '))
+            }
+        } else if (fieldKey.contains('discoverySystemsIndex')) {
+            if (org) {
+                if(org.discoverySystemIndices) {
+                    row.add(createTableCell(format, org.discoverySystemIndices.collect { DiscoverySystemIndex dsi -> dsi.index.getI10n('value') }.join('\n')))
                 }
                 else row.add(createTableCell(format, ' '))
             }

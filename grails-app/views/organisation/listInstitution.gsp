@@ -34,7 +34,8 @@
                               tmplConfigShow: [
                                       ['name', 'orgStatus', 'isLegallyObliged'],
                                       ['identifier', 'identifierNamespace', 'customerIDNamespace', 'isMyX'],
-                                      ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup']
+                                      ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'],
+                                      ['discoverySystemsFrontend', 'discoverySystemsIndex']
                               ],
                               tmplConfigFormFilter: true
                       ]"/>
