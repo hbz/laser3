@@ -90,6 +90,11 @@ class SubscriptionConsCfg extends BaseConfig {
                                              chartTemplate       : 'generic',
                                              chartLabels         : []
                                      ],
+                                     'subscription-x-licenseCategory' : [
+                                             detailsTemplate     : 'subscription',
+                                             chartTemplate       : 'generic',
+                                             chartLabels         : []
+                                     ],
                                      'subscription-x-provider' : [
                                              detailsTemplate     : 'subscription',
                                              chartTemplate       : 'generic',

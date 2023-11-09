@@ -252,6 +252,17 @@
         </g:else>
     </div>
 
+    <div class="help-section" data-help-section="subscription-x-licenseCategory">
+        <g:if test="${lang == 'de'}">
+            <p class="ui header"> Kategorie von Verträgen von Lizenzen </p>
+            <p> TODO </p>
+        </g:if>
+        <g:else>
+            <p class="ui header"> Categories of Licenses of subscriptions </p>
+            <p> TODO </p>
+        </g:else>
+    </div>
+
     <div class="help-section" data-help-section="subscription-x-provider">
         <g:if test="${lang == 'de'}">
             <p class="ui header"> Anbieter von Lizenzen </p>
