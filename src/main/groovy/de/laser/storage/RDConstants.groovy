@@ -39,6 +39,8 @@ class RDConstants {
 
     public static final String DBS_SUBJECT_GROUP        = 'dbs.subject.group'
     public static final String DDC                      = 'ddc'
+    public static final String DISCOVERY_SYSTEM_FRONTEND = 'discovery.group.frontend'
+    public static final String DISCOVERY_SYSTEM_INDEX   = 'discovery.group.index'
     public static final String DOCUMENT_CONFIDENTIALITY = 'document.confidentiality'
     public static final String DOCUMENT_CONTEXT_STATUS  = 'document.context.status'
     public static final String DOCUMENT_TYPE            = 'document.type'

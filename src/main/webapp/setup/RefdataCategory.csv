@@ -29,13 +29,15 @@ country,Land,Country
 coverage.depth,Umfang,Coverage depth
 currency,Währung,Currency
 customer.identifier.type,Kategorie der Kundennummer,Customer Identifier Type
+dbs.subject.group,DBS Fächergruppe,DBS Subject Group
+ddc,Dewey-Dezimalklassifikation,Dewey Decimal Classification
 delivery.edit.status,Status Bearbeitung,Delivery edit status
 delivery.status,Status Lieferungen,Delivery status
+discovery.group.frontend,Discovery-Systeme: Frontend,Discovery systems: frontend
+discovery.group.index,Discovery-Systeme: Index,Discovery systems: index
 document.confidentiality,Vertraulichkeit,Confidentiality
 document.context.status,Document Context Status,Document Context Status
 document.type,Dokumenttyp,Document Type
-dbs.subject.group,DBS Fächergruppe,DBS Subject Group
-ddc,Dewey-Dezimalklassifikation,Dewey Decimal Classification
 e.invoice.portal,eRechnungs Portal,eInvoice Portal
 existence,Vorliegen,Existence
 external.internal,Extern und intern,External and internal

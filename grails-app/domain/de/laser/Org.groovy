@@ -135,6 +135,8 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         addresses:          Address,
         propertySet:        OrgProperty,
         altnames:           AlternativeName,
+        discoverySystemFrontends: DiscoverySystemFrontend,
+        discoverySystemIndices: DiscoverySystemIndex,
         orgType:            RefdataValue,
         documents:          DocContext,
         platforms:          Platform,
