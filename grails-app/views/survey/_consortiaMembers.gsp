@@ -6,7 +6,7 @@
             params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
         <laser:render template="/templates/filter/orgFilter"
                   model="[
-                          tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['subStatus'], surveyConfig.subscription ? ['hasSubscription'] : []],
+                          tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['discoverySystemsFrontend', 'discoverySystemsIndex'], ['subStatus'], surveyConfig.subscription ? ['hasSubscription'] : []],
                           tmplConfigFormFilter: true
                   ]"/>
     </g:form>

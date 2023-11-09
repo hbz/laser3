@@ -2,6 +2,7 @@ package de.laser
 
 
 import de.laser.ctrl.FinanceControllerService
+import de.laser.ctrl.SubscriptionControllerService
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemElementConfiguration
@@ -495,6 +496,26 @@ class FinanceController  {
         render(template: "/finance/ajaxModal", model: result)
     }
 
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
+    })
+    Object showCostItem() {
+        Map<String, Object> result = financeControllerService.getResultGenerics(params)
+        if(!result.editable) {
+                response.sendError(401)
+                return
+        }
+        else {
+            result.costItem = CostItem.get(params.id)
+            if (result.costItem.taxKey)
+                result.taxKey = result.costItem.taxKey
+            result.formUrl = g.createLink(controller: 'finance', action: 'createOrUpdateCostItem', params: [showView: params.showView, offset: params.offset])
+            result.idSuffix = "edit_${params.id}"
+            result
+        }
+    }
+
     /**
      * Calls the cost item creation modal, sets the editing parameters and prefills the form values with the copy base data.
      * After submitting the form, a new cost item will be created which has the current one as base, taking those values
@@ -561,12 +582,18 @@ class FinanceController  {
     def importCostItems() {
         Map<String,Object> ctrlResult = financeService.importCostItems(params)
         if(ctrlResult.status == FinanceService.STATUS_ERROR) {
-            redirect controller: 'myInstitution', action: 'financeImport'
+            redirect controller: 'myInstitution', action: 'financeImport', params: [id: params.subId]
             return
         }
         else {
-            redirect action: 'index'
-            return
+            if(params.subId) {
+                redirect mapping: 'subfinance', controller: 'finance', action: 'index', params: [sub: params.subId]
+                return
+            }
+            else {
+                redirect action: 'index'
+                return
+            }
         }
     }
 

@@ -10,6 +10,7 @@
         <h2 class="ui header">${message(code:'myinst.financeImport.post.header2')}</h2>
         <h3 class="ui header">${message(code:'myinst.financeImport.post.header3')}</h3>
         <g:form name="costItemParameter" action="importCostItems" controller="finance" method="post">
+            <g:hiddenField name="subId" value="${subId}"/>
             <g:hiddenField name="candidates" value="${candidates.keySet() as JSON}"/>
             <g:hiddenField name="budgetCodes" value="${budgetCodes as JSON}"/>
             <table class="ui striped table">
@@ -38,7 +39,7 @@
                                     <%--li><g:message code="myinst.financeImport.institution"/>: ${ci.owner?.sortname}</li--%>
                                     <li><g:message code="default.subscription.label"/>: <g:if test="${ci.sub}">${ci.sub.refresh()}${ci.sub.dropdownNamingConvention()}</g:if></li>
                                     <li><g:message code="package.label"/>: ${ci.subPkg?.pkg?.name}</li>
-                                    <li><g:message code="myinst.financeImport.issueEntitlement"/>: ${ci.issueEntitlement?.tipp?.title?.title}</li>
+                                    <li><g:message code="myinst.financeImport.issueEntitlement"/>: ${ci.issueEntitlement?.tipp?.name}</li>
                                     <li><g:message code="myinst.financeImport.orderNumber"/>: ${ci.order?.orderNumber}</li>
                                     <li><g:message code="myinst.financeImport.invoiceNumber"/>: ${ci.invoice?.invoiceNumber}</li>
                                     <li><g:message code="default.currency.label"/>: ${ci.billingCurrency?.value}</li>
@@ -70,7 +71,7 @@
                                                 <g:if test="${error.getKey() in criticalErrors}">
                                                     <g:set var="withCriticalErrors" value="true"/>
                                                 </g:if>
-                                                <li>${message(code:"myinst.financeImport.post.error.${error.getKey()}",args:[error.getValue()])}</li>
+                                                <li <g:if test="${withCriticalErrors}">style="color: #BB1600"</g:if>>${message(code:"myinst.financeImport.post.error.${error.getKey()}",args:[error.getValue()])}</li>
                                             </g:each>
                                         </ul>
                                     </li>

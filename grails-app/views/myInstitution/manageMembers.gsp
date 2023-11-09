@@ -53,7 +53,7 @@
 
 <ui:messages data="${flash}"/>
     <%
-        List configShowFilter = [['name', 'identifier'], ['identifierNamespace', 'customerIDNamespace'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'], ['property&value', 'subStatus', 'subValidOn'], ['subPerpetualAccess'], ['providers']]
+        List configShowFilter = [['name', 'identifier'], ['identifierNamespace', 'customerIDNamespace'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'], ['discoverySystemsFrontend', 'discoverySystemsIndex'], ['property&value', 'subStatus', 'subValidOn'], ['subPerpetualAccess'], ['providers']]
         List configShowTable = ['sortname', 'name', 'mainContact', 'libraryType', 'status', 'legalInformation', 'numberOfSubscriptions', 'numberOfSurveys']
 
         if (contextService.getOrg().isCustomerType_Support()) {

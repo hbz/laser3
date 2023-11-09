@@ -16,6 +16,7 @@ import de.laser.remote.ApiSource
 import de.laser.remote.ElasticsearchSource
 import de.laser.remote.FTControl
 import de.laser.remote.GlobalRecordSource
+import de.laser.reporting.report.ReportingCache
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
 import de.laser.stats.LaserStatsCursor
@@ -50,6 +51,7 @@ import javax.servlet.ServletOutputStream
 import java.lang.annotation.Annotation
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
+import java.nio.file.Files
 import java.sql.Timestamp
 import java.time.LocalDate
 import java.util.concurrent.ExecutorService
@@ -84,6 +86,7 @@ class YodaController {
     SubscriptionService subscriptionService
     SurveyUpdateService surveyUpdateService
     YodaService yodaService
+    WekbStatsService wekbStatsService
 
     /**
      * Shows the Yoda-dashboard
@@ -204,35 +207,43 @@ class YodaController {
         result.appContext = getApplicationContext()
 
         result.hibernateSession = sessionFactory
-
         result.ehcacheManager = cacheService.getEhcacheManager()
 
-        if (params.key) {
-            JSON entry = contextService.getSessionCache().get(params.key) as JSON
+        if (params.cmd && params.type) {
 
-            entry.prettyPrint = true
-            response.setContentType("application/json")
-            response.outputStream << entry
+            if (params.cmd == 'clearCache') {
+                if (params.type == 'session') {
+                    contextService.getSessionCache().clear()
+                }
+                else if (params.type == 'ehcache' && params.cache) {
+                    cacheService.clear(cacheService.getCache(result.ehcacheManager, params.cache))
+                }
 
-            return
-        }
-        else if (params.cmd?.equals('clearCache')) {
-            def cache
-            if (params.type?.equals('session')) {
-                cache = contextService.getSessionCache()
-                cache.clear()
+                params.remove('cmd')
+                params.remove('type')
+                params.remove('cache')
+
+                redirect controller: 'yoda', action: 'systemCache', params: params
+                return
             }
-            else if (params.type?.equals('ehcache')) {
-                cache = cacheService.getCache(result.ehcacheManager, params.cache)
-                cacheService.clear(cache)
+            else if (params.cmd == 'get') {
+                JSON entry
+
+                if (params.type == 'reporting' && params.token) {
+                    ReportingCache rCache = new ReportingCache(ReportingCache.CTX_GLOBAL, params.token as String)
+                    entry = rCache.get() as JSON
+                }
+                else if (params.type == 'session' && params.key) {
+                    entry = contextService.getSessionCache().get(params.key) as JSON
+                }
+                if (entry) {
+                    entry.prettyPrint = true
+                    response.setContentType("application/json")
+                    response.outputStream << entry
+
+                    return
+                }
             }
-
-            params.remove('cmd')
-            params.remove('type')
-            params.remove('cache')
-
-            redirect controller: 'yoda', action: 'systemCache', params: params
-            return
         }
 
         result
@@ -336,7 +347,9 @@ class YodaController {
         result.globalMatrixSteps = [0, 2000, 4000, 8000, 12000, 20000, 30000, 45000, 60000]
 
         result.archive = params.archive ?: SystemProfiler.getCurrentArchive()
-        result.allArchives = SystemProfiler.executeQuery('select distinct(archive) from SystemProfiler').collect{ it }
+        result.allArchives = SystemProfiler.executeQuery('select distinct(archive) from SystemProfiler').collect{ it ->
+            [it,  SystemProfiler.executeQuery('select count(*) from SystemProfiler where archive =: archive', [archive: it])[0]]
+        }
 
         List<String> allUri = SystemProfiler.executeQuery('select distinct(uri) from SystemProfiler')
 
@@ -663,6 +676,34 @@ class YodaController {
         redirect controller: 'home'
     }
 
+    @Secured(['ROLE_YODA'])
+    Map<String, Object> manageTempUsageFiles() {
+        File dir = new File(GlobalService.obtainFileStorageLocation())
+        List<File> tempFiles = dir.listFiles()
+        //tempFiles.sort { File f -> Files.getAttribute(f.toPath(), 'creationTime') }
+        [tempFiles: tempFiles]
+    }
+
+    @Secured(['ROLE_YODA'])
+    def deleteTempFile() {
+        if(params.containsKey('filename')) {
+            File f = new File(GlobalService.obtainFileStorageLocation() + '/' + params.filename)
+            try {
+                f.delete()
+            }
+            catch (IOException e) {
+                log.error("unable to delete file: ${GlobalService.obtainFileStorageLocation() + '/' + params.filename}")
+            }
+        }
+        else if(params.containsKey('emptyDir')) {
+            File f = new File(GlobalService.obtainFileStorageLocation())
+            f.deleteDir()
+            f.mkdir()
+        }
+        //tempFiles.sort { File f -> Files.getAttribute(f.toPath(), 'creationTime') }
+        redirect action: 'manageTempUsageFiles'
+    }
+
     /**
      * Shows platforms which have a cursor recorded, i.e. usage data has been loaded already
      * @return a list of platforms with cursors
@@ -940,6 +981,13 @@ class YodaController {
             log.debug("process running, lock is set!")
         }
         redirect controller: 'platform', action: 'list'
+    }
+
+    @Secured(['ROLE_YODA'])
+    def reloadWekbChanges() {
+        log.info('--> reloadWekbChanges')
+        wekbStatsService.updateCache()
+        redirect controller: 'myInstitution', action: 'dashboard'
     }
 
     /**

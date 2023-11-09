@@ -90,8 +90,8 @@
                 <thead>
                 <tr>
                     <th>${message(code: 'subscription')}</th>
-                    <th>${message(code: 'default.startDate.label')}</th>
-                    <th>${message(code: 'default.endDate.label')}</th>
+                    <th>${message(code: 'default.startDate.label.shy')}</th>
+                    <th>${message(code: 'default.endDate.label.shy')}</th>
                     <th>${message(code: 'default.status.label')}</th>
                     <th>${message(code: 'subscriptionsManagement.propertySelected')}: ${propertiesFilterPropDef.getI10n('name')}</th>
                     <th></th>
@@ -405,8 +405,8 @@
                     <g:if test="${controllerName == "myInstitution"}">
                         <th>${message(code: 'default.subscription.label')}</th>
                     </g:if>
-                    <th>${message(code: 'default.startDate.label')}</th>
-                    <th>${message(code: 'default.endDate.label')}</th>
+                    <th>${message(code: 'default.startDate.label.shy')}</th>
+                    <th>${message(code: 'default.endDate.label.shy')}</th>
                     <th>${message(code: 'default.status.label')}</th>
                     <th class="la-no-uppercase">
                         <ui:multiYearIcon isConsortial="true" />

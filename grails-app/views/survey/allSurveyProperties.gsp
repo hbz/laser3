@@ -209,7 +209,8 @@ $('#pd_descr').change(function() {
 });
 
 $('#pd_type').change(function() {
-    if( selectedText === $( "#pd_type option:selected" ).val()) {
+    var selectedText = $( "#pd_type option:selected" ).val();
+    if( selectedText == "${RefdataValue.name}") {
         $("#remoteRefdataSearchWrapper").show();
 
         var $pMatch = $( "p[data-prop-def-desc='" + $( "#pd_descr option:selected" ).val() + "']" )

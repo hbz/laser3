@@ -34,9 +34,9 @@
             <th>${message(code: 'default.status.label')}</th>
 
             <g:sortableColumn params="${params}" property="surveyInfo.startDate"
-                              title="${message(code: 'default.startDate.label')}"/>
+                              title="${message(code: 'default.startDate.label.shy')}"/>
             <g:sortableColumn params="${params}" property="surveyInfo.endDate"
-                              title="${message(code: 'default.endDate.label')}"/>
+                              title="${message(code: 'default.endDate.label.shy')}"/>
             <th>${message(code: 'surveyProperty.plural.label')}</th>
             <th>
                 <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyConfigDocs.label')}" data-position="top center">

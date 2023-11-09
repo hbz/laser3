@@ -38,8 +38,8 @@ class PackageController {
     ExportService exportService
     FilterService filterService
     GenericOIDService genericOIDService
+    GlobalService globalService
     GokbService gokbService
-    MessageSource messageSource
     PackageService packageService
     SubscriptionService subscriptionService
     ExportClickMeService exportClickMeService
@@ -736,10 +736,10 @@ class PackageController {
         result.subscription = genericOIDService.resolveOID(params.targetObjectId)
 
         if (result.subscription) {
-            Locale locale = LocaleUtils.getCurrentLocale()
             boolean bulkProcessRunning = false
-            if (subscriptionService.checkThreadRunning('PackageSync_' + result.subscription.id) && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription, result.pkg)) {
-                result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running', null, locale)
+            String threadName = 'PackageSync_' + result.subscription.id
+            if (subscriptionService.checkThreadRunning(threadName) && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription, result.pkg)) {
+                result.message = message(code: 'subscription.details.linkPackage.thread.running')
                 bulkProcessRunning = true
             }
             if(params.holdingSelection) {
@@ -751,11 +751,15 @@ class PackageController {
             if (result.pkg) {
                 if(!bulkProcessRunning) {
                     executorService.execute({
-                        Thread.currentThread().setName('PackageSync_' + result.subscription.id)
+                        long start = System.currentTimeSeconds()
+                        Thread.currentThread().setName(threadName)
                         log.debug("Add package entitlements to subscription ${result.subscription}")
                         subscriptionService.addToSubscription(result.subscription, result.pkg, result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
                         if(auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
                             subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), result.pkg, result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
+                        }
+                        if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
+                            globalService.notifyBackgroundProcessFinish(result.user, threadName, message(code: 'subscription.details.linkPackage.thread.completed', args: [result.subscription.name] as Object[]))
                         }
                     })
                 }

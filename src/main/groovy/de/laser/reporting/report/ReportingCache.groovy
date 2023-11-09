@@ -1,8 +1,9 @@
 package de.laser.reporting.report
 
 import de.laser.Subscription
+import de.laser.cache.EhcacheWrapper
+import de.laser.storage.BeanStore
 import de.laser.utils.DateUtils
-import de.laser.cache.SessionCacheWrapper
 import groovy.util.logging.Slf4j
 
 import java.text.SimpleDateFormat
@@ -10,21 +11,15 @@ import java.text.SimpleDateFormat
 @Slf4j
 class ReportingCache {
 
-    static final CTX_GLOBAL         = 'MyInstitutionController/reporting/'
-    static final CTX_SUBSCRIPTION   = 'SubscriptionController/reporting/'
+    static final CTX_GLOBAL         = 'MyInstitutionController/reporting'
+    static final CTX_SUBSCRIPTION   = 'SubscriptionController/reporting'
 
-    SessionCacheWrapper scw
-    String ctx
+    EhcacheWrapper ttl3600
     String token
 
-    ReportingCache(String ctx) {
-        this.ctx = ctx
-        scw = new SessionCacheWrapper()
-    }
     ReportingCache(String ctx, String token) {
-        this.ctx = ctx
         this.token = token
-        scw = new SessionCacheWrapper()
+        ttl3600  = BeanStore.getCacheService().getTTL3600Cache(ctx + '/' + BeanStore.getContextService().getUser().id) // user bound
     }
 
     // ---
@@ -53,18 +48,15 @@ class ReportingCache {
     // ---
 
     Map<String, Object> get() {
-        String ctxToken = token ? ctx + token : ctx
-        scw.get(ctxToken) as Map<String, Object>
+        ttl3600.get(token) as Map<String, Object>
     }
 
     def put(Map<String, Object> value) {
-        String ctxToken = token ? ctx + token : ctx
-        scw.put(ctxToken, value)
+        ttl3600.put(token , value)
     }
 
     def remove() {
-        String ctxToken = token ? ctx + token : ctx
-        scw.remove(ctxToken)
+        ttl3600.remove(token)
     }
 
     boolean exists () {

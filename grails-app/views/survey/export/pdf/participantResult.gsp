@@ -156,7 +156,9 @@
                                                                                 contextOrg: contextOrg]"/>
 
     <g:render template="/templates/survey/export/entitlementSurveyPDF" model="[countSelectedIEs: countSelectedIEs,
-                                                                               sumListPriceSelectedIEs: sumListPriceSelectedIEs,
+                                                                               sumListPriceSelectedIEsEUR: sumListPriceSelectedIEsEUR,
+                                                                               sumListPriceSelectedIEsUSD: sumListPriceSelectedIEsUSD,
+                                                                               sumListPriceSelectedIEsGBP: sumListPriceSelectedIEsGBP,
                                                                                countCurrentPermanentTitles: countCurrentPermanentTitles,
                                                                                surveyConfig       : surveyConfig,
                                                                                subscription       : subscription,

@@ -1,20 +1,22 @@
 package de.laser.ajax
 
 import de.laser.AlternativeName
+import de.laser.CacheService
 import de.laser.ControlledListService
 import de.laser.CustomerTypeService
+import de.laser.DiscoverySystemFrontend
+import de.laser.DiscoverySystemIndex
 import de.laser.DocContext
 import de.laser.GenericOIDService
 import de.laser.PendingChangeService
-import de.laser.AccessService
 import de.laser.AddressbookService
 import de.laser.WekbStatsService
 import de.laser.WorkflowService
+import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.remote.ApiSource
-import de.laser.CacheService
 import de.laser.ContextService
 import de.laser.GokbService
 import de.laser.IssueEntitlement
@@ -34,6 +36,7 @@ import de.laser.Person
 import de.laser.PersonRole
 import de.laser.SubscriptionPackage
 import de.laser.SubscriptionService
+import de.laser.storage.BeanStore
 import de.laser.storage.PropertyStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyConfigProperties
@@ -50,8 +53,6 @@ import de.laser.ctrl.LicenseControllerService
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.custom.CustomWkhtmltoxService
 import de.laser.utils.DateUtils
-import de.laser.cache.EhcacheWrapper
-import de.laser.cache.SessionCacheWrapper
 import de.laser.utils.SwissKnife
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.export.base.BaseDetailsExport
@@ -67,7 +68,6 @@ import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.workflow.WfChecklist
 import de.laser.workflow.WfCheckpoint
 import de.laser.workflow.WorkflowHelper
-import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.ss.usermodel.Workbook
 import org.mozilla.universalchardet.UniversalDetector
@@ -85,7 +85,6 @@ import java.nio.charset.Charset
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxHtmlController {
 
-    AccessService accessService
     AddressbookService addressbookService
     CacheService cacheService
     ContextService contextService
@@ -127,13 +126,23 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def addObject() {
         def resultObj, owner
-        String field
         switch(params.object) {
             case "altname": owner= Org.get(params.owner)
                 resultObj = AlternativeName.construct([org: owner, name: 'Unknown'])
-                field = "name"
                 if(resultObj) {
-                    render template: '/templates/ajax/newXEditable', model: [wrapper: params.object, ownObj: resultObj, field: field, overwriteEditable: true]
+                    render template: '/templates/ajax/newXEditable', model: [wrapper: params.object, ownObj: resultObj, objOID: genericOIDService.getOID(resultObj), field: "name", overwriteEditable: true]
+                }
+                break
+            case "frontend": owner= Org.get(params.owner)
+                resultObj = new DiscoverySystemFrontend([org: owner, frontend: RDStore.GENERIC_NULL_VALUE]).save()
+                if(resultObj) {
+                    render template: '/templates/ajax/newXEditable', model: [wrapper: params.object, ownObj: resultObj, objOID: genericOIDService.getOID(resultObj), field: "frontend", config: RDConstants.DISCOVERY_SYSTEM_FRONTEND, overwriteEditable: true]
+                }
+                break
+            case "index": owner= Org.get(params.owner)
+                resultObj = new DiscoverySystemIndex([org: owner, index: RDStore.GENERIC_NULL_VALUE]).save()
+                if(resultObj) {
+                    render template: '/templates/ajax/newXEditable', model: [wrapper: params.object, ownObj: resultObj, objOID: genericOIDService.getOID(resultObj), field: "index", config: RDConstants.DISCOVERY_SYSTEM_INDEX, overwriteEditable: true]
                 }
                 break
             case "coverage": //TODO
@@ -226,7 +235,7 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def getLinks() {
-        Map<String,Object> result = [user:contextService.getUser(),contextOrg:contextService.getOrg(),subscriptionLicenseLink:params.subscriptionLicenseLink]
+        Map<String, Object> result = [user:contextService.getUser(), contextOrg:contextService.getOrg(), subscriptionLicenseLink:params.subscriptionLicenseLink]
         def entry = genericOIDService.resolveOID(params.entry)
         result.entry = entry
         result.editable = entry.isEditableBy(result.user)
@@ -346,7 +355,7 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def loadFilterList() {
         Map<String, Object> result = subscriptionControllerService.loadFilterList(params)
-        result.noMultiple = params.noMultiple == 'true'
+        result.multiple = params.multiple ? Boolean.valueOf(params.multiple) : true
         render template: "/templates/filter/statsFilter", model: result
     }
 
@@ -699,17 +708,16 @@ class AjaxHtmlController {
             tab: params.tab
         ]
 
-        SessionCacheWrapper sessionCache = contextService.getSessionCache()
-        Closure getReportingKeys = {
-            sessionCache.list().keySet().findAll{ it.startsWith("MyInstitutionController/reporting/") }
-        }
+        String cachePref = ReportingCache.CTX_GLOBAL + '/' + BeanStore.getContextService().getUser().id // user bound
+        EhcacheWrapper ttl3600 = cacheService.getTTL3600Cache(cachePref)
+
+        List<String> reportingKeys = ttl3600.getKeys().findAll { it.startsWith(cachePref + '_') } as List<String>
+        List<String> reportingTokens = reportingKeys.collect { it.replace(cachePref + '_', '')}
 
         if (params.context == BaseConfig.KEY_MYINST) {
 
             if (params.cmd == 'deleteHistory') {
-                getReportingKeys().each {it ->
-                    sessionCache.remove( it )
-                }
+                reportingTokens.each {it -> ttl3600.remove( it ) }
             }
             else if (params.token) {
                 if (params.cmd == 'addBookmark') {
@@ -730,10 +738,8 @@ class AjaxHtmlController {
                 }
             }
         }
-        result.bookmarks = ReportingFilter.findAllByOwner( contextService.getUser(), [sort: 'lastUpdated', order: 'desc'] )
-
-        result.filterHistory = getReportingKeys().sort { a,b -> sessionCache.get(b).meta.timestamp <=> sessionCache.get(a).meta.timestamp }.take(5)
-        getReportingKeys().findAll{ it -> ! result.filterHistory.contains( it ) }.each { it -> sessionCache.remove(it) }
+        result.bookmarks     = ReportingFilter.findAllByOwner( contextService.getUser(), [sort: 'lastUpdated', order: 'desc'] )
+        result.filterHistory = reportingTokens.sort { a,b -> ttl3600.get(b).meta.timestamp <=> ttl3600.get(a).meta.timestamp }.take(5)
 
         render template: '/myInstitution/reporting/historyAndBookmarks', model: result
     }

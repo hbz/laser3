@@ -266,8 +266,8 @@
                 <tr>
                     <th class="center aligned">${message(code: 'sidewide.number')}</th>
                     <th>${message(code: 'default.sortname.label')}</th>
-                    <th>${message(code: 'default.startDate.label')}</th>
-                    <th>${message(code: 'default.endDate.label')}</th>
+                    <th>${message(code: 'default.startDate.label.shy')}</th>
+                    <th>${message(code: 'default.endDate.label.shy')}</th>
                     <th>${message(code: 'default.status.label')}</th>
                     <th>${message(code: 'default.actions.label')}</th>
 
@@ -321,8 +321,8 @@
                 <tr>
                     <th class="center aligned">${message(code: 'sidewide.number')}</th>
                     <th>${message(code: 'default.sortname.label')}</th>
-                    <th>${message(code: 'default.startDate.label')}</th>
-                    <th>${message(code: 'default.endDate.label')}</th>
+                    <th>${message(code: 'default.startDate.label.shy')}</th>
+                    <th>${message(code: 'default.endDate.label.shy')}</th>
                     <th>${message(code: 'default.status.label')}</th>
                     <th>${message(code: 'default.actions.label')}</th>
 

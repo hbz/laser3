@@ -2,7 +2,7 @@ package de.laser.ctrl
 
 import de.laser.*
 import de.laser.auth.User
-import de.laser.utils.AppUtils
+import de.laser.cache.EhcacheWrapper
 import de.laser.utils.DateUtils
 import de.laser.helper.Profiler
 import de.laser.storage.RDStore
@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat
 @Transactional
 class MyInstitutionControllerService {
 
+    CacheService cacheService
     ContextService contextService
     DashboardDueDatesService dashboardDueDatesService
     FilterService filterService
@@ -70,6 +71,16 @@ class MyInstitutionControllerService {
 
         def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
 
+        //completed processes
+        Set<String> processes = []
+        EhcacheWrapper cache = cacheService.getTTL1800Cache("finish_${result.user.id}")
+        if(cache) {
+            cache.getKeys().each { String key ->
+                processes << cache.get(key.split("finish_${result.user.id}_")[1])
+            }
+        }
+        result.completedProcesses = processes
+
         // systemAnnouncements
         prf.setBenchmark('system announcements')
         result.systemAnnouncements = SystemAnnouncement.getPublished(periodInDays)
@@ -90,7 +101,7 @@ class MyInstitutionControllerService {
         result.recentAnnouncementsCount = Doc.findAllByType(announcement_type).size()*/
         prf.setBenchmark('due dates')
         result.dueDates = dashboardDueDatesService.getDashboardDueDates( result.user, result.institution, false, false, result.max, result.dashboardDueDatesOffset)
-        result.dueDatesCount = dashboardDueDatesService.getDashboardDueDates( result.user, result.institution, false, false).size()
+        result.dueDatesCount = dashboardDueDatesService.countDashboardDueDates( result.user, result.institution, false, false)
         /* -> to AJAX
         pu.setBenchmark('surveys')
         List activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null AND surConfig.surveyInfo.status = :status) " +
@@ -98,7 +109,7 @@ class MyInstitutionControllerService {
                 [org: result.institution,
                  status: RDStore.SURVEY_SURVEY_STARTED])
         */
-
+        prf.setBenchmark('workflows')
         if (workflowService.hasUserPerm_edit()) {
             if (params.cmd) {
                 String[] cmd = params.cmd.split(':')
@@ -127,7 +138,7 @@ class MyInstitutionControllerService {
         result.surveys = activeSurveyConfigs.groupBy {it?.id}
         result.countSurvey = result.surveys.size()
         */
-
+        prf.setBenchmark('wekbChanges')
         result.wekbChanges = wekbStatsService.getCurrentChanges()
 
         result.benchMark = prf.stopBenchmark()
@@ -153,6 +164,7 @@ class MyInstitutionControllerService {
         result.institution = org
         result.contextOrg = org
         result.contextCustomerType = org.getCustomerType()
+        result.subId = params.subId
         result.tooltip = messageSource.getMessage('license.filter.member', null, LocaleUtils.getCurrentLocale())
         if(org.isCustomerType_Consortium())
             result.tooltip = messageSource.getMessage('license.member', null, LocaleUtils.getCurrentLocale())

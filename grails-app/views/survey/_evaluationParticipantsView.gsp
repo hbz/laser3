@@ -112,7 +112,7 @@
         params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
     <laser:render template="/templates/filter/orgFilter"
               model="[
-                      tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], surveyConfig.subscription ? ['hasSubscription'] : []],
+                      tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['discoverySystemsFrontend', 'discoverySystemsIndex'], surveyConfig.subscription ? ['hasSubscription'] : []],
                       tmplConfigFormFilter: true
               ]"/>
 </g:form>
@@ -284,7 +284,7 @@
                             <g:if test="${!surveyConfig.hasOrgSubscription(participant)}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'surveyResult.newOrg')}">
-                                    <i class="star black large  icon"></i>
+                                    <i class="la-sparkles large icon"></i>
                                 </span>
                             </g:if>
 

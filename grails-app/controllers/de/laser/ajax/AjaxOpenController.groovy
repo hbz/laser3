@@ -22,6 +22,12 @@ class AjaxOpenController {
         render test as JSON
     }
 
+    @Secured(['permitAll'])
+    def login() {
+        log.debug( 'render: /templates/system/ajaxLogin')
+        render template: '/templates/system/ajaxLogin'
+    }
+
     /**
      * Call to update the system profiler
      * @return the current profiler state as JSON

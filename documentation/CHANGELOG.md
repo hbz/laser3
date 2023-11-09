@@ -7,6 +7,128 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5385    09.11.2023  dev     3.3         Andreas Feature     EZB-Ausgaben abgeschaltet
+
+5372    09.11.2023  dev     3.3         Andreas Feature     Benachrichtigung von Massenprozessen implementiert
+
+5359    09.11.2023  dev     3.3         Andreas Feature     Discovery-Systeme in das Einrichtungsprofil eingearbeitet
+
+5182    09.11.2023  dev     3.3         Andreas Feature     Verfahrensverzeichnis aktualisiert
+
+5386    08.11.2023  dev     3.3         David   Feature     Trennzeichen in den Übersetzungsdateien
+
+5344    08.11.2023  dev     3.3         Moe     Feature     In Kontextleiste per Klick Lizenzübertraginformationen anzeigen 
+
+5365    08.11.2023  dev     3.3         Moe     Feature     Kostensicht
+
+5337    07.11.2023  dev     3.3         Moe     Feature     Reminder Umfrage-Mail von Teilnehmer aus verschicken
+
+5381    07.11.2023  dev     3.3         Andreas Feature     Caching von kostenintensiven Resultaten Teil eins
+
+5378    07.11.2023  dev     3.3         Andreas Feature     Verkaufsebene als Fallback für Titel zur Titelnutzung implementiert
+
+--      06.11.2023  rc-3.2  3.2.8       Moe     Bug         Nicht richtige Verarbeitung von Zeilenumbrüche im KBArt-Upload 
+
+--      06.11.2023  rc-3.2  3.2.8       Moe     Bug         Titel-Umfrage wird nicht bei meinen Umfragen angezeigt
+
+5379    06.11.2023  rc-3.2  3.2.8       Moe     Bug         Erweiterte Suche: "Tote" Plattformen als Ergebnis
+
+--      01.11.2023  rc-3.2  3.2.7       Moe     Bug         500er be ClickMeExcel vom Titel-Export
+
+--      01.11.2023  rc-3.2  3.2.7       Moe     Bug         Titelumfrage: Export der Statistik geht nicht
+
+5382    07.11.2023  dev     3.3         David   Feature     Reporting: Zuordnungsjahr von Lizenzen
+
+5349    06.11.2023  dev     3.3         David   Feature     Reporting: Verteilung Verträge - Lizenz
+
+5377    06.11.2023  dev     3.3         Andreas Feature     Admin-Sicht zur Lösung temporärer Dateien
+
+5358    06.11.2023  dev     3.3         Andreas Feature     Umrüstung der KBART-Vorauswahl
+
+5369    31.10.2023  rc-3.2  3.2.7       Moe     Bug         Titelumfrage: Export der ausgewählten Titel fehlt
+
+5371    31.10.2023  rc-3.2  3.2.7       Moe     Bug         Export Gesamttitelliste Thieme Titelumfrage scheitert
+
+--      31.10.2023  rc-3.2  3.2.7       Moe     Bug         Bei Titel hinzufügen im KBart Upload mit dem Titel Matching
+
+5364    31.10.2023  dev     3.3         Andreas Feature     Kostentemplate für Lizenzen generieren
+
+5370    30.10.2023  dev     3.3         Andreas Bug         Identifier-Regex-Prüfung sorgte für HibernateException
+
+5354    30.10.2023  dev     3.3         Andreas Feature     globale Kopierfunktion auf Postanschriften erweitert
+
+5346    30.10.2023  dev     3.3         Andreas Feature     Sicht zur Zusammenlegung von Anbietern und Lieferanten gebaut
+
+--      30.10.2023  rc-3.2  3.2.7       Moe     Bug         Summen falsch in Titel-Umfragen
+
+5366    30.10.2023  rc-3.2  3.2.7       Andreas Bug         Listen wurden teilweise nicht korrekt aufgelöst
+
+5166    30.10.2023  dev     3.3         Moe     Feature     Pflichtmerkmale in Umfrage bei "Nein"
+
+5318    30.10.2023  dev     3.3         Moe     Bug         Meine Umfragen - Registerkarten - Zahlen stimmen nicht nach Blättern
+
+5360    27.10.2023  dev     3.3         Moe     Bug         Lizenzübertrag-Sicht überarbeiten
+
+5343    27.10.2023  dev     3.3         Andreas Feature     neue allgemeine Merkmale aufgenommen
+
+5344    27.10.2023  dev     3.3         David   Feature     In Kontextleiste per Klick Lizenzübertraginformationen anzeigen
+
+5361    26.10.2023  dev     3.3         David   Bug         Reporting: Falsche Jahresabfolge
+
+5353    26.10.2023  rc-3.2  3.2.7       Moe     Bug         Lizenzübertragung
+
+--      26.10.2023  rc-3.2  3.2.7       Moe     Bug         Lizenzkosten auch in Titel-Umfrage anzeigen
+
+--      26.10.2023  rc-3.2  3.2.7       Moe     Bug         Titel hinzufügen standardmäßig nicht anhaken von 'Zu Einrichtungslizenzen hinzufügen'
+
+--      26.10.2023  rc-3.2  3.2.7       Moe     Bug         Umfrage-Export funktioniert nicht richtig
+
+5345    25.10.2023  dev     3.3         Andreas Feature     Validierungsmuster für EZB-Identifier eingebaut
+
+5342    23.10.2023  rc-3.2  3.2.6       Andreas Bug         Teilnehmer konnten nicht mit Paketen hinzugefügt werden
+
+5341    23.10.2023  rc-3.2  3.2.6       Moe     Bug         Setzen von dauerhafte Titel im Hintergrund laufen lassen
+
+5340    23.10.2023  dev     3.3         Andreas Feature     Filterung der auswählbaren Report-Typen
+
+5338    20.10.2023  rc-3.2  3.2.6       Andreas Bug         Umlagerung des Paketentknüpfungsprozesses
+
+5335    20.10.2023  dev     3.3         David   Feature     Verknüpfungen zwischen Objekten in Kontextleiste aufnehmen
+
+5331    20.10.2023  rc-3.2  3.2.6       Andreas Bug         Statistik kann zur Gesamttitelliste exportiert werden
+
+5333    19.10.2023  rc-3.2  3.2.6       Andreas Bug         Speicherleck bei Abfragen behoben
+
+5330    18.10.2023  dev     3.3         Andreas Feature     Nichtstandard-Reports werden aus der COUNTER 5-Reportauswahl abgelehnt
+
+5329    17.10.2023  dev     3.3         David   Bug         Paginierung für Aufgaben funktioniert nicht
+
+3680    17.10.2023  dev     3.3         David   Feature     Reporting: Session-Handling verbessern
+
+5312    16.10.2023   rc-3.2  3.2.6      Moe     Bug         Umfrage für andere Konsortialstellen sichtbar
+
+5312    16.10.2023  rc-3.2  3.2.6       Moe     Bug         Umfrage für andere Konsortialstellen sichtbar
+
+5320    16.10.2023  rc-3.2  3.2.6       Moe     Bug         Hinzufügen von Titel mit Plus Button triggert kein dauerhaften Titel
+
+5321    16.10.2023  rc-3.2  3.2.6       Moe     Bug         Lizenzen ohne Anbieter oder Lieferanten fallen in der Übersicht von Lizenzübertrag vom Tisch
+
+--      16.10.2023  rc-3.2  3.2.6       Moe     Bug         500er by clickMeExcel on survey
+
+--      16.10.2023  rc-3.2  3.2.6       Moe     Bug         Bugfix: currentSubscriptionsTransfer not show any more termination by started survey
+
+5322    16.10.2023  rc-3.2  3.2.6       Moe     Bug         Neue Sicht für Lizenzen mit dauerhaft Flag aber Title, die nicht dauerhaft gesetzt wurden sind
+
+--      16.10.2023  rc-3.2  3.2.6       Moe     Bug         Bugfix show ie 500 error
+
+5328    16.10.2023  dev     3.3         Andreas Feature     Hinweis, wenn über Titel hinzufügen keine Titel hinzugefügt werden können
+
+5326    16.10.2023  dev     3.3         Andreas Feature     Lizenzen mit dauerhaftem Zugriff erhalten neue Titel unabhängig vom Jahresring 
+
+5325    16.10.2023  dev     3.3         Andreas Feature     LAS:eR nutzt jetzt auch die SUSHI-Konfigurationen aus der Counter-Registry
+
+5324    16.10.2023  dev     3.3         Andreas Feature     fehlerhafte SUSHI-Calls werden in SystemEvents gespeichert
+
 2276    11.10.2023  dev     3.3         David   Feature     Neuer Kundentyp: ORG_ADMINISTRATION
 
 4636    11.10.2023  dev     3.3         David   Feature     SystemEvents per Mail - Refactoring

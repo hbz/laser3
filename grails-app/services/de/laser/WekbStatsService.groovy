@@ -24,7 +24,7 @@ class WekbStatsService {
     GokbService gokbService
     MarkerService markerService
 
-    static final String CACHE_KEY = 'WekbStatsService/wekbChanges'
+    static final String CACHE_KEY = 'WekbStatsService'
 
     /**
      * Gets the current changes from the cache and assembles them in a map of counts being recently performed. Also the count
@@ -41,12 +41,12 @@ class WekbStatsService {
      * @return a {@link Map} containing the counts: [all: all, inLaser: in LAS:eR, my: subscribed, marker: bookmarked, created: newly created, updated: updated objects]
      */
     Map getCurrentChanges() {
-        EhcacheWrapper cache = cacheService.getTTL1800Cache(CACHE_KEY)
+        EhcacheWrapper ttl1800 = cacheService.getTTL1800Cache(CACHE_KEY)
 
-        if (! cache.get('data')) {
+        if (! ttl1800.get('wekbNews')) {
             return [:]
         }
-        Map result = cache.get('data') as Map
+        Map result = ttl1800.get('wekbNews') as Map
 
         List<String> orgList    = result.org.all.collect{ it.id }
         List<String> pkgList    = result.package.all.collect{ it.id }
@@ -80,10 +80,10 @@ class WekbStatsService {
      * Triggers the update of the cache of the recent changes performed in the we:kb
      */
     void updateCache() {
-        EhcacheWrapper cache = cacheService.getTTL1800Cache(CACHE_KEY)
+        EhcacheWrapper ttl1800 = cacheService.getTTL1800Cache(CACHE_KEY)
 
         Map<String, Object> result = processData()
-        cache.put('data', result)
+        ttl1800.put('wekbNews', result)
     }
 
     /**

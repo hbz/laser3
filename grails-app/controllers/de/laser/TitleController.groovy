@@ -2,10 +2,13 @@ package de.laser
 
 import de.laser.annotations.DebugInfo
 import de.laser.auth.User
+import de.laser.cache.EhcacheWrapper
 import de.laser.storage.RDStore
 import de.laser.utils.SwissKnife
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
+
+import java.security.MessageDigest
 
 /**
  * This controller manages calls for title listing
@@ -13,6 +16,7 @@ import grails.plugin.springsecurity.annotation.Secured
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class TitleController  {
 
+    CacheService cacheService
     ContextService contextService
     ESSearchService ESSearchService
     FilterService filterService
@@ -91,12 +95,27 @@ class TitleController  {
 
         Map<String, Object> query = filterService.getTippQuery(params, [])
         result.filterSet = query.filterSet
+        MessageDigest messageDigest = MessageDigest.getInstance("SHA-256")
+        Map<String, Object> cachingKeys = params.clone()
+        cachingKeys.remove("offset")
+        cachingKeys.remove("max")
+        String checksum = "${result.user.id}_${cachingKeys.entrySet().join('_')}"
+        messageDigest.update(checksum.getBytes())
+        EhcacheWrapper subCache = cacheService.getTTL300Cache("/title/list/subCache/${messageDigest.digest().encodeHex()}")
 
-        List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+        List<Long> titlesList = subCache.get('titleIDs') ?: []
+        if(!titlesList) {
+            titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+            subCache.put('titleIDs', titlesList)
+        }
 
         if(!params.containsKey('fileformat')) {
             //List counts = TitleInstancePackagePlatform.executeQuery('select new map(count(*) as count, tipp.status as status) '+countQueryString+' group by tipp.status', countQueryParams)
-            List counts = TitleInstancePackagePlatform.executeQuery('select new map(count(*) as count, tipp.status as status) from TitleInstancePackagePlatform tipp where tipp.status != :removed group by tipp.status', [removed: RDStore.TIPP_STATUS_REMOVED])
+            List counts = subCache.get('counts') ?: []
+            if(!counts) {
+                counts = TitleInstancePackagePlatform.executeQuery('select new map(count(*) as count, tipp.status as status) from TitleInstancePackagePlatform tipp where tipp.status != :removed group by tipp.status', [removed: RDStore.TIPP_STATUS_REMOVED])
+                subCache.put('counts', counts)
+            }
             result.allTippsCounts = 0
             counts.each { row ->
                 switch (row['status']) {

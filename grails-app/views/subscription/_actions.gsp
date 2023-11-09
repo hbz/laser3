@@ -109,6 +109,11 @@
             <g:if test="${(contextCustomerType == CustomerTypeService.ORG_INST_PRO && !subscription.instanceOf) || customerTypeService.isConsortium( contextCustomerType )}">
                 <ui:actionsDropdownItem controller="subscription" action="copyElementsIntoSubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription)]}" message="myinst.copyElementsIntoSubscription" />
             </g:if>
+            <g:if test="${customerTypeService.isConsortium( contextCustomerType ) && !subscription.instanceOf}">
+                <div class="divider"></div>
+                <ui:actionsDropdownItem controller="myInstitution" action="generateFinanceImportWorksheet" params="${[id:subscription.id]}" message="myinst.financeImport.subscription.template"/>
+                <ui:actionsDropdownItem controller="myInstitution" action="financeImport" params="${[id:subscription.id]}" message="menu.institutions.financeImport" />
+            </g:if>
         </g:if>
 
             <g:if test="${contextCustomerType == CustomerTypeService.ORG_INST_PRO && subscription.instanceOf}">
@@ -123,6 +128,9 @@
                 <ui:actionsDropdownItem controller="subscription" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
                 <g:if test="${subscription.packages}">
                     <ui:actionsDropdownItem controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
+                    <g:if test="${actionName == 'addEntitlements'}">
+                        <ui:actionsDropdownItem data-ui="modal" id="selectEntitlementsWithKBART" href="#KBARTUploadForm" message="subscription.details.addEntitlements.menu"/>
+                    </g:if>
                     <ui:actionsDropdownItem controller="subscription" action="manageEntitlementGroup" params="${[id:params.id]}" message="subscription.details.manageEntitlementGroup.label" />
                     <ui:actionsDropdownItem controller="subscription" action="index" notActive="true" params="${[id:params.id, issueEntitlementEnrichment: true]}" message="subscription.details.issueEntitlementEnrichment.label" />
                 </g:if>
@@ -247,4 +255,11 @@
 <g:if test="${contextService.isInstEditor_or_ROLEADMIN()}">
     <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: subscription, owntp: 'subscription']]}" />
 </g:if>
+
+<g:if test="${subscription._getCalculatedType() == Subscription.TYPE_CONSORTIAL}">
+    <g:set var="previous" value="${subscription._getCalculatedPrevious()}"/>
+    <g:set var="successor" value="${subscription._getCalculatedSuccessor()}"/>
+    <laser:render template="subscriptionTransferInfo" model="${[calculatedSubList: successor + [subscription] + previous]}"/>
+</g:if>
+
 

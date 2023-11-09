@@ -60,6 +60,10 @@
             <g:if test="${editable}">
                 <ui:actionsDropdown>
                     <ui:actionsDropdownItem id="btnAddNewCostItem" message="financials.addNewCost" />
+                    <g:if test="${customerTypeService.isConsortium( institution.getCustomerType() ) && !subscription.instanceOf}">
+                        <ui:actionsDropdownItem controller="myInstitution" action="generateFinanceImportWorksheet" params="${[id:subscription.id]}" message="myinst.financeImport.subscription.template"/>
+                        <ui:actionsDropdownItem controller="myInstitution" action="financeImport" params="${[id:subscription.id]}" message="menu.institutions.financeImport" />
+                    </g:if>
                 </ui:actionsDropdown>
             </g:if>
         </ui:controlButtons>

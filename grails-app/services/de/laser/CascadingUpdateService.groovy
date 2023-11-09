@@ -219,6 +219,7 @@ class CascadingUpdateService {
      * @param luc the timestamp of update
      */
     private void _log(Object obj, Date luc) {
-        log.debug ('cascading update for ' + obj.class.simpleName + ':' + obj.id + ' -> [' + obj.lastUpdatedCascading + '] set to [' + luc + ']')
+//        log.debug ('cascading update for ' + obj.class.simpleName + ':' + obj.id + ' -> [' + obj.lastUpdatedCascading + '] set to [' + luc + ']')
+        log.debug ('cascading update for ' + obj.class.simpleName + ':' + obj.id)
     }
 }

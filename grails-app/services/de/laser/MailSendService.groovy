@@ -5,6 +5,7 @@ import de.laser.config.ConfigMapper
 import de.laser.properties.PropertyDefinition
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
@@ -26,6 +27,7 @@ import javax.servlet.http.HttpServletRequest
 @Transactional
 class MailSendService {
 
+    ContextService contextService
     EscapeService escapeService
     MessageSource messageSource
     SurveyService surveyService
@@ -74,6 +76,28 @@ class MailSendService {
         result
     }
 
+    Map mailSendConfigBySurveys(List<SurveyInfo> surveys, boolean reminderMail) {
+        Map<String, Object> result = [:]
+        result.mailFrom = fromMail
+        result.mailSubject = ""
+        result.mailText = ""
+
+        Locale language = new Locale("de")
+        Object[] args
+        result.mailSubject = subjectSystemPraefix
+        if(reminderMail) {
+            result.mailSubject = result.mailSubject + ' ' + messageSource.getMessage('email.subject.surveysReminder', args, language)
+        }
+
+        result.mailSubject = result.mailSubject + ' ' + messageSource.getMessage('survey.plural', args, language)
+        result.mailSubject = escapeService.replaceUmlaute(result.mailSubject)
+
+        result.mailText = surveyService.surveysMailTextAsString(surveys, reminderMail)
+
+
+        result
+    }
+
     /**
      * Sends survey notifications to the selected mail addresses about the given survey.
      * The mail header and body are user-defined and the addressees are some or all of the participant institutions of the given survey
@@ -98,6 +122,18 @@ class MailSendService {
 
         if (parameterMap.selectedOrgs && result.editable) {
             result.surveyConfig = surveyInfo.surveyConfigs[0]
+
+            List generalContactsEMails = []
+
+            surveyInfo.owner.getGeneralContactPersons(true)?.each { person ->
+                person.contacts.each { contact ->
+                    if (['Mail', 'E-Mail'].contains(contact.contentType?.value)) {
+                        generalContactsEMails << contact.content
+                    }
+                }
+            }
+
+            String replyToMail = (generalContactsEMails.size() > 0) ? generalContactsEMails[0].toString() : null
 
             parameterMap.list('selectedOrgs').each { soId ->
 
@@ -160,21 +196,12 @@ class MailSendService {
 //                    }
 //                }
 
-                List<User> formalUserList = result.orgList ? User.findAllByFormalOrgInList(result.orgList) : []
-                List<String> userSurveyNotification = []
-
-                formalUserList.each { fu ->
-                    if (fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
-                            fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES) {
-                        userSurveyNotification << fu.email
-                    }
-                }
-
 
                 AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
                     multipart true
                     to email
                     from result.mailFrom
+                    replyTo replyToMail
                     subject result.mailSubject
                     text parameterMap.mailText
                 }
@@ -216,6 +243,86 @@ class MailSendService {
             args = [countOpenParticipants]
             flash.message = messageSource.getMessage('openParticipantsAgain.openWithMail.count', args, language)
         }
+
+        result
+    }
+
+    Map mailSendProcessBySurveys(List<SurveyInfo> surveys, boolean reminderMail, Org org, GrailsParameterMap parameterMap) {
+        Map<String, Object> result = [:]
+
+        FlashScope flash = getCurrentFlashScope()
+        result.mailFrom = fromMail
+        result.mailSubject = parameterMap.mailSubject
+
+        result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+
+        if (result.editable) {
+
+            List generalContactsEMails = []
+
+            surveys[0].owner.getGeneralContactPersons(true)?.each { person ->
+                person.contacts.each { contact ->
+                    if (['Mail', 'E-Mail'].contains(contact.contentType?.value)) {
+                        generalContactsEMails << contact.content
+                    }
+                }
+            }
+
+            String replyToMail = (generalContactsEMails.size() > 0) ? generalContactsEMails[0].toString() : null
+
+            surveys.each { surveyInfo ->
+                SurveyConfig surveyConfig = surveyInfo.surveyConfigs[0]
+
+                if (reminderMail) {
+                    SurveyOrg.withTransaction { TransactionStatus ts ->
+                        SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(org, surveyConfig)
+
+                        surveyOrg.reminderMailDate = new Date()
+                        surveyOrg.save()
+
+                        if (surveyConfig.subSurveyUseForTransfer) {
+                            surveyConfig.subscription.reminderSent = true
+                            surveyConfig.subscription.reminderSentDate = new Date()
+                        }
+                    }
+                }
+
+            }
+
+            List emailAddressesToSend = []
+
+            if (parameterMap.emailAddresses) {
+                parameterMap.emailAddresses.split('; ').each {
+                    emailAddressesToSend << it.trim()
+                }
+            }
+
+            if (parameterMap.userSurveyNotificationMails) {
+                parameterMap.userSurveyNotificationMails.split('; ').each {
+                    emailAddressesToSend << it.trim()
+                }
+            }
+
+            emailAddressesToSend = emailAddressesToSend.unique()
+
+            emailAddressesToSend.each { String email ->
+
+                AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
+                    multipart true
+                    to email
+                    from result.mailFrom
+                    replyTo replyToMail
+                    subject result.mailSubject
+                    text parameterMap.mailText
+                }
+            }
+        }
+        Locale language = new Locale("de")
+        Object[] args
+
+
+        flash.message = messageSource.getMessage('mail.send.success', args, language)
+
 
         result
     }

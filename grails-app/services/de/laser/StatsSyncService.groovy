@@ -1162,6 +1162,11 @@ class StatsSyncService {
             result.error = "invalid response returned for ${url} - ${e.getMessage()}!"
             log.error("stack trace: ", e)
         }
+        if(result.containsKey('error')) {
+            Map sysEventPayload = result.clone()
+            sysEventPayload.url = url
+            SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
+        }
         result
     }
 
@@ -1230,6 +1235,11 @@ class StatsSyncService {
         }
         finally {
             if (http) { http.close() }
+        }
+        if(result.containsKey('error')) {
+            Map sysEventPayload = result.clone()
+            sysEventPayload.url = url
+            SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
         }
         result
     }

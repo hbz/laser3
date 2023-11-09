@@ -33,8 +33,8 @@
                             </tr>
                             <tr>
                                 <th>${message(code: 'default.sortname.label')}</th>
-                                <th>${message(code: 'default.startDate.label')}</th>
-                                <th>${message(code: 'default.endDate.label')}</th>
+                                <th>${message(code: 'default.startDate.label.shy')}</th>
+                                <th>${message(code: 'default.endDate.label.shy')}</th>
                                 <th class="la-no-uppercase">
                                     <ui:multiYearIcon />
                                 </th>
@@ -92,8 +92,8 @@
                             </tr>
                             <tr>
                                 <th>${message(code: 'default.sortname.label')}</th>
-                                <th>${message(code: 'default.startDate.label')}</th>
-                                <th>${message(code: 'default.endDate.label')}</th>
+                                <th>${message(code: 'default.startDate.label.shy')}</th>
+                                <th>${message(code: 'default.endDate.label.shy')}</th>
                                 <th class="la-no-uppercase">
                                     <ui:multiYearIcon />
                                 </th>

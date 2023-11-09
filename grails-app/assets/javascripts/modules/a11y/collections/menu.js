@@ -12,7 +12,10 @@ a11yMenu = {
         // for Main Menu
         $('#mainMenue .dropdown').dropdown({
             action: function (text, value, element) {
-                //element.click()
+                if(event.type === 'keydown') {
+                    $('html').css('cursor', 'wait');
+                    (element.clone())[0].click();
+                }
             },
             selectOnKeydown        : false,
             on: 'hover',

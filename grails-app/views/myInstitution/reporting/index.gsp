@@ -95,7 +95,7 @@
                                 <div class="content middle aligned">
                                     <div class="header">Cache</div>
                                     <g:if test="${token}">
-                                        <g:link controller="yoda" action="systemCache" params="${[key: ReportingCache.CTX_GLOBAL + token ]}" target="_blank">${token}</g:link>
+                                        <g:link controller="yoda" action="systemCache" params="${[cmd:'get', type:'reporting', token:token]}" target="_blank">${token}</g:link>
                                     </g:if>
                                     <g:else>--</g:else>
                                 </div>

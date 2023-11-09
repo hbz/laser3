@@ -14,7 +14,7 @@
                     <g:set var="filterCache" value="${fhRCache.readFilterCache()}" />
                     <tr>
                         <td>
-                            <g:link controller="myInstitution" action="reporting" class="ui large icon button blue la-modern-button"
+                            <g:link controller="myInstitution" action="reporting" class="ui large icon button blue la-modern-button reporting-callLink"
                                     params="${[filter: meta.filter /*, token: fhRCache.token*/ ] + filterCache.map}">
                                 <g:if test="${meta.filter == BaseConfig.KEY_ISSUEENTITLEMENT}">
                                     <i class="ui icon book" aria-hidden="true"></i>
@@ -84,7 +84,7 @@
                 <g:each in="${bookmarks}" var="fav">
                     <tr>
                         <td>
-                            <g:link controller="myInstitution" action="reporting" class="ui large icon button blue la-modern-button"
+                            <g:link controller="myInstitution" action="reporting" class="ui large icon button blue la-modern-button reporting-callLink"
                                 params="${[filter: fav.filter /*, token: fhRCache.token*/ ] + fav.getParsedFilterMap()}">
                                 <g:if test="${fav.filter == BaseConfig.KEY_ISSUEENTITLEMENT}">
                                     <i class="ui icon book" aria-hidden="true"></i>
@@ -152,6 +152,9 @@
         $('#bookmark-toggle').addClass('disabled').removeClass('blue');
     </g:else>
 
+    $('.reporting-callLink').on( 'click', function() {
+        $('#globalLoadingIndicator').show();
+    })
     $('#hab-wrapper a.positive, #hab-wrapper a.negative, #history-delete').on( 'click', function(e) {
         e.preventDefault();
         $('#hab-wrapper').load( $(this).attr('href'), function() {});

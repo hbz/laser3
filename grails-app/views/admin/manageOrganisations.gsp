@@ -14,6 +14,7 @@
             <laser:render template="/templates/filter/orgFilter"
                       model="[
                               tmplConfigShow: [['name', 'identifier', 'type', 'customerType'],
+                                               ['discoverySystemsFrontend', 'discoverySystemsIndex'],
                                                ['country&region', 'libraryNetwork', 'sector', 'libraryType']],
                               tmplConfigFormFilter: true
                       ]"/>
@@ -96,7 +97,7 @@
 
                             def gascoEntry = OrgSetting.get(org, OrgSetting.KEYS.GASCO_ENTRY)
                             if (gascoEntry != OrgSetting.SETTING_NOT_FOUND && gascoEntry.getValue()?.value == 'Yes') {
-                                println '<i class="icon green globe"></i>'
+                                println ' <i class="icon green layer group"></i>'
                                 gascoEntry = gascoEntry.getValue()
                             } else {
                                 gascoEntry = RDStore.YN_NO
@@ -181,7 +182,7 @@
                                     data-orgName="${org.name}"
                                     data-ui="modal"
                                     data-href="#gascoEntryModal"
-                                    data-content="GASCO-Eintrag ändern" data-position="top left"><i class="globe icon"></i></button>
+                                    data-content="GASCO-Eintrag ändern" data-position="top left"><i class="layer group icon"></i></button>
                         </g:if>
 
                         <g:if test="${org.isCustomerType_Inst()}">

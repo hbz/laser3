@@ -25,6 +25,17 @@
 
 <laser:render template="nav"/>
 
+<g:if test="${permanentTilesProcessRunning}">
+    <div class="ui icon warning message">
+        <i class="info icon"></i>
+        <div class="content">
+            <div class="header">Info</div>
+
+            <p>${message(code: 'subscription.details.permanentTilesProcessRunning.info')}</p>
+        </div>
+    </div>
+</g:if>
+
 <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
     <laser:render template="message"/>
 </g:if>

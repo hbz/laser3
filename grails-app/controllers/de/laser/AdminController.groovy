@@ -49,6 +49,7 @@ class AdminController  {
     GenericOIDService genericOIDService
     GlobalSourceSyncService globalSourceSyncService
     MailService mailService
+    OrganisationService organisationService
     PropertyService propertyService
     RefdataService refdataService
     SessionFactory sessionFactory
@@ -730,6 +731,19 @@ class AdminController  {
     }
 
     /**
+     * Call to view a list of organisations which may be merged. Currently only providers and agencies are being supported
+     * because of possible conflicts with the user data registered to institutions
+     */
+    @Secured(['ROLE_ADMIN'])
+    def mergeOrganisations() {
+        Map<String, Object> result = [:]
+        if(params.containsKey('source') && params.containsKey('target')) {
+            result = organisationService.mergeOrganisations(genericOIDService.resolveOID(params.source), genericOIDService.resolveOID(params.target), false)
+        }
+        result
+    }
+
+    /**
      * Lists the identifier namespaces along with their attributes and usages. If a such command is being passed, a new identifier namespace is being created with the given
      * parameters. Note: identifier namespaces created by frontend do not persist database resets and are not present instance-wide. To hard-code identifier namespaces,
      * use {@link BootStrapService#setIdentifierNamespace()} instead
@@ -1176,5 +1190,22 @@ SELECT * FROM (
             flash.error = message(code: 'default.not.updated.message', args: [message(code: 'mailTemplate.label'), mailTemplate.name]) as String
         }
         redirect(action: 'listMailTemplates')
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    @Transactional
+    def missingPermantTitlesInSubs() {
+
+        Map<String, Object> result = [:]
+        result.user = contextService.getUser()
+
+        result.subs = Subscription.executeQuery('''
+        select s from IssueEntitlement ie left join ie.subscription s left join s.orgRelations orgR 
+        where ie.status != :removed and s.hasPerpetualAccess = true and orgR.roleType = :orgRole and ie.tipp.status != :removed
+        and ie.tipp.id not in (select pt.tipp.id from PermanentTitle pt where pt.owner = orgR.org and pt.tipp = ie.tipp.id)
+        group by s order by s.name''', [orgRole: RDStore.OR_SUBSCRIBER, removed: RDStore.TIPP_STATUS_REMOVED])
+
+        result.editable = true
+        result
     }
 }

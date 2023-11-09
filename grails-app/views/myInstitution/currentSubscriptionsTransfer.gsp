@@ -281,15 +281,14 @@
 
                     <g:sortableColumn scope="col" rowspan="2" class="la-smaller-table-head" params="${params}"
                                       property="startDate"
-                                      title="${message(code: 'default.startDate.label')}"/>
+                                      title="${message(code: 'default.startDate.label.shy')}"/>
 
                     <g:sortableColumn scope="col" rowspan="3" params="${params}" property="manualCancellationDate"
-                                      title="${message(code: 'subscription.manualCancellationDate.label')}"/>
+                                      title="${message(code: 'subscription.manualCancellationDate.label.shy')}"/>
 
                     <th colspan="3" class="la-smaller-table-head center aligned">
                         ${message(code: 'subscription.offer.table.th')}
                     </th>
-
 
                     <th scope="col" rowspan="3" class="center aligned">
                         ${message(code: 'subscription.priceIncreaseInfo.label')}
@@ -362,7 +361,7 @@
                 <tr>
                     <g:sortableColumn scope="col" rowspan="1" class="la-smaller-table-head" params="${params}"
                                       property="endDate"
-                                      title="${message(code: 'default.endDate.label')}"/>
+                                      title="${message(code: 'default.endDate.label.shy')}"/>
                     <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}"
                                       property="offerRequestedDate"
                                       title="${message(code: 'subscription.offerRequestedDate.table.th')}"/>
@@ -416,7 +415,7 @@
                         <td>
                             <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/><br/>
                             <span class="la-secondHeaderRow"
-                                  data-label="${message(code: 'default.endDate.label')}:"><g:formatDate
+                                  data-label="${message(code: 'default.endDate.label.shy')}:"><g:formatDate
                                     formatName="default.date.format.notime" date="${s.endDate}"/></span>
                         </td>
                         <td>
@@ -428,12 +427,16 @@
                             <ui:xEditable owner="${s}" field="offerRequestedDate" type="date"/>
                         </td>
                         <td>
-                            <button type="button" class="ui icon small button blue la-modern-button" data-ui="modal"
-                                    data-href="${"#modalCreateDocumentOffer" + s.id}"><i aria-hidden="true"
-                                                                                         class="plus small icon"></i>
-                            </button>
-                            <laser:render template="/templates/documents/modal"
-                                          model="${[newModalId: "modalCreateDocumentOffer" + s.id, ownobj: s, owntp: 'subscription']}"/>
+                            <g:if test="${editable}">
+                                <button type="button" class="ui icon tiny button blue la-modern-button"
+                                        data-ownerid="${s.id}"
+                                        data-ownerclass="${s.class.name}"
+                                        data-doctype="${RDStore.DOC_TYPE_OFFER.value}"
+                                        data-ui="modal"
+                                        data-href="#modalCreateDocument"><i aria-hidden="true"
+                                                                            class="plus small icon"></i>
+                                </button>
+                            </g:if>
 
                             <%
                                 Set<DocContext> documentSet = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType', [subscription: s, docType: RDStore.DOC_TYPE_OFFER])
@@ -535,7 +538,7 @@
                                     <g:formatDate formatName="default.date.format.notime"
                                                   date="${surveyConfig.surveyInfo.startDate}"/><br/>
                                     <span class="la-secondHeaderRow"
-                                          data-label="${message(code: 'default.endDate.label')}:"><g:formatDate
+                                          data-label="${message(code: 'default.endDate.label.shy')}:"><g:formatDate
                                             formatName="default.date.format.notime"
                                             date="${surveyConfig.surveyInfo.endDate}"/></span>
                                 </g:link>
@@ -554,10 +557,11 @@
                                 <g:if test="${finishProcess >= 0}">
                                     <g:link controller="survey" action="surveyEvaluation"
                                             id="${surveyConfig.surveyInfo.id}">
-                                        <g:formatNumber number="${finishProcess}"
+                                        ${finish}/${total}
+                                        (<g:formatNumber number="${finishProcess}"
                                                         type="number"
                                                         maxFractionDigits="2"
-                                                        minFractionDigits="2"/>%
+                                                        minFractionDigits="2"/>%)
                                     </g:link>
                                 </g:if>
                             </td>
@@ -566,7 +570,7 @@
                     </g:else>
 
                         <g:set var="countOrgsWithTermination" value="${0}"/>
-                        <g:if test="${surveyConfig && surveyConfig.surveyInfo.status in [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED]}">
+                        <g:if test="${surveyConfig && surveyConfig.surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED, RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED]}">
                             <g:set var="countOrgsWithTermination" value="${surveyConfig.countOrgsWithTermination()}"/>
                         </g:if>
 
@@ -627,12 +631,15 @@
                             <ui:xEditable owner="${s}" field="renewalSentDate" type="date"/>
                         </td>
                         <td>
-                            <button type="button" class="ui icon tiny button blue la-modern-button" data-ui="modal"
-                                    data-href="${"#modalCreateDocumentRenewal" + s.id}"><i aria-hidden="true"
-                                                                                           class="plus small icon"></i>
-                            </button>
-                            <laser:render template="/templates/documents/modal"
-                                          model="${[newModalId: "modalCreateDocumentRenewal" + s.id, ownobj: s, owntp: 'subscription']}"/>
+                            <g:if test="${editable}">
+                                <button type="button" class="ui icon tiny button blue la-modern-button"
+                                        data-ownerid="${s.id}"
+                                        data-ownerclass="${s.class.name}"
+                                        data-doctype="${RDStore.DOC_TYPE_RENEWAL.value}"
+                                        data-ui="modal"
+                                        data-href="#modalCreateDocument"><i aria-hidden="true" class="plus small icon"></i>
+                                </button>
+                            </g:if>
 
                             <%
                                 Set<DocContext> documentSet2 = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType', [subscription: s, docType: RDStore.DOC_TYPE_RENEWAL])
@@ -734,5 +741,21 @@
 </g:if>
 
 <laser:render template="export/individuallyExportModalSubsTransfer" model="[modalID: 'individuallyExportModal']"/>
+
+<g:if test="${editable}">
+    <laser:render template="/templates/documents/modal"
+                  model="${[newModalId: "modalCreateDocument", owntp: 'subscription']}"/>
+
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    JSPC.callbacks.modal.onShow.modalCreateDocument = function(trigger) {
+        $('#modalCreateDocument input[name=ownerid]').attr('value', $(trigger).attr('data-ownerid'))
+        $('#modalCreateDocument input[name=ownerclass]').attr('value', $(trigger).attr('data-ownerclass'))
+        $('#modalCreateDocument input[name=ownertp]').attr('value', $(trigger).attr('data-ownertp'))
+        $('#modalCreateDocument select[name=doctype]').dropdown('set selected', $(trigger).attr('data-doctype'))
+    }
+</laser:script>
+
+</g:if>
 
 <laser:htmlEnd/>

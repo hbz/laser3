@@ -118,8 +118,8 @@
                     <i class="arrow left icon"></i>
                 </span>
             </th>
-            <th>${message(code:'default.startDate.label')}</th>
-            <th>${message(code:'default.endDate.label')}</th>
+            <th>${message(code:'default.startDate.label.shy')}</th>
+            <th>${message(code:'default.endDate.label.shy')}</th>
             <th>
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                       data-content="${message(code: 'default.next.label')}">

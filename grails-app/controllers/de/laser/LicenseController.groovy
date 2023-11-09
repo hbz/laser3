@@ -173,7 +173,7 @@ class LicenseController {
             ]
             result.struct = [pageStruct.width, pageStruct.height, pageStruct.pageSize + ' ' + pageStruct.orientation]
             byte[] pdf = wkhtmltoxService.makePdf(
-                    view: '/license/licensePdf',
+                    view: customerTypeService.getCustomerTypeDependingView('/license/licensePdf'),
                     model: result,
                     pageSize: pageStruct.pageSize,
                     orientation: pageStruct.orientation,

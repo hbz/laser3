@@ -31,9 +31,9 @@
             <g:sortableColumn params="${params}" property="surInfo.name"
                               title="${message(code: 'surveyInfo.slash.name')}" rowspan="2" scope="col"/>
             <g:sortableColumn params="${params}" property="surInfo.startDate"
-                              title="${message(code: 'default.startDate.label')}"/>
+                              title="${message(code: 'default.startDate.label.shy')}"/>
             <g:sortableColumn params="${params}" property="surInfo.endDate"
-                              title="${message(code: 'default.endDate.label')}"/>
+                              title="${message(code: 'default.endDate.label.shy')}"/>
             <th>${message(code: 'surveyInfo.type.label')}</th>
             <th>${message(code: 'default.status.label')}</th>
             <th>${message(code: 'surveyInfo.finishedDate')}</th>

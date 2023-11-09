@@ -61,6 +61,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
     //subscription identifier namespaces
     public static final String EZB_ANCHOR = 'ezb_anchor'
     public static final String EZB_COLLECTION_ID = 'ezb_collection_id'
+    public static final String EZB_SUB_ID = 'ezb_sub_id'
     public static final String ISIL_PAKETSIGEL = 'package_isil'
     public static final String ISCI = 'ISCI'
 

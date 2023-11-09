@@ -96,7 +96,7 @@ class ContextService {
      * @return the {@link EhcacheWrapper} matching to the given prefix
      * @see {@link Org}
      */
-    EhcacheWrapper getSharedOrgCache(String cacheKeyPrefix) {
+    EhcacheWrapper getOrgCache(String cacheKeyPrefix) {
         cacheService.getSharedOrgCache(getOrg(), cacheKeyPrefix)
     }
 
@@ -106,6 +106,11 @@ class ContextService {
      */
     SessionCacheWrapper getSessionCache() {
         return new SessionCacheWrapper()
+    }
+
+    String getFormalCacheKeyToken() {
+        User user = getUser()
+        '[' + user.id + ':' + user.formalOrg.id + ':' + user.formalRole.id + ']'
     }
 
     // -- Formal checks @ user.formalOrg
@@ -260,13 +265,13 @@ class ContextService {
         User user = getUser()
         Org org = getOrg()
 
-        EhcacheWrapper cache = cacheService.getTTL1800Cache('contextService/checkCachedNavPerms/' + user.id + ':' + user.formalOrg.id + ':' + user.formalRole.id)
+        EhcacheWrapper ttl1800 = cacheService.getTTL1800Cache('ContextService/checkCachedNavPerms')
 
         Map<String, Boolean> permsMap = [:]
-        String permsKey = 'ctxOrg:' + org.id
+        String permsKey = getFormalCacheKeyToken()
 
-        if (cache.get(permsKey)) {
-            permsMap = cache.get(permsKey) as Map<String, Boolean>
+        if (ttl1800.get(permsKey)) {
+            permsMap = ttl1800.get(permsKey) as Map<String, Boolean>
         }
 
         String perm =  attrs.instRole + ':' + attrs.orgPerm + ':' + attrs.affiliationOrg + ':' + attrs.specRole
@@ -289,7 +294,7 @@ class ContextService {
                 }
             }
             permsMap.put(perm, check)
-            cache.put(permsKey, permsMap)
+            ttl1800.put(permsKey, permsMap)
         }
 
         check

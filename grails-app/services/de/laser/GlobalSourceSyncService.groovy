@@ -937,10 +937,18 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         Date now = new Date()
         newTitles.each { TitleInstancePackagePlatform tipp ->
-            Set<Subscription> subsConcerned = Subscription.executeQuery('select s from Subscription s join s.packages sp where s.endDate is not null and s.endDate >= :now and s.holdingSelection = :entire and sp.pkg = :pkg', [now: now, entire: RDStore.SUBSCRIPTION_HOLDING_ENTIRE, pkg: tipp.pkg])
+            Set<Subscription> subsConcerned = Subscription.executeQuery('select s from Subscription s join s.packages sp where ((s.endDate is not null and s.endDate >= :now) or s.hasPerpetualAccess = true) and s.holdingSelection = :entire and sp.pkg = :pkg', [now: now, entire: RDStore.SUBSCRIPTION_HOLDING_ENTIRE, pkg: tipp.pkg])
             //we may need to switch to native sql ...
             subsConcerned.each { Subscription s ->
-                IssueEntitlement.construct([subscription: s, tipp: tipp])
+                IssueEntitlement ie = IssueEntitlement.construct([subscription: s, tipp: tipp])
+                if(s.hasPerpetualAccess) {
+                    Org owner = s.getSubscriber()
+                    PermanentTitle perm = PermanentTitle.findByOwnerAndTipp(owner, tipp)
+                    if(!perm) {
+                        perm = new PermanentTitle(owner: owner, tipp: tipp, subscription: s, issueEntitlement: ie)
+                        perm.save()
+                    }
+                }
             }
         }
     }
@@ -1558,7 +1566,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 */
                 if(platform.save()) {
                     //update platforms
-                    Map<String, Object> packagesOfPlatform = fetchRecordJSON(false, [componentType: 'Package', platform: platformRecord.uuid])
+                    Map<String, Object> packagesOfPlatform = fetchRecordJSON(false, [componentType: 'Package', platformUuid: platformRecord.uuid])
                     if(packagesOfPlatform && packagesOfPlatform.count > 0) {
                         Package.executeUpdate('update Package pkg set pkg.nominalPlatform = :plat where pkg.gokbId in (:uuids)', [uuids: packagesOfPlatform.records.uuid, plat: platform])
                     }

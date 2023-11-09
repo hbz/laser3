@@ -101,7 +101,7 @@ class OrganisationController  {
         Map<String,Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
         if(!params.containsKey("tab"))
-            params.tab = "ezb"
+            params.tab = "oamonitor"
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(result.orgInstance, result.institution)
         result.isComboRelated = isComboRelated
         result.contextOrg = result.institution //for the properties template
@@ -637,7 +637,10 @@ class OrganisationController  {
             if(org.ids.find { Identifier id -> id.ns == IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_KR) })
                 nsList = nsList - IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_KR)
         }
-        render template: '/templates/identifier/modal_create', model: [orgInstance: org, nsList: nsList]
+
+        Map<String, Object> namespacesWithValidations = organisationService.getNamespacesWithValidations()
+
+        render template: '/templates/identifier/modal_create', model: [orgInstance: org, nsList: nsList, namespacesWithValidations: namespacesWithValidations]
     }
 
     /**
@@ -650,13 +653,15 @@ class OrganisationController  {
         Identifier identifier = Identifier.get(params.identifier)
         Org org = identifier?.org
 
+        Map<String, Object> namespacesWithValidations = organisationService.getNamespacesWithValidations()
+
         if (! identifier) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.search.identifier'), params.identifier]) as String
             redirect(url: request.getHeader('referer'))
             return
         }
 
-        render template: '/templates/identifier/modal_create', model: [orgInstance: org, identifier: identifier]
+        render template: '/templates/identifier/modal_create', model: [orgInstance: org, identifier: identifier, namespacesWithValidations: namespacesWithValidations]
     }
 
     /**
@@ -1229,9 +1234,8 @@ class OrganisationController  {
         if (!result) {
             response.sendError(401); return
         }
-
-        int offset = params.offset ? Integer.parseInt(params.offset) : 0
-        result.putAll(taskService.getTasks(offset, (User) result.user, (Org) result.institution, result.orgInstance))
+        SwissKnife.setPaginationParams(result, params, result.user as User)
+        result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Org) result.institution, (Org) result.orgInstance)['cmbTaskInstanceList']
 
         result
     }

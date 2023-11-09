@@ -71,6 +71,7 @@ class SystemEvent {
             'STATS_SYNC_JOB_START'          : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'STATS_SYNC_JOB_WARNING'        : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.WARNING],
             'STATS_SYNC_JOB_COMPLETE'       : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
+            'STATS_CALL_ERROR'              : [category: CATEGORY.OTHER, relevance: RELEVANCE.WARNING],
             'SUB_RENEW_JOB_START'           : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'SUB_RENEW_JOB_COMPLETE'        : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'SUB_RENEW_SERVICE_PROCESSING'  : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],

@@ -63,7 +63,7 @@
 
             </tr>
             <tr>
-                <th>${message(code: 'default.startDate.label')}</th>
+                <th>${message(code: 'default.startDate.label.shy')}</th>
                 <td><ui:datepicker class="wide eight" id="subscription.start_date" name="subscription.start_date" placeholder="default.date.label" value="${permissionInfo?.sub_startDate}" required="" /></td>
                 <td class="center aligned">
                     <div class="ui checkbox">
@@ -72,7 +72,7 @@
                 </td>
             </tr>
             <tr>
-                <th>${message(code: 'default.endDate.label')}</th>
+                <th>${message(code: 'default.endDate.label.shy')}</th>
                 <td><ui:datepicker class="wide eight" id="subscription.end_date" name="subscription.end_date" placeholder="default.date.label" value="${permissionInfo?.sub_endDate}" /></td>
                 <td class="center aligned">
                     <div class="ui checkbox">
@@ -81,7 +81,7 @@
                 </td>
             </tr>
             <tr>
-                <th>${message(code: 'subscription.referenceYear.label')}</th>
+                <th>${message(code: 'subscription.referenceYear.label.shy')}</th>
                 <td><ui:datepicker class="wide eight" id="subscription.reference_year" name="subscription.reference_year" placeholder="default.date.format.yyyy" value="${permissionInfo?.sub_referenceYear}" type="year"/></td>
                 <td class="center aligned">
                     <div class="ui checkbox">
@@ -123,7 +123,7 @@
                 </td>
             </tr>
             <tr>
-                <th>${message(code: 'subscription.form.label')}</th>
+                <th>${message(code: 'subscription.form.label.shy')}</th>
                 <td>
                     <g:set var="rdcSubForm" value="${RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_FORM)}"/>
                     <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}" class="ui dropdown"
@@ -188,7 +188,7 @@
                 </td>
             </tr>
             <tr>
-                <th>${message(code: 'subscription.hasPublishComponent.label')}</th>
+                <th>${message(code: 'subscription.hasPublishComponent.label.shy')}</th>
                 <td>
                     <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}" class="ui dropdown"
                               optionKey="id"
@@ -205,7 +205,7 @@
             </tr>
             <g:if test="${subscription.packages}">
                 <tr>
-                    <th>${message(code: 'subscription.holdingSelection.label')}</th>
+                    <th>${message(code: 'subscription.holdingSelection.label.shy')}</th>
                     <td>
                         <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" class="ui dropdown"
                                   optionKey="id"

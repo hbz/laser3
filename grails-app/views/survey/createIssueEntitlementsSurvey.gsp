@@ -12,12 +12,15 @@
 
 <ui:messages data="${flash}"/>
 
-
-<div class="ui icon message">
+<div class="ui icon positive message">
     <i class="info icon"></i>
-    ${message(code: 'allSubscriptions.info2')}
+    <div class="content">
+        <div class="header"></div>
+        <p>
+            ${message(code: 'allSubscriptions.info2')}
+        </p>
+    </div>
 </div>
-
 
 <h2 class="ui left floated aligned icon header la-clear-before"><ui:headerIcon/>${message(code: 'myinst.currentSubscriptions.label')}
 <ui:totalNumber total="${num_sub_rows}"/>
@@ -133,7 +136,7 @@
                                   rowspan="2"/>
 
                 <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.startDate"
-                                  title="${message(code: 'default.startDate.label')}"/>
+                                  title="${message(code: 'default.startDate.label.shy')}"/>
 
 
                 <th scope="col" rowspan="2">
@@ -152,7 +155,7 @@
 
             <tr>
                 <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.endDate"
-                                  title="${message(code: 'default.endDate.label')}"/>
+                                  title="${message(code: 'default.endDate.label.shy')}"/>
             </tr>
             </thead>
             <g:each in="${subscriptions}" var="s" status="i">

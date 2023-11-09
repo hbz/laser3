@@ -52,14 +52,16 @@ class ConfigMapper {
     static final List QUARTZ_HEARTBEAT      = ['quartzHeartbeat', Date]
     static final List REPORTING             = ['reporting', Map]
 
-    static final List SHOW_DEBUG_INFO            = ['showDebugInfo',  Boolean]
-    static final List SHOW_SYSTEM_INFO           = ['showSystemInfo', Boolean]
-    static final List SHOW_STATS_INFO            = ['showStatsInfo',  Boolean]
-    static final List STATS_API_URL              = ['statsApiUrl', String]
-    static final List STATS_REPORT_SAVE_LOCATION = ['statsReportSaveLocation', String]
-    static final List STATS_SYNC_JOB_ACTIVE      = ['statsSyncJobActive', Boolean]
-    static final List SYSTEM_EMAIL               = ['systemEmail', String]
-    static final List SYSTEM_INSIGHT_EMAILS      = ['systemInsightEmails', String]
+    static final List SHOW_DEBUG_INFO                       = ['showDebugInfo',  Boolean]
+    static final List SHOW_SYSTEM_INFO                      = ['showSystemInfo', Boolean]
+    static final List SHOW_STATS_INFO                       = ['showStatsInfo',  Boolean]
+    static final List STATS_API_URL                         = ['statsApiUrl', String]
+    static final List STATS_REPORT_SAVE_LOCATION            = ['statsReportSaveLocation', String]
+    static final List STATS_SYNC_JOB_ACTIVE                 = ['statsSyncJobActive', Boolean]
+    static final List SUSHI_COUNTER_REGISTRY_URL            = ['sushiCounterRegistryUrl', String]
+    static final List SUSHI_COUNTER_REGISTRY_DATA_SUFFIX    = ['sushiCounterRegistryDataSuffix', String]
+    static final List SYSTEM_EMAIL                          = ['systemEmail', String]
+    static final List SYSTEM_INSIGHT_EMAILS                 = ['systemInsightEmails', String]
 
     static final List WEKB_API_USERNAME     = ['wekbApiUsername', String]
     static final List WEKB_API_PASSWORD     = ['wekbApiPassword', String]
@@ -77,7 +79,7 @@ class ConfigMapper {
             PGDUMP_PATH,
             QUARTZ_HEARTBEAT,
             REPORTING,
-            SHOW_DEBUG_INFO, SHOW_SYSTEM_INFO, SHOW_STATS_INFO, STATS_API_URL, STATS_SYNC_JOB_ACTIVE, SYSTEM_EMAIL, SYSTEM_INSIGHT_EMAILS,
+            SHOW_DEBUG_INFO, SHOW_SYSTEM_INFO, SHOW_STATS_INFO, STATS_API_URL, STATS_REPORT_SAVE_LOCATION, STATS_SYNC_JOB_ACTIVE, SUSHI_COUNTER_REGISTRY_URL, SUSHI_COUNTER_REGISTRY_DATA_SUFFIX, SYSTEM_EMAIL, SYSTEM_INSIGHT_EMAILS,
             WEKB_API_USERNAME, WEKB_API_PASSWORD
     ]
 
@@ -219,6 +221,12 @@ class ConfigMapper {
     }
     static boolean getStatsSyncJobActive(int output = LOGGER) {
         readConfig( STATS_SYNC_JOB_ACTIVE, output )
+    }
+    static String getSushiCounterRegistryUrl(int output = LOGGER) {
+        readConfig( SUSHI_COUNTER_REGISTRY_URL, output )
+    }
+    static String getSushiCounterRegistryDataSuffix(int output = LOGGER) {
+        readConfig( SUSHI_COUNTER_REGISTRY_DATA_SUFFIX, output )
     }
     static String getSystemEmail(int output = LOGGER) {
         readConfig( SYSTEM_EMAIL, output )

@@ -100,7 +100,7 @@
         <g:form action="members" controller="subscription" params="${[id:params.id]}" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                   model="[
-                      tmplConfigShow: [['name', 'identifier', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['subRunTimeMultiYear']],
+                      tmplConfigShow: [['name', 'identifier', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['discoverySystemsFrontend', 'discoverySystemsIndex'], ['subRunTimeMultiYear']],
                       tmplConfigFormFilter: true
                   ]"/>
         </g:form>
@@ -125,8 +125,8 @@
                         <i class="arrow left icon"></i>
                     </span>
                 </th>
-                <g:sortableColumn params="${params}" property="sub.startDate" title="${message(code:'default.startDate.label')}"/>
-                <g:sortableColumn params="${params}" property="sub.endDate" title="${message(code:'default.endDate.label')}"/>
+                <g:sortableColumn params="${params}" property="sub.startDate" title="${message(code:'default.startDate.label.shy')}"/>
+                <g:sortableColumn params="${params}" property="sub.endDate" title="${message(code:'default.endDate.label.shy')}"/>
                 <th class="center aligned">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                           data-content="${message(code: 'default.next.label')}">

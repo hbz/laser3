@@ -1,7 +1,7 @@
 <%@ page import="de.laser.ExportClickMeService;" %>
 <laser:serviceInjection/>
 
-<!-- _individuallyExportModal.gsp -->
+<!-- _individuallyExportModalSubsTransfer.gsp -->
 <g:set var="formFields" value="${exportClickMeService.getExportSubscriptionFieldsForUI(institution, true)}"/>
 
 <ui:modal modalSize="fullscreen" id="${modalID}" text="Export" refreshModal="true" hideSubmitButton="true">
@@ -13,5 +13,5 @@
     </g:form>
 
 </ui:modal>
-<!-- _individuallyExportModal.gsp -->
+<!-- _individuallyExportModalSubsTransfer.gsp -->
 

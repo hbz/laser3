@@ -1,7 +1,7 @@
 <%@ page import="de.laser.ExportClickMeService;" %>
 <laser:serviceInjection/>
 
-<!-- _individuallyExportModal.gsp -->
+<!-- _individuallyExportModalOrgs.gsp -->
 <g:set var="formFields" value="${exportClickMeService.getExportOrgFieldsForUI(orgType)}"/>
 <g:if test="${actionName in ['currentProviders','listProvider']}">
     <g:set var="exportFileName" value="${message(code: 'default.ProviderAgency.export.label')}"/>
@@ -25,5 +25,5 @@
     </g:form>
 
 </ui:modal>
-<!-- _individuallyExportModal.gsp -->
+<!-- _individuallyExportModalOrgs.gsp -->
 

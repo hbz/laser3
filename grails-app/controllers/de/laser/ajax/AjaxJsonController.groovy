@@ -2,8 +2,9 @@ package de.laser.ajax
 
 import de.laser.AlternativeName
 import de.laser.CustomerTypeService
+import de.laser.DiscoverySystemFrontend
+import de.laser.DiscoverySystemIndex
 import de.laser.GenericOIDService
-import de.laser.AccessService
 import de.laser.CompareService
 import de.laser.ContextService
 import de.laser.ControlledListService
@@ -12,12 +13,12 @@ import de.laser.IssueEntitlement
 import de.laser.License
 import de.laser.LicenseService
 import de.laser.LinksGenerationService
+import de.laser.OrganisationService
 import de.laser.ReportingGlobalService
 import de.laser.ReportingLocalService
 import de.laser.SubscriptionDiscountScale
 import de.laser.SubscriptionService
 import de.laser.auth.Role
-import de.laser.ctrl.SubscriptionControllerService
 import de.laser.finance.PriceItem
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
@@ -43,7 +44,6 @@ import de.laser.annotations.DebugInfo
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
-import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -62,7 +62,6 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxJsonController {
 
-    AccessService accessService
     CompareService compareService
     ContextService contextService
     ControlledListService controlledListService
@@ -70,10 +69,10 @@ class AjaxJsonController {
     GenericOIDService genericOIDService
     LicenseService licenseService
     LinksGenerationService linksGenerationService
+    OrganisationService organisationService
     ReportingGlobalService reportingGlobalService
     ReportingLocalService reportingLocalService
     SubscriptionService subscriptionService
-    SubscriptionControllerService subscriptionControllerService
 
     /**
      * Test call
@@ -951,6 +950,18 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    @Secured(['ROLE_USER'])
+    def loadOrganisationForMerge() {
+        Map<String, Object> mergeInfo = [:]
+        if(params.containsKey('source') && params.source.length() > 0) {
+            mergeInfo = organisationService.mergeOrganisations(genericOIDService.resolveOID(params.source), null, true)
+        }
+        else if(params.containsKey('target') && params.target.length() > 0) {
+            mergeInfo = organisationService.mergeOrganisations(genericOIDService.resolveOID(params.target), null, true)
+        }
+        render mergeInfo as JSON
+    }
+
     /**
      * Retrieves all reference data values by the given category for dropdown display
      * @return a {@link List} of {@link Map}s of structure [value: reference data value oid, text: translated reference data value]
@@ -1002,6 +1013,10 @@ class AjaxJsonController {
         Map<String, Object> objId = [id: params.long("objId")]
         switch(params.object) {
             case "altname": removed = AlternativeName.executeUpdate('delete from AlternativeName altname where altname.id = :id', objId)
+                break
+            case "frontend": removed = DiscoverySystemFrontend.executeUpdate('delete from DiscoverySystemFrontend dsf where dsf.id = :id', objId)
+                break
+            case "index": removed = DiscoverySystemIndex.executeUpdate('delete from DiscoverySystemIndex dsi where dsi.id = :id', objId)
                 break
             case "coverage": //TODO migrate SubscriptionController.removeCoverage()
                 break
@@ -1170,36 +1185,37 @@ class AjaxJsonController {
 
     // ----- reporting -----
 
-    /**
-     * Checks the current state of the reporting cache
-     * @return a {@link Map} reflecting the existence, the filter cache, query cache and details cache states
-     */
-    @Secured(['ROLE_USER'])
-    def checkReportingCache() {
-
-        Map<String, Object> result = [
-            exists: false
-        ]
-
-        if (params.context in [ BaseConfig.KEY_MYINST, BaseConfig.KEY_SUBSCRIPTION ]) {
-            ReportingCache rCache
-
-            if (params.token) {
-                rCache = new ReportingCache( params.context, params.token )
-                result.token = params.token
-            }
-            else {
-                rCache = new ReportingCache( params.context )
-            }
-
-            result.exists       = rCache.exists()
-            result.filterCache  = rCache.get().filterCache ? true : false
-            result.queryCache   = rCache.get().queryCache ? true : false
-            result.detailsCache = rCache.get().detailsCache ? true : false
-        }
-
-        render result as JSON
-    }
+//    /**
+//     * Checks the current state of the reporting cache
+//     * @return a {@link Map} reflecting the existence, the filter cache, query cache and details cache states
+//     */
+//    @Deprecated
+//    @Secured(['ROLE_USER'])
+//    def checkReportingCache() {
+//
+//        Map<String, Object> result = [
+//            exists: false
+//        ]
+//
+//        if (params.context in [ BaseConfig.KEY_MYINST, BaseConfig.KEY_SUBSCRIPTION ]) {
+//            ReportingCache rCache
+//
+//            if (params.token) {
+//                rCache = new ReportingCache( params.context, params.token )
+//                result.token = params.token
+//            }
+//            else {
+//                rCache = new ReportingCache( params.context )
+//            }
+//
+//            result.exists       = rCache.exists()
+//            result.filterCache  = rCache.get().filterCache ? true : false
+//            result.queryCache   = rCache.get().queryCache ? true : false
+//            result.detailsCache = rCache.get().detailsCache ? true : false
+//        }
+//
+//        render result as JSON
+//    }
 
     /**
      * Outputs a chart from the given report parameters

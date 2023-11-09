@@ -17,14 +17,13 @@ console.log('+ bundle: laser.js');
 //= require modules/why.js
 //= require modules/verticalNavi.js
 //= require modules/responsiveTables.js
-//= require modules/setTextareaHeight.js
+//= require modules/textareaHeight.js
 //= require modules/system.js
 
 // here we go ..
 
 $(function () {
-    JSPC.modules.go( 'r2d2', 'bb8', 'a11yMenu', 'a11yIcon', 'verticalNavi', 'responsiveTables', 'system' );
+    JSPC.modules.go( 'r2d2', 'bb8', 'a11yMenu', 'a11yIcon', 'verticalNavi', 'responsiveTables', 'textareaHeight', 'system' );
 
     $('main.ui.main').removeClass('hidden');
 })
-setTextareaHeight.go();

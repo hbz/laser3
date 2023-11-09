@@ -56,7 +56,6 @@ class AjaxController {
 
     GenericOIDService genericOIDService
     ContextService contextService
-    AccessService accessService
     EscapeService escapeService
     FormService formService
     DashboardDueDatesService dashboardDueDatesService
@@ -536,45 +535,14 @@ class AjaxController {
      * @return a {@link Map} reflecting the success status
      */
   @Secured(['ROLE_USER'])
-  def updateIssueEntitlementOverwrite() {
+  def updateIssueEntitlementSelect() {
       Map success = [success:false]
       EhcacheWrapper cache = contextService.getUserCache("/subscription/${params.referer}/${params.sub}")
-      Map issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
+      Set issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
       if(!issueEntitlementCandidates)
-          issueEntitlementCandidates = [:]
-      def ieCandidate = issueEntitlementCandidates.get(params.key)
-      if(!ieCandidate)
-          ieCandidate = [:]
-      if(params.coverage != 'false') {
-          def ieCoverage
-          Pattern pattern = Pattern.compile("(\\w+)(\\d+)")
-          Matcher matcher = pattern.matcher(params.prop)
-          if(matcher.find()) {
-              String prop = matcher.group(1)
-              int covStmtKey = Integer.parseInt(matcher.group(2))
-              if(!ieCandidate.coverages){
-                  ieCandidate.coverages = []
-                  ieCoverage = [:]
-              }
-              else
-                  ieCoverage = ieCandidate.coverages[covStmtKey]
-              if(prop in ['startDate','endDate']) {
-                  SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-                  ieCoverage[prop] = sdf.parse(params.propValue)
-              }
-              else {
-                  ieCoverage[prop] = params.propValue
-              }
-              ieCandidate.coverages[covStmtKey] = ieCoverage
-          }
-          else {
-              log.error("something wrong with the regex matching ...")
-          }
-      }
-      else {
-          ieCandidate[params.prop] = params.propValue
-      }
-      issueEntitlementCandidates.put(params.key,ieCandidate)
+          issueEntitlementCandidates = []
+      if(!issueEntitlementCandidates.add(params.key))
+          issueEntitlementCandidates.remove(params.key)
       if(cache.put('issueEntitlementCandidates',issueEntitlementCandidates))
           success.success = true
       render success as JSON
@@ -1976,17 +1944,43 @@ class AjaxController {
                         } else {
                             binding_properties[params.name] = params.value
                         }
-                        bindData(target_object, binding_properties)
 
-                        target_object.save(failOnError: true)
+                        if(target_object instanceof Subscription && params.name == 'hasPerpetualAccess'){
+                            if(!subscriptionService.checkThreadRunning('permanentTilesProcess_'+target_object.id)) {
+                                if (params.value == true && target_object.hasPerpetualAccess != params.value) {
+                                    subscriptionService.setPermanentTitlesBySubscription(target_object)
+                                }
+                                if (params.value == false && target_object.hasPerpetualAccess != params.value) {
+                                    subscriptionService.removePermanentTitlesBySubscription(target_object)
+                                }
+                                bindData(target_object, binding_properties)
 
+                                target_object.save(failOnError: true)
 
-                        if (target_object."${params.name}" instanceof BigDecimal) {
-                            result = NumberFormat.getInstance( LocaleUtils.getCurrentLocale() ).format(target_object."${params.name}")
-                            //is for that German users do not cry about comma-dot-change
-                        } else {
-                            result = target_object."${params.name}"
+                                if (target_object."${params.name}" instanceof BigDecimal) {
+                                    result = NumberFormat.getInstance( LocaleUtils.getCurrentLocale() ).format(target_object."${params.name}")
+                                    //is for that German users do not cry about comma-dot-change
+                                } else {
+                                    result = target_object."${params.name}"
+                                }
+                            }else {
+                                result = [status: 'error', msg: "${message(code: 'subscription.details.permanentTilesProcessRunning.info')}"]
+                                render result as JSON
+                                return
+                            }
+                        }else {
+                            bindData(target_object, binding_properties)
+
+                            target_object.save(failOnError: true)
+
+                            if (target_object."${params.name}" instanceof BigDecimal) {
+                                result = NumberFormat.getInstance( LocaleUtils.getCurrentLocale() ).format(target_object."${params.name}")
+                                //is for that German users do not cry about comma-dot-change
+                            } else {
+                                result = target_object."${params.name}"
+                            }
                         }
+
                         break
                 }
 

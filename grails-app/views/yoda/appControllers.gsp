@@ -173,12 +173,12 @@
                                                     <g:if test="${dd.key == 'perm'}">
                                                         <g:if test="${dd.value.contains('ORG_INST_BASIC')}">
                                                             <span class="la-long-tooltip" data-tooltip="Zugriff: ORG_INST_BASIC / ORG_INST_PRO">
-                                                                <i class="icon user circle yellow"></i><i class="icon trophy yellow"></i>
+                                                                <i class="icon user circle grey"></i><i class="icon trophy grey"></i>
                                                             </span>
                                                         </g:if>
                                                         <g:if test="${dd.value.contains('ORG_INST_PRO')}">
                                                             <span class="la-long-tooltip" data-tooltip="Zugriff: ORG_INST_PRO">
-                                                                <i class="icon trophy yellow"></i>
+                                                                <i class="icon trophy grey"></i>
                                                             </span>
                                                         </g:if>
                                                         <g:if test="${dd.value.contains('ORG_CONSORTIUM_BASIC')}">
@@ -205,7 +205,7 @@
 
                                             <g:if test="${! info.value.getAt('perm')}">%{-- check without explicit perms --}%
                                                 <span class="la-long-tooltip" data-tooltip="Zugriff: ORG_INST_BASIC / ORG_INST_PRO">
-                                                    <i class="icon user circle yellow"></i><i class="icon trophy yellow"></i>
+                                                    <i class="icon user circle grey"></i><i class="icon trophy grey"></i>
                                                 </span>
                                                 <span class="la-long-tooltip" data-tooltip="Zugriff: ORG_CONSORTIUM_BASIC / ORG_CONSORTIUM_PRO">
                                                     <i class="icon user circle teal"></i><i class="icon trophy teal"></i>

@@ -27,7 +27,7 @@
         <g:form action="addMembers" method="get" params="[id: params.id]" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow      : [['name'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'], ['property&value']],
+                              tmplConfigShow      : [['name'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'], ['discoverySystemsFrontend', 'discoverySystemsIndex'], ['property&value']],
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>

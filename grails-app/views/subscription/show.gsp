@@ -7,8 +7,10 @@
     <div style="padding: 1em 0;">
         <p>sub.type: ${subscription.type}</p>
 
-        <p>sub.instanceOf: <g:if test="${subscription.instanceOf}"><g:link action="show"
-                                                                           id="${subscription.instanceOf.id}">${subscription.instanceOf.name}</g:link>
+        <p>sub.subscriber: ${subscription.subscriber}</p>
+
+        <p>sub.instanceOf: <g:if test="${subscription.instanceOf}">
+            <g:link action="show" id="${subscription.instanceOf.id}">${subscription.instanceOf.name}</g:link>
             ${subscription.instanceOf.getAllocationTerm()}
         </g:if></p>
 
@@ -35,6 +37,17 @@
 <ui:anualRings object="${subscription}" controller="subscription" action="show" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 <laser:render template="${customerTypeService.getNavTemplatePath()}"/>
+
+<g:if test="${permanentTilesProcessRunning}">
+    <div class="ui icon warning message">
+        <i class="info icon"></i>
+        <div class="content">
+            <div class="header">Info</div>
+
+            <p>${message(code: 'subscription.details.permanentTilesProcessRunning.info')}</p>
+        </div>
+    </div>
+</g:if>
 
 <ui:objectStatus object="${subscription}" status="${subscription.status}"/>
 <laser:render template="message"/>
@@ -68,7 +81,7 @@
                         </dl>
 
                         <dl>
-                            <dt class="control-label">${message(code: 'subscription.manualCancellationDate.label')}</dt>
+                            <dt class="control-label">${message(code: 'subscription.manualCancellationDate.label.shy')}</dt>
                             <dd><ui:xEditable owner="${subscription}" field="manualCancellationDate" type="date"/></dd>
                             <g:if test="${editable}">
                                 <dd class="la-js-editmode-container"><ui:auditButton
@@ -468,7 +481,7 @@
                 </g:if>
             </div>
             <div id="container-links">
-                <div class="ui card"  id="links"></div>
+                <div class="ui card" id="links"></div>
             </div>
             <laser:render template="/templates/sidebar/aside" model="${[ownobj: subscription, owntp: 'subscription']}"/>
         </div>

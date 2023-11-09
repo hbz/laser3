@@ -13,33 +13,6 @@ tooltip = {
         tooltip.initDynamicAccessViaKeys(ctxSel)
     },
 
-    initializePopup_deprecated: function(obj) {
-        $('.la-popup-tooltip').each(function() {
-            // add aria-label
-            $(this).attr('aria-label',$(this).attr('data-content'));
-        });
-        $('.ui.toggle.button').next('.ui.popup').remove();
-        $(obj).popup({
-            hoverable: true,
-            inline     : false,
-            lastResort: true,
-            movePopup: false,
-            boundary: 'body',
-            delay: {
-                show: 300,
-                hide: 500
-            },
-
-            onShow: function() {
-                // generate a random ID
-                var id =  'wcag_' + Math.random().toString(36).substr(2, 9);
-
-                //add role=tooltip and the generated ID to the tooltip-div (generated from semantic)
-                $(this).children('.content').attr({role:'tooltip',id:id});
-            },
-        });
-    },
-
     initDynamicPopups: function(ctxSel) {
         console.log('tooltip.initDynamicPopups( ' + ctxSel + ' )')
 
@@ -64,7 +37,7 @@ tooltip = {
 
             onShow: function() {
                 // generate a random ID
-                var id =  'wcag_' + Math.random().toString(36).substr(2, 9);
+                let id =  'wcag_' + Math.random().toString(36).substr(2, 9);
 
                 //add role=tooltip and the generated ID to the tooltip-div (generated from semantic)
                 $(this).children('.content').attr({role:'tooltip',id:id});
@@ -75,7 +48,7 @@ tooltip = {
     initDynamicAccessViaKeys: function(ctxSel){
         console.log('tooltip.initDynamicAccessViaKeys( ' + ctxSel + ' )')
 
-        var $elem = $(ctxSel + ' .la-popup-tooltip')
+        let $elem = $(ctxSel + ' .la-popup-tooltip')
 
         // for click and focus
         $elem.on('click focus', function(){

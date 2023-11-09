@@ -10,6 +10,7 @@ import io.micronaut.http.client.HttpClient
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.client.HttpClientConfiguration
+import io.micronaut.http.client.exceptions.HttpClientResponseException
 import org.grails.web.json.JSONObject
 
 /**
@@ -246,13 +247,13 @@ class BasicHttpClient {
         else if (sc >= 300 && sc < 400) {
             if (onSuccess) {
                 log.warn '[ request ] ' + url + ' > '+ sc + response.getStatus().getReason()
-                onFailure.call(response, response.getBody())
+                onFailure.call(response, getParsedResponse(response, responseType))
             }
         }
         else if (sc >= 400) {
             if (onFailure) {
                 log.warn '[ request ] ' + url + ' > '+ sc + response.getStatus().getReason()
-                onFailure.call(response, response.getBody())
+                onFailure.call(response, getParsedResponse(response, responseType))
             }
         }
         else if (sc < 0) {
@@ -288,8 +289,14 @@ class BasicHttpClient {
             response = client.toBlocking().exchange(request, responseType.parserType)
         }
         catch(Exception e) {
-            log.error '[ innerGET ] ' + e.getMessage()
-            e.printStackTrace()
+            if(e instanceof HttpClientResponseException) {
+                log.error '[ innerGET ] ' + e.getStatus()
+                response = e.getResponse()
+            }
+            else {
+                log.error '[ innerGET ] ' + e.getMessage()
+                e.printStackTrace()
+            }
         }
         response
     }
@@ -355,8 +362,14 @@ class BasicHttpClient {
             response = client.toBlocking().exchange(request, responseType.parserType)
         }
         catch(Exception e) {
-            log.error '[ innerPOST ] ' + e.getMessage()
-            e.printStackTrace()
+            if(e instanceof HttpClientResponseException) {
+                log.error '[ innerGET ] ' + e.getStatus()
+                response = e.getResponse()
+            }
+            else {
+                log.error '[ innerPOST ] ' + e.getMessage()
+                e.printStackTrace()
+            }
         }
         response
     }

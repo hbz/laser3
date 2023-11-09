@@ -30,7 +30,7 @@
             &lt;td&gt;
             01.01.2022
             &lt;br&gt;
-            <strong>&lt;span&gt; class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label')}:">&lt;/span&gt;</strong>
+            <strong>&lt;span&gt; class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label.shy')}:">&lt;/span&gt;</strong>
             &lt;/td&gt;
             .
             .

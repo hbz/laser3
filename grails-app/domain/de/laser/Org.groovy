@@ -40,7 +40,7 @@ import org.apache.commons.lang3.StringUtils
  */
 @Slf4j
 class Org extends AbstractBaseWithCalculatedLastUpdated
-        implements DeleteFlag, MarkerSupport {
+        implements DeleteFlag, MarkerSupport, Comparable<Org> {
 
     String name
     String shortcode            // Used to generate friendly semantic URLs
@@ -135,6 +135,8 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         addresses:          Address,
         propertySet:        OrgProperty,
         altnames:           AlternativeName,
+        discoverySystemFrontends: DiscoverySystemFrontend,
+        discoverySystemIndices: DiscoverySystemIndex,
         orgType:            RefdataValue,
         documents:          DocContext,
         platforms:          Platform,
@@ -875,5 +877,15 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         withTransaction {
             Marker.findByOrgAndUserAndType(this, user, type).delete(flush:true)
         }
+    }
+
+    @Override
+    int compareTo(Org o) {
+        int result = sortname <=> o.sortname
+        if(!result)
+            name <=> o.name
+        if(!result)
+            id <=> o.id
+        result
     }
 }

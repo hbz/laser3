@@ -3,6 +3,16 @@
 <g:set var="entityName" value="${message(code: 'issueEntitlement.label')}"/>
 <laser:htmlStart text="${message(code:"default.show.label", args:[entityName])}" />
 
+<ui:debugInfo>
+    <div style="padding: 1em 0;">
+        <p>issueEntitlementInstance.dateCreated: ${issueEntitlementInstance.dateCreated}</p>
+
+        <p>issueEntitlementInstance.lastUpdated: ${issueEntitlementInstance.lastUpdated}</p>
+
+        <p>issueEntitlementInstance.status: ${issueEntitlementInstance.status?.value}</p>
+    </div>
+</ui:debugInfo>
+
 <ui:breadcrumbs>
     <g:if test="${issueEntitlementInstance.subscription.subscriber}">
         <ui:crumb controller="myInstitution" action="currentSubscriptions"
