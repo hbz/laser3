@@ -64,18 +64,34 @@
     </div>
 
     <p>
-        Im Folgenden können Sie Kosten in Form einer Tabelle hochladen. Eine Vorlage finden Sie im unten angegebenen Link; Erläuterungen darüber, wie Sie die Spalten ausfüllen müssen
-        finden Sie im Ausklappfenster, das Sie mit dem Fragezeichen oben rechts öffnen können.
-        Wenn Sie die Tabelle mit Excel bearbeiten, müssen Sie folgende Dinge beachten, damit das System die Angaben korrekt verarbeitet:
+        <g:message code="myinst.financeImport.manual.p1"/>
+    </p>
+    <p>
+        <g:message code="myinst.financeImport.manual.p2"/>
         <ol>
-            <li>Speichern Sie die Datei als "Text (Tabstopp-getrennt)" ab. Die Dateiendung .txt stört dabei nicht.</li>
-            <li>Wenn Sie die Datei speichern, müssen Sie die Zeichenkodierung korrekt einstellen. Hierzu klicken Sie auf "Tools" neben dem Knopf "Speichern", dann "Weboptionen".</li>
-            <li>Im nun sich öffnenden Fenster den Reiter "Codierung" anwählen</li>
-            <li>Dort in der Auswahlliste "Dokument speichern als" "UTF-8 (Unicode)" auswählen</li>
-            <li>Mit "OK" bestätigen</li>
-            <li>Datei speichern</li>
+            <li><g:message code="myinst.financeImport.manual.li1"/></li>
+            <li><g:message code="myinst.financeImport.manual.li2"/></li>
+            <li><g:message code="myinst.financeImport.manual.li3"/><p><a href="#" class="previewImage" data-src="/assets/manuals/Abbildung_Punkt_01_03.png"><g:img class="ui small image" file="manuals/Abbildung_Punkt_01_03.png"/></a></p></li>
+            <li><g:message code="myinst.financeImport.manual.li4"/><p><a href="#" class="previewImage" data-src="/assets/manuals/Abbildung_Punkt_01_04.png"><g:img class="ui small image" file="manuals/Abbildung_Punkt_01_04.png"/></a></p></li>
+            <li><g:message code="myinst.financeImport.manual.li5"/></li>
+            <li><g:message code="myinst.financeImport.manual.li6"/><p><a href="#" class="previewImage" data-src="/assets/manuals/Abbildung_Punkt_01_06.png"><g:img class="ui small image" file="manuals/Abbildung_Punkt_01_06.png"/></a></p></li>
+            <li><g:message code="myinst.financeImport.manual.li7"/></li>
+            <li><g:message code="myinst.financeImport.manual.li8"/><p><a href="#" class="previewImage" data-src="/assets/manuals/Abbildung_Punkt_01_08.png"><g:img class="ui small image" file="manuals/Abbildung_Punkt_01_08.png"/></a></p></li>
+            <li><g:message code="myinst.financeImport.manual.li9"/></li>
+            <li><g:message code="myinst.financeImport.manual.li10"/><p><a href="#" class="previewImage" data-src="/assets/manuals/Abbildung_Punkt_01_10.png"><g:img class="ui small image" file="manuals/Abbildung_Punkt_01_10.png"/></a></p></li>
         </ol>
-        Anschließend können Sie die Datei hochladen.
+    </p>
+    <p>
+        <g:message code="myinst.financeImport.manual.p3"/>
+        <ol>
+            <li><g:message code="myinst.financeImport.manual.li11"/></li>
+            <li><g:message code="myinst.financeImport.manual.li12"/></li>
+            <li><g:message code="myinst.financeImport.manual.li13"/></li>
+            <li><g:message code="myinst.financeImport.manual.li14"/></li>
+            <li><g:message code="myinst.financeImport.manual.li15"/></li>
+            <li><g:message code="myinst.financeImport.manual.li16"/></li>
+        </ol>
+        <g:message code="myinst.financeImport.manual.p4"/>
     </p>
           <g:if test="${params.id}">
               <g:link action="generateFinanceImportWorksheet" params="${[id:params.id]}">
@@ -83,7 +99,7 @@
               </g:link>
           </g:if>
           <g:else>
-              <a href="${resource(dir: 'files', file: 'bulk_load_cost_item_records_template_02.csv')}" download="template_bulk_load_cost_item_records.csv">
+              <a href="${resource(dir: 'files', file: 'bulk_load_cost_item_records_template.csv')}" download="template_bulk_load_cost_item_records.csv">
                   <p>${message(code:'myinst.financeImport.template')}</p>
               </a>
           </g:else>
@@ -97,5 +113,16 @@
               <input class="ui input" type="file" name="tsvFile" id="tsvFile"/>
               <input class="ui button" type="submit" value="${message(code:"myinst.financeImport.upload")}"/>
           </g:uploadForm>
+
+    <ui:modal id="fullsizeImage" hideSubmitButton="true">
+        <img class="ui image" src="#" alt="fullsize image"/>
+    </ui:modal>
+
+    <laser:script file="${this.getGroovyPageFileName()}">
+        $('.previewImage').click(function() {
+            $('#fullsizeImage img').attr('src', $(this).attr('data-src'));
+            $('#fullsizeImage').modal('show');
+        });
+    </laser:script>
 
 <laser:htmlEnd />
