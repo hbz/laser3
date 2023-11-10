@@ -1103,10 +1103,10 @@ class FinanceService {
      */
     Map<String,Map> financeImport(MultipartFile tsvFile) {
         Org contextOrg = contextService.getOrg()
-        Map<String,Map> result = [:]
+        List<String> rows = tsvFile.getInputStream().text.split('\n')
+        Map<String,Map> result = [headerRow: rows[0]]
         Map<CostItem,Map> candidates = [:]
         Map<Integer,String> budgetCodes = [:]
-        List<String> rows = tsvFile.getInputStream().text.split('\n')
         Map<String,Integer> colMap = [:]
         rows[0].split('\t').eachWithIndex { String headerCol, int c ->
             if(headerCol.startsWith("\uFEFF"))

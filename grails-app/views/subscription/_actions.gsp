@@ -111,7 +111,7 @@
             </g:if>
             <g:if test="${customerTypeService.isConsortium( contextCustomerType ) && !subscription.instanceOf}">
                 <div class="divider"></div>
-                <ui:actionsDropdownItem controller="myInstitution" action="generateFinanceImportWorksheet" params="${[id:subscription.id]}" message="myinst.financeImport.subscription.template"/>
+                <ui:actionsDropdownItem data-ui="modal" id="generateFinanceImportWorksheet" href="#financeImportTemplate" message="myinst.financeImport.subscription.template"/>
                 <ui:actionsDropdownItem controller="myInstitution" action="financeImport" params="${[id:subscription.id]}" message="menu.institutions.financeImport" />
             </g:if>
         </g:if>
@@ -254,6 +254,7 @@
 
 <g:if test="${contextService.isInstEditor_or_ROLEADMIN()}">
     <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: subscription, owntp: 'subscription']]}" />
+    <laser:render template="financeImportTemplate" />
 </g:if>
 
 <g:if test="${subscription._getCalculatedType() == Subscription.TYPE_CONSORTIAL}">

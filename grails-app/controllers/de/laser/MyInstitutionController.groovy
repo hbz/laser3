@@ -2153,6 +2153,7 @@ class MyInstitutionController  {
                 if(encoding == "UTF-8") {
                     result.filename = tsvFile.originalFilename
                     Map<String,Map> financialData = financeService.financeImport(tsvFile)
+                    result.headerRow = financialData.headerRow
                     result.candidates = financialData.candidates
                     result.budgetCodes = financialData.budgetCodes
                     result.criticalErrors = [/*'ownerMismatchError',*/'noValidSubscription','multipleSubError','packageWithoutSubscription','noValidPackage','multipleSubPkgError','noCurrencyError','invalidCurrencyError',

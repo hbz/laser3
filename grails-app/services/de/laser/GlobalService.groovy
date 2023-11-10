@@ -17,7 +17,7 @@ import javax.sql.DataSource
 @Transactional
 class GlobalService {
 
-    static final long LONG_PROCESS_LIMBO = 5 //2 minutes, other values are for debug only, do not commit!
+    static final long LONG_PROCESS_LIMBO = 30 //30 seconds, other values are for debug only, do not commit!
 
     CacheService cacheService
     SessionFactory sessionFactory
