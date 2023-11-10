@@ -1661,18 +1661,20 @@ class SubscriptionController {
                 Map<String, List> export = exportService.generateTitleExportCustom(queryMap, domainClName, [], null, perpetuallyPurchasedTitleURLs)
                 Map sheetData = [:]
 
-                export.titles << message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs.export')
-                export.titles << "Pick"
+                if(params.tab == 'allTipps') {
+                    export.titles << message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs.export')
+                    export.titles << "Pick"
 
-                String refYes = RDStore.YN_YES.getI10n('value')
-                String refNo = RDStore.YN_NO.getI10n('value')
-                export.rows.eachWithIndex { def field, int index ->
-                    if(export.rows[index][0] && export.rows[index][0].style == 'negative'){
-                        export.rows[index] << [field: refNo, style: 'negative']
-                    }else {
-                        export.rows[index] << [field: refYes, style: null]
+                    String refYes = RDStore.YN_YES.getI10n('value')
+                    String refNo = RDStore.YN_NO.getI10n('value')
+                    export.rows.eachWithIndex { def field, int index ->
+                        if (export.rows[index][0] && export.rows[index][0].style == 'negative') {
+                            export.rows[index] << [field: refNo, style: 'negative']
+                        } else {
+                            export.rows[index] << [field: refYes, style: null]
+                        }
+
                     }
-
                 }
                 sheetData[g.message(code: 'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow: export.titles, columnData: export.rows]
                 wb = exportService.generateXLSXWorkbook(sheetData)
