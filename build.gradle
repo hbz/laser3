@@ -1,6 +1,6 @@
 import java.text.SimpleDateFormat
 
-version '3.2.8'
+version '3.3-RC'
 group 'de.laser'
 
 // ---[ build script ]---
