@@ -279,10 +279,10 @@ class ExportClickMeService {
                     label: 'Provider',
                     message: 'default.provider.label',
                     fields: [
-                            'provider.sortname'          : [field: 'providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
-                            'provider.name'              : [field: 'providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
-                            'provider.altnames'          : [field: 'providers.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altnames'],
-                            'provider.url'               : [field: 'providers.url', label: 'Url', message: 'exportClickMe.provider.url']
+                            'provider.sortname'          : [field: 'sub.providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
+                            'provider.name'              : [field: 'sub.providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
+                            'provider.altnames'          : [field: 'sub.providers.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altnames'],
+                            'provider.url'               : [field: 'sub.providers.url', label: 'Url', message: 'exportClickMe.provider.url']
                     ]
             ],
 
@@ -290,10 +290,10 @@ class ExportClickMeService {
                     label: 'Agency',
                     message: 'default.agency.label',
                     fields: [
-                            'agency.sortname'          : [field: 'agencies.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
-                            'agency.name'              : [field: 'agencies.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
-                            'agency.altnames'          : [field: 'agencies.altnames.name', label: 'Alt Name', message: 'exportClickMe.agency.altnames'],
-                            'agency.url'               : [field: 'agencies.url', label: 'Url', message: 'exportClickMe.agency.url'],
+                            'agency.sortname'          : [field: 'sub.agencies.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
+                            'agency.name'              : [field: 'sub.agencies.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
+                            'agency.altnames'          : [field: 'sub.agencies.altnames.name', label: 'Alt Name', message: 'exportClickMe.agency.altnames'],
+                            'agency.url'               : [field: 'sub.agencies.url', label: 'Url', message: 'exportClickMe.agency.url'],
                     ]
             ],
 
@@ -5175,13 +5175,17 @@ class ExportClickMeService {
      */
     private def _getFieldValue(def map, String field, SimpleDateFormat sdf){
         def fieldValue = ' '
+        println(map)
+        println(field)
         field.split('\\.').eachWithIndex { Object entry, int i ->
             if(i == 0) {
                 fieldValue = map[entry]
             }else {
                 fieldValue = fieldValue ? fieldValue[entry] : null
             }
+
         }
+        println(fieldValue)
 
         if(fieldValue instanceof RefdataValue){
             fieldValue = fieldValue.getI10n('value')
