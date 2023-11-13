@@ -2,6 +2,20 @@
 <laser:htmlStart message="menu.yoda.profilerLoadtime">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
+<g:each in="${myArchives}" var="dasArchive" status="s">
+    ${s}---${dasArchive}<br><br>
+</g:each>
+
+allArchivesGlobalStats ${allArchivesGlobalStats} <br><br>
+---------------------------------------<br><br>
+Archive: ${archive}<br><br>
+
+<g:each in="${globalHeatMap}" var="uri, stat" status="j">
+
+    <g:set var="avg" value="${((double) stat[2] / 1000).round(2)}" />
+    <g:set var="heat" value="${((double) stat[0]).round(2)}" />
+    ---${heat}--
+</g:each>
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
