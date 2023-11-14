@@ -84,12 +84,12 @@
     <p>
         <g:message code="myinst.financeImport.manual.p3"/>
         <ol>
-            <li><g:message code="myinst.financeImport.manual.li11"/></li>
-            <li><g:message code="myinst.financeImport.manual.li12"/></li>
+            <li><g:message code="myinst.financeImport.manual.li11"/><p><a href="#" class="previewImage" data-src="/assets/manuals/Abbildung_Punkt_02_01.png"><g:img class="ui small image" file="manuals/Abbildung_Punkt_02_01.png"/></a></p></li>
+            %{--<li><g:message code="myinst.financeImport.manual.li12"/><p><a href="#" class="previewImage" data-src="/assets/manuals/Abbildung_Punkt_02_02.png"><g:img class="ui small image" file="manuals/Abbildung_Punkt_02_02.png"/></a></p></li>
             <li><g:message code="myinst.financeImport.manual.li13"/></li>
             <li><g:message code="myinst.financeImport.manual.li14"/></li>
-            <li><g:message code="myinst.financeImport.manual.li15"/></li>
-            <li><g:message code="myinst.financeImport.manual.li16"/></li>
+            <li><g:message code="myinst.financeImport.manual.li15"/></li>--}%
+            <li><g:message code="myinst.financeImport.manual.li16"/><p><a href="#" class="previewImage" data-src="/assets/manuals/Abbildung_Punkt_02_02a.png"><g:img class="ui small image" file="manuals/Abbildung_Punkt_02_02a.png"/></a></p></li>
         </ol>
         <g:message code="myinst.financeImport.manual.p4"/>
     </p>
@@ -110,7 +110,7 @@
                   <g:hiddenField name="subId" value="${params.id}"/>
               </g:if>
               <label for="tsvFile">${message(code:'myinst.financeImport.upload')}</label>
-              <input class="ui input" type="file" name="tsvFile" id="tsvFile"/>
+              <input class="ui input" type="file" name="tsvFile" id="tsvFile" accept=".txt,.tsv,.csv,text/tab-separated-values"/>
               <input class="ui button" type="submit" value="${message(code:"myinst.financeImport.upload")}"/>
           </g:uploadForm>
 

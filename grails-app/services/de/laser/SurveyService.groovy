@@ -1787,6 +1787,36 @@ class SurveyService {
         return count
     }
 
+    Integer countPerpetualAccessTitlesBySubAndNotInIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
+        Integer count = 0
+        Set<Subscription> subscriptions = linksGenerationService.getSuccessionChain(subscription, 'sourceSubscription')
+        subscriptions << subscription
+
+        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
+
+        if(subscriptions.size() > 0 && issueEntitlementGroup) {
+            List<Object> subIds = []
+            subIds.addAll(subscriptions.id)
+            Sql sql = GlobalService.obtainSqlConnection()
+            Connection connection = sql.dataSource.getConnection()
+            /*def titles = sql.rows("select count(*) from issue_entitlement ie join title_instance_package_platform tipp on tipp.tipp_id = ie.ie_tipp_fk " +
+                    "where ie.ie_subscription_fk = any(:subs)  " +
+                    "and tipp.tipp_status_rv_fk = :tippStatus and ie.ie_status_rv_fk = :tippStatus " +
+                    "and tipp.tipp_host_platform_url in " +
+                    "(select tipp2.tipp_host_platform_url from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
+                    " where ie2.ie_perpetual_access_by_sub_fk = any(:subs)" +
+                    " and tipp2.tipp_status_rv_fk = :tippStatus and ie2.ie_status_rv_fk = :tippStatus) group by tipp.tipp_id", [subs: connection.createArrayOf('bigint', subIds.toArray()), tippStatus: RDStore.TIPP_STATUS_CURRENT.id])*/
+
+            def titles = sql.rows("select count(*) from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
+                    " where ie2.ie_subscription_fk = any(:subs) and ie2.ie_perpetual_access_by_sub_fk = any(:subs)" +
+                    " and ie2.ie_status_rv_fk = :tippStatus " +
+                    " and ie2.ie_id not in (select igi_ie_fk from issue_entitlement_group_item where igi_ie_group_fk = :ieGroup) group by tipp2.tipp_host_platform_url", [subs: connection.createArrayOf('bigint', subIds.toArray()), tippStatus: RDStore.TIPP_STATUS_CURRENT.id, ieGroup: issueEntitlementGroup.id])
+
+            count = titles.size()
+        }
+        return count
+    }
+
     /**
      * Counts the titles in the group attached to the given survey and subscription
      * @param subscription the {@link Subscription} to whose titles the issue entitlement group has been defined

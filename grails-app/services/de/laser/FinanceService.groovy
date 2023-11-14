@@ -1099,16 +1099,19 @@ class FinanceService {
     /**
      * Processes the given TSV file with financial data and puts together a {@link Map} with the information read off the file
      * @param tsvFile the input file
+     * @param encoding the charset in which the file is being defined
      * @return a {@link Map} with the data read off
      */
-    Map<String,Map> financeImport(MultipartFile tsvFile) {
+    Map<String,Map> financeImport(MultipartFile tsvFile, String encoding) {
         Org contextOrg = contextService.getOrg()
-        Map<String,Map> result = [:]
+        List<String> rows = tsvFile.getInputStream().getText(encoding).split('\n')
+        List<String> headerRow = rows.remove(0).split('\t')
+        List errorRows = [headerRow]
         Map<CostItem,Map> candidates = [:]
         Map<Integer,String> budgetCodes = [:]
-        List<String> rows = tsvFile.getInputStream().text.split('\n')
         Map<String,Integer> colMap = [:]
-        rows[0].split('\t').eachWithIndex { String headerCol, int c ->
+        Map<String,Map> result = [headerRow: headerRow]
+        headerRow.eachWithIndex { String headerCol, int c ->
             if(headerCol.startsWith("\uFEFF"))
                 headerCol = headerCol.substring(1)
             switch(headerCol.toLowerCase().trim()) {
@@ -1165,7 +1168,6 @@ class FinanceService {
                     break
             }
         }
-        rows.remove(0)
         Map<String,IdentifierNamespace> namespaces = [
                 'wibid':IdentifierNamespace.findByNs('wibid'),
                 'isil':IdentifierNamespace.findByNs('ISIL'),
@@ -1177,7 +1179,7 @@ class FinanceService {
                 'eisbn':IdentifierNamespace.findByNsAndNsType('eisbn', TitleInstancePackagePlatform.class.name),
                 'title_id':IdentifierNamespace.findByNsAndNsType('title_id', TitleInstancePackagePlatform.class.name)
         ]
-        rows.eachWithIndex { row, Integer r ->
+        rows.eachWithIndex { String row, Integer r ->
             //log.debug("now processing entry ${r}")
             Map mappingErrorBag = [:]
             List<String> cols = row.split('\t')
@@ -1313,9 +1315,11 @@ class FinanceService {
                 else {
                     RefdataValue currency = RefdataValue.getByValueAndCategory(currencyKey,"Currency")
                     if(!currency)
-                        mappingErrorBag.invalidCurrencyError = true
+                        mappingErrorBag.invalidCurrencyError = currencyKey
                     else {
                         costItem.billingCurrency = currency
+                        if(currency == RDStore.CURRENCY_EUR)
+                            costItem.currencyRate = 1
                     }
                 }
             }
@@ -1358,7 +1362,7 @@ class FinanceService {
                 }
             }
             //currencyRate(nullable: true, blank: false) -> to exchange rate
-            if(colMap.currencyRate != null && cols[colMap.currencyRate] != null) {
+            if(colMap.currencyRate != null && cols[colMap.currencyRate] != null && cols[colMap.currencyRate].trim().length() > 0) {
                 try {
                     costItem.currencyRate = escapeService.parseFinancialValue(cols[colMap.currencyRate])
                 }
@@ -1420,12 +1424,10 @@ class FinanceService {
                     }
                     catch (Exception e) {
                         log.info("non-numeric tax rate parsed")
-                        mappingErrorBag.invalidTaxType = true
+                        mappingErrorBag.invalidTaxType = "${cols[colMap.taxType]} / ${cols[colMap.taxRate]}"
                     }
                 }
-                if(!taxTypeKey)
-                    mappingErrorBag.invalidTaxType = true
-                else {
+                if(taxTypeKey) {
                     CostItem.TAX_TYPES taxKey
                     switch(taxRate) {
                         case 5: taxKey = CostItem.TAX_TYPES.TAXABLE_5
@@ -1451,7 +1453,7 @@ class FinanceService {
                                     break
                                 case RDStore.TAX_TYPE_TAX_CONTAINED_7: taxKey = CostItem.TAX_TYPES.TAX_CONTAINED_7
                                     break
-                                default: mappingErrorBag.invalidTaxType = true
+                                default: mappingErrorBag.invalidTaxType = "${cols[colMap.taxType]} / ${cols[colMap.taxRate]}"
                                     break
                             }
                             break
@@ -1459,7 +1461,7 @@ class FinanceService {
                     if(taxKey)
                         costItem.taxKey = taxKey
                     else
-                        mappingErrorBag.invalidTaxType = true
+                        mappingErrorBag.invalidTaxType = "${cols[colMap.taxType]} / ${cols[colMap.taxRate]}"
                 }
             }
             //invoiceDate(nullable: true, blank: false) -> to invoice date
@@ -1547,9 +1549,12 @@ class FinanceService {
             //isVisibleForSubscriber(nullable: true, blank: false) -> in second configuration step, see ticket #1204
             //costItem.save() MUST NOT be executed here, ONLY AFTER postprocessing!
             candidates.put(costItem,mappingErrorBag)
+            if(mappingErrorBag.size() > 0)
+                errorRows << cols
         }
         result.candidates = candidates
         result.budgetCodes = budgetCodes
+        result.errorRows = errorRows
         result
     }
 
@@ -1581,7 +1586,7 @@ class FinanceService {
                 costItem.billingCurrency = RefdataValue.get(ci.billingCurrency?.id) ?: null
                 costItem.costItemElement = RefdataValue.get(ci.costItemElement?.id) ?: null
                 costItem.costItemElementConfiguration = RefdataValue.get(ci.costItemElementConfiguration?.id) ?: null
-                costItem.taxKey = ci.taxKey && CostItem.TAX_TYPES.valueOf(ci.taxKey.name) ?: null
+                costItem.taxKey = ci.taxKey && CostItem.TAX_TYPES.valueOf(ci.taxKey.name) ? CostItem.TAX_TYPES.valueOf(ci.taxKey.name) : null
                 costItem.costInBillingCurrency = ci.costInBillingCurrency ?: 0.0
                 costItem.costInLocalCurrency = ci.costInLocalCurrency ?: 0.0
                 costItem.currencyRate = ci.currencyRate ?: 0.0
