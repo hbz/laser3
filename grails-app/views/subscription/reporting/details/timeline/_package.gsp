@@ -23,19 +23,19 @@
                     ${message(code:'sidewide.number')}
                 </th>
                 <th scope="col">${message(code:'package.label')}</th>
-                <th scope="col">${message(code:'reporting.local.subscription.timeline.chartLabel.entitlement.3')}%{-- / ${message(code:'title.plural')}--}%</th>
+                <th scope="col">${message(code:'reporting.local.subscription.timeline.chartLabel.entitlement.3')}</th>
                 <th scope="col">${message(code:'platform.label')}</th>
             </tr>
             </thead>
             <tbody>
                 <g:each in="${list}" var="pkg" status="i">
-                    <g:if test="${plusListNames.contains(pkg.name)}">
-                        <tr>
+                    <tr>
+                        <g:if test="${plusListNames.contains(pkg.name)}">
                             <td class="center aligned"><span class="ui label circular green">${i + 1}</span></td>
-                    </g:if>
-                    <g:else>
-                        <td class="center aligned">${i + 1}</td>
-                    </g:else>
+                        </g:if>
+                        <g:else>
+                            <td class="center aligned">${i + 1}</td>
+                        </g:else>
                         <td>
                             <g:link controller="package" action="show" id="${pkg.id}" target="_blank">${pkg.name}</g:link>
                         </td>
@@ -46,10 +46,6 @@
                                         [pkgId: pkg.id, id: id, status: RDStore.TIPP_STATUS_CURRENT]
                                 )[0]
                                 println ieCount
-//                                Long tippCount = TitleInstancePackagePlatform.executeQuery(
-//                                        'select count(tipp.id) from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkgId', [pkgId: pkg.id]
-//                                )[0]
-//                                println ((ieCount != tippCount) ? ieCount + ' von ' + tippCount : ieCount)
                             %>
                         </td>
                         <td>
@@ -71,7 +67,6 @@
                     ${message(code:'sidewide.number')}
                 </th>
                 <th scope="col">${message(code:'package.label')}</th>
-%{--                <th scope="col">${message(code:'default.ie')}</th>--}%
                 <th scope="col">${message(code:'platform.label')}</th>
             </tr>
             </thead>
@@ -82,15 +77,6 @@
                         <td>
                             <g:link controller="package" action="show" id="${pkg.id}" target="_blank">${pkg.name}</g:link>
                         </td>
-%{--                        <td>--}%
-%{--                            <%--}%
-%{--                                List<Long> ieIdList2 = IssueEntitlement.executeQuery(--}%
-%{--                                        'select ie.id from IssueEntitlement ie join ie.tipp tipp where tipp.pkg.id = :pkgId and ie.subscription.id = :id',--}%
-%{--                                        [pkgId: pkg.id, id: id]--}%
-%{--                                )--}%
-%{--                                println ieIdList2.size()--}%
-%{--                            %>--}%
-%{--                        </td>--}%
                         <td>
                             <g:link controller="platform" action="show" id="${pkg.nominalPlatform.id}" target="_blank">${pkg.nominalPlatform.name}</g:link>
                         </td>
