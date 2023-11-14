@@ -21,7 +21,12 @@ class ContextBarTagLib {
         String text  = '?'
         Org org = attrs.org as Org
 
-        if (org.isCustomerType_Consortium_Pro()) {
+        if (!org) {
+            icon  = 'exclamation circle'
+            color = 'red'
+            text  = message(code: 'profile.membership.error1')
+        }
+        else if (org.isCustomerType_Consortium_Pro()) {
             icon  = 'trophy'
             color = 'teal'
             text  = Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_PRO).getI10n('authority')
@@ -77,6 +82,11 @@ class ContextBarTagLib {
                 icon = 'user shield'
                 text = message(code: 'cv.roles.INST_ADM')
             }
+        }
+        else {
+            icon  = 'exclamation circle'
+            color = 'red'
+            text  = message(code: 'profile.membership.error2')
         }
 
         out << '<div class="item la-cb-context">'

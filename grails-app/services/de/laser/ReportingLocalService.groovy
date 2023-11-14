@@ -123,7 +123,7 @@ class ReportingLocalService {
                 result.localSums   = typeDependingCosts.sums?.localSums ?: []
                 result.tmpl        = TMPL_PATH_DETAILS + cfg.getAt('detailsTemplate')
             }
-            else if (params.query in ['timeline-entitlement', 'timeline-member']) {
+            else if (params.query in ['timeline-entitlement', 'timeline-package', 'timeline-member']) {
                 result.labels = SubscriptionReport.getTimelineQueryLabels(params)
 
                 if (params.query == 'timeline-entitlement') {
@@ -132,6 +132,14 @@ class ReportingLocalService {
                     result.list      = idList      ? TitleInstancePackagePlatform.executeQuery( hql, [idList: idList] ) : []
                     result.plusList  = plusIdList  ? TitleInstancePackagePlatform.executeQuery( hql, [idList: plusIdList] ) : []
                     result.minusList = minusIdList ? TitleInstancePackagePlatform.executeQuery( hql, [idList: minusIdList] ) : []
+                    result.tmpl      = TMPL_PATH_DETAILS + cfg.getAt('detailsTemplate')
+                }
+                else if (params.query == 'timeline-package') {
+                    String hql = 'select pkg from Package pkg where pkg.id in (:idList) order by pkg.sortname, pkg.name'
+
+                    result.list      = idList      ? de.laser.Package.executeQuery( hql, [idList: idList] ) : []
+                    result.plusList  = plusIdList  ? de.laser.Package.executeQuery( hql, [idList: plusIdList] ) : []
+                    result.minusList = minusIdList ? de.laser.Package.executeQuery( hql, [idList: minusIdList] ) : []
                     result.tmpl      = TMPL_PATH_DETAILS + cfg.getAt('detailsTemplate')
                 }
                 else {
