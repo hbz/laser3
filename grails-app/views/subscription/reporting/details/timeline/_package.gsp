@@ -1,7 +1,7 @@
 <%@ page import="de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.TitleInstancePackagePlatform;" %>
 <laser:serviceInjection />
 
-<laser:render template="/subscription/reporting/details/timeline/base.part1" />
+<laser:render template="/subscription/reporting/details/timeline/base.part0" />
 
 <g:if test="${minusList}">
     <div class="ui top attached stackable tabular la-tab-with-js menu">
@@ -23,7 +23,7 @@
                     ${message(code:'sidewide.number')}
                 </th>
                 <th scope="col">${message(code:'package.label')}</th>
-                <th scope="col">${message(code:'default.ie')}%{-- / ${message(code:'title.plural')}--}%</th>
+                <th scope="col">${message(code:'reporting.local.subscription.timeline.chartLabel.entitlement.3')}%{-- / ${message(code:'title.plural')}--}%</th>
                 <th scope="col">${message(code:'platform.label')}</th>
             </tr>
             </thead>
@@ -41,17 +41,15 @@
                         </td>
                         <td>
                             <%
-                                List<Long> ieIdList = IssueEntitlement.executeQuery(
-                                        'select ie.id from IssueEntitlement ie join ie.tipp tipp where tipp.pkg.id = :pkgId and ie.subscription.id = :id',
-                                        [pkgId: pkg.id, id: id]
-                                )
-                                println ieIdList.size()
-
-//                                List<Long> tippIdList = TitleInstancePackagePlatform.executeQuery(
-//                                        'select tipp.id from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkgId', [pkgId: pkg.id]
-//                                )
-//
-//                                println '' + tippIdList.size() + ' / ' + ieIdList.size()
+                                Long ieCount = IssueEntitlement.executeQuery(
+                                        'select count(ie.id) from IssueEntitlement ie join ie.tipp tipp where tipp.pkg.id = :pkgId and ie.subscription.id = :id and ie.status = :status',
+                                        [pkgId: pkg.id, id: id, status: RDStore.TIPP_STATUS_CURRENT]
+                                )[0]
+                                println ieCount
+//                                Long tippCount = TitleInstancePackagePlatform.executeQuery(
+//                                        'select count(tipp.id) from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkgId', [pkgId: pkg.id]
+//                                )[0]
+//                                println ((ieCount != tippCount) ? ieCount + ' von ' + tippCount : ieCount)
                             %>
                         </td>
                         <td>
@@ -73,7 +71,7 @@
                     ${message(code:'sidewide.number')}
                 </th>
                 <th scope="col">${message(code:'package.label')}</th>
-                <th scope="col">${message(code:'default.ie')}</th>
+%{--                <th scope="col">${message(code:'default.ie')}</th>--}%
                 <th scope="col">${message(code:'platform.label')}</th>
             </tr>
             </thead>
@@ -84,7 +82,7 @@
                         <td>
                             <g:link controller="package" action="show" id="${pkg.id}" target="_blank">${pkg.name}</g:link>
                         </td>
-                        <td>
+%{--                        <td>--}%
 %{--                            <%--}%
 %{--                                List<Long> ieIdList2 = IssueEntitlement.executeQuery(--}%
 %{--                                        'select ie.id from IssueEntitlement ie join ie.tipp tipp where tipp.pkg.id = :pkgId and ie.subscription.id = :id',--}%
@@ -92,7 +90,7 @@
 %{--                                )--}%
 %{--                                println ieIdList2.size()--}%
 %{--                            %>--}%
-                        </td>
+%{--                        </td>--}%
                         <td>
                             <g:link controller="platform" action="show" id="${pkg.nominalPlatform.id}" target="_blank">${pkg.nominalPlatform.name}</g:link>
                         </td>
@@ -103,4 +101,4 @@
     </div>
 </g:if>
 
-<laser:render template="/subscription/reporting/export/detailsModal" model="[modalID: 'detailsExportModal', token: token]" />
+%{--<laser:render template="/subscription/reporting/export/detailsModal" model="[modalID: 'detailsExportModal', token: token]" />--}%
