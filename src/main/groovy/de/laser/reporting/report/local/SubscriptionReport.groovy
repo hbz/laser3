@@ -187,21 +187,68 @@ class SubscriptionReport {
                         ])
                     }
 
+//                    result.dataDetails.eachWithIndex { Map<String, Object> dd, i ->
+//                        List d = result.data.get(i)
+//
+//                        String tippHql = 'select tipp.id from IssueEntitlement ie join ie.tipp tipp where ie.id in (:idList)'
+//
+//                        if (i > 0) {
+//                            List<Long> currIdList = ieIdLists.get(i)
+//                            List<Long> prevIdList = ieIdLists.get(i - 1)
+//
+//                            List<Long> currTippIdList = currIdList ? TitleInstancePackagePlatform.executeQuery(tippHql, [idList: currIdList]) : []
+//                            List<Long> prevTippIdList = prevIdList ? TitleInstancePackagePlatform.executeQuery(tippHql, [idList: prevIdList]) : []
+//
+//                            dd.idList = currTippIdList
+//                            dd.plusIdList = currTippIdList.minus(prevTippIdList)
+//                            dd.minusIdList = prevTippIdList.minus(currTippIdList)
+//
+//                            d[indexPlusList] = dd.plusIdList.size()
+//                            d[indexMinusList] = dd.minusIdList.size()
+//                        }
+//                        else {
+//                            List<Long> currTippIdList = ieIdLists.get(i) ? TitleInstancePackagePlatform.executeQuery(tippHql, [idList: ieIdLists.get(i)]) : []
+//
+//                            dd.idList = currTippIdList
+//                            dd.plusIdList = currTippIdList
+//                            dd.minusIdList = []
+//
+//                            d[indexPlusList] = dd.plusIdList.size()
+//                            d[indexMinusList] = dd.minusIdList.size()
+//                        }
+//                    }
+
                     result.dataDetails.eachWithIndex { Map<String, Object> dd, i ->
                         List d = result.data.get(i)
 
-                        String tippHql = 'select tipp.id from IssueEntitlement ie join ie.tipp tipp where ie.id in (:idList)'
+                        String tippUrlHql = 'select tipp.id, tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.id in (:idList)'
+                        String tippHql    = 'select tipp.id from IssueEntitlement ie join ie.tipp tipp where ie.id in (:idList)'
 
                         if (i > 0) {
                             List<Long> currIdList = ieIdLists.get(i)
                             List<Long> prevIdList = ieIdLists.get(i - 1)
 
-                            List<Long> currTippIdList = currIdList ? TitleInstancePackagePlatform.executeQuery(tippHql, [idList: currIdList]) : []
-                            List<Long> prevTippIdList = prevIdList ? TitleInstancePackagePlatform.executeQuery(tippHql, [idList: prevIdList]) : []
+                            Map<Long, String> currTippUrlMap = (currIdList ? TitleInstancePackagePlatform.executeQuery(tippUrlHql, [idList: currIdList]).collectEntries {[it[0], it[1]]} : [:]) as Map<Long, String>
+                            Map<Long, String> prevTippUrlMap = (prevIdList ? TitleInstancePackagePlatform.executeQuery(tippUrlHql, [idList: prevIdList]).collectEntries {[it[0], it[1]]} : [:]) as Map<Long, String>
 
-                            dd.idList = currTippIdList
-                            dd.plusIdList = currTippIdList.minus(prevTippIdList)
-                            dd.minusIdList = prevTippIdList.minus(currTippIdList)
+                            dd.idList = currTippUrlMap.keySet() as List<Long>
+                            dd.plusIdList = []
+                            dd.minusIdList = []
+
+                            currTippUrlMap.each { curr ->
+                                if (curr.value) {
+                                    if (! prevTippUrlMap.values().contains(curr.value)) { dd.plusIdList << curr.key }
+                                } else {
+                                    if (! prevTippUrlMap.keySet().contains(curr.key)) { dd.plusIdList << curr.key }
+                                }
+                            }
+                            prevTippUrlMap.each { prev ->
+                                if (prev.value) {
+                                    if (! currTippUrlMap.values().contains(prev.value)) { dd.minusIdList << prev.key }
+                                } else {
+                                    if (! currTippUrlMap.keySet().contains(prev.key)) { dd.minusIdList << prev.key }
+                                }
+                            }
 
                             d[indexPlusList] = dd.plusIdList.size()
                             d[indexMinusList] = dd.minusIdList.size()
@@ -217,8 +264,57 @@ class SubscriptionReport {
                             d[indexMinusList] = dd.minusIdList.size()
                         }
                     }
+                }
+                else if (params.query == 'timeline-package') {
+                    List<List<Long>> pkgIdLists = []
 
-                    //println result.dataDetails
+                    timeline.eachWithIndex { s, i ->
+                        pkgIdLists.add(de.laser.Package.executeQuery(
+                                'select distinct ie.tipp.pkg.id from IssueEntitlement ie where ie.subscription = :sub and ie.status = :status',
+                                [sub: s, status: RDStore.TIPP_STATUS_CURRENT]
+                        ))
+                        List data = [
+                                s.id,
+                                s.name,
+                                pkgIdLists.get(i).size(),
+                                [],
+                                [],
+                                (s.startDate ? sdf.format(s.startDate) : NO_STARTDATE) + ' - ' + (s.endDate ? sdf.format(s.endDate) : NO_ENDDATE),
+                                sub == s
+                        ]
+                        result.data.add(data)
+                        result.dataDetails.add([
+                                query: params.query,
+                                id   : s.id,
+                                label: data[5]
+                        ])
+                    }
+
+                    result.dataDetails.eachWithIndex { Map<String, Object> dd, i ->
+                        List d = result.data.get(i)
+
+                        if (i > 0) {
+                            List<Long> currIdList = pkgIdLists.get(i)
+                            List<Long> prevIdList = pkgIdLists.get(i - 1)
+
+                            dd.idList = currIdList
+                            dd.plusIdList = currIdList.minus(prevIdList)
+                            dd.minusIdList = prevIdList.minus(currIdList)
+
+                            d[indexPlusList] = dd.plusIdList.size()
+                            d[indexMinusList] = dd.minusIdList.size()
+                        }
+                        else {
+                            List<Long> currPkgIdList = pkgIdLists.get(i)
+
+                            dd.idList = currPkgIdList
+                            dd.plusIdList = currPkgIdList
+                            dd.minusIdList = []
+
+                            d[indexPlusList] = dd.plusIdList.size()
+                            d[indexMinusList] = dd.minusIdList.size()
+                        }
+                    }
                 }
                 else if (params.query in ['timeline-member-cost', 'timeline-participant-cost']) {
                     GrailsParameterMap clone = params.clone() as GrailsParameterMap
