@@ -5175,8 +5175,6 @@ class ExportClickMeService {
      */
     private def _getFieldValue(def map, String field, SimpleDateFormat sdf){
         def fieldValue = ' '
-        println(map)
-        println(field)
         field.split('\\.').eachWithIndex { Object entry, int i ->
             if(i == 0) {
                 fieldValue = map[entry]
@@ -5185,8 +5183,7 @@ class ExportClickMeService {
             }
 
         }
-        println(fieldValue)
-
+    
         if(fieldValue instanceof RefdataValue){
             fieldValue = fieldValue.getI10n('value')
         }
