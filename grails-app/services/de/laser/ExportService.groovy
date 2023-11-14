@@ -3404,7 +3404,7 @@ class ExportService {
 	 * @return a {@link Map} containing headers and data for export; it may be used for Excel worksheets as style information is defined in format-style maps or for
 	 * raw text output; access rows.field for the bare data
 	 */
-	Map<String, List> generateTitleExportCustom(Map configMap, String entitlementInstance, List showStatsInMonthRings = [], Org subscriber = null, Collection perpetuallyPurchasedTitleURLs = []) {
+	Map<String, List> generateTitleExportCustom(Map configMap, String entitlementInstance, List showStatsInMonthRings = [], Org subscriber = null, boolean checkPerpetuallyPurchasedTitles = false) {
 		log.debug("Begin generateTitleExportCustom")
 		Sql sql = GlobalService.obtainSqlConnection()
 		Locale locale = LocaleUtils.getCurrentLocale()
@@ -3474,19 +3474,19 @@ class ExportService {
 				data.coverageMap.get(title['ie_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
 					log.debug "now processing coverage statement ${inner} for record ${outer}"
 					covStmt.putAll(title)
-					rows.add(buildRow('excel', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, perpetuallyPurchasedTitleURLs, showStatsInMonthRings, subscriber))
+					rows.add(buildRow('excel', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, checkPerpetuallyPurchasedTitles, showStatsInMonthRings, subscriber))
 				}
 			}
 			else if(entitlementInstance == TitleInstancePackagePlatform.class.name && data.coverageMap.get(title['tipp_id'])) {
 				data.coverageMap.get(title['tipp_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
 					log.debug "now processing coverage statement ${inner} for record ${outer}"
 					covStmt.putAll(title)
-					rows.add(buildRow('excel', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, perpetuallyPurchasedTitleURLs, showStatsInMonthRings, subscriber))
+					rows.add(buildRow('excel', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, checkPerpetuallyPurchasedTitles, showStatsInMonthRings, subscriber))
 				}
 			}
 			else {
 				log.debug "now processing record ${outer}"
-				rows.add(buildRow('excel', title, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, perpetuallyPurchasedTitleURLs, showStatsInMonthRings, subscriber))
+				rows.add(buildRow('excel', title, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, checkPerpetuallyPurchasedTitles, showStatsInMonthRings, subscriber))
 			}
 		}
 		export.rows = rows
@@ -3650,14 +3650,14 @@ class ExportService {
 	 * @param identifierMap a map of title {@link Identifier}s
 	 * @param priceItemMap a map of title {@link de.laser.finance.PriceItem}s
 	 * @param reportMap a map of COUNTER reports (see {@link AbstractReport} implementations)
-	 * @param perpetuallyPurchasedTitleURLs a list of title URLs of titles which the given subscriber have perpetually bought
+	 * @param checkPerpetuallyPurchasedTitles a boolean to check titles which the given subscriber have perpetually bought
 	 * @param coreTitleIdentifierNamespaces {@link List} of identifier namespaces which are core set for titles
 	 * @param otherTitleIdentifierNamespaces {@link List} of identifier namespaces beyond the core set
 	 * @param showStatsInMonthRings if given: a {@link List} of usage report months
 	 * @param subscriber the institution ({@link Org}) whose holding should be exported
 	 * @return a {@link List} containing the columns for the next output row
 	 */
-	List buildRow(String format, GroovyRowResult titleRecord, Map identifierMap, Map priceItemMap, Map reports, List<GroovyRowResult> coreTitleIdentifierNamespaces, List<GroovyRowResult> otherTitleIdentifierNamespaces, Collection perpetuallyPurchasedTitleURLs = [], List showStatsInMonthRings = [], Org subscriber = null) {
+	List buildRow(String format, GroovyRowResult titleRecord, Map identifierMap, Map priceItemMap, Map reports, List<GroovyRowResult> coreTitleIdentifierNamespaces, List<GroovyRowResult> otherTitleIdentifierNamespaces, boolean checkPerpetuallyPurchasedTitles = false, List showStatsInMonthRings = [], Org subscriber = null) {
 		titleRecord.identifiers = identifierMap.get(titleRecord['tipp_id'])
 		if(titleRecord.containsKey('ie_id')) {
 			titleRecord.priceItems = priceItemMap.get(titleRecord['ie_id'])
@@ -3666,8 +3666,15 @@ class ExportService {
 			titleRecord.priceItems = priceItemMap.get(titleRecord['tipp_id'])
 		}
 		String style = null
-		if(titleRecord['tipp_host_platform_url'] in perpetuallyPurchasedTitleURLs)
-			style = 'negative'
+		if(titleRecord['tipp_host_platform_url'] && checkPerpetuallyPurchasedTitles){
+			if(subscriber){
+				int countPPT = PermanentTitle.executeQuery("select count(*) from PermanentTitle where owner = :subscriber and tipp.hostPlatformURL = :hostPlatformURL", [subscriber: subscriber, hostPlatformURL: titleRecord['tipp_host_platform_url']])[0]
+				if(countPPT > 0){
+					style = 'negative'
+				}
+			}
+		}
+
 		List row = []
 		row.add(createCell(format, titleRecord['name'], style))
 		if(titleRecord.identifiers) {
