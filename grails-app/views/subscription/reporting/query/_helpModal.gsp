@@ -62,18 +62,34 @@
             ],
             'timeline-entitlement' : [
                     'de' : [
-                            'Die Abfrage visualisiert die zeitliche Entwicklung des Bestands für diese Lizenz',
+                            'Die Abfrage visualisiert die zeitliche Entwicklung der Paketinhalte für diese Lizenz',
                             'Gelistet werden alle relevanten Lizenzen (referenzierte Vorgänger, bzw. Nachfolger) mit ihren jeweiligen Datumsgrenzen. Für jede Lizenz sind mögliche Veränderungen, bezogen auf den Vorgänger, wie folgt erkennbar:',
                             'Titel hinzugefügt',
                             'Titel entfernt',
-                            'Aktueller Bestand'
+                            'Aktuelle Titel'
                     ],
                     'en' : [
                             'The query visualizes the development of the entitlements for this subscription over time',
                             'All relevant subscriptions (referenced predecessors or successors) are listed with their respective date limits. For each subscription, possible changes in relation to the predecessor can be identified as follows:',
                             'Title added',
                             'Title removed',
-                            'Current entitlements'
+                            'Current Titles'
+                    ]
+            ],
+            'timeline-package' : [
+                    'de' : [
+                            'Die Abfrage visualisiert die zeitliche Entwicklung relevanter Pakete für diese Lizenz',
+                            'Gelistet werden alle relevanten Lizenzen (referenzierte Vorgänger, bzw. Nachfolger) mit ihren jeweiligen Datumsgrenzen. Für jede Lizenz sind mögliche Veränderungen, bezogen auf den Vorgänger, wie folgt erkennbar:',
+                            'Pakete hinzugefügt',
+                            'Pakete entfernt',
+                            'Aktuelle Pakete'
+                    ],
+                    'en' : [
+                            'The query visualizes the development of the packages relevant to this subscription over time',
+                            'All relevant subscriptions (referenced predecessors or successors) are listed with their respective date limits. For each subscription, possible changes in relation to the predecessor can be identified as follows:',
+                            'Packages added',
+                            'Packages removed',
+                            'Current Packages'
                     ]
             ],
             'timeline-annualMember-subscription' : [
@@ -149,6 +165,19 @@
             <i class="icon circle green"></i> ${text['timeline-entitlement'][lang][2]}, <br />
             <i class="icon circle red"></i> ${text['timeline-entitlement'][lang][3]}, <br />
             <i class="icon circle blue"></i> ${text['timeline-entitlement'][lang][4]}
+        </p>
+    </div>
+    <div class="help-section" data-help-section="timeline-package">
+        <p class="ui header">
+            ${text['timeline-package'][lang][0]}
+        </p>
+        <p>
+            ${text['timeline-package'][lang][1]}
+        </p>
+        <p>
+            <i class="icon circle green"></i> ${text['timeline-package'][lang][2]}, <br />
+            <i class="icon circle red"></i> ${text['timeline-package'][lang][3]}, <br />
+            <i class="icon circle blue"></i> ${text['timeline-package'][lang][4]}
         </p>
     </div>
     <div class="help-section" data-help-section="timeline-annualMember-subscription">
