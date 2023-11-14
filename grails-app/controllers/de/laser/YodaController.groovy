@@ -687,12 +687,14 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def deleteTempFile() {
         if(params.containsKey('filename')) {
-            File f = new File(GlobalService.obtainFileStorageLocation() + '/' + params.filename)
-            try {
-                f.delete()
-            }
-            catch (IOException e) {
-                log.error("unable to delete file: ${GlobalService.obtainFileStorageLocation() + '/' + params.filename}")
+            if(!params.filename.contains('..') && !params.filename.contains('\\') && !params.filename.contains('/')) {
+                File f = new File(GlobalService.obtainFileStorageLocation() + '/' + params.filename)
+                try {
+                    f.delete()
+                }
+                catch (IOException e) {
+                    log.error("unable to delete file: ${GlobalService.obtainFileStorageLocation() + '/' + params.filename}")
+                }
             }
         }
         else if(params.containsKey('emptyDir')) {

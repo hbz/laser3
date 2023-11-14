@@ -854,6 +854,15 @@ join sub.orgRelations or_sub where
         countIes
     }
 
+    Integer countCurrentIssueEntitlementsNotInIEGroup(Subscription subscription, IssueEntitlementGroup issueEntitlementGroup) {
+        Integer countIes = subscription ?
+                IssueEntitlement.executeQuery("select count(*) from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :ieStatus " +
+                        "and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)",
+                        [sub: subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])[0]
+                : 0
+        countIes
+    }
+
 
     /**
      * Gets the current permanent titles for the given subscription

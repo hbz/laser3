@@ -925,7 +925,7 @@ class SubscriptionControllerService {
      * @see Subscription
      * @see Platform
      */
-    SortedSet getAvailableReports(Map<String, Object> configMap) {
+    SortedSet getAvailableReports(Map<String, Object> configMap, boolean withPlatformReports = true) {
         SortedSet<String> allAvailableReports = new TreeSet<String>()
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         Set<Package> subscribedPackages = configMap.subscription.packages.pkg
@@ -991,7 +991,7 @@ class SubscriptionControllerService {
                             availableReports.list.each { listEntry ->
                                 String reportType = listEntry["Report_ID"].toLowerCase()
                                 if(reportType in Counter5Report.COUNTER_5_REPORTS) {
-                                    if(reportType in Counter5Report.COUNTER_5_PLATFORM_REPORTS)
+                                    if(reportType in Counter5Report.COUNTER_5_PLATFORM_REPORTS && withPlatformReports)
                                         allAvailableReports.add(reportType)
                                     else {
                                         switch(contentTypes.get(contentType)) {
@@ -1016,10 +1016,13 @@ class SubscriptionControllerService {
                                 break
                             case 'Journal': allAvailableReports.addAll(Counter4Report.COUNTER_4_JOURNAL_REPORTS)
                                 break
-                            default: allAvailableReports.addAll(Counter4Report.COUNTER_4_REPORTS)
+                            default: allAvailableReports.addAll(Counter4Report.COUNTER_4_TITLE_REPORTS)
                                 break
                         }
-                        allAvailableReports.addAll(Counter4Report.COUNTER_4_PLATFORM_REPORTS)
+                        if(withPlatformReports) {
+                            allAvailableReports.addAll(Counter4Report.COUNTER_4_PLATFORM_REPORTS)
+                            allAvailableReports.addAll(Counter4Report.COUNTER_4_DATABASE_REPORTS)
+                        }
                     }
                 }
             }
