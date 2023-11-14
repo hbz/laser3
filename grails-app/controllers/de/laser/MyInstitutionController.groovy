@@ -2150,16 +2150,34 @@ class MyInstitutionController  {
             MultipartFile tsvFile = request.getFile("tsvFile") //this makes the withTransaction closure necessary
             if(tsvFile && tsvFile.size > 0) {
                 String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
-                if(encoding == "UTF-8") {
+                if(encoding in ["UTF-8", "WINDOWS-1252"]) {
                     result.filename = tsvFile.originalFilename
-                    Map<String,Map> financialData = financeService.financeImport(tsvFile)
+                    Map<String,Map> financialData = financeService.financeImport(tsvFile, encoding)
                     result.headerRow = financialData.headerRow
                     result.candidates = financialData.candidates
                     result.budgetCodes = financialData.budgetCodes
-                    result.criticalErrors = [/*'ownerMismatchError',*/'noValidSubscription','multipleSubError','packageWithoutSubscription','noValidPackage','multipleSubPkgError','noCurrencyError','invalidCurrencyError',
+                    if(financialData.errorRows) {
+                        //background of this procedure: the editor adding titles via KBART wishes to receive a "counter-KBART" which will then be sent to the provider for verification
+                        String dir = GlobalService.obtainFileStorageLocation()
+                        File f = new File(dir+"/${result.filename}_errors")
+                        if(!f.exists()) {
+                            List headerRow = financialData.errorRows.remove(0)
+                            String returnFile = exportService.generateSeparatorTableString(headerRow, financialData.errorRows, '\t')
+                            FileOutputStream fos = new FileOutputStream(f)
+                            fos.withWriter { Writer w ->
+                                w.write(returnFile)
+                            }
+                            fos.flush()
+                            fos.close()
+                        }
+                        result.errorCount = financialData.errorRows.size()
+                        result.errMess = 'myinst.financeImport.post.error.matchingErrors'
+                        result.token = "${result.filename}_errors"
+                    }
+                    /*result.criticalErrors = ['ownerMismatchError','noValidSubscription','multipleSubError','packageWithoutSubscription','noValidPackage','multipleSubPkgError','noCurrencyError','invalidCurrencyError',
                                              'packageNotInSubscription','entitlementWithoutPackageOrSubscription','noValidTitle','multipleTitleError','noValidEntitlement','multipleEntitlementError',
                                              'entitlementNotInSubscriptionPackage','multipleOrderError','multipleInvoiceError','invalidCurrencyError','invoiceTotalInvalid','valueInvalid','exchangeRateInvalid',
-                                             'invalidTaxType','invalidYearFormat','noValidStatus','noValidElement','noValidSign']
+                                             'invalidTaxType','invalidYearFormat','noValidStatus','noValidElement','noValidSign']*/
                     render view: 'postProcessingFinanceImport', model: result
                 }
                 else {

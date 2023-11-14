@@ -110,7 +110,7 @@
                   <g:hiddenField name="subId" value="${params.id}"/>
               </g:if>
               <label for="tsvFile">${message(code:'myinst.financeImport.upload')}</label>
-              <input class="ui input" type="file" name="tsvFile" id="tsvFile"/>
+              <input class="ui input" type="file" name="tsvFile" id="tsvFile" accept=".txt,.tsv,.csv,text/tab-separated-values"/>
               <input class="ui button" type="submit" value="${message(code:"myinst.financeImport.upload")}"/>
           </g:uploadForm>
 

@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5364    14.11.2023  rc-3.3  3.3         Andreas Feature     Kostenupload überarbeitet
+
 5385    09.11.2023  dev     3.3         Andreas Feature     EZB-Ausgaben abgeschaltet
 
 5372    09.11.2023  dev     3.3         Andreas Feature     Benachrichtigung von Massenprozessen implementiert
