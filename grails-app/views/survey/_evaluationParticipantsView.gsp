@@ -1,4 +1,4 @@
-<%@ page import="de.laser.config.ConfigMapper; de.laser.survey.SurveyConfig; de.laser.survey.SurveyResult; de.laser.Org; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory; de.laser.survey.SurveyOrg" %>
+<%@ page import="de.laser.IssueEntitlementGroup; de.laser.config.ConfigMapper; de.laser.survey.SurveyConfig; de.laser.survey.SurveyResult; de.laser.Org; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory; de.laser.survey.SurveyOrg" %>
 <laser:serviceInjection/>
 
 <g:if test="${showOpenParticipantsAgainButtons}">
@@ -327,12 +327,14 @@
                         <td class="center aligned">
                             <g:set var="subParticipant"
                                    value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
+                            <g:set var="ieGroup"
+                                   value="${IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subParticipant)}"/>
                             <div class="ui circular label">
                             <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
-                                ${surveyService.countPerpetualAccessTitlesBySub(subParticipant)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
+                                ${surveyService.countPerpetualAccessTitlesBySubAndNotInIEGroup(subParticipant, surveyConfig)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
                             </g:if>
                             <g:else>
-                                ${subscriptionService.countCurrentIssueEntitlements(subParticipant)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
+                                ${subscriptionService.countCurrentIssueEntitlementsNotInIEGroup(subParticipant, ieGroup)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
                             </g:else>
                             </div>
 
@@ -588,12 +590,14 @@
                         <td class="center aligned">
                             <g:set var="subParticipant"
                                    value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
+                            <g:set var="ieGroup"
+                                   value="${IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subParticipant)}"/>
                             <div class="ui circular label">
                                 <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
-                                    ${surveyService.countPerpetualAccessTitlesBySub(subParticipant)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
+                                    ${surveyService.countPerpetualAccessTitlesBySubAndNotInIEGroup(subParticipant, surveyConfig)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
                                 </g:if>
                                 <g:else>
-                                    ${subscriptionService.countCurrentIssueEntitlements(subParticipant)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
+                                    ${subscriptionService.countCurrentIssueEntitlementsNotInIEGroup(subParticipant, ieGroup)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
                                 </g:else>
                             </div>
 

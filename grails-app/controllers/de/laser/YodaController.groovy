@@ -34,6 +34,8 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.gorm.transactions.Transactional
 import grails.util.Holders
 import grails.web.Action
+import groovy.sql.GroovyRowResult
+import groovy.sql.Sql
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.client.core.CountRequest
@@ -1545,47 +1547,6 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
-    def setPerpetualAccessByIes() {
-        if (subscriptionService.checkThreadRunning('setPerpetualAccessByIes')) {
-            flash.error = 'setPerpetualAccessByIes process still running!'
-            redirect controller: 'yoda', action: 'index'
-            return
-        }
-        executorService.execute({
-            Thread.currentThread().setName("setPerpetualAccessByIes")
-            List<Subscription> subList = Subscription.findAllByHasPerpetualAccess(true)
-            int countProcess = 0, countProcessPT = 0
-            Set<RefdataValue> status = [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED]
-            subList.eachWithIndex { Subscription sub, int i ->
-                List<IssueEntitlement> ies = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is null and ie.status in (:status)', [sub: sub, status: status])
-                IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.perpetualAccessBySub = :sub where ie.subscription = :sub and ie.perpetualAccessBySub is null and ie.status in (:status)', [sub: sub, status: status])
-                if (ies.size() > 0) {
-                    Org owner = sub.getSubscriber()
-
-                    ies.eachWithIndex { IssueEntitlement issueEntitlement, int j ->
-                        log.debug("now processing record ${j} for subscription ${i} out of ${subList.size()}")
-                        TitleInstancePackagePlatform titleInstancePackagePlatform = issueEntitlement.tipp
-
-                        if (!PermanentTitle.findByOwnerAndTipp(owner, titleInstancePackagePlatform)) {
-                            PermanentTitle permanentTitle = new PermanentTitle(subscription: sub,
-                                    issueEntitlement: issueEntitlement,
-                                    tipp: titleInstancePackagePlatform,
-                                    owner: owner).save()
-                            countProcessPT++
-                        }
-                        countProcess++
-                    }
-                }
-            }
-
-            SystemEvent.createEvent('YODA_PROCESS', [yodaProcess: 'setPerpetualAccessByIes', countProcessIes: countProcess, countProcessPermanentTitles: countProcessPT])
-        })
-
-        flash.message = 'setPerpetualAccessByIes process is now running. In SystemEvents you see when setPerpetualAccessByIes is finish!'
-        redirect controller: 'yoda', action: 'index'
-    }
-
-    @Secured(['ROLE_YODA'])
     def setPermanentTitle() {
         if (subscriptionService.checkThreadRunning('setPermanentTitle')) {
             flash.error = 'setPermanentTitle process still running!'
@@ -1596,14 +1557,16 @@ class YodaController {
             Thread.currentThread().setName("setPermanentTitle")
             int countProcess = 0, max = 100000
             Set<RefdataValue> status = [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED]
-            int ieCount = IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.perpetualAccessBySub is not null and ie.status in (:status)', [status: status])[0]
+            int ieCount = IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.status in (:status) and ie.subscription.hasPerpetualAccess = true', [status: status])[0]
             if (ieCount > 0) {
                 for(int offset = 0; offset < ieCount; offset+=max) {
-                    List<IssueEntitlement> ies = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.perpetualAccessBySub is not null and ie.status in (:status)', [status: status], [max: max, offset: offset])
+                    List<IssueEntitlement> ies = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.status in (:status) and ie.subscription.hasPerpetualAccess = true', [status: status], [max: max, offset: offset])
                     ies.eachWithIndex { IssueEntitlement issueEntitlement, int i ->
                         //log.debug("now processing record ${offset+i} out of ${ieCount}")
                         TitleInstancePackagePlatform titleInstancePackagePlatform = issueEntitlement.tipp
                         Org owner = issueEntitlement.subscription.subscriber
+                        issueEntitlement.perpetualAccessBySub = issueEntitlement.subscription
+                        issueEntitlement.save()
 
                         if (!PermanentTitle.findByOwnerAndTipp(owner, titleInstancePackagePlatform)) {
                             PermanentTitle permanentTitle = new PermanentTitle(subscription: issueEntitlement.subscription,
@@ -1620,6 +1583,37 @@ class YodaController {
         })
 
         flash.message = 'setPermanentTitle process is now running. In SystemEvents you see when setPermanentTitle is finish!'
+        redirect controller: 'yoda', action: 'index'
+    }
+
+    @Secured(['ROLE_YODA'])
+    def removePerpetualAccessByIes() {
+        if (subscriptionService.checkThreadRunning('removePerpetualAccessByIes')) {
+            flash.error = 'removePerpetualAccessByIes process still running!'
+            redirect controller: 'yoda', action: 'index'
+            return
+        }
+        executorService.execute({
+            Thread.currentThread().setName("removePerpetualAccessByIes")
+            int countProcess = 0, max = 100000
+            int ieCount = IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.perpetualAccessBySub is not null and ie.subscription.hasPerpetualAccess = false')[0]
+            if (ieCount > 0) {
+                for(int offset = 0; offset < ieCount; offset+=max) {
+                    List<IssueEntitlement> ies = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.perpetualAccessBySub is not null and ie.subscription.hasPerpetualAccess = false', [max: max, offset: offset])
+                    ies.eachWithIndex { IssueEntitlement issueEntitlement, int i ->
+                        //log.debug("now processing record ${offset+i} out of ${ieCount}")
+                        issueEntitlement.perpetualAccessBySub = null
+                        issueEntitlement.save()
+                        PermanentTitle.findByOwnerAndIssueEntitlement(owner, issueEntitlement).delete()
+                        countProcess++
+                         //log.debug("record ${offset+i} out of ${ieCount} had permanent title ${countProcess}")
+                    }
+                }
+            }
+            SystemEvent.createEvent('YODA_PROCESS', [yodaProcess: 'removePerpetualAccessByIes', countProcess: countProcess])
+        })
+
+        flash.message = 'removePerpetualAccessByIes process is now running. In SystemEvents you see when removePerpetualAccessByIes is finish!'
         redirect controller: 'yoda', action: 'index'
     }
 }

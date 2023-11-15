@@ -156,6 +156,7 @@ class PackageService {
             //delete matches
             //IssueEntitlement.withSession { Session session ->
             batchUpdateService.clearIssueEntitlements(queryParams)
+            PermanentTitle.executeUpdate("delete from PermanentTitle pt where pt.subscription.id in (:sub) and pt.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id)", queryParams)
             if (deletePackage) {
                 removePackagePendingChanges(pkg, subList, true)
                 SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp where sp.pkg.id = :pkg_id and sp.subscription.id in (:sub)',queryParams).each { SubscriptionPackage delPkg ->
@@ -166,7 +167,6 @@ class PackageService {
                     CostItem.executeUpdate('update CostItem ci set ci.costItemStatus = :deleted, ci.subPkg = null, ci.sub = :sub where ci.subPkg = :delPkg',[delPkg: delPkg, sub:delPkg.subscription, deleted: RDStore.COST_ITEM_DELETED])
                     PendingChangeConfiguration.executeUpdate("delete from PendingChangeConfiguration pcc where pcc.subscriptionPackage=:sp",[sp:delPkg])
                 }
-                PermanentTitle.executeUpdate("delete from PermanentTitle pt where pt.subscription.id in (:sub) and pt.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id)", queryParams)
                 SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg.id=:pkg_id and sp.subscription.id in (:sub)", queryParams)
                 //log.debug("before flush")
                 //session.flush()

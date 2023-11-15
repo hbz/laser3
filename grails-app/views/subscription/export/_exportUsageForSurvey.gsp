@@ -1,9 +1,9 @@
 <%@ page import="de.laser.remote.ApiSource; de.laser.Platform; de.laser.base.AbstractReport; grails.converters.JSON; de.laser.CustomerIdentifier" %>
 <laser:serviceInjection/>
 <%
-    Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription in (:subscriptions)", [subscriptions: allSubscriptions])
+    Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscriberSub", [subscriberSub: subscriberSub])
     if(!subscribedPlatforms) {
-        subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subscriptions)", [subscriptions: allSubscriptions])
+        subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscriberSub", [subscriberSub: subscriberSub])
     }
     Map<String, Map> platformInstanceRecords = [:]
     JSON platformsJSON = subscribedPlatforms.globalUID as JSON
