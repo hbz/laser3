@@ -933,7 +933,7 @@ class SubscriptionControllerService {
         subscribedPackages.each { Package pkg ->
             RefdataValue contentType = pkg.contentType
             if(!contentType) {
-                List titleTypes = TitleInstancePackagePlatform.executeQuery('select tipp.medium from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status != :removed group by tipp.medium', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED])
+                List titleTypes = TitleInstancePackagePlatform.executeQuery('select m from TitleInstancePackagePlatform tipp join tipp.medium m where tipp.pkg = :pkg and tipp.status != :removed group by m', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED])
                 if(titleTypes.size() == 1)
                     contentType = titleTypes[0]
             }
@@ -1471,19 +1471,21 @@ class SubscriptionControllerService {
                     result.subscription.syncAllShares(synShareTargetList)
 
                     if(packagesToProcess) {
-                        globalService.cleanUpGorm() //needed for that the subscriptions are present in the moment of the parallel process
-                        executorService.execute({
-                            Thread.currentThread().setName("PackageTransfer_"+result.subscription.id)
-                            packagesToProcess.each { Package pkg ->
-                                subscriptionService.addToMemberSubscription(result.subscription, memberSubs, pkg, params.linkWithEntitlements == 'on')
-                                /*
-                                if()
-                                    subscriptionService.addToSubscriptionCurrentStock(memberSub, result.subscription, pkg)
-                                else
-                                    subscriptionService.addToSubscription(memberSub, pkg, false)
-                                */
-                            }
-                        })
+                        //needed for that the subscriptions are present in the moment of the parallel process
+                        Subscription.withNewTransaction {
+                            executorService.execute({
+                                Thread.currentThread().setName("PackageTransfer_"+result.subscription.id)
+                                packagesToProcess.each { Package pkg ->
+                                    subscriptionService.addToMemberSubscription(result.subscription, memberSubs, pkg, params.linkWithEntitlements == 'on')
+                                    /*
+                                    if()
+                                        subscriptionService.addToSubscriptionCurrentStock(memberSub, result.subscription, pkg)
+                                    else
+                                        subscriptionService.addToSubscription(memberSub, pkg, false)
+                                    */
+                                }
+                            })
+                        }
                     }
                 } else {
                     [result:result,status:STATUS_ERROR]

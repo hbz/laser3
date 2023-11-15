@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5402    15.11.2023  rc-3.3  3.3         Andreas Bug         Paket hinzufügen für TN behoben
+
+5401    15.11.2023  rc-3.3  3.3         Andreas Bug         Organisationsdropdown befüllt
+
+5398    15.11.2023  rc-3.3  3.3         Andreas Bug         Gruppierklausel korrigiert
+
 5400    15.11.2023  rc-3.3  3.3         Andreas Bug         Umrüstung fehlte an zwei Exports
 
 5403    14.11.2023  rc-3.3  3.3         Moe     Feature     Mail Titelumfrage mit Preise versehen
