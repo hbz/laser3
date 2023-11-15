@@ -4022,6 +4022,8 @@ join sub.orgRelations or_sub where
 
         params.tab = params.tab ?: 'open'
 
+        result.reminder = params.reminder
+
         if(params.tab != 'new'){
             params.sort = 'surInfo.endDate DESC, LOWER(surInfo.name)'
         }
