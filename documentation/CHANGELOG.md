@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5400    15.11.2023  rc-3.3  3.3         Andreas Bug         Umrüstung fehlte an zwei Exports
+
 5403    14.11.2023  rc-3.3  3.3         Moe     Feature     Mail Titelumfrage mit Preise versehen
 
 5364    14.11.2023  rc-3.3  3.3         Andreas Feature     Kostenupload überarbeitet
