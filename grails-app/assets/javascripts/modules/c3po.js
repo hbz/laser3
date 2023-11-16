@@ -26,7 +26,7 @@ c3po = {
     },
 
     remoteRefdataSearch: function (ajaxurl, cssId) {
-        console.log ('c3po.remoteRefdataSearch() ' + ajaxurl + ', ' + cssId + ' )')
+        console.log ('c3po.remoteRefdataSearch( ' + ajaxurl + ', ' + cssId + ' )')
 
         let $select = $(cssId + " .remoteRefdataSearch")
         let appender = ajaxurl.indexOf('?') < 0 ? '?' : '&'
