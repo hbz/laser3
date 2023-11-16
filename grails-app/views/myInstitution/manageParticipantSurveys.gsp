@@ -5,6 +5,9 @@
     <ui:crumb message="manageParticipantSurveys.header" class="active"/>
 </ui:breadcrumbs>
 <ui:controlButtons>
+    <ui:actionsDropdown>
+            <ui:actionsDropdownItem controller="myInstitution" action="manageParticipantSurveys" params="${params + [reminder: true]}" class="item" message="participantsReminder.button"/>
+    </ui:actionsDropdown>
     <ui:exportDropdown>
         <ui:exportDropdownItem>
             <g:link class="item" controller="myInstitution" action="manageParticipantSurveys"
@@ -172,7 +175,7 @@
         <table class="ui celled sortable table la-js-responsive-table la-table">
             <thead>
             <tr>
-                <g:if test="${editable && params.tab == 'open'}">
+                <g:if test="${editable && params.tab == 'open' && reminder}">
                 <th>
                         <g:checkBox name="surveyListToggler" id="surveyListToggler" checked="false"/>
                 </th>
@@ -208,7 +211,7 @@
                        value="${surveyConfig.surveyInfo}"/>
 
                 <tr>
-                    <g:if test="${editable && params.tab == 'open'}">
+                    <g:if test="${editable && params.tab == 'open' && reminder}">
                         <td>
                             <g:checkBox name="selectedSurveys" value="${surveyInfo.id}" checked="false"/>
                         </td>
@@ -276,7 +279,7 @@
 
             </g:each>
         </table>
-        <g:if test="${editable && params.tab == 'open'}">
+        <g:if test="${editable && params.tab == 'open' && reminder}">
             <div class="eight wide field" style="text-align: left;">
                 <button name="openOption" type="submit" value="ReminderMail" class="ui button">
                     ${message(code: 'openParticipantsAgain.reminder')}

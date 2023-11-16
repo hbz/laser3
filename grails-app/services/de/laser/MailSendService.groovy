@@ -480,14 +480,14 @@ class MailSendService {
                                     from fromMail
                                     cc ccAddress
                                     subject mailSubject
-                                    html(view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, survey: surveyInfo, surveyResults: surveyResults, generalContactsEMails: generalContactsEMails])
+                                    html(view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, org: participationFinish, survey: surveyInfo, surveyResults: surveyResults, generalContactsEMails: generalContactsEMails])
                                 }
                             } else {
                                 AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
                                     to emailReceiver
                                     from fromMail
                                     subject mailSubject
-                                    html(view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, survey: surveyInfo, surveyResults: surveyResults, generalContactsEMails: generalContactsEMails])
+                                    html(view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, org: participationFinish, survey: surveyInfo, surveyResults: surveyResults, generalContactsEMails: generalContactsEMails])
                                 }
                             }
 

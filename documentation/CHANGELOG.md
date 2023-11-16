@@ -7,9 +7,23 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5402    15.11.2023  rc-3.3  3.3         Andreas Bug         Paket hinzufügen für TN behoben
+
+5401    15.11.2023  rc-3.3  3.3         Andreas Bug         Organisationsdropdown befüllt
+
+5398    15.11.2023  rc-3.3  3.3         Andreas Bug         Gruppierklausel korrigiert
+
+5400    15.11.2023  rc-3.3  3.3         Andreas Bug         Umrüstung fehlte an zwei Exports
+
+5403    14.11.2023  rc-3.3  3.3         Moe     Feature     Mail Titelumfrage mit Preise versehen
+
 5364    14.11.2023  rc-3.3  3.3         Andreas Feature     Kostenupload überarbeitet
 
 5384    13.11.2023  rc-3.2  3.2.8       Moe     Bug         Titelauswahl: Anzeige bisheriger/ausgewählter Bestand nicht mehr aussagekräftig
+
+5391    10.11.2023  rc-3.2  3.3-RC      Moe     Bug         Uneinheitliche Sortierung der Einrichtungen
+
+5179    10.11.2023  rc-3.2  3.3-RC      Moe     Feature     ClickMe-Excel Teilnehmerreiter subscription/members: Anbieter mit ausgeben
 
 5385    09.11.2023  dev     3.3         Andreas Feature     EZB-Ausgaben abgeschaltet
 
