@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5392    16.11.2023  rc-3.3  3.3         David   Bug         Merkmale werden bei Adresskontakten nicht eingeladen
+
 5402    15.11.2023  rc-3.3  3.3         Andreas Bug         Paket hinzufügen für TN behoben
 
 5401    15.11.2023  rc-3.3  3.3         Andreas Bug         Organisationsdropdown befüllt
@@ -150,6 +152,8 @@
 2276    11.10.2023  dev     3.3         David   Feature     Neuer Kundentyp: ORG_ADMINISTRATION
 
 4636    11.10.2023  dev     3.3         David   Feature     SystemEvents per Mail - Refactoring
+
+5292    10.10.2023  dev     3.3         David   Feature     Kostenentwicklung in Reporting aufnehmen
 
 5315    10.10.2023  dev     3.3         Andreas Bug         Toggle für Sichtbarschaltung aller Kosten eingebaut
 

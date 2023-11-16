@@ -4,7 +4,6 @@ import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.convenience.Marker
 import de.laser.interfaces.MarkerSupport
-import de.laser.utils.AppUtils
 
 class ContextBarTagLib {
 
@@ -107,7 +106,7 @@ class ContextBarTagLib {
 
         if (user.isYoda()) {
             text = 'Systemberechtigung: YODA'
-            icon = 'key'
+            icon = 'dungeon'
         }
         else if (user.isAdmin()) {
             text = 'Systemberechtigung: ADMIN'
