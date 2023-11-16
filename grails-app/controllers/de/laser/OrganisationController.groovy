@@ -1678,10 +1678,24 @@ class OrganisationController  {
         result.num_visibleAddresses = visibleAddresses.size()
         result.addresses = visibleAddresses.drop(result.addressOffset).take(result.max)
 
+        /*
         if (visiblePersons){
-            result.emailAddresses = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
+            result.emailAddresses = Contact.executeQuery("select new map(c.prs as person, c.content as mail) from Contact c join c.prs p join p.roleLinks pr join pr.org o where p in (:persons) and c.contentType = :contentType order by o.sortname",
                     [persons: visiblePersons, contentType: RDStore.CCT_EMAIL])
         }
+        */
+        Map<Org, String> emailAddresses = [:]
+        visiblePersons.each { Person p ->
+            Contact mail = Contact.findByPrsAndContentType(p, RDStore.CCT_EMAIL)
+            if(mail) {
+                Set<String> mails = emailAddresses.get(p.roleLinks.org[0])
+                if(!mails)
+                    mails = []
+                mails << mail.content
+                emailAddresses.put(p.roleLinks.org[0], mails)
+            }
+        }
+        result.emailAddresses = emailAddresses
 
         result
     }
@@ -2013,10 +2027,24 @@ class OrganisationController  {
         result.num_visiblePersons = visiblePersons.size()
         result.visiblePersons = visiblePersons.drop(result.offset).take(result.max)
 
+        /*
         if (visiblePersons){
-            result.emailAddresses = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
+            result.emailAddresses = Contact.executeQuery("select new map(c.prs as person, c.content as mail) from Contact c join c.prs p join p.roleLinks pr join pr.org o where p in (:persons) and c.contentType = :contentType order by o.sortname",
                     [persons: visiblePersons, contentType: RDStore.CCT_EMAIL])
         }
+        */
+        Map<Org, String> emailAddresses = [:]
+        visiblePersons.each { Person p ->
+            Contact mail = Contact.findByPrsAndContentType(p, RDStore.CCT_EMAIL)
+            if(mail) {
+                Set<String> mails = emailAddresses.get(p.roleLinks.org[0])
+                if(!mails)
+                    mails = []
+                mails << mail.content
+                emailAddresses.put(p.roleLinks.org[0], mails)
+            }
+        }
+        result.emailAddresses = emailAddresses
 
         params.tab = params.tab ?: 'contacts'
 
