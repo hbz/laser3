@@ -2,7 +2,6 @@ package de.laser
 
 
 import de.laser.interfaces.ShareSupport
-import de.laser.titles.TitleInstance
 import grails.gorm.transactions.Transactional
 
 /**
@@ -135,7 +134,7 @@ class ShareService {
                 (target instanceof License) ? 'lic' :
                         (target instanceof Subscription) ? 'sub' :
                                 (target instanceof Package) ? 'pkg' :
-                                        (target instanceof TitleInstance) ? 'title' :
+                                        (target instanceof TitleInstancePackagePlatform) ? 'tipp' : // todo: remove
                                                 null
 
         if (tp) {

@@ -103,7 +103,11 @@
                 url: '<g:createLink controller="ajaxJson" action="getEmailAddresses"/>'
                 + '?isPrivate=' + isPrivate + '&isPublic=' + isPublic + '&selectedRoleTypIds=' + selectedRoleTypIds + '&orgIdList=' + JSPC.app.jsonOrgIdList,
                 success: function (data) {
-                    $("#emailAddressesTextArea2").val(data.join('; '));
+                    let addresses = [];
+                    $.each(data, function (i, e) {
+                        addresses.push(e.join('; ')); //join multiple addresses within an org - inner row
+                    });
+                    $("#emailAddressesTextArea2").val(addresses.join('; ')); //join addresses of all orgs - outer row
                 }
             });
         }

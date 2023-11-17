@@ -3,7 +3,6 @@ package de.laser
 import de.laser.helper.FactoryResult
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.storage.BeanStore
-import de.laser.titles.TitleInstance
 
 import grails.plugins.orm.auditable.Auditable
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -253,7 +252,6 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         pkg  = owner instanceof Package ? owner : pkg
         sub  = owner instanceof Subscription ? owner : sub
         tipp = owner instanceof TitleInstancePackagePlatform ? owner : tipp
-        //ti   = owner instanceof TitleInstance ? owner : ti
     }
 
     /**
@@ -292,7 +290,6 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         name = object instanceof Package ?  'pkg' : name
         name = object instanceof Subscription ?                 'sub' :  name
         name = object instanceof TitleInstancePackagePlatform ? 'tipp' : name
-        name = object instanceof TitleInstance ?                'ti' :   name
 
         name
     }

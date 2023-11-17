@@ -250,7 +250,7 @@ div.column.wf-centered {
 
 /* -- new header icons -- */
 
-h1.header.icon > i.key      { background-color:#d12e34; border-color:#d12e34; color:white; }
+h1.header.icon > i.dungeon  { background-color:#d12e34; border-color:#d12e34; color:white; }
 h1.header.icon > i.hdd      { background-color:#b5c334; border-color:#b5c334; color:white; }
 h1.header.icon > i.tools    { background-color:#f3a43b; border-color:#f3a43b; color:white; }
 

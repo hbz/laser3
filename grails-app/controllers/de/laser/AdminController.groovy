@@ -224,7 +224,6 @@ class AdminController  {
                 ['Package', 'packageStatus'],
                 'Platform',
                 'Subscription',
-                'TitleInstance',
                 'TitleInstancePackagePlatform',
                 'Combo'
                 //'Doc'
@@ -352,8 +351,8 @@ class AdminController  {
                 title : [
                         'de_DE.UTF-8' : sql.rows( query4 + ' order by ti_title COLLATE "de_DE" limit ' + limit ).collect{ it.ti_title },
                         'en_US.UTF-8' : sql.rows( query4 + ' order by ti_title COLLATE "en_US" limit ' + limit ).collect{ it.ti_title },
-                        'current_de'  : RefdataValue.executeQuery( "select title from TitleInstance order by title", [max: limit] ),
-                        'current_en'  : RefdataValue.executeQuery( "select title from TitleInstance order by title", [max: limit] )
+                        'current_de'  : RefdataValue.executeQuery( "select name from TitleInstancePackagePlatform order by name", [max: limit] ),
+                        'current_en'  : RefdataValue.executeQuery( "select name from TitleInstancePackagePlatform order by name", [max: limit] )
                 ]
         ]
 
