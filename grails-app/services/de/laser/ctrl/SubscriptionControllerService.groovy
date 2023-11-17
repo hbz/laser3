@@ -1671,9 +1671,9 @@ class SubscriptionControllerService {
                         result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs, [sort: params.sort, order: params.order, offset: result.offset, max: result.max]) : []
                         result.num_rows = sourceIEs ? IssueEntitlement.countByIdInList(sourceIEs) : 0
 
-                        result.iesTotalListPriceSumEUR = surveyService.sumListPriceInCurrencyOfCurrentIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_EUR)
-                        result.iesTotalListPriceSumUSD = surveyService.sumListPriceInCurrencyOfCurrentIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_USD)
-                        result.iesTotalListPriceSumGBP = surveyService.sumListPriceInCurrencyOfCurrentIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_GBP)
+                        result.iesTotalListPriceSumEUR = surveyService.sumListPriceTippInCurrencyOfCurrentIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_EUR)
+                        result.iesTotalListPriceSumUSD = surveyService.sumListPriceTippInCurrencyOfCurrentIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_USD)
+                        result.iesTotalListPriceSumGBP = surveyService.sumListPriceTippInCurrencyOfCurrentIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_GBP)
 
                     }
                 } else if (params.tab == 'currentPerpetualAccessIEs') {
@@ -1692,14 +1692,14 @@ class SubscriptionControllerService {
                     result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs, [sort: params.sort, order: params.order, offset: result.offset, max: result.max]) : []
                     result.num_rows = sourceIEs ? IssueEntitlement.countByIdInList(sourceIEs) : 0
 
-                    result.iesTotalListPriceSumEUR = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                            'where p.listPrice is not null and p.listCurrency = :currency and ie.id in (:ieIDs)', [currency: RDStore.CURRENCY_EUR, ieIDs: sourceIEs])[0] ?: 0
+                    result.iesTotalListPriceSumEUR = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
+                            'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.subscription = :sub and ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_EUR, ieIDs: sourceIEs])[0] ?: 0
 
-                    result.iesTotalListPriceSumUSD = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                            'where p.listPrice is not null and p.listCurrency = :currency and ie.id in (:ieIDs)', [currency: RDStore.CURRENCY_USD, ieIDs: sourceIEs])[0] ?: 0
+                    result.iesTotalListPriceSumUSD = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
+                            'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.subscription = :sub and ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_USD, ieIDs: sourceIEs])[0] ?: 0
 
-                    result.iesTotalListPriceSumGBP = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                            'where p.listPrice is not null and p.listCurrency = :currency and ie.id in (:ieIDs)', [currency: RDStore.CURRENCY_GBP, ieIDs: sourceIEs])[0] ?: 0
+                    result.iesTotalListPriceSumGBP = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
+                            'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.subscription = :sub and ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_GBP, ieIDs: sourceIEs])[0] ?: 0
                 }
 
                 result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(result.subscription, false)

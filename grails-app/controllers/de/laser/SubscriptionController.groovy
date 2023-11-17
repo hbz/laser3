@@ -1625,7 +1625,7 @@ class SubscriptionController {
                 File f = new File(dir+'/'+filename)
                 if(!f.exists()) {
                     FileOutputStream out = new FileOutputStream(f)
-                    String domainClName = IssueEntitlement.class.name
+                    String domainClName = TitleInstancePackagePlatform.class.name
                     if(params.tab == 'allTipps') {
                         domainClName = TitleInstancePackagePlatform.class.name
                     }
@@ -1640,7 +1640,7 @@ class SubscriptionController {
                 render template: '/templates/bulkItemDownload', model: fileResult
                 return
             }else if (params.exportXLS) {
-                String domainClName = IssueEntitlement.class.name
+                String domainClName = TitleInstancePackagePlatform.class.name
                 if(params.tab == 'allTipps') {
                     domainClName = TitleInstancePackagePlatform.class.name
                 }

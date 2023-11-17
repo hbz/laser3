@@ -290,7 +290,7 @@
                 <div class="row">
                     <div class="eight wide column">
                         <h3 class="ui icon header la-clear-before la-noMargin-top"><span
-                                class="ui circular  label">${num_rows}</span> <g:message code="title.filter.result"/>
+                                class="ui circular  label">${num_rows?:0}</span> <g:message code="title.filter.result"/>
                         </h3>
                     </div>
                 </div><!--.row-->
