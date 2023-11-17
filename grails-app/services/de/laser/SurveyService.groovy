@@ -3,6 +3,7 @@ package de.laser
 import de.laser.auth.User
 import de.laser.finance.CostItem
 import de.laser.config.ConfigDefaults
+import de.laser.finance.PriceItem
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
 import de.laser.stats.Counter4ApiSource
@@ -1787,18 +1788,25 @@ class SurveyService {
     BigDecimal sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig, RefdataValue currency) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         BigDecimal sumListPrice = issueEntitlementGroup ?
-                IssueEntitlementGroupItem.executeQuery("select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency and p.issueEntitlement in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)",
+                IssueEntitlementGroupItem.executeQuery("select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency and p.tipp in (select igi.ie.tipp from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)",
                         [ieGroup: issueEntitlementGroup, currency: currency])[0]
                 : 0.0
         sumListPrice
     }
 
-    BigDecimal sumListPriceInCurrencyOfCurrentIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig, RefdataValue currency) {
+    BigDecimal sumListPriceTippInCurrencyOfCurrentIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig, RefdataValue currency) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         BigDecimal sumListPrice = issueEntitlementGroup ?
-                IssueEntitlementGroupItem.executeQuery("select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency and p.issueEntitlement in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup) and p.issueEntitlement.status = :status",
+                IssueEntitlementGroupItem.executeQuery("select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency and p.tipp in (select igi.ie.tipp from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup and igi.ie.status = :status)",
                         [ieGroup: issueEntitlementGroup, status: RDStore.TIPP_STATUS_CURRENT, currency: currency])[0]
                 : 0.0
+        sumListPrice
+    }
+
+    BigDecimal sumListPriceTippInCurrencyOfCurrentIssueEntitlements(Subscription subscription, RefdataValue currency) {
+        BigDecimal sumListPrice = 0.0
+        sumListPrice = PriceItem.executeQuery("select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :status)",
+                        [sub: subscription, status: RDStore.TIPP_STATUS_CURRENT, currency: currency])[0]
         sumListPrice
     }
 

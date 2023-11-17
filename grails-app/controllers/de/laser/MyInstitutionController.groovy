@@ -2341,9 +2341,9 @@ class MyInstitutionController  {
 
                 }*/
 
-                result.sumListPriceSelectedIEsEUR = surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_EUR)
-                result.sumListPriceSelectedIEsUSD = surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_USD)
-                result.sumListPriceSelectedIEsGBP = surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_GBP)
+                result.sumListPriceSelectedIEsEUR = surveyService.sumListPriceTippInCurrencyOfCurrentIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_EUR)
+                result.sumListPriceSelectedIEsUSD = surveyService.sumListPriceTippInCurrencyOfCurrentIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_USD)
+                result.sumListPriceSelectedIEsGBP = surveyService.sumListPriceTippInCurrencyOfCurrentIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_GBP)
 
 
                 /* result.iesFixListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
