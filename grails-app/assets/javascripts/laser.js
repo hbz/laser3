@@ -3,7 +3,7 @@ console.log('+ bundle: laser.js');
 // bundle: assets/javascripts/laser.js
 //
 //= require /javascript/semantic.min.js         //--> assets/themes
-//
+K//
 //= require modules/r2d2.js
 //= require modules/c3po.js
 //= require modules/decksaver.js
