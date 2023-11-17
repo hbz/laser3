@@ -1,4 +1,4 @@
-<%@ page import="de.laser.titles.BookInstance; de.laser.remote.ApiSource; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.remote.ApiSource; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.storage.RDStore" %>
 <laser:htmlStart message="surveyShow.label" serviceInjection="true"/>
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>

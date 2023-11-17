@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.titles.BookInstance" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.Subscription; de.laser.Platform" %>
 <laser:htmlStart message="default.subscription.label" />
 
 <ui:breadcrumbs>
