@@ -1967,7 +1967,7 @@ class OrganisationController  {
                     redirect(url: request.getHeader('referer'))
                     return
                 }
-                if (result.orgInstance.getDiscoverySystemIndices().find { it.frontendId == newIndex.id }) {
+                if (result.orgInstance.getDiscoverySystemIndices().find { it.indexId == newIndex.id }) {
                     flash.message = message(code: 'default.err.alreadyExist', args: [message(code: 'org.discoverySystems.index.label')]) as String
                     redirect(url: request.getHeader('referer'))
                     return
