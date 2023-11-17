@@ -19,47 +19,46 @@ tooltip = {
         $(ctxSel + ' .la-popup-tooltip').each(function() {
             // add aria-label
             $(this).attr('aria-label', $(this).attr('data-content'));
-            $(this).popup()
+            $(this).popup();
         });
 
-        $(ctxSel + ' .ui.toggle.button').next('.ui.popup').remove();
+        $(ctxSel + ' .ui.toggle.button').each(function() {
+            $(this).next('.ui.popup').remove();
 
-        $(ctxSel + ' .ui.toggle.button').popup({
-            hoverable: true,
-            inline     : true,
-            lastResort: true,
-            movePopup: false,
-            boundary: 'body',
-            delay: {
-                show: 300,
-                hide: 500
-            },
-
-            onShow: function() {
-                // generate a random ID
-                let id =  'wcag_' + Math.random().toString(36).substr(2, 9);
-
-                //add role=tooltip and the generated ID to the tooltip-div (generated from semantic)
-                $(this).children('.content').attr({role:'tooltip',id:id});
-            },
+            $(this).popup({
+                hoverable: true,
+                inline     : true,
+                lastResort: true,
+                movePopup: false,
+                boundary: 'body',
+                delay: {
+                    show: 300,
+                    hide: 500
+                },
+                onShow: function() {
+                    let id =  'wcag_' + Math.random().toString(36).substr(2, 9);
+                    //add role=tooltip and the generated ID to the tooltip-div (generated from semantic)
+                    $(this).children('.content').attr({role:'tooltip', id:id});
+                },
+            });
         });
     },
 
     initDynamicAccessViaKeys: function(ctxSel){
         console.log('tooltip.initDynamicAccessViaKeys( ' + ctxSel + ' )')
 
-        let $elem = $(ctxSel + ' .la-popup-tooltip')
+        let $elems = $(ctxSel + ' .la-popup-tooltip')
 
         // for click and focus
-        $elem.on('click focus', function(){
+        $elems.on('click.popup focus.popup', function(){
             $(this).popup('show');
         })
         // for unfocus
-        $elem.on('focusout', function(){
+        $elems.on('focusout.popup', function(){
             $(this).popup('hide');
         })
         // for ESC
-        $elem.on('keydown', function(){
+        $elems.on('keydown.popup', function(){
             if(event.keyCode==27){
                 $(this).popup('hide');
             }

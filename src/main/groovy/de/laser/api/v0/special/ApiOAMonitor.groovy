@@ -13,7 +13,6 @@ import de.laser.api.v0.*
 import de.laser.storage.Constants
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.titles.TitleInstance
 import de.laser.traces.DeletedObject
 import grails.converters.JSON
 import groovy.json.JsonSlurper
