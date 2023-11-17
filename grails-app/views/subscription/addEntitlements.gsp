@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.remote.ApiSource; grails.converters.JSON; de.laser.storage.RDStore; de.laser.Platform;de.laser.titles.BookInstance; de.laser.IssueEntitlementGroup;" %>
+<%@ page import="de.laser.Subscription; de.laser.remote.ApiSource; grails.converters.JSON; de.laser.storage.RDStore; de.laser.Platform; de.laser.IssueEntitlementGroup" %>
 
 <laser:htmlStart message="subscription.details.addEntitlements.label" serviceInjection="true" />
 

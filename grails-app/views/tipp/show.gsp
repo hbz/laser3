@@ -1,4 +1,4 @@
-<%@ page import="de.laser.remote.ApiSource; de.laser.titles.BookInstance; de.laser.storage.RDStore; de.laser.titles.TitleHistoryEventParticipant" %>
+<%@ page import="de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.titles.TitleHistoryEventParticipant" %>
 
 <laser:htmlStart text="${message(code:"tipp.show.label", args:[tipp.name, tipp.pkg.name, tipp.platform.name])}" />
 
