@@ -2696,7 +2696,7 @@ join sub.orgRelations or_sub where
                         ((colMap.doiCol >= 0 && cols[colMap.doiCol].trim().isEmpty()) || colMap.doiCol < 0)) {
                 } else {
                     if (titleUrl) {
-                        tipp = TitleInstancePackagePlatform.findByHostPlatformURL(titleUrl)
+                        tipp = TitleInstancePackagePlatform.findByHostPlatformURLAndPkgInList(titleUrl, subscription.packages.pkg)
                     }
                     if (idCandidate.value && !tipp) {
                         List<TitleInstancePackagePlatform> titles = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp join tipp.ids ident where ident.ns in :namespaces and ident.value = :value and tipp.pkg in (:pkgs) and tipp.status = :tippStatus', [tippStatus: RDStore.TIPP_STATUS_CURRENT, namespaces: idCandidate.namespaces, value: idCandidate.value, pkgs: subscription.packages.pkg])
