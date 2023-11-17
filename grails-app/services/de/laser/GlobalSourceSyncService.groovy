@@ -265,6 +265,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 tipp.status = RDStore.TIPP_STATUS_REMOVED
                                 tipp.save()
                                 IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed, ie.lastUpdated = :now where ie.tipp = :tipp and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, tipp: tipp, now: new Date()])
+                                PermanentTitle.executeUpdate('delete from PermanentTitle pt where pt.tipp = :tipp', [tipp: tipp])
                             }
                         }
                     }
@@ -616,6 +617,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         if(pkg.packageStatus == RDStore.PACKAGE_STATUS_REMOVED) {
                                             log.info("${pkg.name} / ${pkg.gokbId} has been removed, mark titles in package as removed ...")
                                             log.info("${IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed, ie.lastUpdated = :now where ie.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg) and ie.status != :removed', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED, now: new Date()])} issue entitlements marked as removed")
+                                            log.info("${PermanentTitle.executeUpdate('delete from PermanentTitle pt where pt.tipp.pkg = :pkg and pt.tipp.status != :removed', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED])} permanent title (tipps) really deleted")
                                             log.info("${TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.status = :removed, tipp.lastUpdated = :now where tipp.pkg = :pkg and tipp.status != :removed', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED, now: new Date()])} package titles (tipps) marked as removed")
                                             /*
                                             TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqual(pkg, RDStore.TIPP_STATUS_REMOVED).each { TitleInstancePackagePlatform tipp ->
@@ -690,6 +692,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             if(pkg?.packageStatus == RDStore.PACKAGE_STATUS_REMOVED) {
                                 log.info("${pkg.name} / ${pkg.gokbId} has been removed, record status is ${record.status}, mark titles in package as removed ...")
                                 log.info("${IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed, ie.lastUpdated = :now where ie.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg) and ie.status != :removed', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED, now: new Date()])} issue entitlements marked as removed")
+                                log.info("${PermanentTitle.executeUpdate('delete from PermanentTitle pt where pt.tipp.pkg = :pkg and pt.tipp.status != :removed', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED])} permanent title (tipps) really deleted")
                                 log.info("${TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.status = :removed, tipp.lastUpdated = :now where tipp.pkg = :pkg and tipp.status != :removed', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED, now: new Date()])} package titles (tipps) marked as removed")
                                 /*
                                 TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqual(pkg, RDStore.TIPP_STATUS_REMOVED).each { TitleInstancePackagePlatform tipp ->
@@ -891,6 +894,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         tippA.status = RDStore.TIPP_STATUS_REMOVED
                         tippA.save()
                         IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed, ie.lastUpdated = :now where ie.tipp = :tipp and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, tipp: tippA, now: new Date()])
+                        PermanentTitle.executeUpdate('delete from PermanentTitle pt where pt.tipp = :tipp', [tipp: tippA])
                         /*
                         Set<Map<String,Object>> diffsOfPackage = packagesToNotify.get(tippA.pkg.gokbId)
                         if(!diffsOfPackage) {
@@ -925,6 +929,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 tippA.status = RDStore.TIPP_STATUS_REMOVED
                 tippA.save()
                 IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed, ie.lastUpdated = :now where ie.tipp = :tipp and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, tipp: tippA, now: new Date()])
+                PermanentTitle.executeUpdate('delete from PermanentTitle pt where pt.tipp = :tipp', [tipp: tippA])
                 /*
                 Set<Map<String,Object>> diffsOfPackage = packagesToNotify.get(tippA.pkg.gokbId)
                 if(!diffsOfPackage) {
