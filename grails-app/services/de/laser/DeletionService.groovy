@@ -858,6 +858,7 @@ class DeletionService {
                     List<Long> tippsConcerned = TitleInstancePackagePlatform.findAllByPkg(pkg).collect { tipp -> tipp.id }
                     TIPPCoverage.executeUpdate("delete from TIPPCoverage tc where tc.tipp.id in :toDelete",[toDelete:tippsConcerned])
                     Identifier.executeUpdate("delete from Identifier id where id.tipp.id in :toDelete",[toDelete:tippsConcerned])
+                    PermanentTitle.executeUpdate("delete from PermanentTitle pt where pt.tipp.id in :toDelete",[toDelete:tippsConcerned])
                     TitleInstancePackagePlatform.executeUpdate("delete from TitleInstancePackagePlatform tipp where tipp.id in :toDelete",[toDelete:tippsConcerned])
                     //deleting pending changes
                     PendingChange.findAllByPkg(pkg).each { tmp -> tmp.delete() }
@@ -946,6 +947,7 @@ class DeletionService {
                     log.info("${PriceItem.executeUpdate('delete from PriceItem pi where pi.issueEntitlement in (:toDelete)', delIssueEntitlements)} issue entitlement price items deleted")
                     log.info("${IssueEntitlement.executeUpdate('delete from IssueEntitlement ie where ie in (:toDelete)', delIssueEntitlements)} deleted issue entitlements cleared")
                 }
+                log.info("${PermanentTitle.executeUpdate('delete from PermanentTitle pt where pt.tipp in (:toDelete)',toDelete)} permanentTitles cleared")
                 log.info("${TitleInstancePackagePlatform.executeUpdate('delete from TitleInstancePackagePlatform tipp where tipp in (:toDelete)',toDelete)} tipps cleared")
                 return true
             }
