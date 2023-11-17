@@ -69,7 +69,6 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
     String editionDifferentiator
   //String rectype="so"
     String gokbId
-  //TitleInstance title
 
     @RefdataInfo(cat = RDConstants.TIPP_STATUS)
     RefdataValue status
