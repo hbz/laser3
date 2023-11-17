@@ -5,6 +5,7 @@ import de.laser.annotations.DebugInfo
 import de.laser.cache.EhcacheWrapper
 import de.laser.ctrl.OrganisationControllerService
 import de.laser.ctrl.UserControllerService
+import de.laser.custom.CustomWkhtmltoxService
 import de.laser.properties.OrgProperty
 import de.laser.auth.Role
 import de.laser.auth.User
@@ -21,6 +22,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
+import org.grails.plugins.wkhtmltopdf.WkhtmltoxService
 import org.springframework.validation.FieldError
 
 import javax.servlet.ServletOutputStream
@@ -57,6 +59,7 @@ class OrganisationController  {
     UserControllerService userControllerService
     UserService userService
     WorkflowService workflowService
+    CustomWkhtmltoxService wkhtmltoxService
 
     //-----
 
@@ -311,26 +314,49 @@ class OrganisationController  {
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
             contactSwitch.addAll(params.list("contactSwitch"))
             contactSwitch.addAll(params.list("addressSwitch"))
-        }
-        if(params.fileformat == 'xlsx') {
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(availableOrgs, selectedFields, 'institution', ExportClickMeService.FORMAT.XLS, contactSwitch)
+            switch(params.fileformat) {
+                case 'xlsx':
+                    SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(availableOrgs, selectedFields, 'institution', ExportClickMeService.FORMAT.XLS, contactSwitch)
 
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
-            return //IntelliJ cannot know that the return prevents an obsolete redirect
-        }
-        else if(params.fileformat == 'csv') {
-            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
-            response.contentType = "text/csv"
-            ServletOutputStream out = response.outputStream
-            out.withWriter { writer ->
-                writer.write((String) exportClickMeService.exportOrgs(availableOrgs, selectedFields, 'institution', ExportClickMeService.FORMAT.CSV, contactSwitch))
+                    response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                    response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    wb.write(response.outputStream)
+                    response.outputStream.flush()
+                    response.outputStream.close()
+                    wb.dispose()
+                    return //IntelliJ cannot know that the return prevents an obsolete redirect
+                case 'csv':
+                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+                    response.contentType = "text/csv"
+                    ServletOutputStream out = response.outputStream
+                    out.withWriter { writer ->
+                        writer.write((String) exportClickMeService.exportOrgs(availableOrgs, selectedFields, 'institution', ExportClickMeService.FORMAT.CSV, contactSwitch))
+                    }
+                    out.close()
+                    return
+                case 'pdf':
+                    Map<String, Object> pdfOutput = exportClickMeService.exportOrgs(availableOrgs, selectedFields, 'institution', ExportClickMeService.FORMAT.PDF, contactSwitch)
+                    Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.mainHeader.size()*15, height: 35]
+                    if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
+                    else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
+                    else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
+                    else if (pageStruct.width > 85)    { pageStruct.pageSize = 'A3' }
+                    pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
+                    byte[] pdf = wkhtmltoxService.makePdf(
+                            view: '/templates/export/_individuallyExportPdf',
+                            model: pdfOutput,
+                            pageSize: pageStruct.pageSize,
+                            orientation: pageStruct.orientation,
+                            marginLeft: 10,
+                            marginRight: 10,
+                            marginTop: 15,
+                            marginBottom: 15
+                    )
+                    response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
+                    response.setContentType('application/pdf')
+                    response.outputStream.withStream { it << pdf }
+                    return
             }
-            out.close()
         }
         else {
             result.availableOrgs = availableOrgs.drop(result.offset).take(result.max)
@@ -400,39 +426,49 @@ class OrganisationController  {
             contactSwitch.addAll(params.list("addressSwitch"))
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-        }
+            switch(params.fileformat) {
+                case 'xlsx':
+                    SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(availableOrgs, selectedFields, 'consortium', ExportClickMeService.FORMAT.XLS, contactSwitch)
 
-        /*
-        if ( params.exportXLS ) {
-            SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(availableOrgs, header, false, 'xls')
-            response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
-            return
-        }
-        else */
-        if(params.fileformat == 'xlsx') {
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(availableOrgs, selectedFields, 'consortium', ExportClickMeService.FORMAT.XLS, contactSwitch)
-
-            response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
-            return
-        }
-        else if(params.fileformat == 'csv') {
-            response.setHeader("Content-disposition", "attachment; filename=\"${file}.csv\"")
-            response.contentType = "text/csv"
-            ServletOutputStream out = response.outputStream
-            out.withWriter { writer ->
-                writer.write((String) exportClickMeService.exportOrgs(availableOrgs, selectedFields, 'consortium', ExportClickMeService.FORMAT.CSV, contactSwitch))
+                    response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
+                    response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    wb.write(response.outputStream)
+                    response.outputStream.flush()
+                    response.outputStream.close()
+                    wb.dispose()
+                    return
+                case 'csv':
+                    response.setHeader("Content-disposition", "attachment; filename=\"${file}.csv\"")
+                    response.contentType = "text/csv"
+                    ServletOutputStream out = response.outputStream
+                    out.withWriter { writer ->
+                        writer.write((String) exportClickMeService.exportOrgs(availableOrgs, selectedFields, 'consortium', ExportClickMeService.FORMAT.CSV, contactSwitch))
+                    }
+                    out.close()
+                    return
+                case 'pdf':
+                    Map<String, Object> pdfOutput = exportClickMeService.exportOrgs(availableOrgs, selectedFields, 'consortium', ExportClickMeService.FORMAT.PDF, contactSwitch)
+                    Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.mainHeader.size()*15, height: 35]
+                    if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
+                    else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
+                    else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
+                    else if (pageStruct.width > 85)    { pageStruct.pageSize = 'A3' }
+                    pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
+                    byte[] pdf = wkhtmltoxService.makePdf(
+                            view: '/templates/export/_individuallyExportPdf',
+                            model: pdfOutput,
+                            pageSize: pageStruct.pageSize,
+                            orientation: pageStruct.orientation,
+                            marginLeft: 10,
+                            marginRight: 10,
+                            marginTop: 15,
+                            marginBottom: 15
+                    )
+                    response.setHeader('Content-disposition', 'attachment; filename="'+ file +'.pdf"')
+                    response.setContentType('application/pdf')
+                    response.outputStream.withStream { it << pdf }
+                    return
             }
-            out.close()
         }
         else {
             result
@@ -1642,10 +1678,24 @@ class OrganisationController  {
         result.num_visibleAddresses = visibleAddresses.size()
         result.addresses = visibleAddresses.drop(result.addressOffset).take(result.max)
 
+        /*
         if (visiblePersons){
-            result.emailAddresses = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
+            result.emailAddresses = Contact.executeQuery("select new map(c.prs as person, c.content as mail) from Contact c join c.prs p join p.roleLinks pr join pr.org o where p in (:persons) and c.contentType = :contentType order by o.sortname",
                     [persons: visiblePersons, contentType: RDStore.CCT_EMAIL])
         }
+        */
+        Map<Org, String> emailAddresses = [:]
+        visiblePersons.each { Person p ->
+            Contact mail = Contact.findByPrsAndContentType(p, RDStore.CCT_EMAIL)
+            if(mail) {
+                Set<String> mails = emailAddresses.get(p.roleLinks.org[0])
+                if(!mails)
+                    mails = []
+                mails << mail.content
+                emailAddresses.put(p.roleLinks.org[0], mails)
+            }
+        }
+        result.emailAddresses = emailAddresses
 
         result
     }
@@ -1882,6 +1932,57 @@ class OrganisationController  {
     }
 
     /**
+     * Assigns the given discovery system to the given organisation
+     */
+    @Transactional
+    @Secured(['ROLE_USER'])
+    def addDiscoverySystem() {
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
+
+        if (!result.orgInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        result.editable = _checkIsEditable(result.user, result.orgInstance)
+        if (result.editable) {
+            if(params.containsKey('frontend')) {
+                RefdataValue newFrontend = RefdataValue.get(params.frontend)
+                if (!newFrontend) {
+                    flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.discoverySystems.frontend.label'), params.frontend]) as String
+                    redirect(url: request.getHeader('referer'))
+                    return
+                }
+                if (result.orgInstance.getDiscoverySystemFrontends().find { it.frontendId == newFrontend.id }) {
+                    flash.message = message(code: 'default.err.alreadyExist', args: [message(code: 'org.discoverySystems.frontend.label')]) as String
+                    redirect(url: request.getHeader('referer'))
+                    return
+                }
+                result.orgInstance.addToDiscoverySystemFrontends(frontend: newFrontend)
+            }
+            else if(params.containsKey('index')) {
+                RefdataValue newIndex = RefdataValue.get(params.index)
+                if (!newIndex) {
+                    flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.discoverySystems.index.label'), params.index]) as String
+                    redirect(url: request.getHeader('referer'))
+                    return
+                }
+                if (result.orgInstance.getDiscoverySystemIndices().find { it.frontendId == newIndex.id }) {
+                    flash.message = message(code: 'default.err.alreadyExist', args: [message(code: 'org.discoverySystems.index.label')]) as String
+                    redirect(url: request.getHeader('referer'))
+                    return
+                }
+                result.orgInstance.addToDiscoverySystemIndices(index: newIndex)
+            }
+
+            result.orgInstance.save()
+//            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
+        }
+
+        redirect action: 'show', id: params.id
+    }
+
+    /**
      * Removes the given subject group from the given organisation
      */
     @Transactional
@@ -1899,6 +2000,36 @@ class OrganisationController  {
             result.orgInstance.removeFromSubjectGroup(osg)
             result.orgInstance.save()
             osg.delete()
+//            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
+        }
+
+        redirect(url: request.getHeader('referer'))
+    }
+
+    /**
+     * Removes the given discovery system from the given organisation
+     */
+    @Transactional
+    @Secured(['ROLE_USER'])
+    def deleteDiscoverySystem() {
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
+
+        if (!result.orgInstance) {
+            flash.error = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        if (result.editable) {
+            def discoverySystem = genericOIDService.resolveOID(params.oid)
+            if(discoverySystem instanceof DiscoverySystemFrontend) {
+                result.orgInstance.removeFromDiscoverySystemFrontends(discoverySystem)
+                result.orgInstance.save()
+            }
+            else if(discoverySystem instanceof DiscoverySystemIndex) {
+                result.orgInstance.removeFromDiscoverySystemIndices(discoverySystem)
+                result.orgInstance.save()
+            }
+            discoverySystem.delete()
 //            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
         }
 
@@ -1977,10 +2108,24 @@ class OrganisationController  {
         result.num_visiblePersons = visiblePersons.size()
         result.visiblePersons = visiblePersons.drop(result.offset).take(result.max)
 
+        /*
         if (visiblePersons){
-            result.emailAddresses = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
+            result.emailAddresses = Contact.executeQuery("select new map(c.prs as person, c.content as mail) from Contact c join c.prs p join p.roleLinks pr join pr.org o where p in (:persons) and c.contentType = :contentType order by o.sortname",
                     [persons: visiblePersons, contentType: RDStore.CCT_EMAIL])
         }
+        */
+        Map<Org, String> emailAddresses = [:]
+        visiblePersons.each { Person p ->
+            Contact mail = Contact.findByPrsAndContentType(p, RDStore.CCT_EMAIL)
+            if(mail) {
+                Set<String> mails = emailAddresses.get(p.roleLinks.org[0])
+                if(!mails)
+                    mails = []
+                mails << mail.content
+                emailAddresses.put(p.roleLinks.org[0], mails)
+            }
+        }
+        result.emailAddresses = emailAddresses
 
         params.tab = params.tab ?: 'contacts'
 
@@ -2027,7 +2172,7 @@ class OrganisationController  {
                     isEditable = userIsYoda
                 }
                 break
-            case [ 'show', 'ids', 'addSubjectGroup', 'deleteSubjectGroup', 'readerNumber', 'accessPoints', 'addressbook' ]:
+            case [ 'show', 'ids', 'addSubjectGroup', 'deleteSubjectGroup', 'addDiscoverySystem', 'deleteDiscoverySystem', 'readerNumber', 'accessPoints', 'addressbook' ]:
                 if (inContextOrg) {
                     isEditable = userHasEditableRights
                 } else {

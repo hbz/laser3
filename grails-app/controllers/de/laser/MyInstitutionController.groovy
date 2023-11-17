@@ -2150,16 +2150,34 @@ class MyInstitutionController  {
             MultipartFile tsvFile = request.getFile("tsvFile") //this makes the withTransaction closure necessary
             if(tsvFile && tsvFile.size > 0) {
                 String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
-                if(encoding == "UTF-8") {
+                if(encoding in ["UTF-8", "WINDOWS-1252"]) {
                     result.filename = tsvFile.originalFilename
-                    Map<String,Map> financialData = financeService.financeImport(tsvFile)
+                    Map<String,Map> financialData = financeService.financeImport(tsvFile, encoding)
                     result.headerRow = financialData.headerRow
                     result.candidates = financialData.candidates
                     result.budgetCodes = financialData.budgetCodes
-                    result.criticalErrors = [/*'ownerMismatchError',*/'noValidSubscription','multipleSubError','packageWithoutSubscription','noValidPackage','multipleSubPkgError','noCurrencyError','invalidCurrencyError',
+                    if(financialData.errorRows) {
+                        //background of this procedure: the editor adding titles via KBART wishes to receive a "counter-KBART" which will then be sent to the provider for verification
+                        String dir = GlobalService.obtainFileStorageLocation()
+                        File f = new File(dir+"/${result.filename}_errors")
+                        if(!f.exists()) {
+                            List headerRow = financialData.errorRows.remove(0)
+                            String returnFile = exportService.generateSeparatorTableString(headerRow, financialData.errorRows, '\t')
+                            FileOutputStream fos = new FileOutputStream(f)
+                            fos.withWriter { Writer w ->
+                                w.write(returnFile)
+                            }
+                            fos.flush()
+                            fos.close()
+                        }
+                        result.errorCount = financialData.errorRows.size()
+                        result.errMess = 'myinst.financeImport.post.error.matchingErrors'
+                        result.token = "${result.filename}_errors"
+                    }
+                    /*result.criticalErrors = ['ownerMismatchError','noValidSubscription','multipleSubError','packageWithoutSubscription','noValidPackage','multipleSubPkgError','noCurrencyError','invalidCurrencyError',
                                              'packageNotInSubscription','entitlementWithoutPackageOrSubscription','noValidTitle','multipleTitleError','noValidEntitlement','multipleEntitlementError',
                                              'entitlementNotInSubscriptionPackage','multipleOrderError','multipleInvoiceError','invalidCurrencyError','invoiceTotalInvalid','valueInvalid','exchangeRateInvalid',
-                                             'invalidTaxType','invalidYearFormat','noValidStatus','noValidElement','noValidSign']
+                                             'invalidTaxType','invalidYearFormat','noValidStatus','noValidElement','noValidSign']*/
                     render view: 'postProcessingFinanceImport', model: result
                 }
                 else {
@@ -2867,10 +2885,24 @@ class MyInstitutionController  {
         result.num_visibleAddresses = visibleAddresses.size()
         result.addresses = visibleAddresses.drop(result.addressOffset).take(result.max)
 
+        /*
         if (visiblePersons){
             result.emailAddresses = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
                     [persons: visiblePersons, contentType: RDStore.CCT_EMAIL])
         }
+        */
+        Map<Org, String> emailAddresses = [:]
+        visiblePersons.each { Person p ->
+            Contact mail = Contact.findByPrsAndContentType(p, RDStore.CCT_EMAIL)
+            if(mail) {
+                Set<String> mails = emailAddresses.get(p.roleLinks.org[0])
+                if(!mails)
+                    mails = []
+                mails << mail.content
+                emailAddresses.put(p.roleLinks.org[0], mails)
+            }
+        }
+        result.emailAddresses = emailAddresses
 
         /*
         if(params.exportXLS) {
@@ -3256,40 +3288,49 @@ class MyInstitutionController  {
             contactSwitch.addAll(params.list("addressSwitch"))
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-        }
+            switch(params.fileformat) {
+                case 'xlsx':
+                    SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalConsortia, selectedFields, 'consortium', ExportClickMeService.FORMAT.XLS, contactSwitch)
 
-        /*
-        if ( params.exportXLS ) {
-
-            SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(totalConsortia, header, true, 'xls')
-            response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
-            return
-        }
-        else */
-        if(params.fileformat == 'xlsx') {
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalConsortia, selectedFields, 'consortium', ExportClickMeService.FORMAT.XLS, contactSwitch)
-
-            response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
-            return
-        }
-        else if(params.fileformat == 'csv') {
-            response.setHeader("Content-disposition", "attachment; filename=\"${file}.csv\"")
-            response.contentType = "text/csv"
-            ServletOutputStream out = response.outputStream
-            out.withWriter { writer ->
-                writer.write((String) organisationService.exportOrg(totalConsortia,header,true,"csv"))
+                    response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
+                    response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    wb.write(response.outputStream)
+                    response.outputStream.flush()
+                    response.outputStream.close()
+                    wb.dispose()
+                    return
+                case 'csv':
+                    response.setHeader("Content-disposition", "attachment; filename=\"${file}.csv\"")
+                    response.contentType = "text/csv"
+                    ServletOutputStream out = response.outputStream
+                    out.withWriter { writer ->
+                        writer.write((String) exportClickMeService.exportOrgs(totalConsortia, selectedFields, 'consortium', ExportClickMeService.FORMAT.CSV, contactSwitch))
+                    }
+                    out.close()
+                    return
+                case 'pdf':
+                    Map<String, Object> pdfOutput = exportClickMeService.exportOrgs(totalConsortia, selectedFields, 'consortium', ExportClickMeService.FORMAT.PDF, contactSwitch)
+                    Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.mainHeader.size()*15, height: 35]
+                    if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
+                    else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
+                    else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
+                    else if (pageStruct.width > 85)    { pageStruct.pageSize = 'A3' }
+                    pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
+                    byte[] pdf = wkhtmltoxService.makePdf(
+                            view: '/templates/export/_individuallyExportPdf',
+                            model: pdfOutput,
+                            pageSize: pageStruct.pageSize,
+                            orientation: pageStruct.orientation,
+                            marginLeft: 10,
+                            marginRight: 10,
+                            marginTop: 15,
+                            marginBottom: 15
+                    )
+                    response.setHeader('Content-disposition', 'attachment; filename="'+ file +'.pdf"')
+                    response.setContentType('application/pdf')
+                    response.outputStream.withStream { it << pdf }
+                    return
             }
-            out.close()
         }
         else {
             result
@@ -4003,6 +4044,8 @@ join sub.orgRelations or_sub where
         result.participant = Org.get(Long.parseLong(params.id))
 
         params.tab = params.tab ?: 'open'
+
+        result.reminder = params.reminder
 
         if(params.tab != 'new'){
             params.sort = 'surInfo.endDate DESC, LOWER(surInfo.name)'

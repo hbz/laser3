@@ -352,6 +352,7 @@
                                         tenant          : contextOrg]}"/>
 
                                 <laser:script file="${this.getGroovyPageFileName()}">
+                                    r2d2.initDynamicUiStuff('#${propertyWrapper}');
                                     c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${contextOrg.id});
                                 </laser:script>
                             </div>
@@ -391,7 +392,7 @@
                 }
             });
 
-            tooltip.go()  // TODO: set ctxSel @ tooltip.init()
+            tooltip.init("#${modalID ?: 'personModal'}");
 
             JSPC.app.addressElementCount = $(".addressField").length;
             JSPC.app.contactElementCount = $(".contactField").length;

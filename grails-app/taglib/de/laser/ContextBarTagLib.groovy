@@ -4,7 +4,6 @@ import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.convenience.Marker
 import de.laser.interfaces.MarkerSupport
-import de.laser.utils.AppUtils
 
 class ContextBarTagLib {
 
@@ -21,7 +20,12 @@ class ContextBarTagLib {
         String text  = '?'
         Org org = attrs.org as Org
 
-        if (org.isCustomerType_Consortium_Pro()) {
+        if (!org) {
+            icon  = 'exclamation circle'
+            color = 'red'
+            text  = message(code: 'profile.membership.error1')
+        }
+        else if (org.isCustomerType_Consortium_Pro()) {
             icon  = 'trophy'
             color = 'teal'
             text  = Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_PRO).getI10n('authority')
@@ -78,6 +82,11 @@ class ContextBarTagLib {
                 text = message(code: 'cv.roles.INST_ADM')
             }
         }
+        else {
+            icon  = 'exclamation circle'
+            color = 'red'
+            text  = message(code: 'profile.membership.error2')
+        }
 
         out << '<div class="item la-cb-context">'
         out <<     '<span class="ui label" data-display="' + text + '">'
@@ -97,7 +106,7 @@ class ContextBarTagLib {
 
         if (user.isYoda()) {
             text = 'Systemberechtigung: YODA'
-            icon = 'key'
+            icon = 'dungeon'
         }
         else if (user.isAdmin()) {
             text = 'Systemberechtigung: ADMIN'

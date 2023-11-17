@@ -33,9 +33,37 @@ ${message(code: 'email.text.title', locale: language)} ${userName},
 
 </g:elseif>
 <g:else>
-    ${message(code: 'email.survey.participation.finish.text', locale: language)}
+    ${message(code: 'email.survey.participation.finish.text', locale: language, args: [survey.name])}
     <br />
+    <g:if test="${survey.surveyConfigs[0].pickAndChoose}">
+        <g:set var="subscriberSub" value="${survey.surveyConfigs[0].subscription.getDerivedSubscriptionBySubscribers(org)}"/>
+        <g:set var="sumListPriceSelectedIEsEUR" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subscriberSub, survey.surveyConfigs[0], RDStore.CURRENCY_EUR)}"/>
+        <g:set var="sumListPriceSelectedIEsUSD" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subscriberSub, survey.surveyConfigs[0], RDStore.CURRENCY_USD)}"/>
+        <g:set var="sumListPriceSelectedIEsGBP" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subscriberSub, survey.surveyConfigs[0], RDStore.CURRENCY_GBP)}"/>
+
+        ${message(code: 'email.survey.finish.selection.text', locale: language)} ${surveyService.countIssueEntitlementsByIEGroup(subscriberSub, survey.surveyConfigs[0])}
+        <br />
+        ${message(code: 'tipp.price.listPrice')}:
+        <g:if test="${sumListPriceSelectedIEsEUR > 0}">
+            <br>
+            <g:formatNumber
+                    number="${sumListPriceSelectedIEsEUR}" type="currency" currencyCode="EUR"/>
+        </g:if>
+        <g:if test="${sumListPriceSelectedIEsUSD > 0}">
+            <br>
+            <g:formatNumber
+                    number="${sumListPriceSelectedIEsUSD}" type="currency" currencyCode="USD"/>
+        </g:if>
+        <g:if test="${sumListPriceSelectedIEsGBP > 0}">
+            <br>
+            <g:formatNumber
+                    number="${sumListPriceSelectedIEsGBP}" type="currency" currencyCode="GBP"/>
+        </g:if>
+        <br />
+    </g:if>
+    <g:if test="${surveyResults}">
     ${message(code: 'email.survey.participation.finish.text2', locale: language)}
+    </g:if>
 </g:else>
 <br />
 <br />
@@ -89,22 +117,26 @@ ${message(code: 'email.text.title', locale: language)} ${userName},
             </tr>
         </g:each>
     </table>
+    <br />
+    <br />
 </g:if>
-<br />
-<br />
 <g:if test="${survey.type.id == RDStore.SURVEY_TYPE_RENEWAL.id}">
     ${message(code: 'email.survey.participation.finish.renewal.text4', locale: language, args: [generalContactsEMails.join(';')])}
+    <br />
+    <br />
+    <br />
 </g:if>
 <g:elseif test="${survey.type.id == RDStore.SURVEY_TYPE_SUBSCRIPTION.id}">
     ${message(code: 'email.survey.participation.finish.subscriptionSurvey.text3', locale: language)}
     <br />
     <br />
     ${message(code: 'email.survey.participation.finish.subscriptionSurvey.text4', locale: language, args: [generalContactsEMails.join(';')])}
+    <br />
+    <br />
+    <br />
 </g:elseif>
 
-<br />
-<br />
-<br />
+
 ${message(code: 'email.text.end', locale: language)}
 <br />
 ${message(code: 'email.survey.owner', locale: language)}

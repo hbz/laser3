@@ -275,6 +275,28 @@ class ExportClickMeService {
                     ]
             ],
 
+            providers: [
+                    label: 'Provider',
+                    message: 'default.provider.label',
+                    fields: [
+                            'provider.sortname'          : [field: 'sub.providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
+                            'provider.name'              : [field: 'sub.providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
+                            'provider.altnames'          : [field: 'sub.providers.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altnames'],
+                            'provider.url'               : [field: 'sub.providers.url', label: 'Url', message: 'exportClickMe.provider.url']
+                    ]
+            ],
+
+            agencies: [
+                    label: 'Agency',
+                    message: 'default.agency.label',
+                    fields: [
+                            'agency.sortname'          : [field: 'sub.agencies.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
+                            'agency.name'              : [field: 'sub.agencies.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
+                            'agency.altnames'          : [field: 'sub.agencies.altnames.name', label: 'Alt Name', message: 'exportClickMe.agency.altnames'],
+                            'agency.url'               : [field: 'sub.agencies.url', label: 'Url', message: 'exportClickMe.agency.url'],
+                    ]
+            ],
+
     ]
 
     static Map<String, Object> EXPORT_SUBSCRIPTION_CONFIG = [
@@ -3111,14 +3133,14 @@ class ExportClickMeService {
         renewalData.add([createTableCell(format, messageSource.getMessage('renewalEvaluation.orgsWithParticipationInParentSuccessor.label', null, locale) + " (${renewalResult.orgsWithParticipationInParentSuccessor.size()})", 'positive')])
 
 
-        renewalResult.orgsWithParticipationInParentSuccessor.each { sub ->
+        renewalResult.orgsWithParticipationInParentSuccessor.sort{it.getSubscriber().sortname}.each { sub ->
             CostItem costItem
             if(sub){
                 costItem = CostItem.findBySubAndCostItemStatusNotEqualAndCostItemElement(sub, RDStore.COST_ITEM_DELETED, RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE)
             }
-            sub.getAllSubscribers().sort{it.sortname}.each{ subscriberOrg ->
-                _setRenewalRow([participant: subscriberOrg, sub: sub, multiYearTermTwoSurvey: renewalResult.multiYearTermTwoSurvey, multiYearTermThreeSurvey: renewalResult.multiYearTermThreeSurvey, multiYearTermFourSurvey: renewalResult.multiYearTermFourSurvey, multiYearTermFiveSurvey: renewalResult.multiYearTermFiveSurvey, properties: renewalResult.properties, costItem: costItem], selectedExportFields, renewalData, true, renewalResult.multiYearTermTwoSurvey, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermFourSurvey, renewalResult.multiYearTermFiveSurvey, format, contactSources)
-            }
+            Org org = sub.getSubscriber()
+            _setRenewalRow([participant: org, sub: sub, multiYearTermTwoSurvey: renewalResult.multiYearTermTwoSurvey, multiYearTermThreeSurvey: renewalResult.multiYearTermThreeSurvey, multiYearTermFourSurvey: renewalResult.multiYearTermFourSurvey, multiYearTermFiveSurvey: renewalResult.multiYearTermFiveSurvey, properties: renewalResult.properties, costItem: costItem], selectedExportFields, renewalData, true, renewalResult.multiYearTermTwoSurvey, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermFourSurvey, renewalResult.multiYearTermFiveSurvey, format, contactSources)
+
         }
 
         renewalData.add([createTableCell(format, ' ')])
@@ -3170,11 +3192,11 @@ class ExportClickMeService {
         }
 
         if (renewalResult.orgsWithMultiYearTermSub) {
-            sheetData = _exportAccessPoints(renewalResult.orgsWithMultiYearTermSub.collect { it.getAllSubscribers() }, sheetData, selectedExportFields, locale, " - 2", format)
+            sheetData = _exportAccessPoints(renewalResult.orgsWithMultiYearTermSub.collect { it.getSubscriber() }, sheetData, selectedExportFields, locale, " - 2", format)
         }
 
         if (renewalResult.orgsWithParticipationInParentSuccessor) {
-            sheetData = _exportAccessPoints(renewalResult.orgsWithParticipationInParentSuccessor.collect { it.getAllSubscribers() }, sheetData, selectedExportFields, locale, " - 3", format)
+            sheetData = _exportAccessPoints(renewalResult.orgsWithParticipationInParentSuccessor.collect { it.getSubscriber() }, sheetData, selectedExportFields, locale, " - 3", format)
         }
 
         if (renewalResult.newOrgsContinuetoSubscription) {
@@ -5159,8 +5181,9 @@ class ExportClickMeService {
             }else {
                 fieldValue = fieldValue ? fieldValue[entry] : null
             }
-        }
 
+        }
+    
         if(fieldValue instanceof RefdataValue){
             fieldValue = fieldValue.getI10n('value')
         }

@@ -925,7 +925,7 @@ class SubscriptionControllerService {
      * @see Subscription
      * @see Platform
      */
-    SortedSet getAvailableReports(Map<String, Object> configMap) {
+    SortedSet getAvailableReports(Map<String, Object> configMap, boolean withPlatformReports = true) {
         SortedSet<String> allAvailableReports = new TreeSet<String>()
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         Set<Package> subscribedPackages = configMap.subscription.packages.pkg
@@ -933,7 +933,7 @@ class SubscriptionControllerService {
         subscribedPackages.each { Package pkg ->
             RefdataValue contentType = pkg.contentType
             if(!contentType) {
-                List titleTypes = TitleInstancePackagePlatform.executeQuery('select tipp.medium from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status != :removed group by tipp.medium', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED])
+                List titleTypes = TitleInstancePackagePlatform.executeQuery('select m from TitleInstancePackagePlatform tipp join tipp.medium m where tipp.pkg = :pkg and tipp.status != :removed group by m', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED])
                 if(titleTypes.size() == 1)
                     contentType = titleTypes[0]
             }
@@ -991,7 +991,7 @@ class SubscriptionControllerService {
                             availableReports.list.each { listEntry ->
                                 String reportType = listEntry["Report_ID"].toLowerCase()
                                 if(reportType in Counter5Report.COUNTER_5_REPORTS) {
-                                    if(reportType in Counter5Report.COUNTER_5_PLATFORM_REPORTS)
+                                    if(reportType in Counter5Report.COUNTER_5_PLATFORM_REPORTS && withPlatformReports)
                                         allAvailableReports.add(reportType)
                                     else {
                                         switch(contentTypes.get(contentType)) {
@@ -1016,10 +1016,13 @@ class SubscriptionControllerService {
                                 break
                             case 'Journal': allAvailableReports.addAll(Counter4Report.COUNTER_4_JOURNAL_REPORTS)
                                 break
-                            default: allAvailableReports.addAll(Counter4Report.COUNTER_4_REPORTS)
+                            default: allAvailableReports.addAll(Counter4Report.COUNTER_4_TITLE_REPORTS)
                                 break
                         }
-                        allAvailableReports.addAll(Counter4Report.COUNTER_4_PLATFORM_REPORTS)
+                        if(withPlatformReports) {
+                            allAvailableReports.addAll(Counter4Report.COUNTER_4_PLATFORM_REPORTS)
+                            allAvailableReports.addAll(Counter4Report.COUNTER_4_DATABASE_REPORTS)
+                        }
                     }
                 }
             }
@@ -1468,19 +1471,21 @@ class SubscriptionControllerService {
                     result.subscription.syncAllShares(synShareTargetList)
 
                     if(packagesToProcess) {
-                        globalService.cleanUpGorm() //needed for that the subscriptions are present in the moment of the parallel process
-                        executorService.execute({
-                            Thread.currentThread().setName("PackageTransfer_"+result.subscription.id)
-                            packagesToProcess.each { Package pkg ->
-                                subscriptionService.addToMemberSubscription(result.subscription, memberSubs, pkg, params.linkWithEntitlements == 'on')
-                                /*
-                                if()
-                                    subscriptionService.addToSubscriptionCurrentStock(memberSub, result.subscription, pkg)
-                                else
-                                    subscriptionService.addToSubscription(memberSub, pkg, false)
-                                */
-                            }
-                        })
+                        //needed for that the subscriptions are present in the moment of the parallel process
+                        Subscription.withNewTransaction {
+                            executorService.execute({
+                                Thread.currentThread().setName("PackageTransfer_"+result.subscription.id)
+                                packagesToProcess.each { Package pkg ->
+                                    subscriptionService.addToMemberSubscription(result.subscription, memberSubs, pkg, params.linkWithEntitlements == 'on')
+                                    /*
+                                    if()
+                                        subscriptionService.addToSubscriptionCurrentStock(memberSub, result.subscription, pkg)
+                                    else
+                                        subscriptionService.addToSubscription(memberSub, pkg, false)
+                                    */
+                                }
+                            })
+                        }
                     }
                 } else {
                     [result:result,status:STATUS_ERROR]
@@ -2579,16 +2584,17 @@ class SubscriptionControllerService {
 
             result.subscriber = result.subscription.getSubscriber()
             params.issueEntitlementStatus = RDStore.TIPP_STATUS_CURRENT
+            params.subscription = result.subscription
             params.addEntitlements = true
             List packages = []
             if(params.pkgfilter)
                 packages << Package.get(params.pkgfilter)
             else packages = result.subscription.packages?.pkg
 
-            result.countAllTitles = TitleInstancePackagePlatform.executeQuery('''select count(*) from TitleInstancePackagePlatform as tipp where 
+            /*int countAllTitles = TitleInstancePackagePlatform.executeQuery('''select count(*) from TitleInstancePackagePlatform as tipp where
                                     tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = :subscription ) and 
                                     ( not exists ( select ie from IssueEntitlement ie where ie.subscription = :subscription and ie.tipp.id = tipp.id and ie.status != :issueEntitlementStatus ) ) ''',
-            [subscription: result.subscription, issueEntitlementStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+            [subscription: result.subscription, issueEntitlementStatus: RDStore.TIPP_STATUS_REMOVED])[0]*/
 
             params.tab = params.tab ?: 'allTipps'
 
@@ -2602,11 +2608,22 @@ class SubscriptionControllerService {
 
             if(result.subscription.packages?.pkg) {
                 Set<Long> tippIds = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
-                if(tippIds)
-                    tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(tippIds.drop(result.offset).take(result.max),[sort:'sortname']))
+                Map<TitleInstancePackagePlatform, List<PermanentTitle>> permanentTitles = [:]
+                if(tippIds) {
+                    Set<Long> subset = tippIds.drop(result.offset).take(result.max)
+                    tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(subset, [sort: 'sortname']))
+                    tipps.each { TitleInstancePackagePlatform tipp ->
+                        List<PermanentTitle> pts = surveyService.listParticipantPerpetualAccessToTitle(result.institution, tipp)
+                        if(pts)
+                            permanentTitles.put(tipp, pts)
+                    }
+                }
 
                 result.num_tipp_rows = tippIds.size()
                 result.tipps = tipps
+                result.permanentTitles = permanentTitles
+                if(permanentTitles.size() == tipps.size() && tipps.size() > 0)
+                    result.allPerpetuallyBought = 'subscription.details.addEntitlements.allPerpetuallyBought'
                 result.tippIDs = tippIds
                 String filename
                 if(params.pagination) {

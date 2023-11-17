@@ -1,6 +1,5 @@
 package de.laser
 
-import de.laser.titles.TitleInstance
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -554,11 +553,6 @@ class PersonController  {
                     subjectType             = "subscription"
                     subjectFormOptionValue  = "name"
                 }
-                else if(roleRdv?.value == "Specific title editor") {
-                    allSubjects             = TitleInstance.getAll()
-                    subjectType             = "titleInstance"
-                    subjectFormOptionValue  = "normTitle"
-                }
             }
             
             render view: 'ajax/addPersonRole', model: [
@@ -727,12 +721,6 @@ class PersonController  {
                         if (params.subscription) {
                             subject = Subscription.get(params.subscription[key])
                             result = new PersonRole(prs: prs, responsibilityType: roleRdv, org: org, sub: subject)
-                        }
-                        break;
-                    case "titleInstance":
-                        if (params.titleInstance) {
-                            subject = TitleInstance.get(params.titleInstance[key])
-                            result = new PersonRole(prs: prs, responsibilityType: roleRdv, org: org, title: subject)
                         }
                         break;
                 }

@@ -1,9 +1,9 @@
 <%@ page import="de.laser.remote.ApiSource; de.laser.Platform; de.laser.base.AbstractReport; grails.converters.JSON; de.laser.CustomerIdentifier" %>
 <laser:serviceInjection/>
 <%
-    Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: subscriberSub])
+    Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscriberSub", [subscriberSub: subscriberSub])
     if(!subscribedPlatforms) {
-        subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription", [subscription: subscriberSub])
+        subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscriberSub", [subscriberSub: subscriberSub])
     }
     Map<String, Map> platformInstanceRecords = [:]
     JSON platformsJSON = subscribedPlatforms.globalUID as JSON
@@ -27,18 +27,18 @@
                 records[0].id = platformInstance.id
                 platformInstanceRecords[platformInstance.gokbId] = records[0]
             }
-        }
-        CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(subscriber, platformInstance)
-        if(ci?.value) {
-            reportTypes = subscriptionControllerService.getAvailableReports([subscription: subscriberSub])
-        }
-        else if(ci) {
-            dummyCIs << ci
-        }
-        else {
-            CustomerIdentifier dummyCI = new CustomerIdentifier(customer: subscriber, platform: platformInstance, owner: institution)
-            dummyCI.save()
-            dummyCIs << dummyCI
+            CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(subscriber, platformInstance)
+            if(ci?.value) {
+                reportTypes = subscriptionControllerService.getAvailableReports([subscription: subscriberSub], false)
+            }
+            else if(ci) {
+                dummyCIs << ci
+            }
+            else {
+                CustomerIdentifier dummyCI = new CustomerIdentifier(customer: subscriber, platform: platformInstance, owner: institution)
+                dummyCI.save()
+                dummyCIs << dummyCI
+            }
         }
     }
 %>

@@ -180,26 +180,23 @@ class SurveyControllerService {
             result.parentSubChilds.each { Subscription sub ->
                 if (sub.isCurrentMultiYearSubscriptionToParentSub()) {
                     result.orgsWithMultiYearTermSub << sub
-                    sub.getAllSubscribers().each { org ->
-                        orgsWithMultiYearTermOrgsID << org.id
-                    }
+                    orgsWithMultiYearTermOrgsID << sub.getSubscriber().id
+
                 } else {
-                    sub.getAllSubscribers().each { org ->
-                        currentParticipantIDs << org.id
-                    }
+                    println(sub)
+                        currentParticipantIDs << sub.getSubscriber().id
                 }
             }
 
 
             result.orgsWithParticipationInParentSuccessor = []
             result.parentSuccessorSubChilds.each { sub ->
-                sub.getAllSubscribers().each { org ->
+                Org org = sub.getSubscriber()
                     if (!(org.id in orgsWithMultiYearTermOrgsID) || !(org.id in currentParticipantIDs)) {
                         result.orgsWithParticipationInParentSuccessor << sub
                     }
-                }
             }
-
+            result.orgsWithParticipationInParentSuccessor = result.orgsWithParticipationInParentSuccessor.sort{it.getSubscriber().sortname}
 
             result.orgInsertedItself = []
 
@@ -488,7 +485,7 @@ class SurveyControllerService {
                 result.orgsWithoutResult?.remove(it)
             }*/
 
-                result.orgsWithMultiYearTermSub = result.orgsWithMultiYearTermSub.sort { it.getAllSubscribers().sortname }
+                result.orgsWithMultiYearTermSub = result.orgsWithMultiYearTermSub.sort { it.getSubscriber().sortname }
 
             }
 

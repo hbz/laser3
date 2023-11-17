@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
@@ -297,7 +298,7 @@ class TaskService {
      * @return a list of organisation
      */
     private Set<Map> _getOrgsDropdown(Org contextOrg) {
-        Set validOrgs = [], validOrgsDropdown = []
+        Set<Map> validOrgs = [], validOrgsDropdown = []
         if (contextOrg) {
             boolean isInstitution = (contextOrg.isCustomerType_Inst())
             boolean isConsortium  = (contextOrg.isCustomerType_Consortium())
@@ -307,21 +308,26 @@ class TaskService {
             //def fsq          = filterService.getOrgQuery(params)
             //validOrgs = Org.executeQuery('select o.id, o.name, o.sortname from Org o where (o.status is null or o.status != :orgStatus) order by  LOWER(o.sortname), LOWER(o.name) asc', fsq.queryParams)
 
-            String comboQuery = 'select new map(o.id as id, o.name as name, o.sortname as sortname) from Org o join o.outgoingCombos c where c.toOrg = :toOrg and c.type = :type order by '+params.sort
-            if (isConsortium){
+            if (isConsortium) {
+                String comboQuery = 'select new map(o.id as id, o.name as name, o.sortname as sortname) from Org o join o.outgoingCombos c where c.toOrg = :toOrg and c.type = :type order by '+params.sort
                 validOrgs = Combo.executeQuery(comboQuery,
                         [toOrg: contextOrg,
                         type:  RDStore.COMBO_TYPE_CONSORTIUM])
             }
+            else if (isInstitution) {
+                String consQuery = 'select new map(o.id as id, o.name as name, o.sortname as sortname) from OrgSetting os join os.org o where os.key = :customerType and os.roleValue in (:consortium) order by '+params.sort
+                validOrgs.addAll(Org.executeQuery(consQuery, [customerType: OrgSetting.KEYS.CUSTOMER_TYPE, consortium: Role.findAllByAuthorityInList([CustomerTypeService.ORG_CONSORTIUM_PRO, CustomerTypeService.ORG_CONSORTIUM_BASIC])]))
+            }
+            String provQuery = 'select new map(o.id as id, o.name as name, o.sortname as sortname) from Org o join o.orgType ot where ot in (:providerAgency) order by '+params.sort
+            validOrgs.addAll(Org.executeQuery(provQuery, [providerAgency: [RDStore.OT_PROVIDER, RDStore.OT_AGENCY]]))
+            validOrgs = validOrgs.sort { a, b -> !a.sortname ? !b.sortname ? 0 : 1 : !b.sortname ? -1 : a.sortname <=> b.sortname }
             validOrgs.each { row ->
                 Long optionKey = row.id
-                if (isConsortium) {
-                    String optionValue
-                    if(row.sortname)
-                        optionValue = "${row.name} (${row.sortname})"
-                    else optionValue = "${row.name}"
-                    validOrgsDropdown << [optionKey: optionKey, optionValue: optionValue]
-                }
+                String optionValue
+                if(row.sortname)
+                    optionValue = "${row.name} (${row.sortname})"
+                else optionValue = "${row.name}"
+                validOrgsDropdown << [optionKey: optionKey, optionValue: optionValue]
             }
         }
         validOrgsDropdown

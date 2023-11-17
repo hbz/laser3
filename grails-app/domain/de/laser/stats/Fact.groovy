@@ -24,7 +24,6 @@ class Fact {
     @RefdataInfo(cat = RDConstants.FACT_METRIC)
     RefdataValue factMetric
 
-    //TitleInstance relatedTitle
     TitleInstancePackagePlatform relatedTitle
     Platform supplier
     Org inst

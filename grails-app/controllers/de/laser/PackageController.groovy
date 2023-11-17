@@ -487,6 +487,9 @@ class PackageController {
                 case 'kbart': response.contentType = "text/tsv"
                     extension = "tsv"
                     break
+                case 'txt': response.contentType = "text/tsv"
+                    extension = "txt"
+                    break
                 case 'csv': response.contentType = "text/csv"
                     extension = "csv"
                     break
