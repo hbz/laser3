@@ -8,7 +8,7 @@
         <ui:modal id="frontend" message="org.discoverySystems.frontend.add">
             <g:form class="ui form" url="[controller: 'organisation', action: 'addDiscoverySystem',id:org.id]" method="post">
                 <div class="field">
-                    <label><g:message code="org.discoverySystems.frontend.label"/>:</label>
+                    <label for="frontendSelection"><g:message code="org.discoverySystems.frontend.label"/>:</label>
 
                     <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.DISCOVERY_SYSTEM_FRONTEND)}"
                               class="ui dropdown fluid"
@@ -29,7 +29,7 @@
         <ui:modal id="index" message="org.discoverySystems.index.add">
             <g:form class="ui form" url="[controller: 'organisation', action: 'addDiscoverySystem', id:org.id]" method="post">
                 <div class="field">
-                    <label><g:message code="org.discoverySystems.index.label"/>:</label>
+                    <label for="indexSelection"><g:message code="org.discoverySystems.index.label"/>:</label>
 
                     <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.DISCOVERY_SYSTEM_INDEX)}"
                               class="ui dropdown fluid"
