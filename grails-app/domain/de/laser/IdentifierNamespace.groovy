@@ -3,7 +3,6 @@ package de.laser
 import de.laser.base.AbstractI10n
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.storage.BeanStore
-import de.laser.titles.TitleInstance
 import groovy.util.logging.Slf4j
 
 /**
