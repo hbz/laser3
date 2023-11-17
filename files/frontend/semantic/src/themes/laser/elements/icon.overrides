@@ -191,6 +191,8 @@ i.icon.la-sort-dec-jan:before { content: "\e91c"; }
 i.icon.la-copy.open:before { content: "\f24d"; }
 i.icon.la-copy:before { content: "\f24d"; }
 i.icon.la-phone.open:before { content: "\f095"; transform: rotate(45deg);}
+i.icon.map.marker.open:before {  transform: rotate(26deg);}
+
 i.icon.la-phone:before { content: "\f095"; }
 
 i.icon.la-basket-shopping.slash:before { content: "\e91d"; }
