@@ -37177,6 +37177,10 @@ i.icon.la-phone.open:before {
   transform: rotate(45deg);
 }
 
+i.icon.map.marker.open:before {
+  transform: rotate(26deg);
+}
+
 i.icon.la-phone:before {
   content: "\f095";
 }
@@ -52065,10 +52069,16 @@ legend {
   border: none;
   padding-top: 10px;
   padding-bottom: 0;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
 }
 
 .ui.segment.la-timeLineSegment-contact .ui.header {
-  margin-top: 0.5rem;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.ui.segment.la-timeLineSegment-contact .ui.label {
   margin-bottom: 0.5rem;
 }
 

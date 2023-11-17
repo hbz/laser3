@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.remote.ApiSource; grails.converters.JSON; de.laser.storage.RDStore; de.laser.Platform;de.laser.titles.BookInstance; de.laser.IssueEntitlementGroup;" %>
+<%@ page import="de.laser.Subscription; de.laser.remote.ApiSource; grails.converters.JSON; de.laser.storage.RDStore; de.laser.Platform; de.laser.IssueEntitlementGroup" %>
 
 <laser:htmlStart message="subscription.details.addEntitlements.label" serviceInjection="true" />
 
@@ -92,7 +92,7 @@
 <g:form action="processAddEntitlements" class="ui form">
     <input type="hidden" name="id" value="${subscription.id}"/>
 
-    <g:if test="${tipps}">
+    <g:if test="${tipps && !allPerpetuallyBought}">
         <div class="field">
             <g:if test="${blockSubmit}">
                 <ui:msg header="${message(code:"message.attention")}" message="subscription.details.addEntitlements.thread.running" />
@@ -136,12 +136,14 @@
     %>
 
     <div class="ui accordion la-accordion-showMore" id="surveyEntitlements">
+        <g:if test="${allPerpetuallyBought}">
+            <ui:msg message="${message(code: allPerpetuallyBought)}" noClose="true"/>
+        </g:if>
         <g:if test="${tipps}">
-            <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>
+            <g:if test="${editable && !allPerpetuallyBought}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>
             <g:each in="${tipps}" var="tipp">
 
-                <g:set var="participantPerpetualAccessToTitle"
-                       value="${surveyService.listParticipantPerpetualAccessToTitle(institution, tipp)}"/>
+                <g:set var="participantPerpetualAccessToTitle" value="${permanentTitles.containsKey(tipp) ? permanentTitles.get(tipp) : []}"/>
 
                 <div class="ui raised segments la-accordion-segments">
 
@@ -403,16 +405,18 @@
 
     <g:if test="${tipps}">
         <div class="paginateButtons" style="text-align:center">
-            <div class="field">
-                <g:if test="${blockSubmit}">
-                    <ui:msg header="${message(code:"message.attention")}" message="subscription.details.addEntitlements.thread.running" />
-                </g:if>
-                <a class="ui left floated button" id="processButton3" data-ui="modal" href="#linkToIssueEntitlementGroup" ${blockSubmit ? 'disabled="disabled"' : '' }>
-                    ${checkedCount} <g:message code="subscription.details.addEntitlements.add_selectedToIssueEntitlementGroup"/></a>
+            <g:if test="${!allPerpetuallyBought}">
+                <div class="field">
+                    <g:if test="${blockSubmit}">
+                        <ui:msg header="${message(code:"message.attention")}" message="subscription.details.addEntitlements.thread.running" />
+                    </g:if>
+                    <a class="ui left floated button" id="processButton3" data-ui="modal" href="#linkToIssueEntitlementGroup" ${blockSubmit ? 'disabled="disabled"' : '' }>
+                        ${checkedCount} <g:message code="subscription.details.addEntitlements.add_selectedToIssueEntitlementGroup"/></a>
 
-                <button type="submit" name="process" id="processButton4" value="withoutTitleGroup" ${blockSubmit ? 'disabled="disabled"' : '' } class="ui right floated button">
-                    ${checkedCount} ${message(code: 'subscription.details.addEntitlements.add_selected')}</button>
-            </div>
+                    <button type="submit" name="process" id="processButton4" value="withoutTitleGroup" ${blockSubmit ? 'disabled="disabled"' : '' } class="ui right floated button">
+                        ${checkedCount} ${message(code: 'subscription.details.addEntitlements.add_selected')}</button>
+                </div>
+            </g:if>
         </div>
 
         <br>

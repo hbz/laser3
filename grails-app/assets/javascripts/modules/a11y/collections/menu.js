@@ -30,7 +30,10 @@ a11yMenu = {
         // for Test Main Menu on dev/index view
         $('#mainMenueTest .dropdown').dropdown({
             action: function (text, value, element) {
-                element.click()
+                if(event.type === 'keydown') {
+                    $('html').css('cursor', 'wait');
+                    (element.clone())[0].click();
+                }
             },
             selectOnKeydown        : false,
             on: 'hover',

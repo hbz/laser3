@@ -45,9 +45,9 @@
     <br />
 
     <div class="ui form">
-        <div class="field">
+        <%--<div class="field">
             <g:textArea id="emailAddressesTextArea" name="emailAddresses" readonly="false" rows="5" cols="1" class="myTargetsNeu" style="width: 100%;" />
-        </div>
+        </div>--%>
         <button class="ui icon button right floated" onclick="JSPC.app.copyToClipboard()">
             ${message(code:'menu.institutions.copy_emailaddresses_to_clipboard')}
         </button>
@@ -60,13 +60,15 @@
             <tr>
                 <th><g:checkBox name="copyMailToggler" id="copyMailToggler" checked="true"/></th>
                 <th><g:message code="org.sortname.label"/></th>
+                <th>${RDStore.CCT_EMAIL.getI10n('value')}</th>
             </tr>
         </thead>
         <tbody>
             <g:each in="${orgList}" var="org">
-                <tr>
+                <tr id="org${org.id}">
                     <td><g:checkBox id="toCopyMail_${org.id}" name="copyMail" class="orgSelector" value="${org.id}" checked="true"/></td>
                     <td>${org.sortname}</td>
+                    <td><span class="address"></span></td>
                 </tr>
             </g:each>
         </tbody>
@@ -77,26 +79,33 @@
         JSPC.app.jsonOrgIdList = null
 
         JSPC.app.copyToEmailProgram = function () {
-            var emailAdresses = $("#emailAddressesTextArea").val();
+            let emailAdresses = $(".address:visible").map((i, el) => el.innerText.trim()).get().join('; ');
             window.location.href = "mailto:" + emailAdresses;
         }
 
         JSPC.app.copyToClipboard = function () {
-            $("#emailAddressesTextArea").select();
+            let textArea = document.createElement("textarea");
+            textArea.value = $(".address:visible").map((i, el) => el.innerText.trim()).get().join('; ');
+            $("body").append(textArea);
+            textArea.select();
             document.execCommand("copy");
+            textArea.remove();
         }
 
         JSPC.app.updateTextArea = function () {
-            var isPrivate = $("#privateContacts").is(":checked")
-            var isPublic = $("#publicContacts").is(":checked")
-            $("#emailAddressesTextArea").val("")
+            var isPrivate = $("#privateContacts").is(":checked");
+            var isPublic = $("#publicContacts").is(":checked");
+            $(".address").text("");
             var selectedRoleTypIds = $("#prsFunctionMultiSelect").val().concat( $("#prsPositionMultiSelect").val() );
 
             $.ajax({
                 url: '<g:createLink controller="ajaxJson" action="getEmailAddresses"/>'
                 + '?isPrivate=' + isPrivate + '&isPublic=' + isPublic + '&selectedRoleTypIds=' + selectedRoleTypIds + '&orgIdList=' + JSPC.app.jsonOrgIdList,
                 success: function (data) {
-                    $("#emailAddressesTextArea").val(data.join('; '));
+                    //$("#emailAddressesTextArea").val(data.join('; '));
+                    $.each(data, function (i, e) {
+                        $("#"+i+" span.address").text(e.join('; '));
+                    });
                 }
             });
         }
@@ -124,16 +133,19 @@
         $("#publicContacts").change(function()          { JSPC.app.updateTextArea(); });
 
         $('.orgSelector').change(function() {
-            updateMailAddressList();
+            //updateMailAddressList();
+            $('#org'+$(this).val()+' span.address').toggle();
         });
 
         $('#copyMailToggler').change(function() {
             if ($(this).prop('checked')) {
                 $(".orgSelector").prop('checked', true);
+                $('.address').show();
             } else {
                 $(".orgSelector").prop('checked', false);
+                $('.address').hide();
             }
-            updateMailAddressList();
+            //updateMailAddressList();
         });
 
     </laser:script>

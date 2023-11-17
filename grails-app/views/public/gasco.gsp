@@ -183,7 +183,7 @@
                                         </g:each>
                                         <g:each in="${Contact.findAllByPrsAndContentType( person, RDStore.CCT_EMAIL )}" var="prsContact">
                                             <div class="description js-copyTriggerParent">
-                                                <i class="ui icon envelope outline la-list-icon js-copyTrigger"></i>
+                                                <i class="ui icon envelope outline la-list-icon js-copyTrigger la-js-copyTriggerIcon la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}"></i>
                                                 <span class="la-popup-tooltip la-delay" data-position="right center" data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
                                                     <a class="la-break-all js-copyTopic" href="mailto:${prsContact?.content}" >${prsContact?.content}</a>
                                                 </span>

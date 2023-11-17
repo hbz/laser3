@@ -1,4 +1,4 @@
-<%@ page import="de.laser.config.ConfigMapper; de.laser.properties.PropertyDefinition; de.laser.UserSetting; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated;" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.config.ConfigMapper; de.laser.properties.PropertyDefinition; de.laser.UserSetting; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -34,9 +34,30 @@ ${message(code: 'surveyconfig.orgs.label', locale: language)}: ${orgName}
 <br />
 
 <g:if test="${survey.surveyConfigs[0].pickAndChoose}">
-    ${message(code: 'email.survey.finish.selection.text', locale: language)} ${surveyService.countIssueEntitlementsByIEGroup(survey.surveyConfigs[0].subscription.getDerivedSubscriptionBySubscribers(org), survey.surveyConfigs[0])}
+    <g:set var="subscriberSub" value="${survey.surveyConfigs[0].subscription.getDerivedSubscriptionBySubscribers(org)}"/>
+    <g:set var="sumListPriceSelectedIEsEUR" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subscriberSub, survey.surveyConfigs[0], RDStore.CURRENCY_EUR)}"/>
+    <g:set var="sumListPriceSelectedIEsUSD" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subscriberSub, survey.surveyConfigs[0], RDStore.CURRENCY_USD)}"/>
+    <g:set var="sumListPriceSelectedIEsGBP" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subscriberSub, survey.surveyConfigs[0], RDStore.CURRENCY_GBP)}"/>
+
+    ${message(code: 'email.survey.finish.selection.text', locale: language)} ${surveyService.countIssueEntitlementsByIEGroup(subscriberSub, survey.surveyConfigs[0])}
     <br />
     <br />
+    ${message(code: 'tipp.price.listPrice')}:
+    <g:if test="${sumListPriceSelectedIEsEUR > 0}">
+        <br>
+        <g:formatNumber
+                number="${sumListPriceSelectedIEsEUR}" type="currency" currencyCode="EUR"/><br/>
+    </g:if>
+    <g:if test="${sumListPriceSelectedIEsUSD > 0}">
+        <br>
+        <g:formatNumber
+                number="${sumListPriceSelectedIEsUSD}" type="currency" currencyCode="USD"/><br/>
+    </g:if>
+    <g:if test="${sumListPriceSelectedIEsGBP > 0}">
+        <br>
+        <g:formatNumber
+                number="${sumListPriceSelectedIEsGBP}" type="currency" currencyCode="GBP"/><br/>
+    </g:if>
 </g:if>
 
 <g:if test="${surveyResults}">
@@ -98,6 +119,6 @@ ${ConfigMapper.getConfig('grails.serverURL', String) + surveyUrl}
 <br />
 <br />
 ${message(code: 'email.profile.settings', locale: language)}
-<laser:render template="/mailTemplates/html/signature" />
+<g:render template="/mailTemplates/html/signature" />
 </body>
 </html>

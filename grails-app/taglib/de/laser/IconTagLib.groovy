@@ -1,11 +1,7 @@
 package de.laser
 
 import de.laser.auth.Role
-import de.laser.auth.User
 import de.laser.storage.RDStore
-import de.laser.titles.BookInstance
-import de.laser.titles.DatabaseInstance
-import de.laser.titles.JournalInstance
 
 class IconTagLib {
 
@@ -87,7 +83,7 @@ class IconTagLib {
                 icon = 'bordered inverted brown tasks la-object-extended'
                 break
             case 'yoda':
-                icon = 'la-object key'
+                icon = 'la-object dungeon'
                 break
         }
         }
@@ -175,15 +171,15 @@ class IconTagLib {
         String icon = 'question'
 
         switch (attrs.type) {
-            case [ 'Journal', JournalInstance.class.name ]:
+            case [ 'Journal' ]:
                 dc = message(code: 'spotlight.journaltitle')
                 icon = 'newspaper outline'
                 break
-            case [ 'Database', DatabaseInstance.class.name ]:
+            case [ 'Database' ]:
                 dc = message(code: 'spotlight.databasetitle')
                 icon = 'database'
                 break
-            case [ 'Book', 'EBook', BookInstance.class.name ]:
+            case [ 'Book', 'EBook' ]:
                 dc = message(code: 'spotlight.ebooktitle')
                 icon = 'tablet alternate'
                 break

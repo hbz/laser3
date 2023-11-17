@@ -26,14 +26,13 @@
             </thead>
             <tbody>
                 <g:each in="${list}" var="org" status="i">
-                    <g:if test="${plusList.contains(org)}">
-                        <tr>
+                    <tr>
+                        <g:if test="${plusList.contains(org)}">
                             <td class="center aligned"><span class="ui label circular green">${i + 1}</span></td>
-                    </g:if>
-                    <g:else>
-                        <tr>
+                        </g:if>
+                        <g:else>
                             <td class="center aligned">${i + 1}</td>
-                    </g:else>
+                        </g:else>
                         <td>${org.sortname}</td>
                         <td>
                             <g:link controller="organisation" action="show" id="${org.id}" target="_blank">${org.name}</g:link>

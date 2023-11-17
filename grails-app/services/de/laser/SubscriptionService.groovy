@@ -854,6 +854,15 @@ join sub.orgRelations or_sub where
         countIes
     }
 
+    Integer countCurrentIssueEntitlementsNotInIEGroup(Subscription subscription, IssueEntitlementGroup issueEntitlementGroup) {
+        Integer countIes = subscription ?
+                IssueEntitlement.executeQuery("select count(*) from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :ieStatus " +
+                        "and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)",
+                        [sub: subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])[0]
+                : 0
+        countIes
+    }
+
 
     /**
      * Gets the current permanent titles for the given subscription
@@ -2471,7 +2480,7 @@ join sub.orgRelations or_sub where
                             ((colMap.doiCol >= 0 && cols[colMap.doiCol].trim().isEmpty()) || colMap.doiCol < 0)) {
                     } else {
                         if (titleUrl) {
-                            tipp = TitleInstancePackagePlatform.findByHostPlatformURL(titleUrl)
+                            tipp = TitleInstancePackagePlatform.findByHostPlatformURLAndPkgInList(titleUrl, subscription.packages.pkg)
                         }
                         if (idCandidate.value && !tipp) {
                             List<TitleInstancePackagePlatform> titles = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp join tipp.ids ident where ident.ns in :namespaces and ident.value = :value and tipp.pkg in (:pkgs) and tipp.status = :tippStatus', [tippStatus: RDStore.TIPP_STATUS_CURRENT, namespaces: idCandidate.namespaces, value: idCandidate.value, pkgs: subscription.packages.pkg])

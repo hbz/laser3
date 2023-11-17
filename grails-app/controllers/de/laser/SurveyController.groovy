@@ -4751,13 +4751,13 @@ class SurveyController {
         //MultiYearTerm Subs
         result.parentSubChilds.each { sub ->
             if (sub.isCurrentMultiYearSubscriptionToParentSub()){
-                sub.getAllSubscribers().each { org ->
+                Org org = sub.getSubscriber()
                     if (!(result.parentSuccessortParticipantsList && org.id in result.parentSuccessortParticipantsList.id)) {
 
                         countNewSubs++
                         result.newSubs.addAll(_processAddMember(sub, result.parentSuccessorSubscription, org, sub.startDate, sub.endDate, true, params))
                     }
-                }
+
             }
 
         }

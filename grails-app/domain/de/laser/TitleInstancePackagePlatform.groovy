@@ -69,7 +69,6 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
     String editionDifferentiator
   //String rectype="so"
     String gokbId
-  //TitleInstance title
 
     @RefdataInfo(cat = RDConstants.TIPP_STATUS)
     RefdataValue status
@@ -168,7 +167,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
       ddcs                  batchSize: 10
       languages             batchSize: 10
       coverages             batchSize: 10, sort: 'startDate', order: 'asc'
-      priceItems            batchSize: 10, sort: 'startDate', order: 'asc'
+      priceItems            batchSize: 10, sort: 'listCurrency', order: 'asc'
   }
 
     static constraints = {

@@ -7,6 +7,30 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5414    16.11.2023  rc-3.3  3.3         Andreas Bug         obsoleten Menüpunkt entfernt
+
+5413    16.11.2023  rc-3.3  3.3         Andreas Bug         Abfragefehler korrigiert
+
+5392    16.11.2023  rc-3.3  3.3         David   Bug         Merkmale werden bei Adresskontakten nicht eingeladen
+
+5402    15.11.2023  rc-3.3  3.3         Andreas Bug         Paket hinzufügen für TN behoben
+
+5401    15.11.2023  rc-3.3  3.3         Andreas Bug         Organisationsdropdown befüllt
+
+5398    15.11.2023  rc-3.3  3.3         Andreas Bug         Gruppierklausel korrigiert
+
+5400    15.11.2023  rc-3.3  3.3         Andreas Bug         Umrüstung fehlte an zwei Exports
+
+5403    14.11.2023  rc-3.3  3.3         Moe     Feature     Mail Titelumfrage mit Preise versehen
+
+5364    14.11.2023  rc-3.3  3.3         Andreas Feature     Kostenupload überarbeitet
+
+5384    13.11.2023  rc-3.2  3.2.8       Moe     Bug         Titelauswahl: Anzeige bisheriger/ausgewählter Bestand nicht mehr aussagekräftig
+
+5391    10.11.2023  rc-3.2  3.3-RC      Moe     Bug         Uneinheitliche Sortierung der Einrichtungen
+
+5179    10.11.2023  rc-3.2  3.3-RC      Moe     Feature     ClickMe-Excel Teilnehmerreiter subscription/members: Anbieter mit ausgeben
+
 5385    09.11.2023  dev     3.3         Andreas Feature     EZB-Ausgaben abgeschaltet
 
 5372    09.11.2023  dev     3.3         Andreas Feature     Benachrichtigung von Massenprozessen implementiert
@@ -132,6 +156,8 @@
 2276    11.10.2023  dev     3.3         David   Feature     Neuer Kundentyp: ORG_ADMINISTRATION
 
 4636    11.10.2023  dev     3.3         David   Feature     SystemEvents per Mail - Refactoring
+
+5292    10.10.2023  dev     3.3         David   Feature     Kostenentwicklung in Reporting aufnehmen
 
 5315    10.10.2023  dev     3.3         Andreas Bug         Toggle für Sichtbarschaltung aller Kosten eingebaut
 

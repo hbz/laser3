@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.Subscription; de.laser.titles.BookInstance; de.laser.remote.ApiSource; de.laser.Org;" %>
+<%@ page import="de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.Subscription; de.laser.remote.ApiSource; de.laser.Org" %>
 <laser:htmlStart message="subscription.details.renewEntitlements.label" serviceInjection="true"/>
 
 <ui:breadcrumbs>
