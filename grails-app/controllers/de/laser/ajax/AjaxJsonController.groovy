@@ -1137,7 +1137,7 @@ class AjaxJsonController {
      */
     @Secured(['ROLE_USER'])
     def getEmailAddresses() {
-        List result = []
+        Map result = [:]
 
         if (params.orgIdList) {
             List<Long> orgIds = params.orgIdList.split(',').collect{ Long.parseLong(it) }
@@ -1174,9 +1174,15 @@ class AjaxJsonController {
             }
 
             List<Person> persons = Person.executeQuery(query, queryParams)
-            if (persons) {
-                result = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
-                        [persons: persons, contentType: RDStore.CCT_EMAIL])
+            persons.each { Person p ->
+                Contact mail = Contact.findByPrsAndContentType(p, RDStore.CCT_EMAIL)
+                if(mail) {
+                    Set<String> mails = result.get("org${p.roleLinks.org.id[0]}".toString())
+                    if(!mails)
+                        mails = []
+                    mails << mail.content
+                    result.put("org${p.roleLinks.org.id[0]}".toString(), mails)
+                }
             }
         }
 

@@ -412,87 +412,21 @@
                         <dl>
                             <dt><g:message code="org.discoverySystems.frontend.label" /></dt>
                             <dd>
-                                <div id="discoverySystemsFrontend" class="ui divided middle aligned selection list la-flex-list accordion">
-                                    <g:if test="${orgInstance.discoverySystemFrontends}">
-                                        <div class="title" id="frontend_title">
-                                            <div data-objId="${genericOIDService.getOID(orgInstance.discoverySystemFrontends[0])}">
-                                                <ui:xEditableRefData owner="${orgInstance.discoverySystemFrontends[0]}" field="frontend" config="${RDConstants.DISCOVERY_SYSTEM_FRONTEND}" overwriteEditable="${editable}"/>
-                                                <g:if test="${editable}">
-                                                    <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'frontend', objId: orgInstance.discoverySystemFrontends[0].id]"
-                                                                   data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.frontend", args: [orgInstance.discoverySystemFrontends[0].frontend.getI10n('value')])}"
-                                                                   data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(orgInstance.discoverySystemFrontends[0])}')">
-                                                        <i class="trash alternate outline icon"></i>
-                                                    </ui:remoteLink>
-                                                </g:if>
-                                            </div>
-                                            <i class="dropdown icon"></i>
-                                        </div>
-                                        <div class="content">
-                                            <g:each in="${orgInstance.discoverySystemFrontends.drop(1)}" var="frontend">
-                                                <div class="ui item" data-objId="${genericOIDService.getOID(frontend)}">
-                                                    <div class="content la-space-right">
-                                                        <ui:xEditableRefData owner="${frontend}" field="frontend" config="${RDConstants.DISCOVERY_SYSTEM_FRONTEND}" overwriteEditable="${editable}"/>
-                                                    </div>
-                                                    <g:if test="${editable}">
-                                                        <div class="content la-space-right">
-                                                            <div class="ui buttons">
-                                                                <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'frontend', objId: frontend.id]"
-                                                                               data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.frontend", args: [frontend.frontend.getI10n('value')])}"
-                                                                               data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(frontend)}')">
-                                                                    <i class="trash alternate outline icon"></i>
-                                                                </ui:remoteLink>
-                                                            </div>
-                                                        </div>
-                                                    </g:if>
-                                                </div>
-                                            </g:each>
-                                        </div>
-                                    </g:if>
-                                </div>
-                                <input name="addFrontend" id="addFrontend" type="button" class="ui button addListValue" data-objtype="frontend" value="${message(code: 'org.discoverySystems.frontend.add')}">
+                                <laser:render template="discoverySystemAsList"
+                                              model="${[org: orgInstance, config: 'discoverySystemFrontend', editable: editable]}"/>
+
+                                <laser:render template="discoverySystemModal"
+                                              model="${[org: orgInstance, config: 'discoverySystemFrontend', editable: editable]}"/>
                             </dd>
                         </dl>
                         <dl>
                             <dt><g:message code="org.discoverySystems.index.label" /></dt>
                             <dd>
-                                <div id="discoverySystemsIndex" class="ui divided middle aligned selection list la-flex-list accordion">
-                                    <g:if test="${orgInstance.discoverySystemIndices}">
-                                        <div class="title" id="index_title">
-                                            <div data-objId="${genericOIDService.getOID(orgInstance.discoverySystemIndices[0])}">
-                                                <ui:xEditableRefData owner="${orgInstance.discoverySystemIndices[0]}" field="index" config="${RDConstants.DISCOVERY_SYSTEM_INDEX}" overwriteEditable="${editable}"/>
-                                                <g:if test="${editable}">
-                                                    <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'index', objId: orgInstance.discoverySystemIndices[0].id]"
-                                                                   data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.index", args: [orgInstance.discoverySystemIndices[0].index.getI10n('value')])}"
-                                                                   data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(orgInstance.discoverySystemIndices[0])}')">
-                                                        <i class="trash alternate outline icon"></i>
-                                                    </ui:remoteLink>
-                                                </g:if>
-                                            </div>
-                                            <i class="dropdown icon"></i>
-                                        </div>
-                                        <div class="content">
-                                            <g:each in="${orgInstance.discoverySystemIndices.drop(1)}" var="index">
-                                                <div class="ui item" data-objId="${genericOIDService.getOID(index)}">
-                                                    <div class="content la-space-right">
-                                                        <ui:xEditableRefData owner="${index}" field="index" config="${RDConstants.DISCOVERY_SYSTEM_INDEX}" overwriteEditable="${editable}"/>
-                                                    </div>
-                                                    <g:if test="${editable}">
-                                                        <div class="content la-space-right">
-                                                            <div class="ui buttons">
-                                                                <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'index', objId: index.id]"
-                                                                               data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.index", args: [index.index.getI10n('value')])}"
-                                                                               data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(index)})'">
-                                                                    <i class="trash alternate outline icon"></i>
-                                                                </ui:remoteLink>
-                                                            </div>
-                                                        </div>
-                                                    </g:if>
-                                                </div>
-                                            </g:each>
-                                        </div>
-                                    </g:if>
-                                </div>
-                                <input name="addIndex" id="addIndex" type="button" class="ui button addListValue" data-objtype="index" value="${message(code: 'org.discoverySystems.index.add')}">
+                                <laser:render template="discoverySystemAsList"
+                                              model="${[org: orgInstance, config: 'discoverySystemIndex', editable: editable]}"/>
+
+                                <laser:render template="discoverySystemModal"
+                                              model="${[org: orgInstance, config: 'discoverySystemIndex', editable: editable]}"/>
                             </dd>
                         </dl>
                         <dl>

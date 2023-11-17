@@ -1678,10 +1678,24 @@ class OrganisationController  {
         result.num_visibleAddresses = visibleAddresses.size()
         result.addresses = visibleAddresses.drop(result.addressOffset).take(result.max)
 
+        /*
         if (visiblePersons){
-            result.emailAddresses = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
+            result.emailAddresses = Contact.executeQuery("select new map(c.prs as person, c.content as mail) from Contact c join c.prs p join p.roleLinks pr join pr.org o where p in (:persons) and c.contentType = :contentType order by o.sortname",
                     [persons: visiblePersons, contentType: RDStore.CCT_EMAIL])
         }
+        */
+        Map<Org, String> emailAddresses = [:]
+        visiblePersons.each { Person p ->
+            Contact mail = Contact.findByPrsAndContentType(p, RDStore.CCT_EMAIL)
+            if(mail) {
+                Set<String> mails = emailAddresses.get(p.roleLinks.org[0])
+                if(!mails)
+                    mails = []
+                mails << mail.content
+                emailAddresses.put(p.roleLinks.org[0], mails)
+            }
+        }
+        result.emailAddresses = emailAddresses
 
         result
     }
@@ -1918,6 +1932,57 @@ class OrganisationController  {
     }
 
     /**
+     * Assigns the given discovery system to the given organisation
+     */
+    @Transactional
+    @Secured(['ROLE_USER'])
+    def addDiscoverySystem() {
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
+
+        if (!result.orgInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        result.editable = _checkIsEditable(result.user, result.orgInstance)
+        if (result.editable) {
+            if(params.containsKey('frontend')) {
+                RefdataValue newFrontend = RefdataValue.get(params.frontend)
+                if (!newFrontend) {
+                    flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.discoverySystems.frontend.label'), params.frontend]) as String
+                    redirect(url: request.getHeader('referer'))
+                    return
+                }
+                if (result.orgInstance.getDiscoverySystemFrontends().find { it.frontendId == newFrontend.id }) {
+                    flash.message = message(code: 'default.err.alreadyExist', args: [message(code: 'org.discoverySystems.frontend.label')]) as String
+                    redirect(url: request.getHeader('referer'))
+                    return
+                }
+                result.orgInstance.addToDiscoverySystemFrontends(frontend: newFrontend)
+            }
+            else if(params.containsKey('index')) {
+                RefdataValue newIndex = RefdataValue.get(params.index)
+                if (!newIndex) {
+                    flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.discoverySystems.index.label'), params.index]) as String
+                    redirect(url: request.getHeader('referer'))
+                    return
+                }
+                if (result.orgInstance.getDiscoverySystemIndices().find { it.frontendId == newIndex.id }) {
+                    flash.message = message(code: 'default.err.alreadyExist', args: [message(code: 'org.discoverySystems.index.label')]) as String
+                    redirect(url: request.getHeader('referer'))
+                    return
+                }
+                result.orgInstance.addToDiscoverySystemIndices(index: newIndex)
+            }
+
+            result.orgInstance.save()
+//            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
+        }
+
+        redirect action: 'show', id: params.id
+    }
+
+    /**
      * Removes the given subject group from the given organisation
      */
     @Transactional
@@ -1935,6 +2000,36 @@ class OrganisationController  {
             result.orgInstance.removeFromSubjectGroup(osg)
             result.orgInstance.save()
             osg.delete()
+//            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
+        }
+
+        redirect(url: request.getHeader('referer'))
+    }
+
+    /**
+     * Removes the given discovery system from the given organisation
+     */
+    @Transactional
+    @Secured(['ROLE_USER'])
+    def deleteDiscoverySystem() {
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
+
+        if (!result.orgInstance) {
+            flash.error = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        if (result.editable) {
+            def discoverySystem = genericOIDService.resolveOID(params.oid)
+            if(discoverySystem instanceof DiscoverySystemFrontend) {
+                result.orgInstance.removeFromDiscoverySystemFrontends(discoverySystem)
+                result.orgInstance.save()
+            }
+            else if(discoverySystem instanceof DiscoverySystemIndex) {
+                result.orgInstance.removeFromDiscoverySystemIndices(discoverySystem)
+                result.orgInstance.save()
+            }
+            discoverySystem.delete()
 //            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
         }
 
@@ -2013,10 +2108,24 @@ class OrganisationController  {
         result.num_visiblePersons = visiblePersons.size()
         result.visiblePersons = visiblePersons.drop(result.offset).take(result.max)
 
+        /*
         if (visiblePersons){
-            result.emailAddresses = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
+            result.emailAddresses = Contact.executeQuery("select new map(c.prs as person, c.content as mail) from Contact c join c.prs p join p.roleLinks pr join pr.org o where p in (:persons) and c.contentType = :contentType order by o.sortname",
                     [persons: visiblePersons, contentType: RDStore.CCT_EMAIL])
         }
+        */
+        Map<Org, String> emailAddresses = [:]
+        visiblePersons.each { Person p ->
+            Contact mail = Contact.findByPrsAndContentType(p, RDStore.CCT_EMAIL)
+            if(mail) {
+                Set<String> mails = emailAddresses.get(p.roleLinks.org[0])
+                if(!mails)
+                    mails = []
+                mails << mail.content
+                emailAddresses.put(p.roleLinks.org[0], mails)
+            }
+        }
+        result.emailAddresses = emailAddresses
 
         params.tab = params.tab ?: 'contacts'
 
@@ -2063,7 +2172,7 @@ class OrganisationController  {
                     isEditable = userIsYoda
                 }
                 break
-            case [ 'show', 'ids', 'addSubjectGroup', 'deleteSubjectGroup', 'readerNumber', 'accessPoints', 'addressbook' ]:
+            case [ 'show', 'ids', 'addSubjectGroup', 'deleteSubjectGroup', 'addDiscoverySystem', 'deleteDiscoverySystem', 'readerNumber', 'accessPoints', 'addressbook' ]:
                 if (inContextOrg) {
                     isEditable = userHasEditableRights
                 } else {

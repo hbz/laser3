@@ -27,18 +27,18 @@
                 records[0].id = platformInstance.id
                 platformInstanceRecords[platformInstance.gokbId] = records[0]
             }
-        }
-        CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(subscriber, platformInstance)
-        if(ci?.value) {
-            reportTypes = subscriptionControllerService.getAvailableReports([subscription: subscriberSub], false)
-        }
-        else if(ci) {
-            dummyCIs << ci
-        }
-        else {
-            CustomerIdentifier dummyCI = new CustomerIdentifier(customer: subscriber, platform: platformInstance, owner: institution)
-            dummyCI.save()
-            dummyCIs << dummyCI
+            CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(subscriber, platformInstance)
+            if(ci?.value) {
+                reportTypes = subscriptionControllerService.getAvailableReports([subscription: subscriberSub], false)
+            }
+            else if(ci) {
+                dummyCIs << ci
+            }
+            else {
+                CustomerIdentifier dummyCI = new CustomerIdentifier(customer: subscriber, platform: platformInstance, owner: institution)
+                dummyCI.save()
+                dummyCIs << dummyCI
+            }
         }
     }
 %>

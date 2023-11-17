@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5414    16.11.2023  rc-3.3  3.3         Andreas Bug         obsoleten Menüpunkt entfernt
+
+5413    16.11.2023  rc-3.3  3.3         Andreas Bug         Abfragefehler korrigiert
+
 5392    16.11.2023  rc-3.3  3.3         David   Bug         Merkmale werden bei Adresskontakten nicht eingeladen
 
 5402    15.11.2023  rc-3.3  3.3         Andreas Bug         Paket hinzufügen für TN behoben
