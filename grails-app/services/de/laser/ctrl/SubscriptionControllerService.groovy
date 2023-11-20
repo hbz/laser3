@@ -1722,48 +1722,48 @@ class SubscriptionControllerService {
                     }
                 }
 
-               /* if (params.hasPerpetualAccess) {
+                /* if (params.hasPerpetualAccess) {
                     params.hasPerpetualAccessBySubs = subscriptions
                 }*/
 
-            List<Long> sourceIEs = []
-            if(params.tab == 'allTipps') {
-                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-                params.sort = params.sort ?: 'tipp.sortname'
-                params.order = params.order ?: 'asc'
-                Map<String, Object> query = filterService.getTippQuery(params, baseSub.packages.pkg)
-                result.filterSet = query.filterSet
-                List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
-
-                result.tippsListPriceSumEUR = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
-                        'where p.listPrice is not null and p.listCurrency = :currency and tipp.status.id = :tiStatus and tipp.id in (' + query.query + ' )', [currency: RDStore.CURRENCY_EUR, tiStatus: RDStore.TIPP_STATUS_CURRENT.id]+query.queryParams)[0] ?: 0
-
-                result.tippsListPriceSumUSD = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
-                        'where p.listPrice is not null and p.listCurrency = :currency and tipp.status.id = :tiStatus and tipp.id in (' + query.query + ' )', [currency: RDStore.CURRENCY_USD, tiStatus: RDStore.TIPP_STATUS_CURRENT.id]+query.queryParams)[0] ?: 0
-
-                result.tippsListPriceSumGBP = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
-                        'where p.listPrice is not null and p.listCurrency = :currency and tipp.status.id = :tiStatus and tipp.id in (' + query.query + ' )', [currency: RDStore.CURRENCY_GBP, tiStatus: RDStore.TIPP_STATUS_CURRENT.id]+query.queryParams)[0] ?: 0
-
-                result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: params.sort, order: params.order]) : []
-                result.num_rows = titlesList.size()
-
-                if(baseSub.packages){
-                    result.packageInstance = baseSub.packages.pkg[0]
-                }
-
-            }else if(params.tab == 'selectedIEs') {
-                IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
-                if(issueEntitlementGroup) {
+                List<Long> sourceIEs = []
+                if (params.tab == 'allTipps') {
+                    params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
                     params.sort = params.sort ?: 'tipp.sortname'
                     params.order = params.order ?: 'asc'
-                    params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-                    result.titleGroup = issueEntitlementGroup.id.toString()
-                    params.titleGroup = result.titleGroup
-                    Map query = filterService.getIssueEntitlementQuery(params, subscriberSub)
-                    sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
+                    Map<String, Object> query = filterService.getTippQuery(params, baseSub.packages.pkg)
+                    result.filterSet = query.filterSet
+                    List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
 
-                    result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs, [sort: params.sort, order: params.order, offset: result.offset, max: result.max]) : []
-                    result.num_rows = sourceIEs ? IssueEntitlement.countByIdInList(sourceIEs) : 0
+                    result.tippsListPriceSumEUR = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
+                            'where p.listPrice is not null and p.listCurrency = :currency and tipp.status.id = :tiStatus and tipp.id in (' + query.query + ' )', [currency: RDStore.CURRENCY_EUR, tiStatus: RDStore.TIPP_STATUS_CURRENT.id] + query.queryParams)[0] ?: 0
+
+                    result.tippsListPriceSumUSD = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
+                            'where p.listPrice is not null and p.listCurrency = :currency and tipp.status.id = :tiStatus and tipp.id in (' + query.query + ' )', [currency: RDStore.CURRENCY_USD, tiStatus: RDStore.TIPP_STATUS_CURRENT.id] + query.queryParams)[0] ?: 0
+
+                    result.tippsListPriceSumGBP = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
+                            'where p.listPrice is not null and p.listCurrency = :currency and tipp.status.id = :tiStatus and tipp.id in (' + query.query + ' )', [currency: RDStore.CURRENCY_GBP, tiStatus: RDStore.TIPP_STATUS_CURRENT.id] + query.queryParams)[0] ?: 0
+
+                    result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: params.sort, order: params.order]) : []
+                    result.num_rows = titlesList.size()
+
+                    if (baseSub.packages) {
+                        result.packageInstance = baseSub.packages.pkg[0]
+                    }
+
+                } else if (params.tab == 'selectedIEs') {
+                    IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
+                    if (issueEntitlementGroup) {
+                        params.sort = params.sort ?: 'tipp.sortname'
+                        params.order = params.order ?: 'asc'
+                        params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                        result.titleGroup = issueEntitlementGroup.id.toString()
+                        params.titleGroup = result.titleGroup
+                        Map query = filterService.getIssueEntitlementQuery(params, subscriberSub)
+                        sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
+
+                        result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs, [sort: params.sort, order: params.order, offset: result.offset, max: result.max]) : []
+                        result.num_rows = sourceIEs ? IssueEntitlement.countByIdInList(sourceIEs) : 0
 
                         result.iesTotalListPriceSumEUR = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
                                 'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_EUR, ieIDs: sourceIEs])[0] ?: 0
@@ -1801,147 +1801,147 @@ class SubscriptionControllerService {
                 }
 
 
-            //allIEsStats and holdingIEsStats are left active for possible backswitch
-            if(params.tab in ['topUsed']) {
+                //allIEsStats and holdingIEsStats are left active for possible backswitch
+                if (params.tab in ['topUsed']) {
 
-                if(!params.tabStat)
-                    params.tabStat = 'total'
+                    if (!params.tabStat)
+                        params.tabStat = 'total'
 
-                String oldTab = params.tab
-                params.loadFor = oldTab
-                params.tab = params.tabStat
-                Set<Subscription> refSubs = subscriptions
-                subscriptions << baseSub
-                subscriptions << subscriberSub
-                Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription in (:subscriptions)", [subscriptions: refSubs])
-                Set<IdentifierNamespace> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name)] as Set<IdentifierNamespace>,
-                                         propIdNamespaces = IdentifierNamespace.findAllByNsInList(subscribedPlatforms.titleNamespace)
-                if(!subscribedPlatforms) {
-                    subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subscriptions)", [subscriptions: refSubs])
-                }
-                if(subscribedPlatforms) {
-                    namespaces.addAll(propIdNamespaces)
-                }
-                result.platformInstanceRecords = [:]
-                result.platforms = subscribedPlatforms
-                result.platformsJSON = subscribedPlatforms.globalUID as JSON
-                ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-                subscribedPlatforms.each { Platform platformInstance ->
-                    Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
-                    if (queryResult.error && queryResult.error == 404) {
-                        result.wekbServerUnavailable = message(code: 'wekb.error.404')
+                    String oldTab = params.tab
+                    params.loadFor = oldTab
+                    params.tab = params.tabStat
+                    Set<Subscription> refSubs = subscriptions
+                    subscriptions << baseSub
+                    subscriptions << subscriberSub
+                    Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription in (:subscriptions)", [subscriptions: refSubs])
+                    Set<IdentifierNamespace> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name)] as Set<IdentifierNamespace>,
+                            propIdNamespaces = IdentifierNamespace.findAllByNsInList(subscribedPlatforms.titleNamespace)
+                    if (!subscribedPlatforms) {
+                        subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subscriptions)", [subscriptions: refSubs])
                     }
-                    else if (queryResult.warning) {
-                        List records = queryResult.warning.result
-                        if(records[0]) {
-                            records[0].lastRun = platformInstance.counter5LastRun ?: platformInstance.counter4LastRun
-                            records[0].id = platformInstance.id
-                            result.platformInstanceRecords[platformInstance.gokbId] = records[0]
-                        }
+                    if (subscribedPlatforms) {
+                        namespaces.addAll(propIdNamespaces)
                     }
-                }
-                Subscription refSub
-                if(params.loadFor in ['allTippsStats', 'topUsed'])
-                    refSub = baseSub
-                else if(params.loadFor == 'holdingIEsStats')
-                    refSub = subscriberSub
-                Map<String, Object> dateRanges = getDateRange(params, refSub)
-                result.monthsInRing = dateRanges.monthsInRing
-                SortedSet<String> reportTypes = getAvailableReports(result)
-                result.reportTypes = reportTypes
-                if(params.reportType) {
-                    result.putAll(loadFilterList(params))
-                    Map<String, Map<String, TitleInstancePackagePlatform>> titles = [:] //structure: namespace -> value -> tipp
-                    Set<TitleInstancePackagePlatform> titlesSorted = [] //fallback structure to preserve sorting
-                    fetchTitles(params, refSub, namespaces, 'ids').each { Map titleMap ->
-                        titlesSorted << titleMap.tipp
-                        Map<String, TitleInstancePackagePlatform> innerMap = titles.get(titleMap.namespace)
-                        if(!innerMap)
-                            innerMap = [:]
-                        innerMap.put(titleMap.value, titleMap.tipp)
-                        titles.put(titleMap.namespace, innerMap)
-                    }
-                    Map<TitleInstancePackagePlatform, Object> usages = [:]
-                    Map<TitleInstancePackagePlatform, Integer> usageTopList = [:]
-                    if(params.platform) {
-                        Platform platform = Platform.get(params.platform)
-                        IdentifierNamespace propIdNamespace = IdentifierNamespace.findByNs(platform.titleNamespace)
-                        Map<String, Object> queryParams = [reportType: params.reportType, customer: subscriberSub.getSubscriber(), platform: platform]
-                        if(params.metricType) {
-                            queryParams.metricTypes = params.list('metricType').join('%7C')
-                        }
-                        if(params.accessType) {
-                            queryParams.accessTypes = params.list('accessType').join('%7C')
-                        }
-                        if(params.accessMethod) {
-                            queryParams.accessMethods = params.list('accessMethod').join('%7C')
-                        }
-                        queryParams.startDate = dateRanges.startDate
-                        queryParams.endDate = dateRanges.endDate
-                        Map<String, Object> requestResponse = exportService.getReports(queryParams)
-                        if(result.platformInstanceRecords.get(platform.gokbId).counterR5SushiApiSupported == "Yes") {
-                            for(Map reportItem : requestResponse.items) {
-                                Map<String, String> identifierMap = exportService.buildIdentifierMap(reportItem, AbstractReport.COUNTER_5)
-                                TitleInstancePackagePlatform tipp = matchReport(titles, propIdNamespace, identifierMap)
-                                if(tipp) {
-                                    for(Map performance : reportItem.Performance) {
-                                        for(Map instance : performance.Instance) {
-                                            Map<String, Integer> metrics = usages.containsKey(tipp) ? usages.get(tipp): [:]
-                                            Integer topCount = usageTopList.containsKey(tipp) ? usageTopList.get(tipp) : 0
-                                            Integer metricCount = metrics.get(instance.Metric_Type) ?: 0, count = instance.Count as Integer
-                                            metricCount += count
-                                            metrics.put(instance.Metric_Type, metricCount)
-                                            if(metricCount > topCount)
-                                                usageTopList.put(tipp, metricCount)
-                                            usages.put(tipp, metrics)
-                                        }
-                                    }
-                                }
+                    result.platformInstanceRecords = [:]
+                    result.platforms = subscribedPlatforms
+                    result.platformsJSON = subscribedPlatforms.globalUID as JSON
+                    ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+                    subscribedPlatforms.each { Platform platformInstance ->
+                        Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
+                        if (queryResult.error && queryResult.error == 404) {
+                            result.wekbServerUnavailable = message(code: 'wekb.error.404')
+                        } else if (queryResult.warning) {
+                            List records = queryResult.warning.result
+                            if (records[0]) {
+                                records[0].lastRun = platformInstance.counter5LastRun ?: platformInstance.counter4LastRun
+                                records[0].id = platformInstance.id
+                                result.platformInstanceRecords[platformInstance.gokbId] = records[0]
                             }
                         }
-                        else if(result.platformInstanceRecords.get(platform.gokbId).counterR4SushiApiSupported == RDStore.YN_YES.value) {
-                            for(GPathResult reportItem : requestResponse.reports) {
-                                Map<String, String> identifierMap = exportService.buildIdentifierMap(reportItem, AbstractReport.COUNTER_4)
-                                TitleInstancePackagePlatform tipp = matchReport(titles, propIdNamespace, identifierMap)
-                                if(tipp) {
-                                    for(GPathResult performance : reportItem.'ns2:ItemPerformance') {
-                                        for(GPathResult instance : performance.'ns2:Instance') {
-                                            Map<String, Integer> metrics = usages.containsKey(tipp) ? usages.get(tipp): [:]
-                                            Integer topCount = usageTopList.containsKey(tipp) ? usageTopList.get(tipp) : 0
-                                            if((params.metricType && params.metricType == instance.'ns2:MetricType'.text()) || !params.metricType) {
-                                                Integer metricCount = metrics.get(instance.'ns2:MetricType') ?: 0, count = Integer.parseInt(instance.'ns2:Count'.text())
+                    }
+                    Subscription refSub
+                    if (params.loadFor in ['allTippsStats', 'topUsed'])
+                        refSub = baseSub
+                    else if (params.loadFor == 'holdingIEsStats')
+                        refSub = subscriberSub
+                    Map<String, Object> dateRanges = getDateRange(params, refSub)
+                    result.monthsInRing = dateRanges.monthsInRing
+                    SortedSet<String> reportTypes = getAvailableReports(result)
+                    result.reportTypes = reportTypes
+                    if (params.reportType) {
+                        result.putAll(loadFilterList(params))
+                        Map<String, Map<String, TitleInstancePackagePlatform>> titles = [:]
+                        //structure: namespace -> value -> tipp
+                        Set<TitleInstancePackagePlatform> titlesSorted = [] //fallback structure to preserve sorting
+                        fetchTitles(params, refSub, namespaces, 'ids').each { Map titleMap ->
+                            titlesSorted << titleMap.tipp
+                            Map<String, TitleInstancePackagePlatform> innerMap = titles.get(titleMap.namespace)
+                            if (!innerMap)
+                                innerMap = [:]
+                            innerMap.put(titleMap.value, titleMap.tipp)
+                            titles.put(titleMap.namespace, innerMap)
+                        }
+                        Map<TitleInstancePackagePlatform, Object> usages = [:]
+                        Map<TitleInstancePackagePlatform, Integer> usageTopList = [:]
+                        if (params.platform) {
+                            Platform platform = Platform.get(params.platform)
+                            IdentifierNamespace propIdNamespace = IdentifierNamespace.findByNs(platform.titleNamespace)
+                            Map<String, Object> queryParams = [reportType: params.reportType, customer: subscriberSub.getSubscriber(), platform: platform]
+                            if (params.metricType) {
+                                queryParams.metricTypes = params.list('metricType').join('%7C')
+                            }
+                            if (params.accessType) {
+                                queryParams.accessTypes = params.list('accessType').join('%7C')
+                            }
+                            if (params.accessMethod) {
+                                queryParams.accessMethods = params.list('accessMethod').join('%7C')
+                            }
+                            queryParams.startDate = dateRanges.startDate
+                            queryParams.endDate = dateRanges.endDate
+                            Map<String, Object> requestResponse = exportService.getReports(queryParams)
+                            if (result.platformInstanceRecords.get(platform.gokbId).counterR5SushiApiSupported == "Yes") {
+                                for (Map reportItem : requestResponse.items) {
+                                    Map<String, String> identifierMap = exportService.buildIdentifierMap(reportItem, AbstractReport.COUNTER_5)
+                                    TitleInstancePackagePlatform tipp = matchReport(titles, propIdNamespace, identifierMap)
+                                    if (tipp) {
+                                        for (Map performance : reportItem.Performance) {
+                                            for (Map instance : performance.Instance) {
+                                                Map<String, Integer> metrics = usages.containsKey(tipp) ? usages.get(tipp) : [:]
+                                                Integer topCount = usageTopList.containsKey(tipp) ? usageTopList.get(tipp) : 0
+                                                Integer metricCount = metrics.get(instance.Metric_Type) ?: 0, count = instance.Count as Integer
                                                 metricCount += count
-                                                metrics.put(instance.'ns2:MetricType', metricCount)
-                                                if(metricCount > topCount)
+                                                metrics.put(instance.Metric_Type, metricCount)
+                                                if (metricCount > topCount)
                                                     usageTopList.put(tipp, metricCount)
                                                 usages.put(tipp, metrics)
                                             }
                                         }
                                     }
                                 }
+                            } else if (result.platformInstanceRecords.get(platform.gokbId).counterR4SushiApiSupported == RDStore.YN_YES.value) {
+                                for (GPathResult reportItem : requestResponse.reports) {
+                                    Map<String, String> identifierMap = exportService.buildIdentifierMap(reportItem, AbstractReport.COUNTER_4)
+                                    TitleInstancePackagePlatform tipp = matchReport(titles, propIdNamespace, identifierMap)
+                                    if (tipp) {
+                                        for (GPathResult performance : reportItem.'ns2:ItemPerformance') {
+                                            for (GPathResult instance : performance.'ns2:Instance') {
+                                                Map<String, Integer> metrics = usages.containsKey(tipp) ? usages.get(tipp) : [:]
+                                                Integer topCount = usageTopList.containsKey(tipp) ? usageTopList.get(tipp) : 0
+                                                if ((params.metricType && params.metricType == instance.'ns2:MetricType'.text()) || !params.metricType) {
+                                                    Integer metricCount = metrics.get(instance.'ns2:MetricType') ?: 0, count = Integer.parseInt(instance.'ns2:Count'.text())
+                                                    metricCount += count
+                                                    metrics.put(instance.'ns2:MetricType', metricCount)
+                                                    if (metricCount > topCount)
+                                                        usageTopList.put(tipp, metricCount)
+                                                    usages.put(tipp, metrics)
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
+                        result.total = usages.size()
+                        if (params.sort == 'count' && params.order == 'asc')
+                            result.topList = usageTopList.sort { Map.Entry<TitleInstancePackagePlatform, Integer> tippA, Map.Entry<TitleInstancePackagePlatform, Integer> tippB -> tippA.getValue() <=> tippB.getValue() }.drop(result.offset).take(result.max)
+                        else
+                            result.topList = usageTopList.sort { Map.Entry<TitleInstancePackagePlatform, Integer> tippA, Map.Entry<TitleInstancePackagePlatform, Integer> tippB -> tippB.getValue() <=> tippA.getValue() }.drop(result.offset).take(result.max)
+                        result.usages = usages
                     }
-                    result.total = usages.size()
-                    if(params.sort == 'count' && params.order == 'asc')
-                        result.topList = usageTopList.sort { Map.Entry<TitleInstancePackagePlatform, Integer> tippA, Map.Entry<TitleInstancePackagePlatform, Integer> tippB -> tippA.getValue() <=> tippB.getValue() }.drop(result.offset).take(result.max)
-                    else
-                        result.topList = usageTopList.sort { Map.Entry<TitleInstancePackagePlatform, Integer> tippA, Map.Entry<TitleInstancePackagePlatform, Integer> tippB -> tippB.getValue() <=> tippA.getValue() }.drop(result.offset).take(result.max)
-                    result.usages = usages
+                    params.tab = oldTab
                 }
-                params.tab = oldTab
-            }
 
-            result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(subscriberSub, result.surveyConfig)
-            result.countAllTipps = result.subscription.packages ? TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.status = :status and pkg in (:pkgs)", [pkgs: result.subscription.packages.pkg, status: RDStore.TIPP_STATUS_CURRENT])[0] : 0
+                result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(subscriberSub, result.surveyConfig)
+                result.countAllTipps = result.subscription.packages ? TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.status = :status and pkg in (:pkgs)", [pkgs: result.subscription.packages.pkg, status: RDStore.TIPP_STATUS_CURRENT])[0] : 0
 
-            result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(result.subscription, false)
+                result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(result.subscription, false)
 
 /*            if (result.surveyConfig.pickAndChoosePerpetualAccess) {
                 result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)
             } else {
                 result.countCurrentIEs = subscriptionService.countCurrentIssueEntitlements(result.subscription)
             }*/
+            }
 
             result.subscriberSub = subscriberSub
             result.subscription = baseSub
@@ -1955,55 +1955,6 @@ class SubscriptionControllerService {
 
             result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
             //result.showStatisticByParticipant = surveyService.showStatisticByParticipant(result.surveyConfig.subscription, result.subscriber)
-
-
-            if (result.editable) {
-                EhcacheWrapper userCache = contextService.getUserCache("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}")
-                Map<String, Object> checkedCache = userCache.get('selectedTitles')
-
-                if (!checkedCache) {
-                    userCache.put("selectedTitles", ["checked": [:]])
-                    checkedCache = userCache.get("selectedTitles")
-                }
-
-                if (params.kbartPreselect) {
-                    //checkedCache.put('checked', [:])
-
-                    MultipartFile kbartFile = params.kbartPreselect
-                    InputStream stream = kbartFile.getInputStream()
-                    result.selectProcess = subscriptionService.tippSelectForSurvey(stream, result.subscription, result.surveyConfig, subscriberSub)
-                    if (result.selectProcess.selectedTipps) {
-                        executorService.execute({
-                            IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
-
-                            if (!issueEntitlementGroup) {
-                                issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: result.surveyConfig.issueEntitlementGroupName)
-                                if (!issueEntitlementGroup.save())
-                                    log.error(issueEntitlementGroup.getErrors().getAllErrors().toListString())
-                            }
-
-                            if (issueEntitlementGroup) {
-                                subscriptionService.bulkAddEntitlements(subscriberSub, result.selectProcess.selectedTipps, result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)
-                            }
-                        })
-                        result.success = true
-                        [result: result, status: STATUS_OK]
-                    }
-                }
-                else {
-                    result.checkedCache = checkedCache.get('checked')
-                    result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
-
-                    result.allChecked = ""
-                    if (params.tab == 'allTipps' && result.countAllTipps > 0 && result.countAllTipps == result.checkedCount) {
-                        result.allChecked = "checked"
-                    }
-                    if (params.tab == 'selectedIEs' && result.countSelectedIEs > 0 && result.countSelectedIEs == result.checkedCount) {
-                        result.allChecked = "checked"
-                    }
-                }
-
-            }
 
             [result:result,status:STATUS_OK]
         }
