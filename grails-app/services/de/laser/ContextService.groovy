@@ -234,29 +234,6 @@ class ContextService {
         check
     }
 
-    /**
-     * Checks if the context organisation is the given consortium type and the context user has the given role at that consortium
-     * @param orgPerms the customer types to check
-     * @param instUserRole the user role type to check
-     * @return true if the context user is a superadmin or if the context user belongs with the given rights to the context organisation and that is a consortium, false otherwise
-     * @see User
-     * @see Org
-     */
-    // TODO
-//    boolean hasPermAsInstRoleAsConsortium_or_ROLEADMIN(String orgPerms, String instUserRole) {
-//        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-//            return true
-//        }
-//        if (getUser() && getOrg() && instUserRole) {
-//            if (getOrg().getAllOrgTypeIds().contains( RDStore.OT_CONSORTIUM.id )) {
-//                if (userService.hasAffiliation_or_ROLEADMIN(getUser(), getOrg(), instUserRole)) {
-//                    return _hasPerm(orgPerms)
-//                }
-//            }
-//        }
-//        return false
-//    }
-
     // -----
 
     boolean checkCachedNavPerms(GroovyPageAttributes attrs) {
