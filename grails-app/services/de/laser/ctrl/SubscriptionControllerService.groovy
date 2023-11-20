@@ -1642,9 +1642,89 @@ class SubscriptionControllerService {
 
             }
 
-            if (params.hasPerpetualAccess) {
+            if(!params.exportForImport) {
+                result.preselectValues = params.preselectValues == 'on'
+
+                //result.subscriptionIDs = []
+
+                result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
+                //result.showStatisticByParticipant = surveyService.showStatisticByParticipant(result.surveyConfig.subscription, result.subscriber)
+
+                result.countSelectedIEs = surveyService.countCurrentIssueEntitlementsByIEGroup(subscriberSub, result.surveyConfig)
+                result.countAllTipps = baseSub.packages ? TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.status = :status and pkg in (:pkgs)", [pkgs: baseSub.packages.pkg, status: RDStore.TIPP_STATUS_CURRENT])[0] : 0
+
+
+                if (result.editable) {
+                    SessionCacheWrapper sessionCache = contextService.getSessionCache()
+                    Map<String, Object> checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}")
+
+                    if (!checkedCache) {
+                        sessionCache.put("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}", ["checked": [:]])
+                        checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}")
+                    }
+
+                    if (params.kbartPreselect) {
+                        //checkedCache.put('checked', [:])
+
+                        MultipartFile kbartFile = params.kbartPreselect
+                        InputStream stream = kbartFile.getInputStream()
+                        result.selectProcess = subscriptionService.tippSelectForSurvey(stream, baseSub, result.surveyConfig, subscriberSub)
+
+                        if (result.selectProcess.selectedTipps) {
+
+                            Integer countTippsToAdd = 0
+                            result.selectProcess.selectedTipps.each {
+                                TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findById(it.key)
+                                if (tipp) {
+                                    try {
+
+                                        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
+
+                                        if (!issueEntitlementGroup) {
+                                            issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: result.surveyConfig.issueEntitlementGroupName)
+                                            if (!issueEntitlementGroup.save())
+                                                log.error(issueEntitlementGroup.getErrors().getAllErrors().toListString())
+                                        }
+
+                                        if (issueEntitlementGroup && subscriptionService.addEntitlement(subscriberSub, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
+                                            log.debug("Added tipp ${tipp.gokbId} to sub ${subscriberSub.id}")
+                                            ++countTippsToAdd
+                                        }
+                                    }
+                                    catch (EntitlementCreationException e) {
+                                        log.debug("Error: Adding tipp ${tipp} to sub ${subscriberSub.id}: " + e.getMessage())
+                                        result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps', null, LocaleUtils.getCurrentLocale())
+                                        [result: result, status: STATUS_ERROR]
+                                    }
+
+                                }
+                            }
+                            if (countTippsToAdd > 0) {
+                                Object[] args = [countTippsToAdd]
+                                result.message = messageSource.getMessage('renewEntitlementsWithSurvey.tippsToAdd', args, LocaleUtils.getCurrentLocale())
+                            }
+                        }
+
+                        params.remove("kbartPreselect")
+                        params.tab = 'selectedIEs'
+                        result.countSelectedIEs = surveyService.countCurrentIssueEntitlementsByIEGroup(subscriberSub, result.surveyConfig)
+                    }
+
+                    result.checkedCache = checkedCache.get('checked')
+                    result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
+
+                    result.allChecked = ""
+                    if (params.tab == 'allTipps' && result.countAllTipps > 0 && result.countAllTipps == result.checkedCount) {
+                        result.allChecked = "checked"
+                    }
+                    if (params.tab == 'selectedIEs' && result.countSelectedIEs > 0 && result.countSelectedIEs == result.checkedCount) {
+                        result.allChecked = "checked"
+                    }
+                }
+
+               /* if (params.hasPerpetualAccess) {
                     params.hasPerpetualAccessBySubs = subscriptions
-            }
+                }*/
 
             List<Long> sourceIEs = []
             if(params.tab == 'allTipps') {
@@ -1685,36 +1765,40 @@ class SubscriptionControllerService {
                     result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs, [sort: params.sort, order: params.order, offset: result.offset, max: result.max]) : []
                     result.num_rows = sourceIEs ? IssueEntitlement.countByIdInList(sourceIEs) : 0
 
-                    result.iesTotalListPriceSumEUR = surveyService.sumListPriceInCurrencyOfCurrentIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_EUR)
-                    result.iesTotalListPriceSumUSD = surveyService.sumListPriceInCurrencyOfCurrentIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_USD)
-                    result.iesTotalListPriceSumGBP = surveyService.sumListPriceInCurrencyOfCurrentIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_GBP)
+                        result.iesTotalListPriceSumEUR = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
+                                'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_EUR, ieIDs: sourceIEs])[0] ?: 0
 
+                        result.iesTotalListPriceSumUSD = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
+                                'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_USD, ieIDs: sourceIEs])[0] ?: 0
+
+                        result.iesTotalListPriceSumGBP = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
+                                'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_GBP, ieIDs: sourceIEs])[0] ?: 0
+
+                    }
+                } else if (params.tab == 'currentPerpetualAccessIEs') {
+                    params.sort = params.sort ?: 'tipp.sortname'
+                    params.order = params.order ?: 'asc'
+                    GrailsParameterMap parameterMap = params.clone()
+                    Map query = [:]
+                    if (subscriptions) {
+                        parameterMap.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                        parameterMap.hasPerpetualAccess = RDStore.YN_YES.id.toString()
+                        query = filterService.getIssueEntitlementQuery(parameterMap, subscriptions)
+                        //List<Long> previousIes = previousSubscription ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
+                        sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
+                    }
+                    result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs, [sort: params.sort, order: params.order, offset: result.offset, max: result.max]) : []
+                    result.num_rows = sourceIEs ? IssueEntitlement.countByIdInList(sourceIEs) : 0
+
+                    result.iesTotalListPriceSumEUR = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
+                            'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_EUR, ieIDs: sourceIEs])[0] ?: 0
+
+                    result.iesTotalListPriceSumUSD = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
+                            'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_USD, ieIDs: sourceIEs])[0] ?: 0
+
+                    result.iesTotalListPriceSumGBP = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
+                            'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_GBP, ieIDs: sourceIEs])[0] ?: 0
                 }
-            } else if (params.tab == 'currentPerpetualAccessIEs') {
-                params.sort = params.sort ?: 'tipp.sortname'
-                params.order = params.order ?: 'asc'
-                GrailsParameterMap parameterMap = params.clone()
-                Map query = [:]
-                if(subscriptions) {
-                    parameterMap.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-                    parameterMap.hasPerpetualAccess = true
-                    parameterMap.hasPerpetualAccessBySubs = subscriptions
-                    query = filterService.getIssueEntitlementQuery(parameterMap, subscriptions)
-                    //List<Long> previousIes = previousSubscription ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
-                    sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
-                }
-                result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs, [sort: params.sort, order: params.order, offset: result.offset, max: result.max]) : []
-                result.num_rows = sourceIEs ? IssueEntitlement.countByIdInList(sourceIEs) : 0
-
-                result.iesTotalListPriceSumEUR = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                        'where p.listPrice is not null and p.listCurrency = :currency and ie.id in (:ieIDs)', [currency: RDStore.CURRENCY_EUR, ieIDs: sourceIEs])[0] ?: 0
-
-                result.iesTotalListPriceSumUSD = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                        'where p.listPrice is not null and p.listCurrency = :currency and ie.id in (:ieIDs)', [currency: RDStore.CURRENCY_USD, ieIDs: sourceIEs])[0] ?: 0
-
-                result.iesTotalListPriceSumGBP = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                        'where p.listPrice is not null and p.listCurrency = :currency and ie.id in (:ieIDs)', [currency: RDStore.CURRENCY_GBP, ieIDs: sourceIEs])[0] ?: 0
-            }
 
 
             //allIEsStats and holdingIEsStats are left active for possible backswitch
@@ -1861,7 +1945,7 @@ class SubscriptionControllerService {
 
             result.subscriberSub = subscriberSub
             result.subscription = baseSub
-            result.allSubscriptions = subscriptions
+            //result.allSubscriptions = subscriptions
             result.previousSubscription = previousSubscription
 
 
