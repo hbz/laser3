@@ -2523,7 +2523,7 @@ join sub.orgRelations or_sub where
                     }
                 }
                 else {
-                    truncatedRows << row
+                    truncatedRows << i
                 }
             }
         }

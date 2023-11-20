@@ -1977,7 +1977,6 @@ class FilterService {
                         params.ieStatus = RDStore.TIPP_STATUS_CURRENT.id
                         whereClauses << "ie_status_rv_fk = :ieStatus"
                     }
-                }
                 if(configMap.asAt && configMap.asAt.length() > 0) {
                     Date dateFilter = DateUtils.getLocalizedSDF_noTime().parse(configMap.asAt)
                     params.asAt = new Timestamp(dateFilter.getTime())
