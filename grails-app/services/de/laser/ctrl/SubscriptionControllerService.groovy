@@ -1556,7 +1556,7 @@ class SubscriptionControllerService {
                 result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
                 //result.showStatisticByParticipant = surveyService.showStatisticByParticipant(result.surveyConfig.subscription, result.subscriber)
 
-                result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(subscriberSub, result.surveyConfig)
+                result.countSelectedIEs = surveyService.countCurrentIssueEntitlementsByIEGroup(subscriberSub, result.surveyConfig)
                 result.countAllTipps = baseSub.packages ? TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.status = :status and pkg in (:pkgs)", [pkgs: baseSub.packages.pkg, status: RDStore.TIPP_STATUS_CURRENT])[0] : 0
 
 
@@ -1613,7 +1613,7 @@ class SubscriptionControllerService {
 
                         params.remove("kbartPreselect")
                         params.tab = 'selectedIEs'
-                        result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(subscriberSub, result.surveyConfig)
+                        result.countSelectedIEs = surveyService.countCurrentIssueEntitlementsByIEGroup(subscriberSub, result.surveyConfig)
                     }
 
                     result.checkedCache = checkedCache.get('checked')
@@ -1628,9 +1628,9 @@ class SubscriptionControllerService {
                     }
                 }
 
-                if (params.hasPerpetualAccess) {
+               /* if (params.hasPerpetualAccess) {
                     params.hasPerpetualAccessBySubs = subscriptions
-                }
+                }*/
 
                 List<Long> sourceIEs = []
                 if (params.tab == 'allTipps') {
@@ -1671,9 +1671,14 @@ class SubscriptionControllerService {
                         result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs, [sort: params.sort, order: params.order, offset: result.offset, max: result.max]) : []
                         result.num_rows = sourceIEs ? IssueEntitlement.countByIdInList(sourceIEs) : 0
 
-                        result.iesTotalListPriceSumEUR = surveyService.sumListPriceTippInCurrencyOfCurrentIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_EUR)
-                        result.iesTotalListPriceSumUSD = surveyService.sumListPriceTippInCurrencyOfCurrentIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_USD)
-                        result.iesTotalListPriceSumGBP = surveyService.sumListPriceTippInCurrencyOfCurrentIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_GBP)
+                        result.iesTotalListPriceSumEUR = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
+                                'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_EUR, ieIDs: sourceIEs])[0] ?: 0
+
+                        result.iesTotalListPriceSumUSD = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
+                                'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_USD, ieIDs: sourceIEs])[0] ?: 0
+
+                        result.iesTotalListPriceSumGBP = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
+                                'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_GBP, ieIDs: sourceIEs])[0] ?: 0
 
                     }
                 } else if (params.tab == 'currentPerpetualAccessIEs') {
@@ -1683,8 +1688,7 @@ class SubscriptionControllerService {
                     Map query = [:]
                     if (subscriptions) {
                         parameterMap.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-                        parameterMap.hasPerpetualAccess = true
-                        parameterMap.hasPerpetualAccessBySubs = subscriptions
+                        parameterMap.hasPerpetualAccess = RDStore.YN_YES.id.toString()
                         query = filterService.getIssueEntitlementQuery(parameterMap, subscriptions)
                         //List<Long> previousIes = previousSubscription ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
                         sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
@@ -1693,13 +1697,13 @@ class SubscriptionControllerService {
                     result.num_rows = sourceIEs ? IssueEntitlement.countByIdInList(sourceIEs) : 0
 
                     result.iesTotalListPriceSumEUR = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
-                            'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.subscription = :sub and ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_EUR, ieIDs: sourceIEs])[0] ?: 0
+                            'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_EUR, ieIDs: sourceIEs])[0] ?: 0
 
                     result.iesTotalListPriceSumUSD = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
-                            'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.subscription = :sub and ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_USD, ieIDs: sourceIEs])[0] ?: 0
+                            'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_USD, ieIDs: sourceIEs])[0] ?: 0
 
                     result.iesTotalListPriceSumGBP = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
-                            'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.subscription = :sub and ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_GBP, ieIDs: sourceIEs])[0] ?: 0
+                            'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_GBP, ieIDs: sourceIEs])[0] ?: 0
                 }
 
                 result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(result.subscription, false)
@@ -1713,7 +1717,7 @@ class SubscriptionControllerService {
 
             result.subscriberSub = subscriberSub
             result.subscription = baseSub
-            result.allSubscriptions = subscriptions
+            //result.allSubscriptions = subscriptions
             result.previousSubscription = previousSubscription
 
 

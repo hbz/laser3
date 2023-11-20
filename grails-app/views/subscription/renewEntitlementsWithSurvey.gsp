@@ -169,7 +169,7 @@
 <g:if test="${selectProcess}">
     <ui:msg class="positive" header="${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.label')}">
             <g:message code="renewEntitlementsWithSurvey.issueEntitlementSelect.selectProcess"
-                       args="[selectProcess.processCount, countAllTipps, selectProcess.countSelectTipps]"/>
+                       args="[selectProcess.processCount, selectProcess.processRows, selectProcess.countSelectTipps]"/>
     </ui:msg>
 </g:if>
 
