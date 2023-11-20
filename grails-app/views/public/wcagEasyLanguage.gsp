@@ -1,5 +1,5 @@
 <%@ page import="de.laser.PersonRole; de.laser.Contact; de.laser.OrgRole; de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
-<laser:htmlStart text="wcagStatement" />
+<laser:htmlStart message="wcagEasyLanguage" />
 
     <h1 class="ui header">
         <i class="universal access icon"></i>

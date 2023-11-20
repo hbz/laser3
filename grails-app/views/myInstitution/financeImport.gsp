@@ -13,7 +13,7 @@
 
     <div class="ui flyout" id="help-content" style="padding:50px 0 10px 0;overflow:scroll">
         <h1 class="ui header">
-            Erläuterungen zu den Tabelleninhalten
+            <g:message code="myinst.financeImport.headline"/>
         </h1>
         <div class="content">
             <table class="ui la-ignore-fixed compact table">
