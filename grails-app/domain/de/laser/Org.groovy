@@ -50,6 +50,8 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     String urlGov
     String linkResolverBaseURL
     SortedSet subjectGroup
+    SortedSet discoverySystemFrontends
+    SortedSet discoverySystemIndices
 
     String importSource         // "nationallizenzen.de", "edb des hbz"
     Date lastImportDate

@@ -218,11 +218,13 @@ class AddressbookService {
 
         String query = "SELECT distinct(a), ${sort} FROM Address AS a WHERE " + qParts.join(" AND ")
 
+        /*
         if (params.filterPropDef) {
             Map<String, Object> psq = propertyService.evalFilterQuery(params, query, 'a', qParams)
             query = psq.query
             qParams = psq.queryParams
         }
+        */
 
         String order = "ASC"
         if (params?.order != null && params?.order != 'null'){

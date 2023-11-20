@@ -14,15 +14,14 @@
         <ui:exportDropdownItem>
             <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
         </ui:exportDropdownItem>
+        <%--
         <g:if test="${filterSet == true}">
-            <%--
-            <ui:exportDropdownItem>
+            <%-ropdownItem>
                 <g:link class="item js-open-confirm-modal" params="${params+[exportXLS: true]}" action="addressbook"
                         data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}" data-confirm-term-how="ok">
                     <g:message code="default.button.exports.xls"/>
                 </g:link>
             </ui:exportDropdownItem>
-            --%>
             <ui:exportDropdownItem>
                 <g:link class="item js-open-confirm-modal" params="${params+[format: 'csv']}" action="addressbook"
                         data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}" data-confirm-term-how="ok">
@@ -31,15 +30,14 @@
             </ui:exportDropdownItem>
         </g:if>
         <g:else>
-            <%--
             <ui:exportDropdownItem>
                 <g:link class="item" params="${params+[exportXLS: true]}" action="addressbook"><g:message code="default.button.exports.xls"/></g:link>
             </ui:exportDropdownItem>
-            --%>
             <ui:exportDropdownItem>
                 <g:link class="item" params="${params+[format: 'csv']}" action="addressbook"><g:message code="default.button.exports.csv"/></g:link>
             </ui:exportDropdownItem>
         </g:else>
+        --%>
     </ui:exportDropdown>
     <ui:actionsDropdown>
         <g:if test="${editable}">

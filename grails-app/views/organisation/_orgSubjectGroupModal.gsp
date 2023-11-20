@@ -6,7 +6,7 @@
     <ui:modal id="subjectGroup" message="org.subjectGroup.add.label">
         <g:form class="ui form" url="[controller: 'organisation', action: 'addSubjectGroup',id:org.id]" method="post">
             <div class="field">
-            <label><g:message code="org.subjectGroup.label"/>:</label>
+            <label for="subjectGroupSelection"><g:message code="org.subjectGroup.label"/>:</label>
 
             <g:select from="${availableSubjectGroups}"
                       class="ui dropdown fluid"
