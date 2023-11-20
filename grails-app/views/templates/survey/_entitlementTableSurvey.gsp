@@ -81,13 +81,15 @@
                         </div>
 
                         <div class="two wide column">
-                            <g:if test="${ieInNewSub?.priceItems}">
-                                <g:each in="${ieInNewSub.priceItems}" var="priceItem" status="i">
+                            <g:if test="${ie.tipp.priceItems}">
+                                <g:each in="${ie.tipp.priceItems}" var="priceItem" status="i">
                                     <div class="ui list">
                                         <g:if test="${priceItem.listPrice}">
                                             <div class="item">
                                                 <div class="contet">
-                                                    <div class="header"><g:message code="tipp.price.listPrice"/></div>
+                                                    <div class="header">
+                                                        <g:message code="tipp.price.listPrice"/>
+                                                    </div>
 
                                                     <div class="content">
                                                         <g:formatNumber number="${priceItem.listPrice}" type="currency"
@@ -98,6 +100,9 @@
                                             </div>
                                         </g:if>
                                     </div>
+                                    <g:if test="${priceItem.listPrice && (i < ie.tipp.priceItems.size() - 1)}">
+                                        <hr>
+                                    </g:if>
                                     <g:if test="${priceItem.listCurrency == RDStore.CURRENCY_EUR}">
                                         <g:set var="sumlistPriceEuro" value="${sumlistPriceEuro + (priceItem.listPrice ?: 0)}"/>
                                     </g:if>
@@ -107,45 +112,10 @@
                                     <g:if test="${priceItem.listCurrency == RDStore.CURRENCY_GBP}">
                                         <g:set var="sumlistPriceGBP" value="${sumlistPriceGBP + (priceItem.listPrice ?: 0)}"/>
                                     </g:if>
+                                %{--<g:set var="sumlocalPrice"
+                                       value="${sumlocalPrice + (priceItem.localPrice ?: 0)}"/>--}%
                                 </g:each>
                             </g:if>
-                            <g:else>
-                                <g:if test="${ie?.priceItems}">
-                                    <g:each in="${ie.priceItems}" var="priceItem" status="i">
-                                        <div class="ui list">
-                                            <g:if test="${priceItem.listPrice}">
-                                                <div class="item">
-                                                    <div class="contet">
-                                                        <div class="header">
-                                                            <g:message code="tipp.price.listPrice"/>
-                                                        </div>
-
-                                                        <div class="content">
-                                                            <g:formatNumber number="${priceItem.listPrice}" type="currency"
-                                                                            currencyCode="${priceItem.listCurrency?.value}"
-                                                                            currencySymbol="${priceItem.listCurrency?.value}"/>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </g:if>
-                                        </div>
-                                        <g:if test="${priceItem.listPrice && (i < ie.priceItems.size() - 1)}">
-                                            <hr>
-                                        </g:if>
-                                       %{-- <g:if test="${priceItem.listCurrency == RDStore.CURRENCY_EUR}">
-                                            <g:set var="sumlistPriceEuro" value="${sumlistPriceEuro + (priceItem.listPrice ?: 0)}"/>
-                                        </g:if>
-                                        <g:if test="${priceItem.listCurrency == RDStore.CURRENCY_USD}">
-                                            <g:set var="sumlistPriceUSD" value="${sumlistPriceUSD + (priceItem.listPrice ?: 0)}"/>
-                                        </g:if>
-                                        <g:if test="${priceItem.listCurrency == RDStore.CURRENCY_GBP}">
-                                            <g:set var="sumlistPriceGBP" value="${sumlistPriceGBP + (priceItem.listPrice ?: 0)}"/>
-                                        </g:if>
-                                        <g:set var="sumlocalPrice"
-                                               value="${sumlocalPrice + (priceItem.localPrice ?: 0)}"/>--}%
-                                    </g:each>
-                                </g:if>
-                            </g:else>
                         </div>
 
                         <div class="one wide column">

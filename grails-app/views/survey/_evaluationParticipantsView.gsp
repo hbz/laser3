@@ -331,10 +331,10 @@
                                    value="${IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subParticipant)}"/>
                             <div class="ui circular label">
                             <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
-                                ${surveyService.countPerpetualAccessTitlesBySubAndNotInIEGroup(subParticipant, surveyConfig)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
+                                ${surveyService.countPerpetualAccessTitlesBySubAndNotInIEGroup(subParticipant, surveyConfig)} / ${surveyService.countCurrentIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
                             </g:if>
                             <g:else>
-                                ${subscriptionService.countCurrentIssueEntitlementsNotInIEGroup(subParticipant, ieGroup)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
+                                ${subscriptionService.countCurrentIssueEntitlementsNotInIEGroup(subParticipant, ieGroup)} / ${surveyService.countCurrentIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
                             </g:else>
                             </div>
 
@@ -594,10 +594,10 @@
                                    value="${IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subParticipant)}"/>
                             <div class="ui circular label">
                                 <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
-                                    ${surveyService.countPerpetualAccessTitlesBySubAndNotInIEGroup(subParticipant, surveyConfig)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
+                                    ${surveyService.countPerpetualAccessTitlesBySubAndNotInIEGroup(subParticipant, surveyConfig)} / ${surveyService.countCurrentIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
                                 </g:if>
                                 <g:else>
-                                    ${subscriptionService.countCurrentIssueEntitlementsNotInIEGroup(subParticipant, ieGroup)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
+                                    ${subscriptionService.countCurrentIssueEntitlementsNotInIEGroup(subParticipant, ieGroup)} / ${surveyService.countCurrentIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
                                 </g:else>
                             </div>
 
