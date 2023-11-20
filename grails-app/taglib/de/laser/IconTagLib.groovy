@@ -37,9 +37,6 @@ class IconTagLib {
             case 'database':
                 icon = 'bordered la-object-database'
                 break
-            case 'datamanager':
-                icon = 'la-object hdd'
-                break
             case 'ebook':
                 icon = 'bordered la-object-ebook'
                 break

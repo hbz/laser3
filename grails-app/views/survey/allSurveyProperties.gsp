@@ -117,24 +117,23 @@
 </ui:greySegment>
 
 <ui:modal id="createSurveyPropertyModal" message="surveyProperty.create_new.label">
-    <div class=" content">
 
     <g:form class="ui form" action="createSurveyProperty" method="post" params="[surveyInfo: surveyInfo?.id]">
 
         <div class="field">
-            <label class="property-label">Name</label>
-            <input type="text" name="pd_name"/>
+            <label for="pd_name" class="property-label">Name</label>
+            <input type="text" name="pd_name" id="pd_name"/>
         </div>
 
         <div class="field">
-            <label class="property-label">${message(code: 'propertyDefinition.expl.label')}</label>
-            <textarea class="la-textarea-resize-vertical" name="pd_expl" id="pd_expl" class="ui textarea" rows="2"></textarea>
+            <label for="pd_expl" class="property-label">${message(code: 'propertyDefinition.expl.label')}</label>
+            <textarea class="ui textarea la-textarea-resize-vertical" name="pd_expl" id="pd_expl" rows="2"></textarea>
         </div>
 
         <div class="fields">
 
             <div class="field six wide">
-                <label class="property-label">${message(code: 'default.description.label')}</label>
+                <label for="pd_descr" class="property-label">${message(code: 'default.description.label')}</label>
                 <%--<g:select name="pd_descr" from="${PropertyDefinition.AVAILABLE_PRIVATE_DESCR}"/>--%>
                 <select name="pd_descr" id="pd_descr" class="ui dropdown">
                     <g:each in="${[PropertyDefinition.SVY_PROP]}" var="pd">
@@ -145,7 +144,7 @@
             </div>
 
             <div class="field five wide">
-                <label class="property-label"><g:message code="default.type.label"/></label>
+                <label for="pd_type" class="property-label"><g:message code="default.type.label"/></label>
                 <g:select class="ui dropdown"
                           from="${PropertyDefinition.validTypes.entrySet()}"
                           optionKey="key" optionValue="${{ PropertyDefinition.getLocalizedValue(it.key) }}"
