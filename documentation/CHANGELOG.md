@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5416    20.11.2023  rc-3.3  3.3         David   Feature     TitleInstance entfernen
+
+5418    20.11.2023  rc-3.3  3.3         David   Bug         Dateien nicht auffindbar
+
+5410    17.11.2023  rc-3.3  3.3         David   Feature     JS: Mehrfache Initialisierung von Tooltips verhindern
+
 5414    16.11.2023  rc-3.3  3.3         Andreas Bug         obsoleten Menüpunkt entfernt
 
 5413    16.11.2023  rc-3.3  3.3         Andreas Bug         Abfragefehler korrigiert

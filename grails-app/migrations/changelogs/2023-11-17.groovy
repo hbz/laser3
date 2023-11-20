@@ -28,4 +28,19 @@ delete from identifier where id_ns_fk is not null and id_ns_fk in (
         }
     }
 
+    changeSet(author: "klober (generated)", id: "1700210103258-3") {
+        dropForeignKeyConstraint(baseTableName: "title_instance", constraintName: "fkacc69c66d9594e")
+    }
+
+    changeSet(author: "klober (generated)", id: "1700210103258-4") {
+        dropForeignKeyConstraint(baseTableName: "title_instance", constraintName: "fkacc69cbfcf2a91")
+    }
+
+    changeSet(author: "klober (generated)", id: "1700210103258-5") {
+        dropUniqueConstraint(constraintName: "title_instance_ti_guid_key", tableName: "title_instance")
+    }
+
+    changeSet(author: "klober (generated)", id: "1700210103258-6") {
+        dropTable(tableName: "title_instance")
+    }
 }
