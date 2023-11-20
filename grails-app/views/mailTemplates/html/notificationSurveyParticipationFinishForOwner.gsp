@@ -34,7 +34,7 @@ ${message(code: 'surveyconfig.orgs.label', locale: language)}: ${orgName}
 <br />
 
 <g:if test="${survey.surveyConfigs[0].pickAndChoose}">
-    ${message(code: 'email.survey.finish.selection.text', locale: language)} ${surveyService.countIssueEntitlementsByIEGroup(survey.surveyConfigs[0].subscription.getDerivedSubscriptionBySubscribers(org), survey.surveyConfigs[0])}
+    ${message(code: 'email.survey.finish.selection.text', locale: language)} ${surveyService.countCurrentIssueEntitlementsByIEGroup(survey.surveyConfigs[0].subscription.getDerivedSubscriptionBySubscribers(org), survey.surveyConfigs[0])}
     <br />
     <br />
 </g:if>

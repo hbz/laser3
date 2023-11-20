@@ -169,7 +169,7 @@
 <g:if test="${selectProcess}">
     <ui:msg class="positive" header="${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.label')}">
             <g:message code="renewEntitlementsWithSurvey.issueEntitlementSelect.selectProcess"
-                       args="[selectProcess.processCount, countAllTipps, selectProcess.countSelectTipps]"/>
+                       args="[selectProcess.processCount, selectProcess.processRows, selectProcess.countSelectTipps]"/>
     </ui:msg>
 </g:if>
 
@@ -290,7 +290,7 @@
                 <div class="row">
                     <div class="eight wide column">
                         <h3 class="ui icon header la-clear-before la-noMargin-top"><span
-                                class="ui circular  label">${num_rows}</span> <g:message code="title.filter.result"/>
+                                class="ui circular  label">${num_rows?:0}</span> <g:message code="title.filter.result"/>
                         </h3>
                     </div>
                 </div><!--.row-->

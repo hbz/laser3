@@ -1940,6 +1940,18 @@ class FilterService {
 
                 if(subFilter) {
                     whereClauses << subFilter
+                    if(configMap.status != null && configMap.status != '') {
+                        params.ieStatus = connection.createArrayOf('bigint', listReaderWrapper(configMap, 'status').toArray())
+                        whereClauses << "ie_status_rv_fk = any(:ieStatus)"
+                    }
+                    else if(configMap.notStatus != null && !configMap.notStatus.isEmpty()) {
+                        params.ieStatus = configMap.notStatus instanceof String ? Long.parseLong(configMap.notStatus) : configMap.status //already id
+                        whereClauses << "ie_status_rv_fk != :ieStatus"
+                    }
+                    else {
+                        params.ieStatus = RDStore.TIPP_STATUS_CURRENT.id
+                        whereClauses << "ie_status_rv_fk = :ieStatus"
+                    }
                 }
                 if(configMap.asAt && configMap.asAt.length() > 0) {
                     Date dateFilter = DateUtils.getLocalizedSDF_noTime().parse(configMap.asAt)

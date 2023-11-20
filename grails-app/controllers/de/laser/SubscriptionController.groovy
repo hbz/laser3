@@ -1625,10 +1625,10 @@ class SubscriptionController {
                 File f = new File(dir+'/'+filename)
                 if(!f.exists()) {
                     FileOutputStream out = new FileOutputStream(f)
-                    String domainClName = IssueEntitlement.class.name
-                    if(params.tab == 'allTipps') {
+                    String domainClName = TitleInstancePackagePlatform.class.name
+                   /* if(params.tab == 'allTipps') {
                         domainClName = TitleInstancePackagePlatform.class.name
-                    }
+                    }*/
                     Map<String, List> tableData = exportService.generateTitleExportKBART(queryMap, domainClName)
                     out.withWriter { Writer writer ->
                         writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
@@ -1640,10 +1640,10 @@ class SubscriptionController {
                 render template: '/templates/bulkItemDownload', model: fileResult
                 return
             }else if (params.exportXLS) {
-                String domainClName = IssueEntitlement.class.name
-                if(params.tab == 'allTipps') {
+                String domainClName = TitleInstancePackagePlatform.class.name
+              /*  if(params.tab == 'allTipps') {
                     domainClName = TitleInstancePackagePlatform.class.name
-                }
+                }*/
 
                 //List<String> perpetuallyPurchasedTitleURLs = PermanentTitle.executeQuery('select pt.tipp.hostPlatformURL from PermanentTitle pt where pt.owner = :owner and pt.tipp.id in (select ti.id from TitleInstancePackagePlatform as ti where ti.pkg in (:pkgs))',
                 //                        [owner: ctrlResult.result.subscriber, pkgs: ctrlResult.result.subscription.packages?.pkg])
@@ -1658,7 +1658,7 @@ class SubscriptionController {
 
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                Map<String, List> export = exportService.generateTitleExportCustom(queryMap, domainClName, [], null, true)
+                Map<String, List> export = exportService.generateTitleExportCustom(queryMap, domainClName, [], ctrlResult.result.subscriber, params.tab == 'allTipps')
                 Map sheetData = [:]
 
                 if(params.tab == 'allTipps') {
