@@ -2,6 +2,8 @@ package de.laser
 
 class UrlMappings {
 
+    static excludes = [ "/static/**" ]
+
     static mappings = {
 
         "/"         (controller: 'public', action: 'index')
