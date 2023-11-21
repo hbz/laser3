@@ -11,7 +11,7 @@
 
     %{--Custom URL mapping for re-use of index--}%
     <g:link class="item${controllerName == 'finance' ? ' active':''}" mapping="subfinance" controller="finance" action="index" params="${[sub:params.id]}">
-        ${message(code:'subscription.details.financials.label')}<div class="ui floating blue circular label">${currentCostItemCounts}</div>
+        ${message(code:'subscription.details.financials.label')}<span class="ui floating blue circular label">${currentCostItemCounts}</span>
     </g:link>
 
 %{--    <ui:subNavItem controller="subscription" action="reporting" params="${[id:params.id]}" message="myinst.reporting" />--}%

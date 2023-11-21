@@ -57,7 +57,7 @@ class SubNavTagLib {
         }
 
         if (attrs.counts) {
-            linkBody = linkBody + '<div class="ui floating blue circular label">' + attrs.counts + '</div>'
+            linkBody = linkBody + '<span class="ui floating blue circular label">' + attrs.counts + '</span>'
         }
 
         if (attrs.disabled) {
@@ -98,7 +98,7 @@ class SubNavTagLib {
 
         if (check) {
             if (attrs.counts) {
-                linkBody = linkBody + '<div class="ui floating blue circular label">' + attrs.counts + '</div>'
+                linkBody = linkBody + '<span class="ui floating blue circular label">' + attrs.counts + '</span>'
             }
 
             if (attrs.controller) {
