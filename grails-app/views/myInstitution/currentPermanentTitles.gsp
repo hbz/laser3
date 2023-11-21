@@ -9,6 +9,12 @@
 
 <ui:messages data="${flash}"/>
 
+<laser:render template="/templates/filter/tipp_ieFilter"/>
+
+<h3 class="ui icon header la-clear-before la-noMargin-top">
+    <span class="ui circular  label">${num_tipp_rows}</span> <g:message code="title.filter.result"/>
+</h3>
+
 <ui:tabs actionName="${actionName}">
     <ui:tabsItem controller="${controllerName}" action="${actionName}"
                  params="[tab: 'currentIEs']"
@@ -34,21 +40,6 @@
 
 <% params.remove('tab') %>
 
-<div class="ui grid">
-    <div class="row">
-        <div class="column">
-            <laser:render template="/templates/filter/tipp_ieFilter"/>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="eight wide column">
-            <h3 class="ui icon header la-clear-before la-noMargin-top"><span
-                    class="ui circular  label">${num_tipp_rows}</span> <g:message code="title.filter.result"/></h3>
-        </div>
-
-    </div>
-</div>
 <%
     Map<String, String>
     sortFieldMap = ['tipp.sortname': message(code: 'title.label')]
@@ -62,6 +53,9 @@
     sortFieldMap['tipp.accessStartDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.from')}"
     sortFieldMap['tipp.accessEndDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.to')}"
 %>
+
+<div class="ui bottom attached tab active segment">
+
     <div class="ui form">
         <div class="three wide fields">
             <div class="field">
@@ -77,7 +71,6 @@
             <div class="column">
                 <g:if test="${titles}">
                     <g:set var="counter" value="${offset + 1}"/>
-
 
                     <g:if test="${titles}">
                         <div class="ui fluid card">
@@ -228,12 +221,10 @@
                 </g:if>
                 <g:else>
                     <g:if test="${filterSet}">
-                        <br/><strong><g:message code="filter.result.empty.object"
-                                                args="${[message(code: "title.plural")]}"/></strong>
+                        <br/><strong><g:message code="filter.result.empty.object" args="${[message(code: "title.plural")]}"/></strong>
                     </g:if>
                     <g:else>
-                        <br/><strong><g:message code="result.empty.object"
-                                                args="${[message(code: "title.plural")]}"/></strong>
+                        <br/><strong><g:message code="result.empty.object" args="${[message(code: "title.plural")]}"/></strong>
                     </g:else>
                 </g:else>
             </div>
@@ -241,8 +232,7 @@
 
     </div>
     <g:if test="${titles}">
-        <ui:paginate action="currentPermanentTitles" controller="myInstitution" params="${params}"
-                     max="${max}" total="${num_tipp_rows}"/>
+        <ui:paginate action="currentPermanentTitles" controller="myInstitution" params="${params}" max="${max}" total="${num_tipp_rows}"/>
     </g:if>
 
 </div>
