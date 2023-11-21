@@ -3701,7 +3701,7 @@ class ExportClickMeService {
             sheetData[messageSource.getMessage('org.institution.plural', null, locale)] = [titleRow: titleRow, columnData: instData]
         if(withProvData)
             sheetData[messageSource.getMessage('default.agency.provider.plural.label', null, locale)] = [titleRow: titleRow, columnData: provData]
-        if(visibleAddresses) {
+        if(visibleAddresses || tab == 'addresses') {
             titleRow = [messageSource.getMessage('default.type.label', null, locale)]
             titleRow.addAll(_exportTitles(selectedExportAddressFields, locale))
             visibleAddresses.each { Address a ->
@@ -3753,6 +3753,9 @@ class ExportClickMeService {
                         break
                 }
                 return exportService.generateSeparatorTableString(titleRow, currData, '|')
+            case FORMAT.PDF:
+                //structure: list of maps (each map is the content of a page)
+                return [mainHeader: titleRow, pages: sheetData.values()]
         }
     }
 
