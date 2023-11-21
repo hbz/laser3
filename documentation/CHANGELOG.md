@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4987    21.11.2023   rc-3.3  3.3         Moe    Feature     Umfrage erstellen: Zählung der Einrichtungen falsch
+
 5414    16.11.2023  rc-3.3  3.3         Andreas Bug         obsoleten Menüpunkt entfernt
 
 5413    16.11.2023  rc-3.3  3.3         Andreas Bug         Abfragefehler korrigiert
