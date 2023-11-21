@@ -2,8 +2,6 @@
 
 <laser:htmlStart message="copyElementsIntoObject.license" serviceInjection="true"/>
 
-[DEBUG: Support-Template]
-
 <ui:breadcrumbs>
     <ui:crumb text="${message(code:'license.current')}" controller="myInstitution" action="currentLicenses" />
 

@@ -2155,14 +2155,14 @@ class SubscriptionControllerService {
                     long start = System.currentTimeSeconds()
                     if(!Package.findByGokbId(pkgUUID)) {
                         try {
-                            Map<String,Object> queryResult = globalSourceSyncService.fetchRecordJSON(false,[componentType:'TitleInstancePackagePlatform',tippPackageUuid:pkgUUID,max:5000,sort:'lastUpdated'])
+                            Map<String,Object> queryResult = globalSourceSyncService.fetchRecordJSON(false,[componentType:'TitleInstancePackagePlatform',tippPackageUuid:pkgUUID,max:GlobalSourceSyncService.MAX_TIPP_COUNT_PER_PAGE,sort:'lastUpdated'])
                             if(queryResult.error && queryResult.error == 404) {
                                 log.error("we:kb server currently unavailable")
                             }
                             else {
                                 Package.withNewTransaction {
                                     if(queryResult.records && queryResult.count > 0) {
-                                        if(queryResult.count > 5000)
+                                        if(queryResult.count >= GlobalSourceSyncService.MAX_TIPP_COUNT_PER_PAGE)
                                             globalSourceSyncService.processScrollPage(queryResult, 'TitleInstancePackagePlatform', null, pkgUUID)
                                         else
                                             globalSourceSyncService.updateRecords(queryResult.records, 0)
@@ -2753,11 +2753,13 @@ class SubscriptionControllerService {
                         Thread.currentThread().setName("EntitlementEnrichment_${result.subscription.id}")
                         subscriptionService.bulkAddEntitlements(result.subscription, issueEntitlementCandidates, false)
                         if(params.withChildren == 'on') {
+                            Sql sql = GlobalService.obtainSqlConnection()
                             childSubIds.each { Long childSubId ->
                                 pkgIds.each { Long pkgId ->
                                     packageService.bulkAddHolding(sql, childSubId, pkgId, result.subscription.hasPerpetualAccess, result.subscription.id)
                                 }
                             }
+                            sql.close()
                         }
                         //IssueEntitlement.withNewTransaction { TransactionStatus ts ->
                         /*

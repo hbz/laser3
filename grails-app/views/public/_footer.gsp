@@ -114,7 +114,7 @@
                 </g:if>
                    <div class="item">
                        <i class="universal access icon"></i>
-                        <g:link controller="public" action="wcagEasyLanguage" class="content">
+                        <g:link target="_blank" controller="public" action="wcagEasyLanguage" class="content">
                             ${message(code: 'landingpage.footer.4.link4')}
                         </g:link>
                    </div>

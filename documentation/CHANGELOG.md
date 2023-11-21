@@ -9,6 +9,20 @@
 
 4987    21.11.2023   rc-3.3  3.3         Moe    Feature     Umfrage erstellen: Zählung der Einrichtungen falsch
 
+5438    21.11.2023  rc-3.3  3.3         Andreas Feature     fehldende Erläuterungstexte nachgereicht
+
+5435    21.11.2023  rc-3.3  3.3         Andreas Bug         PDF-Export funktionierte bei Umfragen nicht
+
+5437    21.11.2023  rc-3.3  3.3         David   Bug         PDF-Erzeugung funktioniert lokal nicht
+
+5416    20.11.2023  rc-3.3  3.3         David   Feature     TitleInstance entfernen
+
+5418    20.11.2023  rc-3.3  3.3         David   Bug         Dateien nicht auffindbar
+
+5412    20.11.2023  rc-3.3  3.3         Andreas Feature     minimale Umarbeitung der Landingpage
+
+5410    17.11.2023  rc-3.3  3.3         David   Feature     JS: Mehrfache Initialisierung von Tooltips verhindern
+
 5414    16.11.2023  rc-3.3  3.3         Andreas Bug         obsoleten Menüpunkt entfernt
 
 5413    16.11.2023  rc-3.3  3.3         Andreas Bug         Abfragefehler korrigiert

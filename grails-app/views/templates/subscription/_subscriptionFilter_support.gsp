@@ -2,7 +2,6 @@
 <laser:serviceInjection />
 
 <ui:filter>
-    [DEBUG: Support-Filter]
     <g:form action="${actionName}" controller="${controllerName}" method="get" class="ui small form clearing">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
         <g:if test="${license}">

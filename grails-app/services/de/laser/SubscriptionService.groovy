@@ -1513,6 +1513,7 @@ join sub.orgRelations or_sub where
                 }
             }
         }
+        sql.close()
     }
 
     /**

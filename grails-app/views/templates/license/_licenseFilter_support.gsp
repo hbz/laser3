@@ -2,7 +2,6 @@
 <laser:serviceInjection />
 
 <ui:filter>
-      [DEBUG: Support-Filter]
       <form class="ui form">
           <div class="four fields">
               <div class="field">

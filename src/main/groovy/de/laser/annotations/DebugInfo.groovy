@@ -24,8 +24,6 @@ import java.lang.annotation.Target
     String[] isInstEditor_denySupport_or_ROLEADMIN()    default ['']    // [orgPerms]
     String[] isInstAdm_denySupport_or_ROLEADMIN()       default ['']    // [orgPerms]
 
-//    String[] hasPermAsInstRoleAsConsortium_or_ROLEADMIN() default ['','']   // [orgPerms, instUserRole]
-
     // legacy
 
     int ctrlService() default 0

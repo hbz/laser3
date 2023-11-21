@@ -4,21 +4,21 @@ textareaHeight = {
 
     go: function () {
         $(function() {
-            textareaHeight.init();
+            textareaHeight.init('body');
         });
     },
 
-    init: function () {
-        console.log('textareaHeight.init()')
+    init: function (ctxSel) {
+        console.log('textareaHeight.init( ' + ctxSel + ' )')
 
-        $('.la-textarea-resize-vertical').each(function() {
+        $(ctxSel + ' .la-textarea-resize-vertical').each(function() {
             if (this.scrollHeight > 0) {
                 $(this).height(this.scrollHeight)
             }
-        });
-        $('.la-textarea-resize-vertical').on('keyup keypress', function() {
-            $(this).height(0);
-            $(this).height(this.scrollHeight);
+            $(this).on('keyup keypress', function() {
+                $(this).height(0);
+                $(this).height(this.scrollHeight);
+            });
         });
     }
 }

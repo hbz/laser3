@@ -9,8 +9,6 @@
 
 <laser:htmlStart text="${pageTitle}" serviceInjection="true" />
 
-[DEBUG: Support-Template] - workFlowPart: ${workFlowPart}
-
     <g:if test="${fromSurvey}">
         <ui:breadcrumbs>
             <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
