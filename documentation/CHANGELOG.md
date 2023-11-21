@@ -9,6 +9,8 @@
 
 5435    21.11.2023  rc-3.3  3.3         Andreas Bug         PDF-Export funktionierte bei Umfragen nicht
 
+5437    21.11.2023  rc-3.3  3.3         David   Bug         PDF-Erzeugung funktioniert lokal nicht
+
 5416    20.11.2023  rc-3.3  3.3         David   Feature     TitleInstance entfernen
 
 5418    20.11.2023  rc-3.3  3.3         David   Bug         Dateien nicht auffindbar

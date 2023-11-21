@@ -85,6 +85,12 @@ body.myInstitution_dashboard .ui.tab .item .header {
     margin: 0.5rem 0;
 }
 
+/* filter > form > fields + field -> reduced additive margin */
+
+.la-filter .form .fields .field {
+    margin-bottom: 0.5em;
+}
+
 /* mainSearch */
 
 #mainSearch {

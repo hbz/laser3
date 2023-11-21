@@ -41,14 +41,14 @@
                         <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label.shy')}"/>
                         <g:if test="${params.orgRole in ['Subscription Consortia']}">
                             <th scope="col" rowspan="2" class="center aligned">
-                                <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.numberOfLicenses.label')}" data-position="top center">
+                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.numberOfLicenses.label')}" data-position="top center">
                                     <i class="university large icon"></i>
-                                </a>
+                                </span>
                             </th>
                             <th scope="col" rowspan="2" class="center aligned">
-                                <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.numberOfCostItems.label')}" data-position="top center">
+                                <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.numberOfCostItems.label')}" data-position="top center">
                                     <i class="money bill large icon"></i>
-                                </a>
+                                </span>
                             </th>
                         </g:if>
                         <g:if test="${!(institution.isCustomerType_Consortium())}">
