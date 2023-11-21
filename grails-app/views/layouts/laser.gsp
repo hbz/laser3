@@ -57,6 +57,10 @@
 
     <laser:render template="/templates/system/serverIndicator" />
 
+    %{-- skip to main content, bypass menu block (for screen reader) related to https://www.w3.org/TR/WCAG20-TECHS/G1.html--}%
+
+    <laser:render template="/templates/accessibility/skipContent" />
+
     %{-- main menu --}%
 
     <g:set var="visibilityContextOrgMenu" value="la-hide-context-orgMenu" />
@@ -163,7 +167,7 @@
         %{-- global content container --}%
 
         <div class="pusher">
-            <main class="ui main container ${visibilityContextOrgMenu} hidden la-js-mainContent">
+            <main class="ui main container ${visibilityContextOrgMenu} hidden la-js-mainContent" id="main">
 
                 %{-- system messages --}%
 

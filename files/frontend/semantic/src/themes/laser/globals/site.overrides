@@ -470,3 +470,17 @@ i.icon.la-list-icon{
 .js-copyTrigger:hover {
     cursor: pointer;
 }
+/****************************************
+        Accessibility
+*****************************************/
+.la-skipLink {
+    position: absolute;
+    height: 0px;
+}
+.la-screenReaderText {
+    clip: rect(1px, 1px, 1px, 1px);
+    position: absolute !important;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+}
