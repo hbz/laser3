@@ -884,6 +884,20 @@ class SurveyService {
         return Org.executeQuery(tmpQuery, tmpQueryParams, params)
     }
 
+    int countFilteredSurveyOrgs(List orgIDs, String query, queryParams, params) {
+
+        if (!(orgIDs?.size() > 0)) {
+            return []
+        }
+        String tmpQuery = query
+        tmpQuery = tmpQuery.replace("order by", "and o.id in (:orgIDs) order by")
+
+        Map tmpQueryParams = queryParams
+        tmpQueryParams.put("orgIDs", orgIDs)
+
+        return Org.executeQuery(tmpQuery, tmpQueryParams, params)
+    }
+
     /**
      * Retrieves the counts of surveys in the different stages
      * @param parameterMap the filter parameter map
