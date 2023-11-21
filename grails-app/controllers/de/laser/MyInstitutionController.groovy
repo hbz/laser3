@@ -2919,7 +2919,7 @@ class MyInstitutionController  {
         else */
         if(params.fileformat == 'xlsx') {
 
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportAddresses(visiblePersons, visibleAddresses, selectedFields, params.exportOnlyContactPersonForInstitution == 'true', params.exportOnlyContactPersonForProviderAgency == 'true', ExportClickMeService.FORMAT.XLS)
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportAddresses(visiblePersons, visibleAddresses, selectedFields, params.exportOnlyContactPersonForInstitution == 'true', params.exportOnlyContactPersonForProviderAgency == 'true', null, ExportClickMeService.FORMAT.XLS)
 
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -2934,7 +2934,7 @@ class MyInstitutionController  {
             response.contentType = "text/csv"
             ServletOutputStream out = response.outputStream
             out.withWriter { Writer writer ->
-                writer.write((String) exportService.exportAddressbook('csv', visiblePersons))
+                writer.write((String) exportClickMeService.exportAddresses(visiblePersons, visibleAddresses, selectedFields, params.exportOnlyContactPersonForInstitution == 'true', params.exportOnlyContactPersonForProviderAgency == 'true', params.tab, ExportClickMeService.FORMAT.CSV))
             }
             out.close()
         }
