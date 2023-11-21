@@ -327,9 +327,17 @@
 
             <div id="fileformat-query-csv" class="wide four field">
                 <label>${message(code: 'default.export.cfg.csv')}
-                    <span data-tooltip="${message(code: 'exportClickMe.exportCSV.noAccessPoints')}">
-                    <i class="question circle icon"></i>
-                </span></label>
+                    <g:if test="${accessPointNotice}">
+                        <span data-tooltip="${message(code: 'exportClickMe.exportCSV.noAccessPoints')}">
+                            <i class="question circle icon"></i>
+                        </span>
+                    </g:if>
+                    <g:if test="${currentTabNotice}">
+                        <span data-tooltip="${message(code: 'exportClickMe.exportCSV.currentTabOnly')}">
+                            <i class="question circle icon"></i>
+                        </span>
+                    </g:if>
+                </label>
                 <p>
                     ${message(code: 'default.export.cfg.csv.fieldSeparator')}: <span class="ui circular label">${csvFieldSeparator}</span> <br />
                 </p>
@@ -355,9 +363,10 @@
             </div>
 
             <div class="wide two field">
+                <g:set var="format" value="${overrideFormat ?: [xlsx: 'XLSX', csv: 'CSV', pdf: 'PDF']}"/>
                 <g:select name="fileformat" id="fileformat-query" class="ui selection dropdown la-not-clearable"
                           optionKey="key" optionValue="value"
-                          from="${[xlsx: 'XLSX', csv: 'CSV', pdf: 'PDF']}"
+                          from="${format}"
                 />
             </div>
 

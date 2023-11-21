@@ -219,7 +219,7 @@
 
                 packageInfos.packageInstance = subscriptionPackage.pkg
 
-                Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi?uuid=${subscriptionPackage.pkg.gokbId}")
+                Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: subscriptionPackage.pkg.gokbId])
                 if (queryResult.warning) {
                     List records = queryResult.warning.result
                     packageInfos.packageInstanceRecord = records ? records[0] : [:]

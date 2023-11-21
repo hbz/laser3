@@ -3617,7 +3617,7 @@ class ExportClickMeService {
      * @param format the {@link FORMAT} to be exported
      * @return the output, rendered in the desired format
      */
-    def exportAddresses(List visiblePersons, List visibleAddresses, Map<String, Object> selectedFields, withInstData, withProvData, FORMAT format) {
+    def exportAddresses(List visiblePersons, List visibleAddresses, Map<String, Object> selectedFields, withInstData, withProvData, String tab, FORMAT format) {
         Locale locale = LocaleUtils.getCurrentLocale()
         Map<String, Object> configFields = getExportAddressFields(), selectedExportContactFields = [:], selectedExportAddressFields = [:], sheetData = [:]
         List instData = [], provData = [], instAddresses = [], provAddresses = []
@@ -3731,9 +3731,29 @@ class ExportClickMeService {
             if(withProvData)
                 sheetData[messageSource.getMessage('default.agency.provider.address.label', null, locale)] = [titleRow: titleRow, columnData: provAddresses]
         }
-        if(sheetData.size() == 0)
+        if(sheetData.size() == 0) {
             sheetData[messageSource.getMessage('org.institution.plural', null, locale)] = [titleRow: titleRow, columnData: []]
-        return exportService.generateXLSXWorkbook(sheetData)
+        }
+        switch(format) {
+            case FORMAT.XLS: return exportService.generateXLSXWorkbook(sheetData)
+            case FORMAT.CSV:
+                List currData = []
+                switch(tab) {
+                    case 'addresses':
+                        if(withInstData)
+                            currData.addAll(instAddresses)
+                        if(withProvData)
+                            currData.addAll(provAddresses)
+                        break
+                    case 'contacts':
+                        if(withInstData)
+                            currData.addAll(instData)
+                        if(withProvData)
+                            currData.addAll(provData)
+                        break
+                }
+                return exportService.generateSeparatorTableString(titleRow, currData, '|')
+        }
     }
 
     /**

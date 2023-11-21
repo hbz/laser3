@@ -20,7 +20,7 @@
 
     <g:form action="${actionName}" controller="${controllerName}" params="${params}">
 
-        <laser:render template="/templates/export/individuallyExportForm" model="${[formFields: formFields, exportFileName: exportFileName, contactSwitch: contactSwitch, csvFieldSeparator: '|']}"/>
+        <laser:render template="/templates/export/individuallyExportForm" model="${[accessPointNotice: true, formFields: formFields, exportFileName: exportFileName, contactSwitch: contactSwitch, csvFieldSeparator: '|']}"/>
 
     </g:form>
 
