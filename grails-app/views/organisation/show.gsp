@@ -864,6 +864,7 @@
                         --%>
             </g:if>
 
+            <g:if test="${!isProviderOrAgency}">
                 <g:if test="${(SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || institution.isCustomerType_Consortium()) && (institution != orgInstance)}">
                     <g:if test="${orgInstance.createdBy || orgInstance.legallyObligedBy}">
                         <div class="ui card">
@@ -922,6 +923,7 @@
                         </div><!-- .card -->
                     </g:if>
                 </g:if>
+            </g:if>
 
             <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support() || contextService.getOrg().isCustomerType_Inst_Pro()}">
                 <div id="new-dynamic-properties-block">
@@ -953,11 +955,11 @@
                                             <i aria-hidden="true" class="plus icon"></i>
                                         </a>
                                     </g:if>
-                                    <g:elseif test="${isProviderOrAgency}">
-                                        <a href="#createPersonModal" class="ui icon button blue la-modern-button createContact" id="contactPersonForProviderAgencyPublic" data-ui="modal">
-                                            <i aria-hidden="true" class="plus icon"></i>
-                                        </a>
-                                    </g:elseif>
+%{--                                    <g:elseif test="${isProviderOrAgency}">--}%
+%{--                                        <a href="#createPersonModal" class="ui icon button blue la-modern-button createContact" id="contactPersonForProviderAgencyPublic" data-ui="modal">--}%
+%{--                                            <i aria-hidden="true" class="plus icon"></i>--}%
+%{--                                        </a>--}%
+%{--                                    </g:elseif>--}%
                                 </div>
                             </div>
                         </div>
