@@ -69,27 +69,29 @@ class AssetsTagLib {
     // render override for dev environment
 
     def render = { attrs ->
-
         if (Environment.isDevelopmentMode()) {
-            GrailsWebRequest webRequest = getWebRequest()
-            String uri = webRequest.getAttributes().getTemplateUri(attrs.template as String, webRequest.getRequest())
+            try {
+                boolean isDebugMode = AppUtils.isDebugMode() // ERMS-5437 - catch: You cannot use the session in non-request rendering operations @ PDF-Export
 
-            if (attrs.get('model')) {
-                out << '<!-- [template: ' + uri + '], [model: ' + (attrs.get('model') as Map).keySet().join(',') + '] -- START -->'
+                GrailsWebRequest webRequest = getWebRequest()
+                String uri = webRequest.getAttributes().getTemplateUri(attrs.template as String, webRequest.getRequest())
 
-            } else {
-                out << '<!-- [template: ' + uri + '] -- START -->'
-            }
+                if (attrs.get('model')) {
+                    out << '<!-- [template: ' + uri + '], [model: ' + (attrs.get('model') as Map).keySet().join(',') + '] -- START -->'
+                } else {
+                    out << '<!-- [template: ' + uri + '] -- START -->'
+                }
 
-            if (AppUtils.isDebugMode()) {
-                out << '<div style="border:2px dotted orangered" title="' + uri + '">'
+                if (isDebugMode) { out << '<div style="border:2px dotted orangered" title="' + uri + '">' }
                 out << g.render(attrs)
-                out << '</div>'
-            } else {
+                if (isDebugMode) { out << '</div>' }
+
+                out << '<!-- [template: ' + uri + '] -- END -->'
+            }
+            catch (Exception e) {
+                println e.getMessage()
                 out << g.render(attrs)
             }
-
-            out << '<!-- [template: ' + uri + '] -- END -->'
         } else {
             out << g.render(attrs)
         }
