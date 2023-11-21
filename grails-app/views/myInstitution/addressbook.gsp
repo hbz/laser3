@@ -16,7 +16,7 @@
         </ui:exportDropdownItem>
         <%--
         <g:if test="${filterSet == true}">
-            <%-ropdownItem>
+            <ui:exportDropdownItem>
                 <g:link class="item js-open-confirm-modal" params="${params+[exportXLS: true]}" action="addressbook"
                         data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}" data-confirm-term-how="ok">
                     <g:message code="default.button.exports.xls"/>
@@ -244,7 +244,7 @@
 
     <g:form action="addressbook" controller="myInstitution" params="${params+[exportClickMeExcel: true]}">
 
-        <laser:render template="/templates/export/individuallyExportForm" model="${[modalID: 'individuallyExportModal', formFields: formFields, filterFields: filterFields, exportFileName: escapeService.escapeString("${message(code: 'menu.institutions.myAddressbook')}_${DateUtils.getSDF_yyyyMMdd().format(new Date())}"), orgSwitch: true]}"/>
+        <laser:render template="/templates/export/individuallyExportForm" model="${[currentTabNotice: true, modalID: 'individuallyExportModal', formFields: formFields, filterFields: filterFields, exportFileName: escapeService.escapeString("${message(code: 'menu.institutions.myAddressbook')}_${DateUtils.getSDF_yyyyMMdd().format(new Date())}"), orgSwitch: true]}"/>
 
     </g:form>
 
