@@ -2,8 +2,6 @@
 
 <laser:htmlStart message="menu.my.currentSubscriptionsTransfer" serviceInjection="true"/>
 
-[DEBUG: Support-Template] - TODO
-
 <ui:breadcrumbs>
     <ui:crumb message="menu.my.currentSubscriptionsTransfer" class="active"/>
 </ui:breadcrumbs>

@@ -2,18 +2,18 @@
 
 tooltip = {
 
-    go : function() {
+    go: function () {
         tooltip.init('body')
     },
 
-    init : function(ctxSel) {
+    init: function (ctxSel) {
         console.log('tooltip.init( ' + ctxSel + ' )')
 
         tooltip.initDynamicPopups(ctxSel)
         tooltip.initDynamicAccessViaKeys(ctxSel)
     },
 
-    initDynamicPopups: function(ctxSel) {
+    initDynamicPopups: function (ctxSel) {
         console.log('tooltip.initDynamicPopups( ' + ctxSel + ' )')
 
         $(ctxSel + ' .la-popup-tooltip').each(function() {

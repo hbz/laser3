@@ -1554,7 +1554,9 @@ class FinanceService {
         }
         result.candidates = candidates
         result.budgetCodes = budgetCodes
-        result.errorRows = errorRows
+        //is initialised per default with the header row, i.e. it has always a size of at least 1
+        if(errorRows.size() > 1)
+            result.errorRows = errorRows
         result
     }
 

@@ -383,9 +383,6 @@
 .secInfoWrapper .ROLE_ADMIN {
     color: orange;
 }
-.secInfoWrapper .ROLE_DATAMANAGER {
-    color: #8B008B;
-}
 .secInfoWrapper .ROLE_USER {
     color: #1E90FF;
 }

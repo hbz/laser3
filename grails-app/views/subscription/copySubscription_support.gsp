@@ -1,8 +1,6 @@
 <%@ page import="de.laser.CustomerTypeService; de.laser.Person; de.laser.RefdataValue; de.laser.SubscriptionController; de.laser.CopyElementsService;de.laser.storage.RDStore;de.laser.PendingChangeConfiguration;" %>
 <laser:htmlStart message="myinst.copySubscription" serviceInjection="true" />
 
-[DEBUG: Support-Template]
-
 <ui:breadcrumbs>
     <ui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label')}" />
 
