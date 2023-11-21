@@ -17,7 +17,8 @@
 
         <ui:messages data="${flash}" />
 
-        <g:if test="${editable}">
+    <g:if test="${editable}">
+        <div class="ui grey segment">
             <g:form name="newUser" class="ui form" controller="${controllerName}" action="processCreateUser" method="post">
                 <fieldset>
                     <div class="field required">
@@ -68,7 +69,8 @@
 
                 </fieldset>
             </g:form>
-        </g:if>
+        </div>
+    </g:if>
 
 <laser:script file="${this.getGroovyPageFileName()}">
 

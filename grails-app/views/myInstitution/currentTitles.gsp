@@ -76,8 +76,6 @@
 
 <ui:filter>
     <g:form action="currentTitles" controller="myInstitution" class="ui form">
-
-
         <div class="two fields">
             <div class="field">
                 <label>${message(code: 'default.search.text')}</label>
@@ -284,12 +282,10 @@
         </div>
     </div>
 
-
     <div>
         <div>
             <g:if test="${titles}">
                 <g:set var="counter" value="${offset + 1}"/>
-
 
                     <g:if test="${titles}">
                         <div class="ui fluid card">
@@ -451,8 +447,7 @@
 
 </div>
 <g:if test="${titles}">
-    <ui:paginate action="currentTitles" controller="myInstitution" params="${params}"
-                 max="${max}" total="${num_ti_rows}"/>
+    <ui:paginate action="currentTitles" controller="myInstitution" params="${params}" max="${max}" total="${num_ti_rows}"/>
 </g:if>
 
 
@@ -460,8 +455,7 @@
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
 </ui:debugInfo>
 
-<laser:render template="/templates/export/individuallyExportTippsModal"
-              model="[modalID: 'individuallyExportTippsModal']"/>
+<laser:render template="/templates/export/individuallyExportTippsModal" model="[modalID: 'individuallyExportTippsModal']"/>
 
 <laser:script>
     $('.export').click(function(e) {
