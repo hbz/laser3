@@ -1,6 +1,12 @@
 <g:if test="${success}">
     <ui:msg icon="ui check icon" class="success" message="subscription.details.addEntitlements.matchingSuccessful" args="[g.createLink(controller: 'subscription', action: 'index', params: [id: subscription.id])]"/>
 </g:if>
+<g:if test="${selectProcess}">
+    <ui:msg class="positive" header="${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.label')}">
+        <g:message code="renewEntitlementsWithSurvey.issueEntitlementSelect.selectProcess"
+                   args="[selectProcess.processCount, selectProcess.processRows, selectProcess.countSelectTipps, g.createLink(controller: 'subscription', action: 'renewEntitlementsWithSurvey', params: [id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'selectedIEs'])]"/>
+    </ui:msg>
+</g:if>
 <g:if test="${truncatedRows}">
     <ui:msg icon="ui exclamation icon" class="error" message="subscription.details.addEntitlements.truncatedRows" args="[truncatedRows]"/>
 </g:if>

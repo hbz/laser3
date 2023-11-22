@@ -1944,8 +1944,14 @@ class FilterService {
                     List<Object> subIds = []
                     subIds.addAll(configMap.subscriptions.id)
                     params.subscriptions = connection.createArrayOf('bigint', subIds.toArray())
-                    join += " join subscription_package on sp_pkg_fk = tipp_pkg_fk"
-                    subFilter = "sp_sub_fk = any(:subscriptions)"
+                    if(configMap.containsKey('ieStatus')) {
+                        join += " join issue_entitlement on ie_tipp_fk = tipp_id"
+                        subFilter = "ie_subscription_fk = any(:subscriptions)"
+                    }
+                    else {
+                        join += " join subscription_package on sp_pkg_fk = tipp_pkg_fk"
+                        subFilter = "sp_sub_fk = any(:subscriptions)"
+                    }
                 }
                 else if(configMap.defaultSubscriptionFilter) {
                     String consFilter = ""
@@ -1968,20 +1974,20 @@ class FilterService {
                     params.pkgIds = connection.createArrayOf('bigint', pkgIds.toArray())
                     whereClauses << "tipp_pkg_fk = any(:pkgIds)"
                 }
-                if(subFilter)
+                if(subFilter) {
                     whereClauses << subFilter
-                    if(configMap.status != null && configMap.status != '') {
+                    if (configMap.status != null && configMap.status != '') {
                         params.ieStatus = connection.createArrayOf('bigint', listReaderWrapper(configMap, 'status').toArray())
                         whereClauses << "ie_status_rv_fk = any(:ieStatus)"
-                    }
-                    else if(configMap.notStatus != null && !configMap.notStatus.isEmpty()) {
-                        params.ieStatus = configMap.notStatus instanceof String ? Long.parseLong(configMap.notStatus) : configMap.status //already id
+                    } else if (configMap.notStatus != null && !configMap.notStatus.isEmpty()) {
+                        params.ieStatus = configMap.notStatus instanceof String ? Long.parseLong(configMap.notStatus) : configMap.status
+                        //already id
                         whereClauses << "ie_status_rv_fk != :ieStatus"
-                    }
-                    else {
+                    } else {
                         params.ieStatus = RDStore.TIPP_STATUS_CURRENT.id
                         whereClauses << "ie_status_rv_fk = :ieStatus"
                     }
+                }
                 if(configMap.asAt && configMap.asAt.length() > 0) {
                     Date dateFilter = DateUtils.getLocalizedSDF_noTime().parse(configMap.asAt)
                     params.asAt = new Timestamp(dateFilter.getTime())

@@ -7,13 +7,17 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-4987    21.11.2023   rc-3.3  3.3         Moe    Feature     Umfrage erstellen: Zählung der Einrichtungen falsch
+5440    21.11.2023  rc-3.3  3.3         Andreas Bug         Abfragen im Export behoben
+
+5439    21.11.2023  rc-3.3  3.3         Andreas Bug         Exportprozess blieb hängen
 
 5438    21.11.2023  rc-3.3  3.3         Andreas Feature     fehldende Erläuterungstexte nachgereicht
 
 5435    21.11.2023  rc-3.3  3.3         Andreas Bug         PDF-Export funktionierte bei Umfragen nicht
 
 5437    21.11.2023  rc-3.3  3.3         David   Bug         PDF-Erzeugung funktioniert lokal nicht
+
+4987    21.11.2023  rc-3.3  3.3         Moe     Feature     Umfrage erstellen: Zählung der Einrichtungen falsch
 
 5416    20.11.2023  rc-3.3  3.3         David   Feature     TitleInstance entfernen
 

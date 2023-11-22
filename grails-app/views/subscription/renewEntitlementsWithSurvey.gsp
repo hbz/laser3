@@ -497,6 +497,9 @@
         }).done(function(response){
             $("#downloadWrapper").html(response);
             $('#globalLoadingIndicator').hide();
+        }).fail(function(resp, status){
+            $("#downloadWrapper").text('Es ist zu einem Fehler beim Abruf gekommen');
+            $('#globalLoadingIndicator').hide();
         });
     });
 </laser:script>

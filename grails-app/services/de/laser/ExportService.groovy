@@ -2735,7 +2735,7 @@ class ExportService {
 			//countQuery = "select count(*) as countTotal from issue_entitlement left join issue_entitlement_coverage on ic_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id where ${queryClauseParts.where}"
 		}
 		else {
-			queryBase = "select ${titleHeaders.values().join(', ')} from title_instance_package_platform left join tippcoverage on tc_tipp_fk = tipp_id join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id where ${queryClauseParts.where}${queryClauseParts.order}"
+			queryBase = "select ${titleHeaders.values().join(', ')} from title_instance_package_platform left join tippcoverage on tc_tipp_fk = tipp_id join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id ${queryClauseParts.join} where ${queryClauseParts.where}${queryClauseParts.order}"
 			//countQuery = "select count(*) as countTotal from title_instance_package_platform join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id where ${queryClauseParts.where}"
 		}
 		//int count = sql.rows(countQuery, queryClauseParts.params)[0]['countTotal'] as int, max = 100000
@@ -3409,6 +3409,7 @@ class ExportService {
 		Sql sql = GlobalService.obtainSqlConnection()
 		Locale locale = LocaleUtils.getCurrentLocale()
 		Map<String, Object> data = getTitleData(configMap, entitlementInstance, sql, showStatsInMonthRings, subscriber)
+		log.debug("after title data")
 		List<String> titleHeaders = [
 				messageSource.getMessage('tipp.name',null,locale),
 				'Print Identifier',
@@ -3863,7 +3864,7 @@ class ExportService {
 		else if(entitlementInstance == IssueEntitlement.class.name) {
 			identifiers = sql.rows("select id_tipp_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on ie_tipp_fk = id_tipp_fk ${queryData.subJoin} join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
 			coverages = sql.rows("select ic_ie_fk, ic_start_date as startDate, ic_start_volume as startVolume, ic_start_issue as startIssue, ic_end_date as endDate, ic_end_volume as endVolume, ic_end_issue as endIssue, ic_coverage_note as coverageNote, ic_coverage_depth as coverageDepth, ic_embargo as embargo from issue_entitlement_coverage join issue_entitlement on ic_ie_fk = ie_id ${queryData.subJoin} join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
-			priceItems = sql.rows("select pi_ie_fk, pi_list_price, (select rdv_value from refdata_value where rdv_id = pi_list_currency_rv_fk) as pi_list_currency, pi_local_price, (select rdv_value from refdata_value where rdv_id = pi_local_currency_rv_fk) as pi_local_currency from price_item join issue_entitlement on pi_ie_fk = ie_id ${queryData.subJoin} join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
+			priceItems = sql.rows("select pi_tipp_fk, pi_list_price, (select rdv_value from refdata_value where rdv_id = pi_list_currency_rv_fk) as pi_list_currency, pi_local_price, (select rdv_value from refdata_value where rdv_id = pi_local_currency_rv_fk) as pi_local_currency from price_item join title_instance_package_platform on pi_tipp_fk = tipp_id join issue_entitlement on tipp_id = ie_tipp_fk ${queryData.subJoin} where ${queryData.where}", queryData.params)
 			coreTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join issue_entitlement on ie_tipp_fk = tipp_id ${queryData.subJoin} where idns_ns in ('${coreTitleNSrestricted.join("','")}') and ${queryData.where}", queryData.params)
 			otherTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join issue_entitlement on ie_tipp_fk = tipp_id ${queryData.subJoin} where idns_ns not in ('${IdentifierNamespace.CORE_TITLE_NS.join("','")}') and ${queryData.where}", queryData.params)
 			identifierMap.putAll(preprocessIdentifierRows(identifiers))
