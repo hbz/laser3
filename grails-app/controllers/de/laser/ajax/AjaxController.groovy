@@ -431,13 +431,12 @@ class AjaxController {
   @Secured(['ROLE_USER'])
   def updateChecked() {
       Map success = [success:false]
-      SessionCacheWrapper sessionCache = contextService.getSessionCache()
       String sub = params.sub ?: params.id
-      Map<String,Object> cache = sessionCache.get("/subscription/${params.referer}/${sub}")
+      EhcacheWrapper userCache = contextService.getUserCache("/subscription/${params.referer}/${sub}")
+      Map<String,Object> cache = userCache.get('selectedTitles')
 
       if(!cache) {
-          sessionCache.put("/subscription/${params.referer}/${sub}",["checked":[:]])
-          cache = sessionCache.get("/subscription/${params.referer}/${sub}")
+          cache = ["checked":[:]]
       }
 
       Map checked = cache.get('checked')
@@ -516,16 +515,16 @@ class AjaxController {
           }
           cache.put('checked',newChecked)
           success.checkedCount = params.checked == 'true' ? newChecked.size() : 0
+          success.success = success.checkedCount > 0
 	  }
 	  else {
           Map<String, String> newChecked = checked ?: [:]
 		  newChecked[params.index] = params.checked == 'true' ? 'checked' : null
-		  if(cache.put('checked',newChecked)){
-              success.success = true
-          }
+          cache.put('checked', newChecked)
+          success.success = true
           success.checkedCount = newChecked.findAll {it.value == 'checked'}.size()
-
 	  }
+      userCache.put('selectedTitles', cache)
       render success as JSON
   }
 
@@ -535,6 +534,7 @@ class AjaxController {
      * @return a {@link Map} reflecting the success status
      */
   @Secured(['ROLE_USER'])
+  @Deprecated
   def updateIssueEntitlementSelect() {
       Map success = [success:false]
       EhcacheWrapper cache = contextService.getUserCache("/subscription/${params.referer}/${params.sub}")
