@@ -321,7 +321,7 @@
                                         <div
                                                 class="ui button icon blue la-modern-button la-popup-tooltip la-delay right floated "
                                                 data-content="<g:message code="survey.subscription.propertiesChange.show"/>">
-                                            <i class="ui angle double down large icon"></i>
+                                            <i class="ui angle double down icon"></i>
                                         </div>
                                         <laser:script file="${this.getGroovyPageFileName()}">
                                             $('.js-propertiesCompareInfo-accordion')
@@ -381,7 +381,7 @@
                             <div class="title">
                                 <div
                                         class="ui button icon blue la-modern-button la-delay right floated">
-                                    <i class="ui angle double down large icon"></i>
+                                    <i class="ui angle double down icon"></i>
                                 </div>
                                 <laser:script file="${this.getGroovyPageFileName()}">
                                     $('.js-subscription-info-accordion')
@@ -607,7 +607,7 @@
                                 <div class="title">
                                     <div
                                             class="ui button icon blue la-modern-button la-delay right floated ">
-                                        <i class="ui angle double down large icon"></i>
+                                        <i class="ui angle double down icon"></i>
                                     </div>
 
                                     <i aria-hidden="true" class="circular chart bar green outline inverted icon"></i>
