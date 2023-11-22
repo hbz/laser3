@@ -74,9 +74,14 @@
                 if(linkInstanceType == Combo.class.name) {
                     refdataValues << RDStore.COMBO_TYPE_FOLLOWS
                 }
-                else refdataValues.addAll(RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE)-RDStore.LINKTYPE_LICENSE)
+                else {
+                    refdataValues.addAll(RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE)-RDStore.LINKTYPE_LICENSE)
+                }
                 refdataValues.each { RefdataValue rv ->
+                    boolean isSimpleLinkType = (rv.id == RDStore.LINKTYPE_SIMPLE.id) // forced: bidirectional
                     String[] linkArray = rv.getI10n("value").split("\\|")
+                    if (isSimpleLinkType) { linkArray = [linkArray[0]] }
+
                     linkArray.eachWithIndex { l, int perspective ->
                         linkTypes.put(genericOIDService.getOID(rv)+"§"+perspective,l)
                     }
@@ -93,7 +98,7 @@
                     }
                     else {
                         if(link && link.linkType == rv) {
-                            if(context in [link.sourceSubscription,link.sourceLicense]) {
+                            if (context in [link.sourceSubscription,link.sourceLicense]) {
                                 perspIndex = 0
                             }
                             else if(context in [link.destinationSubscription,link.destinationLicense]) {
@@ -102,6 +107,8 @@
                             else {
                                 perspIndex = 0
                             }
+                            if (isSimpleLinkType) { perspIndex = 0 }
+
                             linkType = "${genericOIDService.getOID(rv)}§${perspIndex}"
                         }
                     }
