@@ -1322,8 +1322,13 @@ class FilterService {
             filterSet = true
         }
         if (params.titleGroup && (params.titleGroup != '') && !params.forCount) {
-            base_qry += " and exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ieGroup.id = :titleGroup and iegi.ie = ie) "
-            qry_params.titleGroup = Long.parseLong(params.titleGroup)
+            if(params.titleGroup == 'notInGroups'){
+                base_qry += " and not exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ie = ie) "
+            }else {
+                base_qry += " and exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ieGroup.id = :titleGroup and iegi.ie = ie) "
+                qry_params.titleGroup = Long.parseLong(params.titleGroup)
+            }
+
         }
 
         if (params.inTitleGroups && (params.inTitleGroups != '') && !params.forCount) {
@@ -2079,8 +2084,12 @@ class FilterService {
                     whereClauses << "ie_status_rv_fk = :ieStatus"
                 }
                 if(configMap.titleGroup != null && !configMap.titleGroup.isEmpty()) {
-                    params.titleGroup = Long.parseLong(configMap.titleGroup)
-                    whereClauses << "exists(select igi_id from issue_entitlement_group_item where igi_ie_group_fk = :titleGroup and igi_ie_fk = ie_id)"
+                    if(params.titleGroup == 'notInGroups'){
+                        whereClauses << "not exists ( select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id) "
+                    }else {
+                        params.titleGroup = Long.parseLong(configMap.titleGroup)
+                        whereClauses << "exists(select igi_id from issue_entitlement_group_item where igi_ie_group_fk = :titleGroup and igi_ie_fk = ie_id)"
+                    }
                 }
                 if(configMap.inTitleGroups != null && !configMap.inTitleGroups.isEmpty()) {
                     if(configMap.inTitleGroups == RDStore.YN_YES.id.toString()) {
