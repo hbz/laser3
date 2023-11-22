@@ -210,14 +210,9 @@
 
 
 <div class="ui bottom attached tab active segment">
-   <div class="ui grid">
-       <div class="row">
-           <%--<div class="column" id="filterWrapper"></div>--%>
-           <div class="column">
-               <laser:render template="/templates/filter/tipp_ieFilter"/>
-           </div>
-        </div><!--.row-->
-    </div><!--.grid-->
+
+    <laser:render template="/templates/filter/tipp_ieFilter"/>
+
 <div id="downloadWrapper"></div>
 <%
     Map<String, String>

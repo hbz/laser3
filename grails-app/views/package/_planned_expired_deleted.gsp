@@ -80,26 +80,16 @@
 
   <laser:render template="nav"/>
 
-
   <ui:messages data="${flash}" />
 
   <ui:errors bean="${packageInstance}" />
 
-<div class="ui grid">
-    <div class="row">
-        <div class="column">
-            <laser:render template="/templates/filter/tipp_ieFilter"/>
-        </div>
-    </div>
+    <laser:render template="/templates/filter/tipp_ieFilter"/>
 
-    <div class="row">
-        <div class="eight wide column">
-            <h3 class="ui icon header la-clear-before la-noMargin-top"><span
-                    class="ui circular  label">${num_tipp_rows}</span> <g:message code="title.filter.result"/></h3>
-        </div>
+    <h3 class="ui icon header la-clear-before la-noMargin-top">
+        <span class="ui circular label">${num_tipp_rows}</span> <g:message code="title.filter.result"/>
+    </h3>
 
-    </div>
-</div>
 <div id="downloadWrapper"></div>
 <%
     Map<String, String>

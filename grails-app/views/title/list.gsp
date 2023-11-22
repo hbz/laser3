@@ -33,21 +33,12 @@
 <% params.remove('tab')%>
     <div class="ui bottom attached tab active segment">
 
-<div class="ui grid">
-<div class="row">
-    <div class="column">
+
         <laser:render template="/templates/filter/tipp_ieFilter"/>
-    </div>
-</div>
 
-<div class="row">
-    <div class="eight wide column">
-        <h3 class="ui icon header la-clear-before la-noMargin-top"><span
-                class="ui circular  label">${num_tipp_rows}</span> <g:message code="title.filter.result"/></h3>
-    </div>
-
-</div>
-</div>
+        <h3 class="ui icon header la-clear-before la-noMargin-top">
+            <span class="ui circular label">${num_tipp_rows}</span> <g:message code="title.filter.result"/>
+        </h3>
 <%
     Map<String, String>
     sortFieldMap = ['sortname': message(code: 'title.label')]
@@ -69,14 +60,14 @@
 <div class="ui grid">
     <div class="row">
         <div class="column">
-            <laser:render template="/templates/tipps/table_accordion"
-                          model="[tipps: titlesList, showPackage: false, showPlattform: true]"/>
+            <laser:render template="/templates/tipps/table_accordion" model="[tipps: titlesList, showPackage: false, showPlattform: true]"/>
         </div>
     </div>
 </div>
 
+</div>
+
 <g:if test="${titlesList}">
-    <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
-                 max="${max}" total="${num_tipp_rows}"/>
+    <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}" max="${max}" total="${num_tipp_rows}"/>
 </g:if>
 <laser:htmlEnd />

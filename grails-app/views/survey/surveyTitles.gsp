@@ -77,21 +77,12 @@
         </g:if>
     </div>
 
+    <laser:render template="/templates/filter/tipp_ieFilter"/>
 
+    <h3 class="ui icon header la-clear-before la-noMargin-top">
+        <span class="ui circular label">${num_tipp_rows}</span> <g:message code="title.filter.result"/>
+    </h3>
 
-            <div class="row">
-                <div class="column">
-                    <laser:render template="/templates/filter/tipp_ieFilter"/>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="eight wide column">
-                    <h3 class="ui icon header la-clear-before la-noMargin-top"><span
-                            class="ui circular  label">${num_tipp_rows}</span> <g:message code="title.filter.result"/></h3>
-                </div>
-
-            </div>
         <%
             Map<String, String>
             sortFieldMap = ['tipp.sortname': message(code: 'title.label')]

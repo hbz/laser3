@@ -238,14 +238,11 @@
 </g:if>
 --%>
 
-
-<div class="row">
-    <div class="column">
-
         <laser:render template="/templates/filter/tipp_ieFilter" model="[notShow: params.tab == 'allTipps', fillDropdownsWithPackage: params.tab == 'allTipps']"/>
 
-    </div>
-</div><!--.row-->
+<h3 class="ui icon header la-clear-before la-noMargin-top">
+    <span class="ui circular label">${num_rows?:0}</span> <g:message code="title.filter.result"/>
+</h3>
 
 <div id="downloadWrapper"></div>
 
@@ -269,7 +266,6 @@
             </span>
         <div class="ui circular label">${countCurrentPermanentTitles}</div>
     </g:link>
-
 </ui:tabs>
 
 
@@ -292,15 +288,6 @@
                 sortFieldMap['tipp.accessStartDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.from')}"
                 sortFieldMap['tipp.accessEndDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.to')}"
             %>
-            <div class="ui grid">
-                <div class="row">
-                    <div class="eight wide column">
-                        <h3 class="ui icon header la-clear-before la-noMargin-top"><span
-                                class="ui circular  label">${num_rows?:0}</span> <g:message code="title.filter.result"/>
-                        </h3>
-                    </div>
-                </div><!--.row-->
-            </div><!--.grid-->
 
             <div class="ui form">
                 <div class="three wide fields">
@@ -312,14 +299,11 @@
         </g:if>
 
         <g:if test="${params.tab == 'allTipps'}">
-            <laser:render template="/templates/survey/tippTableSurvey"
-                          model="${[titlesList: titlesList, showPackage: true, showPlattform: true]}"/>
+            <laser:render template="/templates/survey/tippTableSurvey" model="${[titlesList: titlesList, showPackage: true, showPlattform: true]}"/>
         </g:if>
         <g:else>
-            <laser:render template="/templates/survey/entitlementTableSurvey"
-                      model="${[ies: [sourceIEs: sourceIEs], showPackage: true, showPlattform: true]}"/>
+            <laser:render template="/templates/survey/entitlementTableSurvey" model="${[ies: [sourceIEs: sourceIEs], showPackage: true, showPlattform: true]}"/>
         </g:else>
-
 
 
         <div class="sixteen wide column">
