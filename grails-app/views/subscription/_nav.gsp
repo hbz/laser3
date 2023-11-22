@@ -9,7 +9,7 @@
         <ui:subNavItem controller="subscription" counts="${subscription.packages.size()}" action="index" params="${[id:params.id]}" message="subscription.details.current_ent" />
     </g:if>
     <g:else>%{-- prevent two active items with action 'index' due url mapping 'subfinance' --}%
-        <g:link controller="subscription" action="index" params="${[id:params.id]}" class="item">${message('code': 'subscription.details.current_ent')}<div class="ui floating blue circular label">${subscription.packages.size()}</div></g:link>
+        <g:link controller="subscription" action="index" params="${[id:params.id]}" class="item">${message('code': 'subscription.details.current_ent')}<span class="ui floating blue circular label">${subscription.packages.size()}</span></g:link>
     </g:else>
 
     <ui:subNavItem controller="subscription" action="entitlementChanges" params="${[id:params.id]}" message="myinst.menu.changes.label" />
@@ -20,7 +20,7 @@
 
     %{--Custom URL mapping for re-use of index--}%
     <g:link class="item${controllerName == 'finance' ? ' active':''}" mapping="subfinance" controller="finance" action="index" params="${[sub:params.id]}">
-        ${message(code:'subscription.details.financials.label')}<div class="ui floating blue circular label">${currentCostItemCounts}</div>
+        ${message(code:'subscription.details.financials.label')}<span class="ui floating blue circular label">${currentCostItemCounts}</span>
     </g:link>
 
         <g:if test="${showConsortiaFunctions && !subscription.instanceOf}">

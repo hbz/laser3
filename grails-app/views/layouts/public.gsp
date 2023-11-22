@@ -25,6 +25,10 @@
 
     <body class="public">
 
+        %{-- skip to main content - for screenreader --}%
+
+        <laser:render template="/templates/accessibility/skipContent" />
+
         <g:layoutBody/>%{-- body here --}%
     
         <div id="Footer">
