@@ -28,6 +28,7 @@ import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.time.TimeCategory
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
@@ -923,6 +924,19 @@ class SurveyController {
 
         params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         params.sub = result.subscription
+
+        GrailsParameterMap cloneParams = params.clone()
+        cloneParams.removeAll {it.value != ''}
+        cloneParams.orgType = RDStore.OT_INSTITUTION.id.toString()
+        cloneParams.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
+        cloneParams.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id.toString())
+        cloneParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
+        cloneParams.sub = result.subscription
+
+        Map<String,Object> countFsq = filterService.getOrgComboQuery(cloneParams, result.institution)
+
+        result.consortiaMembersCount = Org.executeQuery("select o.id " + countFsq.query.minus("select o "), countFsq.queryParams).size()
+
         Map<String,Object> fsq = filterService.getOrgComboQuery(params, result.institution)
         String tmpQuery = "select o.id " + fsq.query.minus("select o ")
         List consortiaMemberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
@@ -938,11 +952,12 @@ class SurveyController {
             result.consortiaMembers = orgs ? result.consortiaMembers.findAll{ (it.id in orgs.id)} : []
         }
 
-        result.consortiaMembersCount = Org.executeQuery(fsq.query, fsq.queryParams).size()
-
         result.editable = (result.surveyInfo && result.surveyInfo.status.id != RDStore.SURVEY_IN_PROCESSING.id) ? false : result.editable
 
         Map<String,Object> surveyOrgs = result.surveyConfig.getSurveyOrgsIDs()
+
+        result.selectedParticipantsCount = surveyOrgs.orgsWithoutSubIDs ? surveyOrgs.orgsWithoutSubIDs.size() : 0
+        result.selectedSubParticipantsCount = surveyOrgs.orgsWithSubIDs? surveyOrgs.orgsWithSubIDs.size() : 0
 
         result.selectedParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsq.query, fsq.queryParams, params)
         result.selectedSubParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsq.query, fsq.queryParams, params)

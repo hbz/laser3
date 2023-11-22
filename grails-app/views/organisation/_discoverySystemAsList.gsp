@@ -8,14 +8,14 @@
                 <g:if test="${editable}">
                     <div class="content la-space-right">
                         <div class="ui buttons">
-                            <ui:remoteLink class="ui icon negative button la-modern-button js-open-confirm-modal"
+                            <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.frontend", args: [frontend.frontend.getI10n('value')])}"
                                            data-confirm-term-how="delete"
                                            controller="organisation" action="deleteDiscoverySystem" params="[id: org.id, oid: genericOIDService.getOID(frontend)]"
                                            role="button"
                                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                 <i class="trash alternate outline icon"></i>
-                            </ui:remoteLink>
+                            </g:link>
                         </div>
                     </div>
                 </g:if>
@@ -33,14 +33,14 @@
                 <g:if test="${editable}">
                     <div class="content la-space-right">
                         <div class="ui buttons">
-                            <ui:remoteLink class="ui icon negative button la-modern-button js-open-confirm-modal"
+                            <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.frontend", args: [index.index.getI10n('value')])}"
                                            data-confirm-term-how="delete"
                                            controller="organisation" action="deleteDiscoverySystem" params="[id: org.id, oid: genericOIDService.getOID(index)]"
                                            role="button"
                                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                 <i class="trash alternate outline icon"></i>
-                            </ui:remoteLink>
+                            </g:link>
                         </div>
                     </div>
                 </g:if>

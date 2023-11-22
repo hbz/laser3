@@ -1322,8 +1322,13 @@ class FilterService {
             filterSet = true
         }
         if (params.titleGroup && (params.titleGroup != '') && !params.forCount) {
-            base_qry += " and exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ieGroup.id = :titleGroup and iegi.ie = ie) "
-            qry_params.titleGroup = Long.parseLong(params.titleGroup)
+            if(params.titleGroup == 'notInGroups'){
+                base_qry += " and not exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ie = ie) "
+            }else {
+                base_qry += " and exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ieGroup.id = :titleGroup and iegi.ie = ie) "
+                qry_params.titleGroup = Long.parseLong(params.titleGroup)
+            }
+
         }
 
         if (params.inTitleGroups && (params.inTitleGroups != '') && !params.forCount) {
@@ -1939,8 +1944,14 @@ class FilterService {
                     List<Object> subIds = []
                     subIds.addAll(configMap.subscriptions.id)
                     params.subscriptions = connection.createArrayOf('bigint', subIds.toArray())
-                    join += " join subscription_package on sp_pkg_fk = tipp_pkg_fk"
-                    subFilter = "sp_sub_fk = any(:subscriptions)"
+                    if(configMap.containsKey('ieStatus')) {
+                        join += " join issue_entitlement on ie_tipp_fk = tipp_id"
+                        subFilter = "ie_subscription_fk = any(:subscriptions)"
+                    }
+                    else {
+                        join += " join subscription_package on sp_pkg_fk = tipp_pkg_fk"
+                        subFilter = "sp_sub_fk = any(:subscriptions)"
+                    }
                 }
                 else if(configMap.defaultSubscriptionFilter) {
                     String consFilter = ""
@@ -1963,20 +1974,20 @@ class FilterService {
                     params.pkgIds = connection.createArrayOf('bigint', pkgIds.toArray())
                     whereClauses << "tipp_pkg_fk = any(:pkgIds)"
                 }
-                if(subFilter)
+                if(subFilter) {
                     whereClauses << subFilter
-                    if(configMap.status != null && configMap.status != '') {
+                    if (configMap.status != null && configMap.status != '') {
                         params.ieStatus = connection.createArrayOf('bigint', listReaderWrapper(configMap, 'status').toArray())
                         whereClauses << "ie_status_rv_fk = any(:ieStatus)"
-                    }
-                    else if(configMap.notStatus != null && !configMap.notStatus.isEmpty()) {
-                        params.ieStatus = configMap.notStatus instanceof String ? Long.parseLong(configMap.notStatus) : configMap.status //already id
+                    } else if (configMap.notStatus != null && !configMap.notStatus.isEmpty()) {
+                        params.ieStatus = configMap.notStatus instanceof String ? Long.parseLong(configMap.notStatus) : configMap.status
+                        //already id
                         whereClauses << "ie_status_rv_fk != :ieStatus"
-                    }
-                    else {
+                    } else {
                         params.ieStatus = RDStore.TIPP_STATUS_CURRENT.id
                         whereClauses << "ie_status_rv_fk = :ieStatus"
                     }
+                }
                 if(configMap.asAt && configMap.asAt.length() > 0) {
                     Date dateFilter = DateUtils.getLocalizedSDF_noTime().parse(configMap.asAt)
                     params.asAt = new Timestamp(dateFilter.getTime())
@@ -2079,8 +2090,12 @@ class FilterService {
                     whereClauses << "ie_status_rv_fk = :ieStatus"
                 }
                 if(configMap.titleGroup != null && !configMap.titleGroup.isEmpty()) {
-                    params.titleGroup = Long.parseLong(configMap.titleGroup)
-                    whereClauses << "exists(select igi_id from issue_entitlement_group_item where igi_ie_group_fk = :titleGroup and igi_ie_fk = ie_id)"
+                    if(params.titleGroup == 'notInGroups'){
+                        whereClauses << "not exists ( select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id) "
+                    }else {
+                        params.titleGroup = Long.parseLong(configMap.titleGroup)
+                        whereClauses << "exists(select igi_id from issue_entitlement_group_item where igi_ie_group_fk = :titleGroup and igi_ie_fk = ie_id)"
+                    }
                 }
                 if(configMap.inTitleGroups != null && !configMap.inTitleGroups.isEmpty()) {
                     if(configMap.inTitleGroups == RDStore.YN_YES.id.toString()) {

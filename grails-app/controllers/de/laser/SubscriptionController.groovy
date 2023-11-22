@@ -1606,6 +1606,7 @@ class SubscriptionController {
         Map<String,Object> ctrlResult, exportResult
         params.statsForSurvey = true
         SXSSFWorkbook wb
+        boolean kbartPreselect = params.containsKey('kbartPreselect')
         if(params.exportForImport) {
             if(params.reportType) {
                 ctrlResult = subscriptionControllerService.renewEntitlementsWithSurvey(this, params)
@@ -1720,7 +1721,7 @@ class SubscriptionController {
                 ctrlResult.result
             }
         }
-        else if(params.containsKey('kbartPreselect')) {
+        else if(kbartPreselect) {
             render template: 'entitlementProcessResult', model: ctrlResult.result
         }
         else {

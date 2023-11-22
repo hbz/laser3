@@ -159,6 +159,9 @@
         }).done(function(response){
             $("#reportWrapper").html(response);
             $('.localLoadingIndicator').hide();
-        });
+        }).fail(function(resp, status){
+            $("#reportWrapper").text('Es ist zu einem Fehler beim Abruf gekommen');
+            $('.localLoadingIndicator').hide();
+        });;
     });
 </laser:script>

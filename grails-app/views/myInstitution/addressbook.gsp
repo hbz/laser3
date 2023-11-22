@@ -16,7 +16,7 @@
         </ui:exportDropdownItem>
         <%--
         <g:if test="${filterSet == true}">
-            <%-ropdownItem>
+            <ui:exportDropdownItem>
                 <g:link class="item js-open-confirm-modal" params="${params+[exportXLS: true]}" action="addressbook"
                         data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}" data-confirm-term-how="ok">
                     <g:message code="default.button.exports.xls"/>
@@ -232,19 +232,25 @@
         let func = bb8.ajax4SimpleModalFunction("#addressFormModal", url);
         func();
     }
+
+    $('#individuallyExportModal form').submit(function () {
+        $("#tab").val($('div.tab.active').attr('data-tab'));
+    });
 </laser:script>
 
 <!-- _individuallyExportModal.gsp -->
 <%
     Map<String, Object> fields = exportClickMeService.getExportAddressFieldsForUI()
     Map<String, Object> formFields = fields.exportFields as Map, filterFields = fields.filterFields as Map
+    Map<String, Object> urlParams = params.clone()
+    urlParams.remove('tab')
 %>
 
 <ui:modal modalSize="large" id="individuallyExportModal" text="Excel-Export" refreshModal="true" hideSubmitButton="true">
 
-    <g:form action="addressbook" controller="myInstitution" params="${params+[exportClickMeExcel: true]}">
-
-        <laser:render template="/templates/export/individuallyExportForm" model="${[modalID: 'individuallyExportModal', formFields: formFields, filterFields: filterFields, exportFileName: escapeService.escapeString("${message(code: 'menu.institutions.myAddressbook')}_${DateUtils.getSDF_yyyyMMdd().format(new Date())}"), orgSwitch: true]}"/>
+    <g:form action="addressbook" controller="myInstitution" params="${urlParams}">
+        <g:hiddenField name="tab" value="${params.tab}"/>
+        <laser:render template="/templates/export/individuallyExportForm" model="${[currentTabNotice: true, modalID: 'individuallyExportModal', formFields: formFields, filterFields: filterFields, exportFileName: escapeService.escapeString("${message(code: 'menu.institutions.myAddressbook')}_${DateUtils.getSDF_yyyyMMdd().format(new Date())}"), orgSwitch: true]}"/>
 
     </g:form>
 
