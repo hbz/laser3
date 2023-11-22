@@ -1655,12 +1655,11 @@ class SubscriptionControllerService {
 
 
                 if (result.editable) {
-                    SessionCacheWrapper sessionCache = contextService.getSessionCache()
-                    Map<String, Object> checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}")
+                    EhcacheWrapper userCache = contextService.getUserCache("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}")
+                    Map<String, Object> checkedCache = userCache.get('selectedTitles')
 
                     if (!checkedCache) {
-                        sessionCache.put("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}", ["checked": [:]])
-                        checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}")
+                        checkedCache = ["checked": [:]]
                     }
 
                     if (params.kbartPreselect) {
@@ -2520,7 +2519,7 @@ class SubscriptionControllerService {
             EhcacheWrapper userCache = contextService.getUserCache("/subscription/addEntitlements/${params.id}")
             Map checkedCache = userCache.get('selectedTitles')
 
-            if (!checkedCache) {
+            if (!checkedCache || !params.containsKey('pagination')) {
                 checkedCache = [:]
             }
 
@@ -2647,7 +2646,7 @@ class SubscriptionControllerService {
         else {
             Locale locale = LocaleUtils.getCurrentLocale()
             EhcacheWrapper cache = contextService.getUserCache("/subscription/addEntitlements/${result.subscription.id}")
-            Map issueEntitlementCandidates = cache && cache.get('issueEntitlementCandidates') ? cache.get('issueEntitlementCandidates') : [:]
+            Map issueEntitlementCandidates = cache && cache.get('selectedTitles') ? cache.get('selectedTitles') : [:]
             if(!params.singleTitle) {
                 Map checked = issueEntitlementCandidates.get('checked')
                 if(checked) {
@@ -2658,7 +2657,7 @@ class SubscriptionControllerService {
                     pkgIds.addAll(Package.executeQuery('select tipp.pkg.id from TitleInstancePackagePlatform tipp where tipp.gokbId in (:wekbIds)', [wekbIds: checked.keySet()]))
                     executorService.execute({
                         Thread.currentThread().setName("EntitlementEnrichment_${result.subscription.id}")
-                        subscriptionService.bulkAddEntitlements(result.subscription, issueEntitlementCandidates, false)
+                        subscriptionService.bulkAddEntitlements(result.subscription, checked.keySet(), false)
                         if(params.withChildren == 'on') {
                             Sql sql = GlobalService.obtainSqlConnection()
                             childSubIds.each { Long childSubId ->
@@ -3447,8 +3446,8 @@ class SubscriptionControllerService {
             if(!result.editable) {
                 [result:null,status:STATUS_ERROR]
             }
-            SessionCacheWrapper sessionCache = contextService.getSessionCache()
-            Map<String,Object> checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${params.id}?${params.tab}")
+            EhcacheWrapper userCache = contextService.getUserCache("/subscription/renewEntitlementsWithSurvey/${params.id}?${params.tab}")
+            Map<String, Object> checkedCache = userCache.get('selectedTitles') ?: [:]
 
             result.checkedCache = checkedCache.get('checked')
             result.checked = result.checkedCache.findAll {it.value == 'checked'}
@@ -3497,7 +3496,7 @@ class SubscriptionControllerService {
                     result.checked.remove(it)
                 }
                 checkedCache.put('checked',result.checked)
-
+                userCache.put('selectedTitles', checkedCache)
                 [result:result,status:STATUS_OK]
 
             } else if(params.process == "remove" && result.checked.size() > 0) {
@@ -3534,7 +3533,7 @@ class SubscriptionControllerService {
                     result.checked.remove(it)
                 }
                 checkedCache.put('checked',result.checked)
-
+                userCache.put('selectedTitles', checkedCache)
                 [result:result,status:STATUS_OK]
             }
         }

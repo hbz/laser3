@@ -7,13 +7,17 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-5431    22.11.2023  rc-3.3  3.3         Moe     Feature     Festlegen einer Hauptmailadresse für Umfrage-Ersteller im Einrichtungsprofil
+5447    22.11.2023  rc-3.3  3.3         Andreas Bug         Fallback für Titel ohne Identifikatoren implementiert
+
+5446    22.11.2023  rc-3.3  3.3         Andreas Bug         Cache vollständig implementiert
 
 5445    22.11.2023  rc-3.3  3.3         Andreas Bug         Sortierung wurde nicht verarbeitet
 
 5444    22.11.2023  rc-3.3  3.3         Andreas Bug         Titel konnten nicht direkt hinzugefügt werden
 
 5441    22.11.2023  rc-3.3  3.3         Andreas Bug         falsches Formularelement korrigiert
+
+5431    22.11.2023  rc-3.3  3.3         Moe     Feature     Festlegen einer Hauptmailadresse für Umfrage-Ersteller im Einrichtungsprofil
 
 5440    21.11.2023  rc-3.3  3.3         Andreas Bug         Abfragen im Export behoben
 

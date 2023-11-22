@@ -3659,7 +3659,7 @@ class ExportService {
 	 * @return a {@link List} containing the columns for the next output row
 	 */
 	List buildRow(String format, GroovyRowResult titleRecord, Map identifierMap, Map priceItemMap, Map reports, List<GroovyRowResult> coreTitleIdentifierNamespaces, List<GroovyRowResult> otherTitleIdentifierNamespaces, boolean checkPerpetuallyPurchasedTitles = false, List showStatsInMonthRings = [], Org subscriber = null) {
-		titleRecord.identifiers = identifierMap.get(titleRecord['tipp_id'])
+		titleRecord.identifiers = identifierMap.containsKey(titleRecord['tipp_id']) ? identifierMap.get(titleRecord['tipp_id']) : [:]
 		if(titleRecord.containsKey('ie_id')) {
 			titleRecord.priceItems = priceItemMap.get(titleRecord['ie_id'])
 		}
