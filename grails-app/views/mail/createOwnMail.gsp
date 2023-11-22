@@ -136,6 +136,12 @@
         <div class="ui form">
 
             <div class="field">
+                <label for="mailFrom">${message(code: 'mail.sendMail.from')}</label>
+
+                <g:field type="text" name="mailFrom" id="mailFrom" readonly="true" value="${mailFrom}"/>
+            </div>
+
+            <div class="field">
                 <label for="mailSubject">${message(code: 'mail.sendMail.mailSubject')}</label>
 
                 <g:field type="text" name="mailSubject" id="mailSubject" readonly="true" value="${mailSubject}"/>

@@ -40,15 +40,14 @@
                 <g:elseif test="${contextService.getOrg().isCustomerType_Inst_Pro()}">
                     <input type="hidden" id="asOrgType" name="type" value="${RDStore.SUBSCRIPTION_TYPE_LOCAL.id}" />
                 </g:elseif>
-
-                <br />
-                <div id="dynHiddenValues"></div>
-
                 <%--<g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                     <input class="hidden" type="checkbox" name="generateSlavedSubs" value="Y" checked="checked" readonly="readonly">
                 </g:if>--%>
+            <div class="field">
+                <br />
                 <input id="submitterFallback" type="submit" class="ui button js-click-control" value="${message(code:'default.button.create.label')}" />
                 <input type="button" class="ui button js-click-control" onclick="JSPC.helper.goBack();" value="${message(code:'default.button.cancel.label')}" />
+            </div>
         </ui:form>
 
     <hr />

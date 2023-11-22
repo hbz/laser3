@@ -216,21 +216,26 @@ class SubscriptionService {
 
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, '', contextOrg)
         result.filterSet = tmpQ[2]
+        Set<Subscription> subscriptionsFromQuery
         Set<Subscription> subscriptions
-        subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
+        subscriptionsFromQuery = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
         //candidate for ugliest bugfix ever ...
 
         if(params.sort){
             String newSort = "sub.${params.sort}"
             if(params.sort == 'providerAgency'){
-                newSort = "oo.org.name"
-            }
+                subscriptions = Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where (sub.id in (:subscriptions) and oo.roleType in (:providerAgency)) order by oo.org.name " + params.order + ", sub.name ", [subscriptions: subscriptionsFromQuery.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
+                subscriptions = subscriptions + Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where sub.id in (:subscriptions) order by sub.name ", [subscriptions: subscriptionsFromQuery.id])
+            }else {
 
-            subscriptions = Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where (sub.id in (:subscriptions) and oo.roleType in (:providerAgency)) or sub.id in (:subscriptions) order by " + newSort +" "+ params.order + ", oo.org.name, sub.name " , [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
-            //select ooo.sub.id from OrgRole ooo where ooo.roletype in (:providerAgency) and ooo.sub != null
+                subscriptions = Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where (sub.id in (:subscriptions) and oo.roleType in (:providerAgency)) or sub.id in (:subscriptions) order by " + newSort + " " + params.order + ", oo.org.name, sub.name ", [subscriptions: subscriptionsFromQuery.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
+            }
+                //select ooo.sub.id from OrgRole ooo where ooo.roletype in (:providerAgency) and ooo.sub != null
         }else {
-            subscriptions = Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where (sub.id in (:subscriptions) and oo.roleType in (:providerAgency)) or sub.id in (:subscriptions) order by oo.org.name, sub.name ", [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
+            subscriptions = Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where (sub.id in (:subscriptions) and oo.roleType in (:providerAgency)) order by oo.org.name, sub.name ", [subscriptions: subscriptionsFromQuery.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
+            subscriptions = subscriptions + Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where sub.id in (:subscriptions) order by sub.name ", [subscriptions: subscriptionsFromQuery.id])
         }
+
         result.allSubscriptions = subscriptions
         if(!params.exportXLS)
             result.num_sub_rows = subscriptions.size()
@@ -2411,114 +2416,104 @@ join sub.orgRelations or_sub where
         Org contextOrg = contextService.getOrg()
         Set selectedTipps = [], truncatedRows = []
 
-        //List<Long> subscriptionIDs = surveyService.subscriptionsOfOrg(newSub.getSubscriber())
-        if(subscription.packages.pkg) {
+        int zdbCol = -1, onlineIdentifierCol = -1, printIdentifierCol = -1, titleUrlCol = -1, titleIdCol = -1, doiCol = -1, pickCol = -1
+        Set<Package> subPkgs = SubscriptionPackage.executeQuery('select sp.pkg from SubscriptionPackage sp where sp.subscription = :subscription', [subscription: subscription])
+        //now, assemble the identifiers available to highlight
+        Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNsAndNsType('zdb', TitleInstancePackagePlatform.class.name),
+                                                       eissn: IdentifierNamespace.findByNsAndNsType('eissn', TitleInstancePackagePlatform.class.name),
+                                                       isbn: IdentifierNamespace.findByNsAndNsType('isbn',TitleInstancePackagePlatform.class.name),
+                                                       issn : IdentifierNamespace.findByNsAndNsType('issn', TitleInstancePackagePlatform.class.name),
+                                                       eisbn: IdentifierNamespace.findByNsAndNsType('eisbn', TitleInstancePackagePlatform.class.name),
+                                                       doi: IdentifierNamespace.findByNsAndNsType('doi', TitleInstancePackagePlatform.class.name),
+                                                       title_id: IdentifierNamespace.findByNsAndNsType('title_id', TitleInstancePackagePlatform.class.name)]
+        if(subPkgs) {
 
             ArrayList<String> rows = stream.text.split('\n')
-            Map<String, Integer> colMap = [zdbCol: -1, onlineIdentifierCol: -1, printIdentifierCol: -1, pick: -1, titleUrlCol: -1, titleIdCol: -1, doiCol: -1, doiTitleCol : -1]
             //read off first line of KBART file
             List titleRow = rows.remove(0).split('\t')
             titleRow.eachWithIndex { headerCol, int c ->
                 switch (headerCol.toLowerCase().trim()) {
-                    case "zdb_id": colMap.zdbCol = c
+                    case "zdb_id": zdbCol = c
                         break
-                    case "print_identifier": colMap.printIdentifierCol = c
+                    case "print_identifier": printIdentifierCol = c
                         break
-                    case "online_identifier": colMap.onlineIdentifierCol = c
+                    case "online_identifier": onlineIdentifierCol = c
                         break
-                    case "print identifier": colMap.printIdentifierCol = c
+                    case "title_url": titleUrlCol = c
                         break
-                    case "online identifier": colMap.onlineIdentifierCol = c
+                    case "title_id": titleIdCol = c
                         break
-                    case "title_url": colMap.titleUrlCol = c
+                    case "doi_identifier": doiCol = c
                         break
-                    case "zugriffs-url": colMap.titleUrlCol = c
+                    case "print identifier": printIdentifierCol= c
                         break
-                    case "access url": colMap.titleUrlCol = c
+                    case "online identifier": onlineIdentifierCol = c
                         break
-                    case "title_id": colMap.titleIdCol = c
+                    case "zugriffs-url": titleUrlCol = c
                         break
-                    case "doi_identifier": colMap.doiCol = c
+                    case "access url": titleUrlCol = c
                         break
-                    case "doi": colMap.doiTitleCol = c
+                    case "doi": doiCol= c
                         break
-                    case "pick": colMap.pick = c
+                    case "pick": pickCol = c
                         break
                 }
             }
             //after having read off the header row, pop the first row
             rows.remove(0)
-            //now, assemble the identifiers available to highlight
-            Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNsAndNsType('zdb', TitleInstancePackagePlatform.class.name),
-                                                           eissn: IdentifierNamespace.findByNsAndNsType('eissn', TitleInstancePackagePlatform.class.name),
-                                                           isbn: IdentifierNamespace.findByNsAndNsType('isbn', TitleInstancePackagePlatform.class.name),
-                                                           issn : IdentifierNamespace.findByNsAndNsType('issn', TitleInstancePackagePlatform.class.name),
-                                                           eisbn: IdentifierNamespace.findByNsAndNsType('eisbn', TitleInstancePackagePlatform.class.name),
-                                                           doi  : IdentifierNamespace.findByNsAndNsType('doi', TitleInstancePackagePlatform.class.name),
-                                                           title_id: IdentifierNamespace.findByNsAndNsType('title_id', TitleInstancePackagePlatform.class.name)]
             rows.eachWithIndex { row, int i ->
                 countRows++
-                log.debug("now processing entitlement ${i}")
+                log.debug("now processing entitlement ${i+1}")
                 ArrayList<String> cols = row.split('\t')
                 if(cols.size() == titleRow.size()) {
-                Map<String, Object> idCandidate
-                String titleUrl = null
-                TitleInstancePackagePlatform tipp = null
-                if (colMap.titleUrlCol >= 0 && !cols[colMap.titleUrlCol].trim().isEmpty()) {
-                    titleUrl = cols[colMap.titleUrlCol].replace("\r", "")
-                } else if(colMap.titleIdCol >= 0 && !cols[colMap.titleIdCol].trim().isEmpty()) {
-                    idCandidate = [namespaces: namespaces.title_id, value: cols[colMap.titleIdCol]]
-                } else if (colMap.onlineIdentifierCol >= 0 && !cols[colMap.onlineIdentifierCol].trim().isEmpty()) {
-                    idCandidate = [namespaces: [namespaces.eissn, namespaces.eisbn], value: cols[colMap.onlineIdentifierCol]]
-                } else if (colMap.doiCol >= 0 && !cols[colMap.doiCol].trim().isEmpty()) {
-                    idCandidate = [namespaces: [namespaces.doi], value: cols[colMap.doiCol]]
-                } else if (colMap.doiTitleCol >= 0 && !cols[colMap.doiTitleCol].trim().isEmpty()) {
-                    idCandidate = [namespaces: [namespaces.doi], value: cols[colMap.doiTitleCol]]
-                } else if (colMap.printIdentifierCol >= 0 && !cols[colMap.printIdentifierCol].trim().isEmpty()) {
-                    idCandidate = [namespaces: [namespaces.issn, namespaces.isbn], value: cols[colMap.printIdentifierCol]]
-                } else if (colMap.zdbCol >= 0 && !cols[colMap.zdbCol].trim().isEmpty()) {
-                    idCandidate = [namespaces: [namespaces.zdb], value: cols[colMap.zdbCol]]
-                }
-                if (!titleUrl && ((colMap.titleIdCol >= 0 && cols[colMap.titleIdCol].trim().isEmpty()) || colMap.titleIdCol < 0) &&
-                        ((colMap.zdbCol >= 0 && cols[colMap.zdbCol].trim().isEmpty()) || colMap.zdbCol < 0) &&
-                        ((colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol].trim().isEmpty()) || colMap.onlineIdentifierCol < 0) &&
-                        ((colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol].trim().isEmpty()) || colMap.printIdentifierCol < 0) &&
-                        ((colMap.doiCol >= 0 && cols[colMap.doiCol].trim().isEmpty()) || colMap.doiCol < 0)) {
-                } else {
-                    if (titleUrl) {
-                        tipp = TitleInstancePackagePlatform.findByHostPlatformURLAndPkgInListAndStatusNotEqual(titleUrl, subscription.packages.pkg, RDStore.TIPP_STATUS_REMOVED)
+                    TitleInstancePackagePlatform match = null
+                    //cascade: 1. title_url, 2. title_id, 3. identifier map
+                    if(titleUrlCol >= 0 && cols[titleUrlCol] != null && !cols[titleUrlCol].trim().isEmpty()) {
+                        match = TitleInstancePackagePlatform.findByHostPlatformURLAndPkgInListAndStatusNotEqual(cols[titleUrlCol].trim(), subPkgs, RDStore.TIPP_STATUS_REMOVED)
+                    }
+                    if(!match && titleIdCol >= 0 && cols[titleIdCol] != null && !cols[titleIdCol].trim().isEmpty()) {
+                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status != :removed', [subPkgs: subPkgs, value: cols[titleIdCol].trim(), ns: namespaces.title_id, removed: RDStore.TIPP_STATUS_REMOVED])
+                        if(matchList.size() == 1)
+                            match = matchList[0] as TitleInstancePackagePlatform
                     }
 
-                    if (!tipp && idCandidate && idCandidate.value) {
-                        List<TitleInstancePackagePlatform> titles = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp join tipp.ids ident where ident.ns in :namespaces and ident.value = :value and tipp.pkg in (:pkgs) and tipp.status = :tippStatus', [tippStatus: RDStore.TIPP_STATUS_CURRENT, namespaces: idCandidate.namespaces, value: idCandidate.value, pkgs: subscription.packages.pkg])
-                        if(titles.size() == 1)
-                            tipp = titles[0]
+                    if(!match && doiCol >= 0 && cols[doiCol] != null && !cols[doiCol].trim().isEmpty()) {
+                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status != :removed', [subPkgs: subPkgs, value: cols[doiCol].trim(), ns: namespaces.doi, removed: RDStore.TIPP_STATUS_REMOVED])
+                        if(matchList.size() == 1)
+                            match = matchList[0] as TitleInstancePackagePlatform
                     }
-                    if (tipp) {
+                    if(!match && onlineIdentifierCol >= 0 && cols[onlineIdentifierCol] != null && !cols[onlineIdentifierCol].trim().isEmpty()) {
+                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns in (:ns) and tipp.status != :removed', [subPkgs: subPkgs, value: cols[onlineIdentifierCol].trim(), ns: [namespaces.eisbn, namespaces.eissn], removed: RDStore.TIPP_STATUS_REMOVED])
+                        if(matchList.size() == 1)
+                            match = matchList[0] as TitleInstancePackagePlatform
+                    }
+                    if(!match && printIdentifierCol >= 0 && cols[printIdentifierCol] != null && !cols[printIdentifierCol].trim().isEmpty()) {
+                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns in (:ns) and tipp.status != :removed', [subPkgs: subPkgs, value: cols[printIdentifierCol].trim(), ns: [namespaces.isbn, namespaces.issn], removed: RDStore.TIPP_STATUS_REMOVED])
+                        if(matchList.size() == 1)
+                            match = matchList[0] as TitleInstancePackagePlatform
+                    }
+                    if(!match && zdbCol >= 0 && cols[zdbCol] != null && !cols[zdbCol].trim().isEmpty()) {
+                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status != :removed', [subPkgs: subPkgs, value: cols[zdbCol].trim(), ns: namespaces.zdb, removed: RDStore.TIPP_STATUS_REMOVED])
+                        if(matchList.size() == 1)
+                            match = matchList[0] as TitleInstancePackagePlatform
+                    }
+                    if(match) {
                             count++
+                        if (pickCol >= 0 && cols[pickCol] != null && !cols[pickCol].trim().isEmpty()) {
+                            String cellEntry = cols[pickCol].trim()
+                            if (cellEntry.toLowerCase() == RDStore.YN_YES.value_de.toLowerCase() || cellEntry.toLowerCase() == RDStore.YN_YES.value_en.toLowerCase()) {
+                                IssueEntitlement ieInNewSub = surveyService.titleContainedBySubscription(newSub, match)
+                                boolean allowedToSelect = false
+                                if (surveyConfig.pickAndChoosePerpetualAccess) {
+                                    boolean participantPerpetualAccessToTitle = surveyService.hasParticipantPerpetualAccessToTitle3(newSub.getSubscriber(), match)
+                                    allowedToSelect = !(participantPerpetualAccessToTitle) && (!ieInNewSub || (ieInNewSub && (contextOrg.id == surveyConfig.surveyInfo.owner.id)))
+                                } else {
+                                    allowedToSelect = !ieInNewSub || (ieInNewSub && (contextOrg.id == surveyConfig.surveyInfo.owner.id))
+                                }
 
-                            colMap.each { String colName, int colNo ->
-                                if (colNo > -1 && cols[colNo]) {
-                                    String cellEntry = cols[colNo].trim()
-                                    switch (colName) {
-                                        case "pick":
-                                            if (cellEntry.toLowerCase() == RDStore.YN_YES.value_de.toLowerCase() || cellEntry.toLowerCase() == RDStore.YN_YES.value_en.toLowerCase()) {
-                                                IssueEntitlement ieInNewSub = surveyService.titleContainedBySubscription(newSub, tipp)
-                                                boolean allowedToSelect = false
-                                                if (surveyConfig.pickAndChoosePerpetualAccess) {
-                                                    boolean participantPerpetualAccessToTitle = surveyService.hasParticipantPerpetualAccessToTitle3(newSub.getSubscriber(), tipp)
-                                                    allowedToSelect = !(participantPerpetualAccessToTitle) && (!ieInNewSub || (ieInNewSub && (contextOrg.id == surveyConfig.surveyInfo.owner.id)))
-                                                } else {
-                                                    allowedToSelect = !ieInNewSub || (ieInNewSub && (contextOrg.id == surveyConfig.surveyInfo.owner.id))
-                                                }
-
-                                                if (!ieInNewSub && allowedToSelect) {
-                                                    selectedTipps << tipp.gokbId
-                                                    countSelectTipps++
-                                                }
-                                            }
-                                            break
-                                    }
+                                if (!ieInNewSub && allowedToSelect) {
+                                    selectedTipps << match.gokbId
+                                    countSelectTipps++
                                 }
                             }
                         }

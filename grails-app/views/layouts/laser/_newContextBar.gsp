@@ -36,7 +36,7 @@
 
             %{-- child indicator --}%
 
-            <g:if test="${controllerName == 'subscription' && subscription}">
+            <g:if test="${controllerName == 'subscription' && subscription && !surveyConfig}">
                 <g:if test="${subscription.instanceOf && contextService.getOrg().id == subscription.getConsortia()?.id}">
                     <ui:cbItemInfo display="Sie sehen eine Kindlizenz" icon="child" color="orange" />
                 </g:if>
@@ -71,7 +71,7 @@
             %{-- subscription transfer  --}%
 
             <g:if test="${controllerName=='subscription' && (editable && contextService.getOrg().isCustomerType_Consortium())}">
-                <g:if test="${subscription && subscription._getCalculatedType() in [Subscription.TYPE_CONSORTIAL, Subscription.TYPE_ADMINISTRATIVE] && subscription._getCalculatedPrevious()}">
+                <g:if test="${subscription && subscription._getCalculatedType() in [Subscription.TYPE_CONSORTIAL]}">
                     <div class="item la-cb-action">
                         <button class="ui icon button la-toggle-ui la-popup-tooltip la-delay" id="subscriptionTransfer-toggle"
                                 data-content="${message(code:'statusbar.showSubscriptionTransfer.tooltip')}" data-position="bottom left">
