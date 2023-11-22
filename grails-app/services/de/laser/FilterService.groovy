@@ -1932,7 +1932,7 @@ class FilterService {
                 String subFilter
                 if(configMap.sub) {
                     params.subscription = configMap.sub.id
-                    if(configMap.containsKey('ieStatus')) {
+                    if(configMap.containsKey('ieStatus') || configMap.containsKey('notStatus')) {
                         join += " join issue_entitlement on ie_tipp_fk = tipp_id"
                         subFilter = "ie_subscription_fk = :subscription"
                     }
@@ -1985,11 +1985,19 @@ class FilterService {
                     if (configMap.status != null && configMap.status != '') {
                         params.ieStatus = connection.createArrayOf('bigint', listReaderWrapper(configMap, 'status').toArray())
                         whereClauses << "ie_status_rv_fk = any(:ieStatus)"
-                    } else if (configMap.notStatus != null && !configMap.notStatus.isEmpty()) {
-                        params.ieStatus = configMap.notStatus instanceof String ? Long.parseLong(configMap.notStatus) : configMap.status
-                        //already id
+                    }
+                    else if (configMap.notStatus != null) {
+                        if(configMap.notStatus instanceof String && !configMap.notStatus.isEmpty()) {
+                            params.ieStatus = Long.parseLong(configMap.notStatus)
+                        }
+                        else if(configMap.notStatus instanceof Long) {
+                            //already id
+                            params.ieStatus = configMap.notStatus
+                        }
+                        else params.ieStatus = configMap.status
                         whereClauses << "ie_status_rv_fk != :ieStatus"
-                    } else {
+                    }
+                    else {
                         params.ieStatus = RDStore.TIPP_STATUS_CURRENT.id
                         whereClauses << "ie_status_rv_fk = :ieStatus"
                     }
@@ -2003,8 +2011,14 @@ class FilterService {
                     params.tippStatus = connection.createArrayOf('bigint', listReaderWrapper(configMap, 'status').toArray())
                     whereClauses << "tipp_status_rv_fk = any(:tippStatus)"
                 }
-                else if(configMap.notStatus != null && !configMap.notStatus.isEmpty()) {
-                    params.tippStatus = configMap.notStatus instanceof String ? Long.parseLong(configMap.notStatus) : configMap.status //already id
+                else if(configMap.notStatus != null) {
+                    if(configMap.notStatus instanceof String && !configMap.notStatus.isEmpty())
+                        params.tippStatus = Long.parseLong(configMap.notStatus)
+                    else if(configMap.notStatus instanceof Long) {
+                        //already id
+                        params.tippStatus = configMap.notStatus
+                    }
+                    else params.tippStatus = configMap.status
                     whereClauses << "tipp_status_rv_fk != :tippStatus"
                 }
                 else {

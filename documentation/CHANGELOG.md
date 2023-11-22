@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5445    22.11.2023  rc-3.3  3.3         Andreas Bug         Sortierung wurde nicht verarbeitet
+
+5444    22.11.2023  rc-3.3  3.3         Andreas Bug         Titel konnten nicht direkt hinzugefügt werden
+
 5441    22.11.2023  rc-3.3  3.3         Andreas Bug         falsches Formularelement korrigiert
 
 5440    21.11.2023  rc-3.3  3.3         Andreas Bug         Abfragen im Export behoben

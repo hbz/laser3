@@ -195,10 +195,18 @@
                             <div class="ui middle aligned selection list">
                                 <g:each in="${sub.packages}" var="sp">
                                     <div class="item"><div class="content">
-                                        <g:link controller="subscription" action="index" id="${sub.id}"
-                                                params="[pkgfilter: sp.pkg.id]">
-                                            ${sp.pkg.name}<br/>${raw(sp.getIEandPackageSize())}
-                                        </g:link>
+                                        <g:if test="${subscriptionService.countCurrentIssueEntitlements(sub) > 0}">
+                                            <g:link controller="subscription" action="index" id="${sub.id}"
+                                                    params="[pkgfilter: sp.pkg.id]">
+                                                ${sp.pkg.name}<br/>${raw(sp.getIEandPackageSize())}
+                                            </g:link>
+                                        </g:if>
+                                        <g:else>
+                                            <g:link controller="subscription" action="addEntitlements" id="${sub.id}"
+                                                    params="[pkgfilter: sp.pkg.id]">
+                                                ${sp.pkg.name}<br/>${raw(sp.getIEandPackageSize())}
+                                            </g:link>
+                                        </g:else>
                                         <g:if test="${editable && childWithCostItems.find { SubscriptionPackage row -> row.id == sp.id }}">
                                             <br/><g:message code="subscription.delete.existingCostItems"/>
                                         </g:if>
