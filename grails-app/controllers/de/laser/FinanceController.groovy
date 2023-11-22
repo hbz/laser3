@@ -202,7 +202,7 @@ class FinanceController  {
         }
         else {
             ArrayList titles = []
-            String viewMode = params.showView
+            String viewMode = params.showView ?: result.showView
             int sumcell = -1
             int sumcellAfterTax = -1
             int sumTitleCell = -1

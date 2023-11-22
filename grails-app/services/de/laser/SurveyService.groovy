@@ -884,6 +884,20 @@ class SurveyService {
         return Org.executeQuery(tmpQuery, tmpQueryParams, params)
     }
 
+    int countFilteredSurveyOrgs(List orgIDs, String query, queryParams, params) {
+
+        if (!(orgIDs?.size() > 0)) {
+            return []
+        }
+        String tmpQuery = query
+        tmpQuery = tmpQuery.replace("order by", "and o.id in (:orgIDs) order by")
+
+        Map tmpQueryParams = queryParams
+        tmpQueryParams.put("orgIDs", orgIDs)
+
+        return Org.executeQuery(tmpQuery, tmpQueryParams, params)
+    }
+
     /**
      * Retrieves the counts of surveys in the different stages
      * @param parameterMap the filter parameter map
@@ -1825,6 +1839,15 @@ class SurveyService {
      * @return the count of {@link IssueEntitlement}s belonging to the given {@link IssueEntitlementGroup}
      */
     Integer countIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
+        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
+        Integer countIes = issueEntitlementGroup ?
+                IssueEntitlementGroupItem.executeQuery("select count(igi) from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup",
+                        [ieGroup: issueEntitlementGroup])[0]
+                : 0
+        countIes
+    }
+
+    Integer countIssueEntitlementsByIEGroupWithStatus(Subscription subscription, SurveyConfig surveyConfig, RefdataValue status) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         Integer countIes = issueEntitlementGroup ?
                 IssueEntitlementGroupItem.executeQuery("select count(igi) from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup",

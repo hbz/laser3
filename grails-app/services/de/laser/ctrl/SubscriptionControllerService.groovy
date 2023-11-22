@@ -1673,8 +1673,8 @@ class SubscriptionControllerService {
                         if (result.selectProcess.selectedTipps) {
 
                             Integer countTippsToAdd = 0
-                            result.selectProcess.selectedTipps.each {
-                                TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findById(it.key)
+                            result.selectProcess.selectedTipps.each { String tippKey ->
+                                TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(tippKey)
                                 if (tipp) {
                                     try {
 
