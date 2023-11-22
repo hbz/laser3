@@ -7,6 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+
+5431    22.11.2023  rc-3.3  3.3         Moe     Feature     Festlegen einer Hauptmailadresse für Umfrage-Ersteller im Einrichtungsprofil
+
 5441    22.11.2023  rc-3.3  3.3         Andreas Bug         falsches Formularelement korrigiert
 
 5440    21.11.2023  rc-3.3  3.3         Andreas Bug         Abfragen im Export behoben
