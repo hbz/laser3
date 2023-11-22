@@ -33,68 +33,83 @@
                   ]"/>
     </g:form>
 </ui:filter>
+<g:if test="${selectedSubParticipants.size() == 0 && selectedSubParticipantsCount > 0}">
+    <b><g:message code="default.search.empty"/></b>
+</g:if>
+<g:else>
+    <br/>
 
-<br><br>
-<g:form action="deleteSurveyParticipants" data-confirm-id="deleteSurveyParticipants_form" controller="survey" method="post" class="ui form"
-        params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
+    <h3 class="ui icon header la-clear-before la-noMargin-top"><span
+            class="ui circular  label">${selectedSubParticipants.size()}</span> <g:message
+            code="surveyParticipants.selectedSubParticipants"/></h3>
 
-    <h3 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h3>
+    <br/><br/>
 
-    <g:set var="surveyParticipantsHasAccess"
-           value="${selectedSubParticipants?.findAll{ it?.hasInstAdmin() }?.sort{ it?.sortname }}"/>
+    <g:form action="deleteSurveyParticipants" data-confirm-id="deleteSurveyParticipants_form" controller="survey"
+            method="post" class="ui form"
+            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
 
-    <div class="four wide column">
-    <g:if test="${surveyParticipantsHasAccess}">
+        <h3 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h3>
 
-        <a data-ui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
-            <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
-        </a>
+        <g:set var="surveyParticipantsHasAccess"
+               value="${selectedSubParticipants?.findAll { it?.hasInstAdmin() }?.sort { it?.sortname }}"/>
 
-    </g:if>
-    </div>
-    <br />
-    <br />
+        <div class="four wide column">
+            <g:if test="${surveyParticipantsHasAccess}">
 
+                <a data-ui="modal" class="ui icon button right floated"
+                   data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
+                    <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
+                </a>
 
-    <laser:render template="/templates/filter/orgFilterTable"
-              model="[orgList         : surveyParticipantsHasAccess,
-                      tmplShowCheckbox: editable,
-                      tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'libraryType', 'surveySubInfo']
-              ]"/>
-
-
-    <h3 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h3>
+            </g:if>
+        </div>
+        <br/>
+        <br/>
 
 
-    <g:set var="surveyParticipantsHasNotAccess"
-           value="${selectedSubParticipants.findAll{ !it?.hasInstAdmin() }.sort{ it?.sortname }}"/>
+        <laser:render template="/templates/filter/orgFilterTable"
+                      model="[orgList         : surveyParticipantsHasAccess,
+                              tmplShowCheckbox: editable,
+                              tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'libraryType', 'surveySubInfo']
+                      ]"/>
 
-    <div class="four wide column">
-    <g:if test="${surveyParticipantsHasNotAccess}">
-        <a data-ui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
-            <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
-        </a>
-    </g:if>
-    </div>
 
-    <br />
-    <br />
-    <laser:render template="/templates/filter/orgFilterTable"
-              model="[orgList         : surveyParticipantsHasNotAccess,
-                      tmplShowCheckbox: editable,
-                      tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'libraryType', 'surveySubInfo']
-              ]"/>
+        <h3 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h3>
 
-    <br />
 
-    <g:if test="${selectedSubParticipants && editable}">
-        <button type="submit" data-confirm-id="deleteSurveyParticipants" class="ui icon negative button js-open-confirm-modal"
-                        data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.surveyParticipants")}"
-                        data-confirm-term-how="unlink"
-                        role="button"
-                        aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-            <i class="unlink icon"></i> ${message(code: 'default.button.unlink.label')}
-        </button>
-    </g:if>
+        <g:set var="surveyParticipantsHasNotAccess"
+               value="${selectedSubParticipants.findAll { !it?.hasInstAdmin() }.sort { it?.sortname }}"/>
 
-</g:form>
+        <div class="four wide column">
+            <g:if test="${surveyParticipantsHasNotAccess}">
+                <a data-ui="modal" class="ui icon button right floated"
+                   data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
+                    <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
+                </a>
+            </g:if>
+        </div>
+
+        <br/>
+        <br/>
+        <laser:render template="/templates/filter/orgFilterTable"
+                      model="[orgList         : surveyParticipantsHasNotAccess,
+                              tmplShowCheckbox: editable,
+                              tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'libraryType', 'surveySubInfo']
+                      ]"/>
+
+        <br/>
+
+        <g:if test="${selectedSubParticipants && editable}">
+            <button type="submit" data-confirm-id="deleteSurveyParticipants"
+                    class="ui icon negative button js-open-confirm-modal"
+                    data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.surveyParticipants")}"
+                    data-confirm-term-how="unlink"
+                    role="button"
+                    aria-label="${message(code: 'ariaLabel.unlink.universal')}">
+                <i class="unlink icon"></i> ${message(code: 'default.button.unlink.label')}
+            </button>
+        </g:if>
+
+    </g:form>
+</g:else>

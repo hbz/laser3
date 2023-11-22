@@ -17,6 +17,8 @@
 
 5437    21.11.2023  rc-3.3  3.3         David   Bug         PDF-Erzeugung funktioniert lokal nicht
 
+4987    21.11.2023  rc-3.3  3.3         Moe    Feature     Umfrage erstellen: Zählung der Einrichtungen falsch
+
 5416    20.11.2023  rc-3.3  3.3         David   Feature     TitleInstance entfernen
 
 5418    20.11.2023  rc-3.3  3.3         David   Bug         Dateien nicht auffindbar
