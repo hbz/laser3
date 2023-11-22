@@ -21,6 +21,9 @@
         <ui:messages data="${flash}" />
 
         <ui:tabs actionName="settings">
+            <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || contextService.getOrg().isCustomerType_Consortium()}">
+                <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'mail']" tab="mail" text="${message(code: 'org.setting.tab.mail')}"/>
+            </g:if>
             <%--<ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'general']" tab="general" text="${message(code: 'org.setting.tab.general')}"/>--%>
             <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro() || contextService._hasPerm('FAKE')}">
                 <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'api']" tab="api" text="${message(code: 'org.setting.tab.api')}"/>
@@ -145,6 +148,9 @@
                                                 </g:elseif>
                                                 <g:elseif test="${os.key.type == Role}">
                                                     ${os.getValue()?.getI10n('authority')} (Editierfunktion deaktiviert) <%-- TODO --%>
+                                                </g:elseif>
+                                                <g:elseif test="${OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY == os.key}">
+                                                    <ui:xEditable owner="${os}" field="strValue" validation="email"/>
                                                 </g:elseif>
                                                 <g:else>
                                                     <ui:xEditable owner="${os}" field="strValue" />

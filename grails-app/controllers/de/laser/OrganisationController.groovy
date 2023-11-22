@@ -145,12 +145,17 @@ class OrganisationController  {
                 OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID,
                 OrgSetting.KEYS.NATSTAT_SERVER_ACCESS
         ]
+        List<OrgSetting.KEYS> mailSet = [
+                OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY
+        ]
 
         result.settings = []
 
         switch(params.tab) {
 //            case 'general': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in generalSet })
 //                break
+            case 'mail': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in mailSet })
+                break
             case 'api': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in apiSet })
                 break
             case 'ezb': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in ezbSet })

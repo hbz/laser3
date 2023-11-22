@@ -50,6 +50,10 @@ class OrganisationService {
             OrgSetting.add(org, OrgSetting.KEYS.EZB_SERVER_ACCESS, RDStore.YN_NO)
         }
 
+        if (org.isCustomerType_Consortium_Pro() && OrgSetting.get(org, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY) == OrgSetting.SETTING_NOT_FOUND) {
+            OrgSetting.add(org, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY, '')
+        }
+
         // called after
         // new Org.save()
         // does not work unless session is not flushed what causes crashes in sync

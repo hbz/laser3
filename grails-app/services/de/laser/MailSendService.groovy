@@ -55,7 +55,12 @@ class MailSendService {
      */
     Map mailSendConfigBySurvey(SurveyInfo surveyInfo, boolean reminderMail) {
         Map<String, Object> result = [:]
-        result.mailFrom = fromMail
+        String ownerFromMail
+        if(OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
+            ownerFromMail = OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY).strValue
+        }
+
+        result.mailFrom = ownerFromMail ?: fromMail
         result.mailSubject = ""
         result.mailText = ""
 
@@ -78,6 +83,14 @@ class MailSendService {
 
     Map mailSendConfigBySurveys(List<SurveyInfo> surveys, boolean reminderMail) {
         Map<String, Object> result = [:]
+
+        String ownerFromMail
+        if(OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
+            ownerFromMail = OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY).strValue
+        }
+
+        result.mailFrom = ownerFromMail ?: fromMail
+
         result.mailFrom = fromMail
         result.mailSubject = ""
         result.mailText = ""
@@ -112,7 +125,13 @@ class MailSendService {
         Map<String, Object> result = [:]
 
         FlashScope flash = getCurrentFlashScope()
-        result.mailFrom = fromMail
+
+        String ownerFromMail
+        if(OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
+            ownerFromMail = OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY).strValue
+        }
+
+        result.mailFrom = ownerFromMail ?: fromMail
         result.mailSubject = parameterMap.mailSubject
 
         result.editable = (surveyInfo && surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED]) ? surveyInfo.isEditable() : false
@@ -122,18 +141,23 @@ class MailSendService {
 
         if (parameterMap.selectedOrgs && result.editable) {
             result.surveyConfig = surveyInfo.surveyConfigs[0]
+            String replyToMail
 
-            List generalContactsEMails = []
+            if(ownerFromMail){
+                replyToMail = ownerFromMail
+            }else {
+                List generalContactsEMails = []
 
-            surveyInfo.owner.getGeneralContactPersons(true)?.each { person ->
-                person.contacts.each { contact ->
-                    if (['Mail', 'E-Mail'].contains(contact.contentType?.value)) {
-                        generalContactsEMails << contact.content
+                surveyInfo.owner.getGeneralContactPersons(true)?.each { person ->
+                    person.contacts.each { contact ->
+                        if (['Mail', 'E-Mail'].contains(contact.contentType?.value)) {
+                            generalContactsEMails << contact.content
+                        }
                     }
                 }
-            }
 
-            String replyToMail = (generalContactsEMails.size() > 0) ? generalContactsEMails[0].toString() : null
+                replyToMail = (generalContactsEMails.size() > 0) ? generalContactsEMails[0].toString() : null
+            }
 
             parameterMap.list('selectedOrgs').each { soId ->
 
@@ -251,24 +275,35 @@ class MailSendService {
         Map<String, Object> result = [:]
 
         FlashScope flash = getCurrentFlashScope()
-        result.mailFrom = fromMail
+
+        String ownerFromMail
+        if(OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
+            ownerFromMail = OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY).strValue
+        }
+
+        result.mailFrom = ownerFromMail ?: fromMail
         result.mailSubject = parameterMap.mailSubject
 
         result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
         if (result.editable) {
+            String replyToMail
+            if(ownerFromMail){
+                replyToMail = ownerFromMail
+            }else{
+                List generalContactsEMails = []
 
-            List generalContactsEMails = []
-
-            surveys[0].owner.getGeneralContactPersons(true)?.each { person ->
-                person.contacts.each { contact ->
-                    if (['Mail', 'E-Mail'].contains(contact.contentType?.value)) {
-                        generalContactsEMails << contact.content
+                surveys[0].owner.getGeneralContactPersons(true)?.each { person ->
+                    person.contacts.each { contact ->
+                        if (['Mail', 'E-Mail'].contains(contact.contentType?.value)) {
+                            generalContactsEMails << contact.content
+                        }
                     }
                 }
+
+                replyToMail = (generalContactsEMails.size() > 0) ? generalContactsEMails[0].toString() : null
             }
 
-            String replyToMail = (generalContactsEMails.size() > 0) ? generalContactsEMails[0].toString() : null
 
             surveys.each { surveyInfo ->
                 SurveyConfig surveyConfig = surveyInfo.surveyConfigs[0]
@@ -355,17 +390,29 @@ class MailSendService {
                             ccAddress = user.getSetting(UserSetting.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
                         }
 
-                        List generalContactsEMails = []
-
-                        survey.owner.getGeneralContactPersons(true)?.each { person ->
-                            person.contacts.each { contact ->
-                                if (['Mail', 'E-Mail'].contains(contact.contentType?.value)) {
-                                    generalContactsEMails << contact.content
-                                }
-                            }
+                        String ownerFromMail
+                        if(OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
+                            ownerFromMail = OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY).strValue
                         }
 
-                        replyToMail = (generalContactsEMails.size() > 0) ? generalContactsEMails[0].toString() : null
+                        String mailFrom = ownerFromMail ?: fromMail
+
+                        if(ownerFromMail){
+                            replyToMail = ownerFromMail
+                        }else {
+
+                            List generalContactsEMails = []
+
+                            survey.owner.getGeneralContactPersons(true)?.each { person ->
+                                person.contacts.each { contact ->
+                                    if (['Mail', 'E-Mail'].contains(contact.contentType?.value)) {
+                                        generalContactsEMails << contact.content
+                                    }
+                                }
+                            }
+                            replyToMail = (generalContactsEMails.size() > 0) ? generalContactsEMails[0].toString() : null
+                        }
+
                         Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value.toString())
                         String mailSubject = subjectSystemPraefix
                         if(reminderMail) {
@@ -380,7 +427,7 @@ class MailSendService {
                             AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
                                 multipart true
                                 to emailReceiver
-                                from fromMail
+                                from mailFrom
                                 cc ccAddress
                                 replyTo replyToMail
                                 subject mailSubject
@@ -391,7 +438,7 @@ class MailSendService {
                             AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
                                 multipart true
                                 to emailReceiver
-                                from fromMail
+                                from mailFrom
                                 replyTo replyToMail
                                 subject mailSubject
                                 text view: "/mailTemplates/text/notificationSurvey", model: [language: language, survey: survey, reminder: reminderMail]
