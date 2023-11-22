@@ -66,9 +66,11 @@
                 </div>
             </g:if> --%>
 
-
+        <div class="field">
+            <br />
             <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label')}"/>
             <input type="button" class="ui button js-click-control" onclick="JSPC.helper.goBack();" value="${message(code:'default.button.cancel.label')}" />
+        </div>
     </ui:form>
 
 <laser:script file="${this.getGroovyPageFileName()}">

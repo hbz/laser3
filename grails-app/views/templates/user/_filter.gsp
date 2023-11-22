@@ -4,7 +4,7 @@
 <ui:filter>
     <g:form controller="${controllerName}" action="${actionName}" params="${params.id ? [id:params.id] : []}" method="get" class="ui form">
 
-        <div class="four fields">
+        <div class="${orgField ? 'four' : 'three'} fields">
             <div class="field">
                 <label for="name"><g:message code="default.search.text"/></label>
                 <input type="text" id="name" name="name" value="${params.name}"/>

@@ -36,7 +36,7 @@
 
             %{-- child indicator --}%
 
-            <g:if test="${controllerName == 'subscription' && subscription}">
+            <g:if test="${controllerName == 'subscription' && subscription && !surveyConfig}">
                 <g:if test="${subscription.instanceOf && contextService.getOrg().id == subscription.getConsortia()?.id}">
                     <ui:cbItemInfo display="Sie sehen eine Kindlizenz" icon="child" color="orange" />
                 </g:if>

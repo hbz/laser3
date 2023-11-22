@@ -1826,7 +1826,6 @@ class MyInstitutionController  {
 
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-
         if(params.tab){
             if(params.tab == 'currentIEs'){
                 params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
