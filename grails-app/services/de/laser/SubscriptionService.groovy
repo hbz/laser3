@@ -2488,7 +2488,8 @@ join sub.orgRelations or_sub where
                     if (titleUrl) {
                         tipp = TitleInstancePackagePlatform.findByHostPlatformURLAndPkgInListAndStatusNotEqual(titleUrl, subscription.packages.pkg, RDStore.TIPP_STATUS_REMOVED)
                     }
-                    if (!tipp && idCandidate.value) {
+
+                    if (!tipp && idCandidate && idCandidate.value) {
                         List<TitleInstancePackagePlatform> titles = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp join tipp.ids ident where ident.ns in :namespaces and ident.value = :value and tipp.pkg in (:pkgs) and tipp.status = :tippStatus', [tippStatus: RDStore.TIPP_STATUS_CURRENT, namespaces: idCandidate.namespaces, value: idCandidate.value, pkgs: subscription.packages.pkg])
                         if(titles.size() == 1)
                             tipp = titles[0]

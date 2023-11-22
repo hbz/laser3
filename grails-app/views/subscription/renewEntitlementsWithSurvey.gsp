@@ -272,8 +272,34 @@
 
 </ui:tabs>
 
-
 <div class="ui bottom attached tab active segment">
+    <g:if test="${(params.tab == 'selectedIEs' && titleGroup)}">
+        <ui:tabs actionName="${actionName}">
+            <ui:tabsItem controller="subscription" action="${actionName}"
+                         params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: params.tab, subTab: 'currentIEs']"
+                         text="${message(code: "package.show.nav.current")}" tab="currentIEs" subTab="currentIEs"
+                         counts="${currentIECounts}"/>
+            <ui:tabsItem controller="subscription" action="${actionName}"
+                         params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: params.tab, subTab: 'plannedIEs']"
+                         text="${message(code: "package.show.nav.planned")}" tab="plannedIEs" subTab="plannedIEs"
+                         counts="${plannedIECounts}"/>
+            <ui:tabsItem controller="subscription" action="${actionName}"
+                         params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: params.tab, subTab: 'expiredIEs']"
+                         text="${message(code: "package.show.nav.expired")}" tab="expiredIEs" subTab="expiredIEs"
+                         counts="${expiredIECounts}"/>
+            <ui:tabsItem controller="subscription" action="${actionName}"
+                         params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: params.tab, subTab: 'deletedIEs']"
+                         text="${message(code: "package.show.nav.deleted")}" tab="deletedIEs" subTab="deletedIEs"
+                         counts="${deletedIECounts}"/>
+            <ui:tabsItem controller="subscription" action="${actionName}"
+                         params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: params.tab, subTab: 'allIEs']"
+                         text="${message(code: "menu.public.all_titles")}" tab="allIEs" subTab="allIEs"
+                         counts="${allIECounts}"/>
+        </ui:tabs>
+        <br>
+    </g:if>
+
+
     <g:form name="renewEntitlements" id="${subscriberSub.id}" action="processRenewEntitlementsWithSurvey" class="ui form">
     <g:hiddenField id="packageId" name="packageId" value="${params.packageId}"/>
     <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
@@ -414,7 +440,7 @@
                     referer: "${actionName}",
                     checked: checked,
                     tab: "${params.tab}",
-                    baseSubID: "${subscription.id}",
+                    baseSubID: "${parentSubscription.id}",
                     newSubID: "${subscriberSub.id}",
                     surveyConfigID: "${surveyConfig.id}"
 
