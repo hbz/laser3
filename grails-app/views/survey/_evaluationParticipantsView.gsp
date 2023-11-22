@@ -1,4 +1,4 @@
-<%@ page import="de.laser.IssueEntitlementGroup; de.laser.config.ConfigMapper; de.laser.survey.SurveyConfig; de.laser.survey.SurveyResult; de.laser.Org; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory; de.laser.survey.SurveyOrg" %>
+<%@ page import="de.laser.Doc; de.laser.DocContext; de.laser.IssueEntitlementGroup; de.laser.config.ConfigMapper; de.laser.survey.SurveyConfig; de.laser.survey.SurveyResult; de.laser.Org; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory; de.laser.survey.SurveyOrg" %>
 <laser:serviceInjection/>
 
 <g:if test="${showOpenParticipantsAgainButtons}">
@@ -197,6 +197,12 @@
                     ${message(code: 'surveyEvaluation.titles.currentAndFixedEntitlements')}
                 </th>
                 </g:if>
+                <g:if test="${tmplConfigItem.equalsIgnoreCase('uploadTitleListDoc')}">
+                    <th>
+                        Upload
+                        ${RDStore.DOC_TYPE_TITLELIST.getI10n('value')}
+                    </th>
+                </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('finishedDate')}">
                 <th>
                     ${message(code: 'surveyInfo.finishedDate')}
@@ -205,6 +211,12 @@
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('reminderMailDate')}">
                     <th>
                         ${message(code: 'surveyOrg.reminderMailDate')}
+                    </th>
+                </g:if>
+                <g:if test="${tmplConfigItem.equalsIgnoreCase('downloadTitleList')}">
+                    <th>
+                        Download
+                        ${RDStore.DOC_TYPE_TITLELIST.getI10n('value')}
                     </th>
                 </g:if>
             </g:each>
@@ -331,13 +343,97 @@
                                    value="${IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subParticipant)}"/>
                             <div class="ui circular label">
                             <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
-                                ${surveyService.countPerpetualAccessTitlesBySubAndNotInIEGroup(subParticipant, surveyConfig)} / ${surveyService.countCurrentIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
+                                ${surveyService.countPerpetualAccessTitlesBySubAndNotInIEGroup(subParticipant, surveyConfig)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
                             </g:if>
                             <g:else>
-                                ${subscriptionService.countCurrentIssueEntitlementsNotInIEGroup(subParticipant, ieGroup)} / ${surveyService.countCurrentIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
+                                ${subscriptionService.countCurrentIssueEntitlementsNotInIEGroup(subParticipant, ieGroup)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
                             </g:else>
                             </div>
 
+                        </td>
+                    </g:if>
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('uploadTitleListDoc')}">
+                        <td>
+                            <g:if test="${editable}">
+                                <button type="button" class="ui icon tiny button blue la-modern-button"
+                                        data-ownerid="${subParticipant.id}"
+                                        data-ownerclass="${subParticipant.class.name}"
+                                        data-doctype="${RDStore.DOC_TYPE_TITLELIST.value}"
+                                        data-ui="modal"
+                                        data-href="#modalUploadTitleListDoc"><i aria-hidden="true"
+                                                                            class="plus small icon"></i>
+                                </button>
+                            </g:if>
+
+                            <%
+                                Set<DocContext> documentSet = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType', [subscription: subParticipant, docType: RDStore.DOC_TYPE_TITLELIST])
+                                documentSet = documentSet.sort { it.owner?.title }
+                            %>
+                            <g:each in="${documentSet}" var="docctx">
+                                <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
+                                    <div class="ui small feed content">
+                                        <div class="ui grid summary">
+                                            <div class="eleven wide column la-column-right-lessPadding">
+                                                <ui:documentIcon doc="${docctx.owner}" showText="false"
+                                                                 showTooltip="true"/>
+                                                <g:set var="supportedMimeType"
+                                                       value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
+                                                <g:if test="${supportedMimeType}">
+                                                    <a href="#documentPreview"
+                                                       data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
+                                                </g:if>
+                                                <g:else>
+                                                    ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
+                                                </g:else>
+                                            </div>
+
+                                            <div class="right aligned five wide column la-column-left-lessPadding la-border-left">
+
+                                                <g:if test="${!(editable)}">
+                                                <%-- 1 --%>
+                                                    <g:link controller="docstore" id="${docctx.owner.uuid}"
+                                                            class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
+                                                            target="_blank"><i class="download small icon"></i></g:link>
+                                                </g:if>
+                                                <g:else>
+                                                    <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
+                                                    <%-- 1 --%>
+                                                        <g:link controller="docstore" id="${docctx.owner.uuid}"
+                                                                class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
+                                                                target="_blank"><i
+                                                                class="download small icon"></i></g:link>
+
+                                                    <%-- 2 --%>
+                                                        <laser:render template="/templates/documents/modal"
+                                                                      model="[ownobj: subParticipant, owntp: 'subscription', docctx: docctx, doc: docctx.owner]"/>
+                                                        <button type="button"
+                                                                class="ui icon blue tiny button la-modern-button"
+                                                                data-ui="modal"
+                                                                data-href="#modalEditDocument_${docctx.id}"
+                                                                aria-label="${message(code: 'ariaLabel.change.universal')}">
+                                                            <i class="pencil small icon"></i>
+                                                        </button>
+                                                    </g:if>
+
+                                                <%-- 4 --%>
+                                                    <g:if test="${docctx.owner.owner?.id == contextOrg.id && !docctx.isShared}">
+                                                        <g:link controller="${ajaxCallController ?: controllerName}"
+                                                                action="deleteDocuments"
+                                                                class="ui icon negative tiny button la-modern-button js-open-confirm-modal"
+                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
+                                                                data-confirm-term-how="delete"
+                                                                params='[instanceId: "${subParticipant.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
+                                                                role="button"
+                                                                aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                                            <i class="trash alternate outline small icon"></i>
+                                                        </g:link>
+                                                    </g:if>
+                                                </g:else>%{-- (editable || editable2) --}%
+                                            </div>
+                                        </div>
+                                    </div>
+                                </g:if>
+                            </g:each>
                         </td>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('finishedDate')}">
@@ -348,6 +444,17 @@
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('reminderMailDate')}">
                         <td>
                             <ui:xEditable owner="${surveyOrg}" type="date" field="reminderMailDate"/>
+                        </td>
+                    </g:if>
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('downloadTitleList')}">
+                        <td>
+                            <g:link controller="subscription" action="renewEntitlementsWithSurvey" id="${subParticipant.id}"
+                                    params="${[surveyConfigID: surveyConfig.id,
+                                               exportXLS   : true,
+                                               tab           : 'selectedIEs']}"
+                                    class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                    data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}" data-position="bottom left"
+                                    target="_blank"><i class="download icon"></i></g:link>
                         </td>
                     </g:if>
                 </g:each>
@@ -457,6 +564,12 @@
                         ${message(code: 'surveyEvaluation.titles.currentAndFixedEntitlements')}
                     </th>
                 </g:if>
+                <g:if test="${tmplConfigItem.equalsIgnoreCase('uploadTitleListDoc')}">
+                    <th>
+                        Upload
+                        ${RDStore.DOC_TYPE_TITLELIST.getI10n('value')}
+                    </th>
+                </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('finishedDate')}">
                     <th>
                         ${message(code: 'surveyInfo.finishedDate')}
@@ -465,6 +578,12 @@
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('reminderMailDate')}">
                     <th>
                         ${message(code: 'surveyOrg.reminderMailDate')}
+                    </th>
+                </g:if>
+                <g:if test="${tmplConfigItem.equalsIgnoreCase('downloadTitleList')}">
+                    <th>
+                        Download
+                        ${RDStore.DOC_TYPE_TITLELIST.getI10n('value')}
                     </th>
                 </g:if>
 
@@ -594,13 +713,97 @@
                                    value="${IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subParticipant)}"/>
                             <div class="ui circular label">
                                 <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
-                                    ${surveyService.countPerpetualAccessTitlesBySubAndNotInIEGroup(subParticipant, surveyConfig)} / ${surveyService.countCurrentIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
+                                    ${surveyService.countPerpetualAccessTitlesBySubAndNotInIEGroup(subParticipant, surveyConfig)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
                                 </g:if>
                                 <g:else>
-                                    ${subscriptionService.countCurrentIssueEntitlementsNotInIEGroup(subParticipant, ieGroup)} / ${surveyService.countCurrentIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
+                                    ${subscriptionService.countCurrentIssueEntitlementsNotInIEGroup(subParticipant, ieGroup)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
                                 </g:else>
                             </div>
 
+                        </td>
+                    </g:if>
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('uploadTitleListDoc')}">
+                        <td>
+                            <g:if test="${editable}">
+                                <button type="button" class="ui icon tiny button blue la-modern-button"
+                                        data-ownerid="${subParticipant.id}"
+                                        data-ownerclass="${subParticipant.class.name}"
+                                        data-doctype="${RDStore.DOC_TYPE_TITLELIST.value}"
+                                        data-ui="modal"
+                                        data-href="#modalUploadTitleListDoc"><i aria-hidden="true"
+                                                                            class="plus small icon"></i>
+                                </button>
+                            </g:if>
+
+                            <%
+                                Set<DocContext> documentSet2 = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType', [subscription: subParticipant, docType: RDStore.DOC_TYPE_TITLELIST])
+                                documentSet = documentSet2.sort { it.owner?.title }
+                            %>
+                            <g:each in="${documentSet2}" var="docctx">
+                                <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
+                                    <div class="ui small feed content">
+                                        <div class="ui grid summary">
+                                            <div class="eleven wide column la-column-right-lessPadding">
+                                                <ui:documentIcon doc="${docctx.owner}" showText="false"
+                                                                 showTooltip="true"/>
+                                                <g:set var="supportedMimeType"
+                                                       value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
+                                                <g:if test="${supportedMimeType}">
+                                                    <a href="#documentPreview"
+                                                       data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
+                                                </g:if>
+                                                <g:else>
+                                                    ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
+                                                </g:else>
+                                            </div>
+
+                                            <div class="right aligned five wide column la-column-left-lessPadding la-border-left">
+
+                                                <g:if test="${!(editable)}">
+                                                <%-- 1 --%>
+                                                    <g:link controller="docstore" id="${docctx.owner.uuid}"
+                                                            class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
+                                                            target="_blank"><i class="download small icon"></i></g:link>
+                                                </g:if>
+                                                <g:else>
+                                                    <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
+                                                    <%-- 1 --%>
+                                                        <g:link controller="docstore" id="${docctx.owner.uuid}"
+                                                                class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
+                                                                target="_blank"><i
+                                                                class="download small icon"></i></g:link>
+
+                                                    <%-- 2 --%>
+                                                        <laser:render template="/templates/documents/modal"
+                                                                      model="[ownobj: subParticipant, owntp: 'subscription', docctx: docctx, doc: docctx.owner]"/>
+                                                        <button type="button"
+                                                                class="ui icon blue tiny button la-modern-button"
+                                                                data-ui="modal"
+                                                                data-href="#modalEditDocument_${docctx.id}"
+                                                                aria-label="${message(code: 'ariaLabel.change.universal')}">
+                                                            <i class="pencil small icon"></i>
+                                                        </button>
+                                                    </g:if>
+
+                                                <%-- 4 --%>
+                                                    <g:if test="${docctx.owner.owner?.id == contextOrg.id && !docctx.isShared}">
+                                                        <g:link controller="${ajaxCallController ?: controllerName}"
+                                                                action="deleteDocuments"
+                                                                class="ui icon negative tiny button la-modern-button js-open-confirm-modal"
+                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
+                                                                data-confirm-term-how="delete"
+                                                                params='[instanceId: "${subParticipant.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
+                                                                role="button"
+                                                                aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                                            <i class="trash alternate outline small icon"></i>
+                                                        </g:link>
+                                                    </g:if>
+                                                </g:else>%{-- (editable || editable2) --}%
+                                            </div>
+                                        </div>
+                                    </div>
+                                </g:if>
+                            </g:each>
                         </td>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('finishedDate')}">
@@ -611,6 +814,17 @@
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('reminderMailDate')}">
                         <td>
                             <ui:xEditable owner="${surveyOrg}" type="date" field="reminderMailDate"/>
+                        </td>
+                    </g:if>
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('downloadTitleList')}">
+                        <td>
+                            <g:link controller="subscription" action="renewEntitlementsWithSurvey" id="${subParticipant.id}"
+                                    params="${[surveyConfigID: surveyConfig.id,
+                                               exportXLS   : true,
+                                               tab           : 'selectedIEs']}"
+                                    class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                    data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}" data-position="bottom left"
+                                    target="_blank"><i class="download icon"></i></g:link>
                         </td>
                     </g:if>
 
@@ -768,4 +982,20 @@ JSPC.app.propertiesChanged = function (propertyDefinitionId) {
     }
 
 </laser:script>
+
+<g:if test="${editable}">
+    <laser:render template="/templates/documents/modal"
+                  model="${[newModalId: "modalUploadTitleListDoc", owntp: 'subscription']}"/>
+
+
+    <laser:script file="${this.getGroovyPageFileName()}">
+        JSPC.callbacks.modal.onShow.modalUploadTitleListDoc = function(trigger) {
+            $('#modalUploadTitleListDoc input[name=ownerid]').attr('value', $(trigger).attr('data-ownerid'))
+            $('#modalUploadTitleListDoc input[name=ownerclass]').attr('value', $(trigger).attr('data-ownerclass'))
+            $('#modalUploadTitleListDoc input[name=ownertp]').attr('value', $(trigger).attr('data-ownertp'))
+            $('#modalUploadTitleListDoc select[name=doctype]').dropdown('set selected', $(trigger).attr('data-doctype'))
+        }
+    </laser:script>
+
+</g:if>
 

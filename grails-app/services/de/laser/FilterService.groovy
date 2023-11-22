@@ -1932,8 +1932,14 @@ class FilterService {
                 String subFilter
                 if(configMap.sub) {
                     params.subscription = configMap.sub.id
-                    join += " join subscription_package on sp_pkg_fk = tipp_pkg_fk"
-                    subFilter = "sp_sub_fk = :subscription"
+                    if(configMap.containsKey('ieStatus')) {
+                        join += " join issue_entitlement on ie_tipp_fk = tipp_id"
+                        subFilter = "ie_subscription_fk = :subscription"
+                    }
+                    else {
+                        join += " join subscription_package on sp_pkg_fk = tipp_pkg_fk"
+                        subFilter = "sp_sub_fk = :subscription"
+                    }
                 }
                 else if(configMap.subscription) {
                     params.subscription = configMap.subscription.id
