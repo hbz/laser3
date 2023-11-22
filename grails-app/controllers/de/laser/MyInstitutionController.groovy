@@ -1411,6 +1411,8 @@ class MyInstitutionController  {
         String redir
         if(params.redirectAction == 'subscriptionsManagement') {
             redir = 'subscriptionsManagement'
+        }else if(params.redirectAction) {
+            redir = params.redirectAction
         }
 
         redirect controller: 'myInstitution', action: redir ?: 'documents', params: redir == 'subscriptionsManagement' ? [tab: 'documents'] : null /*, fragment: 'docstab' */
