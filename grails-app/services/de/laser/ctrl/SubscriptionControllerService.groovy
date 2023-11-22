@@ -2647,7 +2647,7 @@ class SubscriptionControllerService {
         else {
             Locale locale = LocaleUtils.getCurrentLocale()
             EhcacheWrapper cache = contextService.getUserCache("/subscription/addEntitlements/${result.subscription.id}")
-            Map issueEntitlementCandidates = cache && cache.containsKey('issueEntitlementCandidates') ? cache.get('issueEntitlementCandidates') : [:]
+            Map issueEntitlementCandidates = cache && cache.get('issueEntitlementCandidates') ? cache.get('issueEntitlementCandidates') : [:]
             if(!params.singleTitle) {
                 Map checked = issueEntitlementCandidates.get('checked')
                 if(checked) {
