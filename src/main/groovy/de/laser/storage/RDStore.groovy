@@ -84,6 +84,7 @@ class RDStore {
 
     public final static RefdataValue LINKTYPE_FOLLOWS       = getRefdataValue('follows', RDConstants.LINK_TYPE)
     public final static RefdataValue LINKTYPE_LICENSE       = getRefdataValue('license', RDConstants.LINK_TYPE)
+    public final static RefdataValue LINKTYPE_SIMPLE        = getRefdataValue('simple', RDConstants.LINK_TYPE)
 
     public final static RefdataValue MAIL_STATUS_SEND       = getRefdataValue('Sent', RDConstants.MAIL_STATUS)
 
