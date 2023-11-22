@@ -150,7 +150,7 @@ class MailSendService {
 
                 surveyInfo.owner.getGeneralContactPersons(true)?.each { person ->
                     person.contacts.each { contact ->
-                        if (['Mail', 'E-Mail'].contains(contact.contentType?.value)) {
+                        if (RDStore.CCT_EMAIL == contact.contentType) {
                             generalContactsEMails << contact.content
                         }
                     }
@@ -295,7 +295,7 @@ class MailSendService {
 
                 surveys[0].owner.getGeneralContactPersons(true)?.each { person ->
                     person.contacts.each { contact ->
-                        if (['Mail', 'E-Mail'].contains(contact.contentType?.value)) {
+                        if (RDStore.CCT_EMAIL == contact.contentType) {
                             generalContactsEMails << contact.content
                         }
                     }
@@ -405,7 +405,7 @@ class MailSendService {
 
                             survey.owner.getGeneralContactPersons(true)?.each { person ->
                                 person.contacts.each { contact ->
-                                    if (['Mail', 'E-Mail'].contains(contact.contentType?.value)) {
+                                    if (RDStore.CCT_EMAIL == contact.contentType) {
                                         generalContactsEMails << contact.content
                                     }
                                 }
@@ -499,7 +499,7 @@ class MailSendService {
 
                     surveyInfo.owner.getGeneralContactPersons(true)?.each { person ->
                         person.contacts.each { contact ->
-                            if (['Mail', 'E-Mail'].contains(contact.contentType?.value)) {
+                            if (RDStore.CCT_EMAIL == contact.contentType) {
                                 generalContactsEMails << contact.content
                             }
                         }

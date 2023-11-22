@@ -2463,7 +2463,7 @@ join sub.orgRelations or_sub where
             rows.remove(0)
             rows.eachWithIndex { row, int i ->
                 countRows++
-                log.debug("now processing entitlement ${i++}")
+                log.debug("now processing entitlement ${i+1}")
                 ArrayList<String> cols = row.split('\t')
                 if(cols.size() == titleRow.size()) {
                     TitleInstancePackagePlatform match = null
