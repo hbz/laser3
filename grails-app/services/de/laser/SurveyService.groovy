@@ -1850,8 +1850,8 @@ class SurveyService {
     Integer countIssueEntitlementsByIEGroupWithStatus(Subscription subscription, SurveyConfig surveyConfig, RefdataValue status) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         Integer countIes = issueEntitlementGroup ?
-                IssueEntitlementGroupItem.executeQuery("select count(igi) from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup",
-                        [ieGroup: issueEntitlementGroup])[0]
+                IssueEntitlementGroupItem.executeQuery("select count(igi) from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup and igi.ie.status = :status",
+                        [ieGroup: issueEntitlementGroup, status: status])[0]
                 : 0
         countIes
     }
@@ -1874,8 +1874,8 @@ class SurveyService {
     BigDecimal sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig, RefdataValue currency) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         BigDecimal sumListPrice = issueEntitlementGroup ?
-                IssueEntitlementGroupItem.executeQuery("select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency and p.tipp in (select igi.ie.tipp from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)",
-                        [ieGroup: issueEntitlementGroup, currency: currency])[0]
+                IssueEntitlementGroupItem.executeQuery("select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency and p.tipp in (select igi.ie.tipp from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup and igi.ie.status != :status)",
+                        [ieGroup: issueEntitlementGroup, currency: currency, status: RDStore.TIPP_STATUS_REMOVED])[0]
                 : 0.0
         sumListPrice
     }
