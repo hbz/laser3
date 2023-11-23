@@ -378,6 +378,13 @@
                     $(this).replaceWith($new);
                 })
 
+                $('.la-cb-action-ext > .ui.dropdown').dropdown('destroy').dropdown({
+                    selectOnKeydown: false,
+                    clearable: true,
+                    on: 'hover',
+                    displayType: 'block'
+                })
+
                 $('.la-context-org, .la-advanced-view').fadeIn(150);
             }, 100);
 
