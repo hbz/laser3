@@ -106,6 +106,8 @@ class SubscriptionReport {
 
             if (prefix == 'timeline') {
 
+                long timelineIsCurrentId = id
+
                 if (params.query == 'timeline-member') {
                     List<List<Long>> subIdLists = []
 
@@ -372,12 +374,14 @@ class SubscriptionReport {
                     }
 
                     BaseQuery.handleGenericAnnualXQuery(params.query, 'Subscription', subIdLists, result)
-
                     List newData = []
                     result.data.each { d ->
+                        boolean isCurrent = (sub.startDate && sub.endDate) ? DateUtils.getYearAsInteger(sub.startDate) <= d[0] && DateUtils.getYearAsInteger(sub.endDate) >= d[0] : false
+                        if (isCurrent) {
+                            timelineIsCurrentId = Long.valueOf(d[0] as String)
+                        }
                         newData.add([
-                            d[0], d[1], d[2],
-                            (sub.startDate && sub.endDate) ? DateUtils.getYearAsInteger(sub.startDate) <= d[0] && DateUtils.getYearAsInteger(sub.endDate) >= d[0] : false
+                            d[0], d[1], d[2], isCurrent
                         ])
                     }
                     result.data = newData
@@ -387,7 +391,7 @@ class SubscriptionReport {
 
                 int timelineFromIdx = 0
                 result.data.eachWithIndex{ List entry, int idx ->
-                    if (entry[0] == id) { timelineFromIdx = idx }
+                    if (entry[0] == timelineIsCurrentId) { timelineFromIdx = idx }
                 }
                 int timelineToIdx = (timelineFromIdx + NUMBER_OF_TIMELINE_ELEMENTS)
 
