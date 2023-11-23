@@ -690,7 +690,7 @@ r2d2 = {
         // simple dropdown
         $(ctxSel + ' .ui.dropdown').not('#mainMenue .ui.dropdown').not('.la-not-clearable').dropdown({
             selectOnKeydown: false,
-            clearable: true,
+            clearable: true
         });
         // all dropdowns but dropdowns la-not-clearable
         $(ctxSel + ' .ui.dropdown.la-not-clearable').dropdown({

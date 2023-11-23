@@ -18,45 +18,45 @@
                 <th scope="col" rowspan="3" class="center aligned">${message(code: 'subscription.priceIncreaseInfo.label')}</th>
 
                 <th scope="col" rowspan="3" class="center aligned">
-                    <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'survey.label')}" data-position="top center">
+                    <span class="la-popup-tooltip la-delay" data-content="${message(code: 'survey.label')}" data-position="top center">
                         <i class="chart pie large icon"></i>
-                    </a>
+                    </span>
                 </th>
                 <th scope="col" rowspan="3" class="center aligned">
-                    <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.survey.evaluation.label')}" data-position="top center">
+                    <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.survey.evaluation.label')}" data-position="top center">
                         <i class="comments large icon"></i>
-                    </a>
+                    </span>
                 </th>
                 <th scope="col" rowspan="3" class="center aligned">
-                    <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.survey.cancellation.label')}" data-position="top center">
+                    <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.survey.cancellation.label')}" data-position="top center">
                         <i class="times circle large icon"></i>
-                    </a>
+                    </span>
                 </th>
                 <th scope="col" rowspan="3" class="center aligned">
-                    <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.discountScale.label')}" data-position="top center">
+                    <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.discountScale.label')}" data-position="top center">
                         <i class="percentage large icon"></i>
-                    </a>
+                    </span>
                 </th>
 
                 <th class="la-smaller-table-head center aligned">Reminder</th>
                 <th colspan="2" class="la-smaller-table-head center aligned">Renewal</th>
 
                 <th scope="col" rowspan="3" class="center aligned">
-                    <a href="#" class="la-popup-tooltip la-delay"
+                    <span class="la-popup-tooltip la-delay"
                             data-content="${message(code: 'subscription.participantTransferWithSurvey.label')}"
                             data-position="top center">
                         <i class="large icons">
                             <i class="chart pie icon"></i>
                             <i class="top right corner redo icon"></i>
                         </i>
-                    </a>
+                    </span>
                 </th>
                 <th scope="col" rowspan="3" class="center aligned">
-                    <a href="#" class="la-popup-tooltip la-delay"
+                    <span class="la-popup-tooltip la-delay"
                        data-content="${message(code: 'renewalEvaluation.exportRenewal')}"
                        data-position="top center">
                         <i class="download icon"></i>
-                    </a>
+                    </span>
                 </th>
             </tr>
             <tr>

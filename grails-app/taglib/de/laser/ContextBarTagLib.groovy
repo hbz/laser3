@@ -155,7 +155,7 @@ class ContextBarTagLib {
         if (attrs.reload) {
             out <<      'data-reload="' + attrs.reload + '" '
         }
-        out <<          'data-content="' + tooltip + '" data-position="bottom right">'
+        out <<          'data-content="' + tooltip + '" data-position="bottom left">'
         out <<              '<i class="icon ' + icon + '"></i>'
         out <<     '</button>'
         out << '</div>'
