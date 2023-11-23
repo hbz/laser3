@@ -270,9 +270,9 @@
             <table class="ui compact monitor stackable celled sortable table la-table la-js-responsive-table">
                 <thead>
                 <tr>
-%{--                    <th scope="col" rowspan="3" class="center aligned">
+                   <th scope="col" rowspan="3" class="center aligned">
                         ${message(code: 'sidewide.number')}
-                    </th>--}%
+                    </th>
                     <g:sortableColumn scope="col" rowspan="3" params="${params}" property="providerAgency"
                                       title="${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}"/>
 
@@ -378,9 +378,9 @@
                 <tbody>
                 <g:each in="${subscriptions}" var="s" status="i">
                     <tr>
-%{--                        <td class="center aligned">
+                        <td class="center aligned">
                             ${(params.int('offset') ?: 0) + i + 1}
-                        </td>--}%
+                        </td>
                         <td>
                         <%-- as of ERMS-584, these queries have to be deployed onto server side to make them sortable --%>
                             <g:each in="${s.providers}" var="org">
