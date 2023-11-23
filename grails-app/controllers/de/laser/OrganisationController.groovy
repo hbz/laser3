@@ -146,7 +146,8 @@ class OrganisationController  {
                 OrgSetting.KEYS.NATSTAT_SERVER_ACCESS
         ]
         List<OrgSetting.KEYS> mailSet = [
-                OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY
+                OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY,
+                OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT
         ]
 
         result.settings = []

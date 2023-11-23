@@ -152,6 +152,9 @@
                                                 <g:elseif test="${OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY == os.key}">
                                                     <ui:xEditable owner="${os}" field="strValue" validation="email"/>
                                                 </g:elseif>
+                                                <g:elseif test="${OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT == os.key}">
+                                                    <ui:xEditable owner="${os}" field="strValue" validation="email"/>
+                                                </g:elseif>
                                                 <g:else>
                                                     <ui:xEditable owner="${os}" field="strValue" />
                                                 </g:else>

@@ -203,7 +203,8 @@ class NavigationTagLib {
 
                 def lastLinkAttrs = linkTagAttrs.clone()
 
-                linkParams.offset = total - max
+                int tmp = linkParams.offset + (max * maxsteps)
+                linkParams.offset = tmp < total ? tmp : ((laststep - 1) * max)
                 out << link(lastLinkAttrs) {laststep.toString() }
 
                 // | > | >> |
@@ -216,7 +217,7 @@ class NavigationTagLib {
                     out << link((nextLinkAttrs1 += nextMap), '<i class="angle right icon"></i>')
                     if (currentstep < laststep-maxsteps-1) {
                         // | >> |
-                        int tmp = linkParams.offset + (max * maxsteps)
+                        tmp = linkParams.offset + (max * maxsteps)
                         linkParams.offset = tmp < total ? tmp : ((laststep - 1) * max)
                         linkTagAttrs.class = (currentstep == laststep) ? "item disabled nextLink" : "item nextLink"
 

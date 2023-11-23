@@ -1733,8 +1733,10 @@ class SubscriptionController {
                 filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.selectableTitles') + '_' + ctrlResult.result.parentSubscription.dropdownNamingConvention())
             }
             if(params.tab == 'selectedIEs') {
-                queryMap = [sub: ctrlResult.result.subscriberSub, notStatus: RDStore.TIPP_STATUS_REMOVED.id, pkgIds: ctrlResult.result.parentSubscription.packages?.pkg?.id, titleGroup: ctrlResult.result.titleGroup]
-                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect') + '_' + ctrlResult.result.subscriberSub.dropdownNamingConvention())
+                if(ctrlResult.result.titleGroupID) {
+                    queryMap = [sub: ctrlResult.result.subscriberSub, notStatus: RDStore.TIPP_STATUS_REMOVED.id, pkgIds: ctrlResult.result.parentSubscription.packages?.pkg?.id, titleGroup: ctrlResult.result.titleGroupID]
+                }
+                    filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect') + '_' + ctrlResult.result.subscriberSub.dropdownNamingConvention())
             }
 
             if(params.tab == 'currentPerpetualAccessIEs') {
@@ -1763,7 +1765,7 @@ class SubscriptionController {
                    /* if(params.tab == 'allTipps') {
                         domainClName = TitleInstancePackagePlatform.class.name
                     }*/
-                    Map<String, Collection> tableData = exportService.generateTitleExportKBART(queryMap, domainClName)
+                    Map<String, Collection> tableData = queryMap ? exportService.generateTitleExportKBART(queryMap, domainClName) : [titleRow: [], columnData: []]
                     out.withWriter { Writer writer ->
                         writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
                     }
@@ -1792,7 +1794,7 @@ class SubscriptionController {
 
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                Map<String, List> export = exportService.generateTitleExportCustom(queryMap, domainClName, [], ctrlResult.result.subscriber, params.tab == 'allTipps')
+                Map<String, List> export = queryMap ? exportService.generateTitleExportCustom(queryMap, domainClName, [], ctrlResult.result.subscriber, params.tab == 'allTipps') : [titles: [], rows: []]
                 Map sheetData = [:]
 
                 if(params.tab == 'allTipps') {
