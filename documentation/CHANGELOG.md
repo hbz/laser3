@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+#### day of release 3.3
+
 5449    23.11.2023  rc-3.3  3.3         Andreas Feature     Korrektur von Identifikator-Erklärtexten
 
 5448    23.11.2023  rc-3.3  3.3         David   Feature     Reporting: Jahresring - Einrichtungslizenz
