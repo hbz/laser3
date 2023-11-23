@@ -72,6 +72,8 @@ class MyInstitutionControllerService {
         def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
 
         //completed processes
+        /*
+        deactivated as incomplete
         Set<String> processes = []
         EhcacheWrapper cache = cacheService.getTTL1800Cache("finish_${result.user.id}")
         if(cache) {
@@ -80,6 +82,7 @@ class MyInstitutionControllerService {
             }
         }
         result.completedProcesses = processes
+        */
 
         // systemAnnouncements
         prf.setBenchmark('system announcements')

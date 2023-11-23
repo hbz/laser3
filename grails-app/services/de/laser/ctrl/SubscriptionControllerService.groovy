@@ -1658,7 +1658,7 @@ class SubscriptionControllerService {
                     EhcacheWrapper userCache = contextService.getUserCache("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}")
                     Map<String, Object> checkedCache = userCache.get('selectedTitles')
 
-                    if (!checkedCache) {
+                    if (!checkedCache || !params.containsKey('pagination')) {
                         checkedCache = ["checked": [:]]
                     }
 
@@ -2726,8 +2726,8 @@ class SubscriptionControllerService {
                                 }
                             }
                         }
+                        cache.remove('selectedTitles')
                     })
-                    cache.remove("/subscription/addEntitlements/${result.subscription.id}")
                 }
                 else {
                     log.error('cache error or no titles selected')
@@ -3477,7 +3477,6 @@ class SubscriptionControllerService {
                             if (issueEntitlementGroup && subscriptionService.addEntitlement(result.subscription, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
                                 log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
                                 ++countTippsToAdd
-                                removeFromCache << it.key
                             }
                         }
                         catch (EntitlementCreationException e) {
@@ -3492,11 +3491,7 @@ class SubscriptionControllerService {
                     result.message = messageSource.getMessage('renewEntitlementsWithSurvey.tippsToAdd',args,locale)
                 }
 
-                removeFromCache.each {
-                    result.checked.remove(it)
-                }
-                checkedCache.put('checked',result.checked)
-                userCache.put('selectedTitles', checkedCache)
+                userCache.remove('selectedTitles')
                 [result:result,status:STATUS_OK]
 
             } else if(params.process == "remove" && result.checked.size() > 0) {
@@ -3514,7 +3509,6 @@ class SubscriptionControllerService {
 
                                 if (subscriptionService.deleteEntitlementbyID(result.subscription, it.key.toString())) {
                                     ++countIEsToDelete
-                                    removeFromCache << it.key
                                 }
                             }
                         }
@@ -3529,11 +3523,7 @@ class SubscriptionControllerService {
                     result.message = messageSource.getMessage('renewEntitlementsWithSurvey.tippsToDelete',args,locale)
                 }
 
-                removeFromCache.each {
-                    result.checked.remove(it)
-                }
-                checkedCache.put('checked',result.checked)
-                userCache.put('selectedTitles', checkedCache)
+                userCache.remove('selectedTitles')
                 [result:result,status:STATUS_OK]
             }
         }
