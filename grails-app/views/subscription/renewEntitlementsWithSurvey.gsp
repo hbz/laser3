@@ -378,7 +378,7 @@
 </g:form>
 </div>
 <g:if test="${sourceIEs || titlesList}">
-    <ui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params}"
+    <ui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params + [pagination: true]}"
                     max="${max}" total="${num_rows}"/>
 </g:if>
 
