@@ -13,9 +13,9 @@
 </head>
 <body>
 
-<g:set var="userName" value="${raw(user.getDisplayName())}"/>
+<g:set var="userName" value="${user ? raw(user.getDisplayName()) : 'User'}"/>
 <g:set var="orgName" value="${raw(org.name)}"/>
-<g:set var="language" value="${user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.storage.RDConstants.LANGUAGE)).value}"/>
+<g:set var="language" value="${user ? user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.storage.RDConstants.LANGUAGE)).value : 'de'}"/>
 <g:set var="grailsApplication" bean="grailsApplication"/>
 <g:set var="surveyUrl" value="${"/survey/evaluationParticipant/${survey.id}?surveyConfigID=${survey.surveyConfigs[0].id}&participant=${org.id}"}"/>
 
@@ -46,17 +46,17 @@ ${message(code: 'surveyconfig.orgs.label', locale: language)}: ${orgName}
     <g:if test="${sumListPriceSelectedIEsEUR > 0}">
         <br>
         <g:formatNumber
-                number="${sumListPriceSelectedIEsEUR}" type="currency" currencyCode="EUR"/><br/>
+                number="${sumListPriceSelectedIEsEUR}" type="currency" currencyCode="EUR"/>
     </g:if>
     <g:if test="${sumListPriceSelectedIEsUSD > 0}">
         <br>
         <g:formatNumber
-                number="${sumListPriceSelectedIEsUSD}" type="currency" currencyCode="USD"/><br/>
+                number="${sumListPriceSelectedIEsUSD}" type="currency" currencyCode="USD"/>
     </g:if>
     <g:if test="${sumListPriceSelectedIEsGBP > 0}">
         <br>
         <g:formatNumber
-                number="${sumListPriceSelectedIEsGBP}" type="currency" currencyCode="GBP"/><br/>
+                number="${sumListPriceSelectedIEsGBP}" type="currency" currencyCode="GBP"/>
     </g:if>
 </g:if>
 

@@ -54,6 +54,10 @@ class OrganisationService {
             OrgSetting.add(org, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY, '')
         }
 
+        if (org.isCustomerType_Consortium_Pro() && OrgSetting.get(org, OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT) == OrgSetting.SETTING_NOT_FOUND) {
+            OrgSetting.add(org, OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT, '')
+        }
+
         // called after
         // new Org.save()
         // does not work unless session is not flushed what causes crashes in sync
