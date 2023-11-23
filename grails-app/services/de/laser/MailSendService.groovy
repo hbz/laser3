@@ -564,6 +564,41 @@ class MailSendService {
         }
 
         if (surveyInfo.owner) {
+            List surveyResults = []
+
+            surveyInfo.surveyConfigs[0].getSortedSurveyProperties().each { PropertyDefinition propertyDefinition ->
+                surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(participationFinish, surveyInfo.surveyConfigs[0], propertyDefinition)
+            }
+
+            String mailFinishResult
+            if(OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT) != OrgSetting.SETTING_NOT_FOUND){
+                mailFinishResult = OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT).strValue
+            }
+
+            if(mailFinishResult){
+                Locale language = new Locale('de')
+                String mailSubject = subjectSystemPraefix
+
+                SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(surveyInfo.surveyConfigs[0], participationFinish)
+                if(surveyOrg && surveyOrg.orgInsertedItself) {
+                    Object[] args
+                    mailSubject = mailSubject + messageSource.getMessage('default.new', args, language) + ' '
+                }
+
+                mailSubject = mailSubject + surveyInfo.name +  ' (' + surveyInfo.type.getI10n('value', language) + ') ['
+                mailSubject = mailSubject + participationFinish.sortname + ']'
+
+                mailSubject = escapeService.replaceUmlaute(mailSubject)
+
+                AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
+                    to mailFinishResult
+                    from fromMail
+                    subject mailSubject
+                    html(view: "/mailTemplates/html/notificationSurveyParticipationFinishForOwner", model: [org: participationFinish, survey: surveyInfo, surveyResults: surveyResults])
+                }
+            }
+
+
             //Only User that approved
             List<User> formalUserList = surveyInfo.owner ? User.findAllByFormalOrg(surveyInfo.owner) : []
 
@@ -596,12 +631,6 @@ class MailSendService {
                             String ccAddress = null
                             if (isNotificationCCbyEmail) {
                                 ccAddress = user.getSetting(UserSetting.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
-                            }
-
-                            List surveyResults = []
-
-                            surveyInfo.surveyConfigs[0].getSortedSurveyProperties().each { PropertyDefinition propertyDefinition ->
-                                surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(participationFinish, surveyInfo.surveyConfigs[0], propertyDefinition)
                             }
 
                             if (isNotificationCCbyEmail && ccAddress) {
