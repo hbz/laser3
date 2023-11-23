@@ -2001,6 +2001,16 @@ class FilterService {
                         params.ieStatus = RDStore.TIPP_STATUS_CURRENT.id
                         whereClauses << "ie_status_rv_fk = :ieStatus"
                     }
+
+                    if(configMap.titleGroup != null && !configMap.titleGroup.isEmpty()) {
+                        if(params.titleGroup == 'notInGroups'){
+                            whereClauses << "not exists ( select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id) "
+                        }else {
+                            params.titleGroup = Long.parseLong(configMap.titleGroup)
+                            whereClauses << "exists(select igi_id from issue_entitlement_group_item where igi_ie_group_fk = :titleGroup and igi_ie_fk = ie_id)"
+                        }
+                    }
+
                 }
                 if(configMap.asAt && configMap.asAt.length() > 0) {
                     Date dateFilter = DateUtils.getLocalizedSDF_noTime().parse(configMap.asAt)

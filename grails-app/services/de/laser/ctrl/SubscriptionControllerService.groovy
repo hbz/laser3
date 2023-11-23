@@ -1624,6 +1624,10 @@ class SubscriptionControllerService {
             Subscription baseSub = result.surveyConfig.subscription ?: subscriberSub.instanceOf
             result.subscriber = subscriberSub.getSubscriber()
 
+            IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
+            result.titleGroupID = issueEntitlementGroup ? issueEntitlementGroup.id.toString() : null
+            result.titleGroup = issueEntitlementGroup
+
             params.tab = params.tab ?: 'allTipps'
 
             result.preselectValues = params.preselectValues == 'on'
@@ -1677,9 +1681,6 @@ class SubscriptionControllerService {
                                 TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(tippKey)
                                 if (tipp) {
                                     try {
-
-                                        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
-
                                         if (!issueEntitlementGroup) {
                                             issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: result.surveyConfig.issueEntitlementGroupName)
                                             if (!issueEntitlementGroup.save())
@@ -1752,7 +1753,6 @@ class SubscriptionControllerService {
                     }
 
                 } else if (params.tab == 'selectedIEs') {
-                    IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
                     if (issueEntitlementGroup) {
                         params.sort = params.sort ?: 'tipp.sortname'
                         params.order = params.order ?: 'asc'
@@ -1779,8 +1779,7 @@ class SubscriptionControllerService {
                                 params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
                         }
 
-                        result.titleGroup = issueEntitlementGroup.id.toString()
-                        params.titleGroup = result.titleGroup
+                        params.titleGroup = result.titleGroupID
                         Map query = filterService.getIssueEntitlementQuery(params, subscriberSub)
                         sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
 
@@ -1796,7 +1795,7 @@ class SubscriptionControllerService {
                         result.iesTotalListPriceSumGBP = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
                                 'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_GBP, ieIDs: sourceIEs])[0] ?: 0
 
-                        List counts = IssueEntitlement.executeQuery('select new map(count(*) as count, status as status) from IssueEntitlement as ie where ie.subscription = :sub and ie.status != :ieStatus and exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ieGroup.id = :titleGroup and iegi.ie = ie) group by status', [titleGroup: Long.parseLong(result.titleGroup), sub: subscriberSub, ieStatus: RDStore.TIPP_STATUS_REMOVED])
+                        List counts = IssueEntitlement.executeQuery('select new map(count(*) as count, status as status) from IssueEntitlement as ie where ie.subscription = :sub and ie.status != :ieStatus and exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ieGroup.id = :titleGroup and iegi.ie = ie) group by status', [titleGroup: Long.parseLong(result.titleGroupID), sub: subscriberSub, ieStatus: RDStore.TIPP_STATUS_REMOVED])
                         result.allIECounts = 0
                         result.currentIECounts = 0
                         result.plannedIECounts = 0
