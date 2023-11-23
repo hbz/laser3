@@ -13,12 +13,30 @@ import javax.servlet.http.HttpServletResponse
 import java.nio.charset.Charset
 import java.security.SignatureException
 
+/**
+ * This interceptor class performs checks in order to authenticate the given request by matching HMAC checksums
+ */
 class ApiInterceptor implements grails.artefact.Interceptor {
 
+    /**
+     * defines which controller calls should be caught up
+     */
     ApiInterceptor() {
         match(controller: 'api')
     }
 
+    /**
+     * Checks whether the submitted authentication token matches to the checksum calculated.
+     * The HMAC token is composed by:
+     * <ol>
+     *     <li>request method (GET)</li>
+     *     <li>path requested</li>
+     *     <li>query containing the request parameters</li>
+     *     <li>API password</li>
+     * </ol>
+     * Each of those arguments is also submitted in the request and the checksum is being calculated here whether they match
+     * @return true if the checksums match, false otherwise
+     */
     boolean before() {
 
         String servletPath = request.getServletPath()
@@ -109,10 +127,21 @@ class ApiInterceptor implements grails.artefact.Interceptor {
         true
     }
 
+    /**
+     * Dummy method stub implementing abstract methods
+     * @return true
+     */
     boolean after() {
         true
     }
 
+    /**
+     * Calculates the HMAC checksum based on the submitted data
+     * @param data the request arguments (method, path, query, api password) composing the checksum
+     * @param secret the api password used to calculate the hash
+     * @return the HMAC checksum calculated
+     * @throws SignatureException
+     */
     private String _hmac(String data, String secret) throws SignatureException {
         String result
         try {

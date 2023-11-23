@@ -14,7 +14,7 @@
                     <li>
                         <strong>
                             <g:if test="${detail_item.number}">
-                                <span>${detail_item.number}</span>&nbsp
+                                <span>${detail_item.number}</span>&nbsp;
                             </g:if>
                             <g:if test="${detail_item.link}">
                                 <a href="${detail_item.link}">${detail_item.text}</a>
@@ -38,8 +38,7 @@
     </div>
 
     <div class="actions">
-        <g:form action="unlinkPackage"
-                method="POST" class="ui form">
+        <g:form action="unlinkPackage" method="POST" class="ui form">
             <input type="hidden" name="package" value="${pkg.id}"/>
             <input type="hidden" name="subscription" value="${subscription.id}"/>
             <input type="hidden" name="confirmed" value="Y"/>

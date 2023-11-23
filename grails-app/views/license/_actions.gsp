@@ -41,7 +41,7 @@
         </g:if>
         <g:if test="${actionName == 'show'}">
             <%-- the second clause is to prevent the menu display for consortia at member subscriptions --%>
-            <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC) && !(institution.id == license.getLicensingConsortium()?.id && license.instanceOf)}">
+            <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC) && !(institution.id == license.getLicensingConsortium()?.id && license.instanceOf)}">
                 <div class="divider"></div>
                 <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
             </g:if>
@@ -67,16 +67,6 @@
     </ui:actionsDropdown>
 </g:if>
 
-<g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)}">
+<g:if test="${contextService.isInstEditor_or_ROLEADMIN()}">
     <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: license, owntp: 'license']]}" />
 </g:if>
-
-%{--<g:if test="${editable || contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)}">--}%
-%{--    <laser:render template="/templates/tasks/modal_create" model="${[ownobj:license, owntp:'license']}"/>--}%
-%{--    <laser:render template="/templates/documents/modal" model="${[ownobj:license, owntp:'license']}"/>--}%
-%{--    <laser:render template="/templates/notes/modal_create" model="${[ownobj: license, owntp: 'license']}"/>--}%
-%{--</g:if>--}%
-
-%{--<g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->--}%
-%{--    <laser:render template="/templates/workflow/instantiate" model="${[target: license]}"/>--}%
-%{--</g:if>--}%

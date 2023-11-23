@@ -20,6 +20,7 @@ import de.laser.utils.LocaleUtils
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
+import de.laser.utils.SwissKnife
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -31,7 +32,6 @@ class SurveyControllerService {
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1
 
-    AccessService accessService
     ContextService contextService
     DocstoreService docstoreService
     SubscriptionService subscriptionService
@@ -90,8 +90,8 @@ class SurveyControllerService {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            int offset = params.offset ? Integer.parseInt(params.offset) : 0
-            result.putAll(taskService.getTasks(offset, (User) result.user, (Org) result.institution, result.surveyConfig))
+            SwissKnife.setPaginationParams(result, params, result.user as User)
+            result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Org) result.institution, (SurveyConfig) result.surveyConfig)['cmbTaskInstanceList']
             [result:result,status:STATUS_OK]
         }
     }
@@ -180,26 +180,23 @@ class SurveyControllerService {
             result.parentSubChilds.each { Subscription sub ->
                 if (sub.isCurrentMultiYearSubscriptionToParentSub()) {
                     result.orgsWithMultiYearTermSub << sub
-                    sub.getAllSubscribers().each { org ->
-                        orgsWithMultiYearTermOrgsID << org.id
-                    }
+                    orgsWithMultiYearTermOrgsID << sub.getSubscriber().id
+
                 } else {
-                    sub.getAllSubscribers().each { org ->
-                        currentParticipantIDs << org.id
-                    }
+                    println(sub)
+                        currentParticipantIDs << sub.getSubscriber().id
                 }
             }
 
 
             result.orgsWithParticipationInParentSuccessor = []
             result.parentSuccessorSubChilds.each { sub ->
-                sub.getAllSubscribers().each { org ->
+                Org org = sub.getSubscriber()
                     if (!(org.id in orgsWithMultiYearTermOrgsID) || !(org.id in currentParticipantIDs)) {
                         result.orgsWithParticipationInParentSuccessor << sub
                     }
-                }
             }
-
+            result.orgsWithParticipationInParentSuccessor = result.orgsWithParticipationInParentSuccessor.sort{it.getSubscriber().sortname}
 
             result.orgInsertedItself = []
 
@@ -488,7 +485,7 @@ class SurveyControllerService {
                 result.orgsWithoutResult?.remove(it)
             }*/
 
-                result.orgsWithMultiYearTermSub = result.orgsWithMultiYearTermSub.sort { it.getAllSubscribers().sortname }
+                result.orgsWithMultiYearTermSub = result.orgsWithMultiYearTermSub.sort { it.getSubscriber().sortname }
 
             }
 

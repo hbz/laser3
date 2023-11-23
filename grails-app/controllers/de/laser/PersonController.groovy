@@ -1,6 +1,5 @@
 package de.laser
 
-import de.laser.titles.TitleInstance
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -39,7 +38,7 @@ class PersonController  {
      * @return redirect back to the referer -> an updated list of person contacts
      * @see Person
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -236,7 +235,7 @@ class PersonController  {
      * Takes the submitted parameters and updates the person contact based on the given parameter map
      * @return redirect to the referer -> the updated view of the person contact
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -416,7 +415,7 @@ class PersonController  {
      * Deletes the given person contact
      * @return redirects to one of the list views from which the person contact to be deleted has been called
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -554,11 +553,6 @@ class PersonController  {
                     subjectType             = "subscription"
                     subjectFormOptionValue  = "name"
                 }
-                else if(roleRdv?.value == "Specific title editor") {
-                    allSubjects             = TitleInstance.getAll()
-                    subjectType             = "titleInstance"
-                    subjectFormOptionValue  = "normTitle"
-                }
             }
             
             render view: 'ajax/addPersonRole', model: [
@@ -582,6 +576,7 @@ class PersonController  {
      * @return if a redirect has been specified, the redirect is being executed; the person details page otherwise
      */
     @Transactional
+    @Secured(['ROLE_USER'])
     def addPersonRole() {
         PersonRole result
         Person prs = Person.get(params.id)
@@ -630,6 +625,7 @@ class PersonController  {
      * @return the person details view
      */
     @Transactional
+    @Secured(['ROLE_USER'])
     def deletePersonRole() {
         Person prs = Person.get(params.id)
 
@@ -725,12 +721,6 @@ class PersonController  {
                         if (params.subscription) {
                             subject = Subscription.get(params.subscription[key])
                             result = new PersonRole(prs: prs, responsibilityType: roleRdv, org: org, sub: subject)
-                        }
-                        break;
-                    case "titleInstance":
-                        if (params.titleInstance) {
-                            subject = TitleInstance.get(params.titleInstance[key])
-                            result = new PersonRole(prs: prs, responsibilityType: roleRdv, org: org, title: subject)
                         }
                         break;
                 }

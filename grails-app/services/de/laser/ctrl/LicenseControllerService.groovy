@@ -29,6 +29,12 @@ class LicenseControllerService {
 
     //--------------------------------------------- workflows -------------------------------------------------
 
+    /**
+     * Gets the workflows linked to the given license
+     * @param controller the controller instance
+     * @param params the request parameter map
+     * @return OK if the retrieval was successful, ERROR otherwise
+     */
     Map<String,Object> workflows(LicenseController controller, GrailsParameterMap params) {
         Map<String, Object> result = getResultGenericsAndCheckAccess(controller, params, AccessService.CHECK_VIEW)
 
@@ -51,8 +57,8 @@ class LicenseControllerService {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            int offset = params.offset ? Integer.parseInt(params.offset) : 0
-            result.putAll(taskService.getTasks(offset, (User) result.user, (Org) result.institution, (License) result.license))
+            SwissKnife.setPaginationParams(result, params, result.user as User)
+            result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Org) result.institution, (License) result.license)['cmbTaskInstanceList']
             [result:result,status:STATUS_OK]
         }
     }

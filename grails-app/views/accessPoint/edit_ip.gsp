@@ -9,9 +9,9 @@
 
 <laser:render template="breadcrumb" model="${[accessPoint: accessPoint, params: params]}"/>
 
-<g:set var="is_INST_EDITOR_with_PERMS_BASIC" value="${contextService.is_INST_EDITOR_with_PERMS_BASIC(inContextOrg)}"/>
+<g:set var="isInstEditorOrRoleAdminWithPermsBasic" value="${contextService.is_INST_EDITOR_or_ROLEADMIN_with_PERMS_BASIC(inContextOrg)}"/>
 
-<g:if test="${is_INST_EDITOR_with_PERMS_BASIC}">
+<g:if test="${isInstEditorOrRoleAdminWithPermsBasic}">
     <ui:controlButtons>
         <ui:exportDropdown>
             <ui:exportDropdownItem>
@@ -100,7 +100,7 @@
                     <td>${accessPointData.ipRange}</td>
                     <td>${accessPointData.ipCidr}</td>
                     <td class="center aligned">
-                        <g:if test="${is_INST_EDITOR_with_PERMS_BASIC}">
+                        <g:if test="${isInstEditorOrRoleAdminWithPermsBasic}">
                             <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}"
                                     params="[tab: 'IPv4', orgInstance: orgInstance.id]"
                                     class="ui negative icon button js-open-confirm-modal"
@@ -117,7 +117,7 @@
             </tbody>
         </table>
 
-        <g:if test="${!accessPoint.hasProperty('entityId') && is_INST_EDITOR_with_PERMS_BASIC}">
+        <g:if test="${!accessPoint.hasProperty('entityId') && isInstEditorOrRoleAdminWithPermsBasic}">
             <div class="ui divider"></div>
 
             <div class="content">
@@ -184,7 +184,7 @@
                 </td>
                 <td>${accessPointData.ipCidr}</td>
                 <td class="center aligned">
-                    <g:if test="${is_INST_EDITOR_with_PERMS_BASIC}">
+                    <g:if test="${isInstEditorOrRoleAdminWithPermsBasic}">
                         <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}"
                                 params="[orgInstance: orgInstance.id, tab: 'IPv6']"
                                 class="ui negative icon button js-open-confirm-modal"
@@ -200,7 +200,7 @@
         </tbody>
     </table>
 
-    <g:if test="${!accessPoint.hasProperty('entityId') && is_INST_EDITOR_with_PERMS_BASIC}">
+    <g:if test="${!accessPoint.hasProperty('entityId') && isInstEditorOrRoleAdminWithPermsBasic}">
         <div class="ui divider"></div>
 
         <div class="content">

@@ -30,7 +30,7 @@ why = {
     },
 
     tap: function () {
-        console.log('why.tap: ' + (1 + why.el_keys.length))
+        console.debug('%cwhy.tap ' + (1 + why.el_keys.length), 'color:grey')
         why._executeTap ()
     },
 
@@ -40,10 +40,10 @@ why = {
 
         if ($.toast) {
             if (why.el_resultCounter.click > 0) {
-                $.toast({message: 'Warning: Duplicate event listeners found', displayTime: 6000, class: 'orange', showIcon: 'bug'});
+                $.toast({message: 'Warning: Duplicate event listeners found', displayTime: 6000, class: 'orange', showIcon: 'bug', position: 'bottom left'});
             }
             if (why.id_result.length > 0) {
-                $.toast({message: 'Warning: Duplicate ID attributes found: ' + why.id_result, displayTime: 8000, class: 'red', showIcon: 'code'});
+                $.toast({message: 'Warning: Duplicate ID attributes found: ' + why.id_result, displayTime: 6000, class: 'red', showIcon: 'code', position: 'bottom left'});
             }
         }
     },

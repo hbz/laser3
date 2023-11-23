@@ -1,3 +1,4 @@
+<%@ page import="de.laser.system.SystemProfiler" %>
 <laser:htmlStart message="menu.yoda.profilerTimeline">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
@@ -7,7 +8,7 @@
     <ui:crumb message="menu.yoda.profiler" class="active"/>
 </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon message="menu.yoda.profiler" type="yoda" />
+    <ui:h1HeaderWithIcon message="menu.yoda.profiler" type="yoda" total="${SystemProfiler.executeQuery('select count(*) from SystemProfiler')[0]}" />
 
     <nav class="ui secondary menu">
         <g:link controller="yoda" action="profilerLoadtime" class="item">Ladezeiten</g:link>

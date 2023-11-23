@@ -85,7 +85,6 @@ class CostItem extends AbstractBase
     Double costInLocalCurrency     //local amount entered
     Double currencyRate
 
-    //... this construct:
     TAX_TYPES taxKey
 
     Boolean billingSumRounding = false

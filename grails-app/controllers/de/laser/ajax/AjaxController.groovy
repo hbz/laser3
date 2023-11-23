@@ -48,13 +48,14 @@ import java.util.regex.Pattern
 
 /**
  * This controller manages AJAX calls which result in object manipulation and / or do not deliver clearly either HTML or JSON.
+ * Methods defined here are accessible only with a registered account; general methods which require no authentication are defined in {@link AjaxOpenController}
+ * @see AjaxOpenController
  */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxController {
 
     GenericOIDService genericOIDService
     ContextService contextService
-    AccessService accessService
     EscapeService escapeService
     FormService formService
     DashboardDueDatesService dashboardDueDatesService
@@ -275,7 +276,7 @@ class AjaxController {
                             result = value[params.resultProp]
                         } else {
                             if (value) {
-                                result = renderObjectValue(value)
+                                result = _renderObjectValue(value)
                             }
                         }
                     } else {
@@ -351,7 +352,7 @@ class AjaxController {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
           //value is correct incorrectly translated!
-          if (it.value.equalsIgnoreCase('local subscription') && contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && params.constraint?.contains('removeValue_localSubscription')) {
+          if (it.value.equalsIgnoreCase('local subscription') && contextService.getOrg().isCustomerType_Consortium() && params.constraint?.contains('removeValue_localSubscription')) {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
           // default ..
@@ -430,13 +431,12 @@ class AjaxController {
   @Secured(['ROLE_USER'])
   def updateChecked() {
       Map success = [success:false]
-      SessionCacheWrapper sessionCache = contextService.getSessionCache()
       String sub = params.sub ?: params.id
-      Map<String,Object> cache = sessionCache.get("/subscription/${params.referer}/${sub}")
+      EhcacheWrapper userCache = contextService.getUserCache("/subscription/${params.referer}/${sub}")
+      Map<String,Object> cache = userCache.get('selectedTitles')
 
       if(!cache) {
-          sessionCache.put("/subscription/${params.referer}/${sub}",["checked":[:]])
-          cache = sessionCache.get("/subscription/${params.referer}/${sub}")
+          cache = ["checked":[:]]
       }
 
       Map checked = cache.get('checked')
@@ -515,16 +515,16 @@ class AjaxController {
           }
           cache.put('checked',newChecked)
           success.checkedCount = params.checked == 'true' ? newChecked.size() : 0
+          success.success = success.checkedCount > 0
 	  }
 	  else {
           Map<String, String> newChecked = checked ?: [:]
 		  newChecked[params.index] = params.checked == 'true' ? 'checked' : null
-		  if(cache.put('checked',newChecked)){
-              success.success = true
-          }
+          cache.put('checked', newChecked)
+          success.success = true
           success.checkedCount = newChecked.findAll {it.value == 'checked'}.size()
-
 	  }
+      userCache.put('selectedTitles', cache)
       render success as JSON
   }
 
@@ -534,45 +534,15 @@ class AjaxController {
      * @return a {@link Map} reflecting the success status
      */
   @Secured(['ROLE_USER'])
-  def updateIssueEntitlementOverwrite() {
+  @Deprecated
+  def updateIssueEntitlementSelect() {
       Map success = [success:false]
       EhcacheWrapper cache = contextService.getUserCache("/subscription/${params.referer}/${params.sub}")
-      Map issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
+      Set issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
       if(!issueEntitlementCandidates)
-          issueEntitlementCandidates = [:]
-      def ieCandidate = issueEntitlementCandidates.get(params.key)
-      if(!ieCandidate)
-          ieCandidate = [:]
-      if(params.coverage != 'false') {
-          def ieCoverage
-          Pattern pattern = Pattern.compile("(\\w+)(\\d+)")
-          Matcher matcher = pattern.matcher(params.prop)
-          if(matcher.find()) {
-              String prop = matcher.group(1)
-              int covStmtKey = Integer.parseInt(matcher.group(2))
-              if(!ieCandidate.coverages){
-                  ieCandidate.coverages = []
-                  ieCoverage = [:]
-              }
-              else
-                  ieCoverage = ieCandidate.coverages[covStmtKey]
-              if(prop in ['startDate','endDate']) {
-                  SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-                  ieCoverage[prop] = sdf.parse(params.propValue)
-              }
-              else {
-                  ieCoverage[prop] = params.propValue
-              }
-              ieCandidate.coverages[covStmtKey] = ieCoverage
-          }
-          else {
-              log.error("something wrong with the regex matching ...")
-          }
-      }
-      else {
-          ieCandidate[params.prop] = params.propValue
-      }
-      issueEntitlementCandidates.put(params.key,ieCandidate)
+          issueEntitlementCandidates = []
+      if(!issueEntitlementCandidates.add(params.key))
+          issueEntitlementCandidates.remove(params.key)
       if(cache.put('issueEntitlementCandidates',issueEntitlementCandidates))
           success.success = true
       render success as JSON
@@ -753,7 +723,7 @@ class AjaxController {
      * Inserts a new reference data category. Beware: the inserted reference data category does not survive database resets nor is that available throughout the instances;
      * this has to be considered when running this webapp on multiple instances!
      * If you wish to insert a reference data category which persists and is available on different instances, enter the parameters in RefdataCategory.csv. This resource file is
-     * (currently, as of November 18th, '21) located at /src/main/webapp/setup
+     * (currently, as of August 14th, '23) located at /src/main/webapp/setup
      */
     @Secured(['ROLE_USER'])
     def addRefdataCategory() {
@@ -798,7 +768,7 @@ class AjaxController {
      * Beware: the inserted reference data category does not survive database resets nor is that available throughout the instances;
      * this has to be considered when running this webapp on multiple instances!
      * If you wish to insert a reference data category which persists and is available on different instances, enter the parameters in PropertyDefinition.csv. This resource file is
-     * (currently, as of November 18th, '21) located at /src/main/webapp/setup.
+     * (currently, as of August 14th, '23) located at /src/main/webapp/setup.
      * Note the global usability of this property definition; see {@link MyInstitutionController#managePrivatePropertyDefinitions()} with params.cmd == add for property types which
      * are for an institution's internal usage only
      */
@@ -1026,6 +996,7 @@ class AjaxController {
 
         if (ownobj && propDefGroup && binding) {
             binding.delete()
+            availPropDefGroups = availPropDefGroups - propDefGroup
         }
 
         render(template: "/templates/properties/groupBindings", model:[
@@ -1136,6 +1107,7 @@ class AjaxController {
         }
     }
 
+    @Secured(['ROLE_USER'])
     @Transactional
     def toggleMarker() {
 
@@ -1144,6 +1116,8 @@ class AjaxController {
         Marker.TYPE type    = Marker.TYPE.WEKB_CHANGES // TODO
 
         Map attrs = [ type: type, ajax: true ]
+
+        if (params.simple) { attrs.simple = true }
 
         if (obj instanceof Org) {
             attrs.org = obj
@@ -1162,7 +1136,7 @@ class AjaxController {
             obj.setMarker(user, type)
         }
 
-        render ui.markerSwitch(attrs, null)
+        render ui.cbItemMarkerAction(attrs, null)
     }
 
     /**
@@ -1834,6 +1808,11 @@ class AjaxController {
     result
   }
 
+    /**
+     * Revokes the given affiliation from the given user to the given institution.
+     * Expected is a structure userId:orgId:roleId
+     * @return redirects to the referer
+     */
     @Transactional
     @Secured(['ROLE_USER'])
     def unsetAffiliation() {
@@ -2053,7 +2032,7 @@ class AjaxController {
     }
 
   @Deprecated
-  def renderObjectValue(value) {
+  private def _renderObjectValue(value) {
     String result = ''
     String not_set = message(code:'refdata.notSet') as String
 
@@ -2080,9 +2059,9 @@ class AjaxController {
     /**
      * Deletes the given task
      */
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+        ctx.contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     def deleteTask() {
 
@@ -2120,16 +2099,19 @@ class AjaxController {
         }
     }
 
+    @Deprecated
     @Secured(['ROLE_USER'])
     def dashboardChangesSetAccept() {
         _setDashboardChangesStatus(RDStore.PENDING_CHANGE_ACCEPTED)
     }
 
+    @Deprecated
     @Secured(['ROLE_USER'])
     def dashboardChangesSetReject() {
         _setDashboardChangesStatus(RDStore.PENDING_CHANGE_REJECTED)
     }
 
+    @Deprecated
     @Secured(['ROLE_USER'])
     @Transactional
     private _setDashboardChangesStatus(RefdataValue refdataValue){
@@ -2165,13 +2147,25 @@ class AjaxController {
         result.acceptedOffset = params.acceptedOffset ? params.int("acceptedOffset") : result.offset
         result.pendingOffset = params.pendingOffset ? params.int("pendingOffset") : result.offset
         def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
-        Map<String, Object> pendingChangeConfigMap = [contextOrg:result.institution, consortialView:accessService.otherOrgPerm(result.institution, 'ORG_CONSORTIUM_BASIC'), periodInDays:periodInDays, max:result.max, acceptedOffset:result.acceptedOffset, pendingOffset: result.pendingOffset]
+        Map<String, Object> pendingChangeConfigMap = [
+                contextOrg: result.institution,
+                consortialView: (result.institution as Org).isCustomerType_Consortium(),
+                periodInDays:periodInDays,
+                max:result.max,
+                acceptedOffset:result.acceptedOffset,
+                pendingOffset: result.pendingOffset
+        ]
         Map<String, Object> changes = pendingChangeService.getChanges(pendingChangeConfigMap)
         changes.max = result.max
         changes.editable = result.editable
         render template: '/myInstitution/changesWrapper', model: changes
     }
 
+    /**
+     * Method under development; concept of cost per use is not fully elaborated yet
+     * Generates for the given subsciption and its holding a cost per use calculation, i.e. a cost analysis for the regarded COUNTER report
+     * @return a table view of the cost analysis, depending on the given report(s)
+     */
     @Secured(['ROLE_USER'])
     def generateCostPerUse() {
         Map<String, Object> ctrlResult = subscriptionControllerService.getStatsDataForCostPerUse(params)

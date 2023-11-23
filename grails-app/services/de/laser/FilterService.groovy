@@ -108,6 +108,16 @@ class FilterService {
             queryParams << [subjectGroup : params.list("subjectGroup").collect {Long.parseLong(it)}]
         }
 
+        if (params.discoverySystemsFrontend?.size() > 0) {
+            query << "exists (select dsf from DiscoverySystemFrontend as dsf where dsf.org.id = o.id and dsf.frontend.id in (:frontends))"
+            queryParams << [frontends : params.list("discoverySystemsFrontend").collect {Long.parseLong(it)}]
+        }
+
+        if (params.discoverySystemsIndex?.size() > 0) {
+            query << "exists (select dsi from DiscoverySystemIndex as dsi where dsi.org.id = o.id and dsi.index.id in (:indices))"
+            queryParams << [indices : params.list("discoverySystemsIndex").collect {Long.parseLong(it)}]
+        }
+
         if (params.libraryNetwork?.size() > 0) {
             query << "o.libraryNetwork.id in (:libraryNetwork)"
             List<String> selLibraryNetworks = params.list("libraryNetwork")
@@ -232,6 +242,16 @@ class FilterService {
         if (params.subjectGroup?.size() > 0) {
             query << "exists (select osg from OrgSubjectGroup as osg where osg.org.id = o.id and osg.subjectGroup.id in (:subjectGroup))"
             queryParams << [subjectGroup : listReaderWrapper(params, "subjectGroup").collect {Long.parseLong(it)}]
+        }
+
+        if (params.discoverySystemsFrontend?.size() > 0) {
+            query << "exists (select dsf from DiscoverySystemFrontend as dsf where dsf.org.id = o.id and dsf.frontend.id in (:frontends))"
+            queryParams << [frontends : listReaderWrapper(params, "discoverySystemsFrontend").collect {Long.parseLong(it)}]
+        }
+
+        if (params.discoverySystemsIndex?.size() > 0) {
+            query << "exists (select dsi from DiscoverySystemIndex as dsi where dsi.org.id = o.id and dsi.index.id in (:indices))"
+            queryParams << [indices : listReaderWrapper(params, "discoverySystemsIndex").collect {Long.parseLong(it)}]
         }
 
         if (params.libraryNetwork?.size() > 0) {
@@ -902,6 +922,12 @@ class FilterService {
             queryParams << [org : org]
         }
 
+        if(params.tab == "all"){
+            query << "surInfo.status in (:status) and surOrg.org = :org"
+            queryParams << [status: [RDStore.SURVEY_SURVEY_STARTED, RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED]]
+            queryParams << [org : org]
+        }
+
         if(params.consortiaOrg) {
             query << "surInfo.owner = :owner"
             queryParams << [owner: params.consortiaOrg]
@@ -1296,8 +1322,13 @@ class FilterService {
             filterSet = true
         }
         if (params.titleGroup && (params.titleGroup != '') && !params.forCount) {
-            base_qry += " and exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ieGroup.id = :titleGroup and iegi.ie = ie) "
-            qry_params.titleGroup = Long.parseLong(params.titleGroup)
+            if(params.titleGroup == 'notInGroups'){
+                base_qry += " and not exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ie = ie) "
+            }else {
+                base_qry += " and exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ieGroup.id = :titleGroup and iegi.ie = ie) "
+                qry_params.titleGroup = Long.parseLong(params.titleGroup)
+            }
+
         }
 
         if (params.inTitleGroups && (params.inTitleGroups != '') && !params.forCount) {
@@ -1656,7 +1687,7 @@ class FilterService {
             }
             base_qry += " tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = :subscription ) and " +
                     "( not exists ( select ie from IssueEntitlement ie where ie.subscription = :subscription and ie.tipp.id = tipp.id and ie.status = :issueEntitlementStatus ) )"
-            qry_params.subscription = params.subscription
+            qry_params.subscription = params.subscription instanceof Subscription ? params.subscription : Subscription.get(params.subscription)
             qry_params.issueEntitlementStatus = params.issueEntitlementStatus
         }
 
@@ -1847,7 +1878,7 @@ class FilterService {
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
-                base_qry += "order by ${params.sort} ${params.order} "
+                base_qry += "order by ${params.sort} ${params.order}, tipp.sortname "
         }
         else {
             base_qry += "order by tipp.sortname"
@@ -1898,30 +1929,42 @@ class FilterService {
                                         "(select ${refdata_value_col} from refdata_value where rdv_id = tipp_open_access_rv_fk) as openAccess"]
                 orderClause = " order by tipp_sort_name, tipp_name"
                 query = "select ${columns.join(',')} from title_instance_package_platform"
-                String subFilter = ""
+                String subFilter
                 if(configMap.sub) {
                     params.subscription = configMap.sub.id
-                    join += " join issue_entitlement on ie_tipp_fk = tipp_id"
-                    subFilter = " ie_subscription_fk = :subscription"
+                    if(configMap.containsKey('ieStatus') || configMap.containsKey('notStatus')) {
+                        join += " join issue_entitlement on ie_tipp_fk = tipp_id"
+                        subFilter = "ie_subscription_fk = :subscription"
+                    }
+                    else {
+                        join += " join subscription_package on sp_pkg_fk = tipp_pkg_fk"
+                        subFilter = "sp_sub_fk = :subscription"
+                    }
                 }
                 else if(configMap.subscription) {
                     params.subscription = configMap.subscription.id
-                    join += " join issue_entitlement on ie_tipp_fk = tipp_id"
-                    subFilter = " ie_subscription_fk = :subscription"
+                    join += " join subscription_package on sp_pkg_fk = tipp_pkg_fk"
+                    subFilter = "sp_sub_fk = :subscription"
                 }
                 else if(configMap.subscriptions) {
                     List<Object> subIds = []
                     subIds.addAll(configMap.subscriptions.id)
                     params.subscriptions = connection.createArrayOf('bigint', subIds.toArray())
-                    join += " join issue_entitlement on ie_tipp_fk = tipp_id"
-                    subFilter = " exists (select ie_id from issue_entitlement where ie_subscription_fk = any(:subscriptions) and ie_tipp_fk = tipp_id)"
+                    if(configMap.containsKey('ieStatus')) {
+                        join += " join issue_entitlement on ie_tipp_fk = tipp_id"
+                        subFilter = "ie_subscription_fk = any(:subscriptions)"
+                    }
+                    else {
+                        join += " join subscription_package on sp_pkg_fk = tipp_pkg_fk"
+                        subFilter = "sp_sub_fk = any(:subscriptions)"
+                    }
                 }
                 else if(configMap.defaultSubscriptionFilter) {
                     String consFilter = ""
                     Org contextOrg = contextService.getOrg()
                     if(contextOrg.isCustomerType_Consortium())
                         consFilter = "and sub_parent_sub_fk is null"
-                    subFilter = " exists (select ie_id from issue_entitlement join subscription on ie_subscription_fk = sub_id join subscription_package on sub_id = sp_sub_fk join org_role on or_sub_fk = sub_id where ie_tipp_fk = tipp_id and (sub_status_rv_fk = any(:subStatus) or sub_has_perpetual_access = true) and or_org_fk = :contextOrg ${consFilter}) "
+                    subFilter = "exists (select ie_id from issue_entitlement join subscription on ie_subscription_fk = sub_id join subscription_package on sub_id = sp_sub_fk join org_role on or_sub_fk = sub_id where ie_tipp_fk = tipp_id and (sub_status_rv_fk = any(:subStatus) or sub_has_perpetual_access = true) and or_org_fk = :contextOrg ${consFilter})"
                     //temp; should be enlarged later to configMap.subStatus
                     List<Object> subStatus = [RDStore.SUBSCRIPTION_CURRENT.id]
                     params.subStatus = connection.createArrayOf('bigint', subStatus.toArray())
@@ -1937,21 +1980,37 @@ class FilterService {
                     params.pkgIds = connection.createArrayOf('bigint', pkgIds.toArray())
                     whereClauses << "tipp_pkg_fk = any(:pkgIds)"
                 }
-
                 if(subFilter) {
                     whereClauses << subFilter
-                    if(configMap.status != null && configMap.status != '') {
+                    if (configMap.status != null && configMap.status != '') {
                         params.ieStatus = connection.createArrayOf('bigint', listReaderWrapper(configMap, 'status').toArray())
                         whereClauses << "ie_status_rv_fk = any(:ieStatus)"
                     }
-                    else if(configMap.notStatus != null && !configMap.notStatus.isEmpty()) {
-                        params.ieStatus = configMap.notStatus instanceof String ? Long.parseLong(configMap.notStatus) : configMap.status //already id
+                    else if (configMap.notStatus != null) {
+                        if(configMap.notStatus instanceof String && !configMap.notStatus.isEmpty()) {
+                            params.ieStatus = Long.parseLong(configMap.notStatus)
+                        }
+                        else if(configMap.notStatus instanceof Long) {
+                            //already id
+                            params.ieStatus = configMap.notStatus
+                        }
+                        else params.ieStatus = configMap.status
                         whereClauses << "ie_status_rv_fk != :ieStatus"
                     }
                     else {
                         params.ieStatus = RDStore.TIPP_STATUS_CURRENT.id
                         whereClauses << "ie_status_rv_fk = :ieStatus"
                     }
+
+                    if(configMap.titleGroup != null && !configMap.titleGroup.isEmpty()) {
+                        if(params.titleGroup == 'notInGroups'){
+                            whereClauses << "not exists ( select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id) "
+                        }else {
+                            params.titleGroup = Long.parseLong(configMap.titleGroup)
+                            whereClauses << "exists(select igi_id from issue_entitlement_group_item where igi_ie_group_fk = :titleGroup and igi_ie_fk = ie_id)"
+                        }
+                    }
+
                 }
                 if(configMap.asAt && configMap.asAt.length() > 0) {
                     Date dateFilter = DateUtils.getLocalizedSDF_noTime().parse(configMap.asAt)
@@ -1962,8 +2021,14 @@ class FilterService {
                     params.tippStatus = connection.createArrayOf('bigint', listReaderWrapper(configMap, 'status').toArray())
                     whereClauses << "tipp_status_rv_fk = any(:tippStatus)"
                 }
-                else if(configMap.notStatus != null && !configMap.notStatus.isEmpty()) {
-                    params.tippStatus = configMap.notStatus instanceof String ? Long.parseLong(configMap.notStatus) : configMap.status //already id
+                else if(configMap.notStatus != null) {
+                    if(configMap.notStatus instanceof String && !configMap.notStatus.isEmpty())
+                        params.tippStatus = Long.parseLong(configMap.notStatus)
+                    else if(configMap.notStatus instanceof Long) {
+                        //already id
+                        params.tippStatus = configMap.notStatus
+                    }
+                    else params.tippStatus = configMap.status
                     whereClauses << "tipp_status_rv_fk != :tippStatus"
                 }
                 else {
@@ -2055,8 +2120,12 @@ class FilterService {
                     whereClauses << "ie_status_rv_fk = :ieStatus"
                 }
                 if(configMap.titleGroup != null && !configMap.titleGroup.isEmpty()) {
-                    params.titleGroup = Long.parseLong(configMap.titleGroup)
-                    whereClauses << "exists(select igi_id from issue_entitlement_group_item where igi_ie_group_fk = :titleGroup and igi_ie_fk = ie_id)"
+                    if(params.titleGroup == 'notInGroups'){
+                        whereClauses << "not exists ( select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id) "
+                    }else {
+                        params.titleGroup = Long.parseLong(configMap.titleGroup)
+                        whereClauses << "exists(select igi_id from issue_entitlement_group_item where igi_ie_group_fk = :titleGroup and igi_ie_fk = ie_id)"
+                    }
                 }
                 if(configMap.inTitleGroups != null && !configMap.inTitleGroups.isEmpty()) {
                     if(configMap.inTitleGroups == RDStore.YN_YES.id.toString()) {

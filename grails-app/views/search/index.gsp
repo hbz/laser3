@@ -51,9 +51,6 @@
     }
 %>
 
-
-
-
 <div class="ui la-search segment">
     <g:form action="index" controller="search" method="post" class="ui form" >
 
@@ -304,98 +301,6 @@
                                             <div class="item">
                                             <g:link controller="platform" action="show"
                                                     id="${platform.dbId}">${platform.name}</g:link>
-                                            </div>
-                                        </g:each>
-                                    </div>
-                                </td>
-                            </g:if>
-
-                            <g:if test="${object.rectype == 'TitleInstance'}">
-                                <td>
-
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: "facet.so.rectype.${object.typTitle?.toLowerCase()}")}">
-                                        <i class="circular icon la-${object.typTitle?.toLowerCase()}"></i>
-                                    </span>
-
-                                    <g:link controller="title" action="show"
-                                            id="${object.dbId}">${object.name}</g:link>
-                                </td>
-                                <td>
-                                    <strong><g:message code="default.identifiers.label"/></strong>:
-                                    <div class="ui bulleted list">
-                                        <g:each in="${object.identifiers?.sort { it.type }}" var="id">
-                                            <div class="item">
-                                                ${id.type}: ${id.value} &nbsp;
-                                            </div>
-                                        </g:each>
-                                    </div>
-                                </td>
-                            </g:if>
-
-                            <g:if test="${object.rectype == 'BookInstance'}">
-                                <td>
-
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: "facet.so.rectype.${object.typTitle?.toLowerCase()}")}">
-                                        <i class="circular icon la-${object.typTitle?.toLowerCase()}"></i>
-                                    </span>
-
-                                    <g:link controller="title" action="show"
-                                            id="${object.dbId}">${object.name}</g:link>
-                                </td>
-                                <td>
-                                    <strong><g:message code="default.identifiers.label"/></strong>:
-                                    <div class="ui bulleted list">
-                                        <g:each in="${object.identifiers?.sort { it.type }}" var="id">
-                                            <div class="item">
-                                                ${id.type}: ${id.value} &nbsp;
-                                            </div>
-                                        </g:each>
-                                    </div>
-                                </td>
-                            </g:if>
-
-                            <g:if test="${object.rectype == 'DatabaseInstance'}">
-                                <td>
-
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: "facet.so.rectype.${object.typTitle?.toLowerCase()}")}">
-                                        <i class="circular icon la-${object.typTitle?.toLowerCase()}"></i>
-                                    </span>
-
-                                    <g:link controller="title" action="show"
-                                            id="${object.dbId}">${object.name}</g:link>
-                                </td>
-                                <td>
-                                    <strong><g:message code="default.identifiers.label"/></strong>:
-                                    <div class="ui bulleted list">
-                                        <g:each in="${object.identifiers?.sort { it.type }}" var="id">
-                                            <div class="item">
-                                                ${id.type}: ${id.value} &nbsp;
-                                            </div>
-                                        </g:each>
-                                    </div>
-                                </td>
-                            </g:if>
-
-                            <g:if test="${object.rectype == 'JournalInstance'}">
-                                <td>
-
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: "facet.so.rectype.${object.typTitle?.toLowerCase()}")}">
-                                        <i class="circular icon la-${object.typTitle?.toLowerCase()}"></i>
-                                    </span>
-
-                                    <g:link controller="title" action="show"
-                                            id="${object.dbId}">${object.name}</g:link>
-                                </td>
-                                <td>
-                                    <strong><g:message code="default.identifiers.label"/></strong>:
-                                    <div class="ui bulleted list">
-                                        <g:each in="${object.identifiers?.sort { it.type }}" var="id">
-                                            <div class="item">
-                                                ${id.type}: ${id.value} &nbsp;
                                             </div>
                                         </g:each>
                                     </div>

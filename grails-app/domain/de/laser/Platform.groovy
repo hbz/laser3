@@ -16,7 +16,7 @@ import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 /**
  * This class represents a platform record. A platform is a portal where providers offer access to titles subscribed via packages.
- * This class is a mirror of the we:kb-implementation of Platform, <a href="https://github.com/hbz/wekb/blob/wekb-dev/server/gokbg3/grails-app/domain/org/gokb/cred/Platform.groovy">cf. with the we:kb-implementation</a>
+ * This class is a mirror of the we:kb-implementation of Platform, <a href="https://github.com/hbz/wekb2/blob/dev/grails-app/domain/wekb/Platform.groovy">cf. with the we:kb-implementation</a>
  */
 class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparable<Platform>, MarkerSupport {
 
@@ -56,7 +56,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
           altnames   : AlternativeName
   ]
 
-  static transients = ['calculatedPropDefGroups', 'viewName'] // mark read-only accessor methods
+  static transients = ['calculatedPropDefGroups'] // mark read-only accessor methods
 
   static mapping = {
                 id column:'plat_id'
@@ -138,10 +138,6 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
     super.beforeDeleteHandler()
   }
 
-  String getViewName() {
-    globalUID.replaceAll("[:-]","_")
-  }
-
   /**
    * Retrieves the property definition groups defined by the given institution for this platform
    * @param contextOrg the {@link Org} whose property definition groups should be retrieved
@@ -153,12 +149,10 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
 
   /**
    * Checks whether this platform uses access points defined for the given subscription package
-   * @param contextOrg unused
    * @param subscriptionPackage the subscription (represented by the {@link SubscriptionPackage} link) whose configurations should be verified
    * @return true if there are access point configurations linked to this platform and the given subscription package, false otherwise
    */
-  boolean usesPlatformAccessPoints(Org contextOrg, SubscriptionPackage subscriptionPackage){
-    // TODO do we need the contextOrg?
+  boolean usesPlatformAccessPoints(SubscriptionPackage subscriptionPackage){
     // look for OrgAccessPointLinks for this platform and a given subscriptionPackage, if we can find that "marker",
     // we know the AccessPoints are not derived from the AccessPoints configured for the platform
     String hql = "select oapl from OrgAccessPointLink oapl where oapl.platform=${this.id} and oapl.subPkg = ${subscriptionPackage.id} and oapl.oap is null"
@@ -205,11 +199,22 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
     name
   }
 
+  /**
+   * Checks if the platform is being marked for the given user with the given marker type
+   * @param user the {@link User} whose watchlist should be checked
+   * @param type the {@link Marker.TYPE} of the marker to check
+   * @return true if the platform is marked, false otherwise
+   */
   @Override
   boolean isMarked(User user, Marker.TYPE type) {
     Marker.findByPltAndUserAndType(this, user, type) ? true : false
   }
 
+  /**
+   * Sets the marker for the platform for given user of the given type
+   * @param user the {@link User} for which the platform should be marked
+   * @param type the {@link Marker.TYPE} of marker to record
+   */
   @Override
   void setMarker(User user, Marker.TYPE type) {
     if (!isMarked(user, type)) {
@@ -218,6 +223,11 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
     }
   }
 
+  /**
+   * Removes the given marker with the given type for the platform from the user's watchlist
+   * @param user the {@link User} from whose watchlist the platform marker should be removed
+   * @param type the {@link Marker.TYPE} of marker to remove
+   */
   @Override
   void removeMarker(User user, Marker.TYPE type) {
     withTransaction {

@@ -52,13 +52,13 @@
 @sortableIconSort: '\f0dc';
 @sortableDisabledColor: @disabledTextColor;
 
-@sortableHoverBackground: @#D3DAE3;
+@sortableHoverBackground: #D3DAE3;
 @sortableHoverColor: @hoveredTextColor;
 
-@sortableActiveBackground: @#D3DAE3;
+@sortableActiveBackground: #D3DAE3;
 @sortableActiveColor: #515151;
 
-@sortableActiveHoverBackground: @#D3DAE3;
+@sortableActiveHoverBackground: #D3DAE3;
 
 @sortableColor: #515151;
 

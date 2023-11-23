@@ -60,6 +60,10 @@
             <g:if test="${editable}">
                 <ui:actionsDropdown>
                     <ui:actionsDropdownItem id="btnAddNewCostItem" message="financials.addNewCost" />
+                    <g:if test="${customerTypeService.isConsortium( institution.getCustomerType() ) && !subscription.instanceOf}">
+                        <ui:actionsDropdownItem controller="myInstitution" action="generateFinanceImportWorksheet" params="${[id:subscription.id]}" message="myinst.financeImport.subscription.template"/>
+                        <ui:actionsDropdownItem controller="myInstitution" action="financeImport" params="${[id:subscription.id]}" message="menu.institutions.financeImport" />
+                    </g:if>
                 </ui:actionsDropdown>
             </g:if>
         </ui:controlButtons>
@@ -77,8 +81,8 @@
                 }
             }
         %>
-        <g:set var="visibleOrgRelationsJoin" value="${visibleOrgRelations.findAll{it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}.sort{it.org.sortname}.collect{it.org}.join(' – ')}"/>
-        <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" type="Subscription" visibleOrgRelationsJoin="${visibleOrgRelationsJoin}">
+
+        <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" type="subscription" visibleOrgRelations="${visibleOrgRelations}">
             <laser:render template="/subscription/iconSubscriptionIsChild"/>
 
             ${message(code:'subscription.details.financials.label')} ${message(code:'default.for')} ${subscription}
@@ -86,9 +90,9 @@
         <ui:totalNumber class="la-numberHeader" total="${total.join(' / ')}"/>
         <ui:anualRings mapping="subfinance" object="${subscription}" controller="finance" action="index" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
-        <laser:render template="/subscription/nav" model="${[subscription:subscription, params:(params << [id:subscription.id, showConsortiaFunctions:showConsortiaFunctions])]}"/>
+        <laser:render template="/subscription/${customerTypeService.getNavTemplatePath()}" model="${[subscription:subscription, params:(params << [id:subscription.id, showConsortiaFunctions:showConsortiaFunctions])]}"/>
 
-        <g:if test="${showConsortiaFunctions || params.orgBasicMemberView}">
+        <g:if test="${showConsortiaFunctions}">
             <laser:render template="/subscription/message" model="${[contextOrg: institution, subscription: subscription]}"/>
         </g:if>
 

@@ -12,17 +12,19 @@
             <laser:render template="/user/breadcrumb" model="${[ inContextOrg: inContextOrg, orgInstance: orgInstance, institutionalView: institutionalView, params:params ]}"/>
         </g:if>
 
-        <ui:h1HeaderWithIcon text="${titleMessage}" total="${total}" type="${controllerName == 'user' ? 'user' : ''}" />
+        <ui:h1HeaderWithIcon text="${titleMessage}" total="${total}" type="${controllerName == 'user' ? 'user' : ''}">
+            <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
+        </ui:h1HeaderWithIcon>
 
         <ui:controlButtons>
             <laser:render template="/user/global/actions" />
         </ui:controlButtons>
 
         <g:if test="${controllerName == 'myInstitution'}">
-            <laser:render template="/organisation/nav" model="${navConfig}"/>
+            <laser:render template="/organisation/${customerTypeService.getNavTemplatePath()}" model="${navConfig}"/>
         </g:if>
         <g:if test="${controllerName == 'organisation'}">
-            <laser:render template="/organisation/nav" model="${navConfig}"/>
+            <laser:render template="/organisation/${customerTypeService.getNavTemplatePath()}" model="${navConfig}"/>
         </g:if>
 
         <laser:render template="/templates/user/filter" model="${filterConfig}"/>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.config.ConfigMapper; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.titles.JournalInstance; de.laser.titles.BookInstance; de.laser.remote.ApiSource; de.laser.IssueEntitlement" %>
+<%@ page import="de.laser.config.ConfigMapper; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.remote.ApiSource; de.laser.IssueEntitlement" %>
 
 <g:set var="entityName" value="${message(code: 'issueEntitlement.label')}"/>
 <laser:htmlStart text="${message(code:"default.show.label", args:[entityName])}" />
@@ -65,23 +65,24 @@
                 <div class="ui list">
                     <g:each in="${participantPerpetualAccessToTitle}" var="pt">
                         <div class="item">
-                            <div class="sixteen wide column">
-                                <i class="icon clipboard outline la-list-icon"></i>
-                                <g:link controller="subscription"
-                                        action="index"
-                                        id="${pt.subscription.id}">${pt.subscription.dropdownNamingConvention(contextOrg)}</g:link>
-                                &nbsp;
-                                <br/>
-                                <br/>
-                                <g:link controller="issueEntitlement"
-                                        action="show"
-                                        id="${pt.issueEntitlement.id}">${message(code: 'myinst.currentTitles.full_ie')}</g:link>
-                                <br/>
-                            </div>
+                                <i class="icon clipboard outline"></i>
+                                <div class="content">
+                                    <div class="header"
+                                        <g:link controller="subscription"
+                                            action="index"
+                                            id="${pt.subscription.id}">${pt.subscription.dropdownNamingConvention(contextOrg)}</g:link>
+                                    </div>
+                                    <div class="description">
+                                        <g:link controller="issueEntitlement"
+                                                action="show"
+                                                class="ui tiny button la-margin-top-05em"
+                                                id="${pt.issueEntitlement.id}">${message(code: 'myinst.currentTitles.full_ie')}</g:link>
+                                    </div>
+                                </div>
                         </div>
                     </g:each>
-
                 </div>
+
             </div>
         </div>
     </g:if>

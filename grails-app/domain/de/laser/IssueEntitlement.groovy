@@ -20,10 +20,9 @@ import java.text.Normalizer
  * fields in both classes. In detail:
  * <ul>
  *     <li>access start/end may be different</li>
- *     <li>name</li>
  *     <li>the subscribing institution may have a perpetual access negotiated to the title; this is of course no global property</li>
- *     <li>prices may differ from list prices on global level (the {@link de.laser.finance.PriceItem}s linked to the owning {@link TitleInstancePackagePlatform}; that is why issue entitlements and TIPPs have an individual set of price items)</li>
- *     <li>coverage entities may differ from global level ({@link IssueEntitlementCoverage} vs {@link TIPPCoverage})</li>
+ *     <li>there may be locally negotiated prices in addition to the global list price (the {@link de.laser.finance.PriceItem}s linked to the owning {@link TitleInstancePackagePlatform}; that is why issue entitlements and TIPPs have an individual set of price items)</li>
+ *     <li>there may be coverage entries differing from global level ({@link IssueEntitlementCoverage} vs {@link TIPPCoverage})</li>
  * </ul>
  * Moreover, issue entitlements may be grouped for that the subscribing institution may organise them by certain criteria e.g. subscription phase, title group etc.
  * @see IssueEntitlementCoverage
@@ -212,11 +211,20 @@ class IssueEntitlement extends AbstractBase implements Comparable {
         super.beforeDeleteHandler()
     }
 
+    /**
+     * Call to delete the given issue entitlement from the ElasticSearch index
+     */
   void afterDelete() {
       BeanStore.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
   }
 
-
+    /**
+     * Comparator method; compares two issue entitlements against a controlled set of properties
+     * @param ieB the other issue entitlement to compare against
+     * @return the comparison result
+     * @deprecated the method itself may be useful, but neither the interface Comparable is being implemented nor is the set of properties up to date
+     */
+  @Deprecated
   @Transient
   int compare(IssueEntitlement ieB){
     if(ieB == null) return -1;

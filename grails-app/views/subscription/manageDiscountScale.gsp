@@ -4,16 +4,13 @@
 <laser:serviceInjection/>
 
 <ui:breadcrumbs>
-    <ui:crumb controller="myInstitution" action="currentSubscriptions"
-                 text="${message(code: 'myinst.currentSubscriptions.label')}"/>
-    <ui:crumb controller="subscription" action="subTransfer" id="${subscription.id}"
-                 text="${subscription.name}"/>
-    <ui:crumb class="active"
-                 text="${message(code: 'subscription.details.manageDiscountScale.label')}"/>
+    <ui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code: 'myinst.currentSubscriptions.label')}"/>
+    <ui:crumb controller="subscription" action="subTransfer" id="${subscription.id}" text="${subscription.name}"/>
+    <ui:crumb class="active" text="${message(code: 'subscription.details.manageDiscountScale.label')}"/>
 </ui:breadcrumbs>
 
 <ui:controlButtons>
-    <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)}">
+    <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)}">
         <ui:actionsDropdown>
             <ui:actionsDropdownItem controller="subscription" action="copyDiscountScales" params="${[id: params.id]}"
                                     message="subscription.details.copyDiscountScales.label"/>

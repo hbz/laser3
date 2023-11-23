@@ -12,6 +12,9 @@ import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseDetails
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
+/**
+ * Contains configurations for the institution-wide platform report
+ */
 class PlatformExport extends BaseDetailsExport {
 
     static String KEY = BaseConfig.KEY_PLATFORM
@@ -61,20 +64,40 @@ class PlatformExport extends BaseDetailsExport {
             "lastUpdatedDisplay"
     ]
 
+    /**
+     * Constructor call for a new platform report
+     * @param token the token under which the queried data is going to be stored
+     * @param fields the {@link Map} with the fields selected for the export
+     */
     PlatformExport(String token, Map<String, Object> fields) {
         init(token, fields)
     }
 
+    /**
+     * Gets the fields selected for the current report export
+     * @return the class field map containing the selected report fields
+     */
     @Override
     Map<String, Object> getSelectedFields() {
         selectedExportFields
     }
 
+    /**
+     * Builds the label for the selected field key
+     * @param fieldName the field key to which the export label should be built
+     * @return the label which will appear in the report export
+     */
     @Override
     String getFieldLabel(String fieldName) {
         GlobalExportHelper.getFieldLabel( this, fieldName )
     }
 
+    /**
+     * Collects the details of the given platform and outputs the field values human-readably
+     * @param obj the platform to export
+     * @param fields the selected fields which should appear in the report
+     * @return a {@link List} with the platform's human-readable field values
+     */
     @Override
     List<Object> getDetailedObject(Object obj, Map<String, Object> fields) {
 

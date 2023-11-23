@@ -1,4 +1,4 @@
-<%@ page import="de.laser.IssueEntitlementCoverage; de.laser.titles.JournalInstance; de.laser.titles.BookInstance; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.IssueEntitlementCoverage; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
 
 <laser:htmlStart message="subscription.details.current_ent" serviceInjection="true"/>
 
@@ -17,15 +17,11 @@
     </h1>
 </g:if>
 
-<g:set var="visibleOrgRelationsJoin" value="${visibleOrgRelations.findAll{it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}.sort{it.org.sortname}.collect{it.org}.join(' – ')}"/>
-<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" visibleOrgRelationsJoin="${visibleOrgRelationsJoin}">
-    <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
-        <laser:render template="iconSubscriptionIsChild"/>
-    </g:if>
+<ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" visibleOrgRelations="${visibleOrgRelations}">
+    <laser:render template="iconSubscriptionIsChild"/>
     <ui:xEditable owner="${subscription}" field="name"/>
 </ui:h1HeaderWithIcon>
-<ui:anualRings object="${subscription}" controller="subscription" action="index"
-               navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+<ui:anualRings object="${subscription}" controller="subscription" action="index" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 <laser:render template="nav"/>
 
@@ -214,14 +210,9 @@
 
 
 <div class="ui bottom attached tab active segment">
-   <div class="ui grid">
-       <div class="row">
-           <%--<div class="column" id="filterWrapper"></div>--%>
-           <div class="column">
-               <laser:render template="/templates/filter/tipp_ieFilter"/>
-           </div>
-        </div><!--.row-->
-    </div><!--.grid-->
+
+    <laser:render template="/templates/filter/tipp_ieFilter"/>
+
 <div id="downloadWrapper"></div>
 <%
     Map<String, String>
@@ -245,7 +236,7 @@
 
 
             <div class="eight wide column">
-                <div class="field la-field-right-aligned ">
+                <div class="field la-field-right-aligned">
                     <div class="ui right floated button la-js-editButton la-la-clearfix>"><g:message code="default.button.edit.label"/></div>
                 </div>
             </div>

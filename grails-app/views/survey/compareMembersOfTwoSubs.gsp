@@ -354,11 +354,7 @@
                                         <td>${count}</td>
                                         <td class="titleCell">
                                             <g:if test="${participantSub && participantSub.isMultiYear}">
-                                                <span class="la-long-tooltip la-popup-tooltip la-delay"
-                                                      data-position="bottom center"
-                                                      data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
-                                                    <i class="map orange icon"></i>
-                                                </span>
+                                                <ui:multiYearIcon isConsortial="true" color="orange" />
                                             </g:if>
                                             <g:link controller="myInstitution" action="manageParticipantSurveys"
                                                     id="${participant.id}">
@@ -422,11 +418,7 @@
                                         <td>${count2}</td>
                                         <td class="titleCell">
                                             <g:if test="${participantSub && participantSub.isMultiYear}">
-                                                <span class="la-long-tooltip la-popup-tooltip la-delay"
-                                                      data-position="bottom center"
-                                                      data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
-                                                    <i class="map orange icon"></i>
-                                                </span>
+                                                <ui:multiYearIcon isConsortial="true" color="orange" />
                                             </g:if>
                                             <g:link controller="myInstitution" action="manageParticipantSurveys"
                                                     id="${participant.id}">

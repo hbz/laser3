@@ -1,6 +1,6 @@
 <%@ page import="de.laser.CustomerTypeService; de.laser.storage.BeanStore; de.laser.finance.CostItem; de.laser.Links; de.laser.Person; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.Subscription" %>
 
-<laser:htmlStart text="${BeanStore.getContextService().hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? message(code:'subscription.details.consortiaMembers.label') : ''}" serviceInjection="true" />
+<laser:htmlStart text="${BeanStore.getContextService().getOrg().isCustomerType_Consortium() ? message(code:'subscription.details.consortiaMembers.label') : ''}" serviceInjection="true" />
 
     <laser:render template="breadcrumb" model="${[ params:params ]}"/>
 
@@ -84,24 +84,23 @@
             </ui:exportDropdownItem>
             --%>
         </ui:exportDropdown>
-        <laser:render template="actions" />
+        <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
     </ui:controlButtons>
 
-    <g:set var="visibleOrgRelationsJoin" value="${visibleOrgRelations.findAll{it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}.sort{it.org.sortname}.collect{it.org}.join(' – ')}"/>
-    <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" visibleOrgRelationsJoin="${visibleOrgRelationsJoin}">
+    <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" visibleOrgRelations="${visibleOrgRelations}">
         <ui:xEditable owner="${subscription}" field="name" />
     </ui:h1HeaderWithIcon>
     <ui:totalNumber class="la-numberHeader" total="${filteredSubChilds.size() ?: 0}"/>
 
     <ui:anualRings object="${subscription}" controller="subscription" action="members" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
-    <laser:render template="nav" />
+    <laser:render template="${customerTypeService.getNavTemplatePath()}" />
 
     <ui:filter>
         <g:form action="members" controller="subscription" params="${[id:params.id]}" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                   model="[
-                      tmplConfigShow: [['name', 'identifier', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['subRunTimeMultiYear']],
+                      tmplConfigShow: [['name', 'identifier', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['discoverySystemsFrontend', 'discoverySystemsIndex'], ['subRunTimeMultiYear']],
                       tmplConfigFormFilter: true
                   ]"/>
         </g:form>
@@ -114,42 +113,43 @@
     </ui:debugInfo>
 
     <g:if test="${filteredSubChilds}">
-        <table class="ui celled monitor stackable la-js-responsive-table la-table table">
+        <table class="ui celled monitor sortable stackable la-js-responsive-table la-table table">
             <thead>
             <tr>
                 <th>${message(code:'sidewide.number')}</th>
                 <th>${message(code:'default.sortname.label')}</th>
-                <th>${message(code:'subscriptionDetails.members.members')}</th>
+                <g:sortableColumn params="${params}" property="o.sortname" title="${message(code:'subscriptionDetails.members.members')}"/>
                 <th class="center aligned">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                           data-content="${message(code: 'default.previous.label')}">
                         <i class="arrow left icon"></i>
                     </span>
                 </th>
-                <th>${message(code:'default.startDate.label')}</th>
-                <th>${message(code:'default.endDate.label')}</th>
+                <g:sortableColumn params="${params}" property="sub.startDate" title="${message(code:'default.startDate.label.shy')}"/>
+                <g:sortableColumn params="${params}" property="sub.endDate" title="${message(code:'default.endDate.label.shy')}"/>
                 <th class="center aligned">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                           data-content="${message(code: 'default.next.label')}">
                         <i class="arrow right icon"></i>
                     </span>
                 </th>
-                <th class="center aligned la-no-uppercase">
-                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="${message(code: 'subscription.linktoLicense')}">
-                        <i class="balance scale icon"></i>
-                    </span>
-                </th>
-                <th class="center aligned la-no-uppercase">
-                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="${message(code: 'subscription.packages.label')}">
-                        <i class="gift icon"></i>
-                    </span>
-                </th>
+                <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()}">
+                    <th class="center aligned la-no-uppercase">
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="${message(code: 'subscription.linktoLicense')}">
+                            <i class="balance scale icon"></i>
+                        </span>
+                    </th>
+                </g:if>
+                <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
+                    <th class="center aligned la-no-uppercase">
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="${message(code: 'subscription.packages.label')}">
+                            <i class="gift icon"></i>
+                        </span>
+                    </th>
+                </g:if>
                 <th>${message(code:'default.status.label')}</th>
                 <th class="center aligned la-no-uppercase">
-                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                          data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
-                        <i class="map icon"></i>
-                    </span>
+                    <ui:multiYearIcon isConsortial="true" />
                 </th>
                 <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </tr>
@@ -158,8 +158,8 @@
             <g:each in="${filteredSubChilds}" status="i" var="row">
                 <g:set var="sub" value="${row.sub}"/>
                 <tr>
-                    <td>${i + 1}</td>
                     <g:set var="subscr" value="${row.orgs}" />
+                    <td>${i + 1}</td>
                     <%--<g:each in="${filteredSubscribers}" var="subscr">--%>
                         <td>
                             ${subscr.sortname}</td>
@@ -172,7 +172,7 @@
                                 </span>
                             </g:if>
 
-                            <ui:customerTypeIcon org="${subscr}" />
+                            <ui:customerTypeProIcon org="${subscr}" />
 
                             <div class="ui list">
                                 <g:each in="${Person.getPublicByOrgAndFunc(subscr, 'General contact person')}" var="gcp">
@@ -239,30 +239,30 @@
                                     params="[next: true, memberOrg: subscr.id, memberSubID: sub.id]"><i class="arrow right icon grey"></i></g:link>
                         </g:elseif>
                     </td>
-                    <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                    <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()}">
                         <td class="center aligned">
                             <g:set var="license" value="${Links.executeQuery('select li.id from Links li where li.destinationSubscription = :destination and li.linkType = :linktype',[destination:sub,linktype:RDStore.LINKTYPE_LICENSE])}"/>
                             <g:if test="${!license}">
-                                <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkLicense']" id="${subscription.id}" class="ui icon ">
+                                <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkLicense']" id="${subscription.id}" class="ui icon">
                                     <i class="circular la-light-grey inverted minus icon"></i>
                                 </g:link>
                             </g:if>
                             <g:else>
-                                <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkLicense']" id="${subscription.id}" class="ui icon ">
+                                <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkLicense']" id="${subscription.id}" class="ui icon">
                                     <i class="circular la-license icon"></i>
                                 </g:link>
                             </g:else>
                         </td>
                     </g:if>
-                    <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                    <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                         <td class="center aligned">
                             <g:if test="${!sub.packages}">
-                                <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkPackages']" id="${subscription.id}" class="ui icon ">
+                                <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkPackages']" id="${subscription.id}" class="ui icon">
                                     <i class="circular la-light-grey inverted minus icon"></i>
                                 </g:link>
                             </g:if>
                             <g:else>
-                                <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkPackages']" id="${subscription.id}" class="ui icon ">
+                                <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkPackages']" id="${subscription.id}" class="ui icon">
                                     <i class="circular la-package icon"></i>
                                 </g:link>
                             </g:else>
@@ -271,10 +271,7 @@
                     <td>${sub.status.getI10n('value')}</td>
                     <td>
                         <g:if test="${sub.isMultiYear}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                  data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
-                                <i class="map orange icon"></i>
-                            </span>
+                            <ui:multiYearIcon isConsortial="true" color="orange" />
                         </g:if>
                     </td>
                     <td class="x">
@@ -284,11 +281,13 @@
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
                             <i aria-hidden="true" class="write icon"></i>
                         </g:link>
+
+                        <g:if test="${contextService.getUser().isYoda()}">
                             <g:if test="${sub._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION] && sub.instanceOf._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE}">
                                 <g:if test="${sub.orgRelations.find{it.roleType == RDStore.OR_SUBSCRIBER_CONS_HIDDEN}}">
-                                        <g:link class="ui icon button la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.hiddenForSubscriber')}" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
-                                            <i class="ui icon eye orange"></i>
-                                        </g:link>
+                                    <g:link class="ui icon button la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.hiddenForSubscriber')}" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
+                                        <i class="ui icon eye"></i>
+                                    </g:link>
                                 </g:if>
                                 <g:else>
                                     <g:link class="ui icon orange button la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.hideToSubscriber')}" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
@@ -296,6 +295,8 @@
                                     </g:link>
                                 </g:else>
                             </g:if>
+                        </g:if>
+
                             <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci.id from CostItem ci where ci.sub = :sub and ci.costItemStatus != :deleted and ci.owner = :context',[sub:sub,deleted:RDStore.COST_ITEM_DELETED,context:institution])}"/>
                             <g:if test="${!hasCostItems}">
                                 <g:link class="ui icon negative button la-modern-button" controller="subscription" action="delete" params="${[id:sub.id]}"
@@ -313,6 +314,7 @@
                                     </button>
                                 </span>
                             </g:else>
+
                         <ui:xEditableAsIcon owner="${sub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea" emptyTooltip="${message(code: 'subscription.details.internalComment')}"/>
                     </td>
                 </tr>
@@ -330,6 +332,16 @@
                 <br /><strong><g:message code="subscription.details.nomembers.label" args="${args.memberType}"/></strong>
                 </g:else>
             </g:else>
+
+    <laser:script file="${this.getGroovyPageFileName()}">
+        $('#orgListToggler').click(function () {
+            if ($(this).prop('checked')) {
+                $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', true)
+            } else {
+                $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', false)
+            }
+        });
+    </laser:script>
 
 <laser:htmlEnd />
 

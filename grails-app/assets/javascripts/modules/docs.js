@@ -11,7 +11,7 @@ docs = {
             let previewModalId = '#document-preview-' + docKey.split(':')[0]
 
             $.ajax({
-                url: JSPC.vars.ajax.htmlDocumentPreview + '?key=' + docKey
+                url: JSPC.config.ajax.htmlDocumentPreview + '?key=' + docKey
             }).done (function (data) {
                 $('#dynamicModalContainer').html (data)
                 $(previewModalId).modal ({

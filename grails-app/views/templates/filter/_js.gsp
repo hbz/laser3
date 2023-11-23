@@ -2,7 +2,7 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.la-js-filterButton').on('click', function(){
-        $( ".la-filter").toggle( "fast" );
+        $('.la-filter').slideToggle(120);
         $(this).toggleClass("blue");
         $(this).attr('aria-expanded', function(index, attr){
             return attr == 'false' ? 'true' : 'false';

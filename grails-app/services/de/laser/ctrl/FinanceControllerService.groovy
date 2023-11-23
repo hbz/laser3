@@ -22,7 +22,6 @@ class FinanceControllerService {
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1
 
-    AccessService accessService
     ContextService contextService
     FinanceService financeService
     LinksGenerationService linksGenerationService
@@ -120,18 +119,11 @@ class FinanceControllerService {
         //Determine own org belonging, then, in which relationship I am to the given subscription instance
         switch(result.institution.getCustomerType()) {
         //cases one to three
-            case CustomerTypeService.ORG_CONSORTIUM_BASIC:
-            case CustomerTypeService.ORG_CONSORTIUM_PRO:
+            case [ CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO, CustomerTypeService.ORG_SUPPORT ]:
                 if (result.subscription) {
                     //cases two and three: child subscription
                     if (result.subscription.instanceOf) {
-                        //case three: child subscription preview
-                        if (params.orgBasicMemberView) {
-                            dataToDisplay << 'subscr'
-                            result.showView = 'subscr'
-                        }
                         //case two: child subscription, consortial view
-                        else {
                             dataToDisplay << 'consAtSubscr'
                             result.showView = 'cons'
                             result.showVisibilitySettings = true
@@ -141,7 +133,6 @@ class FinanceControllerService {
                             result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo where s = :parent and oo.roleType in :subscrRoles order by sortname asc',[parent:result.subscription,subscrRoles:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]).collect { row -> row[0]}
                             result.showVisibilitySettings = true
                             editable = true
-                        }
                     }
                     //case one: parent subscription
                     else {
@@ -203,7 +194,7 @@ class FinanceControllerService {
                 break
         }
         if (editable)
-            result.editable = contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+            result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
         result.dataToDisplay = dataToDisplay
         //override default view to show if checked by pagination or from elsewhere
         if (params.showView){
@@ -228,7 +219,7 @@ class FinanceControllerService {
         Locale locale = LocaleUtils.getCurrentLocale()
         Map<String,Object> result = getEditVars(configMap.institution)
 
-        log.debug(configMap.dataToDisplay)
+        log.debug(configMap.dataToDisplay.toString())
 
         if (configMap.dataToDisplay.stream().anyMatch(['cons','consAtSubscr'].&contains)) {
             result.licenseeLabel = messageSource.getMessage( 'consortium.member',null,locale)

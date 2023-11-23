@@ -2,16 +2,19 @@ package de.laser
 
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.base.AbstractReport
+import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemGroup
 import de.laser.finance.PriceItem
 import de.laser.helper.Profiler
+import de.laser.http.BasicHttpClient
 import de.laser.remote.ApiSource
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.base.AbstractCoverage
+import de.laser.system.SystemEvent
 import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.stats.Counter4Report
@@ -475,6 +478,14 @@ class ExportService {
 		}
 	}
 
+	/**
+	 * Exports the given list of contacts in the given format
+	 * @param format the format to use for the export (Excel or CSV)
+	 * @param visiblePersons the list of {@link Person}s to export
+	 * @return either an Excel workbook or a character-separated list containing the export
+	 * @deprecated all exports should be made configurable by modal; move this export to {@link ExportClickMeService#exportAddresses(java.util.List, java.util.List, java.util.Map, java.lang.Object, java.lang.Object, de.laser.ExportClickMeService.FORMAT)}
+	 */
+	@Deprecated
 	def exportAddressbook(String format, List visiblePersons) {
 		Locale locale = LocaleUtils.getCurrentLocale()
 		Map<String, String> columnHeaders = [
@@ -737,18 +748,18 @@ class ExportService {
         Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
 		if(!result)
 			return null
-		Set<Subscription> refSubs
+		Subscription refSub
 		Org customer = result.subscription.getSubscriber()
 		if (params.statsForSurvey == true) {
 			if(params.loadFor == 'allTipps')
-				refSubs = [result.subscription.instanceOf] //look at statistics of the whole set of titles, i.e. of the consortial parent subscription
+				refSub = result.subscription.instanceOf //look at statistics of the whole set of titles, i.e. of the consortial parent subscription
 			else if(params.loadFor == 'holdingIEs')
-				refSubs = result.subscription._getCalculatedPrevious() //look at the statistics of the member, i.e. the member's stock of the previous year
+				refSub = result.subscription._getCalculatedPrevious() //look at the statistics of the member, i.e. the member's stock of the previous year
 		}
-		else if(subscriptionService.getCurrentIssueEntitlementIDs(result.subscription).size() > 0){
-			refSubs = [result.subscription]
+		else if(subscriptionService.countCurrentIssueEntitlements(result.subscription) > 0){
+			refSub = result.subscription
 		}
-		else refSubs = [result.subscription.instanceOf]
+		else refSub = result.subscription.instanceOf
 		prf.setBenchmark('get platforms')
 		Platform platform = Platform.get(params.platform)
 		prf.setBenchmark('get namespaces')
@@ -767,7 +778,7 @@ class ExportService {
 		Set<TitleInstancePackagePlatform> titlesSorted = [] //fallback structure to preserve sorting
 		prf.setBenchmark('prepare title identifier map')
         if(reportType in Counter4Report.COUNTER_4_TITLE_REPORTS || reportType in Counter5Report.COUNTER_5_TITLE_REPORTS) {
-			subscriptionControllerService.fetchTitles(params, refSubs, namespaces, 'ids').each { Map titleMap ->
+			subscriptionControllerService.fetchTitles(params, refSub, namespaces, 'ids').each { Map titleMap ->
 				//debug only! DO NOT COMMIT!
 				//if(titleMap.tipp.id == 862496) {
 				titlesSorted << titleMap.tipp
@@ -787,7 +798,7 @@ class ExportService {
 		int rowno = 0
 		//revision 4
 		if(params.revision == AbstractReport.COUNTER_4) {
-			prf.setBenchmark('data fetched from provider')
+			prf.setBenchmark('before SUSHI call')
 			Map<String, Object> queryParams = [reportType: reportType, customer: customer, platform: platform]
 			if(params.metricType) {
 				queryParams.metricTypes = params.list('metricType')
@@ -796,6 +807,7 @@ class ExportService {
 			queryParams.endDate = dateRangeParams.endDate
 			//the data
 			Map<String, Object> requestResponse = getReports(queryParams)
+			prf.setBenchmark('data fetched from provider')
 			if(requestResponse.containsKey('reports')) {
 				Set<String> availableMetrics = requestResponse.reports.'**'.findAll { node -> node.name() == 'MetricType' }.collect { node -> node.text()}.toSet()
 				workbook = new XSSFWorkbook()
@@ -1185,6 +1197,7 @@ class ExportService {
 		}
 		//revision 5
 		else if(params.revision == AbstractReport.COUNTER_5) {
+			prf.setBenchmark('before SUSHI call')
 			Map<String, Object> queryParams = [reportType: reportType, customer: customer, platform: platform]
 			if(params.metricType) {
 				queryParams.metricTypes = params.list('metricType').join('%7C')
@@ -1905,18 +1918,21 @@ class ExportService {
 		result
 	}
 
+	/**
+	 * Assembles the rows containing the usages for each database according to the given report type
+	 * @param requestResponse the response data from the provider's SUSHI API
+	 * @param reportType the report type to be exported
+	 * @return a {@link Map} containing the export rows for each database, in structure:
+	 * [
+	 	databaseName: {
+	 		metric1: [date1: count, date2: count ... dateN: count]
+	 		metric2: [date1: count, date2: count ... dateN: count]
+	 		...
+	 		metricN: [date1: count, date2: count ... dateN: count]
+	 	  }
+	 	]
+	 */
 	Map<String, Object> prepareDataWithDatabases(Map requestResponse, String reportType) {
-		/*
-		generates structure
-		[
-			databaseName: {
-				metric1: [date1: count, date2: count ... dateN: count]
-				metric2: [date1: count, date2: count ... dateN: count]
-				...
-				metricN: [date1: count, date2: count ... dateN: count]
-			}
-		]
-		 */
 		Map<String, Object> databaseRows = [:]
 		//mini example: https://connect.liblynx.com/sushi/r5/reports/dr?customer_id=2246867&requestor_id=facd706b-cf11-42f9-8d92-a874e594a218&begin_date=2023-01&end_date=2023-12
 		//take https://laser-dev.hbz-nrw.de/subscription/membersSubscriptionsManagement/59727?tab=customerIdentifiers&isSiteReloaded=false as base for customer identifiers!
@@ -2054,31 +2070,97 @@ class ExportService {
 		databaseRows
 	}
 
+	/**
+	 * Sets generic parameters for the upcoming call: revision and SUSHI URL to use.
+     * If the suffix "reports" is not contained by the root URL coming from we:kb, it will be suffixed
+	 * @param platformRecord the we:kb platform record map containing the SUSHI API data
+	 * @return a {@link Map} containing the revision (either counter4 or counter5) and statsUrl wth the URL to call
+	 */
 	Map<String, String> prepareSushiCall(Map platformRecord) {
-		String revision = null, statsUrl = null
-		if(platformRecord.counterR5SushiApiSupported == "Yes") {
-			revision = 'counter5'
-			statsUrl = platformRecord.counterR5SushiServerUrl
-			if (!platformRecord.counterR5SushiServerUrl.contains('reports')) {
-				if (platformRecord.counterR5SushiServerUrl.endsWith('/'))
-					statsUrl = platformRecord.counterR5SushiServerUrl + 'reports'
-				else statsUrl = platformRecord.counterR5SushiServerUrl + '/reports'
+		String revision = null, statsUrl = null, sushiApiAuthenticationMethod = null
+		if(platformRecord.counterRegistryApiUuid) {
+			String url = "${ConfigMapper.getSushiCounterRegistryUrl()}/${platformRecord.counterRegistryApiUuid}${ConfigMapper.getSushiCounterRegistryDataSuffix()}"
+			BasicHttpClient sushiRegistry = new BasicHttpClient(url)
+			try {
+				Closure success = { resp, json ->
+					if(resp.code() == 200) {
+						if(json.containsKey('sushi_services')) {
+							Map sushiConfig = json.sushi_services[0]
+							if(sushiConfig.counter_release in ['5', '5.1'])
+								revision = "counter5"
+							statsUrl = sushiConfig.url
+							if (!sushiConfig.url.contains('reports')) {
+								if (sushiConfig.url.endsWith('/'))
+									statsUrl = sushiConfig.url + 'reports'
+								else statsUrl = sushiConfig.url + '/reports'
+							}
+							boolean withRequestorId = Boolean.valueOf(sushiConfig.requestor_id_required), withApiKey = Boolean.valueOf(sushiConfig.api_key_required), withIpWhitelisting = Boolean.valueOf(sushiConfig.ip_address_authorization)
+							if(withRequestorId) {
+								if(withApiKey) {
+									sushiApiAuthenticationMethod = AbstractReport.API_AUTH_CUSTOMER_REQUESTOR_API
+								}
+								else sushiApiAuthenticationMethod = AbstractReport.API_AUTH_CUSTOMER_REQUESTOR
+							}
+							else if(withApiKey) {
+								sushiApiAuthenticationMethod = AbstractReport.API_AUTH_CUSTOMER_API
+							}
+							else if(withIpWhitelisting) {
+								sushiApiAuthenticationMethod = AbstractReport.API_IP_WHITELISTING
+							}
+						}
+						else {
+							Map sysEventPayload = [error: "platform has no SUSHI configuration", url: url]
+							SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
+						}
+					}
+				}
+				Closure failure = { resp, reader ->
+					Map sysEventPayload = [error: "error on call at COUNTER registry", url: url]
+					SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
+				}
+				sushiRegistry.get(BasicHttpClient.ResponseType.JSON, success, failure)
+			}
+			catch (Exception e) {
+				Map sysEventPayload = [error: "invalid response returned for ${url} - ${e.getMessage()}!", url: url]
+				SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
+				log.error("stack trace: ", e)
+			}
+			finally {
+				sushiRegistry.close()
 			}
 		}
-		else if(platformRecord.counterR4SushiApiSupported == "Yes") {
-			revision = 'counter4'
-			statsUrl = platformRecord.counterR4SushiServerUrl
-			/*
-			if (!platformRecord.counterR4SushiServerUrl.contains('reports')) {
-				if (platformRecord.counterR4SushiServerUrl.endsWith('/'))
-					statsUrl = platformRecord.counterR4SushiServerUrl + 'reports'
-				else statsUrl = platformRecord.counterR4SushiServerUrl + '/reports'
+		//fallback configuration
+		if(!revision) {
+			if(platformRecord.counterR5SushiApiSupported == "Yes") {
+				revision = 'counter5'
+				statsUrl = platformRecord.counterR5SushiServerUrl
+				if (!platformRecord.counterR5SushiServerUrl.contains('reports')) {
+					if (platformRecord.counterR5SushiServerUrl.endsWith('/'))
+						statsUrl = platformRecord.counterR5SushiServerUrl + 'reports'
+					else statsUrl = platformRecord.counterR5SushiServerUrl + '/reports'
+				}
+				sushiApiAuthenticationMethod = platformRecord.sushiApiAuthenticationMethod
 			}
-			*/
+			else if(platformRecord.counterR4SushiApiSupported == "Yes") {
+				revision = 'counter4'
+				statsUrl = platformRecord.counterR4SushiServerUrl
+				/*
+                if (!platformRecord.counterR4SushiServerUrl.contains('reports')) {
+                    if (platformRecord.counterR4SushiServerUrl.endsWith('/'))
+                        statsUrl = platformRecord.counterR4SushiServerUrl + 'reports'
+                    else statsUrl = platformRecord.counterR4SushiServerUrl + '/reports'
+                }
+                */
+			}
 		}
-		[revision: revision, statsUrl: statsUrl]
+		[revision: revision, statsUrl: statsUrl, sushiApiAuthenticationMethod: sushiApiAuthenticationMethod]
 	}
 
+	/**
+	 * Builds the SUSHI request and fetches the data from the provider's SUSHI API server
+	 * @param configMap the map containing the request parameters
+	 * @return a {@link Map}
+	 */
 	Map<String, Object> getReports(Map configMap) {
 		Map<String, Object> result = [:]
 		ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
@@ -2141,14 +2223,13 @@ class ExportService {
 				else if(statsSource.revision == 'counter5') {
 					String url = statsSource.statsUrl + "/${configMap.reportType}"
 					url += "?customer_id=${customerId.value}"
-					switch(platformRecord.sushiApiAuthenticationMethod) {
+					switch(statsSource.sushiApiAuthenticationMethod) {
 						case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR:
 							if(customerId.requestorKey) {
 								url += "&requestor_id=${customerId.requestorKey}"
 							}
 							break
-						case AbstractReport.API_AUTH_CUSTOMER_API:
-						case AbstractReport.API_AUTH_REQUESTOR_API:
+						case [AbstractReport.API_AUTH_CUSTOMER_API, AbstractReport.API_AUTH_REQUESTOR_API]:
 							if(customerId.requestorKey) {
 								url += "&api_key=${customerId.requestorKey}"
 							}
@@ -2184,6 +2265,13 @@ class ExportService {
 		result
 	}
 
+	/**
+	 * Assembles the identifiers of the given report item in order to enable more performant title match
+	 * @param reportItem the report item whose identifiers should be collected
+	 * @param revision the COUNTER revision of the report item
+	 * @return a {@link Map} with unified identifiers
+	 * @see AbstractReport
+	 */
 	Map<String, String> buildIdentifierMap(reportItem, String revision) {
 		Map<String, String> identifierMap = [:]
 		if(revision == AbstractReport.COUNTER_4) {
@@ -2629,16 +2717,17 @@ class ExportService {
 	}
 
 	/**
-	 * Generates a title stream export list according to the KBART II-standard but enriched with proprietary fields such as ZDB-ID
+	 * Generates a title export list according to the KBART II-standard but enriched with proprietary fields such as ZDB-ID
 	 * The standard is defined here: <a href="https://www.niso.org/standards-committees/kbart">KBART definition</a>
-	 * @param entitlementData a {@link Collection} containing the actual data
+	 * @param configMap a {@link Map} containing filter settings
+	 * @param entitlementInstance switch between {@link TitleInstancePackagePlatform} and {@link IssueEntitlement}
 	 * @return a {@link Map} containing lists for the title row and the column data
 	 */
-	Map<String,List> generateTitleExportKBART(Map configMap, String entitlementInstance) {
+	Map<String,Collection> generateTitleExportKBART(Map configMap, String entitlementInstance) {
 		log.debug("Begin generateTitleExportKBART")
 		Sql sql = GlobalService.obtainSqlConnection()
 		Map<String, String> titleHeaders = getBaseTitleHeaders(entitlementInstance)
-		Map<String, List> export = [titleRow:titleHeaders.keySet()]
+		Map<String, Collection> export = [titleRow:titleHeaders.keySet()]
 		Map<String, Object> queryClauseParts = filterService.prepareTitleSQLQuery(configMap, entitlementInstance, sql)
 		String queryBase, countQuery
 		if(entitlementInstance == IssueEntitlement.class.name) {
@@ -2646,7 +2735,7 @@ class ExportService {
 			//countQuery = "select count(*) as countTotal from issue_entitlement left join issue_entitlement_coverage on ic_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id where ${queryClauseParts.where}"
 		}
 		else {
-			queryBase = "select ${titleHeaders.values().join(', ')} from title_instance_package_platform left join tippcoverage on tc_tipp_fk = tipp_id join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id where ${queryClauseParts.where}${queryClauseParts.order}"
+			queryBase = "select ${titleHeaders.values().join(', ')} from title_instance_package_platform left join tippcoverage on tc_tipp_fk = tipp_id join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id ${queryClauseParts.join} where ${queryClauseParts.where}${queryClauseParts.order}"
 			//countQuery = "select count(*) as countTotal from title_instance_package_platform join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id where ${queryClauseParts.where}"
 		}
 		//int count = sql.rows(countQuery, queryClauseParts.params)[0]['countTotal'] as int, max = 100000
@@ -2985,6 +3074,13 @@ class ExportService {
 		joined
 	}
 
+	/**
+	 * Concatenates the set of identifiers belonging to the given namespace to a character-separated list
+	 * @param ids the set of identifiers to output
+	 * @param namespace the namespace whose identifiers should be concatenated
+	 * @param separator the character to use for separation
+	 * @return the concatenated string of identifiers
+	 */
 	String joinIdentifiersSQL(List<String> ids, String separator) {
 		String joined = ' '
 		if(ids)
@@ -3313,6 +3409,7 @@ class ExportService {
 		Sql sql = GlobalService.obtainSqlConnection()
 		Locale locale = LocaleUtils.getCurrentLocale()
 		Map<String, Object> data = getTitleData(configMap, entitlementInstance, sql, showStatsInMonthRings, subscriber)
+		log.debug("after title data")
 		List<String> titleHeaders = [
 				messageSource.getMessage('tipp.name',null,locale),
 				'Print Identifier',
@@ -3554,7 +3651,7 @@ class ExportService {
 	 * @param identifierMap a map of title {@link Identifier}s
 	 * @param priceItemMap a map of title {@link de.laser.finance.PriceItem}s
 	 * @param reportMap a map of COUNTER reports (see {@link AbstractReport} implementations)
-	 * @param checkPerpetuallyPurchasedTitles a boolan to check titles which the given subscriber have perpetually bought
+	 * @param checkPerpetuallyPurchasedTitles a boolean to check titles which the given subscriber have perpetually bought
 	 * @param coreTitleIdentifierNamespaces {@link List} of identifier namespaces which are core set for titles
 	 * @param otherTitleIdentifierNamespaces {@link List} of identifier namespaces beyond the core set
 	 * @param showStatsInMonthRings if given: a {@link List} of usage report months
@@ -3562,7 +3659,7 @@ class ExportService {
 	 * @return a {@link List} containing the columns for the next output row
 	 */
 	List buildRow(String format, GroovyRowResult titleRecord, Map identifierMap, Map priceItemMap, Map reports, List<GroovyRowResult> coreTitleIdentifierNamespaces, List<GroovyRowResult> otherTitleIdentifierNamespaces, boolean checkPerpetuallyPurchasedTitles = false, List showStatsInMonthRings = [], Org subscriber = null) {
-		titleRecord.identifiers = identifierMap.get(titleRecord['tipp_id'])
+		titleRecord.identifiers = identifierMap.containsKey(titleRecord['tipp_id']) ? identifierMap.get(titleRecord['tipp_id']) : [:]
 		if(titleRecord.containsKey('ie_id')) {
 			titleRecord.priceItems = priceItemMap.get(titleRecord['ie_id'])
 		}
@@ -3707,6 +3804,13 @@ class ExportService {
 		row
 	}
 
+	/**
+	 * Creates a table cell in the given format. If the format is an Excel table, a style may be submitted as well
+	 * @param format the format to use for the export (excel or kbart)
+	 * @param data the data for the cell
+	 * @param style styling parameter for an Excel sheet cell
+	 * @return the table cell in the appropriate format; either as {@link Map} in structure [field: data, style: style]
+	 */
 	def createCell(String format, data, String style = null) {
 		if(format == 'excel')
 			[field: data, style: style]
@@ -3717,6 +3821,25 @@ class ExportService {
 		}
 	}
 
+	/**
+	 * Retrieves the title holding data for a given package, using native SQL. Data is being retrieved depending on the given context:
+	 * are we regarding the holding of a certain subscription (then, IssueEntitlement is the base class) or the sales unit of a package
+	 * (where TitleInstancePackagePlatform is the base class holding). In addition, usage statistics data may be retrieved as well, for that purpose,
+	 * the SUSHI API of the provider is being contacted; the matching of the usage reports to the titles is done in this method as well
+	 * @param configMap the map containing the request and filter parameters
+	 * @param entitlementInstance the base class of the titles, depending on the context: if we regard from the subscription's holding, then {@link IssueEntitlement}; if the sales unit is being regarded, then {@link TitleInstancePackagePlatform}
+	 * @param sql the SQL connection to the database
+	 * @param showStatsInMonthRings if submitted: which months of the usage report(s) should be included in the export?
+	 * @param subscriber the subscriber institution ({@link Org}) whose data / usage statistics should be requested
+	 * @return a {@link Map} containing the following data to be exported:
+	 * [titles: titles,
+	 * 	coverageMap: coverageMap,
+	 * 	priceItemMap: priceItemMap,
+	 * 	identifierMap: identifierMap,
+	 * 	reportMap: reportMap,
+	 *  coreTitleIdentifierNamespaces: coreTitleIdentifierNamespaces,
+	 *  otherTitleIdentifierNamespaces: otherTitleIdentifierNamespaces]
+	 */
 	Map<String, Object> getTitleData(Map configMap, String entitlementInstance, Sql sql, List showStatsInMonthRings = [], Org subscriber = null) {
 		Map<String, Object> queryData = filterService.prepareTitleSQLQuery(configMap, entitlementInstance, sql)
 		List<GroovyRowResult> titles = sql.rows(queryData.query+queryData.join+' where '+queryData.where+queryData.order, queryData.params),
@@ -3741,7 +3864,7 @@ class ExportService {
 		else if(entitlementInstance == IssueEntitlement.class.name) {
 			identifiers = sql.rows("select id_tipp_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on ie_tipp_fk = id_tipp_fk ${queryData.subJoin} join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
 			coverages = sql.rows("select ic_ie_fk, ic_start_date as startDate, ic_start_volume as startVolume, ic_start_issue as startIssue, ic_end_date as endDate, ic_end_volume as endVolume, ic_end_issue as endIssue, ic_coverage_note as coverageNote, ic_coverage_depth as coverageDepth, ic_embargo as embargo from issue_entitlement_coverage join issue_entitlement on ic_ie_fk = ie_id ${queryData.subJoin} join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
-			priceItems = sql.rows("select pi_ie_fk, pi_list_price, (select rdv_value from refdata_value where rdv_id = pi_list_currency_rv_fk) as pi_list_currency, pi_local_price, (select rdv_value from refdata_value where rdv_id = pi_local_currency_rv_fk) as pi_local_currency from price_item join issue_entitlement on pi_ie_fk = ie_id ${queryData.subJoin} join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
+			priceItems = sql.rows("select pi_tipp_fk, pi_list_price, (select rdv_value from refdata_value where rdv_id = pi_list_currency_rv_fk) as pi_list_currency, pi_local_price, (select rdv_value from refdata_value where rdv_id = pi_local_currency_rv_fk) as pi_local_currency from price_item join title_instance_package_platform on pi_tipp_fk = tipp_id join issue_entitlement on tipp_id = ie_tipp_fk ${queryData.subJoin} where ${queryData.where}", queryData.params)
 			coreTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join issue_entitlement on ie_tipp_fk = tipp_id ${queryData.subJoin} where idns_ns in ('${coreTitleNSrestricted.join("','")}') and ${queryData.where}", queryData.params)
 			otherTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join issue_entitlement on ie_tipp_fk = tipp_id ${queryData.subJoin} where idns_ns not in ('${IdentifierNamespace.CORE_TITLE_NS.join("','")}') and ${queryData.where}", queryData.params)
 			identifierMap.putAll(preprocessIdentifierRows(identifiers))
@@ -4016,6 +4139,14 @@ class ExportService {
 		result
 	}
 
+	/**
+	 * Helper method to order rows of an auxiliary table to a map for that the values belonging to a title record may be fetched more easily
+	 * @param rows the rows of the auxiliary table
+	 * @param tippKey the primary key of the {@link TitleInstancePackagePlatform}
+	 * @return a {@link Map} containing the SQL row result with the primary key as map key
+	 * @deprecated to be refactored by json_agg(json_build_object()) method chain in the SQL query for that the database does the collection more performantly
+	 */
+	@Deprecated
 	static Map<Long, List<GroovyRowResult>> preprocessRows(List<GroovyRowResult> rows, String tippKey) {
 		Map<Long, List<GroovyRowResult>> result = [:]
 		rows.each { GroovyRowResult row ->
@@ -4028,6 +4159,14 @@ class ExportService {
 		result
 	}
 
+	/**
+	 * Helper method to order rows of the price item table to a map for that the values belonging to a title record may be fetched more easily
+	 * @param priceItemRows the rows of the {@link PriceItem} table
+	 * @param tippKey the primary key of the {@link TitleInstancePackagePlatform}
+	 * @return a {@link Map} containing the SQL row result with the primary key as map key
+	 * @deprecated to be refactored by json_agg(json_build_object()) method chain in the SQL query for that the database does the collection more performantly
+	 */
+	@Deprecated
 	static Map<Long, Map<String, GroovyRowResult>> preprocessPriceItemRows(List<GroovyRowResult> priceItemRows, String tippKey) {
 		Map<Long, Map<String, GroovyRowResult>> priceItems = [:]
 		priceItemRows.each { GroovyRowResult piRow ->
@@ -4042,6 +4181,13 @@ class ExportService {
 		priceItems
 	}
 
+	/**
+	 * Helper method to order rows of the identifier table to a map for that the values belonging to a title record may be fetched more easily
+	 * @param rows the rows of the {@link Identifier} table
+	 * @return a {@link Map} containing the SQL row result, grouped by namespaces, with the primary key as map key
+	 * @deprecated to be refactored by json_agg(json_build_object()) method chain in the SQL query for that the database does the collection more performantly
+	 */
+	@Deprecated
 	static Map<Long, Map<String, List<String>>> preprocessIdentifierRows(List<GroovyRowResult> rows) {
 		Map<Long, Map<String, List<String>>> identifiers = [:]
 		rows.each { GroovyRowResult row ->

@@ -10,12 +10,31 @@ import de.laser.traces.DeletedObject
 import grails.converters.JSON
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+/**
+ * This class delivers traces of objects deleted from the database
+ */
 class ApiDeletedObject {
 
+    /**
+     * Checks if the given deleted object can be retrieved by the institution doing the request;
+     * substitution call for {@link #requestDeletedObject(de.laser.traces.DeletedObject, de.laser.Org, boolean)} with
+     * the isInvoiceTool flag set to false. The deleted object is being returned on success
+     * @param delObj the object to retrieve
+     * @param context the institution ({@link Org}) doing the request
+     * @return JSON | FORBIDDEN
+     */
     static requestDeletedObject(DeletedObject delObj, Org context) {
         requestDeletedObject(delObj, context, false)
     }
 
+    /**
+     * Checks if the given deleted object can be retrieved by the institution doing the request.
+     * The deleted object is being returned on success
+     * @param delObj the object to retrieve
+     * @param context the institution ({@link Org}) doing the request
+     * @param isInvoiceTool is the request done by the invoice tool?
+     * @return JSON | FORBIDDEN
+     */
     static requestDeletedObject(DeletedObject delObj, Org context, boolean isInvoiceTool) {
         Map<String, Object> result = [:]
 
@@ -27,6 +46,12 @@ class ApiDeletedObject {
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
     }
 
+    /**
+     * Checks if the requesting institution can access the given object
+     * @param delObj the {@link DeletedObject} being requested
+     * @param context the institution ({@link Org}) doing the request
+     * @return true if access is granted, false otherwise
+     */
     static boolean calculateAccess(DeletedObject delObj, Org context) {
 
         boolean hasAccess = false
@@ -46,6 +71,11 @@ class ApiDeletedObject {
         hasAccess
     }
 
+    /**
+     * Assembles the given deleted object attributes into a {@link Map}. The schema of the map can be seen in schemas.gsp
+     * @param delObj the {@link DeletedObject} to be returned
+     * @return a {@link Map} containing the deleted object's data in the schema of the deleted object's former class
+     */
     static Map<String, Object> getDeletedMap(DeletedObject delObj) {
         Map<String, Object> result = [:]
 

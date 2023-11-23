@@ -1,5 +1,5 @@
 
-echarts / version 5.4.2
+echarts / version 5.4.3
 
     chart
         - bar *
@@ -16,6 +16,7 @@ echarts / version 5.4.2
         - legend *
         - tooltip *
         - toolbox *
+        - visualMap *
 
     others
         - utilites *

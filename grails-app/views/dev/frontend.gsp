@@ -1,6 +1,6 @@
 <%@ page import="de.laser.License; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.UserSetting" %>
 <laser:htmlStart text="Frontend for Developers"> %{-- <!doctype html><html><head>--}%
-
+    <laser:javascript src="echarts.js"/>%{-- dont move --}%
     <style>
     #example .example .column .icon {
         opacity: 1;
@@ -54,14 +54,18 @@
 
 
 %{-- help sidebar --}%
-<laser:render template="/templates/help/help_subscription_show"/>
+<laser:render template="/templates/help/subscription_show"/>
 <section id="example">
+
     %{-- COLORS  --}%
     <laser:render template="frontend_colors" />
     %{-- ICONS  --}%
     <laser:render template="frontend_icons" />
     %{-- DROPDOWNS --}%
     <laser:render template="frontend_dropdowns" />
+    %{-- TABLES --}%
+    <laser:render template="frontend_responsibleTable" />
+    <laser:render template="sparklines" />
     %{-- DECKSAVER --}%
     <laser:render template="frontend_decksaver" />
     %{-- TOGGLE BUTTONS  --}%
@@ -73,7 +77,7 @@
     %{-- RESPONSIBLE TABELLEN  --}%
     <laser:render template="frontend_copyFunction" />
     %{-- Kopierfunktion  --}%
-    <laser:render template="frontend_responsibleTable" />
+
     %{-- LABELS --}%
     <laser:render template="frontend_labels" />
     %{-- FLYOUT --}%

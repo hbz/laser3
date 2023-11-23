@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.annotations.Check404
+import de.laser.annotations.DebugInfo
 import de.laser.storage.RDStore
 import de.laser.titles.TitleHistoryEvent
 import grails.plugin.springsecurity.annotation.Secured
@@ -17,6 +18,9 @@ class TippController  {
 
   //-----
 
+  /**
+   * Map containing menu alternatives if an unexisting object has been called
+   */
   public static final Map<String, String> CHECK404_ALTERNATIVES = [
           'title/list': 'menu.public.all_titles',
           'myInstitution/currentTitles': 'myinst.currentTitles.label'
@@ -28,7 +32,10 @@ class TippController  {
    * Shows the given title. The title may be called by database ID, we:kb UUID or globalUID
    * @return the details view of the title
    */
-  @Secured(['ROLE_USER'])
+  @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
   @Check404(domain=TitleInstancePackagePlatform)
   def show() { 
     Map<String, Object> result = [:]

@@ -90,8 +90,8 @@
                 <thead>
                 <tr>
                     <th>${message(code: 'subscription')}</th>
-                    <th>${message(code: 'default.startDate.label')}</th>
-                    <th>${message(code: 'default.endDate.label')}</th>
+                    <th>${message(code: 'default.startDate.label.shy')}</th>
+                    <th>${message(code: 'default.endDate.label.shy')}</th>
                     <th>${message(code: 'default.status.label')}</th>
                     <th>${message(code: 'subscriptionsManagement.propertySelected')}: ${propertiesFilterPropDef.getI10n('name')}</th>
                     <th></th>
@@ -124,7 +124,7 @@
                                               data-content="Anzahl der allg. Merkmale in der Lizenz"
                                               data-position="top right">
                                             <ui:totalNumber
-                                                    total="${SubscriptionProperty.executeQuery('select count(id) from SubscriptionProperty where owner = :sub AND ((tenant = :contextOrg OR tenant is null) OR (tenant != :contextOrg AND isPublic = true)) AND type.tenant is null', [contextOrg: contextOrg, sub: subscription])[0] }"/>
+                                                    total="${SubscriptionProperty.executeQuery('select count(*) from SubscriptionProperty where owner = :sub AND ((tenant = :contextOrg OR tenant is null) OR (tenant != :contextOrg AND isPublic = true)) AND type.tenant is null', [contextOrg: contextOrg, sub: subscription])[0] }"/>
                                         </span>
                                     </div>
 
@@ -210,7 +210,7 @@
                                               data-content="Anzahl der priv. Merkmale in der Lizenz"
                                               data-position="top right">
                                             <ui:totalNumber
-                                                    total="${SubscriptionProperty.executeQuery('select count(id) from SubscriptionProperty where owner = :sub AND (type.tenant = :contextOrg AND tenant = :contextOrg)', [contextOrg: contextOrg, sub: subscription])[0] }"/>
+                                                    total="${SubscriptionProperty.executeQuery('select count(*) from SubscriptionProperty where owner = :sub AND (type.tenant = :contextOrg AND tenant = :contextOrg)', [contextOrg: contextOrg, sub: subscription])[0] }"/>
                                         </span>
                                     </div>
 
@@ -309,7 +309,7 @@
     <g:set var="editableOld" value="${false}"/>
 
     <g:if test="${controllerName == "myInstitution"}">
-        <laser:render template="/templates/subscription/subscriptionFilter"/>
+        <laser:render template="${customerTypeService.getSubscriptionFilterTemplatePath()}"/>
     </g:if>
 
     <h3 class="ui header">${message(code: 'subscriptionsManagement.info.property')}</h3>
@@ -334,7 +334,7 @@
                 ${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(propertiesFilterPropDef.type)}
                 <g:if test="${propertiesFilterPropDef.isRefdataValueType()}">
                     <g:set var="refdataValues" value="${[]}"/>
-                    <g:each in="${RefdataCategory.getAllRefdataValues(propertiesFilterPropDef.refdataCategory)}" var="refdataValue">
+                    <g:each in="${RefdataCategory.getAllRefdataValuesWithOrder(propertiesFilterPropDef.refdataCategory)}" var="refdataValue">
                         <g:if test="${refdataValue.getI10n('value')}">
                             <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
                         </g:if>
@@ -349,7 +349,7 @@
                 <g:if test="${propertiesFilterPropDef.isRefdataValueType()}">
                     <g:select class="ui search dropdown"
                               optionKey="id" optionValue="${{ it.getI10n('value') }}"
-                              from="${RefdataCategory.getAllRefdataValues(propertiesFilterPropDef.refdataCategory)}"
+                              from="${RefdataCategory.getAllRefdataValuesWithOrder(propertiesFilterPropDef.refdataCategory)}"
                               name="filterPropValue" value="${params.filterPropValue}"
                               required=""
                               noSelection='["": "${message(code: 'default.select.choose.label')}"]'/>
@@ -405,14 +405,11 @@
                     <g:if test="${controllerName == "myInstitution"}">
                         <th>${message(code: 'default.subscription.label')}</th>
                     </g:if>
-                    <th>${message(code: 'default.startDate.label')}</th>
-                    <th>${message(code: 'default.endDate.label')}</th>
+                    <th>${message(code: 'default.startDate.label.shy')}</th>
+                    <th>${message(code: 'default.endDate.label.shy')}</th>
                     <th>${message(code: 'default.status.label')}</th>
                     <th class="la-no-uppercase">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                              data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
-                            <i class="map orange icon"></i>
-                        </span>
+                        <ui:multiYearIcon isConsortial="true" />
                     </th>
                     <th>${message(code: 'subscriptionsManagement.propertySelected')}: ${propertiesFilterPropDef.getI10n('name')}</th>
                     <th></th>
@@ -448,7 +445,7 @@
                                 </span>
                             </g:if>
 
-                                <ui:customerTypeIcon org="${subscr}" />
+                                <ui:customerTypeProIcon org="${subscr}" />
                             </td>
                         </g:if>
                         <g:if test="${controllerName == "myInstitution"}">
@@ -468,10 +465,7 @@
                         </td>
                         <td>
                             <g:if test="${sub.isMultiYear}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                      data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
-                                    <i class="map orange icon"></i>
-                                </span>
+                                <ui:multiYearIcon isConsortial="true" color="orange" />
                             </g:if>
                         </td>
                         <td>
@@ -486,7 +480,7 @@
                                                   data-content="Anzahl der allg. Merkmale in der Lizenz"
                                                   data-position="top right">
                                                 <ui:totalNumber
-                                                        total="${SubscriptionProperty.executeQuery('select count(id) from SubscriptionProperty where owner = :sub AND (tenant = :contextOrg OR tenant is null OR (tenant != :contextOrg AND isPublic = true)) AND type.tenant is null', [contextOrg: contextOrg, sub: sub])[0] }"/>
+                                                        total="${SubscriptionProperty.executeQuery('select count(*) from SubscriptionProperty where owner = :sub AND (tenant = :contextOrg OR tenant is null OR (tenant != :contextOrg AND isPublic = true)) AND type.tenant is null', [contextOrg: contextOrg, sub: sub])[0] }"/>
                                             </span>
                                         </div>
 
@@ -558,7 +552,7 @@
                                                   data-content="Anzahl der priv. Merkmale in der Lizenz"
                                                   data-position="top right">
                                                 <ui:totalNumber
-                                                        total="${SubscriptionProperty.executeQuery('select count(id) from SubscriptionProperty where owner = :sub AND (type.tenant = :contextOrg AND tenant = :contextOrg)', [contextOrg: contextOrg, sub: sub])[0] }"/>
+                                                        total="${SubscriptionProperty.executeQuery('select count(*) from SubscriptionProperty where owner = :sub AND (type.tenant = :contextOrg AND tenant = :contextOrg)', [contextOrg: contextOrg, sub: sub])[0] }"/>
                                             </span>
                                         </div>
 

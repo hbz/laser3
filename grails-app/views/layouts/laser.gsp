@@ -71,9 +71,14 @@
                     %{-- menu: public, my objects, my institution --}%
 
                     <g:if test="${contextOrg}">
-                        <laser:render template="/layouts/laser/menu_user_public" />
-                        <laser:render template="/layouts/laser/menu_user_myObjects" />
-                        <laser:render template="/layouts/laser/menu_user_myInstitution" />
+                        <g:if test="${contextOrg.isCustomerType_Support()}">
+                            <laser:render template="/layouts/laser/menu_support" />
+                        </g:if>
+                        <g:else>
+                            <laser:render template="/layouts/laser/menu_user_public" />
+                            <laser:render template="/layouts/laser/menu_user_myObjects" />
+                            <laser:render template="/layouts/laser/menu_user_myInstitution" />
+                        </g:else>
                     </g:if>
 
                     %{-- menu: admin --}%
@@ -105,7 +110,7 @@
                                  data-content="${message(code: 'search.advancedSearch.tooltip')}">
                             <i class="large icons">
                                 <i class="search icon"></i>
-                                <i class="top right grey corner cog icon"></i>
+                                <i class="top right grey corner plus icon"></i>
                             </i>
                         </ui:link>
 
@@ -114,7 +119,7 @@
                         <g:if test="${contextUser}">
                             <div class="ui dropdown item la-noBorder" role="menuitem" aria-haspopup="true">
                                 <a class="title">
-                                    ${contextUser.displayName} <i class="dropdown icon"></i>
+                                    <i class="dropdown icon"></i> ${contextUser.displayName}
                                 </a>
 
                                 <div class="menu" role="menu">
@@ -126,7 +131,9 @@
 
                                     <ui:link addItemAttributes="true" controller="logout">${message(code:'menu.user.logout')}</ui:link>
                                     <div class="divider"></div>
-                                    <div class="header">Version: ${AppUtils.getMeta('info.app.version')} – ${AppUtils.getMeta('info.app.build.date')}</div>
+                                    <div class="header">
+                                        Version: ${AppUtils.getMeta('info.app.version')} – ${AppUtils.getMeta('info.app.build.date')}
+                                    </div>
                                     <div class="header">
                                         ${SystemActivityProfiler.getNumberOfActiveUsers()} Benutzer online
                                     </div>
@@ -150,7 +157,7 @@
         %{-- context bar --}%
 
         <sec:ifAnyGranted roles="ROLE_USER">
-            <laser:render template="/layouts/laser/contextBar" />
+            <laser:render template="/layouts/laser/newContextBar" />
         </sec:ifAnyGranted>
 
         %{-- global content container --}%
@@ -180,7 +187,7 @@
                         <laser:render template="/templates/system/info" />
                     </g:if>
 
-                    <div id="system-profiler" class="ui label hidden">
+                    <div id="system-profiler" class="ui label hidden la-debugInfos">
                         <i class="clock icon"></i> <span></span>
                     </div>
                 </sec:ifAnyGranted>
@@ -216,18 +223,11 @@
 
         <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show'}">
             <laser:script file="${this.getGroovyPageFileName()}">
-                <g:if test="${editable} || ${contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
-                    <g:if test="${user?.getSettingsValue(UserSetting.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES)?.value == 'Yes'}">
-                        deckSaver.configs.editMode  = true;
-                    </g:if>
-                    <g:else>
-                        deckSaver.configs.editMode  = false;
-                    </g:else>
-                </g:if>
-                <g:else>
-                    deckSaver.configs.editMode  = false;
-                </g:else>
-
+                <%
+                    boolean isDeckSaverEditMode = contextUser.getSettingsValue(UserSetting.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES).value == 'Yes' &&
+                                                  (editable || contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))
+                %>
+                deckSaver.configs.editMode = ${isDeckSaverEditMode};
                 deckSaver.configs.ajaxUrl = '<g:createLink controller="ajax" action="toggleEditMode"/>';
                 deckSaver.go();
             </laser:script>
@@ -240,12 +240,6 @@
         %{-- ??? --}%
 
         <% if(! flash.redirectFrom) { flash.clear() } %>
-
-        %{-- ajax login --}%
-
-        <g:if test="${controllerName != 'home'}">
-            <laser:render template="/templates/system/ajaxLogin" />
-        </g:if>
 
         %{-- javascript loading --}%
 

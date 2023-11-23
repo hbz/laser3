@@ -38,7 +38,7 @@ class IssueEntitlementFilter extends BaseFilter {
 //                queryParams.issueEntitlementIdList = IssueEntitlement.executeQuery( 'select ie.id from IssueEntitlement ie' )
 //                break
             case 'my-ie':
-                List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([validOn: null], contextService.getOrg())
+                List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([validOn: null])
                 List<Long> subIdList = Subscription.executeQuery( 'select s.id ' + tmp[0], tmp[1])
                 subIdList = Subscription.executeQuery( "select s.id from Subscription s where s.id in (:subIdList)", [subIdList: subIdList])
 

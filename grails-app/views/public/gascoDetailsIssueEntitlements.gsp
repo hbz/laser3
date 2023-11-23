@@ -1,8 +1,8 @@
 <%@ page import="de.laser.IssueEntitlement; de.laser.TitleInstancePackagePlatform;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
 
-<laser:htmlStart message="gasco.title" />
+<laser:htmlStart message="menu.public.gasco_monitor" />
 
-    <ui:h1HeaderWithIcon text="${subscription}">
+    <ui:h1HeaderWithIcon text="${message(code: 'menu.public.gasco_monitor')}: ${subscription}" type="gasco">
         <g:if test="${issueEntitlementsCount}">
             &nbsp;&nbsp;
             (${issueEntitlements?.size()} von ${issueEntitlementsCount})
@@ -51,6 +51,5 @@
             </div>
         </div>
     </div>
-
 
 <laser:htmlEnd />

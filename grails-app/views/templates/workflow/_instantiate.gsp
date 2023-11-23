@@ -18,8 +18,6 @@
 
 <ui:modal id="modalCreateWorkflow" text="Workflow für '${targetText}' anlegen">
 
-    <g:if test="${true}"> %{-- DEV-BLOCKER --}%
-
     <g:form controller="${controllerName}" action="${actionName}" id="${target.id}" method="POST" class="ui form">
         <div class="ui grid">
             <div class="four wide column">
@@ -34,20 +32,20 @@
 
                     <div class="field required">
                         <g:set var="fieldName" value="${WfChecklist.KEY}_title" />
-                        <label for="${fieldName}">${message(code:'default.title.label')}</label>
-                        <input type="text" name="${fieldName}" id="${fieldName}" value="${wfcl?.title}" required="required" />
+                        <label for="${fieldName}_1">${message(code:'default.title.label')}</label>
+                        <input type="text" name="${fieldName}" id="${fieldName}_1" value="${wfcl?.title}" required="required" />
                     </div>
 
                     <div class="field">
                         <g:set var="fieldName" value="${WfChecklist.KEY}_description" />
-                        <label for="${fieldName}">${message(code:'default.description.label')}</label>
-                        <input type="text" name="${fieldName}" id="${fieldName}" value="${wfcl?.description}" />
+                        <label for="${fieldName}_1">${message(code:'default.description.label')}</label>
+                        <input type="text" name="${fieldName}" id="${fieldName}_1" value="${wfcl?.description}" />
                     </div>
 
                     <div class="field">
                         <g:set var="fieldName" value="${WfChecklist.KEY}_numberOfPoints" />
-                        <label for="${fieldName}">Anzahl der Einträge (kann später geändert werden)</label>
-                        <input type="number" name="${fieldName}" id="${fieldName}" value="3" min="1" max="10" />
+                        <label for="${fieldName}_1">Anzahl der Einträge (kann später geändert werden)</label>
+                        <input type="number" name="${fieldName}" id="${fieldName}_1" value="3" min="1" max="10" />
                     </div>
 
                     <input type="hidden" name="cmd" value="create:${WfChecklist.KEY}" />
@@ -59,21 +57,21 @@
 
                         <div class="field">
                             <g:set var="fieldName" value="${WfChecklist.KEY}_title" />
-                            <label for="${fieldName}">Neuer ${message(code:'default.title.label')}</label>
-                            <input type="text" name="${fieldName}" id="${fieldName}" />
+                            <label for="${fieldName}_2">Neuer ${message(code:'default.title.label')}</label>
+                            <input type="text" name="${fieldName}" id="${fieldName}_2" placeholder="Von der Vorlage übernehmen" />
                         </div>
 
                         <div class="field">
                             <g:set var="fieldName" value="${WfChecklist.KEY}_description" />
-                            <label for="${fieldName}">Neue ${message(code:'default.description.label')}</label>
-                            <input type="text" name="${fieldName}" id="${fieldName}" />
+                            <label for="${fieldName}_2">Neue ${message(code:'default.description.label')}</label>
+                            <input type="text" name="${fieldName}" id="${fieldName}_2" placeholder="Von der Vorlage übernehmen" />
                         </div>
 
                         <div class="field required">
-                            <label for="sourceId">${message(code:'workflow.template')}</label>
+                            <label for="sourceId_2">${message(code:'workflow.template')}</label>
 
                             <ui:dropdownWithI18nExplanations class="ui dropdown la-not-clearable"
-                                                             name="sourceId" id="sourceId"
+                                                             name="sourceId" id="sourceId_2"
                                                              from="${wfTemplateList}"
                                                              value="${wfTemplateList.first().id}"
                                                              optionKey="id"
@@ -101,10 +99,7 @@
             </div>
         </div>
     </g:form>
-    </g:if>
-    <g:else>
-        <p>Derzeit sind keine Workflows verfügar.</p>
-    </g:else>
+
 </ui:modal>
 
 <laser:script file="${this.getGroovyPageFileName()}">
@@ -119,16 +114,14 @@
     }
 
     JSPC.app.checkRequired = function () {
-        $('.la-js-checkRequired').form({
+        $('#modalCreateWorkflow').form({
             inline: true,
             fields: {
-                ${WfChecklist.KEY}_title: {
-                    identifier: '${WfChecklist.KEY}_title',
-                    rules: [
-                        {
+                ${WfChecklist.KEY}_title_1: {
+                    identifier: '${WfChecklist.KEY}_title_1',
+                    rules: [{
                             type: 'empty', prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
-                        }
-                    ]
+                    }]
                 },
             }
         });

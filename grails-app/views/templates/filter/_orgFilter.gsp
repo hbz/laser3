@@ -408,6 +408,32 @@
                 </div>
             </g:if>
 
+            <g:if test="${field.equalsIgnoreCase('discoverySystemsFrontend')}">
+                <div class="field">
+                    <label for="discoverySystemsFrontend">${message(code: 'org.discoverySystems.frontend.label')}</label>
+                    <select id="discoverySystemsFrontend" name="discoverySystemsFrontend" multiple="" class="ui selection fluid dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:set var="frontends" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.DISCOVERY_SYSTEM_FRONTEND])}" scope="request"/>
+                        <g:each in="${frontends}" var="rdv">
+                            <option <%=(params.list('discoverySystemsFrontend').contains(rdv.id.toString())) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
+                        </g:each>
+                    </select>
+                </div>
+            </g:if>
+
+            <g:if test="${field.equalsIgnoreCase('discoverySystemsIndex')}">
+                <div class="field">
+                    <label for="discoverySystemsIndex">${message(code: 'org.discoverySystems.index.label')}</label>
+                    <select id="discoverySystemsIndex" name="discoverySystemsIndex" multiple="" class="ui selection fluid dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:set var="indices" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.DISCOVERY_SYSTEM_INDEX])}" scope="request"/>
+                        <g:each in="${indices}" var="rdv">
+                            <option <%=(params.list('discoverySystemsIndex').contains(rdv.id.toString())) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
+                        </g:each>
+                    </select>
+                </div>
+            </g:if>
+
             <g:if test="${field.equalsIgnoreCase('hasSubscription')}">
                 <div class="field">
                     <div class="inline fields la-filter-inline">

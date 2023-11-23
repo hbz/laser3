@@ -31,10 +31,17 @@ class SubscriptionReport {
     static Map<String, Object> getCurrentConfig(Subscription sub) {
 
         String calcType = sub._getCalculatedType()
-        // println '>> ' + calcType
 
         if (calcType in [Subscription.TYPE_CONSORTIAL]) {
             return SubscriptionXCfg.CONFIG_CONS_AT_CONS
+        }
+        else if (calcType in [Subscription.TYPE_PARTICIPATION]) {
+            if (sub.getConsortia().id == BeanStore.getContextService().getOrg().id) {
+                return SubscriptionXCfg.CONFIG_CONS_AT_SUBSCR
+            }
+            else {
+                return SubscriptionXCfg.CONFIG_PARTICIPATION
+            }
         }
         else {
             return SubscriptionXCfg.CONFIG
@@ -98,6 +105,8 @@ class SubscriptionReport {
             List<Subscription> timeline = getTimeline(sub)
 
             if (prefix == 'timeline') {
+
+                long timelineIsCurrentId = id
 
                 if (params.query == 'timeline-member') {
                     List<List<Long>> subIdLists = []
@@ -180,21 +189,68 @@ class SubscriptionReport {
                         ])
                     }
 
+//                    result.dataDetails.eachWithIndex { Map<String, Object> dd, i ->
+//                        List d = result.data.get(i)
+//
+//                        String tippHql = 'select tipp.id from IssueEntitlement ie join ie.tipp tipp where ie.id in (:idList)'
+//
+//                        if (i > 0) {
+//                            List<Long> currIdList = ieIdLists.get(i)
+//                            List<Long> prevIdList = ieIdLists.get(i - 1)
+//
+//                            List<Long> currTippIdList = currIdList ? TitleInstancePackagePlatform.executeQuery(tippHql, [idList: currIdList]) : []
+//                            List<Long> prevTippIdList = prevIdList ? TitleInstancePackagePlatform.executeQuery(tippHql, [idList: prevIdList]) : []
+//
+//                            dd.idList = currTippIdList
+//                            dd.plusIdList = currTippIdList.minus(prevTippIdList)
+//                            dd.minusIdList = prevTippIdList.minus(currTippIdList)
+//
+//                            d[indexPlusList] = dd.plusIdList.size()
+//                            d[indexMinusList] = dd.minusIdList.size()
+//                        }
+//                        else {
+//                            List<Long> currTippIdList = ieIdLists.get(i) ? TitleInstancePackagePlatform.executeQuery(tippHql, [idList: ieIdLists.get(i)]) : []
+//
+//                            dd.idList = currTippIdList
+//                            dd.plusIdList = currTippIdList
+//                            dd.minusIdList = []
+//
+//                            d[indexPlusList] = dd.plusIdList.size()
+//                            d[indexMinusList] = dd.minusIdList.size()
+//                        }
+//                    }
+
                     result.dataDetails.eachWithIndex { Map<String, Object> dd, i ->
                         List d = result.data.get(i)
 
-                        String tippHql = 'select tipp.id from IssueEntitlement ie join ie.tipp tipp where ie.id in (:idList)'
+                        String tippUrlHql = 'select tipp.id, tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.id in (:idList)'
+                        String tippHql    = 'select tipp.id from IssueEntitlement ie join ie.tipp tipp where ie.id in (:idList)'
 
                         if (i > 0) {
                             List<Long> currIdList = ieIdLists.get(i)
                             List<Long> prevIdList = ieIdLists.get(i - 1)
 
-                            List<Long> currTippIdList = currIdList ? TitleInstancePackagePlatform.executeQuery(tippHql, [idList: currIdList]) : []
-                            List<Long> prevTippIdList = prevIdList ? TitleInstancePackagePlatform.executeQuery(tippHql, [idList: prevIdList]) : []
+                            Map<Long, String> currTippUrlMap = (currIdList ? TitleInstancePackagePlatform.executeQuery(tippUrlHql, [idList: currIdList]).collectEntries {[it[0], it[1]]} : [:]) as Map<Long, String>
+                            Map<Long, String> prevTippUrlMap = (prevIdList ? TitleInstancePackagePlatform.executeQuery(tippUrlHql, [idList: prevIdList]).collectEntries {[it[0], it[1]]} : [:]) as Map<Long, String>
 
-                            dd.idList = currTippIdList
-                            dd.plusIdList = currTippIdList.minus(prevTippIdList)
-                            dd.minusIdList = prevTippIdList.minus(currTippIdList)
+                            dd.idList = currTippUrlMap.keySet() as List<Long>
+                            dd.plusIdList = []
+                            dd.minusIdList = []
+
+                            currTippUrlMap.each { curr ->
+                                if (curr.value) {
+                                    if (! prevTippUrlMap.values().contains(curr.value)) { dd.plusIdList << curr.key }
+                                } else {
+                                    if (! prevTippUrlMap.keySet().contains(curr.key)) { dd.plusIdList << curr.key }
+                                }
+                            }
+                            prevTippUrlMap.each { prev ->
+                                if (prev.value) {
+                                    if (! currTippUrlMap.values().contains(prev.value)) { dd.minusIdList << prev.key }
+                                } else {
+                                    if (! currTippUrlMap.keySet().contains(prev.key)) { dd.minusIdList << prev.key }
+                                }
+                            }
 
                             d[indexPlusList] = dd.plusIdList.size()
                             d[indexMinusList] = dd.minusIdList.size()
@@ -210,10 +266,59 @@ class SubscriptionReport {
                             d[indexMinusList] = dd.minusIdList.size()
                         }
                     }
-
-                    //println result.dataDetails
                 }
-                else if (params.query == 'timeline-cost') {
+                else if (params.query == 'timeline-package') {
+                    List<List<Long>> pkgIdLists = []
+
+                    timeline.eachWithIndex { s, i ->
+                        pkgIdLists.add(de.laser.Package.executeQuery(
+                                'select distinct ie.tipp.pkg.id from IssueEntitlement ie where ie.subscription = :sub and ie.status = :status',
+                                [sub: s, status: RDStore.TIPP_STATUS_CURRENT]
+                        ))
+                        List data = [
+                                s.id,
+                                s.name,
+                                pkgIdLists.get(i).size(),
+                                [],
+                                [],
+                                (s.startDate ? sdf.format(s.startDate) : NO_STARTDATE) + ' - ' + (s.endDate ? sdf.format(s.endDate) : NO_ENDDATE),
+                                sub == s
+                        ]
+                        result.data.add(data)
+                        result.dataDetails.add([
+                                query: params.query,
+                                id   : s.id,
+                                label: data[5]
+                        ])
+                    }
+
+                    result.dataDetails.eachWithIndex { Map<String, Object> dd, i ->
+                        List d = result.data.get(i)
+
+                        if (i > 0) {
+                            List<Long> currIdList = pkgIdLists.get(i)
+                            List<Long> prevIdList = pkgIdLists.get(i - 1)
+
+                            dd.idList = currIdList
+                            dd.plusIdList = currIdList.minus(prevIdList)
+                            dd.minusIdList = prevIdList.minus(currIdList)
+
+                            d[indexPlusList] = dd.plusIdList.size()
+                            d[indexMinusList] = dd.minusIdList.size()
+                        }
+                        else {
+                            List<Long> currPkgIdList = pkgIdLists.get(i)
+
+                            dd.idList = currPkgIdList
+                            dd.plusIdList = currPkgIdList
+                            dd.minusIdList = []
+
+                            d[indexPlusList] = dd.plusIdList.size()
+                            d[indexMinusList] = dd.minusIdList.size()
+                        }
+                    }
+                }
+                else if (params.query in ['timeline-member-cost', 'timeline-participant-cost']) {
                     GrailsParameterMap clone = params.clone() as GrailsParameterMap
 
                     // ApplicationTagLib g = BeanStore.getApplicationTagLib()
@@ -225,10 +330,13 @@ class SubscriptionReport {
 
                         Map<String, Object> fsCifsMap = financeControllerService.getResultGenerics(clone)
                         fsCifsMap.put('max', 5000)
+                        //println fsCifsMap // todo - remove
                         Map<String, Object> finance = financeService.getCostItemsForSubscription(clone, fsCifsMap)
-
+                        //println finance // todo - remove
                         //List<CostItem> relevantCostItems = finance.cons.costItems.findAll{ it.costItemElementConfiguration in [RDStore.CIEC_POSITIVE, RDStore.CIEC_NEGATIVE]} ?: []
-                        List<CostItem> neutralCostItems  = finance.cons.costItems.findAll{ it.costItemElementConfiguration == RDStore.CIEC_NEUTRAL } ?: []
+                        def typeDependingCosts = finance.cons ?: finance.subscr
+
+                        List<CostItem> neutralCostItems = (typeDependingCosts.costItems.findAll{ it.costItemElementConfiguration == RDStore.CIEC_NEUTRAL } ?: []) as List<CostItem>
                         List<Double> vncList  = neutralCostItems.collect{Double cilc = it.costInLocalCurrency ?: 0.0; it.finalCostRounding ? cilc.round(0) : cilc.round(2) }
                         List<Double> vnctList = neutralCostItems.collect{it.getCostInLocalCurrencyAfterTax() }
 
@@ -237,8 +345,8 @@ class SubscriptionReport {
                                 s.name,
                                 vncList ? vncList.sum() : 0.0,
                                 vnctList ? vnctList.sum() : 0.0,
-                                finance.cons?.sums?.localSums?.localSum ?: 0,
-                                finance.cons?.sums?.localSums?.localSumAfterTax ?: 0,
+                                typeDependingCosts?.sums?.localSums?.localSum ?: 0,
+                                typeDependingCosts?.sums?.localSums?.localSumAfterTax ?: 0,
                                 (s.startDate ? sdf.format(s.startDate) : NO_STARTDATE) + ' - ' + (s.endDate ? sdf.format(s.endDate) : NO_ENDDATE),
                                 sub == s
                         ]
@@ -247,7 +355,7 @@ class SubscriptionReport {
                                 query   : params.query,
                                 id      : s.id,
                                 label   : data[6],
-                                idList  : finance.cons.costItems.collect{ it.id },
+                                idList  : typeDependingCosts.costItems.collect{ it.id },
                                 vnc     : ( Math.round(data[2] * 100) / 100 ).doubleValue(),
                                 vnct    : ( Math.round(data[3] * 100) / 100 ).doubleValue(),
                                 vc      : ( Math.round(data[4] * 100) / 100 ).doubleValue(),
@@ -266,20 +374,36 @@ class SubscriptionReport {
                     }
 
                     BaseQuery.handleGenericAnnualXQuery(params.query, 'Subscription', subIdLists, result)
-
                     List newData = []
                     result.data.each { d ->
+                        boolean isCurrent = (sub.startDate && sub.endDate) ? DateUtils.getYearAsInteger(sub.startDate) <= d[0] && DateUtils.getYearAsInteger(sub.endDate) >= d[0] : false
+                        if (isCurrent) {
+                            timelineIsCurrentId = Long.valueOf(d[0] as String)
+                        }
                         newData.add([
-                            d[0], d[1], d[2],
-                            (sub.startDate && sub.endDate) ? DateUtils.getYearAsInteger(sub.startDate) <= d[0] && DateUtils.getYearAsInteger(sub.endDate) >= d[0] : false
+                            d[0], d[1], d[2], isCurrent
                         ])
                     }
                     result.data = newData
                 }
 
                 // keep all data for correct processing and only then limit
-                result.data = (result.data as List).takeRight(NUMBER_OF_TIMELINE_ELEMENTS)
-                result.dataDetails = (result.dataDetails as List).takeRight(NUMBER_OF_TIMELINE_ELEMENTS)
+
+                int timelineFromIdx = 0
+                result.data.eachWithIndex{ List entry, int idx ->
+                    if (entry[0] == timelineIsCurrentId) { timelineFromIdx = idx }
+                }
+                int timelineToIdx = (timelineFromIdx + NUMBER_OF_TIMELINE_ELEMENTS)
+
+                if ((result.data.size() <= NUMBER_OF_TIMELINE_ELEMENTS) || timelineToIdx > result.data.size()) {
+                    result.data = (result.data as List).takeRight(NUMBER_OF_TIMELINE_ELEMENTS)
+                    result.dataDetails = (result.dataDetails as List).takeRight(NUMBER_OF_TIMELINE_ELEMENTS)
+                }
+                else {
+                    result.data = (result.data as List).subList(timelineFromIdx, timelineToIdx)
+                    result.dataDetails = (result.dataDetails as List).subList(timelineFromIdx, timelineToIdx)
+                }
+
             }
 
             else if (prefix == 'tipp') {
@@ -561,7 +685,7 @@ class SubscriptionReport {
         tmp = sub
         while (tmp) {
             tmp = getNext(tmp)
-            if (tmp) { result.push(tmp) }
+            if (tmp) { result.add(tmp) }
         }
         result
     }

@@ -16,6 +16,7 @@ import de.laser.remote.ApiSource
 import de.laser.remote.ElasticsearchSource
 import de.laser.remote.FTControl
 import de.laser.remote.GlobalRecordSource
+import de.laser.reporting.report.ReportingCache
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
 import de.laser.stats.LaserStatsCursor
@@ -34,8 +35,6 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.gorm.transactions.Transactional
 import grails.util.Holders
 import grails.web.Action
-import groovy.sql.GroovyRowResult
-import groovy.sql.Sql
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.client.core.CountRequest
@@ -52,6 +51,7 @@ import javax.servlet.ServletOutputStream
 import java.lang.annotation.Annotation
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
+import java.nio.file.Files
 import java.sql.Timestamp
 import java.time.LocalDate
 import java.util.concurrent.ExecutorService
@@ -86,6 +86,7 @@ class YodaController {
     SubscriptionService subscriptionService
     SurveyUpdateService surveyUpdateService
     YodaService yodaService
+    WekbStatsService wekbStatsService
 
     /**
      * Shows the Yoda-dashboard
@@ -206,35 +207,43 @@ class YodaController {
         result.appContext = getApplicationContext()
 
         result.hibernateSession = sessionFactory
-
         result.ehcacheManager = cacheService.getEhcacheManager()
 
-        if (params.key) {
-            JSON entry = contextService.getSessionCache().get(params.key) as JSON
+        if (params.cmd && params.type) {
 
-            entry.prettyPrint = true
-            response.setContentType("application/json")
-            response.outputStream << entry
+            if (params.cmd == 'clearCache') {
+                if (params.type == 'session') {
+                    contextService.getSessionCache().clear()
+                }
+                else if (params.type == 'ehcache' && params.cache) {
+                    cacheService.clear(cacheService.getCache(result.ehcacheManager, params.cache))
+                }
 
-            return
-        }
-        else if (params.cmd?.equals('clearCache')) {
-            def cache
-            if (params.type?.equals('session')) {
-                cache = contextService.getSessionCache()
-                cache.clear()
+                params.remove('cmd')
+                params.remove('type')
+                params.remove('cache')
+
+                redirect controller: 'yoda', action: 'systemCache', params: params
+                return
             }
-            else if (params.type?.equals('ehcache')) {
-                cache = cacheService.getCache(result.ehcacheManager, params.cache)
-                cacheService.clear(cache)
+            else if (params.cmd == 'get') {
+                JSON entry
+
+                if (params.type == 'reporting' && params.token) {
+                    ReportingCache rCache = new ReportingCache(ReportingCache.CTX_GLOBAL, params.token as String)
+                    entry = rCache.get() as JSON
+                }
+                else if (params.type == 'session' && params.key) {
+                    entry = contextService.getSessionCache().get(params.key) as JSON
+                }
+                if (entry) {
+                    entry.prettyPrint = true
+                    response.setContentType("application/json")
+                    response.outputStream << entry
+
+                    return
+                }
             }
-
-            params.remove('cmd')
-            params.remove('type')
-            params.remove('cache')
-
-            redirect controller: 'yoda', action: 'systemCache', params: params
-            return
         }
 
         result
@@ -338,7 +347,9 @@ class YodaController {
         result.globalMatrixSteps = [0, 2000, 4000, 8000, 12000, 20000, 30000, 45000, 60000]
 
         result.archive = params.archive ?: SystemProfiler.getCurrentArchive()
-        result.allArchives = SystemProfiler.executeQuery('select distinct(archive) from SystemProfiler').collect{ it }
+        result.allArchives = SystemProfiler.executeQuery('select distinct(archive) from SystemProfiler').collect{ it ->
+            [it,  SystemProfiler.executeQuery('select count(*) from SystemProfiler where archive =: archive', [archive: it])[0]]
+        }
 
         List<String> allUri = SystemProfiler.executeQuery('select distinct(uri) from SystemProfiler')
 
@@ -466,45 +477,40 @@ class YodaController {
                                     test     : ''
                             ]
 
-                            if (da.isInstUser_or_ROLEADMIN()) {
-                                mInfo.debug.test        = 'isInstUser_or_ROLEADMIN()'
+                            if (da.isInstUser_or_ROLEADMIN() != ([''] as String[])) {
+                                mInfo.debug.test        = 'isInstUser_or_ROLEADMIN()' //  + da.isInstUser_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.isInstUser_or_ROLEADMIN().toList()[0]
                                 mInfo.debug.affil       = 'INST_USER'
                                 mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }
-                            if (da.isInstEditor_or_ROLEADMIN()) {
-                                mInfo.debug.test        = 'isInstEditor_or_ROLEADMIN()'
+                            if (da.isInstEditor_or_ROLEADMIN() != ([''] as String[])) {
+                                mInfo.debug.test        = 'isInstEditor_or_ROLEADMIN()' //  + da.isInstEditor_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.isInstEditor_or_ROLEADMIN().toList()[0]
                                 mInfo.debug.affil       = 'INST_EDITOR'
                                 mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }
-                            if (da.isInstAdm_or_ROLEADMIN()) {
-                                mInfo.debug.test        = 'isInstAdm_or_ROLEADMIN()'
+                            if (da.isInstAdm_or_ROLEADMIN() != ([''] as String[])) {
+                                mInfo.debug.test        = 'isInstAdm_or_ROLEADMIN()' //  + da.isInstAdm_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.isInstAdm_or_ROLEADMIN().toList()[0]
                                 mInfo.debug.affil       = 'INST_ADM'
                                 mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }
-
-                            if (da.hasPermAsInstUser_or_ROLEADMIN()) {
-                                mInfo.debug.test        = 'hasPermAsInstUser_or_ROLEADMIN()' //  + da.hasPermAsInstUser_or_ROLEADMIN().toList()
-                                mInfo.debug.perm        = da.hasPermAsInstUser_or_ROLEADMIN().toList()[0]
+                            if (da.isInstUser_denySupport_or_ROLEADMIN() != ([''] as String[])) {
+                                mInfo.debug.test        = 'isInstUser_denySupport_or_ROLEADMIN()' //  + da.isInstUser_denySupport_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.isInstUser_denySupport_or_ROLEADMIN().toList()[0]
                                 mInfo.debug.affil       = 'INST_USER'
                                 mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }
-                            if (da.hasPermAsInstEditor_or_ROLEADMIN()) {
-                                mInfo.debug.test        = 'hasPermAsInstEditor_or_ROLEADMIN()' //  + da.hasPermAsInstEditor_or_ROLEADMIN().toList()
-                                mInfo.debug.perm        = da.hasPermAsInstEditor_or_ROLEADMIN().toList()[0]
+                            if (da.isInstEditor_denySupport_or_ROLEADMIN() != ([''] as String[])) {
+                                mInfo.debug.test        = 'isInstEditor_denySupport_or_ROLEADMIN()' //  + da.isInstEditor_denySupport_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.isInstEditor_denySupport_or_ROLEADMIN().toList()[0]
                                 mInfo.debug.affil       = 'INST_EDITOR'
                                 mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }
-                            if (da.hasPermAsInstAdm_or_ROLEADMIN()) {
-                                mInfo.debug.test        = 'hasPermAsInstAdm_or_ROLEADMIN()' //  + da.hasPermAsInstAdm_or_ROLEADMIN().toList()
-                                mInfo.debug.perm        = da.hasPermAsInstAdm_or_ROLEADMIN().toList()[0]
+                            if (da.isInstAdm_denySupport_or_ROLEADMIN() != ([''] as String[])) {
+                                mInfo.debug.test        = 'isInstAdm_denySupport_or_ROLEADMIN()' //  + da.isInstAdm_denySupport_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.isInstAdm_denySupport_or_ROLEADMIN().toList()[0]
                                 mInfo.debug.affil       = 'INST_ADM'
-                                mInfo.debug.specRole    = 'ROLE_ADMIN'
-                            }
-                            if (da.hasPermAsInstRoleAsConsortium_or_ROLEADMIN()) {
-                                mInfo.debug.test        = 'hasPermAsInstRoleAsConsortium_or_ROLEADMIN()' //  + da.hasPermAsInstRoleAsConsortium_or_ROLEADMIN().toList()
-                                mInfo.debug.perm        = da.hasPermAsInstRoleAsConsortium_or_ROLEADMIN().toList()[0]
-                                mInfo.debug.affil       = da.hasPermAsInstRoleAsConsortium_or_ROLEADMIN().toList()[1]
-                                mInfo.debug.type        = 'Consortium'
                                 mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }
 
@@ -612,6 +618,11 @@ class YodaController {
         yodaService.getTIPPsWithoutGOKBId()
     }
 
+    /**
+     * Matches the status of the title instance to the issue entitlement holdings. Should be used in case of
+     * preceding errors in the title synchronisation where the
+     * @return
+     */
     @Secured(['ROLE_YODA'])
     def matchTitleStatus() {
         if(!yodaService.bulkOperationRunning) {
@@ -656,6 +667,36 @@ class YodaController {
             }
         }
         redirect controller: 'home'
+    }
+
+    @Secured(['ROLE_YODA'])
+    Map<String, Object> manageTempUsageFiles() {
+        File dir = new File(GlobalService.obtainFileStorageLocation())
+        List<File> tempFiles = dir.listFiles()
+        //tempFiles.sort { File f -> Files.getAttribute(f.toPath(), 'creationTime') }
+        [tempFiles: tempFiles]
+    }
+
+    @Secured(['ROLE_YODA'])
+    def deleteTempFile() {
+        if(params.containsKey('filename')) {
+            if(!params.filename.contains('..') && !params.filename.contains('\\') && !params.filename.contains('/')) {
+                File f = new File(GlobalService.obtainFileStorageLocation() + '/' + params.filename)
+                try {
+                    f.delete()
+                }
+                catch (IOException e) {
+                    log.error("unable to delete file: ${GlobalService.obtainFileStorageLocation() + '/' + params.filename}")
+                }
+            }
+        }
+        else if(params.containsKey('emptyDir')) {
+            File f = new File(GlobalService.obtainFileStorageLocation())
+            f.deleteDir()
+            f.mkdir()
+        }
+        //tempFiles.sort { File f -> Files.getAttribute(f.toPath(), 'creationTime') }
+        redirect action: 'manageTempUsageFiles'
     }
 
     /**
@@ -849,8 +890,7 @@ class YodaController {
 
     /**
      * Is one of the dangerous methods: retriggers the change processing on title level and hands eventual differences
-     * to the local holdings; if necessary, pending changes are being generated
-     * @see PendingChange
+     * to the local holdings
      */
     @Secured(['ROLE_YODA'])
     def reloadPackage() {
@@ -873,7 +913,9 @@ class YodaController {
      * Is another one of the dangerous methods: retriggers the change processing on subscription holding level and hands eventual differences
      * to the local holdings; if necessary, pending changes are being generated
      * @see PendingChange
+     * @deprecated use case is not given any more; {@link #reloadPackage()} and {@link #matchTitleStatus()} do the purpose
      */
+    @Deprecated
     @Secured(['ROLE_YODA'])
     def retriggerPendingChanges() {
         if(!globalSourceSyncService.running) {
@@ -892,20 +934,21 @@ class YodaController {
     }
 
     /**
-     * Call to reload all provider data from the speicified we:kb instance.
+     * Call to reload all provider / agency data from the specified we:kb instance.
      * Note that the organisations whose data should be updated need a we:kb ID for match;
      * if no match is being found for the given we:kb ID, a new record will be created!
      */
     @Secured(['ROLE_YODA'])
-    def reloadWekbProvider() {
+    def reloadWekbOrg() {
         if(!globalSourceSyncService.running) {
-            //continue here and with running GlobalDataSync (beware: other GRS are switched off for test, test also with sources enabled!)
             log.debug("start reloading ...")
-            executorService.execute({
-                Thread.currentThread().setName("GlobalDataUpdate_Org")
-                globalSourceSyncService.reloadData('Org')
-                yodaService.expungeRemovedComponents(Org.class.name)
-            })
+            if(params.containsKey('componentType')) {
+                executorService.execute({
+                    Thread.currentThread().setName("GlobalDataUpdate_Org")
+                    globalSourceSyncService.reloadData(params.componentType)
+                    yodaService.expungeRemovedComponents(params.componentType)
+                })
+            }
         }
         else {
             log.debug("process running, lock is set!")
@@ -933,6 +976,13 @@ class YodaController {
             log.debug("process running, lock is set!")
         }
         redirect controller: 'platform', action: 'list'
+    }
+
+    @Secured(['ROLE_YODA'])
+    def reloadWekbChanges() {
+        log.info('--> reloadWekbChanges')
+        wekbStatsService.updateCache()
+        redirect controller: 'myInstitution', action: 'dashboard'
     }
 
     /**
@@ -1040,6 +1090,9 @@ class YodaController {
         redirect(action: 'manageFTControl')
     }
 
+    /**
+     * Call to trigger an index update
+     */
     @Secured(['ROLE_YODA'])
     def continueIndex() {
         if (params.name) {
@@ -1140,7 +1193,7 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def systemSettings() {
         Map<String, Object> result = [:]
-        result.settings = SystemSetting.executeQuery('select s from SystemSetting s where s.name != \'MaintenanceMode\' order by s.name asc')
+        result.settings = []
         result
     }
 
@@ -1546,6 +1599,11 @@ class YodaController {
         redirect action: 'dashboard'
     }
 
+    /**
+     * Generates permanent title records for each issue entitlement which has a perpetual access ensured
+     * @see PermanentTitle
+     * @see Subscription#hasPerpetualAccess
+     */
     @Secured(['ROLE_YODA'])
     def setPermanentTitle() {
         if (subscriptionService.checkThreadRunning('setPermanentTitle')) {

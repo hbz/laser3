@@ -17,9 +17,6 @@ import de.laser.storage.RDStore
 import de.laser.system.SystemAnnouncement
 import de.laser.system.SystemEvent
 import de.laser.system.SystemMessage
-import de.laser.workflow.WfConditionPrototype
-import de.laser.workflow.WfWorkflowPrototype
-import de.laser.workflow.WfTaskPrototype
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -52,11 +49,11 @@ class AdminController  {
     GenericOIDService genericOIDService
     GlobalSourceSyncService globalSourceSyncService
     MailService mailService
+    OrganisationService organisationService
     PropertyService propertyService
     RefdataService refdataService
     SessionFactory sessionFactory
     StatsSyncService statsSyncService
-    WorkflowOldService workflowOldService
 
     /**
      * Empty call, loads empty admin dashboard
@@ -142,6 +139,9 @@ class AdminController  {
         result
     }
 
+    /**
+     * Call to test mail sending
+     */
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def testMailSending() {
@@ -224,7 +224,6 @@ class AdminController  {
                 ['Package', 'packageStatus'],
                 'Platform',
                 'Subscription',
-                'TitleInstance',
                 'TitleInstancePackagePlatform',
                 'Combo'
                 //'Doc'
@@ -234,156 +233,20 @@ class AdminController  {
         jobList.each { job ->
             if (job instanceof String) {
                 log.info('processing: ' + job)
-                String query = "select count(obj) from ${job} obj join obj.status s where lower(s.value) like 'deleted'"
+                String query = "select count(*) from ${job} obj join obj.status s where lower(s.value) like 'deleted'"
                 result.stats."${job}" = Org.executeQuery( query )
             }
             else {
                 log.info('processing: ' + job[0])
-                String query = "select count(obj) from ${job[0]} obj join obj.${job[1]} s where lower(s.value) like 'deleted'"
+                String query = "select count(*) from ${job[0]} obj join obj.${job[1]} s where lower(s.value) like 'deleted'"
                 result.stats."${job[0]}" = Org.executeQuery( query )
             }
         }
         result
     }
 
-    @Deprecated
-    @Secured(['ROLE_ADMIN'])
-    def hardDeletePkgs(){
-        Map<String, Object> result = [:]
-        //If we make a search while paginating return to start
-        if(params.search == "yes"){
-            params.offset = 0
-            params.search = null
-        }
-        result.user = contextService.getUser()
-        SwissKnife.setPaginationParams(result, params, (User) result.user)
-
-    if(params.id){
-        Package pkg = Package.get(params.id)
-        List conflicts_list = []
-
-      if(pkg.documents){
-        def document_map = [:]
-        document_map.name = "Documents"
-        document_map.details = []
-        pkg.documents.each{
-          document_map.details += ['text':it.owner.title]
-        }
-        document_map.action = ['actionRequired':false,'text':"References will be deleted"]
-        conflicts_list += document_map
-      }
-      if(pkg.subscriptions){
-        def subscription_map = [:]
-        subscription_map.name = "Subscriptions"
-        subscription_map.details = []
-        pkg.subscriptions.each{
-          subscription_map.details += ['link':createLink(controller:'subscription', action: 'show', id:it.subscription.id), 'text': it.subscription.name]
-        }
-        subscription_map.action = ['actionRequired':true,'text':"Unlink subscriptions. (IEs will be removed as well)"]
-        if(subscription_map.details){
-          conflicts_list += subscription_map
-        }
-      }
-      if(pkg.tipps){
-        def tipp_map = [:]
-        tipp_map.name = "TIPPs"
-        def totalIE = 0
-        pkg.tipps.each{
-          totalIE += IssueEntitlement.countByTipp(it)
-        }
-        tipp_map.details = [['text':"Number of TIPPs: ${pkg.tipps.size()}"],
-                ['text':"Number of IEs: ${totalIE}"]]
-        tipp_map.action = ['actionRequired':false,'text':"TIPPs and IEs will be deleted"]
-        conflicts_list += tipp_map
-      }
-      result.conflicts_list = conflicts_list
-      result.pkg = pkg
-
-            render(template: "hardDeleteDetails",model:result)
-        }else{
-
-            def criteria = Package.createCriteria()
-            result.pkgs = criteria.list(max: result.max, offset:result.offset){
-                if(params.pkg_name){
-                    ilike("name","${params.pkg_name}%")
-                }
-                order("name", params.order?:'asc')
-            }
-        }
-
-        result
-    }
-
-    @Deprecated
-  @Secured(['ROLE_ADMIN'])
-  def performPackageDelete(){
-   if (request.method == 'POST'){
-      Package pkg = Package.get(params.id)
-      Package.withTransaction { status ->
-        log.info("Deleting Package ")
-        log.info("${pkg.id}::${pkg}")
-        pkg.pendingChanges.each{
-          it.delete()
-        }
-        pkg.documents.each{
-          it.delete()
-        }
-        pkg.orgs.each{
-          it.delete()
-        }
-
-                pkg.subscriptions.each{
-                    it.delete()
-                }
-                pkg.tipps.each{
-                    it.delete()
-                }
-                pkg.delete()
-            }
-            log.info("Delete Complete.")
-        }
-        redirect controller: 'admin', action:'hardDeletePkgs'
-
-    }
-
     /**
-     * Gets the current workflows and returns a dashboard-like overview of the outstanding tasks
-     */
-    @Secured(['ROLE_ADMIN'])
-    @Deprecated
-    def manageWorkflows() {
-        Map<String, Object> result = [:]
-
-        if (params.cmd) {
-            result = workflowOldService.cmd(params)
-        }
-        if (params.tab) {
-            result.tab = params.tab
-        }
-
-        result.wfpIdTable = [:] as Map<Long, Integer>
-        result.tpIdTable  = [:] as Map<Long, Integer>
-        result.cpIdTable  = [:] as Map<Long, Integer>
-
-        result.wfpList = WfWorkflowPrototype.executeQuery('select wfp from WfWorkflowPrototype wfp order by id')
-        result.tpList  = WfTaskPrototype.executeQuery('select tp from WfTaskPrototype tp order by id')
-        result.cpList  = WfConditionPrototype.executeQuery('select cp from WfConditionPrototype cp order by id')
-
-        result.wfpList.eachWithIndex { wfp, i -> result.wfpIdTable.put( wfp.id, i+1 ) }
-        result.tpList.eachWithIndex { tp, i -> result.tpIdTable.put( tp.id, i+1 ) }
-        result.cpList.eachWithIndex { cp, i -> result.cpIdTable.put( cp.id, i+1 ) }
-
-        EhcacheWrapper cache = cacheService.getTTL1800Cache('admin/manageWorkflows')
-        cache.put( 'wfpIdTable', result.wfpIdTable )
-        cache.put( 'tpIdTable', result.tpIdTable )
-        cache.put( 'cpIdTable', result.cpIdTable )
-
-        log.debug( result.toMapString() )
-        result
-    }
-
-    /**
-     * Shows recorded system events; default count is 100 last entries.
+     * Shows recorded system events; default maximum age is 14 days
      * The record listing may be filtered
      * @see SystemEvent
      */
@@ -404,6 +267,11 @@ class AdminController  {
         result
     }
 
+    /**
+     * Shows recorded access warnings of the last 30 days, if not defined otherwise.
+     * The result contains additional data about the attempted access
+     * @see SystemEvent
+     */
     @Secured(['ROLE_ADMIN'])
     def systemEventsLW() {
         Map<String, Object> result = [:]
@@ -483,8 +351,8 @@ class AdminController  {
                 title : [
                         'de_DE.UTF-8' : sql.rows( query4 + ' order by ti_title COLLATE "de_DE" limit ' + limit ).collect{ it.ti_title },
                         'en_US.UTF-8' : sql.rows( query4 + ' order by ti_title COLLATE "en_US" limit ' + limit ).collect{ it.ti_title },
-                        'current_de'  : RefdataValue.executeQuery( "select title from TitleInstance order by title", [max: limit] ),
-                        'current_en'  : RefdataValue.executeQuery( "select title from TitleInstance order by title", [max: limit] )
+                        'current_de'  : RefdataValue.executeQuery( "select name from TitleInstancePackagePlatform order by name", [max: limit] ),
+                        'current_en'  : RefdataValue.executeQuery( "select name from TitleInstancePackagePlatform order by name", [max: limit] )
                 ]
         ]
 
@@ -503,6 +371,9 @@ class AdminController  {
         result
     }
 
+    /**
+     * Delivers current information about the executed database changesets
+     */
     @Secured(['ROLE_ADMIN'])
     def databaseInfo() {
 
@@ -584,7 +455,19 @@ class AdminController  {
      */
     @Secured(['ROLE_ADMIN'])
     def fileConsistency() {
-        Map<String, Object> result = [:]
+        log.debug('fileConsistency - start')
+
+        Map<String, Object> result = [
+            listOfDocsInUse: [],
+            listOfDocsInUseOrphaned: [],
+
+            listOfDocsNotInUse : [],
+            listOfDocsNotInUseOrphaned: [],
+
+            listOfFiles: [],
+            listOfFilesMatchingDocs: [],
+            listOfFilesOrphaned: []
+        ]
 
         result.filePath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
 
@@ -602,16 +485,6 @@ class AdminController  {
         }
 
         // files
-
-        result.listOfFiles = []
-        result.listOfFilesMatchingDocs = []
-        result.listOfFilesOrphaned = []
-
-        result.listOfDocsInUse = []
-        result.listOfDocsInUseOrphaned = []
-
-        result.listOfDocsNotInUse= []
-        result.listOfDocsNotInUseOrphaned = []
 
         try {
             File folder = new File("${result.filePath}")
@@ -637,24 +510,21 @@ class AdminController  {
 
         // docs
 
-        List<Doc> listOfDocs = Doc.executeQuery(
-                'select doc from Doc doc where doc.contentType = :ct order by doc.id',
-                [ct: Doc.CONTENT_TYPE_FILE]
-        )
-
         result.listOfDocsInUse = Doc.executeQuery(
-                'select distinct(doc) from DocContext dc join dc.owner doc where doc.contentType = :ct order by doc.id',
-                [ct: Doc.CONTENT_TYPE_FILE]
+                'select distinct(doc) from DocContext dc join dc.owner doc where doc.contentType = :ct order by doc.id', [ct: Doc.CONTENT_TYPE_FILE]
+        )
+        result.listOfDocsNotInUseDoc = Doc.executeQuery(
+                'select doc from Doc doc where doc.contentType = :ct and doc not in ' +
+                    '(select distinct(doc2) from DocContext dc join dc.owner doc2 where doc2.contentType = :ct) ' +
+                'order by doc.id', [ct: Doc.CONTENT_TYPE_FILE]
         )
 
-        result.listOfDocsNotInUse = listOfDocs - result.listOfDocsInUse
-
-        result.listOfDocsInUse.each{ doc ->
+        result.listOfDocsInUse.each { Doc doc ->
             if (! fileCheck(doc)) {
                 result.listOfDocsInUseOrphaned << doc
             }
         }
-        result.listOfDocsNotInUse.each{ doc ->
+        result.listOfDocsNotInUse.each { Doc doc ->
             if (! fileCheck(doc)) {
                 result.listOfDocsNotInUseOrphaned << doc
             }
@@ -672,6 +542,7 @@ class AdminController  {
                 [ct: Doc.CONTENT_TYPE_FILE, del: RDStore.DOC_CTX_STATUS_DELETED]
         ).size()
 
+        log.debug('fileConsistency - done')
         result
     }
 
@@ -716,7 +587,6 @@ class AdminController  {
             result.docsToRecovery = docs
         }
         result
-
     }
 
     /**
@@ -856,6 +726,19 @@ class AdminController  {
         result.allConsortia = Org.executeQuery(
                 "select o from OrgSetting os join os.org o where os.key = 'CUSTOMER_TYPE' and (os.roleValue.authority  = 'ORG_CONSORTIUM_BASIC' or os.roleValue.authority  = 'ORG_CONSORTIUM_PRO') order by o.sortname, o.name"
         )
+        result
+    }
+
+    /**
+     * Call to view a list of organisations which may be merged. Currently only providers and agencies are being supported
+     * because of possible conflicts with the user data registered to institutions
+     */
+    @Secured(['ROLE_ADMIN'])
+    def mergeOrganisations() {
+        Map<String, Object> result = [:]
+        if(params.containsKey('source') && params.containsKey('target')) {
+            result = organisationService.mergeOrganisations(genericOIDService.resolveOID(params.source), genericOIDService.resolveOID(params.target), false)
+        }
         result
     }
 
@@ -1147,6 +1030,10 @@ SELECT * FROM (
         ]
     }
 
+    /**
+     * Call to load the reference data integrity check
+     * @see RefdataService#integrityCheck()
+     */
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def manageRefdataIntegrityCheck() {
@@ -1200,6 +1087,9 @@ SELECT * FROM (
         redirect(action: 'systemMessages')
     }
 
+    /**
+     * Delivers information about the current application health state
+     */
     @Secured(['ROLE_ADMIN'])
     def appInfo() {
         Map<String, Object> result = [
@@ -1277,7 +1167,7 @@ SELECT * FROM (
 
     /**
      * Updates the given email template
-     * @return
+     * @return the updated list view
      */
     @Transactional
     @Secured(['ROLE_ADMIN'])

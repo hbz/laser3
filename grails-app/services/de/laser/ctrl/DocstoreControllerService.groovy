@@ -20,7 +20,7 @@ class DocstoreControllerService {
     /**
      * Edits a document with the given parameter map. The editing is done if the attached object could be retrieved. The document context is given by params.docctx
      * @param params the parameter {@link Map}
-     * @return a {@link Map} containing the edtiting result status
+     * @return a {@link Map} containing the editing result status
      */
     //TODO [ticket=2393] this is a process which should be deployed onto the DMS
     Map<String,Object> editDocument(GrailsParameterMap params) {

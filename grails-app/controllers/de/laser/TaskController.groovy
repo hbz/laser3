@@ -18,12 +18,14 @@ import java.text.SimpleDateFormat
 class TaskController  {
 
     ContextService contextService
-    TaskService taskService
 
 	//-----
 
 	static allowedMethods = [create: 'POST', edit: 'POST', delete: 'POST']
 
+	/**
+	 * Map containing menu alternatives if an unexisting object has been called
+	 */
 	public static final Map<String, String> CHECK404_ALTERNATIVES = [
 			'myInstitution/tasks' : 'menu.institutions.tasks'
 	]
@@ -34,7 +36,7 @@ class TaskController  {
 	 * Processes the submitted input parameters and creates a new task for the given owner object
 	 * @return a redirect to the referer
 	 */
-	@DebugInfo(isInstEditor_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
+	@DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
 	@Secured(closure = {
 		ctx.contextService.isInstEditor_or_ROLEADMIN()
 	})
@@ -91,7 +93,7 @@ class TaskController  {
 	 * Processes the submitted input and updates the given task instance with the given parameters
 	 * @return a redirect to the referer
 	 */
-	@DebugInfo(isInstUser_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
+	@DebugInfo(isInstUser_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
 	@Secured(closure = {
 		ctx.contextService.isInstUser_or_ROLEADMIN()
 	})
@@ -175,7 +177,7 @@ class TaskController  {
 	 * Call to delete the given task instance
 	 * @return a redirect to the referer
 	 */
-	@DebugInfo(isInstEditor_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
+	@DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
 	@Secured(closure = {
 		ctx.contextService.isInstEditor_or_ROLEADMIN()
 	})

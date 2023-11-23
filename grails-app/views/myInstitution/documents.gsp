@@ -1,12 +1,12 @@
 <%@page import="de.laser.Org" %>
-<laser:htmlStart message="menu.my.documents" />
+<laser:htmlStart message="menu.my.documents" serviceInjection="true"/>
 
     <ui:breadcrumbs>
       <ui:crumb message="menu.my.documents" class="active"/>
     </ui:breadcrumbs>
 
     <ui:controlButtons>
-      <laser:render template="actions" />
+      <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
     </ui:controlButtons>
 
     <ui:h1HeaderWithIcon message="menu.my.documents" type="file" />

@@ -6,15 +6,17 @@
 <laser:render template="breadcrumb"
               model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
 
-<ui:h1HeaderWithIcon text="${orgInstance.name}" />
+<ui:h1HeaderWithIcon text="${orgInstance.name}">
+    <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
+</ui:h1HeaderWithIcon>
 
 <ui:controlButtons>
-    <laser:render template="actions" />
+    <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
 </ui:controlButtons>
 
 <ui:messages data="${flash}"/>
 
-<laser:render template="/organisation/nav"/>
+<laser:render template="${customerTypeService.getNavTemplatePath()}"/>
 
 <div class="ui top attached stackable tabular la-tab-with-js menu">
     <a class="${params.tab == 'contacts' ? 'active' : ''} item" data-tab="contacts">

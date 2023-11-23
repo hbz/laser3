@@ -5,8 +5,10 @@ import groovy.util.logging.Slf4j
 
 /**
  * A COUNTER report representation according to the COUNTER format, revision 4 (https://www.projectcounter.org/code-of-practice-sections/usage-reports/)
+ * @deprecated Disused as data is not saved in LAS:eR but retrieved in real-time from the provider
  */
 @Slf4j
+@Deprecated
 class Counter4Report extends AbstractReport {
 
     static final String JOURNAL_REPORT_1        = "JR1"
@@ -26,8 +28,9 @@ class Counter4Report extends AbstractReport {
     /**
      * ex Counter4ApiSource; these are the report types supported by COUNTER Revision 4
      */
-    static List<String> COUNTER_4_TITLE_REPORTS = [JOURNAL_REPORT_1, JOURNAL_REPORT_1_GOA, JOURNAL_REPORT_2, JOURNAL_REPORT_5,
-                                                   BOOK_REPORT_1, BOOK_REPORT_2, BOOK_REPORT_3, BOOK_REPORT_4, BOOK_REPORT_5]
+    static List<String> COUNTER_4_BOOK_REPORTS = [BOOK_REPORT_1, BOOK_REPORT_2, BOOK_REPORT_3, BOOK_REPORT_4, BOOK_REPORT_5]
+    static List<String> COUNTER_4_JOURNAL_REPORTS = [JOURNAL_REPORT_1, JOURNAL_REPORT_1_GOA, JOURNAL_REPORT_2, JOURNAL_REPORT_5]
+    static List<String> COUNTER_4_TITLE_REPORTS = COUNTER_4_BOOK_REPORTS+COUNTER_4_JOURNAL_REPORTS
     static List<String> COUNTER_4_DATABASE_REPORTS = [DATABASE_REPORT_1, DATABASE_REPORT_2]
     static List<String> COUNTER_4_PLATFORM_REPORTS = [PLATFORM_REPORT_1]
     static List<String> COUNTER_4_REPORTS       = COUNTER_4_TITLE_REPORTS+COUNTER_4_PLATFORM_REPORTS+COUNTER_4_DATABASE_REPORTS

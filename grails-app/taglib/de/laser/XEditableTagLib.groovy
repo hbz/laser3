@@ -243,6 +243,7 @@ class XEditableTagLib {
         try {
             boolean editable = _isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
             def owner    = attrs.owner
+            def style    = attrs.style
             String field = attrs.field
 
             if ( editable ) {

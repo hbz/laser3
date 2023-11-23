@@ -7,7 +7,7 @@ import de.laser.storage.RDConstants
 import de.laser.survey.SurveyConfig
 
 /**
- * Represents a single task which can be attached to an object an is, unlike {@link de.laser.workflow.WfTask}, not part of a more complex workflow
+ * Represents a single task which can be attached to an object an is, unlike {@link de.laser.workflow.WfCheckpoint}, not part of a more complex workflow
  * Tasks may but need not to be linked to an object; if they are, the following objects can contain them:
  * <ul>
  *     <li>{@link License}</li>

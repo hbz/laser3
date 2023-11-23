@@ -14,6 +14,7 @@
             <laser:render template="/templates/filter/orgFilter"
                       model="[
                               tmplConfigShow: [['name', 'identifier', 'type', 'customerType'],
+                                               ['discoverySystemsFrontend', 'discoverySystemsIndex'],
                                                ['country&region', 'libraryNetwork', 'sector', 'libraryType']],
                               tmplConfigFormFilter: true
                       ]"/>
@@ -32,20 +33,21 @@
                 <th>${message(code:'org.customerType.label')}</th>
                 <th>
                     ${message(code:'org.apiLevel.label')}
-                    <span class="la-popup-tooltip la-delay la-no-uppercase" data-position="right center" data-content="${message(code:'org.apiLevel.tooltip')}" >
+                    <span class="la-popup-tooltip la-delay la-no-uppercase" data-position="right center" data-content="${message(code:'org.apiLevel.tooltip')}">
                         <i class="question circle icon popup"></i>
                     </span>
                 </th>
                 <th>
                     ${message(code:'org.specialApiPermission.label')}
-                    <span class="la-popup-tooltip la-delay la-no-uppercase" data-position="right center" data-content="${message(code:'org.specialApiPermission.tooltip')}" >
+                    <span class="la-popup-tooltip la-delay la-no-uppercase" data-position="right center" data-content="${message(code:'org.specialApiPermission.tooltip')}">
                         <i class="question circle icon popup"></i>
                     </span>
                 </th>
-                <th class="la-no-uppercase"><span class="la-popup-tooltip la-delay" data-position="left center"
-                          data-content="${message(code:'org.legalInformation.tooltip')}" >
-                    <i class="handshake outline icon"></i>
-                </span></th>
+                <th class="la-no-uppercase">
+                    <span class="la-popup-tooltip la-delay" data-position="left center" data-content="${message(code:'org.legalInformation.tooltip')}">
+                        <i class="handshake outline icon"></i>
+                    </span>
+                </th>
                 <th>${message(code:'org.hasAccessOrg')}</th>
                 <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </tr>
@@ -95,7 +97,7 @@
 
                             def gascoEntry = OrgSetting.get(org, OrgSetting.KEYS.GASCO_ENTRY)
                             if (gascoEntry != OrgSetting.SETTING_NOT_FOUND && gascoEntry.getValue()?.value == 'Yes') {
-                                println '<i class="icon green globe"></i>'
+                                println ' <i class="icon green layer group"></i>'
                                 gascoEntry = gascoEntry.getValue()
                             } else {
                                 gascoEntry = RDStore.YN_NO
@@ -173,14 +175,14 @@
                     </td>
 
                     <td class="x">
-                        <g:if test="${org.isCustomerType_Consortium()}">
+                        <g:if test="${org.isCustomerType_Consortium() || org.isCustomerType_Support()}">
                             <button type="button" class="ui icon button la-modern-button la-popup-tooltip la-delay"
                                     data-gascoTarget="${Org.class.name}:${org.id}"
                                     data-gascoEntry="${gascoEntry.class.name}:${gascoEntry.id}"
                                     data-orgName="${org.name}"
                                     data-ui="modal"
                                     data-href="#gascoEntryModal"
-                                    data-content="GASCO-Eintrag ändern" data-position="top left"><i class="globe icon"></i></button>
+                                    data-content="GASCO-Eintrag ändern" data-position="top left"><i class="layer group icon"></i></button>
                         </g:if>
 
                         <g:if test="${org.isCustomerType_Inst()}">

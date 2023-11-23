@@ -4,7 +4,6 @@ package de.laser
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserRole
-import de.laser.config.ConfigMapper
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
@@ -19,7 +18,6 @@ import org.springframework.validation.FieldError
 @Transactional
 class UserService {
 
-    AccessService accessService
     ContextService contextService
     GenericOIDService genericOIDService
     MessageSource messageSource
@@ -167,11 +165,12 @@ class UserService {
     }
 
     /**
-     * Checks the user's permissions in the given institution
+     * Checks the user's permissions in the given institution or if it is a superuser; is a substitution call for
+     * {@link #hasFormalAffiliation(de.laser.auth.User, de.laser.Org, java.lang.String)} if not a superuser
      * @param userToCheck the user to check
      * @param instUserRole the user's role (permission grant) in the institution to be checked
      * @param orgToCheck the institution to which affiliation should be checked
-     * @return true if the given permission is granted to the user in the given institution (or a missing one overridden by global roles), false otherwise
+     * @return true if the given permission is granted to the user in the given institution (or a missing one overridden by global roles; having at least ROLE_USER rights), false otherwise
      */
     boolean hasAffiliation_or_ROLEADMIN(User userToCheck, Org orgToCheck, String instUserRole) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
@@ -183,6 +182,13 @@ class UserService {
         _checkUserOrgRole(userToCheck, orgToCheck, instUserRole)
     }
 
+    /**
+     * Checks the user's permissions in the given institution
+     * @param userToCheck the user to check
+     * @param instUserRole the user's role (permission grant) in the institution to be checked
+     * @param orgToCheck the institution to which affiliation should be checked
+     * @return true if the given permission is granted to the user in the given institution which is also the context institution, false otherwise
+     */
     boolean hasFormalAffiliation(User userToCheck, Org orgToCheck, String instUserRole) {
         if (! userToCheck || ! orgToCheck) {
             return false
@@ -193,6 +199,14 @@ class UserService {
         _checkUserOrgRole(userToCheck, orgToCheck, instUserRole)
     }
 
+    /**
+     * Substitution call for {@link #hasFormalAffiliation(de.laser.auth.User, de.laser.Org, java.lang.String)}; may be
+     * overridden by {@link Role#ROLE_ADMIN} before
+     * @param userToCheck the user to check
+     * @param orgToCheck the institution to which affiliation should be checked
+     * @param instUserRole the user's role (permission grant) in the institution to be checked
+     * @return true if the given user has {@link Role#ROLE_ADMIN} rights; the result of {@link #hasFormalAffiliation(de.laser.auth.User, de.laser.Org, java.lang.String)} otherwise
+     */
     boolean hasFormalAffiliation_or_ROLEADMIN(User userToCheck, Org orgToCheck, String instUserRole) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
@@ -200,6 +214,14 @@ class UserService {
         hasFormalAffiliation(userToCheck, orgToCheck, instUserRole)
     }
 
+    /**
+     * Checks if the given institution role is granted to the given user at the given institution. The role
+     * may be granted implicitly by another role
+     * @param userToCheck the user to check
+     * @param orgToCheck the institution to which the user is belonging
+     * @param instUserRole the role to check
+     * @return true if the given role is granted to the user, false otherwise
+     */
     private boolean _checkUserOrgRole(User userToCheck, Org orgToCheck, String instUserRole) {
         boolean check = false
 
@@ -215,9 +237,11 @@ class UserService {
         }
 
         rolesToCheck.each { String rtc ->
-            Role role = Role.findByAuthority(rtc)
-            if (role) {
-                check = check || userToCheck.isFormal(role, orgToCheck)
+            if (!check) {
+                Role role = Role.findByAuthority(rtc)
+                if (role) {
+                    check = userToCheck.isFormal(role, orgToCheck)
+                }
             }
         }
         //TODO: log.debug("_checkUserOrgRole(): ${userToCheck} ${orgToCheck} ${instUserRole} -> ${check}")
@@ -226,6 +250,12 @@ class UserService {
 
     // -- todo: check logic
 
+    /**
+     * Checks if the given user belongs as administrator to an institution linked to the given consortium
+     * @param user the user to check
+     * @param org the consortium ({@link Org}) whose institutions should be checked
+     * @return true if there is at least one institution belonging to the given consortium for which the user has {@link Role#INST_ADM} rights
+     */
     boolean hasComboInstAdmPivileges(User user, Org org) {
         boolean result = hasFormalAffiliation(user, org, 'INST_ADM')
 
@@ -242,12 +272,18 @@ class UserService {
 
     // -- todo: check logic
 
+    /**
+     * Checks if the given user can be edited by the given editor user
+     * @param user the user who should be edited
+     * @param editor the editor whose permissions should be checked
+     * @return true if the user is an {@link Role#INST_ADM} of a consortium to which the target institution is belonging, a consortium administrator at all or a superadmin, false otherwise
+     */
     boolean isUserEditableForInstAdm(User user, User editor) {
         if (user.formalOrg) {
             return hasComboInstAdmPivileges(editor, user.formalOrg)
         }
         else {
-            return contextService.hasPermAsInstAdm_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+            return contextService.isInstAdm_denySupport_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
         }
     }
 }

@@ -209,18 +209,14 @@
             </div>
             <% /* 4-2 */ %>
         <%-- TODO [ticket=2276] provisoric, name check is in order to prevent id mismatch --%>
-            <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_INST_PRO) || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
+            <g:if test="${contextService.getOrg().isCustomerType_Inst_Pro()}">
                 <div class="field">
                     <fieldset id="subscritionType">
                         <label>${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
 
                         <div class="inline fields la-filter-inline">
                             <%
-                                List subTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)
-                                if (institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID)
-                                    subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL
-                                else
-                                    subTypes -= RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE
+                                List subTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE) - RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE
                             %>
                             <g:each in="${subTypes}" var="subType">
                                 <div class="inline field">
@@ -241,7 +237,7 @@
                 <div class="field"></div>
             </g:else>
 
-            <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_INST_BASIC)}">
+            <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
                 <div class="field">
                     <fieldset>
                         <legend id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</legend>
@@ -274,9 +270,9 @@
             <table class="ui compact monitor stackable celled sortable table la-table la-js-responsive-table">
                 <thead>
                 <tr>
-                    %{--                    <th scope="col" rowspan="3" class="center aligned">
-                                            ${message(code: 'sidewide.number')}
-                                        </th>--}%
+                   <th scope="col" rowspan="3" class="center aligned">
+                        ${message(code: 'sidewide.number')}
+                    </th>
                     <g:sortableColumn scope="col" rowspan="3" params="${params}" property="providerAgency"
                                       title="${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}"/>
 
@@ -285,15 +281,14 @@
 
                     <g:sortableColumn scope="col" rowspan="2" class="la-smaller-table-head" params="${params}"
                                       property="startDate"
-                                      title="${message(code: 'default.startDate.label')}"/>
+                                      title="${message(code: 'default.startDate.label.shy')}"/>
 
                     <g:sortableColumn scope="col" rowspan="3" params="${params}" property="manualCancellationDate"
-                                      title="${message(code: 'subscription.manualCancellationDate.label')}"/>
+                                      title="${message(code: 'subscription.manualCancellationDate.label.shy')}"/>
 
                     <th colspan="3" class="la-smaller-table-head center aligned">
                         ${message(code: 'subscription.offer.table.th')}
                     </th>
-
 
                     <th scope="col" rowspan="3" class="center aligned">
                         ${message(code: 'subscription.priceIncreaseInfo.label')}
@@ -331,8 +326,6 @@
                         Renewal
                     </th>
 
-
-
                     <th scope="col" rowspan="3" class="center aligned sortable ${params.sort == 'participantTransferWithSurvey' ? ('sorted '+(params.order == 'asc' ? 'desc' : 'asc')) : ''}">
                         <g:link action="currentSubscriptionsTransfer" params="${params+[sort: 'participantTransferWithSurvey', order: params.order == 'asc' ? 'desc' : 'asc']}" class="la-popup-tooltip la-delay " data-content="${message(code: 'subscription.participantTransferWithSurvey.label')}" data-position="top center">
                             <i class="large icons">
@@ -341,7 +334,6 @@
                             </i>
                         </g:link>
                     </th>
-
                 </tr>
                 <tr>
                     <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}"
@@ -365,14 +357,11 @@
                     <th scope="col" rowspan="2" class="center aligned two wide">
                         ${message(code: 'subscriptionsManagement.documents')}
                     </th>%{-- Documents--}%
-
-
-
                 </tr>
                 <tr>
                     <g:sortableColumn scope="col" rowspan="1" class="la-smaller-table-head" params="${params}"
                                       property="endDate"
-                                      title="${message(code: 'default.endDate.label')}"/>
+                                      title="${message(code: 'default.endDate.label.shy')}"/>
                     <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}"
                                       property="offerRequestedDate"
                                       title="${message(code: 'subscription.offerRequestedDate.table.th')}"/>
@@ -389,9 +378,9 @@
                 <tbody>
                 <g:each in="${subscriptions}" var="s" status="i">
                     <tr>
-                        %{--                        <td class="center aligned">
-                                                    ${(params.int('offset') ?: 0) + i + 1}
-                                                </td>--}%
+                        <td class="center aligned">
+                            ${(params.int('offset') ?: 0) + i + 1}
+                        </td>
                         <td>
                         <%-- as of ERMS-584, these queries have to be deployed onto server side to make them sortable --%>
                             <g:each in="${s.providers}" var="org">
@@ -426,7 +415,7 @@
                         <td>
                             <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/><br/>
                             <span class="la-secondHeaderRow"
-                                  data-label="${message(code: 'default.endDate.label')}:"><g:formatDate
+                                  data-label="${message(code: 'default.endDate.label.shy')}:"><g:formatDate
                                     formatName="default.date.format.notime" date="${s.endDate}"/></span>
                         </td>
                         <td>
@@ -438,12 +427,16 @@
                             <ui:xEditable owner="${s}" field="offerRequestedDate" type="date"/>
                         </td>
                         <td>
-                            <button type="button" class="ui icon small button blue la-modern-button" data-ui="modal"
-                                    data-href="${"#modalCreateDocumentOffer" + s.id}"><i aria-hidden="true"
-                                                                                         class="plus small icon"></i>
-                            </button>
-                            <laser:render template="/templates/documents/modal"
-                                          model="${[newModalId: "modalCreateDocumentOffer" + s.id, ownobj: s, owntp: 'subscription', selectedDocType: RDStore.DOC_TYPE_OFFER.value]}"/>
+                            <g:if test="${editable}">
+                                <button type="button" class="ui icon tiny button blue la-modern-button"
+                                        data-ownerid="${s.id}"
+                                        data-ownerclass="${s.class.name}"
+                                        data-doctype="${RDStore.DOC_TYPE_OFFER.value}"
+                                        data-ui="modal"
+                                        data-href="#modalCreateDocument"><i aria-hidden="true"
+                                                                            class="plus small icon"></i>
+                                </button>
+                            </g:if>
 
                             <%
                                 Set<DocContext> documentSet = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType', [subscription: s, docType: RDStore.DOC_TYPE_OFFER])
@@ -545,7 +538,7 @@
                                     <g:formatDate formatName="default.date.format.notime"
                                                   date="${surveyConfig.surveyInfo.startDate}"/><br/>
                                     <span class="la-secondHeaderRow"
-                                          data-label="${message(code: 'default.endDate.label')}:"><g:formatDate
+                                          data-label="${message(code: 'default.endDate.label.shy')}:"><g:formatDate
                                             formatName="default.date.format.notime"
                                             date="${surveyConfig.surveyInfo.endDate}"/></span>
                                 </g:link>
@@ -638,12 +631,15 @@
                             <ui:xEditable owner="${s}" field="renewalSentDate" type="date"/>
                         </td>
                         <td>
-                            <button type="button" class="ui icon tiny button blue la-modern-button" data-ui="modal"
-                                    data-href="${"#modalCreateDocumentRenewal" + s.id}"><i aria-hidden="true"
-                                                                                           class="plus small icon"></i>
-                            </button>
-                            <laser:render template="/templates/documents/modal"
-                                          model="${[newModalId: "modalCreateDocumentRenewal" + s.id, ownobj: s, owntp: 'subscription', selectedDocType: RDStore.DOC_TYPE_RENEWAL.value]}"/>
+                            <g:if test="${editable}">
+                                <button type="button" class="ui icon tiny button blue la-modern-button"
+                                        data-ownerid="${s.id}"
+                                        data-ownerclass="${s.class.name}"
+                                        data-doctype="${RDStore.DOC_TYPE_RENEWAL.value}"
+                                        data-ui="modal"
+                                        data-href="#modalCreateDocument"><i aria-hidden="true" class="plus small icon"></i>
+                                </button>
+                            </g:if>
 
                             <%
                                 Set<DocContext> documentSet2 = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType', [subscription: s, docType: RDStore.DOC_TYPE_RENEWAL])
@@ -741,11 +737,25 @@
 </div>
 
 <g:if test="${subscriptions}">
-    <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
-                 max="${max}" total="${num_sub_rows}"/>
+    <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}" max="${max}" total="${num_sub_rows}"/>
 </g:if>
 
-
 <laser:render template="export/individuallyExportModalSubsTransfer" model="[modalID: 'individuallyExportModal']"/>
+
+<g:if test="${editable}">
+    <laser:render template="/templates/documents/modal"
+                  model="${[newModalId: "modalCreateDocument", owntp: 'subscription']}"/>
+
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    JSPC.callbacks.modal.onShow.modalCreateDocument = function(trigger) {
+        $('#modalCreateDocument input[name=ownerid]').attr('value', $(trigger).attr('data-ownerid'))
+        $('#modalCreateDocument input[name=ownerclass]').attr('value', $(trigger).attr('data-ownerclass'))
+        $('#modalCreateDocument input[name=ownertp]').attr('value', $(trigger).attr('data-ownertp'))
+        $('#modalCreateDocument select[name=doctype]').dropdown('set selected', $(trigger).attr('data-doctype'))
+    }
+</laser:script>
+
+</g:if>
 
 <laser:htmlEnd/>

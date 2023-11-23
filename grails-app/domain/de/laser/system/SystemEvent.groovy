@@ -71,6 +71,7 @@ class SystemEvent {
             'STATS_SYNC_JOB_START'          : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'STATS_SYNC_JOB_WARNING'        : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.WARNING],
             'STATS_SYNC_JOB_COMPLETE'       : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
+            'STATS_CALL_ERROR'              : [category: CATEGORY.OTHER, relevance: RELEVANCE.WARNING],
             'SUB_RENEW_JOB_START'           : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'SUB_RENEW_JOB_COMPLETE'        : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'SUB_RENEW_SERVICE_PROCESSING'  : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
@@ -85,6 +86,9 @@ class SystemEvent {
             'SYSANN_SENDING_ERROR'          : [category: CATEGORY.OTHER, relevance: RELEVANCE.ERROR],
             'SYSTEM_INFO_JOB_START'         : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'SYSTEM_INFO_JOB_STOP'          : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
+            'SYSTEM_INSIGHT_MAILS_START'    : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
+            'SYSTEM_INSIGHT_MAILS_COMPLETE' : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
+            'SYSTEM_INSIGHT_MAILS_ERROR'    : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
             'YODA_ES_RESET_START'           : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
             'YODA_ES_RESET_DELETED'         : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
             'YODA_ES_RESET_CREATED'         : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO]
@@ -181,6 +185,10 @@ class SystemEvent {
         }
     }
 
+    /**
+     * Checks for the defined events whether there exists a explanatory message string in the translation resource file
+     * @return true if there is one for at least one locale (DE, EN), false otherwise
+     */
     static boolean checkDefinedEvents() {
         MessageSource messageSource = BeanStore.getMessageSource()
         boolean valid = true
@@ -215,10 +223,20 @@ class SystemEvent {
         result.unique().sort()
     }
 
+    /**
+     * Gets the last system event record of the given token
+     * @param token the token of which the last record should be retrieved
+     * @return the most recent system event record of the given token
+     */
     static SystemEvent getLastByToken(String token) {
         find('from SystemEvent se where se.token = :token order by se.created desc', [token: token])
     }
 
+    /**
+     * Changes the current system event record to the given new token and sets the given payload
+     * @param token the new token for this record
+     * @param payload the new JSON payload
+     */
     void changeTo(String token, def payload) {
         withTransaction {
             if (DEFINED_EVENTS.containsKey(token)) {

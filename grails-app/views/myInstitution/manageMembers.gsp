@@ -44,8 +44,8 @@
         </g:else>
         --%>
     </ui:exportDropdown>
-    <g:if test="${editable}">
-        <laser:render template="actions"/>
+    <g:if test="${editable || contextService.getOrg().isCustomerType_Support()}">
+        <laser:render template="${customerTypeService.getActionsTemplatePath()}"/>
     </g:if>
 </ui:controlButtons>
 
@@ -53,8 +53,13 @@
 
 <ui:messages data="${flash}"/>
     <%
-        List configShowFilter = [['name', 'identifier'], ['identifierNamespace', 'customerIDNamespace'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'], ['property&value', 'subStatus', 'subValidOn'], ['subPerpetualAccess'], ['providers']]
+        List configShowFilter = [['name', 'identifier'], ['identifierNamespace', 'customerIDNamespace'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'], ['discoverySystemsFrontend', 'discoverySystemsIndex'], ['property&value', 'subStatus', 'subValidOn'], ['subPerpetualAccess'], ['providers']]
         List configShowTable = ['sortname', 'name', 'mainContact', 'libraryType', 'status', 'legalInformation', 'numberOfSubscriptions', 'numberOfSurveys']
+
+        if (contextService.getOrg().isCustomerType_Support()) {
+            configShowFilter = [['name', 'identifier'], ['identifierNamespace', 'customerIDNamespace'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'], ['property&value', 'subStatus', 'subValidOn']]
+            configShowTable = ['sortname', 'name', 'mainContact', 'libraryType', 'status', 'legalInformation', 'numberOfSubscriptions']
+        }
     %>
 
     <ui:filter>

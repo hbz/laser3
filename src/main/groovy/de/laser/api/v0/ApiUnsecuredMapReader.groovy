@@ -278,6 +278,11 @@ class ApiUnsecuredMapReader {
         ApiToolkit.cleanUp(result, true, true)
     }
 
+    /**
+     * Returns the given price item details
+     * @param pi the {@link PriceItem} to be retrieved
+     * @return a {@link Map} reflecting the price item for API output
+     */
     static Map<String, Object> getPriceItemMap(PriceItem pi) {
         if(!pi)
             return null
@@ -345,6 +350,11 @@ class ApiUnsecuredMapReader {
         ApiToolkit.cleanUp(result, true, true)
     }
 
+    /**
+     * Returns the given deleted object stub details
+     * @param delObj the {@link DeletedObject} trace to be retrieved
+     * @return a {@link Map} containing the deleted object stub
+     */
     static Map<String, Object> getDeletedObjectStubMap(DeletedObject delObj) {
         if (!delObj) {
             return null

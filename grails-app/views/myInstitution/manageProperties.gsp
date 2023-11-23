@@ -100,7 +100,7 @@
                     <input id="filterPropValue" type="number" step="0.01" name="filterPropValue">
                 </g:elseif>
                 <g:elseif test="${filterPropDef.isDateType()}">
-                    <g:datePicker name="filterPropValue"/>
+                    <ui:datepicker name="filterPropValue"/>
                 </g:elseif>
                 <g:else>
                     <input id="filterPropValue" type="text" name="filterPropValue" placeholder="${message(code: 'license.search.property.ph')}"/>
@@ -338,7 +338,7 @@
                     <input id="filterPropValue" type="number" step="0.01" name="filterPropValue">
                 </g:elseif>
                 <g:elseif test="${filterPropDef.isDateType()}">
-                    <g:datePicker name="filterPropValue"/>
+                    <ui:datepicker name="filterPropValue"/>
                 </g:elseif>
                 <g:else>
                     <input id="filterPropValue" type="text" name="filterPropValue" placeholder="${message(code: 'license.search.property.ph')}">

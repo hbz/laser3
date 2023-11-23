@@ -162,6 +162,12 @@ class DocstoreService {
         [filteredDocuments: filteredDocuments, sharedItems: sharedItems]
     }
 
+    /**
+     * Gets the notes of the given owner institution for the given object
+     * @param objInstance the object whose notes should be retrieved
+     * @param docOwner the owner institution ({@link Org}) who owns the notes
+     * @return a {@link List} of {@link DocContext}s pointing from the given object to respective notes
+     */
     List<DocContext> getNotes(def objInstance, Org docOwner) {
 
         Map queryParams = [instance: objInstance, del: RDStore.DOC_CTX_STATUS_DELETED, docOwner: docOwner]
@@ -189,6 +195,12 @@ class DocstoreService {
         Doc.executeQuery("select dc from DocContext dc, Doc d where " + query, queryParams)
     }
 
+    /**
+     * Performs the given bulk operation (params.bulk_op) on a list of {@link Doc}uments
+     * @param params the request parameter map
+     * @param result the result map containing generic data
+     * @param flash the {@link grails.web.mvc.FlashScope} container for success or error messages
+     */
     def bulkDocOperation (GrailsParameterMap params, Map result, def flash) {
         if (params.bulk_op == RDConstants.DOCUMENT_CONFIDENTIALITY) {
             if (params.bulk_docIdList) {

@@ -30,7 +30,7 @@ class ReportingGlobalService {
     void doFilter(Map<String, Object> result, GrailsParameterMap params) {
 
         result.filter = params.filter
-        result.token  = /* params.token ?: */ RandomStringUtils.randomAlphanumeric(16)
+        result.token  = /* params.token ?: */ RandomStringUtils.randomAlphanumeric(24)
 
         result.cfgQueryList = [:]
         result.cfgDistributionList = [:]
@@ -317,7 +317,7 @@ class ReportingGlobalService {
             ReportingCache rCache = new ReportingCache( ReportingCache.CTX_GLOBAL, params.token )
 
             //println 'AjaxHtmlController.chartDetails()'
-            rCache.readQueryCache().dataDetails.each{ it ->
+            rCache.readQueryCache().dataDetails.each { it ->
                 if (it.get('id') == params.long('id')) {
                     idList = it.get('idList')
                     return

@@ -1,0 +1,22 @@
+@startuml
+
+object subscription {
+    sub_id : bigint
+    ...
+}
+
+object subscription_package {
+    sp_id : bigint
+    sp_subscription_fk : bigint
+    sp_pkg_fk : bigint
+}
+
+object package {
+    pkg_id : bigint
+    ...
+}
+
+subscription_package::sp_subscription_fk --> subscription::sub_id
+subscription_package::sp_pkg_fk --> package::pkg_id
+
+@enduml

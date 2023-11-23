@@ -5,7 +5,6 @@ import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.properties.PersonProperty
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.titles.TitleInstance
 import groovy.util.logging.Slf4j
 
 /**
@@ -214,10 +213,6 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
             q = ' and pr.sub = :obj '
             p << ['obj': obj]
         }
-        if (obj instanceof TitleInstance) {
-            q = ' and pr.title = :obj '
-            p << ['obj': obj]
-        }
 
         List<Person> result = Person.executeQuery(
                 "select p from Person as p inner join p.roleLinks pr where p.isPublic = true " +
@@ -267,10 +262,6 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
             q = ' and pr.sub = :obj '
             p << ['obj': obj]
         }
-        if (obj instanceof TitleInstance) {
-            q = ' and pr.title = :obj '
-            p << ['obj': obj]
-        }
 
         List<Person> result = Person.executeQuery(
                 "select p from Person as p inner join p.roleLinks pr where p.isPublic = false and pr.org = :org and pr.responsibilityType.value = :resp and p.tenant = :tnt " + q,
@@ -314,6 +305,7 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
     }
 
     /**
+     * Called from {@link de.laser.ajax.AjaxHtmlController#editPerson()}
      * Retrieves the organisation to which this person is linked to
      * @return the {@link Org} to which this person is linked to
      */

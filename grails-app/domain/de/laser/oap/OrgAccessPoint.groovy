@@ -16,7 +16,7 @@ import groovy.json.JsonSlurper
 /**
  * An access configuration for an organisation. It defined conditions of access the organisation has met to use certain kinds of resources; those may be platforms or subscription packages.
  * They are specified in the {@link OrgAccessPointLink} domain.
- * The condition itself i.e. what conditions (e.g. IPv4/IPv6 ranges, EZProxy/Proxy/Shibboleth/OpenAthens configurations etc.) are needed to be met are specified in one or more {@link AccessPointData} objects.
+ * The condition itself i.e. what conditions (e.g. IPv4/IPv6 ranges, EZProxy/Proxy/Shibboleth/OpenAthens configurations, email domains etc.) are needed to be met are specified in one or more {@link AccessPointData} objects.
  */
 class OrgAccessPoint extends AbstractBase {
 
@@ -71,6 +71,12 @@ class OrgAccessPoint extends AbstractBase {
         super.beforeDeleteHandler()
     }
 
+    /**
+     * Retrieves the IP range strings of the given type in the specified format.
+     * @param datatype the type of address (IPv4 or IPv6) to output
+     * @param format the format in which the output should be listed. Valid formats are: cidr, ranges, input
+     * @return an array of strings containing the ranges
+     */
     String[] getIpRangeStrings(String datatype, String format) {
 
         JsonSlurper jsonSluper = new JsonSlurper()
@@ -101,6 +107,10 @@ class OrgAccessPoint extends AbstractBase {
         }
     }
 
+    /**
+     * Gets all platforms for this access point which are not linked to any subscription
+     * @return a {@link List} of {@link de.laser.Platform}s not linked anywhere
+     */
     def getNotLinkedPlatforms()
     {
         List currentSubIds = BeanStore.getOrgTypeService().getCurrentSubscriptionIds(org)
@@ -126,6 +136,10 @@ class OrgAccessPoint extends AbstractBase {
         Subscription.executeQuery(qry, qryParams)
     }
 
+    /**
+     * Gets all {@link Subscription}s which are not linked to the given access point
+     * @return a {@link List} of {@link Subscription}s without any access point link
+     */
     def getNotLinkedSubscriptions()
     {
         List<String> notAllowedSubscriptionStatusList  = ['Deleted', 'Expired', 'Terminated', 'No longer usable', 'Rejected']
@@ -136,6 +150,11 @@ class OrgAccessPoint extends AbstractBase {
         Subscription.executeQuery(hql, [status: statusList])
     }
 
+    /**
+     * Used in _apLinkContent.gsp
+     * Checks if the access point has an active link
+     * @return true if there is at least one active access point
+     */
     boolean hasActiveLink() {
         boolean active = false
         def oapps = this.oapp
@@ -147,6 +166,10 @@ class OrgAccessPoint extends AbstractBase {
         active
     }
 
+    /**
+     * Collects all the IP ranges for the given access point and returns sets of the IPv4 and IPv6 ranges
+     * @return a {@link Map} of structure {ipv4Ranges: [], ipv6Ranges: []} containing the defined ranges of the access point
+     */
     Map<String, Object> getAccessPointIpRanges() {
         Map<String, Object> accessPointIpRanges = [:]
 

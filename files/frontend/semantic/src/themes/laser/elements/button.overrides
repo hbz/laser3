@@ -59,7 +59,7 @@
   width: 100%;
   margin: @la-verticalGroupOffset;
   box-shadow: @verticalBoxShadow;
-  border-radius: 0em;
+  border-radius: @borderRadius;
 }
 #js-confirmation-button.positive.button {
   background-color: @red !important;
@@ -219,4 +219,15 @@ a i.circular.la-gokb:hover {
 .ui.buttons.la-ctrls > .button:not(:has(~ .button)) {
     border-top-right-radius: @borderRadius;
     border-bottom-right-radius: @borderRadius;
+}
+
+.la-margin-top-05em {
+    margin-top: .5em!important;
+}
+/*------------------------------------
+         Buttons for debug infos
+  ------------------------------------*/
+.la-debugInfos {
+    position: fixed;
+    z-index: @debugInfoZIndex
 }

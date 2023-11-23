@@ -5,7 +5,7 @@ import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 
 /**
- * This service holds generic methods releated to form handling
+ * This service holds generic methods related to form handling
  */
 @Transactional
 class FormService {

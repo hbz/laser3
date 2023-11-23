@@ -31,7 +31,6 @@ import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
 import org.springframework.web.multipart.MultipartFile
 
-import java.sql.Array
 import java.sql.Connection
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
@@ -47,6 +46,7 @@ class SubscriptionService {
     ExecutorService executorService
     FilterService filterService
     GenericOIDService genericOIDService
+    GlobalService globalService
     GokbService gokbService
     LinksGenerationService linksGenerationService
     MessageSource messageSource
@@ -107,7 +107,7 @@ class SubscriptionService {
         viableOrgs.add(contextOrg)
 
         String consortiaFilter = ''
-        if(contextOrg.isCustomerType_Consortium())
+        if(contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Support())
             consortiaFilter = 'and s.instanceOf = null'
 
         Set<Year> availableReferenceYears = Subscription.executeQuery('select s.referenceYear from OrgRole oo join oo.sub s where s.referenceYear != null and oo.org = :contextOrg '+consortiaFilter+' order by s.referenceYear', [contextOrg: contextOrg])
@@ -142,7 +142,7 @@ class SubscriptionService {
         }
 
         prf.setBenchmark('get base query')
-        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextOrg)
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, '', contextOrg)
         result.filterSet = tmpQ[2]
         List<Subscription> subscriptions
         prf.setBenchmark('fetch subscription data')
@@ -161,7 +161,7 @@ class SubscriptionService {
         /* deactivated as statistics key is submitted nowhere, as of July 16th, '20
         if (OrgSetting.get(contextOrg, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSetting){
             result.statsWibid = contextOrg.getIdentifierByType('wibid')?.value
-            result.usageMode = contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? 'package' : 'institution'
+            result.usageMode = contextService.getOrg().isCustomerType_Consortium() ? 'package' : 'institution'
         }
          */
         prf.setBenchmark('end properties')
@@ -176,12 +176,12 @@ class SubscriptionService {
     }
 
     /**
-     * ex MyInstitutionController.currentSubscriptions()
-     * Gets the current subscriptions for the given institution
+     * ex {@link MyInstitutionController#currentSubscriptions()}
+     * Gets the current subscription transfers for the given institution
      * @param params the request parameter map
      * @param contextUser the user whose settings should be considered
      * @param contextOrg the institution whose subscriptions should be accessed
-     * @return a result map containing a list of subscriptions and other site parameters
+     * @return a result map containing a list of subscription transfers and other site parameters
      */
     Map<String,Object> getMySubscriptionTransfer(GrailsParameterMap params, User contextUser, Org contextOrg) {
         Map<String,Object> result = [:]
@@ -214,22 +214,26 @@ class SubscriptionService {
         }
 
 
-        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextOrg)
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, '', contextOrg)
         result.filterSet = tmpQ[2]
+        Set<Subscription> subscriptionsFromQuery
         Set<Subscription> subscriptions
-        subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
+        subscriptionsFromQuery = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
         //candidate for ugliest bugfix ever ...
 
         if(params.sort){
             String newSort = "sub.${params.sort}"
             if(params.sort == 'providerAgency'){
-                newSort = "oo.org.name"
-            }
+                subscriptions = Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where (sub.id in (:subscriptions) and oo.roleType in (:providerAgency)) order by oo.org.name " + params.order + ", sub.name ", [subscriptions: subscriptionsFromQuery.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
+                subscriptions = subscriptions + Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where sub.id in (:subscriptions) order by sub.name ", [subscriptions: subscriptionsFromQuery.id])
+            }else {
 
-            subscriptions = Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where (sub.id in (:subscriptions) and oo.roleType in (:providerAgency)) or sub.id in (:subscriptions) order by " + newSort +" "+ params.order + ", oo.org.name, sub.name " , [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
-            //select ooo.sub.id from OrgRole ooo where ooo.roletype in (:providerAgency) and ooo.sub != null
+                subscriptions = Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where (sub.id in (:subscriptions) and oo.roleType in (:providerAgency)) or sub.id in (:subscriptions) order by " + newSort + " " + params.order + ", oo.org.name, sub.name ", [subscriptions: subscriptionsFromQuery.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
+            }
+                //select ooo.sub.id from OrgRole ooo where ooo.roletype in (:providerAgency) and ooo.sub != null
         }else {
-            subscriptions = Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where (sub.id in (:subscriptions) and oo.roleType in (:providerAgency)) or sub.id in (:subscriptions) order by oo.org.name, sub.name ", [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
+            subscriptions = Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where (sub.id in (:subscriptions) and oo.roleType in (:providerAgency)) order by oo.org.name, sub.name ", [subscriptions: subscriptionsFromQuery.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
+            subscriptions = subscriptions + Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where sub.id in (:subscriptions) order by sub.name ", [subscriptions: subscriptionsFromQuery.id])
         }
 
         result.allSubscriptions = subscriptions
@@ -296,7 +300,8 @@ class SubscriptionService {
         Map<Subscription,Set<License>> linkedLicenses = [:]
 
         if('withCostItems' in tableConf) {
-            query = "select new map((case when ci.owner = :org then ci else null end) as cost, subT as sub, roleT.org as org) " +
+            //database-side filtering; delivers strange duplicates: (case when ci.owner = :org then ci else null end) --> transpose into server filtering (again... beware of performance loss!)
+            query = "select new map(ci as cost, subT as sub, roleT.org as orgs) " +
                     " from CostItem ci right outer join ci.sub subT join subT.instanceOf subK " +
                     " join subK.orgRelations roleK join subT.orgRelations roleTK join subT.orgRelations roleT " +
                     " where roleK.org = :org and roleK.roleType = :rdvCons " +
@@ -337,17 +342,26 @@ class SubscriptionService {
             query += " and roleT.org.id = :member "
             qarams.put('member', params.long('member'))
         }
+        /*
+        this performance improvement is not needed any more! Keep it nonetheless for the case of ...
         else if(!params.filterSet) {
             query += " and roleT.org.id = :member "
             qarams.put('member', result.filterConsortiaMembers[0].id)
             params.member = result.filterConsortiaMembers[0].id
             result.defaultSet = true
         }
+        */
 
         if (params.identifier?.length() > 0) {
             query += " and exists (select ident from Identifier ident join ident.org ioorg " +
                     " where ioorg = roleT.org and LOWER(ident.value) like LOWER(:identifier)) "
             qarams.put('identifier', "%${params.identifier}%")
+        }
+
+        Map costFilter = params.findAll{ it -> it.toString().startsWith('iex:subCostItem.') }
+        if(costFilter) {
+            query += " and (ci.costItemElement.id in (:elems) or ci is null)" //otherwise, subscriptions without cost items will be omitted due to not-null join
+            qarams.put('elems', costFilter.keySet().collect { String selElem -> Long.parseLong(selElem.split('\\.')[2]) })
         }
 
         if (params.validOn?.size() > 0) {
@@ -464,9 +478,7 @@ class SubscriptionService {
             }
 
 
-                Set costs = CostItem.executeQuery(
-                    query + " " + orderQuery, qarams
-            )
+                Set costs = CostItem.executeQuery(query + " " + orderQuery, qarams).findAll { row -> row.cost == null || row.cost.owner.id == contextOrg.id } //very ugly and subject of performance loss; keep an eye on that!
             prf.setBenchmark('read off costs')
             //post filter; HQL cannot filter that parameter out
             result.costs = costs
@@ -486,9 +498,9 @@ join sub.orgRelations or_sub where
 
             result.providers = Org.executeQuery(queryProviders + " and sub in (:subs)", queryParamsProviders+[subs: costs.sub])
             result.totalCount = costs.size()
-            result.totalMembers = []
+            result.totalMembers = new TreeSet<Org>()
             costs.each { row ->
-                result.totalMembers << row.org
+                result.totalMembers << row.orgs
             }
             if(params.fileformat) {
                 result.entries = costs
@@ -558,7 +570,7 @@ join sub.orgRelations or_sub where
             params.joinQuery = "join s.orgRelations so"
         }
 
-        if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if (contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()) {
             tmpQ = _getSubscriptionsConsortiaQuery(params)
             result.addAll(Subscription.executeQuery(queryStart + tmpQ[0], tmpQ[1]))
 
@@ -587,7 +599,7 @@ join sub.orgRelations or_sub where
         List result = []
         List tmpQ
 
-        if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if (contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()) {
             tmpQ = _getSubscriptionsConsortiaQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
             if (params.showSubscriber) {
@@ -621,7 +633,7 @@ join sub.orgRelations or_sub where
         List result = []
         List tmpQ
 
-        if(contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)) {
+        if(contextService.getOrg().isCustomerType_Inst_Pro()) {
 
             tmpQ = _getSubscriptionsConsortialLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
@@ -642,7 +654,7 @@ join sub.orgRelations or_sub where
         List result = []
         List tmpQ
 
-        if(contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)) {
+        if(contextService.getOrg().isCustomerType_Inst_Pro()) {
 
             tmpQ = _getSubscriptionsConsortialLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
@@ -667,7 +679,7 @@ join sub.orgRelations or_sub where
         queryParams.showParentsAndChildsSubs = params.showSubscriber
         queryParams.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
         String joinQuery = params.joinQuery ?: ""
-        List result = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.getOrg(), joinQuery)
+        List result = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, joinQuery)
         result
     }
 
@@ -684,7 +696,7 @@ join sub.orgRelations or_sub where
         queryParams.orgRole = RDStore.OR_SUBSCRIBER.value
         queryParams.subTypes = RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id
         String joinQuery = params.joinQuery ?: ""
-        subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.getOrg(), joinQuery)
+        subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, joinQuery)
     }
 
     /**
@@ -700,7 +712,7 @@ join sub.orgRelations or_sub where
         queryParams.orgRole = RDStore.OR_SUBSCRIBER.value
         queryParams.subTypes = RDStore.SUBSCRIPTION_TYPE_LOCAL.id
         String joinQuery = params.joinQuery ?: ""
-        subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.getOrg(), joinQuery)
+        subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, joinQuery)
     }
 
     /**
@@ -1192,13 +1204,14 @@ join sub.orgRelations or_sub where
     }
 
     /**
-     * Substitution call for {@link #addEntitlement(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, boolean, java.lang.Object)}
+     * Adds the selected issue entitlement to the given subscription
      * @param sub the subscription to which the title should be added
      * @param gokbId the we:kb ID of the title
      * @param issueEntitlementOverwrite eventually cached imported local data
      * @param withPriceData should price data be added as well?
      * @param set ie in issueEntitlementGroup
      * @return true if the adding was successful, false otherwise
+     * @throws EntitlementCreationException
      */
     boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, pickAndChoosePerpetualAccess, issueEntitlementGroup) throws EntitlementCreationException {
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(gokbId)
@@ -1231,34 +1244,8 @@ join sub.orgRelations or_sub where
             IssueEntitlement parentIE = IssueEntitlement.findBySubscriptionAndTippAndStatusNotEqual(sub.instanceOf, tipp, RDStore.TIPP_STATUS_REMOVED)
             if(parentIE)
                 new_ie.status = parentIE.status
-
-            Date accessStartDate, accessEndDate
-            if(issueEntitlementOverwrite) {
-                if(issueEntitlementOverwrite.accessStartDate) {
-                    if(issueEntitlementOverwrite.accessStartDate instanceof String)
-                        accessStartDate = DateUtils.parseDateGeneric(issueEntitlementOverwrite.accessStartDate)
-                    else if(issueEntitlementOverwrite.accessStartDate instanceof Date)
-                        accessStartDate = issueEntitlementOverwrite.accessStartDate
-                    else accessStartDate = tipp.accessStartDate
-                }
-                else accessStartDate = tipp.accessStartDate
-                if(issueEntitlementOverwrite.accessEndDate) {
-                    if(issueEntitlementOverwrite.accessEndDate instanceof String) {
-                        accessEndDate = DateUtils.parseDateGeneric(issueEntitlementOverwrite.accessEndDate)
-                    }
-                    else if(issueEntitlementOverwrite.accessEndDate instanceof Date) {
-                        accessEndDate = issueEntitlementOverwrite.accessEndDate
-                    }
-                    else accessEndDate = tipp.accessEndDate
-                }
-                else accessEndDate = tipp.accessEndDate
-            }
-            else {
-                accessStartDate = tipp.accessStartDate
-                accessEndDate = tipp.accessEndDate
-            }
-            new_ie.accessStartDate = accessStartDate
-            new_ie.accessEndDate = accessEndDate
+            new_ie.accessStartDate = tipp.accessStartDate
+            new_ie.accessEndDate = tipp.accessEndDate
             if (new_ie.save()) {
 
                 if((pickAndChoosePerpetualAccess || sub.hasPerpetualAccess) && new_ie.status != RDStore.TIPP_STATUS_EXPECTED){
@@ -1307,56 +1294,19 @@ join sub.orgRelations or_sub where
                     }
                 }
                 if(withPriceData) {
-                    if(issueEntitlementOverwrite) {
-                        if(issueEntitlementOverwrite instanceof IssueEntitlement) {
-                            issueEntitlementOverwrite.priceItems.each { PriceItem priceItem ->
-                                PriceItem pi = new PriceItem(
-                                        startDate: priceItem.startDate ?: null,
-                                        endDate: priceItem.endDate ?: null,
-                                        listPrice: priceItem.listPrice ?: null,
-                                        listCurrency: priceItem.listCurrency ?: null,
-                                        localPrice: priceItem.localPrice ?: null,
-                                        localCurrency: priceItem.localCurrency ?: null,
-                                        issueEntitlement: new_ie
-                                )
-                                pi.setGlobalUID()
-                                if (!pi.save()) {
-                                    throw new EntitlementCreationException(pi.errors)
-                                }
-                            }
-
-                        }
-                        else {
-                            PriceItem pi = new PriceItem(startDate: DateUtils.parseDateGeneric(issueEntitlementOverwrite.startDate),
-                                    listPrice: issueEntitlementOverwrite.listPrice,
-                                    listCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.listCurrency, 'Currency'),
-                                    localPrice: issueEntitlementOverwrite.localPrice,
-                                    localCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.localCurrency, 'Currency'),
-                                    issueEntitlement: new_ie
-                            )
-                            pi.setGlobalUID()
-                            if(pi.save())
-                                return true
-                            else {
-                                throw new EntitlementCreationException(pi.errors)
-                            }
-                        }
-                    }
-                    else {
-                        tipp.priceItems.each { PriceItem priceItem ->
-                            PriceItem pi = new PriceItem(
-                                    startDate: priceItem.startDate ?: null,
-                                    endDate: priceItem.endDate ?: null,
-                                    listPrice: priceItem.listPrice ?: null,
-                                    listCurrency: priceItem.listCurrency ?: null,
-                                    localPrice: priceItem.localPrice ?: null,
-                                    localCurrency: priceItem.localCurrency ?: null,
-                                    issueEntitlement: new_ie
-                            )
-                            pi.setGlobalUID()
-                            if (!pi.save()) {
-                                throw new EntitlementCreationException(pi.errors)
-                            }
+                    tipp.priceItems.each { PriceItem priceItem ->
+                        PriceItem pi = new PriceItem(
+                                startDate: priceItem.startDate ?: null,
+                                endDate: priceItem.endDate ?: null,
+                                listPrice: priceItem.listPrice ?: null,
+                                listCurrency: priceItem.listCurrency ?: null,
+                                localPrice: priceItem.localPrice ?: null,
+                                localCurrency: priceItem.localCurrency ?: null,
+                                issueEntitlement: new_ie
+                        )
+                        pi.setGlobalUID()
+                        if (!pi.save()) {
+                            throw new EntitlementCreationException(pi.errors)
                         }
                     }
                 }
@@ -1365,6 +1315,88 @@ join sub.orgRelations or_sub where
                 throw new EntitlementCreationException(new_ie.errors)
             }
         }
+    }
+
+    Map<String, Object> selectEntitlementsWithKBART(MultipartFile kbartFile, Subscription subscription) {
+        InputStream stream = kbartFile.getInputStream()
+        ArrayList<String> rows = stream.text.split('\n')
+        int zdbCol = -1, onlineIdentifierCol = -1, printIdentifierCol = -1, titleUrlCol = -1, titleIdCol = -1, doiCol = -1
+        Set<Package> subPkgs = SubscriptionPackage.executeQuery('select sp.pkg from SubscriptionPackage sp where sp.subscription = :subscription', [subscription: subscription])
+        //now, assemble the identifiers available to highlight
+        Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNsAndNsType('zdb', TitleInstancePackagePlatform.class.name),
+                                                       eissn: IdentifierNamespace.findByNsAndNsType('eissn', TitleInstancePackagePlatform.class.name),
+                                                       isbn: IdentifierNamespace.findByNsAndNsType('isbn',TitleInstancePackagePlatform.class.name),
+                                                       issn : IdentifierNamespace.findByNsAndNsType('issn', TitleInstancePackagePlatform.class.name),
+                                                       eisbn: IdentifierNamespace.findByNsAndNsType('eisbn', TitleInstancePackagePlatform.class.name),
+                                                       doi: IdentifierNamespace.findByNsAndNsType('doi', TitleInstancePackagePlatform.class.name),
+                                                       title_id: IdentifierNamespace.findByNsAndNsType('title_id', TitleInstancePackagePlatform.class.name)]
+        //read off first line of KBART file, pop the first row and prepare it for the error return list
+        List titleRow = rows.remove(0).split('\t'), wrongTitles = [], truncatedRows = []
+        titleRow.eachWithIndex { String headerCol, int c ->
+            switch (headerCol.toLowerCase().trim()) {
+                case "zdb_id": zdbCol = c
+                    break
+                case "print_identifier": printIdentifierCol = c
+                    break
+                case "online_identifier": onlineIdentifierCol = c
+                    break
+                case "title_url": titleUrlCol = c
+                    break
+                case "title_id": titleIdCol = c
+                    break
+                case "doi_identifier": doiCol = c
+                    break
+            }
+        }
+        Set<String> selectedTitles = []
+        rows.eachWithIndex{ String row, int i ->
+            log.debug("now processing record ${i}")
+            ArrayList<String> cols = row.split('\t')
+            if(cols.size() == titleRow.size()) {
+                TitleInstancePackagePlatform match = null
+                //cascade: 1. title_id, 2. title_url, 3. identifier map
+                if(titleIdCol >= 0 && cols[titleIdCol] != null && !cols[titleIdCol].trim().isEmpty()) {
+                    List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status != :removed', [subPkgs: subPkgs, value: cols[titleIdCol].trim(), ns: namespaces.title_id, removed: RDStore.TIPP_STATUS_REMOVED])
+                    if(matchList.size() == 1)
+                        match = matchList[0] as TitleInstancePackagePlatform
+                }
+                if(!match && titleUrlCol >= 0 && cols[titleUrlCol] != null && !cols[titleUrlCol].trim().isEmpty()) {
+                    match = TitleInstancePackagePlatform.findByHostPlatformURLAndPkgInListAndStatusNotEqual(cols[titleUrlCol].trim(), subPkgs, RDStore.TIPP_STATUS_REMOVED)
+                }
+                if(!match && doiCol >= 0 && cols[doiCol] != null && !cols[doiCol].trim().isEmpty()) {
+                    List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status != :removed', [subPkgs: subPkgs, value: cols[doiCol].trim(), ns: namespaces.doi, removed: RDStore.TIPP_STATUS_REMOVED])
+                    if(matchList.size() == 1)
+                        match = matchList[0] as TitleInstancePackagePlatform
+                }
+                if(!match && onlineIdentifierCol >= 0 && cols[onlineIdentifierCol] != null && !cols[onlineIdentifierCol].trim().isEmpty()) {
+                    List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns in (:ns) and tipp.status != :removed', [subPkgs: subPkgs, value: cols[onlineIdentifierCol].trim(), ns: [namespaces.eisbn, namespaces.eissn], removed: RDStore.TIPP_STATUS_REMOVED])
+                    if(matchList.size() == 1)
+                        match = matchList[0] as TitleInstancePackagePlatform
+                }
+                if(!match && printIdentifierCol >= 0 && cols[printIdentifierCol] != null && !cols[printIdentifierCol].trim().isEmpty()) {
+                    List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns in (:ns) and tipp.status != :removed', [subPkgs: subPkgs, value: cols[printIdentifierCol].trim(), ns: [namespaces.isbn, namespaces.issn], removed: RDStore.TIPP_STATUS_REMOVED])
+                    if(matchList.size() == 1)
+                        match = matchList[0] as TitleInstancePackagePlatform
+                }
+                if(!match && zdbCol >= 0 && cols[zdbCol] != null && !cols[zdbCol].trim().isEmpty()) {
+                    List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status != :removed', [subPkgs: subPkgs, value: cols[zdbCol].trim(), ns: namespaces.zdb, removed: RDStore.TIPP_STATUS_REMOVED])
+                    if(matchList.size() == 1)
+                        match = matchList[0] as TitleInstancePackagePlatform
+                }
+                if(match) {
+                    IssueEntitlement ieMatch = IssueEntitlement.findBySubscriptionAndTippAndStatusNotEqual(subscription, match, RDStore.TIPP_STATUS_REMOVED)
+                    if(ieMatch)
+                        wrongTitles << cols
+                    else selectedTitles << match.gokbId
+                }
+                else
+                    wrongTitles << cols
+            }
+            else {
+                truncatedRows << i
+            }
+        }
+        [titleRow: titleRow, wrongTitles: wrongTitles, truncatedRows: truncatedRows.join(', '), selectedTitles: selectedTitles]
     }
 
     /**
@@ -1423,161 +1455,45 @@ join sub.orgRelations or_sub where
     }
 
     /**
-     * Adds the given set of issue entitlements to the given subscription. The entitlement data may come directly from the package or be overwritten by individually negotiated content
+     * Adds the given set of issue entitlements to the given subscription. The entitlement data may come directly from the package or be overwritten by individually negotiated content.
+     * Because of the amount of data, the insert is done by native SQL
      * @param target the {@link Subscription} to which the entitlements should be attached
-     * @param issueEntitlementOverwrites the {@link Map} containing the data to submit for each issue entitlement
-     * @param checkMap the {@link Map} containing identifiers of titles which have been selected for the enrichment
+     * @param selectedTitles the {@link Map} containing identifiers of titles which have been selected for the enrichment
      * @param withPriceData should price data be added as well?
      * @param pickAndChoosePerpetualAccess are the given titles purchased perpetually?
+     * @param issueEntitlementGroup if set, titles are being assigned to an issue entitlement group
      */
-    void bulkAddEntitlements(Subscription sub, Map<String, Object> issueEntitlementOverwrites, Map<String, String> checkMap, withPriceData, pickAndChoosePerpetualAccess, Sql sql) {
-        Object[] keys = checkMap.keySet().toArray()
-        Map<String, Object> fallbackMap = [:]
+    void bulkAddEntitlements(Subscription sub, Set <String> selectedTitles, boolean pickAndChoosePerpetualAccess, IssueEntitlementGroup ieGroup = null) {
+        Sql sql = GlobalService.obtainSqlConnection()
+        Object[] keys = selectedTitles.toArray()
         sql.withTransaction {
-            List<GroovyRowResult> accessStartEndDateRows = sql.rows('select tipp_gokb_id, tipp_access_start_date, tipp_access_end_date from title_instance_package_platform where tipp_gokb_id = any(:keys)', [keys: sql.connection.createArrayOf('varchar', keys)])
-            accessStartEndDateRows.each { GroovyRowResult row ->
-                fallbackMap.put(row['tipp_gokb_id'], [accessStartDate: row['tipp_access_start_date'], accessEndDate: row['tipp_access_end_date']])
-            }
-            List<GroovyRowResult> coverageRows = sql.rows('select tipp_gokb_id, tc_start_date, tc_start_issue, tc_start_volume, tc_embargo, tc_coverage_note, tc_coverage_depth, tc_end_date, tc_end_issue, tc_end_volume from tippcoverage join title_instance_package_platform on tc_tipp_fk = tipp_id where tipp_gokb_id = any(:keys)', [keys: sql.connection.createArrayOf('varchar', keys)])
-            coverageRows.each { GroovyRowResult row ->
-                Map fallbackRec = fallbackMap.get(row['tipp_gokb_id'])
-                if(!fallbackRec)
-                    fallbackRec = [:]
-                Set<Map> coverages = fallbackRec.coverages
-                if(!coverages)
-                    coverages = []
-                Map<String, Object> covStmt = [:]
-                covStmt.startDate = row['tc_start_date']
-                covStmt.startIssue = row['tc_start_issue']
-                covStmt.startVolume = row['tc_start_volume']
-                covStmt.endDate = row['tc_end_date']
-                covStmt.endIssue = row['tc_end_issue']
-                covStmt.endVolume = row['tc_end_volume']
-                covStmt.coverageNote = row['tc_coverage_note']
-                covStmt.coverageDepth = row['tc_coverage_depth']
-                covStmt.embargo = row['tc_embargo']
-                coverages << covStmt
-                fallbackRec.coverages = coverages
-                fallbackMap.put(row['tipp_gokb_id'], fallbackRec)
-            }
-            List<GroovyRowResult> priceRows = sql.rows('select tipp_gokb_id, pi_list_price, pi_list_currency_rv_fk from price_item join title_instance_package_platform on pi_tipp_fk = tipp_id where tipp_gokb_id = any(:keys)', [keys: sql.connection.createArrayOf('varchar', keys)])
-            priceRows.each { GroovyRowResult row ->
-                Map fallbackRec = fallbackMap.get(row['tipp_gokb_id'])
-                if(!fallbackRec)
-                    fallbackRec = [:]
-                Set<Map> priceItems = fallbackRec.priceItems
-                if(!priceItems)
-                    priceItems = []
-                Map<String, Object> piStmt = [:]
-                piStmt.listPrice = row['pi_list_price']
-                piStmt.listCurrency = row['pi_list_currency_rv_fk']
-                piStmt.localPrice = null
-                piStmt.localCurrency = null
-                priceItems << piStmt
-                fallbackRec.priceItems = priceItems
-                fallbackMap.put(row['tipp_gokb_id'], fallbackRec)
-            }
             sql.executeUpdate('update issue_entitlement set ie_status_rv_fk = :current from title_instance_package_platform where ie_tipp_fk = tipp_id and ie_status_rv_fk = :expected and tipp_gokb_id = any(:keys) and ie_subscription_fk = :subId', [current: RDStore.TIPP_STATUS_CURRENT.id, expected: RDStore.TIPP_STATUS_EXPECTED.id, keys: sql.connection.createArrayOf('varchar', keys), subId: sub.id])
-            Set<Map<String, Object>> ieDirectMapSet = [], ieOverwriteMapSet = [], coverageDirectMapSet = [], coverageOverwriteMapSet = [], priceItemDirectSet = [], priceItemOverwriteSet = []
-            checkMap.each { String wekbId, String checked ->
-                if(checked == 'checked') {
-                    log.debug "processing ${wekbId}"
-                    List<GroovyRowResult> existingEntitlements = sql.rows('select ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId and ie_status_rv_fk = :current and tipp_gokb_id = :key',[subId: sub.id, current: RDStore.TIPP_STATUS_CURRENT.id, key: wekbId])
-                    if(existingEntitlements.size() == 0) {
-                        Map<String, Object> configMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id], coverageMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id], priceMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id]
-                        if(pickAndChoosePerpetualAccess || sub.hasPerpetualAccess){
-                            configMap.perpetualAccessBySub = sub.id
-                        }
-                        Map overwrite = (Map) issueEntitlementOverwrites.get(wekbId)
-                        if(overwrite) {
-                            if(overwrite.accessStartDate) {
-                                configMap.accessStartDate = overwrite.accessStartDate
-                            }
-                            else configMap.accessStartDate = fallbackMap.get(wekbId)?.accessStartDate
-                            if(overwrite.accessEndDate) {
-                                configMap.accessEndDate = overwrite.accessEndDate
-                            }
-                            else configMap.accessEndDate = fallbackMap.get(wekbId)?.accessEndDate
-                            List coverages
-                            if(overwrite.coverages) {
-                                overwrite.coverages.each { Map covStmt ->
-                                    coverageMap.putAll(covStmt)
-                                    coverageOverwriteMapSet << coverageMap
-                                }
-                            }
-                            else if(fallbackMap.get(wekbId)?.coverages) {
-                                fallbackMap.get(wekbId).coverages.each { Map covStmt ->
-                                    coverageMap.putAll(covStmt)
-                                    coverageOverwriteMapSet << coverageMap
-                                }
-                            }
-                            if(overwrite.listPrice || overwrite.localPrice) {
-                                priceMap.listPrice = overwrite.listPrice
-                                priceMap.listCurrency = overwrite.listCurrency ? RefdataValue.getByValueAndCategory(overwrite.listCurrency, RDConstants.CURRENCY)?.id : null
-                                priceMap.localPrice = overwrite.localPrice
-                                priceMap.localCurrency = overwrite.localCurrency ? RefdataValue.getByValueAndCategory(overwrite.localCurrency, RDConstants.CURRENCY)?.id : null
-                                priceItemOverwriteSet << priceMap
-                            }
-                            else if(fallbackMap.get(wekbId)?.priceItems) {
-                                fallbackMap.get(wekbId).priceItems.each { Map priceStmt ->
-                                    priceMap.putAll(priceStmt)
-                                    priceItemOverwriteSet << priceMap
-                                }
-                            }
-                            ieOverwriteMapSet << configMap
-                        }
-                        else {
-                            ieDirectMapSet << configMap
-                            coverageDirectMapSet << coverageMap
-                            priceItemDirectSet << priceMap
-                        }
+            Set<Map<String, Object>> ieDirectMapSet = [], coverageDirectMapSet = [], priceItemDirectSet = []
+            selectedTitles.each { String wekbId ->
+                log.debug "processing ${wekbId}"
+                List<GroovyRowResult> existingEntitlements = sql.rows('select ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId and ie_status_rv_fk = :current and tipp_gokb_id = :key',[subId: sub.id, current: RDStore.TIPP_STATUS_CURRENT.id, key: wekbId])
+                if(existingEntitlements.size() == 0) {
+                    Map<String, Object> configMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id], coverageMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id], priceMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id]
+                    if(pickAndChoosePerpetualAccess || sub.hasPerpetualAccess){
+                        configMap.perpetualAccessBySub = sub.id
                     }
-                }
-            }
-            ieOverwriteMapSet.each { Map<String, Object> configMap ->
-                String accessStartDate = null, accessEndDate = null
-                if(configMap.accessStartDate)
-                    accessStartDate = "'${ configMap.accessStartDate }'"
-                if(configMap.accessEndDate)
-                    accessEndDate = "'${ configMap.accessEndDate }'"
-                sql.withBatch("insert into issue_entitlement (ie_version, ie_guid, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_status_rv_fk, ie_access_start_date, ie_access_end_date, ie_perpetual_access_by_sub_fk) " +
-                        "select 0, concat('issueentitlement:',gen_random_uuid()), now(), now(), ${sub.id}, tipp_id, tipp_status_rv_fk, ${accessStartDate}, ${accessEndDate}, ${configMap.perpetualAccessBySub} from title_instance_package_platform where tipp_gokb_id = :wekbId") { BatchingStatementWrapper stmt ->
-                    stmt.addBatch([wekbId: configMap.wekbId])
-                }
-            }
-            if(sub.hasPerpetualAccess) {
-                Long ownerId = sub.getSubscriber().id
-                ieOverwriteMapSet.each { Map<String, Object> configMap ->
-                    sql.withBatch("insert into permanent_title (pt_version, pt_ie_fk, pt_date_created, pt_subscription_fk, pt_last_updated, pt_tipp_fk, pt_owner_fk) " +
-                            "select 0, ie_id, now(), ie_subscription_fk, now(), ie_tipp_fk, "+ownerId+" from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_gokb_id = :wekbId and ie_subscription_fk = :subId") { BatchingPreparedStatementWrapper stmt ->
-                        stmt.addBatch([wekbId: configMap.wekbId, subId: sub.id])
-                    }
-                }
-            }
-            coverageOverwriteMapSet.each { Map<String, Object> configMap ->
-                if(configMap.startDate == '')
-                    configMap.startDate = null
-                else if(configMap.startDate)
-                    configMap.startDate = new Timestamp(DateUtils.parseDateGeneric(configMap.startDate).getTime())
-                if(configMap.endDate == '')
-                    configMap.endDate = null
-                else if(configMap.startDate)
-                    configMap.startDate = new Timestamp(DateUtils.parseDateGeneric(configMap.endDate).getTime())
-                sql.withBatch("insert into issue_entitlement_coverage (ic_version, ic_date_created, ic_last_updated, ic_start_date, ic_start_issue, ic_start_volume, ic_end_date, ic_end_issue, ic_end_volume, ic_coverage_depth, ic_coverage_note, ic_embargo, ic_ie_fk) " +
-                        "values (0, now(), now(), :startDate, :startIssue, :startVolume, :endDate, :endIssue, :endVolume, :coverageDepth, :coverageNote, :embargo, (select ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId and tipp_gokb_id = :wekbId and ie_status_rv_fk != :removed))") { BatchingStatementWrapper stmt ->
-                    stmt.addBatch(configMap)
-                }
-            }
-            priceItemOverwriteSet.each { Map<String, Object> configMap ->
-                sql.withBatch("insert into price_item (pi_version, pi_date_created, pi_last_updated, pi_guid, pi_list_price, pi_list_currency_rv_fk, pi_local_price, pi_local_currency_rv_fk, pi_ie_fk) " +
-                        "values (0, now(), now(), concat('priceitem:',gen_random_uuid()), :listPrice, :listCurrency, :localPrice, :localCurrency, (select ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId and tipp_gokb_id = :wekbId and ie_status_rv_fk != :removed))") { BatchingStatementWrapper stmt ->
-                    stmt.addBatch(configMap)
+                    ieDirectMapSet << configMap
+                    coverageDirectMapSet << coverageMap
+                    priceItemDirectSet << priceMap
                 }
             }
             ieDirectMapSet.each { Map<String, Object> configMap ->
                 sql.withBatch("insert into issue_entitlement (ie_version, ie_guid, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_status_rv_fk, ie_access_start_date, ie_access_end_date, ie_perpetual_access_by_sub_fk) " +
                         "select 0, concat('issueentitlement:',gen_random_uuid()), now(), now(), ${sub.id}, tipp_id, tipp_status_rv_fk, tipp_access_start_date, tipp_access_end_date, ${configMap.perpetualAccessBySub} from title_instance_package_platform where tipp_gokb_id = :wekbId") { BatchingStatementWrapper stmt ->
                     stmt.addBatch([wekbId: configMap.wekbId])
+                }
+            }
+            if(ieGroup) {
+                ieDirectMapSet.each { Map<String, Object> configMap ->
+                    sql.withBatch("insert into issue_entitlement_group_item (igi_version, igi_date_created, igi_last_updated, igi_ie_fk, igi_ie_group_fk) " +
+                            "select 0, now(), now(), ie_id, ${ieGroup.id} from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_gokb_id = :wekbId and ie_subscription_fk = :subId") { stmt ->
+                        stmt.addBatch([wekbId: configMap.wekbId, subId: sub.id])
+                    }
                 }
             }
             if(sub.hasPerpetualAccess) {
@@ -1602,153 +1518,7 @@ join sub.orgRelations or_sub where
                 }
             }
         }
-
-        /*
-        TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(gokbId)
-        if (tipp == null) {
-            throw new EntitlementCreationException("Unable to tipp ${gokbId}")
-        }
-        else if(IssueEntitlement.findAllBySubscriptionAndTippAndStatus(sub, tipp, RDStore.TIPP_STATUS_CURRENT)) {
-            throw new EntitlementCreationException("Unable to create IssueEntitlement because IssueEntitlement exist with tipp ${gokbId}")
-        }
-        else if(IssueEntitlement.findBySubscriptionAndTippAndStatus(sub, tipp, RDStore.TIPP_STATUS_EXPECTED)) {
-            IssueEntitlement expected = IssueEntitlement.findBySubscriptionAndTippAndStatus(sub, tipp, RDStore.TIPP_STATUS_EXPECTED)
-            expected.status = RDStore.TIPP_STATUS_CURRENT
-            if(!expected.save())
-                throw new EntitlementCreationException(expected.errors.getAllErrors().toListString())
-        }
-        else {
-            IssueEntitlement new_ie = new IssueEntitlement(
-                    status: tipp.status,
-                    subscription: sub,
-                    tipp: tipp,
-                    name: tipp.name,
-                    medium: tipp.medium,
-                    // ieReason: 'Manually Added by User',
-                    )
-            new_ie.generateSortTitle()
-
-            if(pickAndChoosePerpetualAccess || sub.hasPerpetualAccess){
-                new_ie.perpetualAccessBySub = sub
-            }
-
-            Date accessStartDate, accessEndDate
-            if(issueEntitlementOverwrite) {
-                if(issueEntitlementOverwrite.accessStartDate) {
-                    if(issueEntitlementOverwrite.accessStartDate instanceof String)
-                        accessStartDate = DateUtils.parseDateGeneric(issueEntitlementOverwrite.accessStartDate)
-                    else if(issueEntitlementOverwrite.accessStartDate instanceof Date)
-                        accessStartDate = issueEntitlementOverwrite.accessStartDate
-                    else accessStartDate = tipp.accessStartDate
-                }
-                else accessStartDate = tipp.accessStartDate
-                if(issueEntitlementOverwrite.accessEndDate) {
-                    if(issueEntitlementOverwrite.accessEndDate instanceof String) {
-                        accessEndDate = DateUtils.parseDateGeneric(issueEntitlementOverwrite.accessEndDate)
-                    }
-                    else if(issueEntitlementOverwrite.accessEndDate instanceof Date) {
-                        accessEndDate = issueEntitlementOverwrite.accessEndDate
-                    }
-                    else accessEndDate = tipp.accessEndDate
-                }
-                else accessEndDate = tipp.accessEndDate
-            }
-            else {
-                accessStartDate = tipp.accessStartDate
-                accessEndDate = tipp.accessEndDate
-            }
-            new_ie.accessStartDate = accessStartDate
-            new_ie.accessEndDate = accessEndDate
-            if (new_ie.save()) {
-                Set coverageStatements
-                Set fallback = tipp.coverages
-                if(issueEntitlementOverwrite?.coverages) {
-                    coverageStatements = issueEntitlementOverwrite.coverages
-                }
-                else {
-                    coverageStatements = fallback
-                }
-                coverageStatements.eachWithIndex { covStmt, int c ->
-                    IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(
-                            startDate: covStmt.startDate ?: fallback[c]?.startDate,
-                            startVolume: covStmt.startVolume ?: fallback[c]?.startVolume,
-                            startIssue: covStmt.startIssue ?: fallback[c]?.startIssue,
-                            endDate: covStmt.endDate ?: fallback[c]?.endDate,
-                            endVolume: covStmt.endVolume ?: fallback[c]?.endVolume,
-                            endIssue: covStmt.endIssue ?: fallback[c]?.endIssue,
-                            coverageDepth: covStmt.coverageDepth ?: fallback[c]?.coverageDepth,
-                            coverageNote: covStmt.coverageNote ?: fallback[c]?.coverageNote,
-                            embargo: covStmt.embargo ?: fallback[c]?.embargo,
-                            issueEntitlement: new_ie
-                    )
-                    if(!ieCoverage.save()) {
-                        throw new EntitlementCreationException(ieCoverage.errors)
-                    }
-                }
-                if(withPriceData) {
-                    if(issueEntitlementOverwrite) {
-                        if(issueEntitlementOverwrite instanceof IssueEntitlement) {
-                            issueEntitlementOverwrite.priceItems.each { PriceItem priceItem ->
-                                PriceItem pi = new PriceItem(
-                                        startDate: priceItem.startDate ?: null,
-                                        endDate: priceItem.endDate ?: null,
-                                        listPrice: priceItem.listPrice ?: null,
-                                        listCurrency: priceItem.listCurrency ?: null,
-                                        localPrice: priceItem.localPrice ?: null,
-                                        localCurrency: priceItem.localCurrency ?: null,
-                                        issueEntitlement: new_ie
-                                )
-                                pi.setGlobalUID()
-                                if (pi.save())
-                                    return true
-                                else {
-                                    throw new EntitlementCreationException(pi.errors)
-                                }
-                            }
-
-                        }
-                        else {
-                            PriceItem pi = new PriceItem(startDate: DateUtils.parseDateGeneric(issueEntitlementOverwrite.startDate),
-                                    listPrice: issueEntitlementOverwrite.listPrice,
-                                    listCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.listCurrency, 'Currency'),
-                                    localPrice: issueEntitlementOverwrite.localPrice,
-                                    localCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.localCurrency, 'Currency'),
-                                    issueEntitlement: new_ie
-                            )
-                            pi.setGlobalUID()
-                            if(pi.save())
-                                return true
-                            else {
-                                throw new EntitlementCreationException(pi.errors)
-                            }
-                        }
-                    }
-                    else {
-                        tipp.priceItems.each { PriceItem priceItem ->
-                            PriceItem pi = new PriceItem(
-                                    startDate: priceItem.startDate ?: null,
-                                    endDate: priceItem.endDate ?: null,
-                                    listPrice: priceItem.listPrice ?: null,
-                                    listCurrency: priceItem.listCurrency ?: null,
-                                    localPrice: priceItem.localPrice ?: null,
-                                    localCurrency: priceItem.localCurrency ?: null,
-                                    issueEntitlement: new_ie
-                            )
-                            pi.setGlobalUID()
-                            if (pi.save())
-                                return true
-                            else {
-                                throw new EntitlementCreationException(pi.errors)
-                            }
-                        }
-                    }
-                }
-                else return true
-            } else {
-                throw new EntitlementCreationException(new_ie.errors)
-            }
-        }
-        */
+        sql.close()
     }
 
     /**
@@ -1784,6 +1554,12 @@ join sub.orgRelations or_sub where
                 [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE])
     }
 
+    /**
+     * Called from views
+     * Checks if statistics are provided by at least one of the given platforms
+     * @param subscribedPlatforms the {@link Platform}s to verify
+     * @return true if at least one of the platforms provides usage statistics data, false if none
+     */
     boolean areStatsAvailable(Collection<Platform> subscribedPlatforms) {
         ApiSource wekbSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         boolean result = false
@@ -1803,7 +1579,19 @@ join sub.orgRelations or_sub where
     }
 
     /**
-     * (Un-)links the given subscription to the given license
+     * Unsets the given customer number
+     * @param id the customer number ID to unser
+     * @return true if the unsetting was successful, false otherwise
+     */
+    boolean deleteCustomerIdentifier(Long id) {
+        CustomerIdentifier ci = CustomerIdentifier.get(id)
+        ci.value = null
+        ci.requestorKey = null
+        ci.save()
+    }
+
+    /**
+     * (Un-)links the given subscription to/from the given license
      * @param sub the subscription to be linked
      * @param newLicense the license to link
      * @param unlink should the link being created or dissolved?
@@ -1879,7 +1667,7 @@ join sub.orgRelations or_sub where
         Org contextOrg = contextService.getOrg()
         RefdataValue comboType
         String[] parentSubType
-        if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if (contextService.getOrg().isCustomerType_Consortium()) {
             comboType = RDStore.COMBO_TYPE_CONSORTIUM
             parentSubType = [RDStore.SUBSCRIPTION_KIND_CONSORTIAL.getI10n('value')]
         }
@@ -1909,7 +1697,7 @@ join sub.orgRelations or_sub where
                 case "konsortiallizenz":
                 case "parent subscription":
                 case "consortial subscription":
-                    if(contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC))
+                    if(contextService.getOrg().isCustomerType_Consortium())
                         colMap.instanceOf = c
                     break
                 case "status": colMap.status = c
@@ -2342,7 +2130,7 @@ join sub.orgRelations or_sub where
                     sub.refresh() //needed for dependency processing
                     //create the org role associations
                     RefdataValue parentRoleType, memberRoleType
-                    if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+                    if (contextService.getOrg().isCustomerType_Consortium()) {
                         parentRoleType = RDStore.OR_SUBSCRIPTION_CONSORTIA
                         memberRoleType = RDStore.OR_SUBSCRIBER_CONS
                     }
@@ -2625,117 +2413,114 @@ join sub.orgRelations or_sub where
         Integer countRows = 0
         Integer count = 0
         Integer countSelectTipps = 0
-        Map<String, Object> selectedTipps = [:]
         Org contextOrg = contextService.getOrg()
+        Set selectedTipps = [], truncatedRows = []
 
-        //List<Long> subscriptionIDs = surveyService.subscriptionsOfOrg(newSub.getSubscriber())
-        if(subscription.packages.pkg) {
+        int zdbCol = -1, onlineIdentifierCol = -1, printIdentifierCol = -1, titleUrlCol = -1, titleIdCol = -1, doiCol = -1, pickCol = -1
+        Set<Package> subPkgs = SubscriptionPackage.executeQuery('select sp.pkg from SubscriptionPackage sp where sp.subscription = :subscription', [subscription: subscription])
+        //now, assemble the identifiers available to highlight
+        Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNsAndNsType('zdb', TitleInstancePackagePlatform.class.name),
+                                                       eissn: IdentifierNamespace.findByNsAndNsType('eissn', TitleInstancePackagePlatform.class.name),
+                                                       isbn: IdentifierNamespace.findByNsAndNsType('isbn',TitleInstancePackagePlatform.class.name),
+                                                       issn : IdentifierNamespace.findByNsAndNsType('issn', TitleInstancePackagePlatform.class.name),
+                                                       eisbn: IdentifierNamespace.findByNsAndNsType('eisbn', TitleInstancePackagePlatform.class.name),
+                                                       doi: IdentifierNamespace.findByNsAndNsType('doi', TitleInstancePackagePlatform.class.name),
+                                                       title_id: IdentifierNamespace.findByNsAndNsType('title_id', TitleInstancePackagePlatform.class.name)]
+        if(subPkgs) {
 
             ArrayList<String> rows = stream.text.split('\n')
-            Map<String, Integer> colMap = [zdbCol: -1, onlineIdentifierCol: -1, printIdentifierCol: -1, pick: -1, titleUrlCol: -1, titleIdCol: -1, doiCol: -1, doiTitleCol : -1]
             //read off first line of KBART file
-            rows[0].split('\t').eachWithIndex { headerCol, int c ->
+            List titleRow = rows.remove(0).split('\t')
+            titleRow.eachWithIndex { headerCol, int c ->
                 switch (headerCol.toLowerCase().trim()) {
-                    case "zdb_id": colMap.zdbCol = c
+                    case "zdb_id": zdbCol = c
                         break
-                    case "print_identifier": colMap.printIdentifierCol = c
+                    case "print_identifier": printIdentifierCol = c
                         break
-                    case "online_identifier": colMap.onlineIdentifierCol = c
+                    case "online_identifier": onlineIdentifierCol = c
                         break
-                    case "print identifier": colMap.printIdentifierCol = c
+                    case "title_url": titleUrlCol = c
                         break
-                    case "online identifier": colMap.onlineIdentifierCol = c
+                    case "title_id": titleIdCol = c
                         break
-                    case "title_url": colMap.titleUrlCol = c
+                    case "doi_identifier": doiCol = c
                         break
-                    case "zugriffs-url": colMap.titleUrlCol = c
+                    case "print identifier": printIdentifierCol= c
                         break
-                    case "access url": colMap.titleUrlCol = c
+                    case "online identifier": onlineIdentifierCol = c
                         break
-                    case "title_id": colMap.titleIdCol = c
+                    case "zugriffs-url": titleUrlCol = c
                         break
-                    case "doi_identifier": colMap.doiCol = c
+                    case "access url": titleUrlCol = c
                         break
-                    case "doi": colMap.doiTitleCol = c
+                    case "doi": doiCol= c
                         break
-                    case "pick": colMap.pick = c
+                    case "pick": pickCol = c
                         break
                 }
             }
             //after having read off the header row, pop the first row
             rows.remove(0)
-            //now, assemble the identifiers available to highlight
-            Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNsAndNsType('zdb', TitleInstancePackagePlatform.class.name),
-                                                           eissn: IdentifierNamespace.findByNsAndNsType('eissn', TitleInstancePackagePlatform.class.name),
-                                                           isbn: IdentifierNamespace.findByNsAndNsType('isbn', TitleInstancePackagePlatform.class.name),
-                                                           issn : IdentifierNamespace.findByNsAndNsType('issn', TitleInstancePackagePlatform.class.name),
-                                                           eisbn: IdentifierNamespace.findByNsAndNsType('eisbn', TitleInstancePackagePlatform.class.name),
-                                                           doi  : IdentifierNamespace.findByNsAndNsType('doi', TitleInstancePackagePlatform.class.name),
-                                                           title_id: IdentifierNamespace.findByNsAndNsType('title_id', TitleInstancePackagePlatform.class.name)]
             rows.eachWithIndex { row, int i ->
                 countRows++
-                log.debug("now processing entitlement ${i}")
+                log.debug("now processing entitlement ${i+1}")
                 ArrayList<String> cols = row.split('\t')
-                Map<String, Object> idCandidate
-                String titleUrl = null
-                TitleInstancePackagePlatform tipp = null
-                if (colMap.titleUrlCol >= 0 && !cols[colMap.titleUrlCol].trim().isEmpty()) {
-                    titleUrl = cols[colMap.titleUrlCol].replace("\r", "")
-                } else if(colMap.titleIdCol >= 0 && !cols[colMap.titleIdCol].trim().isEmpty()) {
-                    idCandidate = [namespaces: namespaces.title_id, value: cols[colMap.titleIdCol]]
-                } else if (colMap.onlineIdentifierCol >= 0 && !cols[colMap.onlineIdentifierCol].trim().isEmpty()) {
-                    idCandidate = [namespaces: [namespaces.eissn, namespaces.eisbn], value: cols[colMap.onlineIdentifierCol]]
-                } else if (colMap.doiCol >= 0 && !cols[colMap.doiCol].trim().isEmpty()) {
-                    idCandidate = [namespaces: [namespaces.doi], value: cols[colMap.doiCol]]
-                } else if (colMap.doiTitleCol >= 0 && !cols[colMap.doiTitleCol].trim().isEmpty()) {
-                    idCandidate = [namespaces: [namespaces.doi], value: cols[colMap.doiTitleCol]]
-                } else if (colMap.printIdentifierCol >= 0 && !cols[colMap.printIdentifierCol].trim().isEmpty()) {
-                    idCandidate = [namespaces: [namespaces.issn, namespaces.isbn], value: cols[colMap.printIdentifierCol]]
-                } else if (colMap.zdbCol >= 0 && !cols[colMap.zdbCol].trim().isEmpty()) {
-                    idCandidate = [namespaces: [namespaces.zdb], value: cols[colMap.zdbCol]]
-                }
-                if (!titleUrl && ((colMap.titleIdCol >= 0 && cols[colMap.titleIdCol].trim().isEmpty()) || colMap.titleIdCol < 0) &&
-                        ((colMap.zdbCol >= 0 && cols[colMap.zdbCol].trim().isEmpty()) || colMap.zdbCol < 0) &&
-                        ((colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol].trim().isEmpty()) || colMap.onlineIdentifierCol < 0) &&
-                        ((colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol].trim().isEmpty()) || colMap.printIdentifierCol < 0) &&
-                        ((colMap.doiCol >= 0 && cols[colMap.doiCol].trim().isEmpty()) || colMap.doiCol < 0)) {
-                } else {
-                    if (titleUrl) {
-                        tipp = TitleInstancePackagePlatform.findByHostPlatformURLAndPkgInListAndStatusNotEqual(titleUrl, subscription.packages.pkg, RDStore.TIPP_STATUS_REMOVED)
+                if(cols.size() == titleRow.size()) {
+                    TitleInstancePackagePlatform match = null
+                    //cascade: 1. title_url, 2. title_id, 3. identifier map
+                    if(titleUrlCol >= 0 && cols[titleUrlCol] != null && !cols[titleUrlCol].trim().isEmpty()) {
+                        match = TitleInstancePackagePlatform.findByHostPlatformURLAndPkgInListAndStatusNotEqual(cols[titleUrlCol].trim(), subPkgs, RDStore.TIPP_STATUS_REMOVED)
                     }
-                    if (!tipp && idCandidate.value) {
-                        List<TitleInstancePackagePlatform> titles = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp join tipp.ids ident where ident.ns in :namespaces and ident.value = :value and tipp.pkg in (:pkgs) and tipp.status = :tippStatus', [tippStatus: RDStore.TIPP_STATUS_CURRENT, namespaces: idCandidate.namespaces, value: idCandidate.value, pkgs: subscription.packages.pkg])
-                        if(titles.size() == 1)
-                            tipp = titles[0]
+                    if(!match && titleIdCol >= 0 && cols[titleIdCol] != null && !cols[titleIdCol].trim().isEmpty()) {
+                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status != :removed', [subPkgs: subPkgs, value: cols[titleIdCol].trim(), ns: namespaces.title_id, removed: RDStore.TIPP_STATUS_REMOVED])
+                        if(matchList.size() == 1)
+                            match = matchList[0] as TitleInstancePackagePlatform
                     }
-                    if (tipp) {
+
+                    if(!match && doiCol >= 0 && cols[doiCol] != null && !cols[doiCol].trim().isEmpty()) {
+                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status != :removed', [subPkgs: subPkgs, value: cols[doiCol].trim(), ns: namespaces.doi, removed: RDStore.TIPP_STATUS_REMOVED])
+                        if(matchList.size() == 1)
+                            match = matchList[0] as TitleInstancePackagePlatform
+                    }
+                    if(!match && onlineIdentifierCol >= 0 && cols[onlineIdentifierCol] != null && !cols[onlineIdentifierCol].trim().isEmpty()) {
+                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns in (:ns) and tipp.status != :removed', [subPkgs: subPkgs, value: cols[onlineIdentifierCol].trim(), ns: [namespaces.eisbn, namespaces.eissn], removed: RDStore.TIPP_STATUS_REMOVED])
+                        if(matchList.size() == 1)
+                            match = matchList[0] as TitleInstancePackagePlatform
+                    }
+                    if(!match && printIdentifierCol >= 0 && cols[printIdentifierCol] != null && !cols[printIdentifierCol].trim().isEmpty()) {
+                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns in (:ns) and tipp.status != :removed', [subPkgs: subPkgs, value: cols[printIdentifierCol].trim(), ns: [namespaces.isbn, namespaces.issn], removed: RDStore.TIPP_STATUS_REMOVED])
+                        if(matchList.size() == 1)
+                            match = matchList[0] as TitleInstancePackagePlatform
+                    }
+                    if(!match && zdbCol >= 0 && cols[zdbCol] != null && !cols[zdbCol].trim().isEmpty()) {
+                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status != :removed', [subPkgs: subPkgs, value: cols[zdbCol].trim(), ns: namespaces.zdb, removed: RDStore.TIPP_STATUS_REMOVED])
+                        if(matchList.size() == 1)
+                            match = matchList[0] as TitleInstancePackagePlatform
+                    }
+                    if(match) {
                             count++
+                        if (pickCol >= 0 && cols[pickCol] != null && !cols[pickCol].trim().isEmpty()) {
+                            String cellEntry = cols[pickCol].trim()
+                            if (cellEntry.toLowerCase() == RDStore.YN_YES.value_de.toLowerCase() || cellEntry.toLowerCase() == RDStore.YN_YES.value_en.toLowerCase()) {
+                                IssueEntitlement ieInNewSub = surveyService.titleContainedBySubscription(newSub, match)
+                                boolean allowedToSelect = false
+                                if (surveyConfig.pickAndChoosePerpetualAccess) {
+                                    boolean participantPerpetualAccessToTitle = surveyService.hasParticipantPerpetualAccessToTitle3(newSub.getSubscriber(), match)
+                                    allowedToSelect = !(participantPerpetualAccessToTitle) && (!ieInNewSub || (ieInNewSub && (contextOrg.id == surveyConfig.surveyInfo.owner.id)))
+                                } else {
+                                    allowedToSelect = !ieInNewSub || (ieInNewSub && (contextOrg.id == surveyConfig.surveyInfo.owner.id))
+                                }
 
-                            colMap.each { String colName, int colNo ->
-                                if (colNo > -1 && cols[colNo]) {
-                                    String cellEntry = cols[colNo].trim()
-                                    switch (colName) {
-                                        case "pick":
-                                            if (cellEntry.toLowerCase() == RDStore.YN_YES.value_de.toLowerCase() || cellEntry.toLowerCase() == RDStore.YN_YES.value_en.toLowerCase()) {
-                                                IssueEntitlement ieInNewSub = surveyService.titleContainedBySubscription(newSub, tipp)
-                                                boolean allowedToSelect = false
-                                                if (surveyConfig.pickAndChoosePerpetualAccess) {
-                                                    boolean participantPerpetualAccessToTitle = surveyService.hasParticipantPerpetualAccessToTitle3(newSub.getSubscriber(), tipp)
-                                                    allowedToSelect = !(participantPerpetualAccessToTitle) && (!ieInNewSub || (ieInNewSub && (contextOrg.id == surveyConfig.surveyInfo.owner.id)))
-                                                } else {
-                                                    allowedToSelect = !ieInNewSub || (ieInNewSub && (contextOrg.id == surveyConfig.surveyInfo.owner.id))
-                                                }
-
-                                                if (!ieInNewSub && allowedToSelect) {
-                                                    selectedTipps[tipp.id.toString()] = 'checked'
-                                                    countSelectTipps++
-                                                }
-                                            }
-                                            break
-                                    }
+                                if (!ieInNewSub && allowedToSelect) {
+                                    selectedTipps << match.gokbId
+                                    countSelectTipps++
                                 }
                             }
+                        }
                     }
+                }
+                else {
+                    truncatedRows << i
                 }
             }
         }
@@ -3015,10 +2800,12 @@ join sub.orgRelations or_sub where
 
     /**
      * Cronjob-triggered.
-     * Processes subscriptions which have been marked with holdings to be freezed after their end time and sets all pending change
+     * Processes subscriptions which have been marked with holdings to be frozen after their end time and sets all pending change
      * configurations to reject
      * @return true if the execution was successful, false otherwise
+     * @deprecated is implicitlely done by {@link GlobalSourceSyncService#updateRecords(java.util.List, int, java.util.Set)} where only subscriptions are being considered whose end date has not been reached yet and {@link Subscription#holdingSelection} is set to Entire
      */
+    @Deprecated
     boolean freezeSubscriptionHoldings() {
         boolean done, doneChild
         Date now = new Date()
@@ -3039,10 +2826,10 @@ join sub.orgRelations or_sub where
     void setPermanentTitlesBySubscription(Subscription subscription) {
         if (subscription._getCalculatedType() in [CalculatedType.TYPE_LOCAL, CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_CONSORTIAL]) {
             if(!checkThreadRunning('permanentTilesProcess_' + subscription.id)) {
+                Long userId = contextService.getUser().id
                 executorService.execute({
                     Thread.currentThread().setName('permanentTilesProcess_' + subscription.id)
-                    Long ownerId = subscription.subscriber.id
-                    Long subId = subscription.id
+                    Long ownerId = subscription.subscriber.id, subId = subscription.id, start = System.currentTimeSeconds()
                     Sql sql = GlobalService.obtainSqlConnection()
                     Connection connection = sql.dataSource.getConnection()
 
@@ -3067,6 +2854,9 @@ join sub.orgRelations or_sub where
                         }
                     }
                     sql.close()
+                    if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
+                        globalService.notifyBackgroundProcessFinish(userId, 'permanentTilesProcess_' + subscription.id, messageSource.getMessage('subscription.details.unmarkPermanentTitles.completed' ,[subscription.name] as Object[], LocaleUtils.getCurrentLocale()))
+                    }
                 })
             }
         }
@@ -3075,7 +2865,9 @@ join sub.orgRelations or_sub where
     void removePermanentTitlesBySubscription(Subscription subscription) {
         if (subscription._getCalculatedType() in [CalculatedType.TYPE_LOCAL, CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_CONSORTIAL]) {
             if(!checkThreadRunning('permanentTilesProcess_' + subscription.id)) {
+                long userId = contextService.getUser().id
                 executorService.execute({
+                    long start = System.currentTimeSeconds()
                     Thread.currentThread().setName('permanentTilesProcess_' + subscription.id)
                     int countIeIDs = IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is not null', [sub: subscription])[0]
                     log.debug("removePermanentTitlesBySubscription -> set perpetualAccessBySub of ${countIeIDs} IssueEntitlements to null: " + subscription.id)
@@ -3091,6 +2883,9 @@ join sub.orgRelations or_sub where
                             PermanentTitle.executeUpdate("delete PermanentTitle pt where pt.issueEntitlement.id in (select ie.id from IssueEntitlement ie where ie.subscription = :sub)", [sub: dependingObj])
 
                         }
+                    }
+                    if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
+                        globalService.notifyBackgroundProcessFinish(userId, 'permanentTilesProcess_' + subscription.id, messageSource.getMessage('subscription.details.unmarkPermanentTitles.completed' ,[subscription.name] as Object[], LocaleUtils.getCurrentLocale()))
                     }
                 })
             }

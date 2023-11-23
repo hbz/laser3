@@ -161,6 +161,11 @@ class I10nTranslation {
 
     // -- helper --
 
+    /**
+     * Gets the reference data value column for the given {@link Locale}
+     * @param locale the {@link Locale} to which the matching column should be determined
+     * @return the matching SQL column name
+     */
     static String getRefdataValueColumn(Locale locale) {
         switch(LocaleUtils.decodeLocale(locale.toString())) {
             case 'de': 'rdv_value_de'

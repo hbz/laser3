@@ -67,7 +67,7 @@
     </g:else>
 </g:elseif>
 
-<table class="ui celled table la-js-responsive-table la-table">
+<table class="ui sortable celled table la-js-responsive-table la-table">
     <thead>
         <tr>
             <th class="one wide" rowspan="2">${message(code:'sidewide.number')}</th>

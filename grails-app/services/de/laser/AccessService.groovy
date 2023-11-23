@@ -1,10 +1,8 @@
 package de.laser
 
-import de.laser.annotations.ShouldBePrivate_DoNotUse
-import de.laser.auth.*
+import de.laser.auth.User
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
-import org.springframework.web.context.request.RequestContextHolder
 
 /**
  * This service manages access control checks
@@ -12,23 +10,14 @@ import org.springframework.web.context.request.RequestContextHolder
 @Transactional
 class AccessService {
 
-    static final CHECK_VIEW = 'CHECK_VIEW'
-    static final CHECK_EDIT = 'CHECK_EDIT'
-    static final CHECK_VIEW_AND_EDIT = 'CHECK_VIEW_AND_EDIT'
+    static final String CHECK_VIEW = 'CHECK_VIEW'
+    static final String CHECK_EDIT = 'CHECK_EDIT'
+    static final String CHECK_VIEW_AND_EDIT = 'CHECK_VIEW_AND_EDIT'
 
     ContextService contextService
     UserService userService
 
-    // --- checks for other orgs ---
-
-    /**
-     * @param orgToCheck the context institution whose customer type needs to be checked
-     * @param orgPerms customer type depending permissions to check against
-     * @return true if access is granted, false otherwise
-     */
-    boolean otherOrgPerm(Org orgToCheck, String orgPerms) {
-        _hasPerm_forOrg_withFakeRole(orgPerms.split(','), orgToCheck)
-    }
+    // --- generic checks for orgs ---
 
     /**
      * Checks if
@@ -49,10 +38,11 @@ class AccessService {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
-        Org ctx = contextService.getOrg()
+        Org ctx   = contextService.getOrg()
+        User user = contextService.getUser()
 
         // combo check @ contextUser/contextOrg
-        boolean check1 = contextService._hasPermAndInstRole_withFakeRole(orgPerms, instUserRole)
+        boolean check1 = userService.hasAffiliation_or_ROLEADMIN(user, ctx, instUserRole) && contextService._hasPerm(orgPerms)
         boolean check2 = (orgToCheck.id == ctx.id) || Combo.findByToOrgAndFromOrg(ctx, orgToCheck)
 
         // orgToCheck check @ otherOrg
@@ -60,42 +50,5 @@ class AccessService {
         // boolean check3 = (ctx.id == orgToCheck.id) && contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN(null) // legacy - no affiliation given
 
         (check1 && check2) || check3
-    }
-
-    // --- should be private; NO direct calls ---
-
-    /**
-     * Checks for the context institution if one of the given customer types are granted
-     * @param orgToCheck the context institution whose customer type needs to be checked
-     * @param orgPerms customer type depending permissions to check against
-     * @return true if access is granted, false otherwise
-     */
-    @ShouldBePrivate_DoNotUse
-    boolean _hasPerm_forOrg_withFakeRole(String[] orgPerms, Org orgToCheck) {
-        boolean check = false
-
-        if (orgPerms) {
-
-            Role fakeRole
-            boolean isOrgBasicMemberView = false
-            try {
-                isOrgBasicMemberView = RequestContextHolder.currentRequestAttributes().params.orgBasicMemberView
-            } catch (IllegalStateException e) {}
-
-            if (isOrgBasicMemberView && orgToCheck.isCustomerType_Consortium()) {
-                fakeRole = Role.findByAuthority('ORG_INST_BASIC')
-                // TODO: ERMS-4920 - ORG_INST_BASIC or ORG_INST_PRO
-            }
-
-            def oss = OrgSetting.get(orgToCheck, OrgSetting.KEYS.CUSTOMER_TYPE)
-            if (oss != OrgSetting.SETTING_NOT_FOUND) {
-                orgPerms.each{ cd ->
-                    check = check || PermGrant.findByPermAndRole(Perm.findByCode(cd.toLowerCase().trim()), (Role) fakeRole ?: oss.getValue())
-                }
-            }
-        } else {
-            check = true
-        }
-        check
     }
 }

@@ -17,6 +17,8 @@ import de.laser.reporting.report.myInstitution.base.BaseFilter
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.util.logging.Slf4j
 
+import java.time.Year
+
 @Slf4j
 class SubscriptionFilter extends BaseFilter {
 
@@ -40,24 +42,22 @@ class SubscriptionFilter extends BaseFilter {
                 break
             case 'consortia-sub':
                 List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(
-                        [validOn: null, orgRole: 'Subscription Consortia'], contextService.getOrg() )
+                        [validOn: null, orgRole: 'Subscription Consortia'])
                 queryParams.subscriptionIdList = Subscription.executeQuery( 'select s.id ' + tmp[0], tmp[1])
                 break
             case 'inst-sub':
                 List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(
-                        [validOn: null, orgRole: 'Subscriber'], contextService.getOrg() )
+                        [validOn: null, orgRole: 'Subscriber'])
                 queryParams.subscriptionIdList = Subscription.executeQuery( 'select s.id ' + tmp[0], tmp[1])
                 break
             case 'inst-sub-consortia':
                 List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(
-                        [validOn: null, orgRole: RDStore.OR_SUBSCRIBER.value, subTypes: RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id],
-                        contextService.getOrg() )
+                        [validOn: null, orgRole: RDStore.OR_SUBSCRIBER.value, subTypes: RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id])
                 queryParams.subscriptionIdList = Subscription.executeQuery( 'select s.id ' + tmp[0], tmp[1])
                 break
             case 'inst-sub-local':
                 List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(
-                        [validOn: null, orgRole: RDStore.OR_SUBSCRIBER.value, subTypes: RDStore.SUBSCRIPTION_TYPE_LOCAL.id],
-                        contextService.getOrg() )
+                        [validOn: null, orgRole: RDStore.OR_SUBSCRIBER.value, subTypes: RDStore.SUBSCRIPTION_TYPE_LOCAL.id])
                 queryParams.subscriptionIdList = Subscription.executeQuery( 'select s.id ' + tmp[0], tmp[1])
                 break
         }
@@ -131,6 +131,12 @@ class SubscriptionFilter extends BaseFilter {
                         Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(p)
                         List labels = customRdv.get('from').findAll { it -> it.id in params.list(key).collect{ it2 -> Long.parseLong(it2) } }
                         filterLabelValue = labels.collect { it.get('value_de') } // TODO
+                    }
+                    else if (p == BaseConfig.CI_GENERIC_REFERENCE_YEAR) {
+                        whereParts.add( '(sub.referenceYear = :p' + (++pCount) + ')')
+                        queryParams.put('p' + pCount, Year.of(params.int(key))) // TODO !!!
+
+                        filterLabelValue = params.get(key)
                     }
                     else if (p == BaseConfig.CI_GENERIC_STARTDATE_LIMIT) {
                         whereParts.add( '(YEAR(sub.startDate) >= :p' + (++pCount) + ')')
@@ -273,6 +279,12 @@ class SubscriptionFilter extends BaseFilter {
                         Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(p)
                         List labels = customRdv.get('from').findAll { it -> it.id in params.list(key).collect{ it2 -> Long.parseLong(it2) } }
                         filterLabelValue = labels.collect { it.get('value_de') } // TODO
+                    }
+                    else if (p == BaseConfig.CI_GENERIC_REFERENCE_YEAR) {
+                        whereParts.add( '(sub.referenceYear = :p' + (++pCount) + ')')
+                        queryParams.put('p' + pCount, Year.of(params.int(key))) // TODO !!!
+
+                        filterLabelValue = params.get(key)
                     }
                     else if (p == BaseConfig.CI_GENERIC_STARTDATE_LIMIT) {
                         whereParts.add( '(YEAR(mbr.startDate) >= :p' + (++pCount) + ')')

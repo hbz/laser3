@@ -234,11 +234,11 @@
 
             <div class="content">
                 ${showCompact ? '' : message(code: 'tipp.ddc') + ':'}
-                <ul>
+                <div class="ui list la-titleAccordionList">
                     <g:each in="${tipp.ddcs}" var="ddc">
-                        <li>${ddc.ddc.value} - ${ddc.ddc.getI10n("value")}</li>
+                        <div class="item">${ddc.ddc.value} - ${ddc.ddc.getI10n("value")}</div>
                     </g:each>
-                </ul>
+                </div>
             </div>
         </div>
     </g:if>
@@ -250,11 +250,11 @@
 
             <div class="content">
                 ${showCompact ? '' : message(code: 'tipp.language') + ':'}
-                <ul>
+                <div class="ui list la-titleAccordionList">
                     <g:each in="${tipp.languages}" var="language">
-                        <li>${language.language.getI10n("value")}</li>
+                        <div class="item">${language.language.getI10n("value")}</div>
                     </g:each>
-                </ul>
+                </div>
             </div>
         </div>
     </g:if>

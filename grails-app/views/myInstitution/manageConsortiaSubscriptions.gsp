@@ -1,6 +1,6 @@
 <%@ page import="de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
 
-<laser:htmlStart message="menu.my.consortiaSubscriptions" />
+<laser:htmlStart message="menu.my.consortiaSubscriptions" serviceInjection="true"/>
 
     <g:set var="entityName" value="${message(code: 'org.label')}"/>
 
@@ -44,6 +44,19 @@
                 <g:link class="item" controller="myInstitution" action="manageConsortiaSubscriptions" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
             </g:else>
         </ui:exportDropdownItem>
+        <ui:exportDropdownItem>
+            <g:if test="${filterSet || defaultSet}">
+                <g:link class="item js-open-confirm-modal"
+                        data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
+                        data-confirm-term-how="ok" controller="myInstitution" action="manageConsortiaSubscriptions"
+                        params="${params+[exportPDF:true]}">
+                    ${message(code:'default.button.exports.pdf')}
+                </g:link>
+            </g:if>
+            <g:else>
+                <g:link class="item" controller="myInstitution" action="manageConsortiaSubscriptions" params="${params+[exportPDF:true]}">${message(code:'default.button.exports.pdf')}</g:link>
+            </g:else>
+        </ui:exportDropdownItem>
         --%>
     </ui:exportDropdown>
     <ui:actionsDropdown>
@@ -55,7 +68,7 @@
 
 <ui:messages data="${flash}"/>
 
-<laser:render template="/templates/subscription/consortiaSubscriptionFilter"/>
+<laser:render template="${customerTypeService.getConsortiaSubscriptionFilterTemplatePath()}"/>
 
 <laser:render template="/templates/subscription/consortiaSubscriptionTable"/>
 

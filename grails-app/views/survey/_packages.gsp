@@ -10,7 +10,7 @@
                     <div class="title">
                         <div
                                 class="ui button icon blue la-modern-button la-delay right floated ">
-                            <i class="ui angle double down large icon"></i>
+                            <i class="ui angle double down icon"></i>
                         </div>
                         <laser:script file="${this.getGroovyPageFileName()}">
                             $('.js-package-info-accordion')

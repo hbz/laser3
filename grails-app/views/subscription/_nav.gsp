@@ -5,8 +5,6 @@
 
     <ui:subNavItem controller="subscription" action="show" params="${[id:params.id]}" message="subscription.details.details.label" />
 
-    <g:if test="${! params.orgBasicMemberView}">
-
     <g:if test="${controllerName != 'finance'}">%{-- template is used by subscriptionDetails/* and finance/index --}%
         <ui:subNavItem controller="subscription" counts="${subscription.packages.size()}" action="index" params="${[id:params.id]}" message="subscription.details.current_ent" />
     </g:if>
@@ -31,7 +29,7 @@
         <g:if test="${(contextService.getOrg().isCustomerType_Consortium_Pro() && subscription.instanceOf)}">
             <ui:securedSubNavItem orgPerm="${CustomerTypeService.ORG_CONSORTIUM_PRO}" controller="subscription" action="surveys" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
         </g:if>
-        <g:if test="${(contextService.getOrg().isCustomerType_Inst() || params.orgBasicMemberView) && subscription?.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL}">
+        <g:if test="${contextService.getOrg().isCustomerType_Inst() && subscription.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL}">
             <ui:securedSubNavItem orgPerm="${CustomerTypeService.ORG_INST_BASIC}" controller="subscription" action="surveys" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
         </g:if>
 
@@ -54,18 +52,18 @@
             <ui:subNavItem message="default.stats.label" tooltip="${message(code: 'default.stats.noPackage')}" disabled="disabled" />
         </g:else>
 
-        <g:if test="${contextService.getOrg().isCustomerType_Pro()}">
-            <ui:subNavItem controller="subscription" action="reporting" params="${[id:params.id]}" message="myinst.reporting" />
-        </g:if>
+%{--        <g:if test="${contextService.getOrg().isCustomerType_Pro()}">--}%
+            <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="subscription" action="reporting" params="${[id:params.id]}" message="myinst.reporting" />
+%{--        </g:if>--}%
 
         <ui:subNavItem controller="subscription" action="notes" params="${[id:params.id]}" counts="${notesCount}" message="default.notes.label" />
         <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="subscription" action="tasks" params="${[id:params.id]}" counts="${tasksCount}" message="task.plural" />
         <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="subscription" action="documents" params="${[id:params.id]}" message="default.documents.label" />
 
-        <g:if test="${contextService.hasPerm(CustomerTypeService.PERMS_PRO)}"><!-- TODO: workflows-permissions -->
+        <g:if test="${contextService.getOrg().isCustomerType_Pro()}"><!-- TODO: workflows-permissions -->
             <ui:subNavItem controller="subscription" action="workflows" counts="${checklistCount}" params="${[id:params.id]}" message="workflow.plural"/>
         </g:if>
-        <g:elseif test="${contextService.hasPerm(CustomerTypeService.PERMS_BASIC)}">
+        <g:elseif test="${contextService.getOrg().isCustomerType_Basic()}">
             <ui:subNavItem controller="subscription" action="workflows" counts="${checklistCount}" params="${[id:params.id]}" message="workflow.plural" disabled="disabled"/>
         </g:elseif>
 
@@ -73,5 +71,4 @@
             <ui:securedSubNavItem orgPerm="${CustomerTypeService.ORG_CONSORTIUM_PRO}" controller="subscription" action="subTransfer" params="${[id:params.id]}" message="subscription.details.subTransfer.label" />
         </g:if>
 
-    </g:if>%{-- if test="${! params.orgBasicMemberView}" --}%
 </ui:subNav>

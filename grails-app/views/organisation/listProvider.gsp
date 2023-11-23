@@ -42,7 +42,7 @@
             --%>
         </ui:exportDropdown>
 
-            <g:if test="${contextService.is_ORG_COM_EDITOR()}">
+            <g:if test="${contextService.is_ORG_COM_EDITOR_or_ROLEADMIN()}">
                 <ui:actionsDropdown>
                     <ui:actionsDropdownItem controller="organisation" action="findProviderMatches" message="org.create_new_provider.label"/>
                 </ui:actionsDropdown>

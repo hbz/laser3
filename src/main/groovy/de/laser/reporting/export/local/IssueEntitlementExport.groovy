@@ -11,6 +11,9 @@ import org.grails.plugins.web.taglib.ApplicationTagLib
 
 import java.text.SimpleDateFormat
 
+/**
+ * Contains configurations for the issue entitlement export
+ */
 class IssueEntitlementExport extends BaseDetailsExport {
 
     static String KEY = 'entitlement'
@@ -49,20 +52,40 @@ class IssueEntitlementExport extends BaseDetailsExport {
             ]
     ]
 
+    /**
+     * Constructor call for a new issue entitlement report
+     * @param token the token under which the queried data is going to be stored
+     * @param fields the {@link Map} with the fields selected for the export
+     */
     IssueEntitlementExport(String token, Map<String, Object> fields) {
         init(token, fields)
     }
 
+    /**
+     * Gets the fields selected for the current report export
+     * @return the class field map containing the selected report fields
+     */
     @Override
     Map<String, Object> getSelectedFields() {
         selectedExportFields
     }
 
+    /**
+     * Builds the label for the selected field key
+     * @param fieldName the field key to which the export label should be built
+     * @return the label which will appear in the report export
+     */
     @Override
     String getFieldLabel(String fieldName) {
         LocalExportHelper.getFieldLabel( this, fieldName )
     }
 
+    /**
+     * Collects the details of the given issue entitlement and outputs the field values human-readably
+     * @param obj the issue entitlement to export
+     * @param fields the selected fields which should appear in the report
+     * @return a {@link List} with the issue entitlement's human-readable field values
+     */
     @Override
     List<Object> getDetailedObject(Object obj, Map<String, Object> fields) {
 

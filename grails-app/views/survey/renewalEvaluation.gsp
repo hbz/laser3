@@ -70,7 +70,7 @@
             <g:link controller="subscription" action="show"
                     id="${parentSuccessorSubscription.id}">${parentSuccessorSubscription.dropdownNamingConvention()}</g:link>
 
-            <g:if test="${parentSuccessorSubscription.getAllSubscribers().size() > 0}">
+            <g:if test="${parentSuccessorSubscription.getSubscriber().size() > 0}">
                 <g:link controller="subscription" action="copyElementsIntoSubscription" id="${parentSubscription.id}"
                         params="[sourceObjectId: genericOIDService.getOID(parentSubscription), targetObjectId: genericOIDService.getOID(parentSuccessorSubscription), isRenewSub: true, fromSurvey: true]"
                         class="ui button ">
@@ -266,8 +266,8 @@
                 <tr>
                     <th class="center aligned">${message(code: 'sidewide.number')}</th>
                     <th>${message(code: 'default.sortname.label')}</th>
-                    <th>${message(code: 'default.startDate.label')}</th>
-                    <th>${message(code: 'default.endDate.label')}</th>
+                    <th>${message(code: 'default.startDate.label.shy')}</th>
+                    <th>${message(code: 'default.endDate.label.shy')}</th>
                     <th>${message(code: 'default.status.label')}</th>
                     <th>${message(code: 'default.actions.label')}</th>
 
@@ -275,11 +275,11 @@
                 </thead>
                 <tbody>
                 <g:each in="${orgsWithMultiYearTermSub}" var="sub" status="i">
+                    <g:set value="${sub.getSubscriber()}" var="subscriberOrg"/>
                     <tr>
                         <td class="center aligned">
                             ${i + 1}
                         </td>
-                        <g:each in="${sub.getAllSubscribers()}" var="subscriberOrg">
                             <td>
                                 ${subscriberOrg.sortname}
                                 <br/>
@@ -304,7 +304,6 @@
                                             class="ui button icon"><i class="icon yellow clipboard"></i></g:link>
                                 </g:if>
                             </td>
-                        </g:each>
                     </tr>
                 </g:each>
                 </tbody>
@@ -321,8 +320,8 @@
                 <tr>
                     <th class="center aligned">${message(code: 'sidewide.number')}</th>
                     <th>${message(code: 'default.sortname.label')}</th>
-                    <th>${message(code: 'default.startDate.label')}</th>
-                    <th>${message(code: 'default.endDate.label')}</th>
+                    <th>${message(code: 'default.startDate.label.shy')}</th>
+                    <th>${message(code: 'default.endDate.label.shy')}</th>
                     <th>${message(code: 'default.status.label')}</th>
                     <th>${message(code: 'default.actions.label')}</th>
 
@@ -330,11 +329,11 @@
                 </thead>
                 <tbody>
                 <g:each in="${orgsWithParticipationInParentSuccessor}" var="sub" status="i">
+                    <g:set value="${sub.getSubscriber()}" var="subscriberOrg"/>
                     <tr>
                         <td class="center aligned">
                             ${i + 1}
                         </td>
-                        <g:each in="${sub.getAllSubscribers()}" var="subscriberOrg">
                             <td>
                                 ${subscriberOrg.sortname}
                                 <br/>
@@ -358,7 +357,6 @@
                                             class="ui button icon"><i class="icon yellow clipboard"></i></g:link>
                                 </g:if>
                             </td>
-                        </g:each>
                     </tr>
                 </g:each>
                 </tbody>

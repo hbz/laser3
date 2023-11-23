@@ -16,18 +16,21 @@
 
 <laser:render template="breadcrumb"
           model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView, consortialView: consortialView]}"/>
-
 <ui:controlButtons>
-    <laser:render template="actions" model="${[org: orgInstance, user: user]}"/>
+    <laser:render template="${customerTypeService.getActionsTemplatePath()}" model="${[org: orgInstance, user: user]}"/>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon text="${orgInstance.name}" />
+<ui:h1HeaderWithIcon text="${orgInstance.name}" >
+    <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
+</ui:h1HeaderWithIcon>
+
+
 <ui:anualRings object="${orgInstance}" controller="organisation" action="show" navNext="${navNextOrg}"
                navPrev="${navPrevOrg}"/>
 
-<g:if test="${isProviderOrAgency}">
-    <ui:markerSwitch org="${orgInstance}"/>
-</g:if>
+%{--<g:if test="${isProviderOrAgency}">--}%
+%{--    <ui:cbItemMarkerAction org="${orgInstance}"/>--}%
+%{--</g:if>--}%
 
 <g:if test="${missing.size() > 0}">
     <div class="ui icon message warning">
@@ -47,7 +50,7 @@
     </div>
 </g:if>
 
-<laser:render debug="true" template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, isProviderOrAgency: isProviderOrAgency]}"/>
+<laser:render template="${customerTypeService.getNavTemplatePath()}" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, isProviderOrAgency: isProviderOrAgency]}"/>
 
 <ui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
 
@@ -88,10 +91,25 @@
                         <dd>
                             <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion">
                                 <g:if test="${orgInstance.altnames}">
-                                    <div class="title" id="altname_title">${orgInstance.altnames[0].name} <i class="dropdown icon"></i></div>
+                                    <div class="title" id="altname_title">
+                                        <div data-objId="${genericOIDService.getOID(orgInstance.altnames[0])}">
+                                            <ui:xEditable data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                          data_confirm_term_how="ok"
+                                                          class="js-open-confirm-modal-xEditable"
+                                                          owner="${orgInstance.altnames[0]}" field="name" overwriteEditable="${editable && orgInstanceRecord == null}"/>
+                                            <g:if test="${editable && orgInstanceRecord == null}">
+                                                <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: orgInstance.altnames[0].id]"
+                                                               data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [orgInstance.altnames[0].name])}"
+                                                               data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(orgInstance.altnames[0])}')">
+                                                    <i class="trash alternate outline icon"></i>
+                                                </ui:remoteLink>
+                                            </g:if>
+                                        </div>
+                                        <i class="dropdown icon"></i>
+                                    </div>
                                     <div class="content">
                                         <g:each in="${orgInstance.altnames.drop(1)}" var="altname">
-                                            <div class="ui item" data-objId="${altname.id}">
+                                            <div class="ui item" data-objId="${genericOIDService.getOID(altname)}">
                                                 <div class="content la-space-right">
                                                     <ui:xEditable
                                                             data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
@@ -104,7 +122,7 @@
                                                         <div class="ui buttons">
                                                             <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
                                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
-                                                                           data-confirm-term-how="delete" data-done="JSPC.app.removeAltname(${altname.id})">
+                                                                           data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
                                                                 <i class="trash alternate outline icon"></i>
                                                             </ui:remoteLink>
                                                         </div>
@@ -116,7 +134,7 @@
                                 </g:if>
                             </div>
                             <g:if test="${orgInstanceRecord == null}">
-                                <input name="addAltname" id="addAltname" type="button" class="ui button" value="${message(code: 'org.altname.add')}">
+                                <input name="addAltname" id="addAltname" type="button" class="ui button addListValue" data-objtype="altname" value="${message(code: 'org.altname.add')}">
                             </g:if>
                         </dd>
                     </dl>
@@ -392,6 +410,26 @@
                             </dd>
                         </dl>
                         <dl>
+                            <dt><g:message code="org.discoverySystems.frontend.label" /></dt>
+                            <dd>
+                                <laser:render template="discoverySystemAsList"
+                                              model="${[org: orgInstance, config: 'discoverySystemFrontend', editable: editable]}"/>
+
+                                <laser:render template="discoverySystemModal"
+                                              model="${[org: orgInstance, config: 'discoverySystemFrontend', editable: editable]}"/>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><g:message code="org.discoverySystems.index.label" /></dt>
+                            <dd>
+                                <laser:render template="discoverySystemAsList"
+                                              model="${[org: orgInstance, config: 'discoverySystemIndex', editable: editable]}"/>
+
+                                <laser:render template="discoverySystemModal"
+                                              model="${[org: orgInstance, config: 'discoverySystemIndex', editable: editable]}"/>
+                            </dd>
+                        </dl>
+                        <dl>
                             <dt>
                                 <g:message code="org.libraryNetwork.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
@@ -482,7 +520,7 @@
                             <dd>
                             <laser:render template="publicContacts" model="[isProviderOrAgency: isProviderOrAgency, existsWekbRecord: orgInstanceRecord != null]"/>
 
-                            <g:if test="${isProviderOrAgency && contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ) && !orgInstanceRecord}">
+                            <g:if test="${isProviderOrAgency && contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ) && !orgInstanceRecord}">
                                 <div class="ui list">
 
                                     <div class="item">
@@ -826,6 +864,7 @@
                         --%>
             </g:if>
 
+            <g:if test="${!isProviderOrAgency}">
                 <g:if test="${(SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || institution.isCustomerType_Consortium()) && (institution != orgInstance)}">
                     <g:if test="${orgInstance.createdBy || orgInstance.legallyObligedBy}">
                         <div class="ui card">
@@ -884,8 +923,9 @@
                         </div><!-- .card -->
                     </g:if>
                 </g:if>
+            </g:if>
 
-            <g:if test="${contextService.hasPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+            <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support() || contextService.getOrg().isCustomerType_Inst_Pro()}">
                 <div id="new-dynamic-properties-block">
                     <laser:render template="properties" model="${[ orgInstance: orgInstance, authOrg: formalOrg, contextOrg: institution ]}"/>
                 </div><!-- #new-dynamic-properties-block -->
@@ -915,11 +955,11 @@
                                             <i aria-hidden="true" class="plus icon"></i>
                                         </a>
                                     </g:if>
-                                    <g:elseif test="${isProviderOrAgency}">
-                                        <a href="#createPersonModal" class="ui icon button blue la-modern-button createContact" id="contactPersonForProviderAgencyPublic" data-ui="modal">
-                                            <i aria-hidden="true" class="plus icon"></i>
-                                        </a>
-                                    </g:elseif>
+%{--                                    <g:elseif test="${isProviderOrAgency}">--}%
+%{--                                        <a href="#createPersonModal" class="ui icon button blue la-modern-button createContact" id="contactPersonForProviderAgencyPublic" data-ui="modal">--}%
+%{--                                            <i aria-hidden="true" class="plus icon"></i>--}%
+%{--                                        </a>--}%
+%{--                                    </g:elseif>--}%
                                 </div>
                             </div>
                         </div>
@@ -1087,7 +1127,7 @@
                                 <g:if test="${isProviderOrAgency}">
                                     <g:set var="providerContacts" value="${orgInstance.getContactPersonsByFunctionType(true, null, orgInstanceRecord != null)}"/>
                                     <%--
-                                    <g:if test="${isProviderOrAgency && contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ) && !orgInstanceRecord}">
+                                    <g:if test="${isProviderOrAgency && contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ) && !orgInstanceRecord}">
                                         <tr>
                                             <td>
                                                 <a href="#createPersonModal" class="ui button" data-ui="modal"
@@ -1130,9 +1170,9 @@
                                                                             <g:each in="${prs.contacts.toSorted()}" var="contact">
                                                                                 <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
                                                                                     <laser:render template="/templates/cpa/contact" model="${[
-                                                                                            overwriteEditable   : (orgInstanceRecord == null && contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
+                                                                                            overwriteEditable   : (orgInstanceRecord == null && contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
                                                                                             contact             : contact,
-                                                                                            tmplShowDeleteButton: (orgInstanceRecord == null && contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ))
+                                                                                            tmplShowDeleteButton: (orgInstanceRecord == null && contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ))
                                                                                     ]}"/>
                                                                                 </g:if>
                                                                             </g:each>
@@ -1412,19 +1452,35 @@
     }--%>
 
     <g:if test="${orgInstance.isCustomerType_Inst()}">
-        JSPC.app.showRegionsdropdown( $("#country").editable('getValue', true) );
+        if($("#country").length) {
+            JSPC.app.showRegionsdropdown( $("#country").editable('getValue', true) );
+        }
     </g:if>
-    $('#addAltname').click(function() {
+    $('.addListValue').click(function() {
+        let url;
+        let returnSelector;
+        switch($(this).attr('data-objtype')) {
+            case 'altname': url = '<g:createLink controller="ajaxHtml" action="addObject" params="[object: 'altname', owner: orgInstance.id]"/>';
+                returnSelector = '#altnames';
+                break;
+            case 'frontend': url = '<g:createLink controller="ajaxHtml" action="addObject" params="[object: 'frontend', owner: orgInstance.id]"/>';
+                returnSelector = '#discoverySystemsFrontend';
+                break;
+            case 'index': url = '<g:createLink controller="ajaxHtml" action="addObject" params="[object: 'index', owner: orgInstance.id]"/>';
+                returnSelector = '#discoverySystemsIndex';
+                break;
+        }
+
         $.ajax({
-            url: '<g:createLink controller="ajaxHtml" action="addObject" params="[object: 'altname', owner: orgInstance.id]"/>',
+            url: url,
             success: function(result) {
-                $('#altnames').append(result);
-                r2d2.initDynamicUiStuff('#altnames');
-                r2d2.initDynamicXEditableStuff('#altnames');
+                $(returnSelector).append(result);
+                r2d2.initDynamicUiStuff(returnSelector);
+                r2d2.initDynamicXEditableStuff(returnSelector);
             }
         });
     });
-    JSPC.app.removeAltname = function(objId) {
+    JSPC.app.removeListValue = function(objId) {
         $("div[data-objId='"+objId+"']").remove();
     }
 

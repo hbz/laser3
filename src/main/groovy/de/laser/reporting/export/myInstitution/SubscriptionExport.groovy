@@ -13,6 +13,10 @@ import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseDetails
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
+/**
+ * Contains configurations for the local subscription report.
+ * Configurations are defined for pro customer institutions and consortia
+ */
 class SubscriptionExport extends BaseDetailsExport {
 
     static String KEY = BaseConfig.KEY_SUBSCRIPTION
@@ -30,6 +34,7 @@ class SubscriptionExport extends BaseDetailsExport {
                                     'startDate'             : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'endDate'               : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'status'                : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'referenceYear'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'kind'                  : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'form'                  : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'resource'              : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
@@ -48,6 +53,7 @@ class SubscriptionExport extends BaseDetailsExport {
                                     'startDate'             : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'endDate'               : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'status'                : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'referenceYear'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'kind'                  : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'form'                  : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'resource'              : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
@@ -75,6 +81,7 @@ class SubscriptionExport extends BaseDetailsExport {
                                     'startDate'             : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'endDate'               : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'status'                : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'referenceYear'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'kind'                  : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'form'                  : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'resource'              : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
@@ -89,20 +96,40 @@ class SubscriptionExport extends BaseDetailsExport {
             ]
     ]
 
+    /**
+     * Constructor call for a new subscription report
+     * @param token the token under which the queried data is going to be stored
+     * @param fields the {@link Map} with the fields selected for the export
+     */
     SubscriptionExport (String token, Map<String, Object> fields) {
         init(token, fields)
     }
 
+    /**
+     * Gets the fields selected for the current report export
+     * @return the class field map containing the selected report fields
+     */
     @Override
     Map<String, Object> getSelectedFields() {
         selectedExportFields
     }
 
+    /**
+     * Builds the label for the selected field key
+     * @param fieldName the field key to which the export label should be built
+     * @return the label which will appear in the report export
+     */
     @Override
     String getFieldLabel(String fieldName) {
         GlobalExportHelper.getFieldLabel( this, fieldName )
     }
 
+    /**
+     * Collects the details of the given subscription and outputs the field values human-readably
+     * @param obj the subscription to export
+     * @param fields the selected fields which should appear in the report
+     * @return a {@link List} with the subscription's human-readable field values
+     */
     @Override
     List<Object> getDetailedObject(Object obj, Map<String, Object> fields) {
 

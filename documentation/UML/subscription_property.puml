@@ -1,0 +1,16 @@
+@startuml
+
+object subscription {
+    sub_id : bigint
+    ...
+}
+
+object subscription_property {
+    sp_id : bigint
+    sp_owner_fk : bigint
+    ...
+}
+
+subscription_property::sp_owner_fk --> subscription::sub_id
+
+@enduml

@@ -6,6 +6,7 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import groovy.util.logging.Slf4j
 
+@Deprecated
 @Slf4j
 class IssueEntitlementChange {
 
@@ -34,6 +35,7 @@ class IssueEntitlementChange {
         actionDate (nullable: true)
     }
 
+    @Deprecated
     static IssueEntitlementChange construct(Map configMap) throws CreationException {
         IssueEntitlementChange iec = new IssueEntitlementChange(configMap)
         IssueEntitlementChange.executeUpdate('update IssueEntitlementChange iec set iec.status = :superseded where iec.titleChange = :change and iec.subscription = :subscription and iec.owner = :owner and iec.status != :superseded', [superseded: RDStore.PENDING_CHANGE_SUPERSEDED, change: configMap.titleChange, subscription: configMap.subscription, owner: configMap.owner])

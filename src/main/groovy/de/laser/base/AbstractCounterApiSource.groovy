@@ -10,6 +10,7 @@ import grails.converters.JSON
 /**
  * Is actually deprecated and kept by reference; to be removed in later versions
  */
+@Deprecated
 abstract class AbstractCounterApiSource {
 
     String baseUrl

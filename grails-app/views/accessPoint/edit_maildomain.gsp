@@ -9,9 +9,9 @@
 
 <laser:render template="breadcrumb" model="${[accessPoint: accessPoint, params: params]}"/>
 
-<g:set var="is_INST_EDITOR_with_PERMS_BASIC" value="${contextService.is_INST_EDITOR_with_PERMS_BASIC(inContextOrg)}"/>
+<g:set var="isInstEditorOrRoleAdminWithPermsBasic" value="${contextService.is_INST_EDITOR_or_ROLEADMIN_with_PERMS_BASIC(inContextOrg)}"/>
 
-<g:if test="${is_INST_EDITOR_with_PERMS_BASIC}">
+<g:if test="${isInstEditorOrRoleAdminWithPermsBasic}">
     <ui:controlButtons>
         <ui:exportDropdown>
             <ui:exportDropdownItem>
@@ -75,7 +75,7 @@
                 <tr>
                     <td>${accessPointData.mailDomain}</td>
                     <td class="center aligned">
-                        <g:if test="${is_INST_EDITOR_with_PERMS_BASIC}">
+                        <g:if test="${isInstEditorOrRoleAdminWithPermsBasic}">
                             <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}" params="[orgInstance: orgInstance.id]"
                                     class="ui negative icon button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.generic', args: [accessPointData.mailDomain])}"
@@ -91,31 +91,27 @@
             </tbody>
         </table>
 
-        <g:if test="${!accessPoint.hasProperty('entityId') && is_INST_EDITOR_with_PERMS_BASIC}">
+        <g:if test="${!accessPoint.hasProperty('entityId') && isInstEditorOrRoleAdminWithPermsBasic}">
             <div class="ui divider"></div>
 
             <div class="content">
                 <g:form class="ui form" url="[controller: 'accessPoint', action: 'addMailDomain']"
                         method="POST">
                     <g:hiddenField name="id" id="mailDomain_id" value="${accessPoint.id}"/>
-                    <g:hiddenField name="accessMethod" id="mailDomain_accessMethod"
-                                   value="${accessPoint.accessMethod}"/>
+                    <g:hiddenField name="accessMethod" id="mailDomain_accessMethod" value="${accessPoint.accessMethod}"/>
 
                     <div class="ui form">
                         <div class="field">
                             <label for="mailDomain_id">Mail-Domain</label>
-
                             <g:field type="text" name="mailDomain" id="mailDomain_id" value="${mailDomain}"/>
                         </div>
-                        <input type="submit" class="ui button"
-                               value="${message(code: 'accessPoint.button.add')}"/>
+                        <input type="submit" class="ui button" value="${message(code: 'accessPoint.button.add')}"/>
                     </div>
                 </g:form>
             </div>
         </g:if>
 
     </div>
-
 
     <br/>
 

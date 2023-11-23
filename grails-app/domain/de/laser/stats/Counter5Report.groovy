@@ -5,8 +5,10 @@ import groovy.util.logging.Slf4j
 
 /**
  * A COUNTER report representation according to the COUNTER format, revision 5 (https://www.projectcounter.org/code-of-practice-five-sections/5-delivery-counter-reports/)
+ * @deprecated Disused as data is not saved in LAS:eR but retrieved in real-time from the provider
  */
 @Slf4j
+@Deprecated
 class Counter5Report extends AbstractReport {
 
     static final String PLATFORM_MASTER_REPORT          = "pr"
@@ -28,8 +30,9 @@ class Counter5Report extends AbstractReport {
     /**
      * ex Counter5ApiSource, these are the report types supported by COUNTER Revision 5
      */
-    static List<String> COUNTER_5_TITLE_REPORTS         = [TITLE_MASTER_REPORT, BOOK_REQUESTS, BOOK_ACCESS_DENIED, BOOK_USAGE_BY_ACCESS_TYPE, JOURNAL_REQUESTS, JOURNAL_ACCESS_DENIED, JOURNAL_USAGE_BY_ACCESS_TYPE, JOURNAL_REQUESTS_BY_YOP,
-                                                           ITEM_MASTER_REPORT, JOURNAL_ARTICLE_REQUESTS, MULTIMEDIA_ITEM_REQUESTS]
+    static List<String> COUNTER_5_BOOK_REPORTS         = [TITLE_MASTER_REPORT, BOOK_REQUESTS, BOOK_ACCESS_DENIED, BOOK_USAGE_BY_ACCESS_TYPE]
+    static List<String> COUNTER_5_JOURNAL_REPORTS         = [TITLE_MASTER_REPORT, JOURNAL_REQUESTS, JOURNAL_ACCESS_DENIED, JOURNAL_USAGE_BY_ACCESS_TYPE, JOURNAL_REQUESTS_BY_YOP, ITEM_MASTER_REPORT, JOURNAL_ARTICLE_REQUESTS, MULTIMEDIA_ITEM_REQUESTS]
+    static List<String> COUNTER_5_TITLE_REPORTS         = COUNTER_5_BOOK_REPORTS+COUNTER_5_JOURNAL_REPORTS
     static List<String> COUNTER_5_PLATFORM_REPORTS      = [PLATFORM_MASTER_REPORT, PLATFORM_USAGE]
     static List<String> COUNTER_5_DATABASE_REPORTS      = [DATABASE_MASTER_REPORT, DATABASE_SEARCH_AND_ITEM_USAGE, DATABASE_ACCESS_DENIED]
     static List<String> COUNTER_5_REPORTS               = COUNTER_5_TITLE_REPORTS+COUNTER_5_PLATFORM_REPORTS+COUNTER_5_DATABASE_REPORTS

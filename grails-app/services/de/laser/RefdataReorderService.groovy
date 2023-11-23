@@ -11,7 +11,7 @@ import grails.gorm.transactions.Transactional
 class RefdataReorderService {
 
     /**
-     * This bootstrapped method should capsulate every reordering queries so that no manual database migration scripts needs to be executed
+     * This bootstrapped method should capsule every reordering queries so that no manual database migration scripts needs to be executed
      * !!! Be careful when using rdv.order.
      * This overwrites the sorting, so it may be sorted according to German values. Then the display is wrongly sorted in English!!!
      */
@@ -86,6 +86,21 @@ class RefdataReorderService {
                 default: rdv.order = i*order+40
                     break
             }
+            rdv.save()
+        }
+
+        //simuser.count: numerical order, then the textual ones
+        order = 150
+        RefdataValue.executeQuery("select rdv from RefdataValue rdv join rdv.owner rdc where rdc.desc = :simuserCnt", [simuserCnt: RDConstants.SIM_USER_NUMBER]).eachWithIndex{ RefdataValue rdv, int i ->
+            try {
+                long numericOrder = Long.parseLong(rdv.value)
+                rdv.order = numericOrder
+            }
+            catch (NumberFormatException e) {
+                rdv.order = order
+                order += 10
+            }
+            rdv.save()
         }
 
         //ToDo Order of cost.item.elements

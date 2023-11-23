@@ -7,6 +7,11 @@ import de.laser.config.ConfigMapper
 import de.laser.system.SystemEvent
 import groovy.util.logging.Slf4j
 
+import java.time.LocalTime
+
+/**
+ * This job retrieves between 06:00 and 21:00 every 15 minutes the last changes in the we:kb
+ */
 @Slf4j
 class MuleJob extends AbstractJob {
 
@@ -15,6 +20,7 @@ class MuleJob extends AbstractJob {
 
     static triggers = {
         cron name: 'muleTrigger', startDelay:10000, cronExpression: "0 0/15 6-21 * * ?"
+//        cron name: 'muleTrigger', startDelay:10000, cronExpression: "0 0/5 6-21 * * ?" // local test
         // cronExpression: "s m h D M W Y"
     }
 
@@ -36,7 +42,12 @@ class MuleJob extends AbstractJob {
             long start_time = System.currentTimeMillis()
 
             wekbStatsService.updateCache()
-            //systemService.sendSystemInsightMails()
+
+            // only once per day ..
+
+            if (Math.abs(LocalTime.parse('06:45').toSecondOfDay() - LocalTime.now().toSecondOfDay()) < 300) {
+                systemService.sendSystemInsightMails()
+            }
 
             double elapsed = ((System.currentTimeMillis() - start_time) / 1000).round(2)
             sysEvent.changeTo('MULE_COMPLETE', [s: elapsed])

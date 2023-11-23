@@ -111,6 +111,12 @@ class ApiIssueEntitlement {
         ApiToolkit.cleanUp(result, true, true)
     }
 
+    /**
+     * Assembles the titles in the given title group
+     * @param titleGroup the {@link IssueEntitlementGroup} whose {@link IssueEntitlement}s to fetch
+     * @param context the institution making the call
+     * @return a {@link Map} containing the titles of the group
+     */
     static Map<String, Object> getTitleGroupMap(IssueEntitlementGroup titleGroup, Org context) {
         Map<String, Object> result = [:]
         result.name = titleGroup.name

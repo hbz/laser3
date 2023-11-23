@@ -11,7 +11,6 @@ import grails.gorm.transactions.Transactional
 @Transactional
 class LicenseService {
 
-    AccessService accessService
     ContextService contextService
 
     /**
@@ -23,7 +22,7 @@ class LicenseService {
         List<License> result = []
         List tmpQ // [String, Map<String, Object>]
 
-        if(contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if(contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()) {
             tmpQ = getLicensesConsortiaQuery(params)
             result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
 
@@ -49,7 +48,7 @@ class LicenseService {
         List<License> result = []
         List tmpQ // [String, Map<String, Object>]
 
-        if(contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if(contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()) {
             tmpQ = getLicensesConsortiaQuery(params)
             result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
 

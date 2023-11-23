@@ -93,8 +93,8 @@
                 <td>
                     <g:if test="${choosenOrgCPAs}">
                         <g:each in="${choosenOrgCPAs}" var="gcp">
-                            <g:render template="/templates/cpa/person_details"
-                                      model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
+                            %{-- EXPORT PROBLEM @ laser:render in call stack - ERMS-5437 --}%
+                            <g:render template="/templates/cpa/person_details"  model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
                         </g:each>
 
                     </g:if>
@@ -123,6 +123,7 @@
 
 <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
 
+    %{-- EXPORT PROBLEM @ laser:render in call stack - ERMS-5437 --}%
     <g:render template="/templates/survey/export/subscriptionSurveyPDF" model="[surveyConfig       : surveyConfig,
                                                                                 costItemSums       : costItemSums,
                                                                                 subscription       : subscription,
@@ -146,6 +147,7 @@
 
 <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
 
+    %{-- EXPORT PROBLEM @ laser:render in call stack - ERMS-5437 --}%
     <g:render template="/templates/survey/export/subscriptionSurveyPDF" model="[surveyConfig       : surveyConfig,
                                                                                 costItemSums       : costItemSums,
                                                                                 subscription       : subscription,

@@ -63,7 +63,7 @@
                         <g:each in="${object.getLicenses()?.sort{it.reference}}" var="license">
                             <g:if test="${contextOrg.id in license.orgRelations?.org.id}">
                             <strong><i
-                                    class="balance scale icon"></i>&nbsp${license.licenseCategory?.getI10n("value")}:
+                                    class="balance scale icon"></i>&nbsp;${license.licenseCategory?.getI10n("value")}:
                             </strong>
                             <g:link controller="license" action="show" target="_blank" id="${license.id}">
                                 ${license.dropdownNamingConvention()}
@@ -88,7 +88,7 @@
                         <g:each in="${object.getSubscriptions()?.sort{it.name}}" var="subscription">
                             <g:if test="${contextOrg.id in subscription.orgRelations?.org.id}">
                             <strong><i
-                                    class="clipboard icon"></i>&nbsp${subscription.kind?.getI10n("value")}:
+                                    class="clipboard icon"></i>&nbsp;${subscription.kind?.getI10n("value")}:
                             </strong>
                             <g:link controller="subscription" action="show" target="_blank" id="${subscription.id}">
                                 ${subscription.dropdownNamingConvention()}
@@ -106,14 +106,14 @@
             <tr>
                 <td>
                     <strong><i
-                            class="university icon"></i>&nbsp${message(code: "${objects[0].getClass().getSimpleName().toLowerCase()}.organisations.label")}:
+                            class="university icon"></i>&nbsp;${message(code: "${objects[0].getClass().getSimpleName().toLowerCase()}.organisations.label")}:
                     </strong>
                 </td>
                 <g:each in="${objects}" var="object">
                     <td>
                         <g:each in="${object.orgRelations?.sort{it.org.name}}" var="role">
                             <g:if test="${(role.roleType in [RDStore.OR_AGENCY, RDStore.OR_PROVIDER, RDStore.OR_LICENSOR, RDStore.OR_LICENSING_CONSORTIUM, RDStore.OR_SUBSCRIPTION_CONSORTIA]) && role.org.id != contextOrg.id}">
-                                <strong><i class="university icon"></i>&nbsp${role.roleType.getI10n("value")}:
+                                <strong><i class="university icon"></i>&nbsp;${role.roleType.getI10n("value")}:
                                 </strong>
                                 <g:link controller="organisation" action="show" target="_blank"
                                         id="${role.org.id}">
@@ -171,7 +171,7 @@
                                     </span>
                                     ${resp}
                                     (<strong><i
-                                        class="university icon"></i>&nbsp${role.roleType.getI10n("value")}:
+                                        class="university icon"></i>&nbsp;${role.roleType.getI10n("value")}:
                                 </strong>
                                     <g:link controller="organisation" action="show" target="_blank"
                                             id="${role.org.id}">${role.org.name}</g:link>)
@@ -189,7 +189,7 @@
                                     </span>
                                     ${resp}
                                     (<strong><i
-                                        class="university icon"></i>&nbsp${role.roleType.getI10n("value")}:
+                                        class="university icon"></i>&nbsp;${role.roleType.getI10n("value")}:
                                 </strong>
                                     <g:link controller="organisation" action="show" target="_blank"
                                             id="${role.org.id}">${role.org.name}</g:link>)
@@ -207,13 +207,13 @@
         <g:if test="${objects[0].hasProperty("ids")}">
             <tr>
                 <td data-element="copyObject.takeIdentifier.source">
-                    <strong><i class="barcode icon"></i>&nbsp${message(code: 'default.identifiers.label')}:
+                    <strong><i class="barcode icon"></i>&nbsp;${message(code: 'default.identifiers.label')}:
                     </strong><br />
                 </td>
                 <g:each in="${objects}" var="object">
                     <td class="center aligned">
                         <g:each in="${object.ids?.sort{it.ns.ns}}" var="ident">
-                            <strong>${ident.ns.ns}:</strong>&nbsp${ident.value}<br />
+                            <strong>${ident.ns.ns}:</strong>&nbsp;${ident.value}<br />
                         </g:each>
                     </td>
                 </g:each>

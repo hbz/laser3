@@ -16,15 +16,13 @@ import java.lang.annotation.Target
 
     // contextService
 
-    boolean isInstUser_or_ROLEADMIN() default false
-    boolean isInstEditor_or_ROLEADMIN() default false
-    boolean isInstAdm_or_ROLEADMIN() default false
+    String[] isInstUser_or_ROLEADMIN()      default ['']                // [orgPerms]
+    String[] isInstEditor_or_ROLEADMIN()    default ['']                // [orgPerms]
+    String[] isInstAdm_or_ROLEADMIN()       default ['']                // [orgPerms]
 
-    String[] hasPermAsInstUser_or_ROLEADMIN() default []                    // [orgPerms]
-    String[] hasPermAsInstEditor_or_ROLEADMIN() default []                  // [orgPerms]
-    String[] hasPermAsInstAdm_or_ROLEADMIN() default []                     // [orgPerms]
-
-    String[] hasPermAsInstRoleAsConsortium_or_ROLEADMIN() default []        // [orgPerms, instUserRole]
+    String[] isInstUser_denySupport_or_ROLEADMIN()      default ['']    // [orgPerms]
+    String[] isInstEditor_denySupport_or_ROLEADMIN()    default ['']    // [orgPerms]
+    String[] isInstAdm_denySupport_or_ROLEADMIN()       default ['']    // [orgPerms]
 
     // legacy
 

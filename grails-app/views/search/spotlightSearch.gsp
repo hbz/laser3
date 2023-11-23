@@ -52,36 +52,6 @@
                 "description": "${statusString + ' ' +period}"
             ]
         }
-        else if (object.rectype == 'TitleInstance') {
-            result << objMap + [
-                "url":   g.createLink(controller:"title", action:"show", id:"${object.dbId}"),
-                "category": (object.typTitle == 'Journal') ? "${message(code: 'spotlight.journaltitle')}" :
-                                (object.typTitle == 'Database') ? "${message(code: 'spotlight.databasetitle')}" :
-                                        (object.typTitle == 'EBook') ? "${message(code: 'spotlight.ebooktitle')}" : "${message(code: 'spotlight.title')}",
-                "description": ""
-            ]
-        }
-        else if (object.rectype == 'BookInstance') {
-            result << objMap + [
-                    "url":   g.createLink(controller:"title", action:"show", id:"${object.dbId}"),
-                    "category": "${message(code: 'spotlight.ebooktitle')}",
-                    "description": ""
-            ]
-        }
-        else if (object.rectype == 'DatabaseInstance') {
-            result << objMap + [
-                    "url":   g.createLink(controller:"title", action:"show", id:"${object.dbId}"),
-                    "category": "${message(code: 'spotlight.databasetitle')}",
-                    "description": ""
-            ]
-        }
-        else if (object.rectype == 'JournalInstance') {
-            result << objMap + [
-                    "url":   g.createLink(controller:"title", action:"show", id:"${object.dbId}"),
-                    "category":  "${message(code: 'spotlight.journaltitle')}",
-                    "description": ""
-            ]
-        }
         else if (object.rectype == 'SurveyOrg') {
 
             SurveyConfig surveyConfig =  SurveyConfig.get(object.dbId)

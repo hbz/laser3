@@ -5,6 +5,7 @@ import de.laser.Platform
 import de.laser.SubscriptionPackage
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
+import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -156,8 +157,11 @@ class PlatformControllerService {
 
         result.user = contextService.getUser()
         result.institution = contextService.getOrg()
-        result.contextOrg = result.institution //temp fix
+        result.contextOrg = result.institution //temp fixPlatform platformInstance = Platform.get(params.id)
 
+        result.platformInstance = Platform.get(params.id)
+        int relationCheck = Platform.executeQuery('select count(sp) from SubscriptionPackage sp join sp.pkg pkg where pkg.nominalPlatform = :plat and sp.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true)))',[plat: result.platformInstance, context: result.institution, current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED])[0]
+        result.isMyPlatform = relationCheck > 0
         result
     }
 

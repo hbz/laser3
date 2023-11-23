@@ -43,6 +43,9 @@
                     <th>${message(code: 'package.curatoryGroup.label')}</th>
                     <th>${message(code: 'package.source.automaticUpdates')}</th>
                     <g:sortableColumn property="lastUpdatedDisplay" title="${message(code: 'package.lastUpdated.label')}" params="${params}" defaultOrder="desc"/>
+                    <th class="center aligned">
+                        <ui:myXIcon tooltip="${message(code: 'menu.my.packages')}" />
+                    </th>
                     <th class="center aligned"><ui:markerIcon type="WEKB_CHANGES" /></th>
                     <sec:ifAllGranted roles="ROLE_YODA">
                         <th class="x center aligned">
@@ -142,6 +145,13 @@
                             </g:if>
                         </td>
                         <td class="center aligned">
+                            <g:if test="${pkg && pkg.id in currentPackageIdList}">
+                                <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.packages')}">
+                                    <i class="icon yellow star"></i>
+                                </span>
+                            </g:if>
+                        </td>
+                        <td class="center aligned">
                             <g:if test="${pkg && pkg.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
                                 <ui:markerIcon type="WEKB_CHANGES" color="purple" />
                             </g:if>
@@ -155,9 +165,11 @@
                                 </span>
                                 <g:if test="${pkg}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'menu.yoda.retriggerPendingChanges')}">
-                                    <g:link controller="yoda" action="matchPackageHoldings" params="${[pkgId: pkg.id]}" class="ui icon button">
-                                        <i class="icon wrench"></i>
-                                    </g:link>
+                                    <g:if test="${pkg}">
+                                        <g:link controller="yoda" action="matchPackageHoldings" params="${[pkgId: pkg.id]}" class="ui icon button">
+                                            <i class="icon wrench"></i>
+                                        </g:link>
+                                    </g:if>
                                 </span>
                                 </g:if>
 %{--                                <g:link class="ui button" controller="yoda" action="reloadPackage"--}%
@@ -173,9 +185,7 @@
                 </tbody>
             </table>
 
-
-            <ui:paginate action="index" controller="package" params="${params}"
-                            max="${max}" total="${recordsCount}"/>
+            <ui:paginate action="index" controller="package" params="${params}" max="${max}" total="${recordsCount}"/>
 
         </g:if>
         <g:else>

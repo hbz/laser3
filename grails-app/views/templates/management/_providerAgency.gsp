@@ -89,14 +89,14 @@
                                 </span>
                             </g:if>
 
-                            <ui:customerTypeIcon org="${subscr}" />
+                            <ui:customerTypeProIcon org="${subscr}" />
                         </td>
                     </g:if>
                     <g:if test="${controllerName == "myInstitution"}">
                         <td>${sub.name}</td>
                     </g:if>
                     <td>
-                        <div class="ui card ">
+                        <div class="ui card">
                             <div class="content">
                                 <laser:render template="/templates/links/orgLinksAsList"
                                           model="${[roleLinks    : sub.orgRelations?.findAll {

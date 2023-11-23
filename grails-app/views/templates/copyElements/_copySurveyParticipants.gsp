@@ -43,7 +43,7 @@
                                     <td>
                                         <g:link controller="organisation" action="show" id="${surveyOrg.org.id}">${surveyOrg.org.sortname}</g:link>
 
-                                        <ui:customerTypeIcon org="${surveyOrg.org}" />
+                                        <ui:customerTypeProIcon org="${surveyOrg.org}" />
                                     </td>
                                     <td class="titleCell">
                                         <g:link controller="organisation" action="show" id="${surveyOrg.org.id}">${surveyOrg.org.name}</g:link>
@@ -114,7 +114,7 @@
                                     <td>
                                         <g:link controller="organisation" action="show" id="${surveyOrg.org.id}">${surveyOrg.org.sortname}</g:link>
 
-                                        <ui:customerTypeIcon org="${surveyOrg.org}" />
+                                        <ui:customerTypeProIcon org="${surveyOrg.org}" />
                                     </td>
                                     <td class="titleCell">
                                         <g:link controller="organisation" action="show" id="${surveyOrg.org.id}">${surveyOrg.org.name}</g:link>

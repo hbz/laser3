@@ -224,7 +224,7 @@
 .ui.table thead tr:nth-child(2) > th,
 .ui.table thead tr:nth-child(3) > th {
   position: sticky !important;
-  z-index: 2;
+  z-index: @fixedTableHeaderZIndex;
 }
 .ui.table.la-ignore-fixed thead tr:first-child > th,
 .ui.table.la-ignore-fixed thead tr:nth-child(2) > th,

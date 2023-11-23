@@ -22,7 +22,6 @@
                     ${message(code:'default.button.exports.xls')}
                 </g:link>
             </ui:exportDropdownItem>
-            --%>
             <ui:exportDropdownItem>
                 <g:link class="item js-open-confirm-modal"
                         data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
@@ -31,16 +30,17 @@
                     ${message(code:'default.button.exports.csv')}
                 </g:link>
             </ui:exportDropdownItem>
+            --%>
         </g:if>
         <g:else>
             <%--
             <ui:exportDropdownItem>
                 <g:link class="item" action="currentConsortia" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
             </ui:exportDropdownItem>
-            --%>
             <ui:exportDropdownItem>
                 <g:link class="item" action="currentConsortia" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
             </ui:exportDropdownItem>
+            --%>
         </g:else>
     </ui:exportDropdown>
     <g:if test="${editable}">

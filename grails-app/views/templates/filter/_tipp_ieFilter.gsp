@@ -279,12 +279,13 @@
                                   noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                 </div>
                 <g:if test="${action =='index' && subscription.ieGroups.size() > 0}">
+                    <g:set var="groups" value="${['notInGroups': g.message(code: 'issueEntitlement.notInTitleGroups')]+subscription.ieGroups.collectEntries{[it.id, it.name]}}"/>
                     <div class="field">
                         <label>${message(code: 'issueEntitlementGroup.label')}</label>
                         <g:select class="ui fluid dropdown" name="titleGroup"
-                                   from="${subscription.ieGroups}"
-                                   optionKey="id"
-                                   optionValue="name"
+                                   from="${groups}"
+                                   optionKey="key"
+                                   optionValue="value"
                                    value="${params.titleGroup}"
                                    noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                     </div>

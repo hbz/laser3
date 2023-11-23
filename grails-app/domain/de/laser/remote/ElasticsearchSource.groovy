@@ -1,10 +1,9 @@
 package de.laser.remote
 
 /**
- * A source pointing to an ElasticSearch index.
- * IMPORTANT: LAS:eR is fed by two indices: the local ElasticSearch index whose sources are being kept here. These ES indices mirror the LAS:eR data (see {@link de.laser.DataloadService})
- * Then, there are external ElasticSearch indices serving as data sources; package and platform data are being loaded on-the-fly from we:kb instances. Those sources are being recorded in {@link de.laser.remote.ApiSource}.
- * Moreover, title data is being mirrored from we:kb instances as well; this is done by bulk synchronisation and those API sources are being recorded in {@link de.laser.remote.GlobalRecordSource}s
+ * A source pointing to a local ElasticSearch index, mirroring the LAS:eR data (see {@link de.laser.DataloadService})
+ * Distinct it from {@link de.laser.remote.ApiSource}s and {@link de.laser.remote.GlobalRecordSource}s where a direct connection to the knowledge base is being established, fetching either data on the fly or synchronising them to LAS:eR.
+ * Those are title, provider, package and platform data; this is done by bulk synchronisation and those API sources are being recorded in {@link de.laser.remote.GlobalRecordSource}s
  */
 class ElasticsearchSource {
 

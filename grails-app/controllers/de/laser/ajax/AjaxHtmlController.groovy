@@ -1,20 +1,22 @@
 package de.laser.ajax
 
 import de.laser.AlternativeName
+import de.laser.CacheService
 import de.laser.ControlledListService
 import de.laser.CustomerTypeService
+import de.laser.DiscoverySystemFrontend
+import de.laser.DiscoverySystemIndex
 import de.laser.DocContext
 import de.laser.GenericOIDService
 import de.laser.PendingChangeService
-import de.laser.AccessService
 import de.laser.AddressbookService
 import de.laser.WekbStatsService
 import de.laser.WorkflowService
+import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.remote.ApiSource
-import de.laser.CacheService
 import de.laser.ContextService
 import de.laser.GokbService
 import de.laser.IssueEntitlement
@@ -34,6 +36,7 @@ import de.laser.Person
 import de.laser.PersonRole
 import de.laser.SubscriptionPackage
 import de.laser.SubscriptionService
+import de.laser.storage.BeanStore
 import de.laser.storage.PropertyStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyConfigProperties
@@ -50,8 +53,6 @@ import de.laser.ctrl.LicenseControllerService
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.custom.CustomWkhtmltoxService
 import de.laser.utils.DateUtils
-import de.laser.cache.EhcacheWrapper
-import de.laser.cache.SessionCacheWrapper
 import de.laser.utils.SwissKnife
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.export.base.BaseDetailsExport
@@ -64,16 +65,9 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.reporting.export.QueryExportManager
 import de.laser.reporting.report.myInstitution.base.BaseConfig
-import de.laser.workflow.WfCondition
-import de.laser.workflow.WfConditionPrototype
-import de.laser.workflow.WfWorkflow
-import de.laser.workflow.WfWorkflowPrototype
-import de.laser.workflow.WfTask
-import de.laser.workflow.WfTaskPrototype
 import de.laser.workflow.WfChecklist
 import de.laser.workflow.WfCheckpoint
 import de.laser.workflow.WorkflowHelper
-import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.ss.usermodel.Workbook
 import org.mozilla.universalchardet.UniversalDetector
@@ -91,7 +85,6 @@ import java.nio.charset.Charset
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxHtmlController {
 
-    AccessService accessService
     AddressbookService addressbookService
     CacheService cacheService
     ContextService contextService
@@ -125,16 +118,31 @@ class AjaxHtmlController {
         render result
     }
 
+    /**
+     * Adds a new object stub to an xEditable enumeration.
+     * Currently supported are {@link AlternativeName}s (params.object == "altname") or {@link de.laser.finance.PriceItem}s (params.object == "priceItem")
+     * @return a template fragment for the new xEditable item
+     */
     @Secured(['ROLE_USER'])
     def addObject() {
         def resultObj, owner
-        String field
         switch(params.object) {
             case "altname": owner= Org.get(params.owner)
                 resultObj = AlternativeName.construct([org: owner, name: 'Unknown'])
-                field = "name"
                 if(resultObj) {
-                    render view: '/templates/ajax/_newXEditable', model: [wrapper: params.object, ownObj: resultObj, field: field, overwriteEditable: true]
+                    render template: '/templates/ajax/newXEditable', model: [wrapper: params.object, ownObj: resultObj, objOID: genericOIDService.getOID(resultObj), field: "name", overwriteEditable: true]
+                }
+                break
+            case "frontend": owner= Org.get(params.owner)
+                resultObj = new DiscoverySystemFrontend([org: owner, frontend: RDStore.GENERIC_NULL_VALUE]).save()
+                if(resultObj) {
+                    render template: '/templates/ajax/newXEditable', model: [wrapper: params.object, ownObj: resultObj, objOID: genericOIDService.getOID(resultObj), field: "frontend", config: RDConstants.DISCOVERY_SYSTEM_FRONTEND, overwriteEditable: true]
+                }
+                break
+            case "index": owner= Org.get(params.owner)
+                resultObj = new DiscoverySystemIndex([org: owner, index: RDStore.GENERIC_NULL_VALUE]).save()
+                if(resultObj) {
+                    render template: '/templates/ajax/newXEditable', model: [wrapper: params.object, ownObj: resultObj, objOID: genericOIDService.getOID(resultObj), field: "index", config: RDConstants.DISCOVERY_SYSTEM_INDEX, overwriteEditable: true]
                 }
                 break
             case "coverage": //TODO
@@ -161,7 +169,14 @@ class AjaxHtmlController {
         result.acceptedOffset = params.acceptedOffset ? params.int("acceptedOffset") : result.offset
         result.pendingOffset = params.pendingOffset ? params.int("pendingOffset") : result.offset
         def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
-        Map<String, Object> pendingChangeConfigMap = [contextOrg:result.institution, consortialView:accessService.otherOrgPerm(result.institution, 'ORG_CONSORTIUM_BASIC'), periodInDays:periodInDays, max:result.max, acceptedOffset:result.acceptedOffset, pendingOffset: result.pendingOffset]
+        Map<String, Object> pendingChangeConfigMap = [
+                contextOrg: result.institution,
+                consortialView: (result.institution as Org).isCustomerType_Consortium(),
+                periodInDays:periodInDays,
+                max:result.max,
+                acceptedOffset:result.acceptedOffset,
+                pendingOffset: result.pendingOffset
+        ]
         Map<String, Object> changes = pendingChangeService.getSubscriptionChanges(pendingChangeConfigMap)
         changes.max = result.max
         changes.editable = result.editable
@@ -181,7 +196,7 @@ class AjaxHtmlController {
                 [org: result.institution,
                  status: RDStore.SURVEY_SURVEY_STARTED])
 
-        if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)){
+        if (contextService.getOrg().isCustomerType_Consortium_Pro()){
             activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where surConfig.surveyInfo.status = :status  and surConfig.surveyInfo.owner = :org " +
                     " order by surConfig.surveyInfo.endDate",
                     [org: result.institution,
@@ -197,6 +212,10 @@ class AjaxHtmlController {
         render template: '/myInstitution/surveys', model: result
     }
 
+    /**
+     * Call to render the flyout to display recent changes in the we:kb knowledge base
+     * @return the template fragment for the changes
+     */
     @Secured(['ROLE_USER'])
     def wekbChangesFlyout() {
         log.debug('ajaxHtmlController.wekbChangesFlyout ' + params)
@@ -216,7 +235,7 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def getLinks() {
-        Map<String,Object> result = [user:contextService.getUser(),contextOrg:contextService.getOrg(),subscriptionLicenseLink:params.subscriptionLicenseLink]
+        Map<String, Object> result = [user:contextService.getUser(), contextOrg:contextService.getOrg(), subscriptionLicenseLink:params.subscriptionLicenseLink]
         def entry = genericOIDService.resolveOID(params.entry)
         result.entry = entry
         result.editable = entry.isEditableBy(result.user)
@@ -252,7 +271,7 @@ class AjaxHtmlController {
         result.roleObject = result.subscription
         result.roleRespValue = 'Specific subscription editor'
         result.editmode = result.subscription.isEditableBy(contextService.getUser())
-        result.accessConfigEditable = contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_INST_BASIC) || (contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC) && result.subscription.getSubscriber().id == contextOrg.id)
+        result.accessConfigEditable = contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_INST_BASIC) || (contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC) && result.subscription.getSubscriber().id == contextOrg.id)
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         result.subscription.packages.pkg.gokbId.each { String uuid ->
             Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: uuid])
@@ -350,6 +369,7 @@ class AjaxHtmlController {
         model.orgList = result.results
         model.tmplShowCheckbox = true
         model.tmplConfigShow = ['sortname', 'name', 'altname', 'isWekbCurated']
+        model.fixedHeader = 'la-ignore-fixed'
         render template: "/templates/filter/orgFilterTable", model: model
     }
 
@@ -679,26 +699,25 @@ class AjaxHtmlController {
      * Retrieves the filter history and bookmarks for the given reporting view.
      * If a command is being submitted, the cache is being updated. The updated view is being rendered afterwards
      */
-    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     def reporting() {
         Map<String, Object> result = [
             tab: params.tab
         ]
 
-        SessionCacheWrapper sessionCache = contextService.getSessionCache()
-        Closure getReportingKeys = {
-            sessionCache.list().keySet().findAll{ it.startsWith("MyInstitutionController/reporting/") }
-        }
+        String cachePref = ReportingCache.CTX_GLOBAL + '/' + BeanStore.getContextService().getUser().id // user bound
+        EhcacheWrapper ttl3600 = cacheService.getTTL3600Cache(cachePref)
+
+        List<String> reportingKeys = ttl3600.getKeys().findAll { it.startsWith(cachePref + '_') } as List<String>
+        List<String> reportingTokens = reportingKeys.collect { it.replace(cachePref + '_', '')}
 
         if (params.context == BaseConfig.KEY_MYINST) {
 
             if (params.cmd == 'deleteHistory') {
-                getReportingKeys().each {it ->
-                    sessionCache.remove( it )
-                }
+                reportingTokens.each {it -> ttl3600.remove( it ) }
             }
             else if (params.token) {
                 if (params.cmd == 'addBookmark') {
@@ -719,10 +738,8 @@ class AjaxHtmlController {
                 }
             }
         }
-        result.bookmarks = ReportingFilter.findAllByOwner( contextService.getUser(), [sort: 'lastUpdated', order: 'desc'] )
-
-        result.filterHistory = getReportingKeys().sort { a,b -> sessionCache.get(b).meta.timestamp <=> sessionCache.get(a).meta.timestamp }.take(5)
-        getReportingKeys().findAll{ it -> ! result.filterHistory.contains( it ) }.each { it -> sessionCache.remove(it) }
+        result.bookmarks     = ReportingFilter.findAllByOwner( contextService.getUser(), [sort: 'lastUpdated', order: 'desc'] )
+        result.filterHistory = reportingTokens.sort { a,b -> ttl3600.get(b).meta.timestamp <=> ttl3600.get(a).meta.timestamp }.take(5)
 
         render template: '/myInstitution/reporting/historyAndBookmarks', model: result
     }
@@ -730,9 +747,9 @@ class AjaxHtmlController {
     /**
      * Retrieves the details for the given charts
      */
-    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     def chartDetails() {
         // TODO - SESSION TIMEOUTS
@@ -767,9 +784,9 @@ class AjaxHtmlController {
      *     <li>PDF</li>
      * </ul>
      */
-    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     def chartDetailsExport() {
 
@@ -933,9 +950,9 @@ class AjaxHtmlController {
      *     <li>PDF</li>
      * </ul>
      */
-    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     def chartQueryExport() {
 
@@ -1066,66 +1083,9 @@ class AjaxHtmlController {
     }
 
     /**
-     * Opens the modal for creation of one of the workflow components:
-     * <ul>
-     *     <li>workflow</li>
-     *     <li>workflow task</li>
-     *     <li>workflow condition</li>
-     * </ul>
-     * Upon opening, the underlying parameters are being set
+     * Call to render the flyout containing the steps of a given workflow
+     * @return the template containing the data for the flyout
      */
-    @Secured(['ROLE_USER'])
-    def createWfXModal() {
-        Map<String, Object> result = [
-                tmplCmd: 'create',
-                tmplModalTitle: g.message(code: 'default.create.label', args: [ g.message(code: 'workflow.object.' + params.key) ]) as String,
-                tmplFormUrl: createLink(controller: 'admin', action: 'manageWorkflows'),
-                prefix: params.key
-        ]
-
-        if (params.tab) { result.tmplTab = params.tab }
-
-        if (params.key in [WfWorkflow.KEY]) {
-            result.tmpl = '/templates/workflow/forms/wfWorkflow'
-        }
-        else if (params.key in [WfTask.KEY]) {
-            result.tmpl = '/templates/workflow/forms/wfTask'
-        }
-        else if (params.key in [WfCondition.KEY]) {
-            result.tmpl = '/templates/workflow/forms/wfCondition'
-        }
-        else if (params.key in [WfWorkflowPrototype.KEY]) {
-            result.tmpl = '/templates/workflow/forms/wfWorkflow'
-            result.tmplModalTitle = '<i class="icon tasks sc_darkgrey"></i> ' + result.tmplModalTitle
-
-            // not: * used as tp.next
-            result.dd_taskList = WfTaskPrototype.executeQuery(
-                    'select wftp from WfTaskPrototype wftp where ' +
-                            'wftp not in (select tp.next from WfTaskPrototype tp) ' +
-                            'order by id'
-            )
-        }
-        else if (params.key in [WfTaskPrototype.KEY]) {
-            result.tmpl = '/templates/workflow/forms/wfTask'
-            result.tmplModalTitle = '<i class="icon check circle outline sc_darkgrey"></i> ' + result.tmplModalTitle
-
-            // not: * used as wp.task
-            result.dd_nextList = WfTaskPrototype.executeQuery(
-                    'select wftp from WfTaskPrototype wftp where ' +
-                            'wftp not in (select wp.task from WfWorkflowPrototype wp) ' +
-                            'order by id'
-            )
-
-            result.dd_conditionList = WfConditionPrototype.executeQuery('select wfcp from WfConditionPrototype wfcp order by id')
-        }
-        else if (params.key in [WfConditionPrototype.KEY]) {
-            result.tmpl = '/templates/workflow/forms/wfCondition'
-            result.tmplModalTitle = '<i class="icon check double sc_darkgrey"></i> ' + result.tmplModalTitle
-        }
-        render template: '/templates/workflow/forms/modalWrapper', model: result
-    }
-
-
     @Secured(['ROLE_USER'])
     def workflowFlyout() {
         Map<String, Object> result = [
@@ -1161,6 +1121,11 @@ class AjaxHtmlController {
         render template: '/templates/workflow/flyout', model: result
     }
 
+    /**
+     * Opens the modal for a given object, containing workflow details for the given object. Along that, the form
+     * processing parameters are set according to the object type being treated
+     * @return the template fragment for the workflow modal
+     */
     @Secured(['ROLE_USER'])
     def workflowModal() {
         Map<String, Object> result = [
@@ -1192,7 +1157,6 @@ class AjaxHtmlController {
                 }
             }
             else if (key[0] == 'myInstitution') {
-//                result.workflow = WfWorkflow.get (key[1] ) // TODO
                 result.tmplFormUrl  = createLink(controller: 'myInstitution', action: key[2])
                 if (key[2] == 'dashboard') {
                     result.tmplFormUrl = result.tmplFormUrl + '?view=Workflows'
@@ -1219,208 +1183,6 @@ class AjaxHtmlController {
         }
 
         render template: '/templates/workflow/modal', model: result
-    }
-
-    /**
-     * Opens a modal to display workflow details
-     */
-    @Secured(['ROLE_USER'])
-    def useWfXModal() {
-        Map<String, Object> result = [
-                tmplCmd:    'usage',
-                tmplFormUrl: createLink(controller: 'myInstitution', action: 'currentWorkflows')
-        ]
-
-        String template = '/templates/workflow/forms/modalWrapper' // todo
-
-        //println params
-        if (params.key) {
-            String[] key = (params.key as String).split(':')
-
-            result.prefix = key[2]
-
-            // subscription:id:WF_X:id
-            if (key[0] in [License.class.name, Subscription.class.name, Org.class.name]) {
-
-                if (key[0] == License.class.name) {
-                    result.targetObject = License.get( key[1] )
-                    result.tmplFormUrl  = createLink(controller: 'lic', action: 'workflows', id: key[1])
-                }
-                else if (key[0] == Subscription.class.name) {
-                    result.targetObject = Subscription.get( key[1] )
-                    result.tmplFormUrl  = createLink(controller: 'subscription', action: 'workflows', id: key[1])
-                }
-                else {
-                    result.targetObject = Org.get( key[1] )
-                    result.tmplFormUrl  = createLink(controller: 'org', action: 'workflows', id: key[1])
-                }
-            }
-            else if (key[0] == 'myInstitution') {
-                result.workflow = WfWorkflow.get (key[1] ) // TODO
-            }
-            else if (key[0] == 'dashboard') {
-                result.workflow = WfWorkflow.get (key[1] )
-                result.tmplFormUrl  = createLink(controller: 'myInstitution', action: 'dashboard')
-            }
-
-            if (result.prefix == WfWorkflow.KEY) {
-                result.workflow       = WfWorkflow.get( key[3] )
-                result.tmplModalTitle = g.message(code:'workflow.label') + ': ' + result.workflow.title
-
-            }
-            else if (result.prefix == WfTask.KEY) {
-                result.task           = WfTask.get( key[3] )
-                result.tmplModalTitle = g.message(code:'task.label') + ': ' +  result.task.title
-            }
-            else if (result.prefix == WfChecklist.KEY) {
-                result.checklist      = WfChecklist.get( key[3] )
-                result.tmplModalTitle = g.message(code:'task.label') + ': ' +  result.checklist.title
-            }
-            else if (result.prefix == WfCheckpoint.KEY) {
-                result.checkpoint     = WfCheckpoint.get( key[3] )
-                result.tmplModalTitle = g.message(code:'task.label') + ': ' +  result.checkpoint.title
-            }
-        }
-
-        if (params.info) {
-            result.info = params.info
-        }
-
-        render template: template, model: result
-    }
-
-    /**
-     * Opens an editing modal for the given workflow
-     */
-    @Secured(['ROLE_USER'])
-    def editWfXModal() {
-        Map<String, Object> result = [
-                tmplCmd : 'edit',
-                tmplFormUrl: createLink(controller: 'admin', action: 'manageWorkflows')
-        ]
-
-        if (params.tab) { result.tmplTab = params.tab }
-        if (params.info) { result.tmplInfo = params.info }
-
-        if (params.key) {
-            String[] key = (params.key as String).split(':')
-
-            // WF_X:id
-            String prefix = key[0]
-            Long wfObjId = key[1] as Long
-
-            // subscription:id:WF_X:id
-            if (prefix in [License.class.name, Subscription.class.name, Org.class.name]) {
-
-                if (prefix == License.class.name) {
-                    result.tmplFormUrl = createLink(controller: 'lic', action: 'workflows', id: key[1])
-                }
-                else if (prefix == Subscription.class.name) {
-                    result.tmplFormUrl = createLink(controller: 'subscription', action: 'workflows', id: key[1])
-                }
-                else {
-                    result.tmplFormUrl = createLink(controller: 'org', action: 'workflows', id: key[1])
-                }
-                prefix = key[2]
-                wfObjId = key[3] as Long
-            }
-
-            result.prefix = prefix
-            result.tmplModalTitle = g.message(code: 'default.edit.label', args: [ g.message(code: 'workflow.object.' + result.prefix) ]) as String
-
-            if (result.prefix == WfWorkflowPrototype.KEY) {
-                result.workflow       = WfWorkflowPrototype.get( wfObjId )
-                result.tmpl           = '/templates/workflow/forms/wfWorkflow'
-                result.tmplModalTitle = '<i class="icon tasks sc_darkgrey"></i> ' + result.tmplModalTitle
-
-                if (result.workflow) {
-                    // not: * used as tp.next
-                    result.dd_taskList = WfTaskPrototype.executeQuery(
-                            'select wftp from WfTaskPrototype wftp where ' +
-                            'wftp not in (select tp.next from WfTaskPrototype tp) ' +
-                            'order by id'
-                    )
-                }
-            }
-            else if (result.prefix == WfWorkflow.KEY) {
-                result.workflow       = WfWorkflow.get( wfObjId )
-                result.tmpl           = '/templates/workflow/forms/wfWorkflow'
-                result.tmplModalTitle = result.tmplModalTitle + ' - ' + message(code: 'workflow.edit.ext.perms')
-
-//                if (result.workflow) {
-//                    result.dd_taskList          = result.workflow.task ? [ result.workflow.task ] : []
-//                    result.dd_prototypeList     = result.workflow.prototype ? [ result.workflow.prototype ] : []
-//                    result.dd_subscriptionList  = result.workflow.subscription ? [ result.workflow.subscription ] : []
-//                }
-            }
-            else if (result.prefix == WfTaskPrototype.KEY) {
-                result.task           = WfTaskPrototype.get( wfObjId )
-                result.tmpl           = '/templates/workflow/forms/wfTask'
-                result.tmplModalTitle = '<i class="icon check circle outline sc_darkgrey"></i> ' + result.tmplModalTitle
-                //result.tmplModalTitle = result.tmplModalTitle + result.task.title
-
-                if (result.task) {
-//                    String sql = 'select wftp from WfTaskPrototype wftp where id != :id order by id'
-                    Map<String, Object> sqlParams = [id: wfObjId]
-
-                    // not: * self * used as wp.task
-                    result.dd_nextList = WfTaskPrototype.executeQuery(
-                            'select wftp from WfTaskPrototype wftp where id != :id ' +
-                            'and wftp not in (select wp.task from WfWorkflowPrototype wp) ' +
-                            'order by id', sqlParams
-                    )
-//                    result.dd_previousList  = WfTaskPrototype.executeQuery(sql, sqlParams)
-//                    result.dd_parentList    = WfTaskPrototype.executeQuery(sql, sqlParams)
-
-                    result.dd_conditionList = WfConditionPrototype.executeQuery('select wfcp from WfConditionPrototype wfcp order by id')
-                }
-            }
-            else if (result.prefix == WfTask.KEY) {
-                result.task           = WfTask.get( wfObjId )
-                result.tmpl           = '/templates/workflow/forms/wfTask'
-                result.tmplModalTitle = result.tmplModalTitle + ' - ' + message(code: 'workflow.edit.ext.perms')
-
-                if (result.task) {
-
-                    result.dd_nextList      = result.task.next ? [ result.task.next ] : []
-                    result.dd_conditionList = result.task.condition ? [ result.task.condition ] : []
-//                    result.dd_prototypeList = result.task.prototype ? [ result.task.prototype ] : []
-
-//                    String sql = 'select wft from WfTask wft where id != :id order by id'
-//                    Map<String, Object> sqlParams = [id: key[1] as Long]
-
-//                    result.dd_previousList  = WfTask.executeQuery(sql, sqlParams)
-//                    result.dd_parentList    = WfTask.executeQuery(sql, sqlParams)
-                }
-            }
-            else if (result.prefix == WfConditionPrototype.KEY) {
-                result.condition      = WfConditionPrototype.get( wfObjId )
-                result.tmpl           = '/templates/workflow/forms/wfCondition'
-                result.tmplModalTitle = '<i class="icon check double sc_darkgrey"></i> ' + result.tmplModalTitle
-                //result.tmplModalTitle = result.tmplModalTitle + result.condition.title
-
-//                if (result.condition) {
-//                    result.dd_taskList = WfTaskPrototype.executeQuery( 'select wftp from WfTaskPrototype wftp' )
-//                }
-            }
-            else if (result.prefix == WfCondition.KEY) {
-                result.condition      = WfCondition.get( wfObjId )
-                result.tmpl           = '/templates/workflow/forms/wfCondition'
-                result.tmplModalTitle = result.tmplModalTitle + ' - ' + message(code: 'workflow.edit.ext.perms')
-
-//                if (result.condition) {
-//                    result.dd_taskList = WfTask.executeQuery( 'select wft from WfTask wft' )
-//                    result.dd_prototypeList = result.condition.prototype ? [ result.condition.prototype ] : []
-//                }
-            }
-
-            EhcacheWrapper cache = cacheService.getTTL1800Cache('admin/manageWorkflows')
-            result.wfpIdTable = cache.get( 'wfpIdTable') ?: [:]
-            result.tpIdTable  = cache.get( 'tpIdTable')  ?: [:]
-            result.cpIdTable  = cache.get( 'cpIdTable')  ?: [:]
-
-            render template: '/templates/workflow/forms/modalWrapper', model: result
-        }
     }
 
     /**
@@ -1463,6 +1225,12 @@ class AjaxHtmlController {
 
     }
 
+    /**
+     * Opens a modal containing a preview of the given document if rights are granted and the file being found.
+     * The preview is being generated according to the MIME type of the requested document; the document key is
+     * expected in structure docUUID:docContextID
+     * @return the template containing a preview of the document (either document viewer or fulltext extract)
+     */
     @Secured(['ROLE_USER'])
     def documentPreview() {
         Map<String, Object> result = [:]

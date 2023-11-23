@@ -35,7 +35,9 @@ class OrgSetting {
         NATSTAT_SERVER_ACCESS       (RefdataValue, RDConstants.Y_N),
         NATSTAT_SERVER_API_KEY      (String),
         NATSTAT_SERVER_REQUESTOR_ID (String),
-        LASERSTAT_SERVER_KEY        (String)
+        LASERSTAT_SERVER_KEY        (String),
+        MAIL_FROM_FOR_SURVEY        (String),
+        MAIL_SURVEY_FINISH_RESULT        (String)
 
         KEYS(type, rdc) {
             this.type = type
@@ -95,7 +97,9 @@ class OrgSetting {
                 OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS,
                 OrgSetting.KEYS.NATSTAT_SERVER_ACCESS,
                 OrgSetting.KEYS.NATSTAT_SERVER_API_KEY,
-                OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID
+                OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID,
+                OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY,
+                OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT
         ]
     }
 

@@ -146,6 +146,10 @@ class YodaService {
         [tipps: tippsWithAlternate, issueEntitlements: ieTippMap, toDelete: toDelete, toUUIDfy: toUUIDfy]
     }
 
+    /**
+     * Correction method. Use with care.
+     * Processes all {@link IssueEntitlement}s whose reference {@link TitleInstancePackagePlatform} have a different status and matches the issue entitlement status to the reference title one's
+     */
     void matchTitleStatus() {
         int max = 100000
         bulkOperationRunning = true
@@ -345,8 +349,12 @@ class YodaService {
         String componentType
         Set objects = []
         switch(className) {
-            case Org.class.name: rectype = GlobalSourceSyncService.RECTYPE_ORG
+            case GlobalSourceSyncService.ORG_TYPE_PROVIDER: rectype = GlobalSourceSyncService.RECTYPE_ORG
                 componentType = 'Org'
+                objects.addAll(Org.findAllByStatusNotEqualAndGokbIdIsNotNull(RDStore.ORG_STATUS_REMOVED))
+                break
+            case GlobalSourceSyncService.ORG_TYPE_VENDOR: rectype = GlobalSourceSyncService.RECTYPE_VENDOR
+                componentType = 'Vendor'
                 objects.addAll(Org.findAllByStatusNotEqualAndGokbIdIsNotNull(RDStore.ORG_STATUS_REMOVED))
                 break
             case Platform.class.name: rectype = GlobalSourceSyncService.RECTYPE_PLATFORM
@@ -387,6 +395,10 @@ class YodaService {
         }
     }
 
+    /**
+     * Correction method to trigger again inhertis for unset audit configs due to bugs
+     * @param field the field whose inheritance / audit should be triggered
+     */
     @Transactional
     void retriggerInheritance(String field) {
         String query = "update Subscription s set s.${field} = (select parent.${field} from Subscription parent where parent = s.instanceOf) where s.instanceOf != null and exists(select auc.id from AuditConfig auc where auc.referenceId = s.instanceOf.id and auc.referenceClass = '${Subscription.class.name}' and auc.referenceField = '${field}')"

@@ -1,11 +1,19 @@
 <%
-    Map<String, Object> costItemFields = fields.value.fields.get('costItemsElements'),
-                        otherFields = fields.value.fields.findAll { Map.Entry f -> f.getKey() != 'costItemsElements' }
+    Map<String, Object> subTabFields = [:],
+                        otherFields
+    if(fields.value.fields.containsKey('costItemsElements')) {
+        subTabFields.putAll(fields.value.fields.get('costItemsElements'))
+        otherFields = fields.value.fields.findAll { Map.Entry f -> f.getKey() != 'costItemsElements' }
+    }
+    if(fields.key.contains('Contacts')) {
+        subTabFields.putAll(fields.value.fields.findAll { Map.Entry f -> f.getKey().contains(subTabPrefix) })
+    }
+    else otherFields = fields.value.fields
 %>
-<g:if test="${costItemFields}">
+<g:if test="${subTabFields}">
     <div class="ui grid">
-        <g:each in="${costItemFields}" var="field" status="gc">
-            <g:if test="${gc == 0 || gc == Math.floor((costItemFields.size() / 2))}">
+        <g:each in="${subTabFields}" var="field" status="gc">
+            <g:if test="${gc == 0 || gc == Math.floor((subTabFields.size() / 2))}">
                 <div class="wide eight field">
             </g:if>
             <div class="field">
@@ -24,7 +32,7 @@
                     </div>
                 </g:else>
             </div>
-            <g:if test="${gc == Math.floor((costItemFields.size() / 2))-1 || gc == costItemFields.size()-1}">
+            <g:if test="${gc == Math.floor((subTabFields.size() / 2))-1 || gc == subTabFields.size()-1}">
                 </div><!-- .wide eight gc -->
             </g:if>
         </g:each>

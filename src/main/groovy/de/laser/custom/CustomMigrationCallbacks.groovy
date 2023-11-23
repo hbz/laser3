@@ -11,6 +11,10 @@ import liquibase.database.Database
 
 import java.text.SimpleDateFormat
 
+/**
+ * Contains database migration cleanup methods. As methods are used mainly once,
+ * they are not documented in detail
+ */
 class CustomMigrationCallbacks {
 
 	GrailsApplication grailsApplication
@@ -105,6 +109,13 @@ class CustomMigrationCallbacks {
 	void beforeStartMigration(Database database) {
 	}
 
+	/**
+	 * Executed upon database migration start; fetches the changesets for the given database and executes them, if not done already.
+	 * A database dump is being created before executing changesets
+	 * @param database the database on which the changes should be checked
+	 * @param liquibase the database changelogs
+	 * @param changelogName unused
+	 */
 	void onStartMigration(Database database, Liquibase liquibase, String changelogName) {
 
 		_localChangelogMigration_july24()

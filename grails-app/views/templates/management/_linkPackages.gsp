@@ -138,15 +138,12 @@
                     <g:if test="${controllerName == "myInstitution"}">
                         <th>${message(code: 'default.subscription.label')}</th>
                     </g:if>
-                    <th>${message(code: 'default.startDate.label')}</th>
-                    <th>${message(code: 'default.endDate.label')}</th>
+                    <th>${message(code: 'default.startDate.label.shy')}</th>
+                    <th>${message(code: 'default.endDate.label.shy')}</th>
                     <th>${message(code: 'default.status.label')}</th>
                     <th>${message(code: 'subscription.packages.label')}</th>
                     <th class="la-no-uppercase">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                              data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
-                            <i class="map orange icon"></i>
-                        </span>
+                        <ui:multiYearIcon isConsortial="true" />
                     </th>
                     <th>${message(code:'default.actions.label')}</th>
                 </tr>
@@ -183,7 +180,7 @@
                                     </span>
                                 </g:if>
 
-                                <ui:customerTypeIcon org="${subscr}" />
+                                <ui:customerTypeProIcon org="${subscr}" />
                             </td>
                         </g:if>
                         <g:if test="${controllerName == "myInstitution"}">
@@ -198,10 +195,18 @@
                             <div class="ui middle aligned selection list">
                                 <g:each in="${sub.packages}" var="sp">
                                     <div class="item"><div class="content">
-                                        <g:link controller="subscription" action="index" id="${sub.id}"
-                                                params="[pkgfilter: sp.pkg.id]">
-                                            ${sp.pkg.name}<br/>${raw(sp.getIEandPackageSize())}
-                                        </g:link>
+                                        <g:if test="${subscriptionService.countCurrentIssueEntitlements(sub) > 0}">
+                                            <g:link controller="subscription" action="index" id="${sub.id}"
+                                                    params="[pkgfilter: sp.pkg.id]">
+                                                ${sp.pkg.name}<br/>${raw(sp.getIEandPackageSize())}
+                                            </g:link>
+                                        </g:if>
+                                        <g:else>
+                                            <g:link controller="subscription" action="addEntitlements" id="${sub.id}"
+                                                    params="[pkgfilter: sp.pkg.id]">
+                                                ${sp.pkg.name}<br/>${raw(sp.getIEandPackageSize())}
+                                            </g:link>
+                                        </g:else>
                                         <g:if test="${editable && childWithCostItems.find { SubscriptionPackage row -> row.id == sp.id }}">
                                             <br/><g:message code="subscription.delete.existingCostItems"/>
                                         </g:if>
@@ -212,10 +217,7 @@
                         </td>
                         <td>
                             <g:if test="${sub.isMultiYear}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                      data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
-                                    <i class="map orange icon"></i>
-                                </span>
+                                <ui:multiYearIcon isConsortial="true" color="orange" />
                             </g:if>
                         </td>
                         <td class="x">

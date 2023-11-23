@@ -18,7 +18,7 @@ import java.util.regex.Pattern
 
 /**
  * This class reflects a title package which may be subscribed as a whole or partially (e.g. pick-and-choose).
- * This is a reflection of the we:kb-implementation of the package class (see <a href="https://github.com/hbz/wekb/blob/wekb-dev/server/gokbg3/grails-app/domain/org/gokb/cred/Package.groovy">here</a>).
+ * This is a reflection of the we:kb-implementation of the package class (see <a href="https://github.com/hbz/wekb2/blob/dev/grails-app/domain/wekb/Package.groovy">here</a>).
  * If a package is being subscribed, the link between subscription and package is being represented by a {@link SubscriptionPackage} connection
  * @see TitleInstancePackagePlatform
  * @see Platform
@@ -162,11 +162,22 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
      */
   @Transient
   Org getContentProvider() {
-    Org result
-    orgs.each { OrgRole or ->
-      if ( or.roleType in [RDStore.OR_CONTENT_PROVIDER, RDStore.OR_PROVIDER] )
-        result = or.org
-    }
+    Org result = orgs.find { OrgRole or ->
+      or.roleType in [RDStore.OR_CONTENT_PROVIDER, RDStore.OR_PROVIDER]
+    }?.org
+    result
+  }
+
+    /**
+     * Gets the agencies / vendors of this package
+     * @return the {@link Set} of {@link Org}s linked to this package by {@link OrgRole} of type Agency
+     */
+  @Transient
+  Set<Org> getAgencies() {
+    Set<Org> result = []
+    result.addAll(orgs.findAll { OrgRole or ->
+      or.roleType == RDStore.OR_AGENCY
+    }.org)
     result
   }
 
@@ -308,11 +319,22 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         return this.name + ' ('+ TitleInstancePackagePlatform.countByPkgAndStatus(this, RDStore.TIPP_STATUS_CURRENT) +')'
     }
 
+    /**
+     * Checks if the package is being marked for the given user with the given marker type
+     * @param user the {@link User} whose watchlist should be checked
+     * @param type the {@link Marker.TYPE} of the marker to check
+     * @return true if the package is marked, false otherwise
+     */
     @Override
     boolean isMarked(User user, Marker.TYPE type) {
         Marker.findByPkgAndUserAndType(this, user, type) ? true : false
     }
 
+    /**
+     * Sets the marker for the package for given user of the given type
+     * @param user the {@link User} for which the package should be marked
+     * @param type the {@link Marker.TYPE} of marker to record
+     */
     @Override
     void setMarker(User user, Marker.TYPE type) {
         if (!isMarked(user, type)) {
@@ -321,6 +343,11 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         }
     }
 
+    /**
+     * Removes the given marker with the given type for the package from the user's watchlist
+     * @param user the {@link User} from whose watchlist the package marker should be removed
+     * @param type the {@link Marker.TYPE} of marker to remove
+     */
     @Override
     void removeMarker(User user, Marker.TYPE type) {
         withTransaction {

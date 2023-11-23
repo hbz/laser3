@@ -5,7 +5,6 @@ import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.survey.SurveyConfig
 import de.laser.traits.ShareableTrait
-import de.laser.workflow.WfWorkflow
 import org.grails.datastore.mapping.engine.event.PostUpdateEvent
 
 /**
@@ -99,24 +98,41 @@ class DocContext implements ShareableTrait, Comparable {
         deleteShare_trait()
     }
 
+    /**
+     * Gets the type of the document linked by this context
+     * @return the {@link Doc#type} of the context document
+     */
     RefdataValue getDocType() {
         owner?.type
     }
+
+    /**
+     * Gets the confidentiality of the document linked by this context
+     * @return the {@link Doc#confidentiality} of the context document
+     */
     RefdataValue getDocConfid() {
         owner?.confidentiality
     }
+
+    /**
+     * Checks whether the document is a note
+     * @return true if the {@link Doc#contentType} is of type {@link Doc#CONTENT_TYPE_STRING} (= a note), false otherwise
+     */
     boolean isDocANote() {
         owner?.contentType == Doc.CONTENT_TYPE_STRING // 0
     }
+
+    /**
+     * Checks whether the document is a file
+     * @return true if the {@link Doc#contentType} is of type {@link Doc#CONTENT_TYPE_FILE} (= a document), false otherwise
+     */
     boolean isDocAFile() {
         owner?.contentType == Doc.CONTENT_TYPE_FILE // 3
     }
-    boolean isUsedByWorkflow(WfWorkflow wf) {
-        wf.getCurrentDocContexts().collect{ it.id }.contains( this.id )
-    }
 
     /**
-     * Comparator method; the owner document's titles are being compared against each other
+     * Comparator method; the owner document's titles are being compared against each other.
+     * If they are equal, the creation dates are being compared
      * @param o the {@link DocContext} to compare with
      * @return the comparison result (-1, 0 or 1)
      */

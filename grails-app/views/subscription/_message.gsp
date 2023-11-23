@@ -10,18 +10,6 @@
         <g:each in="${subscription.getAllSubscribers()}" var="subscr">
             <span class="ui label"><g:link controller="organisation" action="show" id="${subscr.id}">${subscr.getDesignation()}</g:link></span>.
         </g:each>
-        <div class="la-float-right">
-            <g:if test="${params.orgBasicMemberView}">
-                <g:link controller="${controllerName}" action="${actionName}" id="${params.id}" params="[sub: subscription.id]" data-content="${message(code: 'myinst.subscriptionDetails.message.changeToNormalView')}" class="ui icon button la-popup-tooltip la-delay red">
-                    <i class="icon window restore "></i>
-                </g:link>
-            </g:if>
-            <g:else>
-                <g:link controller="${controllerName}" action="${actionName}" id="${params.id}" params="[orgBasicMemberView: true, sub: subscription.id]" data-content="${message(code: 'myinst.subscriptionDetails.message.changeToChildView')}" class="ui icon button la-popup-tooltip la-delay green">
-                    <i class="icon window restore outline "></i>
-                </g:link>
-            </g:else>
-        </div>
     </div>
     <p>
         <g:if test="${checkCons}">

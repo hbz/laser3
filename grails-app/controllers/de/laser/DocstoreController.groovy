@@ -33,7 +33,10 @@ class DocstoreController  {
      * Retrieves a document by its uuid
      * @return the document, null otherwise
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_or_ROLEADMIN()
+    })
     def index() {
         Doc doc = Doc.findByUuid(params.id)
 
@@ -53,8 +56,10 @@ class DocstoreController  {
     /**
      * Uploads a new document, specified by the upload form parameters, and sets the entered metadata to the new {@link DocContext} object
      */
-    @DebugInfo(wtc = DebugInfo.WITH_TRANSACTION)
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
+    })
     def uploadDocument() {
         Doc.withTransaction { TransactionStatus ts ->
             log.debug("upload document....");
@@ -200,7 +205,7 @@ class DocstoreController  {
     /**
      * Call for editing an existing document, see {@link DocstoreControllerService#editDocument()} for the editing implementation. Redirects back to the referer where result may be shown in case of an error
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })

@@ -75,6 +75,11 @@ class ApiCollectionReader {
         result
     }
 
+    /**
+     * Processes a collection of alternative names and build a collection of entries for API output
+     * @param list the {@link Collection} of {@link AlternativeName}s to output
+     * @return a {@link Collection} of alternative names
+     */
     static Collection<Object> getAlternativeNameCollection(Collection<AlternativeName> list) {
         Collection<Object> result = []
 
@@ -422,6 +427,11 @@ class ApiCollectionReader {
         return ApiToolkit.cleanUp(result, true, true)
     }
 
+    /**
+     * Processes a collection of languages and build a collection of entries for API output
+     * @param languages the {@link SortedSet} of {@link Language}s to output
+     * @return a {@link Collection} of language entries
+     */
     static Collection<Object> getLanguageCollection(SortedSet<Language> languages) {
         Collection<Object> result = []
 
@@ -507,6 +517,11 @@ class ApiCollectionReader {
         return ApiToolkit.cleanUp(result, true, false)
     }
 
+    /**
+     * Processes a collection of price items and build a collection of entries for API output
+     * @param list a {@link Set} of {@link PriceItem}s to output
+     * @return a {@link Collection} of price items
+     */
     static Collection<Object> getPriceItemCollection(Set<PriceItem> list) {
         Collection<Object> result = []
 

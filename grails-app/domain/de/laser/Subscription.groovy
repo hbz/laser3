@@ -50,14 +50,14 @@ import static java.time.temporal.ChronoUnit.DAYS
  * There are three types of subscriptions:
  * <ol>
  *     <li>consortial (parent) subscriptions</li>
- *     <li>consortial (member) subscriptions</li>
+ *     <li>institution (consortial member) subscriptions</li>
  *     <li>local subscriptions</li>
  * </ol>
  * (above them, there are administrative subscriptions as well, but they are for hbz-internal purposes only and technically consortial subscriptions)</p>
  * <p>Consortial parent subscriptions can be maintained only by consortia, local subscriptions only by single users. Consortia may add member institutions
- * to consortial subscriptions; they then get member subscriptions. Basic members and single users may have consortia member subscriptions, but they have
+ * to consortial subscriptions; they then get institution subscriptions. Basic members and single users may have institution subscriptions, but they have
  * reading rights only. Members may add notes to the subscriptions; single users may add above that own documents, tasks, notes and properties to the
- * consortial member subscription. Consortia have full writing rights for the parent and the member subscriptions as well. Consortia may also share attributes
+ * institution subscription. Consortia have full writing rights for the parent and the member subscriptions as well. Consortia may also share attributes
  * with their members; properties may be inherited just as identifiers and documents and cost items may be shared with the consortia subscription members. Shared
  * items are thus visible on both levels - on parent and on member level. The inheritance may be configured to take effect automatically or only after accepting it -
  * this is controlled by the {@link #isSlaved} flag. Inheritance means that properties of the consortial parent entity are adopted by the member (= child) instances automatically.</p>
@@ -331,6 +331,10 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         false
     }
 
+    /**
+     * Checks whether this subscription is a consortial parent subscription
+     * @return true if the subscription is of the {@link CalculatedType#TYPE_CONSORTIAL}, false otherwise
+     */
     @Override
     boolean showUIShareButton() {
         _getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL]
@@ -657,6 +661,10 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         return (this.isMultiYear && endDate && (DAYS.between(LocalDate.now(), endDate) > 366))
     }
 
+    /**
+     * Checks if this subscription is a multi-year subscription and if we are in the time range spanned by the parent subscription
+     * @return true if we are within the given multi-year range, false otherwise
+     */
     boolean isCurrentMultiYearSubscriptionToParentSub() {
         //return (this.isMultiYear && this.endDate && this.instanceOf && (this.endDate.minus(this.instanceOf.startDate) > 366))
 
@@ -698,9 +706,9 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
-     * Checks if this subscription is viewable by the given user
+     * Checks if this subscription is visible for the given user
      * @param user the {@link User} whose grants should be checked
-     * @return true if this subscription is viewable, false otherwise
+     * @return true if this subscription is visible, false otherwise
      */
     boolean isVisibleBy(User user) {
         hasPerm('view', user)
@@ -728,7 +736,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                 return cons || subscrCons || subscr
             }
             if (perm == 'edit') {
-                if (BeanStore.getContextService().hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))
+                if (BeanStore.getContextService().isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))
                     return cons || subscr
             }
         }
@@ -1016,6 +1024,7 @@ select distinct oap from OrgAccessPoint oap
     }
 
     /**
+     * Used in _copySubscriber.gsp
      * Checks if the subscriber is in survey renewal
      * @return true if the subscriber is in survey renewal, false otherwise
      */

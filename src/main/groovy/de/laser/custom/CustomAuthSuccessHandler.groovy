@@ -14,12 +14,26 @@ import javax.servlet.ServletException
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
+/**
+ * Implementation of request success handler
+ */
 class CustomAuthSuccessHandler extends CustomAjaxAwareAuthenticationSuccessHandler {
 
     SpringSecurityService springSecurityService
     UserService userService
     ContextService contextService
 
+    /**
+     * Handler after a successful authentication; setting the mandatory settings if the user logs in for the
+     * first time.
+     * See the super class(es) for the documentation of the arguments
+     * @param request the request which caused the successful authentication
+     * @param response the response
+     * @param authentication the <tt>Authentication</tt> object which was created during
+     * the authentication process.
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     @Transactional
     void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response,

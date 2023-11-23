@@ -58,13 +58,13 @@
     </div>
     <div class="ui list">
         <div class="item">
-            <div class="ui label blue">
-                <i class="icon circle outline"></i>
+            <div class="ui label yellow">
+                <i class="icon user circle"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_INST_BASIC).getI10n('authority')}
             </div>
         </div>
         <div class="item">
-            <div class="ui label blue">
+            <div class="ui label yellow">
                 <i class="icon trophy"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_INST_PRO).getI10n('authority')}
             </div>
@@ -72,7 +72,7 @@
 
         <div class="item">
             <div class="ui label teal">
-                <i class="icon circle outline"></i>
+                <i class="icon user circle"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_BASIC).getI10n('authority')}
             </div>
         </div>
@@ -171,6 +171,24 @@
         <i class="icon large stop sc_grey"></i> fallback <br/>
 
         <i class="icon large stop sc_darkgrey"></i> fallback <br/>
+    </p>
+
+    <p>
+        <a class="ui primary label">Primary</a>
+        <a class="ui secondary label">Secondary</a>
+        <a class="ui red label">Red</a>
+        <a class="ui orange label">Orange</a>
+        <a class="ui yellow label">Yellow</a>
+        <a class="ui olive label">Olive</a>
+        <a class="ui green label">Green</a>
+        <a class="ui teal label">Teal</a>
+        <a class="ui blue label">Blue</a>
+        <a class="ui violet label">Violet</a>
+        <a class="ui purple label">Purple</a>
+        <a class="ui pink label">Pink</a>
+        <a class="ui brown label">Brown</a>
+        <a class="ui grey label">Grey</a>
+        <a class="ui black label">Black</a>
     </p>
 </div>
 

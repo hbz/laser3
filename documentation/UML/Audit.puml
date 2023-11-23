@@ -1,0 +1,14 @@
+@startuml
+
+start
+:löse Vererbung einer Eigenschaft aus
+AjaxController.toggleAudit();
+:registriere Vererbung der Eigenschaft am Objekt
+AuditConfig.addConfig(subscription, prop);
+while (members.each())
+    :setze für alle Teilnehmer den Wert der Elternlizenz
+    member.setProperty(prop, subscription.getProperty(prop));
+endwhile
+stop
+
+@enduml

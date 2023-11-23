@@ -14,8 +14,14 @@ import org.springframework.context.MessageSource
 import java.text.SimpleDateFormat
 import java.time.Year
 
+/**
+ * Abstract class for the export helfers, containing generic properties common for export display
+ */
 class BaseExportHelper {
 
+    /**
+     * The common page properties
+     */
     static final Map<String, List> PDF_OPTIONS = [
             'auto' : [ 'auto' ],
             'A4-P' : [ 'A4', 'Portrait' ], 'A4-L' : [ 'A4', 'Landscape' ],
@@ -25,6 +31,15 @@ class BaseExportHelper {
             'A0-P' : [ 'A0', 'Portrait' ], 'A0-L' : [ 'A0', 'Landscape' ]
     ]
 
+    /**
+     * Updates the given cell in the given Excel workbook
+     * @param workbook the workbook in which the cell should be updated
+     * @param cell the cell to be updated
+     * @param value the new cell value
+     * @param inserNewLines should new lines be included into the cell?
+     * @param useHyperlinks should links be parsed as hyperlinks?
+     * @return the count of lines concerned by the update
+     */
     static int updateCell(Workbook workbook, Cell cell, def value, boolean inserNewLines, boolean useHyperlinks) {
 
         int lineCount = 1
@@ -115,6 +130,11 @@ class BaseExportHelper {
         lineCount
     }
 
+    /**
+     * Builds the filename for the given export. The filename is being normalised, i.e. special characters removed
+     * @param labels the list of selected options which are included into the filename; at least 'Reporting' appears in every case
+     * @return the normalised filename
+     */
     static String getFileName(List<String> labels = ['Reporting']) {
 
         SimpleDateFormat sdf = DateUtils.getSDF_forFilename()
@@ -128,6 +148,11 @@ class BaseExportHelper {
         filename
     }
 
+    /**
+     * Reorders the form fields for the UI, removing the impair fields
+     * @param formFields the base list to reorder
+     * @return the reordered field list
+     */
     static def reorderFieldsForUI(Map<String, Object> formFields) {
 
         Map<String, Object> result = [:]
@@ -151,6 +176,12 @@ class BaseExportHelper {
 
     // -----
 
+    /**
+     * Calculates the PDF page size, based on the size of the given input
+     * @param content the lists to appear on the page
+     * @param pin the type of page (chart details, chart query, chart image) to be printed
+     * @return a {@link Map} containing the page structure details: width, height, pageSize, orientation
+     */
     static Map<String, Object> calculatePdfPageStruct(List<List<String>> content, String pin) {
 
         Map<String, Object> struct = [

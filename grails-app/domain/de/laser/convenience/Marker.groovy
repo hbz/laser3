@@ -5,8 +5,15 @@ import de.laser.Package
 import de.laser.Platform
 import de.laser.auth.User
 
+/**
+ * A class to bookmark objects coming from the we:kb knowledge base in order to monitor the changes performed there
+ */
 class Marker {
 
+    /**
+     * The enum containing types of markers. Currently, {@link #WEKB_CHANGES} is supported, along with {@link #UNKOWN}
+     * as dummy value
+     */
     static enum TYPE {
         WEKB_CHANGES ("WEKB_CHANGES"), UNKOWN ("UNKOWN")
 

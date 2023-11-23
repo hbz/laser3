@@ -4,6 +4,9 @@ import de.laser.auth.User
 import grails.plugin.springsecurity.userdetails.GrailsUser
 import org.springframework.security.core.GrantedAuthority
 
+/**
+ * Contains the details of a user logged in; maps the {@link User} domain to {@link GrailsUser}
+ */
 class CustomUserDetails extends GrailsUser {
 
     User user

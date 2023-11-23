@@ -1,6 +1,5 @@
 package de.laser.api.v0.entities
 
-import de.laser.traces.DelCombo
 import de.laser.traces.DeletedObject
 import de.laser.Identifier
 import de.laser.Links

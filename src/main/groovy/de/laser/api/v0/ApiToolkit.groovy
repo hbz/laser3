@@ -73,6 +73,10 @@ class ApiToolkit {
         ]
     }
 
+    /**
+     * Gets the start of the current year ring
+     * @return the first of January of the current year
+     */
     static String getStartOfYearRing() {
         LocalDateTime ldt = LocalDateTime.now()
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN)
@@ -80,6 +84,10 @@ class ApiToolkit {
         dateTimeFormatter.format(ldt)
     }
 
+    /**
+     * Gets the end of the current year ring
+     * @return the 31st of December of the current year
+     */
     static String getEndOfYearRing() {
         LocalDateTime ldt = LocalDateTime.now()
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN)
@@ -136,6 +144,14 @@ class ApiToolkit {
         return false
     }
 
+    /**
+     * Gets all institutions ({@link Org}) to which the given special access grant has been given
+     * @param specGrant the grant which has been granted to the institutions
+     * @return a {@link List} of {@link Org}s (institutions) to which the given access right has been granted
+     * @see OrgSetting.KEYS#EZB_SERVER_ACCESS
+     * @see OrgSetting.KEYS#OAMONITOR_SERVER_ACCESS
+     * @see OrgSetting.KEYS#NATSTAT_SERVER_ACCESS
+     */
     static List<Org> getOrgsWithSpecialAPIAccess(String specGrant) {
         Org.executeQuery('select o.globalUID from OrgSetting os join os.org o where os.key = :customerType and os.strValue = :specGrant', [customerType: OrgSetting.KEYS.API_LEVEL, specGrant: specGrant])
     }

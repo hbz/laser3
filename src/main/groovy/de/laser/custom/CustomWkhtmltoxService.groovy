@@ -7,6 +7,9 @@ import org.grails.plugins.wkhtmltopdf.PartialView
 import org.grails.plugins.wkhtmltopdf.WkhtmltoxException
 import org.grails.plugins.wkhtmltopdf.WkhtmltoxWrapper
 
+/**
+ * Class to implement the Wkhtmltox service for PDF creation which will then submit to output
+ */
 @Slf4j
 class CustomWkhtmltoxService /* extends WkhtmltoxService */ {
 
@@ -15,6 +18,11 @@ class CustomWkhtmltoxService /* extends WkhtmltoxService */ {
     def mailMessageContentRenderer
     GrailsApplication grailsApplication
 
+    /**
+     * Prepares header, body and footer of the PDF document with the given configuration settings
+     * @param config the {@link Map} containing the page details
+     * @return the byte array containing the PDF document binary
+     */
     byte[] makePdf(config) {
 
         log.debug('Overriding WkhtmltoxService ..')
@@ -47,6 +55,14 @@ class CustomWkhtmltoxService /* extends WkhtmltoxService */ {
         return makePdf(wrapper, contentPartial, headerPartial, footerPartial)
     }
 
+    /**
+     * Collects the prepared page details and assembles them to the complete PDF document
+     * @param wrapper the wrapper service instance building the page
+     * @param contentPartial the page body
+     * @param headerPartial the page header
+     * @param footerPartial the page footer
+     * @return the byte array containing the PDF document binary
+     */
     byte[] makePdf(WkhtmltoxWrapper wrapper, contentPartial, headerPartial = null, footerPartial = null) {
 
         String htmlBodyContent = renderMailView(contentPartial)
@@ -87,10 +103,20 @@ class CustomWkhtmltoxService /* extends WkhtmltoxService */ {
         return pdfData
     }
 
+    /**
+     * Builds the mail view of the given page part
+     * @param partialView the part of page to render
+     * @return the rendered page
+     */
     protected String renderMailView(PartialView partialView) {
         return mailMessageContentRenderer.render(new StringWriter(), partialView.viewName, partialView.model, null, partialView.pluginName).out.toString()
     }
 
+    /**
+     * Renders the given page part in a file
+     * @param pv the page part to render
+     * @return a temp file containing only the page part
+     */
     File makePartialViewFile(PartialView pv) {
         String content = renderMailView(pv)
         File tempFile = File.createTempFile("/wkhtmltopdf", ".html")

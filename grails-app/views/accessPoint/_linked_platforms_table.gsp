@@ -4,7 +4,7 @@
   <thead>
   <tr>
     <th>${message(code: "platform.label")}</th>
-    <g:if test="${contextService.is_INST_EDITOR_with_PERMS_BASIC( inContextOrg )}">
+    <g:if test="${contextService.is_INST_EDITOR_or_ROLEADMIN_with_PERMS_BASIC( inContextOrg )}">
       <th>${message(code: "accessPoint.subscriptions.label")}</th>
       <th>${message(code: 'default.action.label')}</th>
     </g:if>
@@ -19,7 +19,7 @@
           <g:link controller="Subscription" action="show" id="${linkedSub.id}">${linkedSub.name} ${(linkedSub.status != RDStore.SUBSCRIPTION_CURRENT) ? '('+ linkedSub.status.getI10n('value') +')': ''}</g:link><br />
         </g:each>
       </td>
-      <g:if test="${contextService.is_INST_EDITOR_with_PERMS_BASIC( inContextOrg )}">
+      <g:if test="${contextService.is_INST_EDITOR_or_ROLEADMIN_with_PERMS_BASIC( inContextOrg )}">
         <td class="center aligned">
           <g:link class="ui negative icon button la-modern-button js-open-confirm-modal" id="${linkedPlatform.aplink.id}"
                   controller="accessPoint" action="unlinkPlatform"

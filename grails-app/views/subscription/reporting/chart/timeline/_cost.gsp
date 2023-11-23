@@ -99,7 +99,7 @@ JSPC.app.reporting.current.chart.option = {
         formatter (params) {
             var str = params[0].data[6]
             for (var i=0; i<params.length; i++) {
-                var ci = new Intl.NumberFormat(JSPC.vars.locale, { style: 'currency', currency: 'EUR' }).format(params[i].data[ params[i].seriesIndex + 2 ])
+                var ci = new Intl.NumberFormat(JSPC.config.language, { style: 'currency', currency: 'EUR' }).format(params[i].data[ params[i].seriesIndex + 2 ])
                 str += JSPC.app.reporting.helper.tooltip.getEntry(params[i].marker, params[i].seriesName, ci)
             }
             return str
@@ -119,7 +119,7 @@ JSPC.app.reporting.current.chart.option = {
                 position: 'top',
                 formatter (params) {
                     var index = JSPC.app.reporting.current.chart.option.dataset.dimensions.indexOf('valueNeutralCons')
-                    return new Intl.NumberFormat(JSPC.vars.locale, { style: 'currency', currency: 'EUR' }).format(params.data[ index ])
+                    return new Intl.NumberFormat(JSPC.config.language, { style: 'currency', currency: 'EUR' }).format(params.data[ index ])
                 }
             },
             itemStyle: {
@@ -141,7 +141,7 @@ JSPC.app.reporting.current.chart.option = {
                 position: 'top',
                 formatter (params) {
                     var index = JSPC.app.reporting.current.chart.option.dataset.dimensions.indexOf('valueNeutralConsTax')
-                    return new Intl.NumberFormat(JSPC.vars.locale, { style: 'currency', currency: 'EUR' }).format(params.data[ index ])
+                    return new Intl.NumberFormat(JSPC.config.language, { style: 'currency', currency: 'EUR' }).format(params.data[ index ])
                 }
             },
             itemStyle: {
@@ -163,7 +163,7 @@ JSPC.app.reporting.current.chart.option = {
                 position: 'top',
                 formatter (params) {
                     var index = JSPC.app.reporting.current.chart.option.dataset.dimensions.indexOf('valueCons')
-                    return new Intl.NumberFormat(JSPC.vars.locale, { style: 'currency', currency: 'EUR' }).format(params.data[ index ])
+                    return new Intl.NumberFormat(JSPC.config.language, { style: 'currency', currency: 'EUR' }).format(params.data[ index ])
                 }
             },
             itemStyle: {
@@ -185,7 +185,7 @@ JSPC.app.reporting.current.chart.option = {
                 position: 'top',
                 formatter (params) {
                     var index = JSPC.app.reporting.current.chart.option.dataset.dimensions.indexOf('valueConsTax')
-                    return new Intl.NumberFormat(JSPC.vars.locale, { style: 'currency', currency: 'EUR' }).format(params.data[ index ])
+                    return new Intl.NumberFormat(JSPC.config.language, { style: 'currency', currency: 'EUR' }).format(params.data[ index ])
                 }
             },
             itemStyle: {

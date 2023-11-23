@@ -30,7 +30,14 @@ class PendingChangeService extends AbstractLockableService {
     MessageSource messageSource
 
     /**
-     *
+     * Much of this code has been commented out because the functionality got deprecated and disused.
+     * Some of the functionality remained nevertheless intact, so that this method delivers changes concerning subscriptions and cost items.
+     * They may be pending; those require actions on behalf of a user with editing rights or accepted, then, they appear on the notifications tab
+     * for the next X days since the action date. X is the time span configured in the user profile for which notifications appear on the dashboard
+     * @see PendingChangeConfiguration
+     * @see CostItem
+     * @see Subscription
+     * @return a {@link Map} containing pending and accepted changes
      */
     Map<String, Object> getSubscriptionChanges(Map configMap) {
         Map<String, Object> result = [:]
@@ -321,6 +328,7 @@ class PendingChangeService extends AbstractLockableService {
      * queries because the GORM loading slows the query very much down
      * @param configMap a map containing the configuration parameters such as context institution, user's time setting
      * @return a map containing title changes and notification
+     * @deprecated disused and replaced by {@link #getSubscriptionChanges(java.util.Map)}
      */
     @Deprecated
     Map<String, Object> getChanges(LinkedHashMap<String, Object> configMap) {
@@ -467,6 +475,7 @@ class PendingChangeService extends AbstractLockableService {
      * @param sql the SQL connection
      * @param subPkgConfigs the map of subscription package pending change configurations
      * @return a list of maps containing the subscription data, the event string and the change token
+     * @deprectaed not needed any more; functionality is in the new principal method {@link #getSubscriptionChanges(java.util.Map)}
      */
     @Deprecated
     List<Map<String, Object>> getEventRows(List<GroovyRowResult> entries, Locale locale, Map status, Map roleTypes, Sql sql, Set subPkgConfigs) {
@@ -492,6 +501,7 @@ class PendingChangeService extends AbstractLockableService {
      * @param status the possible subscription status
      * @param locale the locale to use for message constants
      * @return the subscription name conform to {@link Subscription#dropdownNamingConvention(de.laser.Org)}
+     * @deprecated not needed any more; functionality is in the new principal method {@link #getSubscriptionChanges(java.util.Map)}
      */
     @Deprecated
     String subscriptionName(GroovyRowResult entry, Map<Long, String> status, Locale locale) {
@@ -513,6 +523,7 @@ class PendingChangeService extends AbstractLockableService {
      * @param change the change whose property should be output
      * @param key the string value
      * @return the value as {@link Date} or {@link String}
+     * @deprecated not needed any more; functionality is in the new principal method {@link #getSubscriptionChanges(java.util.Map)}
      */
     @Deprecated
     def output(PendingChange change,String key) {
@@ -535,7 +546,9 @@ class PendingChangeService extends AbstractLockableService {
      * Retrieves the counts of changes for each of the packages in the given list
      * @param pkgList the list of packages (as {@link SubscriptionPackage} link objects) whose counts should be retrieved
      * @return a {@link Map} of counts, grouped by events and application status (pending or accepted)
+     * @deprecated unused since we:kb changes are monitored differently and handled by {@link WekbStatsService} / {@link MarkerService}
      */
+    @Deprecated
     Map<String, Integer> getCountsForPackages(Map<SubscriptionPackage, Map<String, RefdataValue>> pkgList) {
         Integer newTitlesPending = 0, titlesDeletedPending = 0, titlesRemovedAccepted = 0
         Integer newTitlesAccepted = 0, titlesStatusChangedAccepted = 0
@@ -682,6 +695,7 @@ class PendingChangeService extends AbstractLockableService {
         done
     }
 
+    @Deprecated
     boolean acceptTitleChange(IssueEntitlementChange iec) throws ChangeAcceptException {
         boolean done = false
         switch(iec.titleChange.event) {
@@ -771,7 +785,9 @@ class PendingChangeService extends AbstractLockableService {
      * Rejects the given issue entitlement change and sets the flag to prevent accidents
      * @param iec the change to reject
      * @return true if the rejection was successful, false otherwise
+     * @deprecated functionality removed without replacement
      */
+    @Deprecated
     boolean reject(IssueEntitlementChange iec) {
         iec.status = RDStore.PENDING_CHANGE_REJECTED
         iec.actionDate = new Date()
@@ -786,7 +802,9 @@ class PendingChangeService extends AbstractLockableService {
      * @param newChange the change to apply
      * @param subPkg the subscription package on which the change should be applied
      * @param contextOrg the subscriber
+     * @deprectaed functionality removed without replacement
      */
+    @Deprecated
     void applyPendingChange(TitleChange newChange,SubscriptionPackage subPkg,Org contextOrg) {
         log.debug("applyPendingChange")
         if(!(newChange.event in [PendingChangeConfiguration.TITLE_REMOVED, PendingChangeConfiguration.TITLE_DELETED])) {
@@ -813,7 +831,9 @@ class PendingChangeService extends AbstractLockableService {
      * @param newChange the change to apply
      * @param subPkg the (consortial) subscription package on which the change should be applied
      * @param contextOrg the subscription consortium
+     * @deprectaed functionality removed without replacement
      */
+    @Deprecated
     void applyPendingChangeForHolding(TitleChange newChange,SubscriptionPackage subPkg,Org contextOrg) {
         log.debug("applyPendingChangeForHolding")
         Set<Subscription> childSubscriptions = Subscription.findAllByInstanceOf(subPkg.subscription)

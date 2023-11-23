@@ -39,7 +39,6 @@ class ManagementService {
     static final int STATUS_ERROR = 1
 
     AuditService auditService
-    AccessService accessService
     AddressbookService addressbookService
     ContextService contextService
     ExecutorService executorService
@@ -169,18 +168,6 @@ class ManagementService {
         }
     }
 
-    /**
-     * Unsets the given customer number
-     * @param id the customer number ID to unser
-     * @return true if the unsetting was successful, false otherwise
-     */
-    boolean deleteCustomerIdentifier(Long id) {
-        CustomerIdentifier ci = CustomerIdentifier.get(id)
-        ci.value = null
-        ci.requestorKey = null
-        ci.save()
-    }
-
     //--------------------------------------------- general subscriptions management section -------------------------------------------------
 
     /**
@@ -213,11 +200,11 @@ class ManagementService {
                 String base_qry
                 Map qry_params
 
-                if (contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)) {
+                if (contextService.getOrg().isCustomerType_Inst_Pro()) {
                     base_qry = "from License as l where ( exists ( select o from l.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) )"
                     qry_params = [roleType1:RDStore.OR_LICENSEE, roleType2:RDStore.OR_LICENSEE_CONS, lic_org:result.institution]
                 }
-                else if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+                else if (contextService.getOrg().isCustomerType_Consortium()) {
                     base_qry = "from License as l where exists ( select o from l.orgRelations as o where ( o.roleType = :roleTypeC AND o.org = :lic_org AND l.instanceOf is null AND NOT exists ( select o2 from l.orgRelations as o2 where o2.roleType = :roleTypeL ) ) )"
                     qry_params = [roleTypeC:RDStore.OR_LICENSING_CONSORTIUM, roleTypeL:RDStore.OR_LICENSEE_CONS, lic_org:result.institution]
                 }
@@ -369,7 +356,9 @@ class ManagementService {
                 if(selectedSub.isEditableBy(result.user))
                     permittedSubs << selectedSub
             }
+            long userId = contextService.getUser().id
             executorService.execute({
+                long start = System.currentTimeSeconds()
                 Thread.currentThread().setName(threadName)
                 pkgsToProcess.each { Package pkg ->
                     permittedSubs.each { Subscription selectedSub ->
@@ -399,6 +388,9 @@ class ManagementService {
                             }
 
                     }
+                }
+                if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
+                    globalService.notifyBackgroundProcessFinish(userId, threadName, messageSource.getMessage('subscription.details.linkPackage.thread.completed', [result.subscription.name] as Object[], LocaleUtils.getCurrentLocale()))
                 }
             })
 

@@ -102,7 +102,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     Org tenant
 
     /**
-     * allows multiple occurences within an object
+     * allows multiple occurrences within an object
      */
     boolean multipleOccurrence = false
     /**
@@ -305,31 +305,82 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     }
 
     /**
-     * Retrieves all
-     * @param descr
-     * @return
+     * Retrieves all public property definitions of the given object type
+     * @param descr the object type, one of:
+     * <ul>
+     *     <li>{@link #LIC_PROP}</li>
+     *     <li>{@link #ORG_PROP}</li>
+     *     <li>{@link #PLA_PROP}</li>
+     *     <li>{@link #PRS_PROP}</li>
+     *     <li>{@link #SUB_PROP}</li>
+     *     <li>{@link #SVY_PROP}</li>
+     * </ul>
+     * @return a {@link List} of property definitions which have no tenant, i.e. are public, matching the given object type
      */
     static List<PropertyDefinition> getAllByDescr(String descr) {
         PropertyDefinition.findAllByDescrAndTenantIsNull(descr)
     }
 
+    /**
+     * Retrieves all property definitions of the given object type and owned by the given institution
+     * @param descr the object type, one of:
+     * <ul>
+     *     <li>{@link #LIC_PROP}</li>
+     *     <li>{@link #ORG_PROP}</li>
+     *     <li>{@link #PLA_PROP}</li>
+     *     <li>{@link #PRS_PROP}</li>
+     *     <li>{@link #SUB_PROP}</li>
+     *     <li>{@link #SVY_PROP}</li>
+     * </ul>
+     * @param tenant the institution ({@link Org}) whose property definitions should be retrieved
+     * @return a {@link List} of property definitions which have the given tenant, matching the given object type
+     */
     static List<PropertyDefinition> getAllByDescrAndTenant(String descr, Org tenant) {
         PropertyDefinition.findAllByDescrAndTenant(descr, tenant)
     }
 
+    /**
+     * Retrieves all public properties which have the mandatory flag set to the given value
+     * @param descr the object type, one of:
+     * <ul>
+     *     <li>{@link #LIC_PROP}</li>
+     *     <li>{@link #ORG_PROP}</li>
+     *     <li>{@link #PLA_PROP}</li>
+     *     <li>{@link #PRS_PROP}</li>
+     *     <li>{@link #SUB_PROP}</li>
+     *     <li>{@link #SVY_PROP}</li>
+     * </ul>
+     * @param mandatory should the mandatory properties set or the optional ones
+     * @return a {@link List} of property definitions which have no tenant (i.e. are public), matching the given mandatory flag
+     */
     static List<PropertyDefinition> getAllByDescrAndMandatory(String descr, boolean mandatory) {
         PropertyDefinition.findAllByDescrAndMandatoryAndTenantIsNull(descr, mandatory)
     }
 
+    /**
+     * Retrieves all private properties which have the mandatory flag set to the given value and are owned by the given institution
+     * @param descr the object type, one of:
+     * <ul>
+     *     <li>{@link #LIC_PROP}</li>
+     *     <li>{@link #ORG_PROP}</li>
+     *     <li>{@link #PLA_PROP}</li>
+     *     <li>{@link #PRS_PROP}</li>
+     *     <li>{@link #SUB_PROP}</li>
+     *     <li>{@link #SVY_PROP}</li>
+     * </ul>
+     * @param mandatory should the mandatory properties set or the optional ones
+     * @return a {@link List} of property definitions which have the given tenant, matching the given mandatory flag
+     */
     static List<PropertyDefinition> getAllByDescrAndMandatoryAndTenant(String descr, boolean mandatory, Org tenant) {
         PropertyDefinition.findAllByDescrAndMandatoryAndTenant(descr, mandatory, tenant)
     }
 
     /**
-     * Called from AjaxController.addCustomPropertyValue()
-     * Called from AjaxController.addPrivatePropertyValue()
-     *
-     * @param owner: The class that will hold the property, e.g License
+     * Creates a property for the given object of the given type (property definition) for the current institution which will be registered as tenant
+     * @param flag is the property public?
+     * @param owner The class that will hold the property, e.g License
+     * @param type the type of property to create
+     * @param contextOrg the context institution ({@link Org}) creating the property
      */
     static AbstractPropertyWithCalculatedLastUpdated createGenericProperty(String flag, def owner, PropertyDefinition type, Org contextOrg) {
 
@@ -353,6 +404,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         }
     }
 
+    @Deprecated
     static def refdataFind(GrailsParameterMap params) {
         List<Map<String, Object>> result = []
         List<PropertyDefinition> propDefsInCalcGroups = []
@@ -413,10 +465,18 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         result
     }
 
+    /**
+     * Substitution call for {@link #getDescrClass(java.lang.String)} with the descr value of the current object
+     */
     String getDescrClass() {
         getDescrClass(this.descr)
     }
 
+    /**
+     * Returns the object class of the given property definition object type
+     * @param descr the property definition object type
+     * @return the {@link Class} of the property definition object type
+     */
     static String getDescrClass(String descr) {
         String result
         String[] parts = descr.split(" ")
@@ -437,78 +497,63 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         result
     }
 
+    /**
+     * Gets the object class for the object type to that properties of this type may be attached to
+     * @return the class representation of the object type
+     */
     String getImplClass() {
-        if(descr.contains("Organisation"))
+        if (descr.contains("Organisation")) {
             OrgProperty.class.name
-        else if (descr.contains("Survey"))
+        } else if (descr.contains("Survey")) {
             SurveyResult.class.name
+        }
         else 'de.laser.properties.'+descr.replace(" ","")
     }
 
+    /**
+     * Counts how many properties are defined of the current type
+     * @return the count how many properties of the current type are attached to the respective objects
+     */
     int countUsages() {
         String table = this.descr.replace(" ","")
-        if(this.descr == PropertyDefinition.ORG_PROP) {
+
+        if (this.descr == PropertyDefinition.ORG_PROP) {
             table = "OrgProperty"
-        } else if(this.descr == PropertyDefinition.SVY_PROP)
+        } else if (this.descr == PropertyDefinition.SVY_PROP)
             table = "SurveyResult"
 
         if (table) {
-            int[] c = executeQuery("select count(c) from " + table + " as c where c.type.id = :type", [type:this.id])
+            int[] c = executeQuery("select count(*) from " + table + " as c where c.type.id = :type", [type:this.id])
             return c[0]
         }
         return 0
     }
 
+    /**
+     * Counts how many properties are defined of the current type which are owned by the context institution
+     * @return the count how many properties of the current type are attached to the respective objects and belonging to the context institution
+     */
     int countOwnUsages() {
         String table = this.descr.replace(" ","")
         String tenantFilter = 'and c.tenant.id = :ctx'
-        Map<String,Long> filterParams = [type:this.id,ctx:BeanStore.getContextService().getOrg().id]
+
+        Map<String,Long> filterParams = [type:this.id, ctx:BeanStore.getContextService().getOrg().id]
         if (this.descr == PropertyDefinition.ORG_PROP) {
             table = "OrgProperty"
-        } else if(this.descr == PropertyDefinition.SVY_PROP) {
+        } else if (this.descr == PropertyDefinition.SVY_PROP) {
             table = "SurveyResult"
             tenantFilter = ''
             filterParams.remove("ctx")
         }
 
         if (table) {
-            int[] c = executeQuery("select count(c) from " + table + " as c where c.type.id = :type "+tenantFilter, filterParams)
+            int[] c = executeQuery("select count(*) from " + table + " as c where c.type.id = :type " + tenantFilter, filterParams)
             return c[0]
         }
         return 0
     }
 
-
-  @Transient
-  List getOccurrencesOwner(String[] cls){
-    List all_owners = []
-    cls.each{
-        all_owners.add(getOccurrencesOwner(it)) 
-    }
-    all_owners
-  }
-
-  @Transient
-  List getOccurrencesOwner(String cls){
-    String qry = 'select c.owner from ' + cls + " as c where c.type = :type"
-    PropertyDefinition.executeQuery(qry, [type: this])
-  }
-
-  @Transient
-  int countOccurrences(String cls) {
-    String qry = 'select count(c) from ' + cls + " as c where c.type = :type"
-    PropertyDefinition.executeQuery(qry, [type: this])[0] ?: 0
-  }
-
-  @Transient
-  int countOccurrences(String[] cls){
-    int total_count = 0
-    cls.each{
-        total_count += countOccurrences(it)
-    }
-    return total_count
-  }
-
+    @Deprecated
     @Transient
     void removeProperty() {
         log.debug("removeProperty")
@@ -525,6 +570,12 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         }
     }
 
+    /**
+     * Gets the translated value type name for the given type key
+     * @param key the value type to determine
+     * @return the translated (localised) name of the value type
+     * @see #validTypes
+     */
     static String getLocalizedValue(String key){
         String lang = LocaleUtils.getCurrentLang()
 
@@ -535,6 +586,11 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         }
     }
 
+    /**
+     * Retrieves all property definitions defined for organisations; returned are all public ones and those defined by the context institution
+     * @param contextOrg the context institution whose own property definitions should be returned
+     * @return a {@link List} of matching property definitions
+     */
     static List<PropertyDefinition> findAllPublicAndPrivateOrgProp(Org contextOrg){
         PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and (pd.tenant is null or pd.tenant = :tenant) order by pd.name_de asc", [
                         defList: [PropertyDefinition.ORG_PROP],
@@ -542,6 +598,11 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
                     ])
     }
 
+    /**
+     * Retrieves all property definitions for every object type; returned are all public ones and those defined by the context institution
+     * @param contextOrg the context institution whose own property definitions should be returned
+     * @return a {@link List} of matching property definitions
+     */
     static List<PropertyDefinition> findAllPublicAndPrivateProp(List propertyDefinitionList, Org contextOrg){
         PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and (pd.tenant is null or pd.tenant = :tenant) order by pd.name_de asc", [
                         defList: propertyDefinitionList,
@@ -549,31 +610,77 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
                     ])
     }
 
+    /**
+     * Comparator method; compared by localised property definition name
+     * @param pd the object to be compared
+     * @return the comparison result (-1; 0; 1)
+     */
     int compareTo(PropertyDefinition pd) {
         String a = this.getI10n('name') ?:''
         String b = pd.getI10n('name') ?:''
         return a.toLowerCase()?.compareTo(b.toLowerCase())
     }
 
+    /**
+     * Checks if the given property definition value type is {@link BigDecimal}
+     * @return true if the value type is {@link BigDecimal}, false otherwise
+     */
     boolean isBigDecimalType() {
         type == BigDecimal.class.name
     }
+
+    /**
+     * Checks if the given property definition value type is {@link Date}
+     * @return true if the value type is {@link Date}, false otherwise
+     */
     boolean isDateType() {
         type == Date.class.name
     }
+
+    /**
+     * Checks if the given property definition value type is integer
+     * @return true if the value type is integer, false otherwise
+     */
     boolean isIntegerType() {
         type == Integer.class.name
     }
+
+    /**
+     * Checks if the given property definition value type is {@link RefdataValue}
+     * @return true if the value type is {@link RefdataValue}, false otherwise
+     */
     boolean isRefdataValueType() {
         type == RefdataValue.class.name
     }
+
+    /**
+     * Checks if the given property definition value type is string
+     * @return true if the value type is string, false otherwise
+     */
     boolean isStringType() {
         type == String.class.name
     }
+
+    /**
+     * Checks if the given property definition value type is {@link URL}
+     * @return true if the value type is {@link URL}, false otherwise
+     */
     boolean isURLType() {
         type == URL.class.name
     }
 
+    /**
+     * Returns the value column to be filled for the implementing property of this type
+     * @return one of
+     * <ul>
+     *     <li>intValue</li>
+     *     <li>stringValue</li>
+     *     <li>decValue</li>
+     *     <li>dateValue</li>
+     *     <li>urlValue</li>
+     *     <li>refValue</li>
+     * </ul>
+     */
     String getImplClassValueProperty(){
         if( isIntegerType() )   { return "intValue" }
         if( isStringType() )    { return "stringValue" }

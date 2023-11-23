@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.Subscription; de.laser.titles.BookInstance; de.laser.remote.ApiSource; de.laser.Org;" %>
+<%@ page import="de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.Subscription; de.laser.remote.ApiSource; de.laser.Org" %>
 <laser:htmlStart message="subscription.details.renewEntitlements.label" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -26,6 +26,14 @@
                     params="${[surveyConfigID: surveyConfig.id,
                                exportKBart   : true,
                                tab           : 'allTipps']}">${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}</g:link>
+        </ui:exportDropdownItem>
+
+        <ui:exportDropdownItem>
+            <g:link class="item kbartExport" action="renewEntitlementsWithSurvey"
+                    id="${subscriberSub.id}"
+                    params="${[surveyConfigID: surveyConfig.id,
+                               exportKBart   : true,
+                               tab           : 'selectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}</g:link>
         </ui:exportDropdownItem>
 
         <g:if test="${countCurrentPermanentTitles > 0}">
@@ -97,6 +105,9 @@
 
 
     </ui:exportDropdown>
+    <ui:actionsDropdown>
+        <ui:actionsDropdownItem data-ui="modal" id="selectEntitlementsWithKBART" href="#KBARTUploadForm" message="subscription.details.addEntitlements.menu"/>
+    </ui:actionsDropdown>
 </ui:controlButtons>
 
 <ui:h1HeaderWithIcon text="${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.name}">
@@ -173,7 +184,9 @@
     </ui:msg>
 </g:if>
 
+<laser:render template="KBARTSelectionUploadFormModal"/>
 
+<%--
 <g:if test="${(params.tab == 'allTipps') && editable}">
 
     <ui:greySegment>
@@ -231,15 +244,13 @@
         </laser:script>
     </ui:greySegment>
 </g:if>
-
-
-<div class="row">
-    <div class="column">
+--%>
 
         <laser:render template="/templates/filter/tipp_ieFilter" model="[notShow: params.tab == 'allTipps', fillDropdownsWithPackage: params.tab == 'allTipps']"/>
 
-    </div>
-</div><!--.row-->
+<h3 class="ui icon header la-clear-before la-noMargin-top">
+    <span class="ui circular label">${num_rows?:0}</span> <g:message code="title.filter.result"/>
+</h3>
 
 <div id="downloadWrapper"></div>
 
@@ -263,11 +274,36 @@
             </span>
         <div class="ui circular label">${countCurrentPermanentTitles}</div>
     </g:link>
-
 </ui:tabs>
 
-
 <div class="ui bottom attached tab active segment">
+    <g:if test="${(params.tab == 'selectedIEs' && titleGroup)}">
+        <ui:tabs actionName="${actionName}">
+            <ui:tabsItem controller="subscription" action="${actionName}"
+                         params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: params.tab, subTab: 'currentIEs']"
+                         text="${message(code: "package.show.nav.current")}" tab="currentIEs" subTab="currentIEs"
+                         counts="${currentIECounts}"/>
+            <ui:tabsItem controller="subscription" action="${actionName}"
+                         params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: params.tab, subTab: 'plannedIEs']"
+                         text="${message(code: "package.show.nav.planned")}" tab="plannedIEs" subTab="plannedIEs"
+                         counts="${plannedIECounts}"/>
+            <ui:tabsItem controller="subscription" action="${actionName}"
+                         params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: params.tab, subTab: 'expiredIEs']"
+                         text="${message(code: "package.show.nav.expired")}" tab="expiredIEs" subTab="expiredIEs"
+                         counts="${expiredIECounts}"/>
+            <ui:tabsItem controller="subscription" action="${actionName}"
+                         params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: params.tab, subTab: 'deletedIEs']"
+                         text="${message(code: "package.show.nav.deleted")}" tab="deletedIEs" subTab="deletedIEs"
+                         counts="${deletedIECounts}"/>
+            <ui:tabsItem controller="subscription" action="${actionName}"
+                         params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: params.tab, subTab: 'allIEs']"
+                         text="${message(code: "menu.public.all_titles")}" tab="allIEs" subTab="allIEs"
+                         counts="${allIECounts}"/>
+        </ui:tabs>
+        <br>
+    </g:if>
+
+
     <g:form name="renewEntitlements" id="${subscriberSub.id}" action="processRenewEntitlementsWithSurvey" class="ui form">
     <g:hiddenField id="packageId" name="packageId" value="${params.packageId}"/>
     <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
@@ -286,15 +322,6 @@
                 sortFieldMap['tipp.accessStartDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.from')}"
                 sortFieldMap['tipp.accessEndDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.to')}"
             %>
-            <div class="ui grid">
-                <div class="row">
-                    <div class="eight wide column">
-                        <h3 class="ui icon header la-clear-before la-noMargin-top"><span
-                                class="ui circular  label">${num_rows?:0}</span> <g:message code="title.filter.result"/>
-                        </h3>
-                    </div>
-                </div><!--.row-->
-            </div><!--.grid-->
 
             <div class="ui form">
                 <div class="three wide fields">
@@ -306,14 +333,11 @@
         </g:if>
 
         <g:if test="${params.tab == 'allTipps'}">
-            <laser:render template="/templates/survey/tippTableSurvey"
-                          model="${[titlesList: titlesList, showPackage: true, showPlattform: true]}"/>
+            <laser:render template="/templates/survey/tippTableSurvey" model="${[titlesList: titlesList, showPackage: true, showPlattform: true]}"/>
         </g:if>
         <g:else>
-            <laser:render template="/templates/survey/entitlementTableSurvey"
-                      model="${[ies: [sourceIEs: sourceIEs], showPackage: true, showPlattform: true]}"/>
+            <laser:render template="/templates/survey/entitlementTableSurvey" model="${[ies: [sourceIEs: sourceIEs], showPackage: true, showPlattform: true]}"/>
         </g:else>
-
 
 
         <div class="sixteen wide column">
@@ -354,7 +378,7 @@
 </g:form>
 </div>
 <g:if test="${sourceIEs || titlesList}">
-    <ui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params}"
+    <ui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params + [pagination: true]}"
                     max="${max}" total="${num_rows}"/>
 </g:if>
 
@@ -408,7 +432,7 @@
                     referer: "${actionName}",
                     checked: checked,
                     tab: "${params.tab}",
-                    baseSubID: "${subscription.id}",
+                    baseSubID: "${parentSubscription.id}",
                     newSubID: "${subscriberSub.id}",
                     surveyConfigID: "${surveyConfig.id}"
 
@@ -490,6 +514,9 @@
             contentType: false
         }).done(function(response){
             $("#downloadWrapper").html(response);
+            $('#globalLoadingIndicator').hide();
+        }).fail(function(resp, status){
+            $("#downloadWrapper").text('Es ist zu einem Fehler beim Abruf gekommen');
             $('#globalLoadingIndicator').hide();
         });
     });

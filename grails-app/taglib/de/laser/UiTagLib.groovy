@@ -43,7 +43,11 @@ class UiTagLib {
         } else {
             out << '<h1 class="ui icon header la-clear-before la-noMargin-top">'
         }
-        if ( (attrs.referenceYear) || (attrs.visibleOrgRelationsJoin) ){
+
+        if (attrs.visibleOrgRelations && attrs.visibleOrgRelations instanceof Collection) {
+            attrs.visibleOrgRelations = attrs.visibleOrgRelations.findAll{ it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA }.sort{ it.org.sortname }.collect{ it.org }.join(' – ')
+        }
+        if ( (attrs.referenceYear) || (attrs.visibleOrgRelations) ){
             out << '<div class="la-subPlusYear">'
         }
         if (attrs.type) {
@@ -51,7 +55,7 @@ class UiTagLib {
         } else {
             out << ui.headerIcon()
         }
-        if ( (attrs.referenceYear)|| (attrs.visibleOrgRelationsJoin) ) {
+        if ( (attrs.referenceYear)|| (attrs.visibleOrgRelations) ) {
             out << '<div class="la-subPlusYear-texts">'
         }
         if (attrs.text) {
@@ -69,14 +73,14 @@ class UiTagLib {
         if ( body ) {
             out << body()
         }
-        if ( (attrs.referenceYear)|| (attrs.visibleOrgRelationsJoin) ) {
+        if ( (attrs.referenceYear)|| (attrs.visibleOrgRelations) ) {
             out << '<span class="la-subPlusYear-year">'
             out << attrs.referenceYear
             if (attrs.referenceYear) {
                 out << ' – '
             }
             out << '<span class="la-orgRelations">'
-            out << attrs.visibleOrgRelationsJoin
+            out << attrs.visibleOrgRelations
             out << '</span>'
             out << '</span>'
             out << '</div>'

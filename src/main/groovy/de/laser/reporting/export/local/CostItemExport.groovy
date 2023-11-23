@@ -12,6 +12,9 @@ import de.laser.reporting.export.base.BaseDetailsExport
 
 import java.text.SimpleDateFormat
 
+/**
+ * Contains configurations for the cost report
+ */
 class CostItemExport extends BaseDetailsExport {
 
     static String KEY = 'cost'
@@ -51,20 +54,75 @@ class CostItemExport extends BaseDetailsExport {
             ]
     ]
 
+    static Map<String, Object> CONFIG_ORG_INST = [ // todo - check fields
+
+            base : [
+                    meta : [
+                            class: CostItem
+                    ],
+                    fields : [
+                            default: [
+                                    '@-cost-member+sortname+name' : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-cost-subscription'         : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-cost-package'              : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-cost-order'                : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-cost-invoice'              : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
+
+                                    'costTitle'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'costDescription'   : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'reference'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+
+                                    'costInBillingCurrency'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'costInBillingCurrencyAfterTax' : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'billingCurrency'               : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'costInLocalCurrency'           : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'costInLocalCurrencyAfterTax'   : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    '@-cost-taxKey'                 : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
+                                    'costItemElementConfiguration'  : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'costItemStatus'                : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'startDate'                     : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'endDate'                       : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'datePaid'                      : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'financialYear'                 : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ]
+                            ]
+                    ],
+            ]
+    ]
+
+    /**
+     * Constructor call for a new cost report
+     * @param token the token under which the queried data is going to be stored
+     * @param fields the {@link Map} with the fields selected for the export
+     */
     CostItemExport(String token, Map<String, Object> fields) {
         init(token, fields)
     }
 
+    /**
+     * Gets the fields selected for the current report export
+     * @return the class field map containing the selected report fields
+     */
     @Override
     Map<String, Object> getSelectedFields() {
         selectedExportFields
     }
 
+    /**
+     * Builds the label for the selected field key
+     * @param fieldName the field key to which the export label should be built
+     * @return the label which will appear in the report export
+     */
     @Override
     String getFieldLabel(String fieldName) {
         LocalExportHelper.getFieldLabel( this, fieldName )
     }
 
+    /**
+     * Collects the details of the given cost item and outputs the field values human-readably
+     * @param obj the cost item to export
+     * @param fields the selected fields which should appear in the report
+     * @return a {@link List} with the cost item's human-readable field values
+     */
     @Override
     List<Object> getDetailedObject(Object obj, Map<String, Object> fields) {
 

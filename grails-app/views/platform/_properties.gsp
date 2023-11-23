@@ -50,7 +50,7 @@
 </div><!-- .card -->
 
 <%-- private properties --%>
-<g:if test="${contextService.hasPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+<g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro()}">
 
         <div class="ui card la-dl-no-table">
             <div class="content">

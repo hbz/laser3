@@ -33,10 +33,10 @@
             <br><br><br>
         </g:if>
 
-        <div class="ui card ">
+        <div class="ui card">
             <div class="content">
 
-                <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO) && surveyOrg}">
+                <g:if test="${contextService.getOrg().isCustomerType_Consortium_Pro() && surveyOrg}">
                     <dl>
                         <dt class="control-label">
                             ${message(code: 'surveyOrg.ownerComment.label', args: [institution.sortname])}
@@ -321,7 +321,7 @@
                                         <div
                                                 class="ui button icon blue la-modern-button la-popup-tooltip la-delay right floated "
                                                 data-content="<g:message code="survey.subscription.propertiesChange.show"/>">
-                                            <i class="ui angle double down large icon"></i>
+                                            <i class="ui angle double down icon"></i>
                                         </div>
                                         <laser:script file="${this.getGroovyPageFileName()}">
                                             $('.js-propertiesCompareInfo-accordion')
@@ -381,7 +381,7 @@
                             <div class="title">
                                 <div
                                         class="ui button icon blue la-modern-button la-delay right floated">
-                                    <i class="ui angle double down large icon"></i>
+                                    <i class="ui angle double down icon"></i>
                                 </div>
                                 <laser:script file="${this.getGroovyPageFileName()}">
                                     $('.js-subscription-info-accordion')
@@ -607,7 +607,7 @@
                                 <div class="title">
                                     <div
                                             class="ui button icon blue la-modern-button la-delay right floated ">
-                                        <i class="ui angle double down large icon"></i>
+                                        <i class="ui angle double down icon"></i>
                                     </div>
 
                                     <i aria-hidden="true" class="circular chart bar green outline inverted icon"></i>
@@ -643,7 +643,7 @@
             <g:if test="${controllerName == 'survey' && actionName == 'show'}">
                 <div id="container-notes">
                     <laser:render template="/templates/notes/card"
-                                  model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)]}"/>
+                                  model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)]}"/>
                 </div>
                 <div id="container-tasks">
                     <laser:render template="/templates/tasks/card"

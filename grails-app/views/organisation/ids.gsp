@@ -1,7 +1,7 @@
 <%@ page import="de.laser.Combo; de.laser.CustomerIdentifier; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 
-<laser:htmlStart message="${isProviderOrAgency ? 'org.nav.ids' : 'org.nav.idsCidsHyphen'}" serviceInjection="true" />
+<laser:htmlStart message="${isProviderOrAgency ? 'org.nav.ids' : 'org.nav.idsCids.shy'}" serviceInjection="true" />
 
     <g:set var="isGrantedOrgRoleAdminOrOrgEditor" value="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}" />
 
@@ -10,7 +10,7 @@
 
 %{--<g:if test="${editable_identifier || editable_customeridentifier}">--}%
     <ui:controlButtons>
-        <laser:render template="actions" model="${[
+        <laser:render template="${customerTypeService.getActionsTemplatePath()}" model="${[
                 org: orgInstance,
                 user: user,
                 editable: (editable_identifier || editable_customeridentifier),
@@ -21,9 +21,11 @@
     </ui:controlButtons>
 %{--</g:if>--}%
 
-<ui:h1HeaderWithIcon text="${orgInstance.name}" />
+<ui:h1HeaderWithIcon text="${orgInstance.name}" >
+    <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
+</ui:h1HeaderWithIcon>
 
-<laser:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
+<laser:render template="${customerTypeService.getNavTemplatePath()}" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
 
 <ui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
 

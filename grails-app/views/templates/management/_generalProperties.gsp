@@ -12,18 +12,18 @@
                 <thead>
                 <tr>
                     <th>${message(code: 'subscription')}</th>
-                    <th>${message(code: 'default.startDate.label')}</th>
-                    <th>${message(code: 'default.endDate.label')}</th>
-                    <th>${message(code: 'subscription.referenceYear.label')}</th>
+                    <th>${message(code: 'default.startDate.label.shy')}</th>
+                    <th>${message(code: 'default.endDate.label.shy')}</th>
+                    <th>${message(code: 'subscription.referenceYear.label.shy')}</th>
                     <th>${message(code: 'default.status.label')}</th>
                     <th>${message(code: 'subscription.kind.label')}</th>
-                    <th>${message(code: 'subscription.form.label')}</th>
+                    <th>${message(code: 'subscription.form.label.shy')}</th>
                     <th>${message(code: 'subscription.resource.label')}</th>
                     <th>${message(code: 'subscription.isPublicForApi.label')}</th>
                     <th>${message(code: 'subscription.hasPerpetualAccess.label')}</th>
-                    <th>${message(code: 'subscription.hasPublishComponent.label')}</th>
+                    <th>${message(code: 'subscription.hasPublishComponent.label.shy')}</th>
                     <g:if test="${subscription.packages}">
-                        <th>${message(code: 'subscription.holdingSelection.label')}</th>
+                        <th>${message(code: 'subscription.holdingSelection.label.shy')}</th>
                     </g:if>
                     <th>${message(code: 'default.actions.label')}</th>
                 </tr>
@@ -98,7 +98,7 @@
 
         <div class="ui segments">
         <div class="ui segment">
-            <g:set var="tmplAddColumns" value="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && controllerName == 'myInstitution'}" />
+            <g:set var="tmplAddColumns" value="${contextService.getOrg().isCustomerType_Consortium() && controllerName == 'myInstitution'}" />
 
             <div class="ui ${tmplAddColumns ? 'divided compact grid' : 'grid'}">
                 <div class="row">
@@ -302,7 +302,7 @@
                         </div>
                     </div>
                     <div class="four wide column">
-                        <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)}">
+                        <g:if test="${contextService.getOrg().isCustomerType_Inst_Pro()}">
                             <div class="field">
                                 <label>${message(code: 'subscription.isAutomaticRenewAnnually.label')}</label>
                                 <ui:select class="ui dropdown" name="process_isAutomaticRenewAnnually"
@@ -346,25 +346,22 @@
                     <g:if test="${controllerName == "myInstitution"}">
                         <th>${message(code: 'default.subscription.label')}</th>
                     </g:if>
-                    <th>${message(code: 'default.startDate.label')}</th>
-                    <th>${message(code: 'default.endDate.label')}</th>
-                    <th>${message(code: 'subscription.referenceYear.label')}</th>
+                    <th>${message(code: 'default.startDate.label.shy')}</th>
+                    <th>${message(code: 'default.endDate.label.shy')}</th>
+                    <th>${message(code: 'subscription.referenceYear.label.shy')}</th>
                     <th>${message(code: 'default.status.label')}</th>
                     <th>${message(code: 'subscription.kind.label')}</th>
-                    <th>${message(code: 'subscription.form.label')}</th>
+                    <th>${message(code: 'subscription.form.label.shy')}</th>
                     <th>${message(code: 'subscription.resource.label')}</th>
                     <th>${message(code: 'subscription.isPublicForApi.label')}</th>
                     <th>${message(code: 'subscription.hasPerpetualAccess.label')}</th>
-                    <th>${message(code: 'subscription.hasPublishComponent.label')}</th>
-                    <th>${message(code: 'subscription.holdingSelection.label')}</th>
-                    <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)}">
+                    <th>${message(code: 'subscription.hasPublishComponent.label.shy')}</th>
+                    <th>${message(code: 'subscription.holdingSelection.label.shy')}</th>
+                    <g:if test="${contextService.getOrg().isCustomerType_Inst_Pro()}">
                         <th>${message(code: 'subscription.isAutomaticRenewAnnually.label')}</th>
                     </g:if>
                     <th class="la-no-uppercase">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                              data-content="${message(code: 'subscription.isMultiYear.label')}">
-                            <i class="map orange icon"></i>
-                        </span>
+                        <ui:multiYearIcon />
                     </th>
                     <th>${message(code:'default.actions.label')}</th>
                 </tr>
@@ -399,7 +396,7 @@
                                     </span>
                                 </g:if>
 
-                                <ui:customerTypeIcon org="${subscr}" />
+                                <ui:customerTypeProIcon org="${subscr}" />
                             </td>
                         </g:if>
                         <g:if test="${controllerName == "myInstitution"}">
@@ -456,7 +453,7 @@
                             <ui:xEditableRefData owner="${sub}" field="holdingSelection" config="${RDConstants.SUBSCRIPTION_HOLDING}" overwriteEditable="${editableOld}"/>
                             <ui:auditButton auditable="[sub, 'holdingSelection']"/>
                         </td>
-                        <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)}">
+                        <g:if test="${contextService.getOrg().isCustomerType_Inst_Pro()}">
                             <td>
                                 <g:if test="${(sub.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && sub._getCalculatedType() == CalculatedType.TYPE_LOCAL)}">
                                     <ui:xEditableBoolean owner="${sub}" field="isAutomaticRenewAnnually" overwriteEditable="${editable && sub.isAllowToAutomaticRenewAnnually()}"/>
@@ -465,11 +462,7 @@
                         </g:if>
                         <td>
                             <g:if test="${sub.isMultiYear}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay"
-                                      data-position="bottom center"
-                                      data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
-                                    <i class="map orange icon"></i>
-                                </span>
+                                <ui:multiYearIcon isConsortial="true" color="orange" />
                             </g:if>
                         </td>
                         <td class="x">

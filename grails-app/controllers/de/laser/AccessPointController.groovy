@@ -26,12 +26,10 @@ class AccessPointController  {
 
     AccessPointControllerService accessPointControllerService
     AccessPointService accessPointService
-    AccessService accessService
     ContextService contextService
     GenericOIDService genericOIDService
     EscapeService escapeService
     OrgTypeService orgTypeService
-
 
     //static allowedMethods = [create: ['GET', 'POST'], delete: ['GET', 'POST'], dynamicSubscriptionList: ['POST'], dynamicPlatformList: ['POST']]
 
@@ -39,9 +37,9 @@ class AccessPointController  {
      * Adds a new IP range with the given parameters. The distinction between v4 and v6 just as the validation is done in the service
      * @see AccessPointControllerService#addIpRange(grails.web.servlet.mvc.GrailsParameterMap)
      */
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def addIpRange() {
         Map<String,Object> ctrlResult = accessPointControllerService.addIpRange(params)
@@ -59,9 +57,9 @@ class AccessPointController  {
      * Adds a new Mail Domain with the given parameters.
      * @see AccessPointControllerService#addMailDomain(grails.web.servlet.mvc.GrailsParameterMap)
      */
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def addMailDomain() {
         Map<String,Object> ctrlResult = accessPointControllerService.addMailDomain(params)
@@ -78,7 +76,10 @@ class AccessPointController  {
      * Loads a list of subscriptions linked to the given {@link OrgAccessPoint}
      * @returns a table view listing the resulting subscriptions
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def dynamicSubscriptionList() {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
         List<Long> currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
@@ -107,7 +108,10 @@ class AccessPointController  {
      * Loads a list of platforms linked to the given {@link OrgAccessPoint}
      * @return a table view listing the resulting platforms
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def dynamicPlatformList() {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
         List<Long> currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
@@ -142,14 +146,14 @@ class AccessPointController  {
      * @return the access point creation view which in turn outputs the fragment with the fields which need to be filled out
      * @see OrgAccessPoint
      */
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_BASIC])
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_BASIC )
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def create() {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
-        Org organisation = contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? Org.get(params.id) : contextService.getOrg()
+        Org organisation = contextService.getOrg().isCustomerType_Consortium() ? Org.get(params.id) : contextService.getOrg()
         result.institution = contextService.getOrg()
         result.contextCustomerType = result.institution.getCustomerType()
         result.orgInstance = organisation
@@ -169,9 +173,9 @@ class AccessPointController  {
      * Takes the given input parameters and builds a new access point for the institution
      * @return the edit view in case of success, the creation form page otherwise
      */
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_BASIC )
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def processCreate() {
         RefdataValue accessMethod = (RefdataValue) genericOIDService.resolveOID(params.accessMethod)
@@ -191,9 +195,9 @@ class AccessPointController  {
      * Handles the deletion call of the given access point to the service
      * @return the list of institution's access points in case of success
      */
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_BASIC )
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def delete() {
         Map<String,Object> ctrlResult = accessPointControllerService.delete(params)
@@ -222,7 +226,10 @@ class AccessPointController  {
      * @see de.uni_freiburg.ub.Ipv4Address
      * @see de.uni_freiburg.ub.Ipv6Address
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+    })
     def edit_ip() {
         _edit("ip")
     }
@@ -232,7 +239,10 @@ class AccessPointController  {
      * @return the OpenAthens editing view
      * @see de.laser.oap.OrgAccessPointOA
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+    })
     def edit_oa() {
         _edit("oa")
     }
@@ -242,7 +252,10 @@ class AccessPointController  {
      * @return the proxy editing view
      * @see de.laser.oap.OrgAccessPointProxy
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+    })
     def edit_proxy() {
         _edit("proxy")
     }
@@ -252,7 +265,10 @@ class AccessPointController  {
      * @return the EZProxy editing view
      * @see de.laser.oap.OrgAccessPointEzproxy
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+    })
     def edit_ezproxy() {
         _edit("ezproxy")
     }
@@ -262,7 +278,10 @@ class AccessPointController  {
      * @return the Shibboleth editing view
      * @see de.laser.oap.OrgAccessPointShibboleth
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+    })
     def edit_shibboleth() {
         _edit("shibboleth")
     }
@@ -272,7 +291,10 @@ class AccessPointController  {
      * @return the Mail-Domain editing view
      * @see de.laser.oap.OrgAccessPoint
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+    })
     def edit_maildomain() {
         _edit("mailDomain")
     }
@@ -354,7 +376,7 @@ class AccessPointController  {
                     linkedPlatforms                   : linkedPlatforms,
                     linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages,
                     ip                                : params.ip,
-                    editable                          : contextService.is_INST_EDITOR_with_PERMS_BASIC( inContextOrg ),
+                    editable                          : contextService.is_INST_EDITOR_or_ROLEADMIN_with_PERMS_BASIC( inContextOrg ),
                     autofocus                         : autofocus,
                     orgInstance                       : orgAccessPoint.org,
                     inContextOrg                      : inContextOrg,
@@ -369,15 +391,15 @@ class AccessPointController  {
     /**
      * Handles the deletion call for the given IP range to the service
      */
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def deleteAccessPointData() {
-        Org organisation = contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? Org.get(params.orgInstance) : contextService.getOrg()
+        Org organisation = contextService.getOrg().isCustomerType_Consortium() ? Org.get(params.orgInstance) : contextService.getOrg()
         boolean inContextOrg = organisation.id == contextService.getOrg().id
 
-        if (contextService.is_INST_EDITOR_with_PERMS_BASIC( inContextOrg )){
+        if (contextService.is_INST_EDITOR_or_ROLEADMIN_with_PERMS_BASIC( inContextOrg )){
             accessPointService.deleteAccessPointData(AccessPointData.get(params.id))
         } else {
             flash.error = message(code: 'default.noPermissions') as String
@@ -389,9 +411,9 @@ class AccessPointController  {
     /**
      * Controller call to link an access point to a given platform
      */
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def linkPlatform() {
         Map<String,Object> result = accessPointService.linkPlatform(params)
@@ -403,9 +425,9 @@ class AccessPointController  {
     /**
      * Controller call to unlink an access point from a given platform
      */
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def unlinkPlatform() {
         Map<String,Object> result = accessPointService.unlinkPlatform(OrgAccessPointLink.get(params.id))

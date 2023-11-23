@@ -1,7 +1,7 @@
 
 ## Roles and Permissions and more ..
 
-2023-06-27
+2023-08-07
 
 ### Customer Types
 
@@ -28,33 +28,20 @@
     static final String ORG_CONSORTIUM_BASIC     = 'ORG_CONSORTIUM_BASIC'
     static final String ORG_CONSORTIUM_PRO       = 'ORG_CONSORTIUM_PRO'
 
-    static final String PERMS_BASIC              = 'ORG_INST_BASIC,ORG_CONSORTIUM_BASIC'
-    static final String PERMS_PRO                = 'ORG_INST_PRO,ORG_CONSORTIUM_PRO'
-
-    static final String PERMS_INST_BASIC_CONSORTIUM_PRO  = 'ORG_INST_BASIC,ORG_CONSORTIUM_PRO'
+    static final String PERMS_PRO                        = 'ORG_INST_PRO,ORG_CONSORTIUM_PRO'
     static final String PERMS_INST_PRO_CONSORTIUM_BASIC  = 'ORG_INST_PRO,ORG_CONSORTIUM_BASIC'
 
     boolean isConsortium (String customerType)
-
 
 
 ### Permission Checks (formal)
 
 #### de.laser.ContextService
 
-    // formal; no fake role
-    boolean isInstUser_or_ROLEADMIN ()
-    boolean isInstEditor_or_ROLEADMIN ()
-    boolean isInstAdm_or_ROLEADMIN ()
+    boolean isInstUser_or_ROLEADMIN (String orgPerms)
+    boolean isInstEditor_or_ROLEADMIN (String orgPerms)
+    boolean isInstAdm_or_ROLEADMIN (String orgPerms)
 
-    // formal; with fake role
-    boolean hasPerm (String orgPerms)
-    boolean hasPerm_or_ROLEADMIN (String orgPerms)
-
-    // formal; with fake role - in progress
-    boolean hasPermAsInstUser_or_ROLEADMIN (String orgPerms)
-    boolean hasPermAsInstEditor_or_ROLEADMIN (String orgPerms)
-    boolean hasPermAsInstAdm_or_ROLEADMIN (String orgPerms)
 
 ### Affiliation Checks
 
@@ -64,7 +51,6 @@
 
     boolean hasFormalAffiliation (User userToCheck, Org orgToCheck, String instUserRole)
     boolean hasFormalAffiliation_or_ROLEADMIN (User userToCheck, Org orgToCheck, String instUserRole)
-
 
 
 ### Various

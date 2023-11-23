@@ -125,7 +125,7 @@
                 </tr>
             </g:each>
 
-            <g:if test="${copyObject && contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && sourceObject.hasProperty("instanceOf") && sourceObject instanceof Subscription}">
+            <g:if test="${copyObject && contextService.getOrg().isCustomerType_Consortium() && sourceObject.hasProperty("instanceOf") && sourceObject instanceof Subscription}">
                 <tr data-type="linktoSubscription">
                     <td>
                         <div>
@@ -151,7 +151,7 @@
                 </tr>
             </g:if>
 
-            <g:if test="${copyObject && contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && sourceObject.hasProperty("instanceOf") && sourceObject instanceof License}">
+            <g:if test="${copyObject && contextService.getOrg().isCustomerType_Consortium() && sourceObject.hasProperty("instanceOf") && sourceObject instanceof License}">
                 <tr data-type="linktoLicense">
                     <td>
                         <div>
@@ -230,7 +230,7 @@
                     </g:if>
                 </tr>
             </g:if>
-            <g:if test="${sourceObject.hasProperty("orgRelations")}">
+            <g:if test="${sourceObject.hasProperty("orgRelations") && !contextService.getOrg().isCustomerType_Support()}">
                 <tr data-type="takeOrgRelations" data-element="copyObject.takeOrgRelations">
                     <td data-element="source">
                         <div>

@@ -89,7 +89,7 @@ class PriceItem extends AbstractBase {
 
     /**
      * Locates in a parallel {@link Collection} an equivalent item. See {@link #equivalencyProperties} for the fields eligible for an equivalency
-     * @param list the list to be comapred against
+     * @param list the list to be compared against
      * @return the equivalent price item of the other list to this one
      */
     PriceItem findEquivalent(Collection<PriceItem> list) {

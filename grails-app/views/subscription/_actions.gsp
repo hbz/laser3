@@ -7,14 +7,14 @@
     if(showConsortiaFunctions)
         menuArgs = [message(code:'subscription.details.consortiaMembers.label')]
 %>
-<g:if test="${actionName == 'show'}">
-    <ui:exportDropdown>
-        <ui:exportDropdownItem>
-            <g:link class="item" action="show" target="_blank" params="[id: subscription.id, export: 'pdf']">Export PDF</g:link>
-        </ui:exportDropdownItem>
-    </ui:exportDropdown>
-</g:if>
-    <g:if test="${actionName in ['index','addEntitlements']}">
+    <g:if test="${actionName == 'show'}">
+        <ui:exportDropdown>
+            <ui:exportDropdownItem>
+                <g:link class="item" action="show" target="_blank" params="[id: subscription.id, export: 'pdf']">Export PDF</g:link>
+            </ui:exportDropdownItem>
+        </ui:exportDropdown>
+    </g:if>
+    <g:elseif test="${actionName in ['index','addEntitlements']}">
         <ui:exportDropdown>
             <%--
             <ui:exportDropdownItem>
@@ -89,9 +89,9 @@
                 <g:link class="item" controller="subscription" action="index" id="${subscription.id}" params="${params + [format:'xml']}">XML</g:link>
             </ui:exportDropdownItem>--%>
         </ui:exportDropdown>
-</g:if>
+</g:elseif>
 
-<g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+<g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
     <ui:actionsDropdown>
         <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
 
@@ -109,6 +109,11 @@
             <g:if test="${(contextCustomerType == CustomerTypeService.ORG_INST_PRO && !subscription.instanceOf) || customerTypeService.isConsortium( contextCustomerType )}">
                 <ui:actionsDropdownItem controller="subscription" action="copyElementsIntoSubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription)]}" message="myinst.copyElementsIntoSubscription" />
             </g:if>
+            <g:if test="${customerTypeService.isConsortium( contextCustomerType ) && !subscription.instanceOf}">
+                <div class="divider"></div>
+                <ui:actionsDropdownItem data-ui="modal" id="generateFinanceImportWorksheet" href="#financeImportTemplate" message="myinst.financeImport.subscription.template"/>
+                <ui:actionsDropdownItem controller="myInstitution" action="financeImport" params="${[id:subscription.id]}" message="menu.institutions.financeImport" />
+            </g:if>
         </g:if>
 
             <g:if test="${contextCustomerType == CustomerTypeService.ORG_INST_PRO && subscription.instanceOf}">
@@ -123,6 +128,9 @@
                 <ui:actionsDropdownItem controller="subscription" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
                 <g:if test="${subscription.packages}">
                     <ui:actionsDropdownItem controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
+                    <g:if test="${actionName == 'addEntitlements'}">
+                        <ui:actionsDropdownItem data-ui="modal" id="selectEntitlementsWithKBART" href="#KBARTUploadForm" message="subscription.details.addEntitlements.menu"/>
+                    </g:if>
                     <ui:actionsDropdownItem controller="subscription" action="manageEntitlementGroup" params="${[id:params.id]}" message="subscription.details.manageEntitlementGroup.label" />
                     <ui:actionsDropdownItem controller="subscription" action="index" notActive="true" params="${[id:params.id, issueEntitlementEnrichment: true]}" message="subscription.details.issueEntitlementEnrichment.label" />
                 </g:if>
@@ -147,14 +155,14 @@
                     </g:else>
                 </g:if>
             </sec:ifAnyGranted>
-                <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE] && contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
+                <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE] && contextService.getOrg().isCustomerType_Consortium_Pro()}">
                     <div class="divider"></div>
                     <ui:actionsDropdownItem controller="subscription" action="manageDiscountScale" params="${[id:params.id]}" message="subscription.details.manageDiscountScale.label" />
                     <g:if test="${subscription.discountScales.size() > 0}">
                         <ui:actionsDropdownItem controller="subscription" action="copyDiscountScales" params="${[id:params.id]}" message="subscription.details.copyDiscountScales.label" />
                     </g:if>
                 </g:if>
-                    <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE] && contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                    <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE] && contextService.getOrg().isCustomerType_Consortium()}">
                 <div class="divider"></div>
                 <g:if test="${hasNext}">
                     <ui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription"
@@ -175,14 +183,14 @@
                                            params="${[id: params.id]}" message="subscription.details.renewals.label"/>
                 </g:else>
             </g:if>
-            <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO) && showConsortiaFunctions && subscription.instanceOf == null }">
+            <g:if test="${contextService.getOrg().isCustomerType_Consortium_Pro() && showConsortiaFunctions && subscription.instanceOf == null }">
                 <ui:actionsDropdownItem controller="survey" action="addSubtoSubscriptionSurvey"
                                                params="${[sub:params.id]}" text="${message(code:'createSubscriptionSurvey.label')}" />
 
                 <ui:actionsDropdownItem controller="survey" action="addSubtoIssueEntitlementsSurvey"
                                            params="${[sub:params.id]}" text="${message(code:'createIssueEntitlementsSurvey.label')}" />
             </g:if>
-            <g:elseif test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && showConsortiaFunctions && subscription.instanceOf == null }">
+            <g:elseif test="${contextService.getOrg().isCustomerType_Consortium() && showConsortiaFunctions && subscription.instanceOf == null }">
                 <ui:actionsDropdownItemDisabled controller="survey" action="addSubtoSubscriptionSurvey" params="${[sub:params.id]}" text="${message(code:'createSubscriptionSurvey.label')}"
                                                 tooltip="${message(code: 'tooltip.onlyFullMembership')}" message="createSubscriptionSurvey.label"/>
 
@@ -204,7 +212,7 @@
             <g:if test="${actionName == 'members'}">
                 <g:if test="${subscriptionService.getValidSubChilds(subscription)}">
                     <div class="divider"></div>
-                    <ui:actionsDropdownItem data-ui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
+                    <ui:actionsDropdownItem data-ui="modal" id="copyMailAddresses" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
                 </g:if>
             </g:if>
             <g:elseif test="${actionName == 'show'}">
@@ -226,22 +234,33 @@
         </g:if>
     </ui:actionsDropdown>
 </g:if>
-<g:elseif test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)}">
+<g:elseif test="${contextService.isInstEditor_or_ROLEADMIN()}">
     <ui:actionsDropdown>
         <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
+
+        <g:if test="${actionName == 'members' && subscriptionService.getValidSubChilds(subscription)}">
+            <ui:actionsDropdownItem data-ui="modal" id="copyMailAddresses" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
+            <div class="divider"></div>
+        </g:if>
     </ui:actionsDropdown>
 </g:elseif>
+<g:elseif test="${contextService.isInstUser_or_ROLEADMIN()}">
+    <g:if test="${actionName == 'members' && subscriptionService.getValidSubChilds(subscription)}">
+        <ui:actionsDropdown>
+            <ui:actionsDropdownItem data-ui="modal" id="copyMailAddresses" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
+        </ui:actionsDropdown>
+    </g:if>
+</g:elseif>
 
-<g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)}">
+<g:if test="${contextService.isInstEditor_or_ROLEADMIN()}">
     <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: subscription, owntp: 'subscription']]}" />
+    <laser:render template="financeImportTemplate" />
 </g:if>
 
-%{--<g:if test="${editable || contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)}">--}%
-%{--    <laser:render template="/templates/documents/modal" model="${[ownobj: subscription, owntp: 'subscription']}"/>--}%
-%{--    <laser:render template="/templates/tasks/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>--}%
-%{--    <laser:render template="/templates/notes/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>--}%
-%{--</g:if>--}%
+<g:if test="${subscription._getCalculatedType() == Subscription.TYPE_CONSORTIAL}">
+    <g:set var="previous" value="${subscription._getCalculatedPrevious()}"/>
+    <g:set var="successor" value="${subscription._getCalculatedSuccessor()}"/>
+    <laser:render template="subscriptionTransferInfo" model="${[calculatedSubList: successor + [subscription] + previous]}"/>
+</g:if>
 
-%{--<g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->--}%
-%{--    <laser:render template="/templates/workflow/instantiate" model="${[target: subscription]}"/>--}%
-%{--</g:if>--}%
+

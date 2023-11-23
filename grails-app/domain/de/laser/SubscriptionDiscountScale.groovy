@@ -1,5 +1,10 @@
 package de.laser
 
+/**
+ * This class represents discount scales for subscriptions, i.e. keeps track for a given subscription eventual discounts, usually
+ * linked to a certain level of subscribers
+ * To each discount, a note may be attached
+ */
 class SubscriptionDiscountScale {
 
     Subscription subscription
@@ -34,8 +39,8 @@ class SubscriptionDiscountScale {
     }
 
     /**
-     * Outputs the contact as human-readable string
-     * @return the contact as concatenated string
+     * Outputs the discount scale as human-readable string
+     * @return the discount scale as concatenated string
      */
     @Override
     String toString() {

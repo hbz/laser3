@@ -6,7 +6,9 @@
         <laser:render template="breadcrumb"
               model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
 
-        <ui:h1HeaderWithIcon text="${orgInstance.name}" />
+        <ui:h1HeaderWithIcon text="${orgInstance.name}">
+            <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
+        </ui:h1HeaderWithIcon>
 
         <ui:controlButtons>
             <laser:render template="actions" />
@@ -19,13 +21,17 @@
         <ui:messages data="${flash}" />
 
         <ui:tabs actionName="settings">
+            <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || contextService.getOrg().isCustomerType_Consortium()}">
+                <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'mail']" tab="mail" text="${message(code: 'org.setting.tab.mail')}"/>
+            </g:if>
             <%--<ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'general']" tab="general" text="${message(code: 'org.setting.tab.general')}"/>--%>
-            <g:if test="${contextService.hasPerm_or_ROLEADMIN( 'FAKE,ORG_INST_PRO,ORG_CONSORTIUM_BASIC' )}">
+            <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro() || contextService._hasPerm('FAKE')}">
                 <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'api']" tab="api" text="${message(code: 'org.setting.tab.api')}"/>
             </g:if>
-            <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'ezb']" tab="ezb" text="${message(code: 'org.setting.tab.ezb')}"/>
+            <%-- deactivated U.F.N. as of [ticket=5385], November 8th, 2023 --%>
+            <%--<ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'ezb']" tab="ezb" text="${message(code: 'org.setting.tab.ezb')}"/>--%>
             <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'natstat']" tab="natstat" text="${message(code: 'org.setting.tab.natstat')}"/>
-            <g:if test="${contextService.hasPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
+            <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro()}">
                 <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'oamonitor']" tab="oamonitor" text="${message(code: 'org.setting.tab.oamonitor')}"/>
             </g:if>
         </ui:tabs>
@@ -142,6 +148,12 @@
                                                 </g:elseif>
                                                 <g:elseif test="${os.key.type == Role}">
                                                     ${os.getValue()?.getI10n('authority')} (Editierfunktion deaktiviert) <%-- TODO --%>
+                                                </g:elseif>
+                                                <g:elseif test="${OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY == os.key}">
+                                                    <ui:xEditable owner="${os}" field="strValue" validation="email"/>
+                                                </g:elseif>
+                                                <g:elseif test="${OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT == os.key}">
+                                                    <ui:xEditable owner="${os}" field="strValue" validation="email"/>
                                                 </g:elseif>
                                                 <g:else>
                                                     <ui:xEditable owner="${os}" field="strValue" />

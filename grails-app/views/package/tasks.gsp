@@ -24,9 +24,6 @@
 
     <ui:messages data="${flash}" />
 
-    <laser:render template="/templates/tasks/tables" model="${[
-            taskInstanceList: taskInstanceList,
-            myTaskInstanceList: myTaskInstanceList
-    ]}"/>
+    <laser:render template="/templates/tasks/tables" model="${[cmbTaskInstanceList: cmbTaskInstanceList]}"/>
 
 <laser:htmlEnd />

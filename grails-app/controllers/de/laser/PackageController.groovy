@@ -13,14 +13,12 @@ import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import grails.converters.JSON
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.springframework.context.MessageSource
 
 import javax.servlet.ServletOutputStream
-import java.nio.charset.Charset
 import java.text.SimpleDateFormat
 import java.util.concurrent.ExecutorService
 
@@ -31,7 +29,6 @@ import java.util.concurrent.ExecutorService
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class PackageController {
 
-    AccessService accessService
     AddressbookService addressbookService
     AuditService auditService
     ContextService contextService
@@ -41,17 +38,20 @@ class PackageController {
     ExportService exportService
     FilterService filterService
     GenericOIDService genericOIDService
+    GlobalService globalService
     GokbService gokbService
-    MessageSource messageSource
+    PackageService packageService
     SubscriptionService subscriptionService
     ExportClickMeService exportClickMeService
-    //TaskService taskService
     YodaService yodaService
 
     //-----
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
+    /**
+     * Map containing menu alternatives if an unexisting object has been called
+     */
     public static final Map<String, String> CHECK404_ALTERNATIVES = [
             'index' : 'package.show.all',
             'list' : 'myinst.packages',
@@ -64,7 +64,10 @@ class PackageController {
      * Lists current packages in the we:kb ElasticSearch index.
      * @return Data from we:kb ES
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def index() {
 
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
@@ -135,6 +138,7 @@ class PackageController {
                 result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
             }
             result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
+            result.currentPackageIdList = SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp where sp.subscription in (select oo.sub from OrgRole oo join oo.sub sub where oo.org = :context and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true)))', [context: contextService.getOrg(), current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED]).toSet()
             result.putAll(gokbService.doQuery(result, params.clone(), queryParams))
         }
 
@@ -228,13 +232,16 @@ class PackageController {
      * Shows the details of the package. Consider that an active connection to a we:kb ElasticSearch index has to exist
      * because some data will not be mirrored to the app
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     @Check404()
     def show() {
-        Map<String, Object> result = [:]
+        Map<String, Object> result = packageService.getResultGenerics(params)
 
         result.user = contextService.getUser()
-        Package packageInstance = Package.get(params.id)
+        Package packageInstance = result.packageInstance
 
         result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_CURRENT])[0]
         result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_EXPECTED])[0]
@@ -257,7 +264,7 @@ class PackageController {
         //result.visibleOrgs.sort { it.org.sortname }
 
         List<RefdataValue> roleTypes = [RDStore.OR_SUBSCRIBER]
-        if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if (contextService.getOrg().isCustomerType_Consortium()) {
             roleTypes.addAll([RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS])
         }
 
@@ -276,7 +283,7 @@ class PackageController {
 
         if (OrgSetting.get(result.contextOrg, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSetting) {
             result.statsWibid = result.contextOrg.getIdentifierByType('wibid')?.value
-            result.usageMode = contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? 'package' : 'institution'
+            result.usageMode = contextService.getOrg().isCustomerType_Consortium() ? 'package' : 'institution'
             result.packageIdentifier = packageInstance.getIdentifierByType('isil')?.value
         }
 
@@ -300,8 +307,6 @@ class PackageController {
             }
         }
         result.gascoContacts = gascoContacts
-
-        result.packageInstance = packageInstance
 
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         result.editUrl = apiSource.editUrl.endsWith('/') ? apiSource.editUrl : apiSource.editUrl+'/'
@@ -339,21 +344,23 @@ class PackageController {
     /**
      * Call to show all current titles in the package. The entitlement holding may be shown directly as HTML
      * or exported as KBART (<a href="https://www.niso.org/standards-committees/kbart">Knowledge Base and related tools</a>) file, CSV file or Excel worksheet
+     * KBART files may take time to be prepared; therefor the download is not triggered by this method because te loading would generate a 502 timeout. Instead, a
+     * file is being prepared and written to the file storage and a download link is being generated which delivers the file after its full generation
      * @return a HTML table showing the holding or the holding rendered as KBART or Excel worksheet
      * @see TitleInstancePackagePlatform
+     * @see GlobalService#obtainFileStorageLocation()
+     * @see #downloadLargeFile()
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     @Check404()
     def current() {
         log.debug("current ${params}");
-        Map<String, Object> result = [:]
-        result.user = contextService.getUser()
-        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-        result.contextOrg = contextService.getOrg()
-        result.contextCustomerType = result.contextOrg.getCustomerType()
+        Map<String, Object> result = packageService.getResultGenerics(params)
 
-        Package packageInstance = Package.get(params.id)
-        result.packageInstance = packageInstance
+        Package packageInstance = result.packageInstance
 
         if (executorWrapperService.hasRunningProcess(packageInstance)) {
             result.processingpc = true
@@ -377,7 +384,7 @@ class PackageController {
 
         if(params.fileformat) {
             if (params.filename) {
-                filename =params.filename
+                filename = params.filename
             }
 
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
@@ -393,7 +400,7 @@ class PackageController {
                 Map<String, Object> configMap = [:]
                 configMap.putAll(params)
                 configMap.pkgIds = [params.id]
-                Map<String, List> tableData = titlesList ? exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name) : []
+                Map<String, Collection> tableData = titlesList ? exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name) : []
                 String tableOutput = exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t')
                 FileOutputStream fos = new FileOutputStream(f)
                 fos.withWriter { Writer w ->
@@ -402,7 +409,7 @@ class PackageController {
                 fos.flush()
                 fos.close()
             }
-            Map fileResult = [token: filename, fileformat: 'kbart']
+            Map fileResult = [token: filename, filenameDisplay: filename, fileformat: 'kbart']
             render template: '/templates/bulkItemDownload', model: fileResult
             return
         }
@@ -459,7 +466,17 @@ class PackageController {
         }
     }
 
-    @Secured(['ROLE_USER'])
+    /**
+     * This helper method calls a prepared output file to download. Because of bulk holdings (> 1000000 titles),
+     * their generation takes too much time before the server generates a timeout. Therefor, the files have to be
+     * prepared asynchronously
+     * @return a downloadable file stream, providing a previously generated file
+     * @see #current()
+     */
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def downloadLargeFile() {
         byte[] output = []
         try {
@@ -469,6 +486,9 @@ class PackageController {
             switch(params.fileformat) {
                 case 'kbart': response.contentType = "text/tsv"
                     extension = "tsv"
+                    break
+                case 'txt': response.contentType = "text/tsv"
+                    extension = "txt"
                     break
                 case 'csv': response.contentType = "text/csv"
                     extension = "csv"
@@ -494,7 +514,10 @@ class PackageController {
      * Call to see planned titles of the package
      * @return {@link #planned_expired_deleted(java.lang.Object, java.lang.Object)}
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def planned() {
         planned_expired_deleted(params, "planned")
     }
@@ -503,7 +526,10 @@ class PackageController {
      * Call to see expired titles of the package
      * @return {@link #planned_expired_deleted(java.lang.Object, java.lang.Object)}
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def expired() {
         planned_expired_deleted(params, "expired")
     }
@@ -512,7 +538,10 @@ class PackageController {
      * Call to see deleted titles of the package
      * @return {@link #planned_expired_deleted(java.lang.Object, java.lang.Object)}
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def deleted() {
         planned_expired_deleted(params, "deleted")
     }
@@ -525,16 +554,15 @@ class PackageController {
      * @return a HTML table showing the holding or the holding rendered as KBART or Excel worksheet
      * @see TitleInstancePackagePlatform
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     def planned_expired_deleted(params, func) {
         log.debug("planned_expired_deleted ${params}");
-        Map<String, Object> result = [:]
-        result.user = contextService.getUser()
-        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-        result.contextOrg = contextService.getOrg()
-        result.contextCustomerType = result.contextOrg.getCustomerType()
+        Map<String, Object> result = packageService.getResultGenerics(params)
 
-        Package packageInstance = Package.get(params.id)
+        Package packageInstance = result.packageInstance
         if (!packageInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id]) as String
             redirect action: 'index'
@@ -588,14 +616,14 @@ class PackageController {
                 Map<String, Object> configMap = [:]
                 configMap.putAll(params)
                 configMap.pkgIds = [params.id]
-                Map<String, List> tableData = exportService.generateTitleExportKBART(configMap,TitleInstancePackagePlatform.class.name)
+                Map<String, Collection> tableData = exportService.generateTitleExportKBART(configMap,TitleInstancePackagePlatform.class.name)
                 fos.withWriter { writer ->
                     writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
                 }
                 fos.flush()
                 fos.close()
             }
-            Map fileResult = [token: filename, fileformat: 'kbart']
+            Map fileResult = [token: filename, filenameDisplay: filename, fileformat: 'kbart']
             render template: '/templates/bulkItemDownload', model: fileResult
             return
         }
@@ -647,7 +675,10 @@ class PackageController {
      * Shows the title changes done in the package
      * @see PendingChange
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
     @Check404()
     def tippChanges() {
         Map<String, Object> result = [:]
@@ -698,9 +729,9 @@ class PackageController {
      * the we:kb data will be fetched and data mirrored prior to linking the package
      * to the subscription
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def processLinkToSub() {
         Map<String, Object> result = [:]
@@ -708,10 +739,10 @@ class PackageController {
         result.subscription = genericOIDService.resolveOID(params.targetObjectId)
 
         if (result.subscription) {
-            Locale locale = LocaleUtils.getCurrentLocale()
             boolean bulkProcessRunning = false
-            if (subscriptionService.checkThreadRunning('PackageSync_' + result.subscription.id) && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription, result.pkg)) {
-                result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running', null, locale)
+            String threadName = 'PackageSync_' + result.subscription.id
+            if (subscriptionService.checkThreadRunning(threadName) && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription, result.pkg)) {
+                result.message = message(code: 'subscription.details.linkPackage.thread.running')
                 bulkProcessRunning = true
             }
             if(params.holdingSelection) {
@@ -723,11 +754,15 @@ class PackageController {
             if (result.pkg) {
                 if(!bulkProcessRunning) {
                     executorService.execute({
-                        Thread.currentThread().setName('PackageSync_' + result.subscription.id)
+                        long start = System.currentTimeSeconds()
+                        Thread.currentThread().setName(threadName)
                         log.debug("Add package entitlements to subscription ${result.subscription}")
                         subscriptionService.addToSubscription(result.subscription, result.pkg, result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
                         if(auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
                             subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), result.pkg, result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
+                        }
+                        if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
+                            globalService.notifyBackgroundProcessFinish(result.user, threadName, message(code: 'subscription.details.linkPackage.thread.completed', args: [result.subscription.name] as Object[]))
                         }
                     })
                 }

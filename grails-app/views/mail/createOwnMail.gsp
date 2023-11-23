@@ -35,6 +35,10 @@
             <g:hiddenField name="selectedOrgs" value="${org.id}"/>
         </g:each>
 
+        <g:each in="${surveyList}" var="survey">
+            <g:hiddenField name="selectedSurveys" value="${survey.id}"/>
+        </g:each>
+
         <g:if test="${userSurveyNotificationMails}">
             <div class="ui segment">
                 <h3 class="ui header">${message(code: 'mail.sendMail.standard')}</h3>
@@ -132,6 +136,12 @@
         <div class="ui form">
 
             <div class="field">
+                <label for="mailFrom">${message(code: 'mail.sendMail.from')}</label>
+
+                <g:field type="text" name="mailFrom" id="mailFrom" readonly="true" value="${mailFrom}"/>
+            </div>
+
+            <div class="field">
                 <label for="mailSubject">${message(code: 'mail.sendMail.mailSubject')}</label>
 
                 <g:field type="text" name="mailSubject" id="mailSubject" readonly="true" value="${mailSubject}"/>
@@ -168,6 +178,13 @@
                         <g:message code="default.button.back"/>
                     </g:link>
                 </g:else>
+            </g:if>
+
+            <g:if test="${org}">
+                    <g:link class="ui button left floated" controller="myInstitution" action="manageParticipantSurveys"
+                            id="${org.id}">
+                        <g:message code="default.button.back"/>
+                    </g:link>
             </g:if>
 
             <button class="ui icon button right floated" type="submit">
@@ -212,7 +229,11 @@
                 url: '<g:createLink controller="ajaxJson" action="getEmailAddresses"/>'
                 + '?isPrivate=' + isPrivate + '&isPublic=' + isPublic + '&selectedRoleTypIds=' + selectedRoleTypIds + '&orgIdList=' + JSPC.app.jsonOrgIdList,
                 success: function (data) {
-                    $("#emailAddressesTextArea").val(data.join('; '));
+                    let addresses = [];
+                    $.each(data, function (i, e) {
+                        addresses.push(e.join('; ')); //join multiple addresses within an org - inner row
+                    });
+                    $("#emailAddressesTextArea").val(addresses.join('; ')); //join addresses of all orgs - outer row
                 }
             });
         }

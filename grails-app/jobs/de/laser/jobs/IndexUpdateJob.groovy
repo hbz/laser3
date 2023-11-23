@@ -5,6 +5,10 @@ import de.laser.base.AbstractJob
 import de.laser.config.ConfigMapper
 import groovy.util.logging.Slf4j
 
+/**
+ * Triggers between 07:00 and 20:00 every ten minutes the update of the local ElasticSearch index
+ * @see DataloadService#updateFTIndices()
+ */
 @Slf4j
 class IndexUpdateJob extends AbstractJob {
 

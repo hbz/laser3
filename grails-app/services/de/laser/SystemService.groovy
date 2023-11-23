@@ -9,12 +9,9 @@ import de.laser.system.SystemSetting
 import de.laser.utils.AppUtils
 import de.laser.utils.DateUtils
 import grails.gorm.transactions.Transactional
+import grails.plugins.mail.MailService
 import groovy.json.JsonOutput
-import org.elasticsearch.action.index.IndexRequest
-import org.elasticsearch.action.index.IndexResponse
-import org.elasticsearch.client.RequestOptions
-import org.elasticsearch.client.RestHighLevelClient
-import org.elasticsearch.xcontent.XContentType
+import org.springframework.mail.MailMessage
 
 import java.text.SimpleDateFormat
 
@@ -25,7 +22,7 @@ import java.text.SimpleDateFormat
 class SystemService {
 
     ContextService contextService
-    ESWrapperService ESWrapperService
+    MailService mailService
 
     /**
      * Dumps the state of currently active services
@@ -63,6 +60,11 @@ class SystemService {
         return checks
     }
 
+    /**
+     * Gets the system status message
+     * @param messageId the message ID to display
+     * @return a {@link Map} with the status, state of maintenance and the messages themselves
+     */
     Map getStatusMessage(long messageId = 0) {
         Map result = [ status: 'error' ]
 
@@ -82,58 +84,87 @@ class SystemService {
         result
     }
 
-    boolean sendInsight_SystemEvents(String systemInsightIndex) {
-        boolean done = false
-        SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd_HHmmss()
+    /**
+     * Sends system status / events mails to registered email addresses. The email registry is a setting in the
+     * local configuration file; see the configuration setting at {@link ConfigMapper#SYSTEM_INSIGHT_EMAILS)}
+     */
+    void sendSystemInsightMails() {
+        if (SystemSetting.findByName('SystemInsight').value != 'true') {
+            log.info '---> Sending system insight mails .. ignored'
+        }
+        else {
+            log.info '---> Sending system insight mails ..'
 
-        List<SystemEvent> events = SystemEvent.executeQuery(
-                "select se from SystemEvent se where se.created > (CURRENT_DATE-1) and se.relevance in ('WARNING', 'ERROR') order by se.created desc"
-        )
+            String recipients = ConfigMapper.getSystemInsightEmails()
 
-        Map<String, Object> output = [
-                system  : "${ConfigMapper.getLaserSystemId()}",
-                server  : "${AppUtils.getCurrentServer()}",
-                created : "${sdf.format(new Date())}",
-                data_type   : "SystemEvent",
-                data_count  : events.size(),
-                data        : []
-        ]
+            Map<String, Object> seMap = [recipients: recipients, status: 'ok']
+            SystemEvent se = SystemEvent.createEvent('SYSTEM_INSIGHT_MAILS_START', seMap)
 
-        if (events) {
-            events.each { e ->
-                Map<String, Object> data = [
-                        created : "${sdf.format(e.created)}",
-                        level   : "${e.relevance.value}",
-                        event   : "${e.getSource()} -> ${e.getEvent()}"
+            if (recipients) {
+                SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd_HHmmss()
+                List<SystemEvent> events = SystemEvent.executeQuery(
+                        "select se from SystemEvent se where se.created > (CURRENT_DATE-1) and se.relevance in ('WARNING', 'ERROR') order by se.created desc"
+                )
+
+                Map<String, Object> output = [
+                        system      : "${ConfigMapper.getLaserSystemId()}",
+                        server      : "${AppUtils.getCurrentServer()}",
+                        created     : "${sdf.format(new Date())}",
+                        data_type   : "SystemEvent",
+                        data_count  : events.size(),
+                        data        : []
                 ]
-                if (e.payload) {
-                    data.putAt('payload', "${e.payload}")
+
+                if (events) {
+                    events.each { e ->
+                        Map<String, Object> data = [
+                                created : "${sdf.format(e.created)}",
+                                level   : "${e.relevance.value}",
+                                event   : "${e.getSource()} -> ${e.getEvent()}"
+                        ]
+                        if (e.payload) {
+                            data.putAt('payload', "${e.payload}")
+                        }
+                        output.data.add( data )
+                    }
                 }
-                output.data.add( data )
+
+                String mailContent = JsonOutput.prettyPrint(JsonOutput.toJson(output))
+                // println mailContent
+
+                Map<String, String> mailsFailed = [:]
+                String mailsStatus = 'ok'
+
+                recipients.split(',').each { mailTo ->
+                    log.info 'to .. ' + mailTo
+
+                    try {
+                        MailMessage mail = mailService.sendMail {
+                            to      mailTo
+                            from    ConfigMapper.getNotificationsEmailFrom()
+                            replyTo ConfigMapper.getNotificationsEmailReplyTo()
+                            subject ConfigMapper.getLaserSystemId() + ' - (Insight)'
+                            text    mailContent
+                        }
+                        if (!mail) {
+                            mailsFailed.put(mailTo, 'unkown error')
+                            mailsStatus = 'error'
+                        }
+                    }
+                    catch (Exception e) {
+                        log.error "mailService.sendMail exception: ${e.message}"
+                        mailsFailed.put(mailTo, e.message.split(';').first())
+                        mailsStatus = 'error'
+                    }
+                }
+                seMap.put('status', mailsStatus)
+
+                if (mailsFailed) {
+                    seMap.put('failed', mailsFailed)
+                }
             }
-        }
 
-        RestHighLevelClient esclient
-        try {
-            String json = JsonOutput.toJson(output)
-
-            esclient = ESWrapperService.getNewClient(true)
-            if (esclient) {
-                IndexRequest request = new IndexRequest( systemInsightIndex )
-                request.source( json, XContentType.JSON )
-                IndexResponse response = esclient.index(request, RequestOptions.DEFAULT)
-
-                // TODO
-                done = response.getResult().toString() == 'CREATED'
-                log.info 'sendInsight_SystemEvents( ' + systemInsightIndex + ' ): ' + events.size() + ' events -> ' + response.getResult()
-            }
+            se.changeTo(seMap.status == 'ok' ? 'SYSTEM_INSIGHT_MAILS_COMPLETE' : 'SYSTEM_INSIGHT_MAILS_ERROR', seMap)
         }
-        catch (Exception e) {
-            log.error e.getMessage()
-        }
-        finally {
-            if (esclient) { esclient.close() }
-        }
-        done
     }
 }

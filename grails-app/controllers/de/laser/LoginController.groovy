@@ -15,7 +15,7 @@ import grails.web.Action
 import grails.web.mapping.UrlMappingInfo
 import grails.web.mapping.UrlMappingsHolder
 import org.apache.http.HttpStatus
-import org.springframework.security.access.annotation.Secured
+import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.security.authentication.AccountExpiredException
 import org.springframework.security.authentication.CredentialsExpiredException
 import org.springframework.security.authentication.DisabledException
@@ -28,7 +28,7 @@ import org.springframework.security.web.savedrequest.HttpSessionRequestCache
 /**
  * The controller manages authentication handling
  */
-@Secured('permitAll')
+@Secured(['permitAll'])
 class LoginController {
 
   def authenticationTrustResolver
@@ -193,6 +193,10 @@ class LoginController {
     redirect action: 'auth'
   }
 
+    /**
+     * Triggers the sending of the forgotten username to the given mail address
+     * @return redirects to the login page
+     */
   def getForgottenUsername() {
         if(!params.forgotten_username_mail) {
             flash.error = g.message(code:'menu.user.forgottenUsername.userMissing') as String
@@ -210,26 +214,34 @@ class LoginController {
         redirect action: 'auth'
   }
 
+    /**
+     * Checks if the last requested page before a login warning aims to a valid page
+     * @param savedRequest the request to check
+     * @return true if the saved request call was valid, false otherwise
+     */
     private boolean _fuzzyCheck(DefaultSavedRequest savedRequest) {
 
         if (!savedRequest) {
             return true
         }
-        boolean validRequest = false
+        boolean valid = false
 
         UrlMappingsHolder urlMappingsHolder = BeanStore.getUrlMappingsHolder()
-        List<UrlMappingInfo> mappingInfo = urlMappingsHolder.matchAll(savedRequest.getRequestURI())
+        UrlMappingInfo mappingInfo = urlMappingsHolder.matchAll(savedRequest.getRequestURI()).first()
 
         if (mappingInfo) {
-            GrailsClass controller = CodeUtils.getAllControllerArtefacts().find {
-                it.clazz.simpleName == mappingInfo.first().getControllerName().capitalize() + 'Controller'
-            }
-            if (controller) {
-                if (controller.clazz.declaredMethods.find { it.getAnnotation(Action) && it.name == mappingInfo.first().getActionName() }) {
-                    validRequest = true
+            GrailsClass controller = mappingInfo.hasProperty('controllerClass') ? mappingInfo.controllerClass :
+                    CodeUtils.getAllControllerArtefacts().find {
+                        it.clazz.simpleName == mappingInfo.controllerName.capitalize() + 'Controller'
+                    }
+
+            if (controller && controller.name != 'ServerCodes') {
+                boolean match = mappingInfo.hasProperty('info') ? controller.actionUriToViewName.find { it.key == mappingInfo.info.params.action } : false
+                if (match) {
+                    valid = true
                 }
             }
         }
-        validRequest
+        valid
     }
 }

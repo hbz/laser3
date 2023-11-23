@@ -128,7 +128,7 @@
                                   rowspan="2"/>
 
                 <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.startDate"
-                                  title="${message(code: 'default.startDate.label')}"/>
+                                  title="${message(code: 'default.startDate.label.shy')}"/>
 
 
                 <th scope="col" rowspan="2">
@@ -143,12 +143,11 @@
                 </th>
 
                 <th rowspan="2" class="two wide">${message(code:'default.actions.label')}</th>
-
             </tr>
 
             <tr>
                 <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.endDate"
-                                  title="${message(code: 'default.endDate.label')}"/>
+                                  title="${message(code: 'default.endDate.label.shy')}"/>
             </tr>
             </thead>
             <g:each in="${subscriptions}" var="s" status="i">
@@ -216,7 +215,7 @@
                         </td>
                         <td>
                             <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/><br />
-                            <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label')}:">
+                            <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label.shy')}:">
                                 <g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/>
                             </span>
                         </td>
@@ -234,7 +233,7 @@
 
 
                         <td class="x">
-                            <g:if test="${editable && contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )}">
+                            <g:if test="${editable && contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )}">
                                     <g:link class="ui icon blue la-modern-button button la-popup-tooltip la-delay"
                                             data-content="${message(code: 'survey.toggleSurveySub.add.label', args:[SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNotNull(s).size(), SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNull(s).size()])}"
                                             controller="survey" action="addSubtoSubscriptionSurvey"

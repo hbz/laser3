@@ -3,7 +3,6 @@ package de.laser
 import de.laser.helper.FactoryResult
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.storage.BeanStore
-import de.laser.titles.TitleInstance
 
 import grails.plugins.orm.auditable.Auditable
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -253,7 +252,6 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         pkg  = owner instanceof Package ? owner : pkg
         sub  = owner instanceof Subscription ? owner : sub
         tipp = owner instanceof TitleInstancePackagePlatform ? owner : tipp
-        //ti   = owner instanceof TitleInstance ? owner : ti
     }
 
     /**
@@ -292,7 +290,6 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         name = object instanceof Package ?  'pkg' : name
         name = object instanceof Subscription ?                 'sub' :  name
         name = object instanceof TitleInstancePackagePlatform ? 'tipp' : name
-        name = object instanceof TitleInstance ?                'ti' :   name
 
         name
     }
@@ -330,7 +327,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
 
         // -- moved from def afterInsert = { .. }
         if (this.ns?.ns in IdentifierNamespace.CORE_ORG_NS) {
-            if (this.value == IdentifierNamespace.UNKNOWN) {
+            if (this.value == IdentifierNamespace.UNKNOWN && !this.ns.validationRegex?.contains('Unknown')) {
                 this.value = ''
                 if(!this.save()) {
                     log.error(this.getErrors().getAllErrors().toListString())
@@ -416,17 +413,6 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
             result.add([id: "${id.class.name}:${id.id}", text: "${id.ns.ns}:${id.value}"])
         }
         result
-    }
-
-    // called from AjaxController.resolveOID2()
-    @Deprecated
-    // front end creation broken
-    static def refdataCreate(value) {
-        // value is String[] arising from  value.split(':');
-        if ( ( value.length == 4 ) && ( value[2] != '' ) && ( value[3] != '' ) )
-            return lookupOrCreateCanonicalIdentifier(value[2],value[3]); // ns, value
-
-        return null;
     }
 
     /**

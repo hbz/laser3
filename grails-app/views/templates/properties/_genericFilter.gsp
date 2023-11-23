@@ -43,7 +43,7 @@
 
     <g:if test="${params.descr in [PropertyDefinition.ORG_PROP]}">
         <div class="two fields">
-            <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+            <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
 
                 <div class="field">
                     <div class="inline fields la-filter-inline">
@@ -132,7 +132,7 @@
                                 clearable: true,
                                 forceSelection: false,
                                 selectOnKeydown: false,
-                                message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage)},
+                                message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.config.language)},
                                 onChange: function (value, text, $selectedItem) {
                                     value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
                                 }
@@ -181,7 +181,7 @@ $.ajax({
                                 clearable: true,
                                 forceSelection: false,
                                 selectOnKeydown: false,
-                                message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage)},
+                                message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.config.language)},
                                 onChange: function (value, text, $selectedItem) {
                                     value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
                                 }
@@ -222,7 +222,7 @@ $.ajax({
                                 clearable: true,
                                 forceSelection: false,
                                 selectOnKeydown: false,
-                                message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage)},
+                                message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.config.language)},
                                 onChange: function (value, text, $selectedItem) {
                                     value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
                                 }
@@ -246,7 +246,7 @@ $.ajax({
                 clearable: true,
                 forceSelection: false,
                 selectOnKeydown: false,
-                message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage)},
+                message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.config.language)},
                 onChange: function (value, text, $selectedItem) {
                     value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
                     if ((typeof $selectedItem != 'undefined')){

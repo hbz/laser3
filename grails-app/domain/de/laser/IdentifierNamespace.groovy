@@ -3,7 +3,6 @@ package de.laser
 import de.laser.base.AbstractI10n
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.storage.BeanStore
-import de.laser.titles.TitleInstance
 import groovy.util.logging.Slf4j
 
 /**
@@ -61,6 +60,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
     //subscription identifier namespaces
     public static final String EZB_ANCHOR = 'ezb_anchor'
     public static final String EZB_COLLECTION_ID = 'ezb_collection_id'
+    public static final String EZB_SUB_ID = 'ezb_sub_id'
     public static final String ISIL_PAKETSIGEL = 'package_isil'
     public static final String ISCI = 'ISCI'
 
@@ -70,6 +70,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
      */
     public static final List<String> CORE_ORG_NS = [
             ISIL,
+            ISNI,
             WIBID,
             GND_ORG_NR,
             EZB_ORG_ID,
@@ -77,11 +78,15 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
             DBS_ID,
             DBIS_ORG_ID,
             VAT,
+            WIKIDATA_ID,
             LEIT_ID,
             LEIT_KR,
             LEIBNIZ_ID
     ]
 
+    /**
+     * Set of identifiers every provider or agency (i.e. commercial organisation) must have
+     */
     public static final List<String> CORE_PROVIDER_NS = [
             CROSSREF_FUNDER_ID,
             DBPEDIA,

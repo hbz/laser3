@@ -15,18 +15,19 @@
             <g:if test="${query != 'tipp-publisherName'}">
                 <th scope="col">${message(code:'tipp.publisher')}</th>
             </g:if>
-            <g:if test="${query != 'tipp-seriesName'}">
-                <th scope="col">${message(code:'tipp.seriesName')}</th>
-            </g:if>
-            <g:if test="${query != 'tipp-subjectReference'}">
-                <th scope="col">${message(code:'tipp.subjectReference')}</th>
-            </g:if>
-            <g:if test="${query != 'tipp-titleType'}">
-                <th scope="col">${message(code:'tipp.titleType')}</th>
-            </g:if>
-            <g:if test="${query != 'tipp-medium'}">
-                <th scope="col">${message(code:'tipp.medium')}</th>
-            </g:if>
+%{--            <g:if test="${query != 'tipp-seriesName'}">--}%
+%{--                <th scope="col">${message(code:'tipp.seriesName')}</th>--}%
+%{--            </g:if>--}%
+%{--            <g:if test="${query != 'tipp-subjectReference'}">--}%
+%{--                <th scope="col">${message(code:'tipp.subjectReference')}</th>--}%
+%{--            </g:if>--}%
+%{--            <g:if test="${query != 'tipp-titleType'}">--}%
+%{--                <th scope="col">${message(code:'tipp.titleType')}</th>--}%
+%{--            </g:if>--}%
+%{--            <g:if test="${query != 'tipp-medium'}">--}%
+%{--                <th scope="col">${message(code:'tipp.medium')}</th>--}%
+%{--            </g:if>--}%
+            <th scope="col">${message(code:'package.label')}</th>
         </tr>
         </thead>
         <tbody>
@@ -45,18 +46,21 @@
                     <g:if test="${query != 'tipp-publisherName'}">
                         <td>${tipp.publisherName}</td>
                     </g:if>
-                    <g:if test="${query != 'tipp-seriesName'}">
-                        <td>${tipp.seriesName}</td>
-                    </g:if>
-                    <g:if test="${query != 'tipp-subjectReference'}">
-                        <td>${tipp.subjectReference}</td>
-                    </g:if>
-                    <g:if test="${query != 'tipp-titleType'}">
-                        <td>${tipp.titleType}</td>
-                    </g:if>
-                    <g:if test="${query != 'tipp-medium'}">
-                        <td>${tipp.medium?.getI10n('value')}</td>
-                    </g:if>
+%{--                    <g:if test="${query != 'tipp-seriesName'}">--}%
+%{--                        <td>${tipp.seriesName}</td>--}%
+%{--                    </g:if>--}%
+%{--                    <g:if test="${query != 'tipp-subjectReference'}">--}%
+%{--                        <td>${tipp.subjectReference}</td>--}%
+%{--                    </g:if>--}%
+%{--                    <g:if test="${query != 'tipp-titleType'}">--}%
+%{--                        <td>${tipp.titleType}</td>--}%
+%{--                    </g:if>--}%
+%{--                    <g:if test="${query != 'tipp-medium'}">--}%
+%{--                        <td>${tipp.medium?.getI10n('value')}</td>--}%
+%{--                    </g:if>--}%
+                    <td>
+                        <g:link controller="package" action="show" id="${tipp.pkg.id}" target="_blank">${tipp.pkg.name}</g:link>
+                    </td>
                 </tr>
             </g:each>
         </tbody>

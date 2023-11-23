@@ -6,8 +6,8 @@
 <ui:controlButtons>
     <laser:render template="actions"/>
 </ui:controlButtons>
-<g:set var="visibleOrgRelationsJoin" value="${visibleOrgRelations.findAll{it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}.sort{it.org.sortname}.collect{it.org}.join(' – ')}"/>
-<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" visibleOrgRelationsJoin="${visibleOrgRelationsJoin}">
+
+<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" visibleOrgRelations="${visibleOrgRelations}">
     <ui:xEditable owner="${subscription}" field="name"/>
 </ui:h1HeaderWithIcon>
 <ui:totalNumber class="la-numberHeader" total="${surveys.size()}"/>
@@ -15,9 +15,7 @@
 <ui:anualRings object="${subscription}" controller="subscription" action="surveysConsortia"
                   navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
-
 <laser:render template="nav"/>
-
 
 <ui:messages data="${flash}"/>
 
@@ -36,9 +34,9 @@
             <th>${message(code: 'default.status.label')}</th>
 
             <g:sortableColumn params="${params}" property="surveyInfo.startDate"
-                              title="${message(code: 'default.startDate.label')}"/>
+                              title="${message(code: 'default.startDate.label.shy')}"/>
             <g:sortableColumn params="${params}" property="surveyInfo.endDate"
-                              title="${message(code: 'default.endDate.label')}"/>
+                              title="${message(code: 'default.endDate.label.shy')}"/>
             <th>${message(code: 'surveyProperty.plural.label')}</th>
             <th>
                 <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyConfigDocs.label')}" data-position="top center">
@@ -96,14 +94,10 @@
                     ${surveyInfo.status.getI10n('value')}
                 </td>
                 <td>
-                    <g:formatDate formatName="default.date.format.notime"
-                                  date="${surveyInfo.startDate}"/>
-
+                    <g:formatDate formatName="default.date.format.notime" date="${surveyInfo.startDate}"/>
                 </td>
                 <td>
-
-                    <g:formatDate formatName="default.date.format.notime"
-                                  date="${surveyInfo.endDate}"/>
+                    <g:formatDate formatName="default.date.format.notime" date="${surveyInfo.endDate}"/>
                 </td>
 
                 <td class="center aligned">

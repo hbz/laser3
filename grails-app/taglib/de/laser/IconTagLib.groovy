@@ -2,9 +2,6 @@ package de.laser
 
 import de.laser.auth.Role
 import de.laser.storage.RDStore
-import de.laser.titles.BookInstance
-import de.laser.titles.DatabaseInstance
-import de.laser.titles.JournalInstance
 
 class IconTagLib {
 
@@ -25,7 +22,7 @@ class IconTagLib {
                 icon = 'bordered inverted teal address book la-object-extended'
                 break
             case 'admin':
-                icon = 'la-object trophy'
+                icon = 'la-object tools'
                 break
             case 'affiliation':
                 Role fr = contextService.getUser().formalRole
@@ -39,9 +36,6 @@ class IconTagLib {
                 break
             case 'database':
                 icon = 'bordered la-object-database'
-                break
-            case 'datamanager':
-                icon = 'la-object hdd'
                 break
             case 'ebook':
                 icon = 'bordered la-object-ebook'
@@ -57,6 +51,9 @@ class IconTagLib {
                 break
             case 'journal':
                 icon = 'bordered la-object-journal'
+                break
+            case 'gasco':
+                icon = 'bordered inverted grey layer group la-object-extended'
                 break
             case 'marker':
                 icon = 'bordered inverted purple bookmark la-object-extended'
@@ -83,15 +80,11 @@ class IconTagLib {
                 icon = 'bordered inverted brown tasks la-object-extended'
                 break
             case 'yoda':
-                icon = 'la-object tools'
+                icon = 'la-object dungeon'
                 break
         }
         }
         out << '<i aria-hidden="true" class="icon ' + icon + '"></i> '
-    }
-
-    def childSubscriptionIcon = { attrs, body ->
-        out << '<i class="icon circular orange child la-subscriptionIsChild"></i> '
     }
 
     def propertyIcon = { attrs, body ->
@@ -175,15 +168,15 @@ class IconTagLib {
         String icon = 'question'
 
         switch (attrs.type) {
-            case [ 'Journal', JournalInstance.class.name ]:
+            case [ 'Journal' ]:
                 dc = message(code: 'spotlight.journaltitle')
                 icon = 'newspaper outline'
                 break
-            case [ 'Database', DatabaseInstance.class.name ]:
+            case [ 'Database' ]:
                 dc = message(code: 'spotlight.databasetitle')
                 icon = 'database'
                 break
-            case [ 'Book', 'EBook', BookInstance.class.name ]:
+            case [ 'Book', 'EBook' ]:
                 dc = message(code: 'spotlight.ebooktitle')
                 icon = 'tablet alternate'
                 break
@@ -236,15 +229,21 @@ class IconTagLib {
         out << '</span>'
     }
 
-    def customerTypeIcon = { attrs, body ->
-        if (attrs.org && attrs.org.isCustomerType_Inst_Pro()) {
-            out << '<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="' + attrs.org.getCustomerTypeI10n() + '">'
-            if (attrs.cssClass) {
-                out << '<i class="icon grey trophy ' + attrs.cssClass + '"></i>'
-            } else {
-                out << '<i class="icon grey trophy"></i>'
+    def customerTypeProIcon = { attrs, body ->
+        if (attrs.org) {
+            if (attrs.org.isCustomerType_Inst_Pro()) {
+//            if (attrs.org.isCustomerType_Pro()) {
+                out << '<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="' + attrs.org.getCustomerTypeI10n() + '">'
+
+//                String color = attrs.org.isCustomerType_Consortium_Pro() ? 'teal' : 'grey'
+                String color = 'grey'
+                if (attrs.cssClass) {
+                    out << '<i class="icon ' + color + ' trophy ' + attrs.cssClass + '"></i>'
+                } else {
+                    out << '<i class="icon ' + color + ' trophy"></i>'
+                }
+                out << '</span>'
             }
-            out << '</span>'
         }
     }
 
@@ -285,6 +284,18 @@ class IconTagLib {
         }
     }
 
+    def multiYearIcon = { attrs, body ->
+        String tt = (attrs.isConsortial && attrs.isConsortial == 'true') ? message(code: 'subscription.isMultiYear.consortial.label') : message(code: 'subscription.isMultiYear.label')
+//        String color = attrs.color ? ' ' + attrs.color : ''
+        String color = attrs.color ? ' grey' : '' // tmp override
+
+        out << '<span class="la-long-tooltip la-popup-tooltip la-delay"'
+        out << ' data-position="bottom center" data-content="' + tt +'">'
+        out << '<i class="forward icon' + color + '"></i>'
+//        out << '<i class="double angle right icon' + color + '"></i>'
+        out << '</span>'
+    }
+
     // <ui:myIcon type="wekbchanges" color="optional" />
 
     def markerIcon = { attrs, body ->
@@ -304,7 +315,6 @@ class IconTagLib {
         } else {
             out << '<span>'
         }
-
         out << '<i class="icon ' + (attrs.color ? attrs.color + ' ' : '') + 'star"></i>'
         out << '</span>'
     }

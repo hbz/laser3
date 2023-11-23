@@ -31,7 +31,9 @@
     <laser:render template="breadcrumb"
                 model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
 
-    <ui:h1HeaderWithIcon text="${orgInstance.name}" />
+    <ui:h1HeaderWithIcon text="${orgInstance.name}">
+        <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
+    </ui:h1HeaderWithIcon>
 
     <laser:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}" />
 

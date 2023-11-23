@@ -37,6 +37,10 @@ class LinkTagLib {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
             label = message(code: 'default.provider.label') + ' in der we:kb aufrufen'
         }
+        else if (attrs.type == 'vendor') {
+            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
+            label = message(code: 'default.agency.label') + ' in der we:kb aufrufen'
+        }
         else if (attrs.type == 'package') {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
             label = message(code: 'package.label') + ' in der we:kb aufrufen'
@@ -53,9 +57,9 @@ class LinkTagLib {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
             label = message(code: 'title.label') + ' in der we:kb aufrufen'
         }
-        out << '<span class="la-popup-tooltip la-delay" data-position="top right" data-content="' + label + '" style="bottom: -3px">&nbsp;'
+        out << '<span class="la-popup-tooltip la-delay" data-position="top right" data-content="' + label + '" >&nbsp;'
         out << '<a href="' + href + '" target="_blank" aria-label="' + label + '">'
-        out << '<i class="icon la-gokb" aria-hidden="true"></i>'
+        out << '<i class="icon small la-gokb" aria-hidden="true"></i>'
         out << '</a>'
         out << '</span>'
     }
@@ -75,7 +79,7 @@ class LinkTagLib {
         }
 
         out << '<a href="' + href + '" target="_blank" aria-label="' + label + '" '
-        out << 'class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay" '
+        out << 'class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay" '
         out << 'data-position="top right" data-content="' + label + '" '
 //        out << 'data-content="' + message(code: 'org.isWekbCurated.header.label') + '" '
 //        out << 'aria-label="' + message(code: 'org.isWekbCurated.header.label') + '" '

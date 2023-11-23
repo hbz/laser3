@@ -7,7 +7,9 @@ import de.laser.Platform
  * This class was originally designed for retain missing periods of data and is now used
  * as temporary entity to mark periods which could not be retrieved due to a server fault and whose
  * request should be retried later
+ * @deprecated Disused as data is not saved in LAS:eR but retrieved in real-time from the provider
  */
+@Deprecated
 class StatsMissingPeriod implements Comparable {
 
     Platform platform

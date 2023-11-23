@@ -13,37 +13,36 @@
 </ui:breadcrumbs>
 
 <ui:controlButtons>
-        <ui:exportDropdown>
-            <ui:exportDropdownItem>
-                <g:link class="item" controller="survey" action="generatePdfForParticipant"
-                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]">PDF-Export
-                </g:link>
-            </ui:exportDropdownItem>
-        </ui:exportDropdown>
-    <ui:actionsDropdown>
-        <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_SURVEY_STARTED.id]}">
-
+    <ui:exportDropdown>
+        <ui:exportDropdownItem>
+            <g:link class="item" controller="survey" action="generatePdfForParticipant"
+                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]">PDF-Export
+            </g:link>
+        </ui:exportDropdownItem>
+    </ui:exportDropdown>
+    <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_SURVEY_STARTED.id]}">
+        <ui:actionsDropdown>
             <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
                 <ui:actionsDropdownItem controller="survey" action="openSurveyAgainForParticipant"
-                                           params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
-                                           message="openSurveyAgainForParticipant.button"/>
+                                               params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
+                                               message="openSurveyAgainForParticipant.button"/>
 
             </g:if>
             <g:if test="${!surveyConfig.isResultsSetFinishByOrg(participant)}">
                 <ui:actionsDropdownItem controller="survey" action="finishSurveyForParticipant"
-                                           params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
-                                           message="finishSurveyForParticipant.button"/>
+                                               params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
+                                               message="finishSurveyForParticipant.button"/>
 
             </g:if>
-        </g:if>
-    </ui:actionsDropdown>
-
+        </ui:actionsDropdown>
+    </g:if>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon text="${surveyInfo.name}" type="Survey">
+<ui:h1HeaderWithIcon type="Survey">
     <ui:xEditable owner="${surveyInfo}" field="name"/>
     <uiSurvey:status object="${surveyInfo}"/>
 </ui:h1HeaderWithIcon>
+
 
 <laser:render template="nav"/>
 

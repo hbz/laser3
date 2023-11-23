@@ -2,10 +2,10 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.config.ConfigMapper
-import de.laser.mail.MailReport
 import de.laser.properties.PropertyDefinition
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
@@ -15,7 +15,6 @@ import de.laser.utils.AppUtils
 import grails.gorm.transactions.Transactional
 import grails.plugin.asyncmail.AsynchronousMailMessage
 import grails.plugin.asyncmail.AsynchronousMailService
-import grails.plugins.mail.MailService
 import grails.web.mvc.FlashScope
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.web.servlet.mvc.GrailsWebRequest
@@ -28,12 +27,10 @@ import javax.servlet.http.HttpServletRequest
 @Transactional
 class MailSendService {
 
-    MailService mailService
+    ContextService contextService
     EscapeService escapeService
     MessageSource messageSource
-    AccessService accessService
     SurveyService surveyService
-    SubscriptionService subscriptionService
     AsynchronousMailService asynchronousMailService
 
     String fromMail
@@ -50,9 +47,20 @@ class MailSendService {
         messageSource = BeanStore.getMessageSource()
     }
 
+    /**
+     * Builds a notification mail about the given survey
+     * @param surveyInfo the survey about which a notification should be sent
+     * @param reminderMail is it a reminder mail?
+     * @return a {@link Map} containing the details of the mail to be sent
+     */
     Map mailSendConfigBySurvey(SurveyInfo surveyInfo, boolean reminderMail) {
         Map<String, Object> result = [:]
-        result.mailFrom = fromMail
+        String ownerFromMail
+        if(OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
+            ownerFromMail = OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY).strValue
+        }
+
+        result.mailFrom = ownerFromMail ?: fromMail
         result.mailSubject = ""
         result.mailText = ""
 
@@ -73,11 +81,57 @@ class MailSendService {
         result
     }
 
+    Map mailSendConfigBySurveys(List<SurveyInfo> surveys, boolean reminderMail) {
+        Map<String, Object> result = [:]
+
+        String ownerFromMail
+        if(OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
+            ownerFromMail = OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY).strValue
+        }
+
+        result.mailFrom = ownerFromMail ?: fromMail
+
+        result.mailFrom = fromMail
+        result.mailSubject = ""
+        result.mailText = ""
+
+        Locale language = new Locale("de")
+        Object[] args
+        result.mailSubject = subjectSystemPraefix
+        if(reminderMail) {
+            result.mailSubject = result.mailSubject + ' ' + messageSource.getMessage('email.subject.surveysReminder', args, language)
+        }
+
+        result.mailSubject = result.mailSubject + ' ' + messageSource.getMessage('survey.plural', args, language)
+        result.mailSubject = escapeService.replaceUmlaute(result.mailSubject)
+
+        result.mailText = surveyService.surveysMailTextAsString(surveys, reminderMail)
+
+
+        result
+    }
+
+    /**
+     * Sends survey notifications to the selected mail addresses about the given survey.
+     * The mail header and body are user-defined and the addressees are some or all of the participant institutions of the given survey
+     * @param surveyInfo the survey whose participants should be notified
+     * @param reminderMail is this a reminder mail?
+     * @param parameterMap the request parameter map, containing also the mail header and body which are being submitted via form
+     * @return a ${link Map} containing the details of and about the mail to be send
+     * @see #mailSendConfigBySurvey(de.laser.survey.SurveyInfo, boolean)
+     * @see SurveyInfo
+     */
     Map mailSendProcessBySurvey(SurveyInfo surveyInfo, boolean reminderMail, GrailsParameterMap parameterMap) {
         Map<String, Object> result = [:]
 
         FlashScope flash = getCurrentFlashScope()
-        result.mailFrom = fromMail
+
+        String ownerFromMail
+        if(OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
+            ownerFromMail = OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY).strValue
+        }
+
+        result.mailFrom = ownerFromMail ?: fromMail
         result.mailSubject = parameterMap.mailSubject
 
         result.editable = (surveyInfo && surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED]) ? surveyInfo.isEditable() : false
@@ -87,6 +141,23 @@ class MailSendService {
 
         if (parameterMap.selectedOrgs && result.editable) {
             result.surveyConfig = surveyInfo.surveyConfigs[0]
+            String replyToMail
+
+            if(ownerFromMail){
+                replyToMail = ownerFromMail
+            }else {
+                List generalContactsEMails = []
+
+                surveyInfo.owner.getGeneralContactPersons(true)?.each { person ->
+                    person.contacts.each { contact ->
+                        if (RDStore.CCT_EMAIL == contact.contentType) {
+                            generalContactsEMails << contact.content
+                        }
+                    }
+                }
+
+                replyToMail = (generalContactsEMails.size() > 0) ? generalContactsEMails[0].toString() : null
+            }
 
             parameterMap.list('selectedOrgs').each { soId ->
 
@@ -149,21 +220,12 @@ class MailSendService {
 //                    }
 //                }
 
-                List<User> formalUserList = result.orgList ? User.findAllByFormalOrgInList(result.orgList) : []
-                List<String> userSurveyNotification = []
-
-                formalUserList.each { fu ->
-                    if (fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
-                            fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES) {
-                        userSurveyNotification << fu.email
-                    }
-                }
-
 
                 AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
                     multipart true
                     to email
                     from result.mailFrom
+                    replyTo replyToMail
                     subject result.mailSubject
                     text parameterMap.mailText
                 }
@@ -209,6 +271,97 @@ class MailSendService {
         result
     }
 
+    Map mailSendProcessBySurveys(List<SurveyInfo> surveys, boolean reminderMail, Org org, GrailsParameterMap parameterMap) {
+        Map<String, Object> result = [:]
+
+        FlashScope flash = getCurrentFlashScope()
+
+        String ownerFromMail
+        if(OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
+            ownerFromMail = OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY).strValue
+        }
+
+        result.mailFrom = ownerFromMail ?: fromMail
+        result.mailSubject = parameterMap.mailSubject
+
+        result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+
+        if (result.editable) {
+            String replyToMail
+            if(ownerFromMail){
+                replyToMail = ownerFromMail
+            }else{
+                List generalContactsEMails = []
+
+                surveys[0].owner.getGeneralContactPersons(true)?.each { person ->
+                    person.contacts.each { contact ->
+                        if (RDStore.CCT_EMAIL == contact.contentType) {
+                            generalContactsEMails << contact.content
+                        }
+                    }
+                }
+
+                replyToMail = (generalContactsEMails.size() > 0) ? generalContactsEMails[0].toString() : null
+            }
+
+
+            surveys.each { surveyInfo ->
+                SurveyConfig surveyConfig = surveyInfo.surveyConfigs[0]
+
+                if (reminderMail) {
+                    SurveyOrg.withTransaction { TransactionStatus ts ->
+                        SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(org, surveyConfig)
+
+                        surveyOrg.reminderMailDate = new Date()
+                        surveyOrg.save()
+
+                        if (surveyConfig.subSurveyUseForTransfer) {
+                            surveyConfig.subscription.reminderSent = true
+                            surveyConfig.subscription.reminderSentDate = new Date()
+                        }
+                    }
+                }
+
+            }
+
+            List emailAddressesToSend = []
+
+            if (parameterMap.emailAddresses) {
+                parameterMap.emailAddresses.split('; ').each {
+                    emailAddressesToSend << it.trim()
+                }
+            }
+
+            if (parameterMap.userSurveyNotificationMails) {
+                parameterMap.userSurveyNotificationMails.split('; ').each {
+                    emailAddressesToSend << it.trim()
+                }
+            }
+
+            emailAddressesToSend = emailAddressesToSend.unique()
+
+            emailAddressesToSend.each { String email ->
+
+                AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
+                    multipart true
+                    to email
+                    from result.mailFrom
+                    replyTo replyToMail
+                    subject result.mailSubject
+                    text parameterMap.mailText
+                }
+            }
+        }
+        Locale language = new Locale("de")
+        Object[] args
+
+
+        flash.message = messageSource.getMessage('mail.send.success', args, language)
+
+
+        result
+    }
+
     /**
      * Sends a mail about the survey to the given user of the given institution about the given surveys
      * @param user the user to be notified
@@ -237,17 +390,29 @@ class MailSendService {
                             ccAddress = user.getSetting(UserSetting.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
                         }
 
-                        List generalContactsEMails = []
-
-                        survey.owner.getGeneralContactPersons(true)?.each { person ->
-                            person.contacts.each { contact ->
-                                if (['Mail', 'E-Mail'].contains(contact.contentType?.value)) {
-                                    generalContactsEMails << contact.content
-                                }
-                            }
+                        String ownerFromMail
+                        if(OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
+                            ownerFromMail = OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY).strValue
                         }
 
-                        replyToMail = (generalContactsEMails.size() > 0) ? generalContactsEMails[0].toString() : null
+                        String mailFrom = ownerFromMail ?: fromMail
+
+                        if(ownerFromMail){
+                            replyToMail = ownerFromMail
+                        }else {
+
+                            List generalContactsEMails = []
+
+                            survey.owner.getGeneralContactPersons(true)?.each { person ->
+                                person.contacts.each { contact ->
+                                    if (RDStore.CCT_EMAIL == contact.contentType) {
+                                        generalContactsEMails << contact.content
+                                    }
+                                }
+                            }
+                            replyToMail = (generalContactsEMails.size() > 0) ? generalContactsEMails[0].toString() : null
+                        }
+
                         Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value.toString())
                         String mailSubject = subjectSystemPraefix
                         if(reminderMail) {
@@ -262,7 +427,7 @@ class MailSendService {
                             AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
                                 multipart true
                                 to emailReceiver
-                                from fromMail
+                                from mailFrom
                                 cc ccAddress
                                 replyTo replyToMail
                                 subject mailSubject
@@ -273,7 +438,7 @@ class MailSendService {
                             AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
                                 multipart true
                                 to emailReceiver
-                                from fromMail
+                                from mailFrom
                                 replyTo replyToMail
                                 subject mailSubject
                                 text view: "/mailTemplates/text/notificationSurvey", model: [language: language, survey: survey, reminder: reminderMail]
@@ -286,7 +451,7 @@ class MailSendService {
                 } catch (Exception e) {
                     String eMsg = e.message
 
-                    log.error("SurveyService - sendSurveyEmail() :: Unable to perform email due to exception ${eMsg}")
+                    log.error("SurveyService - sendSurveyEmail() :: Unable to perform email due to exception: ${eMsg}")
                     SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user.getDisplayName(), org: org.name, survey: survey.name])
                 }
             }
@@ -334,7 +499,7 @@ class MailSendService {
 
                     surveyInfo.owner.getGeneralContactPersons(true)?.each { person ->
                         person.contacts.each { contact ->
-                            if (['Mail', 'E-Mail'].contains(contact.contentType?.value)) {
+                            if (RDStore.CCT_EMAIL == contact.contentType) {
                                 generalContactsEMails << contact.content
                             }
                         }
@@ -362,14 +527,14 @@ class MailSendService {
                                     from fromMail
                                     cc ccAddress
                                     subject mailSubject
-                                    html(view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, survey: surveyInfo, surveyResults: surveyResults, generalContactsEMails: generalContactsEMails])
+                                    html(view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, org: participationFinish, survey: surveyInfo, surveyResults: surveyResults, generalContactsEMails: generalContactsEMails])
                                 }
                             } else {
                                 AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
                                     to emailReceiver
                                     from fromMail
                                     subject mailSubject
-                                    html(view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, survey: surveyInfo, surveyResults: surveyResults, generalContactsEMails: generalContactsEMails])
+                                    html(view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, org: participationFinish, survey: surveyInfo, surveyResults: surveyResults, generalContactsEMails: generalContactsEMails])
                                 }
                             }
 
@@ -378,7 +543,7 @@ class MailSendService {
                     } catch (Exception e) {
                         String eMsg = e.message
 
-                        log.error("emailToSurveyParticipationByFinish - sendSurveyEmail() :: Unable to perform email due to exception ${eMsg}")
+                        log.error("emailToSurveyParticipationByFinish - sendSurveyEmail() :: Unable to perform email due to exception: ${eMsg}")
                         SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user.getDisplayName(), org: participationFinish.name, survey: surveyInfo.name])
                     }
                 }
@@ -399,6 +564,41 @@ class MailSendService {
         }
 
         if (surveyInfo.owner) {
+            List surveyResults = []
+
+            surveyInfo.surveyConfigs[0].getSortedSurveyProperties().each { PropertyDefinition propertyDefinition ->
+                surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(participationFinish, surveyInfo.surveyConfigs[0], propertyDefinition)
+            }
+
+            String mailFinishResult
+            if(OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT) != OrgSetting.SETTING_NOT_FOUND){
+                mailFinishResult = OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT).strValue
+            }
+
+            if(mailFinishResult){
+                Locale language = new Locale('de')
+                String mailSubject = subjectSystemPraefix
+
+                SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(surveyInfo.surveyConfigs[0], participationFinish)
+                if(surveyOrg && surveyOrg.orgInsertedItself) {
+                    Object[] args
+                    mailSubject = mailSubject + messageSource.getMessage('default.new', args, language) + ' '
+                }
+
+                mailSubject = mailSubject + surveyInfo.name +  ' (' + surveyInfo.type.getI10n('value', language) + ') ['
+                mailSubject = mailSubject + participationFinish.sortname + ']'
+
+                mailSubject = escapeService.replaceUmlaute(mailSubject)
+
+                AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
+                    to mailFinishResult
+                    from fromMail
+                    subject mailSubject
+                    html(view: "/mailTemplates/html/notificationSurveyParticipationFinishForOwner", model: [org: participationFinish, survey: surveyInfo, surveyResults: surveyResults])
+                }
+            }
+
+
             //Only User that approved
             List<User> formalUserList = surveyInfo.owner ? User.findAllByFormalOrg(surveyInfo.owner) : []
 
@@ -433,12 +633,6 @@ class MailSendService {
                                 ccAddress = user.getSetting(UserSetting.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
                             }
 
-                            List surveyResults = []
-
-                            surveyInfo.surveyConfigs[0].getSortedSurveyProperties().each { PropertyDefinition propertyDefinition ->
-                                surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(participationFinish, surveyInfo.surveyConfigs[0], propertyDefinition)
-                            }
-
                             if (isNotificationCCbyEmail && ccAddress) {
                                 AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
                                     to emailReceiver
@@ -461,7 +655,7 @@ class MailSendService {
                     } catch (Exception e) {
                         String eMsg = e.message
 
-                        log.error("emailToSurveyOwnerbyParticipationFinish - sendSurveyEmail() :: Unable to perform email due to exception ${eMsg}")
+                        log.error("emailToSurveyOwnerbyParticipationFinish - sendSurveyEmail() :: Unable to perform email due to exception: ${eMsg}")
                         SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user.getDisplayName(), org: participationFinish.name, survey: surveyInfo.name])
                     }
                 }
@@ -472,6 +666,7 @@ class MailSendService {
     /**
      * Sends a mail to a given user. The system announcement is being included in a mail template
      * @param user the {@link User} to be notified
+     * @param systemAnnouncement the {@link SystemAnnouncement} to be broadcasted
      * @throws Exception
      */
     void sendSystemAnnouncementMail(User user, SystemAnnouncement systemAnnouncement) throws Exception {
@@ -542,10 +737,14 @@ class MailSendService {
             }
         }
         catch (Exception e) {
-            log.error "Unable to perform email due to exception ${e.message}"
+            log.error "Unable to perform email due to exception: ${e.message}"
         }
     }
 
+    /**
+     * Helper method to fetch the {@link FlashScope} for the current request
+     * @return the current {@link FlashScope} registered to this request
+     */
     FlashScope getCurrentFlashScope() {
         GrailsWebRequest grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
         HttpServletRequest request = grailsWebRequest.getCurrentRequest()

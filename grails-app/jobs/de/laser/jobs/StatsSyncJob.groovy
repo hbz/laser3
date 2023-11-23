@@ -5,6 +5,7 @@ import de.laser.config.ConfigMapper
 import de.laser.base.AbstractJob
 import groovy.util.logging.Slf4j
 
+@Deprecated
 @Slf4j
 class StatsSyncJob extends AbstractJob {
 

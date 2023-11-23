@@ -1,12 +1,10 @@
 package de.laser
 
-import de.laser.api.v0.ApiToolkit
-import de.laser.auth.Role
-import de.laser.auth.User
-import de.laser.config.ConfigMapper
+import de.laser.properties.OrgProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.remote.ApiSource
 import de.laser.storage.RDStore
+import de.laser.traces.DeletedObject
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -24,6 +22,10 @@ class OrganisationService {
     GokbService gokbService
 
     List<String> errors = []
+
+    static String RESULT_BLOCKED            = 'RESULT_BLOCKED'
+    static String RESULT_SUCCESS            = 'RESULT_SUCCESS'
+    static String RESULT_ERROR              = 'RESULT_ERROR'
 
     /**
      * Initialises mandatory keys for a new organisation
@@ -46,6 +48,14 @@ class OrganisationService {
         }
         if (OrgSetting.get(org, OrgSetting.KEYS.EZB_SERVER_ACCESS) == OrgSetting.SETTING_NOT_FOUND) {
             OrgSetting.add(org, OrgSetting.KEYS.EZB_SERVER_ACCESS, RDStore.YN_NO)
+        }
+
+        if (org.isCustomerType_Consortium_Pro() && OrgSetting.get(org, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY) == OrgSetting.SETTING_NOT_FOUND) {
+            OrgSetting.add(org, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY, '')
+        }
+
+        if (org.isCustomerType_Consortium_Pro() && OrgSetting.get(org, OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT) == OrgSetting.SETTING_NOT_FOUND) {
+            OrgSetting.add(org, OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT, '')
         }
 
         // called after
@@ -201,16 +211,6 @@ class OrganisationService {
     }
 
     /**
-     * Dumps the errors occurred during creation as an outputable string
-     * @return the error list as a string joined by HTML line breaks for frontend display
-     */
-    String dumpErrors() {
-        String out = errors.join('<br>')
-        errors = []
-        out
-    }
-
-    /**
      * Helper method to group reader numbers by their key property which is a temporal unit
      * @param readerNumbers the {@link List} of {@link ReaderNumber}s to group
      * @param keyProp may be a dueDate or semester; a temporal unit to group the reader numbers by
@@ -241,18 +241,207 @@ class OrganisationService {
         Platform.executeQuery('select p from Platform p join p.org o where p.gokbId in (:uuids) and p.org is not null order by o.name, o.sortname, p.name', [uuids: uuids])
     }
 
+    /**
+     * Gets a (filtered) map of provider records from the we:kb
+     * @param params the request parameters
+     * @param result a result generics map, containing also configuration params for the request
+     * @return a {@link Map} of structure [providerUUID: providerRecord] containing the request results
+     */
     Map<String, Map> getWekbOrgRecords(GrailsParameterMap params, Map result) {
-        Map<String, Object> queryParams = [componentType: "Org"]
-        if (params.curatoryGroup || params.providerRole) {
-            if(params.curatoryGroup)
-                queryParams.curatoryGroupExact = params.curatoryGroup.replaceAll('&','ampersand').replaceAll('\\+','%2B').replaceAll(' ','%20')
-            if(params.providerRole)
-                queryParams.role = RefdataValue.get(params.providerRole).value.replaceAll(' ','%20')
+        Map<String, Map> records = [:]
+        Set<String> componentTypes = ['Org', 'Vendor']
+        componentTypes.each { String componentType ->
+            Map<String, Object> queryParams = [componentType: componentType]
+            if (params.curatoryGroup || params.providerRole) {
+                if(params.curatoryGroup)
+                    queryParams.curatoryGroupExact = params.curatoryGroup.replaceAll('&','ampersand').replaceAll('\\+','%2B').replaceAll(' ','%20')
+                if(params.providerRole)
+                    queryParams.role = RefdataValue.get(params.providerRole).value.replaceAll(' ','%20')
+            }
+            Map<String, Object> wekbResult = gokbService.doQuery(result, [max: 10000, offset: 0], queryParams)
+            if(wekbResult.recordsCount > 0)
+                records.putAll(wekbResult.records.collectEntries { Map wekbRecord -> [wekbRecord.uuid, wekbRecord] })
         }
-        Map<String, Object> wekbResult = gokbService.doQuery(result, [max: 10000, offset: 0], queryParams)
-        if(wekbResult.recordsCount > 0)
-            wekbResult.records.collectEntries { Map wekbRecord -> [wekbRecord.uuid, wekbRecord] }
-        else [:]
+        records
     }
 
+    Map<String, Object> getNamespacesWithValidations() {
+        Map<String, Object> result = [:]
+        Locale locale = LocaleUtils.getCurrentLocale()
+        IdentifierNamespace.findAllByValidationRegexIsNotNull().each { IdentifierNamespace idns ->
+            result[idns.id] = [pattern: idns.validationRegex, prompt: messageSource.getMessage("validation.${idns.ns.replaceAll(' ','_')}Match", null, locale), placeholder: messageSource.getMessage("identifier.${idns.ns.replaceAll(' ','_')}.info", null, locale)]
+        }
+        result
+    }
+
+    /**
+     * Merges the given two organisations; displays eventual attached objects
+     * @param org the organisation which should be merged
+     * @param replacement the organisation to merge with
+     * @param dryRun should the merge avoided and only information be fetched?
+     * @return a map returning the information about the organisation
+     */
+    Map<String, Object> mergeOrganisations(Org org, Org replacement, boolean dryRun) {
+
+        Map<String, Object> result = [:]
+
+        // gathering references
+
+        List ids            = new ArrayList(org.ids)
+        List outgoingCombos = new ArrayList(org.outgoingCombos)
+        List incomingCombos = new ArrayList(org.incomingCombos)
+
+        List orgLinks      = new ArrayList(org.links)
+
+        List addresses      = new ArrayList(org.addresses)
+        List contacts       = new ArrayList(org.contacts)
+        List prsLinks       = new ArrayList(org.prsLinks)
+        List docContexts    = new ArrayList(org.documents)
+        List platforms      = new ArrayList(org.platforms)
+        List tipps          = TitleInstancePackagePlatform.executeQuery('select oo.tipp.id from OrgRole oo where oo.org = :source and oo.tipp != null', [source: org])
+
+        List customProperties       = new ArrayList(org.propertySet.findAll { it.type.tenant == null })
+        List privateProperties      = new ArrayList(org.propertySet.findAll { it.type.tenant != null })
+
+        // collecting information
+
+        result.info = []
+
+        //result.info << ['Links: Orgs', links, FLAG_BLOCKER]
+
+        result.info << ['Identifikatoren', ids]
+        result.info << ['Combos (out)', outgoingCombos]
+        result.info << ['Combos (in)', incomingCombos]
+
+        result.info << ['OrgRoles', orgLinks]
+
+        result.info << ['Adressen', addresses]
+        result.info << ['Kontaktdaten', contacts]
+        result.info << ['Personen', prsLinks]
+        result.info << ['Dokumente', docContexts]   // delete ? docContext->doc
+        result.info << ['Plattformen', platforms]
+        result.info << ['Titel', tipps]
+        //result.info << ['TitleInstitutionProvider (inst)', tips, FLAG_BLOCKER]
+        //result.info << ['TitleInstitutionProvider (provider)', tipsProviders, FLAG_BLOCKER]
+        //result.info << ['TitleInstitutionProvider (provider)', tipsProviders, FLAG_SUBSTITUTE]
+
+        result.info << ['Allgemeine Merkmale', customProperties]
+        result.info << ['Private Merkmale', privateProperties]
+
+
+        // checking constraints and/or processing
+
+        result.mergeable = true
+
+        if (dryRun || ! result.mergeable) {
+            return result
+        }
+        else {
+            Org.withTransaction { status ->
+
+                try {
+                    Map<String, Object> genericParams = [source: org, target: replacement]
+                    // identifiers
+                    org.ids.clear()
+                    ids.each { Identifier id ->
+                        id.org = replacement
+                        id.save()
+                    }
+
+                    org.outgoingCombos.clear()
+                    org.incomingCombos.clear()
+                    outgoingCombos.each { Combo c ->
+                        c.fromOrg = replacement
+                        c.save()
+                    }
+                    incomingCombos.each { Combo c ->
+                        c.toOrg = replacement
+                        c.save()
+                    }
+
+                    // orgTypes
+                    //org.orgType.clear()
+                    //orgTypes.each{ tmp -> tmp.delete() }
+                    org.links.clear()
+                    orgLinks.each { OrgRole oo ->
+                        Map<String, Object> checkParams = [target: replacement, roleType: oo.roleType]
+                        String targetClause = ''
+                        if(oo.sub) {
+                            targetClause = 'oo.sub = :sub'
+                            checkParams.sub = oo.sub
+                        }
+                        else if(oo.lic) {
+                            targetClause = 'oo.lic = :lic'
+                            checkParams.lic = oo.lic
+                        }
+                        else if(oo.pkg) {
+                            targetClause = 'oo.pkg = :pkg'
+                            checkParams.pkg = oo.pkg
+                        }
+                        else if(oo.tipp) {
+                            targetClause = 'oo.tipp = :tipp'
+                            checkParams.tipp = oo.tipp
+                        }
+                        List orgRoleCheck = OrgRole.executeQuery('select oo from OrgRole oo where oo.org = :target and oo.roleType = :roleType and '+targetClause, checkParams)
+                        if(!orgRoleCheck) {
+                            oo.org = replacement
+                            oo.save()
+                        }
+                        else {
+                            oo.delete()
+                        }
+                    }
+
+                    // orgSettings
+                    /*
+                    Set<String> specialAccess = []
+                    Set<OrgSetting.KEYS> specGrants = [OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS, OrgSetting.KEYS.EZB_SERVER_ACCESS]
+                    specGrants.each { OrgSetting.KEYS specGrant ->
+                        if(OrgSetting.get(org, specGrant) == RDStore.YN_YES) {
+                            specialAccess.addAll(ApiToolkit.getOrgsWithSpecialAPIAccess(specGrant))
+                        }
+                    }
+                    */
+                    OrgSetting.executeUpdate('delete from OrgSetting os where os.org = :source', [source: org])
+
+                    // addresses
+                    org.addresses.clear()
+                    log.debug("${Address.executeUpdate('update Address a set a.org = :target where a.org = :source', genericParams)} addresses updated")
+
+                    // contacts
+                    org.contacts.clear()
+                    log.debug("${Contact.executeUpdate('update Contact c set c.org = :target where c.org = :source', genericParams)} contacts updated")
+
+                    // private properties
+                    //org.privateProperties.clear()
+                    //privateProperties.each { tmp -> tmp.delete() }
+
+                    // custom properties
+                    org.propertySet.clear()
+                    log.debug("${OrgProperty.executeUpdate('update OrgProperty op set op.owner = :target where op.owner = :source', genericParams)} properties updated")
+
+                    org.altnames.clear()
+                    log.debug("${AlternativeName.executeUpdate('update AlternativeName alt set alt.org = :target where alt.org = :source', genericParams)} alternative names updated")
+                    AlternativeName.construct([name: org.name, org: replacement])
+
+                    org.delete()
+
+                    DeletedObject.withTransaction {
+                        DeletedObject.construct(org)
+                    }
+                    status.flush()
+
+                    result.status = RESULT_SUCCESS
+                }
+                catch (Exception e) {
+                    log.error 'error while merging org ' + org.id + ' .. rollback: ' + e.message
+                    e.printStackTrace()
+                    status.setRollbackOnly()
+                    result.status = RESULT_ERROR
+                }
+            }
+        }
+
+        result
+    }
 }

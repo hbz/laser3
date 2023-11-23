@@ -14,7 +14,7 @@
         </ui:exportDropdown>
 
         <%
-            editable = (editable && contextService.hasPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || contextService.is_ORG_COM_EDITOR()
+            editable = (editable && (contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro())) || contextService.is_ORG_COM_EDITOR_or_ROLEADMIN()
         %>
         <g:if test="${editable}">
             <ui:actionsDropdown>
@@ -34,7 +34,8 @@
                               tmplConfigShow: [
                                       ['name', 'orgStatus', 'isLegallyObliged'],
                                       ['identifier', 'identifierNamespace', 'customerIDNamespace', 'isMyX'],
-                                      ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup']
+                                      ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'],
+                                      ['discoverySystemsFrontend', 'discoverySystemsIndex']
                               ],
                               tmplConfigFormFilter: true
                       ]"/>

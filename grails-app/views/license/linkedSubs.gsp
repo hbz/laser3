@@ -6,18 +6,17 @@
 
     <ui:controlButtons>
         <g:if test="${userService.hasFormalAffiliation(user, institution, 'INST_EDITOR')}">
-            <laser:render template="actions" />
+            <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
         </g:if>
     </ui:controlButtons>
 
-    <g:set var="visibleOrgRelationsJoin" value="${visibleOrgRelations.findAll{it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}.sort{it.org.sortname}.collect{it.org}.join(' – ')}"/>
-    <ui:h1HeaderWithIcon visibleOrgRelationsJoin="${visibleOrgRelationsJoin}">
+    <ui:h1HeaderWithIcon visibleOrgRelations="${visibleOrgRelations}">
         <ui:xEditable owner="${license}" field="reference" id="reference"/>
     </ui:h1HeaderWithIcon>
     <ui:totalNumber total="${subscriptions.size() ?: 0}"/>
     <ui:anualRings object="${license}" controller="license" action="linkedSubs" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
-<laser:render template="nav" />
+<laser:render template="${customerTypeService.getNavTemplatePath()}" />
 
 <g:if test="${license.instanceOf && (institution.id == license.getLicensingConsortium()?.id)}">
     <ui:msg class="negative" header="${message(code:'myinst.message.attention')}" noClose="true">
@@ -119,8 +118,8 @@
                     <i class="arrow left icon"></i>
                 </span>
             </th>
-            <th>${message(code:'default.startDate.label')}</th>
-            <th>${message(code:'default.endDate.label')}</th>
+            <th>${message(code:'default.startDate.label.shy')}</th>
+            <th>${message(code:'default.endDate.label.shy')}</th>
             <th>
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                       data-content="${message(code: 'default.next.label')}">
@@ -129,10 +128,7 @@
             </th>
             <th>${message(code:'default.status.label')}</th>
             <th class="la-no-uppercase">
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                      data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
-                    <i class="map orange icon"></i>
-                </span>
+                <ui:multiYearIcon isConsortial="true" />
             </th>
         </tr>
     </thead>
@@ -164,7 +160,7 @@
                             </span>
                         </g:if>
 
-                        <ui:customerTypeIcon org="${subscr}" />
+                        <ui:customerTypeProIcon org="${subscr}" />
 
                         <div class="ui list">
                             <g:each in="${Person.getPublicByOrgAndFunc(subscr, 'General contact person')}" var="gcp">
@@ -214,10 +210,7 @@
                 </td>
                 <td>
                     <g:if test="${sub.isMultiYear}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                              data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
-                            <i class="map orange icon"></i>
-                        </span>
+                        <ui:multiYearIcon isConsortial="true" color="orange" />
                     </g:if>
                 </td>
             </tr>

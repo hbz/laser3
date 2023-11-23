@@ -1,5 +1,5 @@
 
-## Upgrade from Grails 2.5.6 to 3.3.11
+## Details: Upgrade from Grails 2.5.6 to 3.3.11
 
 #### Updated Dependencies
 

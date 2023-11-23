@@ -8,17 +8,16 @@
         <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
         <ui:controlButtons>
-            <laser:render template="actions" />
+            <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
         </ui:controlButtons>
 
-        <g:set var="visibleOrgRelationsJoin" value="${visibleOrgRelations.findAll{it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}.sort{it.org.sortname}.collect{it.org}.join(' – ')}"/>
-        <ui:h1HeaderWithIcon visibleOrgRelationsJoin="${visibleOrgRelationsJoin}">
+        <ui:h1HeaderWithIcon visibleOrgRelations="${visibleOrgRelations}">
             <ui:xEditable owner="${license}" field="reference" id="reference"/>
         </ui:h1HeaderWithIcon>
 
         <ui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
-        <laser:render template="nav" />
+        <laser:render template="${customerTypeService.getNavTemplatePath()}" />
 
         <%--<ui:objectStatus object="${license}" status="${license.status}" />--%>
 
@@ -46,7 +45,7 @@
 
                 <div class="la-inline-lists">
                     <div class="ui two doubling stackable cards">
-                        <div class="ui card ">
+                        <div class="ui card">
                             <div class="content">
                                 <dl>
                                     <dt class="control-label">${message(code: 'license.startDate.label')}</dt>
@@ -77,7 +76,7 @@
                                 </dl>
                             </div>
                         </div>
-                        <div class="ui card ">
+                        <div class="ui card">
                             <div class="content">
                                 <dl>
                                     <dt><label class="control-label">${message(code:'license.status.label')}</label></dt>
@@ -101,7 +100,6 @@
                                 <g:if test="${license.instanceOf && institution.id == license.getLicensingConsortium().id}">
                                     <dl>
                                         <dt class="control-label">${message(code:'license.linktoLicense')}</dt>
-
                                         <g:link controller="license" action="show" id="${license.instanceOf.id}">${license.instanceOf}</g:link>
                                     </dl>
                                     <%--<dl>
@@ -114,13 +112,15 @@
                                     </dl>--%>
                                 </g:if>
 
-                                <dl>
-                                    <dt class="control-label">${message(code: 'license.isPublicForApi.label')}</dt>
-                                    <dd><ui:xEditableBoolean owner="${license}" field="isPublicForApi" /></dd>
-                                    <g:if test="${editable}">
-                                        <dd class="la-js-editmode-container"><ui:auditButton auditable="[license, 'isPublicForApi']" auditConfigs="${auditConfigs}"/></dd>
-                                    </g:if>
-                                </dl>
+                                <g:if test="${!contextService.getOrg().isCustomerType_Support()}">
+                                    <dl>
+                                        <dt class="control-label">${message(code: 'license.isPublicForApi.label')}</dt>
+                                        <dd><ui:xEditableBoolean owner="${license}" field="isPublicForApi" /></dd>
+                                        <g:if test="${editable}">
+                                            <dd class="la-js-editmode-container"><ui:auditButton auditable="[license, 'isPublicForApi']" auditConfigs="${auditConfigs}"/></dd>
+                                        </g:if>
+                                    </dl>
+                                </g:if>
 
                             </div>
                         </div>
@@ -139,8 +139,9 @@
             <aside class="five wide column la-sidekick">
                 <div class="ui one cards">
 
+                    <g:if test="${!contextService.getOrg().isCustomerType_Support()}">
                     <div id="container-provider">
-                        <div class="ui card ">
+                        <div class="ui card">
                             <div class="content">
                                 <h2 class="ui header">${message(code: 'license.details.tmplEntity')}</h2>
                                 <laser:render template="/templates/links/orgLinksAsList"
@@ -183,6 +184,8 @@
                             </div>
                         </div>
                     </div>
+                    </g:if>
+
                     <div id="container-links">
                         <div class="ui card" id="links"></div>
                     </div>

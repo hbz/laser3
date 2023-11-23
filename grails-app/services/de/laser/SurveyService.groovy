@@ -73,7 +73,7 @@ class SurveyService {
      */
     boolean isEditableSurvey(Org org, SurveyInfo surveyInfo) {
 
-        if (contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO ) && surveyInfo.owner?.id == contextService.getOrg().id) {
+        if (contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO ) && surveyInfo.owner?.id == contextService.getOrg().id) {
             return true
         }
 
@@ -81,7 +81,7 @@ class SurveyService {
             return false
         }
 
-        if (contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )) {
+        if (contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )) {
             SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfigInList(org, surveyInfo.surveyConfigs)
 
             if (surveyOrg.finishDate) {
@@ -97,7 +97,7 @@ class SurveyService {
     @Deprecated
     boolean isEditableIssueEntitlementsSurvey(Org org, SurveyConfig surveyConfig) {
 
-        if (contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO ) && surveyConfig.surveyInfo.owner?.id == contextService.getOrg().id) {
+        if (contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO ) && surveyConfig.surveyInfo.owner?.id == contextService.getOrg().id) {
             return true
         }
 
@@ -109,7 +109,7 @@ class SurveyService {
             return false
         }
 
-        if (contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )) {
+        if (contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )) {
 
             if (SurveyOrg.findByOrgAndSurveyConfig(org, surveyConfig)?.finishDate) {
                 return false
@@ -510,8 +510,8 @@ class SurveyService {
                                    messageSource.getMessage('default.currency.label', null, locale),
                                    messageSource.getMessage('financials.newCosts.taxTypeAndRate', null, locale),
                                    messageSource.getMessage('financials.costInBillingCurrencyAfterTax', null, locale),
-                                   messageSource.getMessage('default.startDate.export.label', null, locale),
-                                   messageSource.getMessage('default.endDate.export.label', null, locale),
+                                   messageSource.getMessage('default.startDate.label', null, locale),
+                                   messageSource.getMessage('default.endDate.label', null, locale),
                                    messageSource.getMessage('surveyConfigsInfo.newPrice.comment', null, locale)])
                 }
 
@@ -595,8 +595,8 @@ class SurveyService {
                            messageSource.getMessage('default.currency.label', null, locale),
                            messageSource.getMessage('financials.newCosts.taxTypeAndRate', null, locale),
                            messageSource.getMessage('financials.costInBillingCurrencyAfterTax', null, locale),
-                           messageSource.getMessage('default.startDate.export.label', null, locale),
-                           messageSource.getMessage('default.endDate.export.label', null, locale),
+                           messageSource.getMessage('default.startDate.label', null, locale),
+                           messageSource.getMessage('default.endDate.label', null, locale),
                            messageSource.getMessage('surveyConfigsInfo.newPrice.comment', null, locale)])
 
 
@@ -841,7 +841,7 @@ class SurveyService {
 
     /**
      * Sends mails to the users of the given institution
-     * @param surveyInfo the survey information to be sent
+     * @param surveyInfo the survey concerned
      * @param org the institution whose users should be notified
      * @param reminderMail is it a reminder about the survey completion?
      */
@@ -884,6 +884,20 @@ class SurveyService {
         return Org.executeQuery(tmpQuery, tmpQueryParams, params)
     }
 
+    int countFilteredSurveyOrgs(List orgIDs, String query, queryParams, params) {
+
+        if (!(orgIDs?.size() > 0)) {
+            return []
+        }
+        String tmpQuery = query
+        tmpQuery = tmpQuery.replace("order by", "and o.id in (:orgIDs) order by")
+
+        Map tmpQueryParams = queryParams
+        tmpQueryParams.put("orgIDs", orgIDs)
+
+        return Org.executeQuery(tmpQuery, tmpQueryParams, params)
+    }
+
     /**
      * Retrieves the counts of surveys in the different stages
      * @param parameterMap the filter parameter map
@@ -894,17 +908,15 @@ class SurveyService {
 
         Org contextOrg = contextService.getOrg()
 
-        GrailsParameterMap tmpParams = (GrailsParameterMap) parameterMap.clone()
+        result = _setSurveyConfigCounts(result, 'created', parameterMap, contextOrg)
 
-        result = _setSurveyConfigCounts(result, 'created', tmpParams, contextOrg)
+        result = _setSurveyConfigCounts(result, 'active', parameterMap, contextOrg)
 
-        result = _setSurveyConfigCounts(result, 'active', tmpParams, contextOrg)
+        result = _setSurveyConfigCounts(result, 'finish', parameterMap, contextOrg)
 
-        result = _setSurveyConfigCounts(result, 'finish', tmpParams, contextOrg)
+        result = _setSurveyConfigCounts(result, 'inEvaluation', parameterMap, contextOrg)
 
-        result = _setSurveyConfigCounts(result, 'inEvaluation', tmpParams, contextOrg)
-
-        result = _setSurveyConfigCounts(result, 'completed', tmpParams, contextOrg)
+        result = _setSurveyConfigCounts(result, 'completed', parameterMap, contextOrg)
 
         return result
     }
@@ -925,9 +937,11 @@ class SurveyService {
 
         cloneParameterMap.tab = tab
         cloneParameterMap.remove('max')
+        cloneParameterMap.remove('offset')
 
         fsq = filterService.getSurveyConfigQueryConsortia(cloneParameterMap, sdFormat, owner)
-        result."${tab}" =  SurveyInfo.executeQuery(fsq.query, fsq.queryParams, cloneParameterMap).size()
+        String queryWithoutOrderBy = fsq.query.split('order by')[0]
+        result."${tab}" =  SurveyInfo.executeQuery("select count(*) "+queryWithoutOrderBy, fsq.queryParams, cloneParameterMap)[0]
 
         return result
     }
@@ -1151,6 +1165,8 @@ class SurveyService {
 
             result = _setSurveyParticipantCounts(result, 'termination', tmpParams, participant, contextOrg)
 
+            //result = _setSurveyParticipantCounts(result, 'all', tmpParams, participant, contextOrg)
+
 
         }else {
 
@@ -1165,6 +1181,8 @@ class SurveyService {
             result = _setSurveyParticipantCounts(result, 'notFinish', tmpParams, participant, null)
 
             result = _setSurveyParticipantCounts(result, 'termination', tmpParams, participant, null)
+
+            //result = _setSurveyParticipantCounts(result, 'all', tmpParams, participant, contextOrg)
         }
         return result
     }
@@ -1448,6 +1466,12 @@ class SurveyService {
         result
     }
 
+    /**
+     * Substitution call to ${@link #hasParticipantPerpetualAccessToTitle2(java.util.List, de.laser.TitleInstancePackagePlatform)}
+     * @param subscriptions the list of subscriptions eligible for the perpetual purchase
+     * @param tipp the title to be checked
+     * @return true if one of the given subscriptions grant access, false otherwise
+     */
     boolean hasParticipantPerpetualAccessToTitle(List<Subscription> subscriptions, TitleInstancePackagePlatform tipp) {
         if(subscriptions){
             List<Long> subscriptionIDs = subscriptions.id
@@ -1486,6 +1510,12 @@ class SurveyService {
         }
     }
 
+    /**
+     * Checks if the given institution ({@link Org}) has perpetual access to the given title
+     * @param org the institution whose access to check
+     * @param tipp the title to which perpetual access may be granted
+     * @return true if there is perpetual access (= at least one record in {@link PermanentTitle} for the given institution and title, false otherwise
+     */
     boolean hasParticipantPerpetualAccessToTitle3(Org org, TitleInstancePackagePlatform tipp){
             Integer countPermanentTitles = PermanentTitle.executeQuery('select count(*) from PermanentTitle pt join pt.tipp tipp where ' +
                     '(tipp = :tipp or tipp.hostPlatformURL = :hostPlatformURL) and ' +
@@ -1503,6 +1533,12 @@ class SurveyService {
             }
     }
 
+    /**
+     * Lists the institution's subscriptions via which it has purchased perpetual access to the given title
+     * @param org the institution ({@link Org}) whose subscriptions should be listed
+     * @param tipp the title subject of the perpetual access
+     * @return a {@link List} of {@link PermanentTitle} records containing the subscription(s) granting perpetual access to the given title
+     */
     List<PermanentTitle> listParticipantPerpetualAccessToTitle(Org org, TitleInstancePackagePlatform tipp){
         List<PermanentTitle> permanentTitles = PermanentTitle.executeQuery('select pt from PermanentTitle pt join pt.tipp tipp where ' +
                 '(tipp = :tipp or tipp.hostPlatformURL = :hostPlatformURL) and ' +
@@ -1528,6 +1564,11 @@ class SurveyService {
         return hasParticipantPerpetualAccessToTitle2(subscriptionIDs, tipp)
     }
 
+    /**
+     * Gets a list of subscription IDs of the given institution
+     * @param org the institution ({@link Org}) whose subscriptions should be retrieved
+     * @return a {@link List} of {@link Subscription} IDs which are subscribed by the given institution
+     */
     List<Long> subscriptionsOfOrg(Org org){
         String base_qry = ''
         Map qry_params = [:]
@@ -1535,7 +1576,7 @@ class SurveyService {
         RefdataValue role_subCons = RDStore.OR_SUBSCRIBER_CONS
         RefdataValue role_sub_consortia = RDStore.OR_SUBSCRIPTION_CONSORTIA
 
-        if (accessService.otherOrgPerm(org, 'ORG_CONSORTIUM_PRO')) {
+        if (org.isCustomerType_Consortium_Pro()) {
             //nur Parents
             base_qry = " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                     " AND s.instanceOf is null "
@@ -1550,7 +1591,6 @@ class SurveyService {
 
         return subscriptionIDs
     }
-
 
     /**
      * Called from views
@@ -1589,6 +1629,13 @@ class SurveyService {
         }
     }
 
+    /**
+     *
+     * @param surveyConfig
+     * @param participants
+     * @param contextOrg
+     * @return
+     */
     def exportPropertiesChanged(SurveyConfig surveyConfig, def participants, Org contextOrg) {
         Locale locale = LocaleUtils.getCurrentLocale()
         Map sheetData = [:]
@@ -1640,6 +1687,7 @@ class SurveyService {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
+    @Deprecated
     void transferPerpetualAccessTitlesOfOldSubs(List<Long> entitlementsToTake, Subscription participantSub) {
         Sql sql = GlobalService.obtainSqlConnection()
         Connection connection = sql.dataSource.getConnection()
@@ -1671,6 +1719,7 @@ class SurveyService {
         }
     }
 
+    @Deprecated
     List<IssueEntitlement> getPerpetualAccessIesBySub(Subscription subscription) {
         Set<Subscription> subscriptions = linksGenerationService.getSuccessionChain(subscription, 'sourceSubscription')
         subscriptions << subscription
@@ -1695,6 +1744,7 @@ class SurveyService {
         return issueEntitlements
     }
 
+    @Deprecated
     List<Long> getPerpetualAccessIeIDsBySub(Subscription subscription) {
         Set<Subscription> subscriptions = linksGenerationService.getSuccessionChain(subscription, 'sourceSubscription')
         subscriptions << subscription
@@ -1719,6 +1769,12 @@ class SurveyService {
         return issueEntitlementIds
     }
 
+    /**
+     * Counts the titles perpetually purchased via the given subscription. Regarded is the time span of all year rings, i.e.
+     * subscriptions preceding the given one are counted as well
+     * @param subscription the {@link Subscription} whose perpetually accessible titles should be counted
+     * @return the count of {@link IssueEntitlement}s to which perpetual access have been granted over all years of the given subscription
+     */
     Integer countPerpetualAccessTitlesBySub(Subscription subscription) {
         Integer count = 0
         Set<Subscription> subscriptions = linksGenerationService.getSuccessionChain(subscription, 'sourceSubscription')
@@ -1776,11 +1832,26 @@ class SurveyService {
         return count
     }
 
+    /**
+     * Counts the titles in the group attached to the given survey and subscription
+     * @param subscription the {@link Subscription} to whose titles the issue entitlement group has been defined
+     * @param surveyConfig the {@link SurveyConfig} for which the issue entitlement group has been defined
+     * @return the count of {@link IssueEntitlement}s belonging to the given {@link IssueEntitlementGroup}
+     */
     Integer countIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         Integer countIes = issueEntitlementGroup ?
-                IssueEntitlementGroupItem.executeQuery("select count(igi) from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup",
-                        [ieGroup: issueEntitlementGroup])[0]
+                IssueEntitlementGroupItem.executeQuery("select count(igi) from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup and igi.ie.status != :status",
+                        [ieGroup: issueEntitlementGroup, status: RDStore.TIPP_STATUS_REMOVED])[0]
+                : 0
+        countIes
+    }
+
+    Integer countIssueEntitlementsByIEGroupWithStatus(Subscription subscription, SurveyConfig surveyConfig, RefdataValue status) {
+        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
+        Integer countIes = issueEntitlementGroup ?
+                IssueEntitlementGroupItem.executeQuery("select count(igi) from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup and igi.ie.status = :status",
+                        [ieGroup: issueEntitlementGroup, status: status])[0]
                 : 0
         countIes
     }
@@ -1794,11 +1865,17 @@ class SurveyService {
         countIes
     }
 
+    /**
+     * Calculates the sum of list prices of titles in the group attached to the given survey and subscription
+     * @param subscription the {@link Subscription} to whose titles the issue entitlement group has been defined
+     * @param surveyConfig the {@link SurveyConfig} for which the issue entitlement group has been defined
+     * @return the sum of {@link de.laser.finance.PriceItem#listPrice}s of the titles belonging to the given {@link IssueEntitlementGroup}
+     */
     BigDecimal sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig, RefdataValue currency) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         BigDecimal sumListPrice = issueEntitlementGroup ?
-                IssueEntitlementGroupItem.executeQuery("select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency and p.tipp in (select igi.ie.tipp from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)",
-                        [ieGroup: issueEntitlementGroup, currency: currency])[0]
+                IssueEntitlementGroupItem.executeQuery("select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency and p.tipp in (select igi.ie.tipp from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup and igi.ie.status != :status)",
+                        [ieGroup: issueEntitlementGroup, currency: currency, status: RDStore.TIPP_STATUS_REMOVED])[0]
                 : 0.0
         sumListPrice
     }
@@ -1819,6 +1896,12 @@ class SurveyService {
         sumListPrice
     }
 
+    /**
+     * Gets the titles in the group attached to the given survey and subscription
+     * @param subscription the {@link Subscription} to whose titles the issue entitlement group has been defined
+     * @param surveyConfig the {@link SurveyConfig} for which the issue entitlement group has been defined
+     * @return a {@link List} of {@link IssueEntitlement}s belonging to the given {@link IssueEntitlementGroup}
+     */
     List<IssueEntitlement> issueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         List<IssueEntitlement> ies = issueEntitlementGroup ?
@@ -1828,14 +1911,32 @@ class SurveyService {
         ies
     }
 
+    /**
+     * Called from _evaluationParticipantsView.gsp
+     * Generates a notification mail containing the details of the survey for the participants in the given {@link SurveyInfo}
+     * @param surveyInfo the survey data containing the general parameters of the survey and the participants
+     * @param reminder unused
+     * @return the mail text as string with HTML markup
+     */
     String surveyMailHtmlAsString(SurveyInfo surveyInfo, boolean reminder = false) {
         Locale language = new Locale("de")
         groovyPageRenderer.render view: '/mailTemplates/html/notificationSurveyForMailClient', model: [language: language, survey: surveyInfo, reminder: false]
     }
 
+    /**
+     * Generates a notification mail containing the details of the survey for the participants in the given {@link SurveyInfo}
+     * @param surveyInfo the survey data containing the general parameters of the survey and the participants
+     * @param reminder is the mail a reminder to participate at the given survey?
+     * @return the mail text as plain string
+     */
     String surveyMailTextAsString(SurveyInfo surveyInfo, boolean reminder = false) {
         Locale language = new Locale("de")
         groovyPageRenderer.render view: '/mailTemplates/text/notificationSurvey', model: [language: language, survey: surveyInfo, reminder: reminder]
+    }
+
+    String surveysMailTextAsString(List<SurveyInfo> surveys, boolean reminder = false) {
+        Locale language = new Locale("de")
+        groovyPageRenderer.render view: '/mailTemplates/text/notificationSurveys', model: [language: language, surveys: surveys, reminder: reminder]
     }
 
 }

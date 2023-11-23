@@ -364,7 +364,7 @@
                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
                                         <i class="address card outline icon"></i>
                                     </span>
-                                    *&nbsp${message(code: 'default.can.not.be.changed')}
+                                    *&nbsp;${message(code: 'default.can.not.be.changed')}
                                 </g:if>
                                 <g:else>
                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.public')}" data-position="top right">

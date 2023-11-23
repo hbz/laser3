@@ -58,10 +58,10 @@
                     <td><g:checkBox name="copySurvey.copyDates" value="${true}"/></td>
                     <td>${message(code: 'copySurvey.copyDates')}</td>
                     <td>
-                        ${message(code: 'copySurvey.copyDates.startDate')}:&nbsp<g:if
+                        ${message(code: 'copySurvey.copyDates.startDate')}:&nbsp;<g:if
                                 test="${!surveyInfo.startDate}">-</g:if><g:formatDate date="${surveyInfo.startDate}"
                                                                                       format="${message(code: 'default.date.format.notime')}"/> &nbsp
-                        ${message(code: 'copySurvey.copyDates.endDate')}:&nbsp<g:if
+                        ${message(code: 'copySurvey.copyDates.endDate')}:&nbsp;<g:if
                                 test="${!surveyInfo.endDate}">-</g:if><g:formatDate date="${surveyInfo.endDate}"
                                                                                     format="${message(code: 'default.date.format.notime')}"/>
                     </td>
@@ -380,7 +380,7 @@
                                           rowspan="2"/>
 
                         <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.startDate"
-                                          title="${message(code: 'default.startDate.label')}"/>
+                                          title="${message(code: 'default.startDate.label.shy')}"/>
 
 
                         <th scope="col" rowspan="2">
@@ -402,7 +402,7 @@
 
                     <tr>
                         <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.endDate"
-                                          title="${message(code: 'default.endDate.label')}"/>
+                                          title="${message(code: 'default.endDate.label.shy')}"/>
                     </tr>
                     </thead>
                     <g:each in="${subscriptions}" var="s" status="i">
@@ -435,7 +435,7 @@
                                                     id="${license.id}">
                                                 <div data-oid="${genericOIDService.getOID(license)}"
                                                      class="la-multi-sources">
-                                                    <strong><i class="balance scale icon"></i>&nbsp${license.licenseCategory?.getI10n("value")}:
+                                                    <strong><i class="balance scale icon"></i>&nbsp;${license.licenseCategory?.getI10n("value")}:
                                                     </strong>
                                                     ${license.reference}
                                                     <br />
@@ -498,7 +498,7 @@
                                 </td>
 
                                 <td class="x">
-                                    <g:if test="${editable && contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )}">
+                                    <g:if test="${editable && contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )}">
                                         <g:link class="ui icon positive button la-popup-tooltip la-delay"
                                                 data-content="${message(code: 'survey.toggleSurveySub.add.label', args: [SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNotNull(s).size(), SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNull(s).size()])}"
                                                 controller="survey" action="copySurvey"

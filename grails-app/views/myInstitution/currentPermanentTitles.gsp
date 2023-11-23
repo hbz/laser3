@@ -32,23 +32,16 @@
                  counts="${allTippCounts}"/>
 </ui:tabs>
 
+<div class="ui bottom attached tab active segment">
+
 <% params.remove('tab') %>
 
-<div class="ui grid">
-    <div class="row">
-        <div class="column">
-            <laser:render template="/templates/filter/tipp_ieFilter"/>
-        </div>
-    </div>
+<laser:render template="/templates/filter/tipp_ieFilter"/>
 
-    <div class="row">
-        <div class="eight wide column">
-            <h3 class="ui icon header la-clear-before la-noMargin-top"><span
-                    class="ui circular  label">${num_tipp_rows}</span> <g:message code="title.filter.result"/></h3>
-        </div>
+<h3 class="ui icon header la-clear-before la-noMargin-top">
+    <span class="ui circular  label">${num_tipp_rows}</span> <g:message code="title.filter.result"/>
+</h3>
 
-    </div>
-</div>
 <%
     Map<String, String>
     sortFieldMap = ['tipp.sortname': message(code: 'title.label')]
@@ -62,6 +55,7 @@
     sortFieldMap['tipp.accessStartDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.from')}"
     sortFieldMap['tipp.accessEndDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.to')}"
 %>
+
     <div class="ui form">
         <div class="three wide fields">
             <div class="field">
@@ -71,13 +65,11 @@
         </div>
     </div>
 
-
     <div class="ui grid">
         <div class="row">
             <div class="column">
                 <g:if test="${titles}">
                     <g:set var="counter" value="${offset + 1}"/>
-
 
                     <g:if test="${titles}">
                         <div class="ui fluid card">
@@ -197,18 +189,19 @@
                                                             <div class="ui list">
                                                                 <g:each in="${ie_infos}" var="ie">
                                                                     <div class="item">
-                                                                        <div class="sixteen wide column">
-                                                                            <i class="icon clipboard outline la-list-icon"></i>
-                                                                            <g:link controller="subscription"
-                                                                                    action="index"
-                                                                                    id="${ie.subscription.id}">${ie.subscription.dropdownNamingConvention(institution)}</g:link>
-                                                                            &nbsp;
-                                                                            <br/>
-                                                                            <br/>
-                                                                            <g:link controller="issueEntitlement"
-                                                                                    action="show"
-                                                                                    id="${ie.id}">${message(code: 'myinst.currentTitles.full_ie')}</g:link>
-                                                                            <br/>
+                                                                        <i class="icon clipboard outline la-list-icon"></i>
+                                                                        <div class="content">
+                                                                            <div class="header">
+                                                                                <g:link controller="subscription"
+                                                                                        action="index"
+                                                                                        id="${ie.subscription.id}">${ie.subscription.dropdownNamingConvention(institution)}</g:link>
+                                                                            </div>
+                                                                            <div class="description">
+                                                                                <g:link controller="issueEntitlement"
+                                                                                        action="show"
+                                                                                        class="ui tiny button la-margin-top-05em"
+                                                                                        id="${ie.id}">${message(code: 'myinst.currentTitles.full_ie')}</g:link>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </g:each>
@@ -227,12 +220,10 @@
                 </g:if>
                 <g:else>
                     <g:if test="${filterSet}">
-                        <br/><strong><g:message code="filter.result.empty.object"
-                                                args="${[message(code: "title.plural")]}"/></strong>
+                        <br/><strong><g:message code="filter.result.empty.object" args="${[message(code: "title.plural")]}"/></strong>
                     </g:if>
                     <g:else>
-                        <br/><strong><g:message code="result.empty.object"
-                                                args="${[message(code: "title.plural")]}"/></strong>
+                        <br/><strong><g:message code="result.empty.object" args="${[message(code: "title.plural")]}"/></strong>
                     </g:else>
                 </g:else>
             </div>
@@ -240,8 +231,7 @@
 
     </div>
     <g:if test="${titles}">
-        <ui:paginate action="currentPermanentTitles" controller="myInstitution" params="${params}"
-                     max="${max}" total="${num_tipp_rows}"/>
+        <ui:paginate action="currentPermanentTitles" controller="myInstitution" params="${params}" max="${max}" total="${num_tipp_rows}"/>
     </g:if>
 
 </div>

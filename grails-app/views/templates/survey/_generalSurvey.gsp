@@ -20,10 +20,10 @@
             </div>
         </g:if>
 
-        <div class="ui card ">
+        <div class="ui card">
             <div class="content">
 
-                <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO) && surveyOrg}">
+                <g:if test="${contextService.getOrg().isCustomerType_Consortium_Pro() && surveyOrg}">
                     <dl>
                         <dt class="control-label">
                             ${message(code: 'surveyOrg.ownerComment.label', args: [institution.sortname])}
@@ -218,7 +218,7 @@
 
                 <div id="container-notes">
                     <laser:render template="/templates/notes/card"
-                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)]}"/>
+                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)]}"/>
                 </div>
             </g:if>
 

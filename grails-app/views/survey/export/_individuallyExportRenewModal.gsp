@@ -4,7 +4,7 @@
 <!-- _individuallyExportModal.gsp -->
 <g:set var="formFields" value="${exportClickMeService.getExportRenewalFieldsForUI(surveyConfig)}"/>
 
-<ui:modal id="${modalID}" text="Excel-Export" refreshModal="true" hideSubmitButton="true">
+<ui:modal id="${modalID}" text="${modalTextHeader ?: 'Excel-Export'}" refreshModal="true" hideSubmitButton="true">
 
     <g:form controller="survey" action="renewalEvaluation" id="${surveyInfo.id}"
             params="[surveyConfigID: surveyConfig.id]">

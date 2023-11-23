@@ -2,7 +2,7 @@ package de.laser.ctrl
 
 import de.laser.*
 import de.laser.auth.User
-import de.laser.utils.AppUtils
+import de.laser.cache.EhcacheWrapper
 import de.laser.utils.DateUtils
 import de.laser.helper.Profiler
 import de.laser.storage.RDStore
@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat
 @Transactional
 class MyInstitutionControllerService {
 
+    CacheService cacheService
     ContextService contextService
     DashboardDueDatesService dashboardDueDatesService
     FilterService filterService
@@ -70,11 +71,18 @@ class MyInstitutionControllerService {
 
         def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
 
-        // changes -> to AJAX
-
-        //Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.otherOrgPerm(result.institution, 'ORG_CONSORTIUM_BASIC'),periodInDays:periodInDays,max:result.max,offset:result.acceptedOffset]
-        //pu.setBenchmark('pending changes')
-        //result.putAll(pendingChangeService.getChanges(pendingChangeConfigMap))
+        //completed processes
+        /*
+        deactivated as incomplete
+        Set<String> processes = []
+        EhcacheWrapper cache = cacheService.getTTL1800Cache("finish_${result.user.id}")
+        if(cache) {
+            cache.getKeys().each { String key ->
+                processes << cache.get(key.split("finish_${result.user.id}_")[1])
+            }
+        }
+        result.completedProcesses = processes
+        */
 
         // systemAnnouncements
         prf.setBenchmark('system announcements')
@@ -104,18 +112,6 @@ class MyInstitutionControllerService {
                 [org: result.institution,
                  status: RDStore.SURVEY_SURVEY_STARTED])
         */
-
-//            List<WfWorkflow> myWfList  = workflows.findAll { it.user != null && it.user.id == result.user.id }
-//            List<WfWorkflow> allWfList = workflows.findAll { it.user == null }
-//
-//            result.myWorkflowsCount  = myWfList.size()
-//            result.allWorkflowsCount = allWfList.size()
-//            result.myWorkflows  = myWfList.take(contextService.getUser().getPageSizeOrDefault())
-//            result.allWorkflows = allWfList.take(contextService.getUser().getPageSizeOrDefault())
-
-//            result.currentWorkflowsCount = result.myCurrentWorkflows.size() + result.allCurrentWorkflows.size()
-//            result.currentWorkflows      = workflows.take(contextService.getUser().getPageSizeOrDefault())
-
         prf.setBenchmark('workflows')
         if (workflowService.hasUserPerm_edit()) {
             if (params.cmd) {
@@ -171,6 +167,7 @@ class MyInstitutionControllerService {
         result.institution = org
         result.contextOrg = org
         result.contextCustomerType = org.getCustomerType()
+        result.subId = params.subId
         result.tooltip = messageSource.getMessage('license.filter.member', null, LocaleUtils.getCurrentLocale())
         if(org.isCustomerType_Consortium())
             result.tooltip = messageSource.getMessage('license.member', null, LocaleUtils.getCurrentLocale())

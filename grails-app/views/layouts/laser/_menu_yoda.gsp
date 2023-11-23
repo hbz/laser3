@@ -1,4 +1,4 @@
-<%@ page import="de.laser.FormService" %>
+<%@ page import="de.laser.GlobalSourceSyncService; de.laser.FormService" %>
 <laser:serviceInjection />
 
 <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
@@ -14,7 +14,6 @@
             <div class="title">
                 <i class="ui icon keyboard outline"></i> ${message(code:'menu.yoda.engine')} <i class="dropdown icon"></i>
             </div>
-
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="yoda" action="systemSettings"><i class="icon toggle on"></i>${message(code:'menu.yoda.systemSettings')}</ui:link>
                 <ui:link addItemAttributes="true" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</ui:link>
@@ -31,7 +30,7 @@
 
         <div class="item" role="menuitem" aria-haspopup="true">
             <div class="title">
-                <i class="stopwatch icon"></i> Profiler <i class="dropdown icon"></i>
+                <i class="tachometer alternate icon"></i> Profiler <i class="dropdown icon"></i>
             </div>
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="yoda" action="profilerLoadtime">${message(code:'menu.yoda.profilerLoadtime')}</ui:link>
@@ -69,7 +68,7 @@
             </div>
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="yoda" action="statsSync">${message(code:'menu.admin.stats.sync')}</ui:link>
-                <ui:link addItemAttributes="true" controller="yoda" action="manageStatsSources">Übersicht der Statistik-Cursor</ui:link>
+                <ui:link addItemAttributes="true" controller="yoda" action="manageTempUsageFiles">${message(code:'menu.admin.stats.cache')}</ui:link>
                 <%--<ui:link addItemAttributes="true" controller="yoda" action="fetchStats" params="[(FormService.FORM_SERVICE_TOKEN): formService.getNewToken(), incremental: true]">${message(code:'menu.admin.stats.fetch.incremental')}</ui:link>--%>
                 <%--<ui:link addItemAttributes="true" controller="yoda" action="fetchStats" params="[(FormService.FORM_SERVICE_TOKEN): formService.getNewToken(), incremental: false]">${message(code:'menu.admin.stats.fetch')}</ui:link>--%>
             </div>
@@ -83,12 +82,16 @@
             </div>
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.yoda.globalDataSync')}</ui:link>
-                <div class="item" role="menuitem" aria-haspopup="true">
-                    <div class="title">
-                        ${message(code:'menu.admin.syncManagement.reload')} <i class="dropdown icon"></i>
-                    </div>
-                    <div class="menu" role="menu">
-                        <ui:link addItemAttributes="true" controller="yoda" action="reloadWekbProvider" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.reloadProvider')}</ui:link>
+                <ui:link addItemAttributes="true" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</ui:link>
+                <div class="divider"></div>
+
+%{--                <div class="item" role="menuitem" aria-haspopup="true">--}%
+%{--                    <div class="title">--}%
+%{--                        ${message(code:'menu.admin.syncManagement.reload')} <i class="dropdown icon"></i>--}%
+%{--                    </div>--}%
+%{--                    <div class="menu" role="menu">--}%
+                        <ui:link addItemAttributes="true" controller="yoda" action="reloadWekbOrg" params="[componentType:GlobalSourceSyncService.ORG_TYPE_PROVIDER]" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.reloadProvider')}</ui:link>
+                        <ui:link addItemAttributes="true" controller="yoda" action="reloadWekbOrg" params="[componentType:GlobalSourceSyncService.ORG_TYPE_VENDOR]" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.reloadAgencies')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="reloadWekbPlatform" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.reloadPlatform')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'globalUID', objType:'issueEntitlement']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateGlobalUID')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'identifier']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateIdentifiers')}</ui:link>
@@ -101,9 +104,10 @@
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'accessType']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateAccessType')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'openAccess']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateOpenAccess')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'titleNamespace']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateTitleNamespace')}</ui:link>
-                    </div>
-                </div>
-                <ui:link addItemAttributes="true" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</ui:link>
+                        <ui:link addItemAttributes="true" controller="yoda" action="reloadWekbChanges" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateWekbChanges')}</ui:link>
+%{--                    </div>--}%
+%{--                </div>--}%
+
                 <%--<ui:link addItemAttributes="true" controller="yoda" action="expungeRemovedTIPPs" onclick="return confirm('${message(code:'confirmation.content.deleteTIPPsWithoutGOKBId')}')">${message(code:'menu.yoda.expungeRemovedTIPPs')}</ui:link>--%>
                 <%--<ui:link addItemAttributes="true" controller="yoda" action="matchPackageHoldings">${message(code:'menu.admin.bulkOps.matchPackageHoldings')}</ui:link>--%>
             </div>
@@ -144,11 +148,9 @@
             <div class="title">
                 <i class="icon database"></i> ${message(code:'menu.admin.dataManagement')} <i class="dropdown icon"></i>
             </div>
-
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="package" action="getDuplicatePackages">List Package Duplicates</ui:link>
                 <ui:link addItemAttributes="true" controller="package" action="list">${message(code: 'myinst.packages')} - ${message(code: 'default.onlyDatabase')}</ui:link>
-                <%--<ui:link addItemAttributes="true" controller="admin" action="hardDeletePkgs">${message(code:'menu.admin.hardDeletePkgs')}</ui:link>--%>
                 <div class="divider"></div>
 
                 <ui:link addItemAttributes="true" controller="admin" action="databaseInfo">${message(code: "menu.admin.databaseInfo")}</ui:link>

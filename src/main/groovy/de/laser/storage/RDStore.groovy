@@ -66,6 +66,7 @@ class RDStore {
     public final static RefdataValue DOC_TYPE_RENEWAL           = getRefdataValue('Renewal', RDConstants.DOCUMENT_TYPE)
     public final static RefdataValue DOC_TYPE_OFFER           = getRefdataValue('Offer', RDConstants.DOCUMENT_TYPE)
     public final static RefdataValue DOC_TYPE_ONIXPL            = getRefdataValue('ONIX-PL License', RDConstants.DOCUMENT_TYPE)
+    public final static RefdataValue DOC_TYPE_TITLELIST         = getRefdataValue('Title List', RDConstants.DOCUMENT_TYPE)
 
     public final static RefdataValue IE_ACCESS_CURRENT                      = getRefdataValue('Current', RDConstants.IE_ACCESS_STATUS)
 
@@ -84,6 +85,7 @@ class RDStore {
 
     public final static RefdataValue LINKTYPE_FOLLOWS       = getRefdataValue('follows', RDConstants.LINK_TYPE)
     public final static RefdataValue LINKTYPE_LICENSE       = getRefdataValue('license', RDConstants.LINK_TYPE)
+    public final static RefdataValue LINKTYPE_SIMPLE        = getRefdataValue('simple', RDConstants.LINK_TYPE)
 
     public final static RefdataValue MAIL_STATUS_SEND       = getRefdataValue('Sent', RDConstants.MAIL_STATUS)
 

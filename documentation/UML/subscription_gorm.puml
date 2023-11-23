@@ -1,0 +1,32 @@
+@startuml
+
+object Subscription.mapping {
+    id column: 'sub_id'
+    version column: 'sub_version'
+    globalUID column: 'sub_guid'
+    status column: 'sub_status_rv_fk'
+    type column: 'sub_type_rv_fk', index: 'sub_type_idx'
+    kind column: 'sub_kind_rv_fk'
+    form column: 'sub_form_fk'
+    resource column: 'sub_resource_fk'
+    holdingSelection column: 'sub_holding_selection_rv_fk', index: 'sub_holding_selection_idx'
+    name column: 'sub_name'
+    comment column: 'sub_comment', type: 'text'
+    startDate column: 'sub_start_date', index: 'sub_dates_idx'
+    endDate column: 'sub_end_date', index: 'sub_dates_idx'
+    manualRenewalDate column: 'sub_manual_renewal_date'
+    manualCancellationDate column: 'sub_manual_cancellation_date'
+    referenceYear column: 'sub_reference_year', index: 'sub_reference_year_idx'
+    instanceOf column: 'sub_parent_sub_fk', index:'sub_parent_idx'
+    administrative column: 'sub_is_administrative'
+    hasPerpetualAccess column: 'sub_has_perpetual_access'
+    hasPublishComponent column: 'sub_has_publish_component'
+    isPublicForApi  column: 'sub_is_public_for_api'
+    dateCreated column: 'sub_date_created'
+    lastUpdated column: 'sub_last_updated'
+    lastUpdatedCascading column: 'sub_last_updated_cascading'
+    isMultiYear column: 'sub_is_multi_year'
+    isAutomaticRenewAnnually column: 'sub_is_automatic_renew_annually'
+}
+
+@enduml

@@ -15,9 +15,11 @@
     <ui:crumb class="active" id="${platformInstance.id}" text="${platformInstance.name}"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon text="${platformInstance.name}" />
+<ui:h1HeaderWithIcon text="${platformInstance.name}">
+    <laser:render template="/templates/iconObjectIsMine" model="${[isMyPlatform: isMyPlatform]}"/>
+</ui:h1HeaderWithIcon>
 
-<ui:markerSwitch platform="${platformInstance}"/>
+%{--<ui:cbItemMarkerAction platform="${platformInstance}"/>--}%
 
 <laser:render template="/templates/meta/identifier" model="${[object: platformInstance, editable: false]}"/>
 

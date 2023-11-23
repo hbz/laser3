@@ -9,12 +9,13 @@
 
     <ui:controlButtons>
         <%
-            editable = (editable && contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+            editable = (editable && contextService.getOrg().isCustomerType_Inst_Pro()) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         %>
         <ui:exportDropdown>
             <ui:exportDropdownItem>
                 <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
             </ui:exportDropdownItem>
+            <%--
             <g:if test="${filterSet}">
                 <ui:exportDropdownItem>
                     <g:link class="item js-open-confirm-modal"
@@ -41,6 +42,7 @@
                     <g:link class="item" action="listConsortia" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
                 </ui:exportDropdownItem>
             </g:else>
+            --%>
         </ui:exportDropdown>
     </ui:controlButtons>
 

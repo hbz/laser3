@@ -1,4 +1,4 @@
-<%@ page import="de.laser.remote.ApiSource; de.laser.Platform; de.laser.base.AbstractReport; grails.converters.JSON; de.laser.CustomerIdentifier" %>
+<%@ page import="de.laser.remote.ApiSource; de.laser.Platform; de.laser.base.AbstractReport; grails.converters.JSON; de.laser.CustomerIdentifier; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 <%
     Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscriberSub", [subscriberSub: subscriberSub])
@@ -10,6 +10,7 @@
     ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
     String revision
     List<CustomerIdentifier> dummyCIs = []
+    List<String> errors = []
     SortedSet reportTypes
     String dummy
     subscribedPlatforms.each { Platform platformInstance ->
@@ -27,18 +28,20 @@
                 records[0].id = platformInstance.id
                 platformInstanceRecords[platformInstance.gokbId] = records[0]
             }
-        }
-        CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(subscriber, platformInstance)
-        if(ci?.value) {
-            reportTypes = subscriptionControllerService.getAvailableReports(subscribedPlatforms, [subscription: subscriberSub])
-        }
-        else if(ci) {
-            dummyCIs << ci
-        }
-        else {
-            CustomerIdentifier dummyCI = new CustomerIdentifier(customer: subscriber, platform: platformInstance, owner: institution)
-            dummyCI.save()
-            dummyCIs << dummyCI
+            CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(subscriber, platformInstance)
+            if(ci?.value) {
+                reportTypes = subscriptionControllerService.getAvailableReports([subscription: subscriberSub], false)
+            }
+            else if(ci) {
+                dummyCIs << ci
+            }
+            else {
+                CustomerIdentifier dummyCI = new CustomerIdentifier(customer: subscriber, platform: platformInstance, owner: institution, type: RDStore.CUSTOMER_IDENTIFIER_TYPE_DEFAULT, isPublic: true)
+                if(dummyCI.save()) {
+                    dummyCIs << dummyCI
+                }
+                else errors << dummyCI.errors.getAllErrors().toListString()
+            }
         }
     }
 %>
@@ -93,14 +96,14 @@
         </g:form>
     </g:if>
     <g:elseif test="${dummyCIs}">
-        Es fehlen Kundennummer/Requestor-ID-Schlüsselpaare. Hier können Sie die fehlenden Schlüsselpaare nachtragen. Laden Sie bitte anschließend die Seite neu.
+        <g:message code="default.usage.renewal.dummy.header"/>
         <table>
             <thead>
             <tr>
-                <th>Einrichtung</th>
-                <th>Plattform</th>
-                <th>Kundennummer</th>
-                <th>Requestor-ID/API-Key</th>
+                <th><g:message code="default.institution"/></th>
+                <th><g:message code="platform"/></th>
+                <th><g:message code="org.customerIdentifier"/></th>
+                <th><g:message code="org.requestorKey"/></th>
             </tr>
             </thead>
             <tbody>
@@ -116,9 +119,9 @@
         </table>
     </g:elseif>
     <g:else>
-        <b><g:message code="renewEntitlementsWithSurvey.noIEsStats"/></b>
+        <b><g:message code="default.stats.error.noReportAvailable"/></b>
     </g:else>
-    <div id="localLoadingIndicator" hidden="hidden">
+    <div class="localLoadingIndicator" hidden="hidden">
         <div class="ui inline medium text loader active">Aktualisiere Daten ..</div>
     </div>
     <div id="reportWrapper"></div>
@@ -145,7 +148,7 @@
         });
     });
     $("#generateReport").on('click', function() {
-        $('#localLoadingIndicator').show();
+        $('.localLoadingIndicator').show();
         let fd = new FormData($('#individuallyExportModal').find('form')[0]);
         $.ajax({
             url: "<g:createLink action="renewEntitlementsWithSurvey"/>",
@@ -155,7 +158,10 @@
             contentType: false
         }).done(function(response){
             $("#reportWrapper").html(response);
-            $('#localLoadingIndicator').hide();
-        });
+            $('.localLoadingIndicator').hide();
+        }).fail(function(resp, status){
+            $("#reportWrapper").text('Es ist zu einem Fehler beim Abruf gekommen');
+            $('.localLoadingIndicator').hide();
+        });;
     });
 </laser:script>

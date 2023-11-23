@@ -16,7 +16,6 @@ import java.nio.file.Path
 @Transactional
 class InstitutionsService {
 
-    AccessService accessService
     ContextService contextService
 
     static final CUSTOM_PROPERTIES_COPY_HARD        = 'CUSTOM_PROPERTIES_COPY_HARD'
@@ -156,7 +155,7 @@ class InstitutionsService {
 
             log.debug("adding org link to new license")
 
-            if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+            if (contextService.getOrg().isCustomerType_Consortium()) {
                 new OrgRole(lic: licenseInstance, org: org, roleType: lic_cons_role).save()
             }
             else {

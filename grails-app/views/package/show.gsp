@@ -26,9 +26,10 @@ making obsolete package/actions
                                    data-url='<g:createLink controller="ajax"
                                                            action="editableSetValue"/>'>${packageInstance.name}</span></g:if>
     <g:else>${packageInstance.name}</g:else>
+    <laser:render template="/templates/iconObjectIsMine" model="${[isMyPkg: isMyPkg]}"/>
 </ui:h1HeaderWithIcon>
 
-<ui:markerSwitch package="${packageInstance}"/>
+%{--<ui:cbItemMarkerAction package="${packageInstance}"/>--}%
 
 <laser:render template="nav"/>
 
@@ -55,9 +56,12 @@ making obsolete package/actions
                             <dl>
                                 <dt>${message(code: 'package.show.altname')}</dt>
                                 <dd>
-                                    <div class="ui bulleted list">
+                                    <div class="ui list">
                                         <g:each in="${packageInstanceRecord.altname}" var="altname">
-                                            <div class="item">${altname}</div>
+                                            <div class="item">
+                                                <i class="box open grey icon"></i>
+                                                <div class="content">${altname}</div>
+                                            </div>
                                         </g:each>
                                     </div>
                                 </dd>
@@ -68,8 +72,10 @@ making obsolete package/actions
                                     <div class="ui list">
                                         <g:each in="${packageInstanceRecord.curatoryGroups}" var="curatoryGroup">
                                             <div class="item">
-                                                <ui:wekbIconLink type="curatoryGroup" gokbId="${curatoryGroup.curatoryGroup}"/>
-                                                ${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}
+                                                <div class="content">
+                                                    ${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}
+                                                    <ui:wekbIconLink type="curatoryGroup" gokbId="${curatoryGroup.curatoryGroup}"/>
+                                                </div>
                                             </div>
                                         </g:each>
                                     </div>
@@ -156,9 +162,12 @@ making obsolete package/actions
                             <dl>
                                 <dt>${message(code: 'package.ddc.label')}</dt>
                                 <dd>
-                                    <div class="ui bulleted list">
+                                    <div class="ui list">
                                         <g:each in="${packageInstanceRecord.ddcs}" var="ddc">
-                                            <div class="item">${RefdataValue.getByValueAndCategory(ddc.value,RDConstants.DDC) ? RefdataValue.getByValueAndCategory(ddc.value,RDConstants.DDC).getI10n('value') : message(code:'package.ddc.invalid')}</div>
+                                            <div class="item">
+                                                <i class="sitemap grey icon"></i>
+                                                <div class="content">${RefdataValue.getByValueAndCategory(ddc.value,RDConstants.DDC) ? RefdataValue.getByValueAndCategory(ddc.value,RDConstants.DDC).getI10n('value') : message(code:'package.ddc.invalid')}</div>
+                                            </div>
                                         </g:each>
                                     </div>
                                 </dd>
@@ -166,14 +175,15 @@ making obsolete package/actions
                             <dl>
                                 <dt>${message(code: 'package.archivingAgency.label')}</dt>
                                 <dd>
-                                    <div class="ui bulleted list">
+                                    <div class="ui list">
                                         <g:each in="${packageInstanceRecord.packageArchivingAgencies}" var="arcAgency">
                                             <div class="item">
-                                                <ul style="list-style-type: none">
-                                                    <li>${arcAgency.archivingAgency ? RefdataValue.getByValueAndCategory(arcAgency.archivingAgency, RDConstants.ARCHIVING_AGENCY).getI10n("value") : message(code: 'package.archivingAgency.invalid')}</li>
-                                                    <li>${message(code: 'package.archivingAgency.openAccess.label')}: ${arcAgency.openAccess ? RefdataValue.getByValueAndCategory(arcAgency.openAccess, RDConstants.Y_N_P).getI10n("value") : ""}</li>
-                                                    <li>${message(code: 'package.archivingAgency.postCancellationAccess.label')}: ${arcAgency.postCancellationAccess ? RefdataValue.getByValueAndCategory(arcAgency.postCancellationAccess, RDConstants.Y_N_P).getI10n("value") : ""}</li>
-                                                </ul>
+                                                <i class="archive grey icon"></i>
+                                                <div class="content">
+                                                    <div class="header">${arcAgency.archivingAgency ? RefdataValue.getByValueAndCategory(arcAgency.archivingAgency, RDConstants.ARCHIVING_AGENCY).getI10n("value") : message(code: 'package.archivingAgency.invalid')}</div>
+                                                    <div class="description">${message(code: 'package.archivingAgency.openAccess.label')}: ${arcAgency.openAccess ? RefdataValue.getByValueAndCategory(arcAgency.openAccess, RDConstants.Y_N_P).getI10n("value") : ""}</div>
+                                                    <div class="description">${message(code: 'package.archivingAgency.postCancellationAccess.label')}: ${arcAgency.postCancellationAccess ? RefdataValue.getByValueAndCategory(arcAgency.postCancellationAccess, RDConstants.Y_N_P).getI10n("value") : ""}</div>
+                                                </div>
                                             </div>
                                         </g:each>
                                     </div>
@@ -237,15 +247,23 @@ making obsolete package/actions
                             <div class="ui accordion la-accordion-showMore">
                                 <div class="ui raised segments la-accordion-segments">
                                     <div class="ui fluid segment title">
-                                        <ui:wekbIconLink type="platform" gokbId="${platformInstanceRecord.uuid}"/>
-                                        <g:link controller="platform" action="show" id="${platformInstanceRecord.id}">${platformInstanceRecord.name}</g:link>
+                                        <div class="ui grid">
+                                            <div class="equal width row">
+                                                <div class="column">
+                                                    <g:link controller="platform" action="show" id="${platformInstanceRecord.id}">${platformInstanceRecord.name}</g:link>
 
-                                        <g:if test="${platformInstanceRecord.primaryUrl}">
-                                            <ui:linkWithIcon href="${platformInstanceRecord.primaryUrl?.startsWith('http') ? platformInstanceRecord.primaryUrl : 'http://' + platformInstanceRecord.primaryUrl}"/>
-                                        </g:if>
-                                        <div class="ui icon blue button la-modern-button ${buttonColor} la-js-dont-hide-button la-popup-tooltip la-delay"
-                                             data-content="${message(code: 'platform.details')}">
-                                            <i class="ui angle double down icon"></i>
+                                                    <g:if test="${platformInstanceRecord.primaryUrl}">
+                                                        <ui:linkWithIcon href="${platformInstanceRecord.primaryUrl?.startsWith('http') ? platformInstanceRecord.primaryUrl : 'http://' + platformInstanceRecord.primaryUrl}"/>
+                                                    </g:if>
+                                                    <ui:wekbIconLink type="platform" gokbId="${platformInstanceRecord.uuid}"/>
+                                                </div>
+                                                <div class="right aligned column">
+                                                    <div class="ui icon blue button la-modern-button ${buttonColor} la-js-dont-hide-button la-popup-tooltip la-delay"
+                                                         data-content="${message(code: 'platform.details')}">
+                                                        <i class="ui angle double down icon"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="ui fluid segment content">
@@ -474,7 +492,7 @@ making obsolete package/actions
                 <div id="container-provider">
                     <div class="ui card">
                         <div class="content">
-                            <h2 class="ui header">${message(code: 'gasco.table.provider')}</h2>
+                            <h2 class="ui header">${message(code: 'default.ProviderAgency.label')}</h2>
                             <laser:render template="/templates/links/orgLinksAsList"
                                           model="${[roleLinks    : visibleOrgs,
                                                     roleObject   : packageInstance,
@@ -485,7 +503,7 @@ making obsolete package/actions
                         </div>
                     </div>
                     <g:if test="${gascoContacts}">
-                        <div class="ui card ">
+                        <div class="ui card">
                             <div class="content">
                                 <h2 class="ui header">${message(code: 'gasco.contacts.plural')}</h2>
                                 <table class="ui compact table">

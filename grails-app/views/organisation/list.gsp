@@ -1,4 +1,4 @@
-<%@ page import="de.laser.*" %>
+<%@ page import="de.laser.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:htmlStart message="menu.public.all_orgs" serviceInjection="true"/>
 
         <g:set var="entityName" value="${message(code: 'org.label')}" />
@@ -37,7 +37,7 @@
                     </g:else>
                 </ui:exportDropdown>
 
-                <g:if test="${contextService.hasPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
+                <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro()}">
                     <ui:actionsDropdown>
                         <ui:actionsDropdownItem controller="organisation" action="create" message="org.create_new.label"/>
                     </ui:actionsDropdown>
@@ -55,6 +55,7 @@
                           model="[
                                   tmplConfigShow: [['name', 'identifier', 'type'],
                                                    ['country&region', 'libraryNetwork'],
+                                                   ['discoverySystemsFrontend', 'discoverySystemsIndex'],
                                                    ['sector', 'libraryType', 'subjectGroup']],
                                   tmplConfigFormFilter: true
                           ]"/>

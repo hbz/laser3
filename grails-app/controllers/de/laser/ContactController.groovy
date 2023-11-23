@@ -22,7 +22,10 @@ class ContactController  {
 	/**
 	 * index call, redirecting to the context institution's addressbook
 	 */
-	@Secured(['ROLE_USER'])
+	@DebugInfo(isInstUser_or_ROLEADMIN = [])
+	@Secured(closure = {
+		ctx.contextService.isInstUser_or_ROLEADMIN()
+	})
 	def index() {
 		redirect controller: 'myInstitution', action: 'addressbook'
 	}
@@ -31,7 +34,7 @@ class ContactController  {
 	 * Creating a new contact entity: takes the given parameters and constructs a new contact entity with them
 	 * @return the contact view in case of success or returning to the creation page with an error message
 	 */
-	@DebugInfo(isInstEditor_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
+	@DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
 	@Secured(closure = {
 		ctx.contextService.isInstEditor_or_ROLEADMIN()
 	})
@@ -78,7 +81,7 @@ class ContactController  {
 	 * Deletes the given contact entity
 	 * @return the contact list in case of success; the details view otherwise
 	 */
-	@DebugInfo(isInstEditor_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
+	@DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
 	@Secured(closure = {
 		ctx.contextService.isInstEditor_or_ROLEADMIN()
 	})

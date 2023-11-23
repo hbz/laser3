@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
@@ -18,7 +19,6 @@ import java.text.SimpleDateFormat
 @Transactional
 class TaskService {
 
-    AccessService accessService
     ContextService contextService
     MessageSource messageSource
 
@@ -39,18 +39,17 @@ class TaskService {
 
     /**
      * Loads the user's tasks for the given object
-     * @param offset the pagination offset from which data should be loaded
      * @param user the user whose tasks should be retrieved
      * @param contextOrg the user's context institution
      * @param object the object to which the tasks are attached
      * @return a list of accessible tasks
      */
-    Map<String, Object> getTasks(int offset, User user, Org contextOrg, Object object) {
+    Map<String, Object> getTasks(User user, Org contextOrg, Object object) {
         Map<String, Object> result = [:]
         result.taskInstanceList = getTasksByResponsiblesAndObject(user, contextOrg, object)
-        result.taskInstanceList = chopOffForPageSize(result.taskInstanceList, user, offset)
         result.myTaskInstanceList = getTasksByCreatorAndObject(user,  object)
-        result.myTaskInstanceList = chopOffForPageSize(result.myTaskInstanceList, user, offset)
+        result.cmbTaskInstanceList = (result.taskInstanceList + result.myTaskInstanceList).unique()
+        println result
         result
     }
 
@@ -104,15 +103,10 @@ class TaskService {
      * @param flag should only tasks without tenant appear?
      * @return a list of tasks matching the given criteria
      */
-    List<Task> getTasksByCreator(User user, Map queryMap, String flag) {
+    List<Task> getTasksByCreator(User user, Map queryMap) {
         List<Task> tasks = []
         if (user) {
-            String query
-            if (flag == WITHOUT_TENANT_ONLY) {
-                query = SELECT_WITH_JOIN + 'where t.creator = :user and ru is null and t.responsibleOrg is null'
-            } else {
-                query = SELECT_WITH_JOIN + 'where t.creator = :user'
-            }
+            String query = SELECT_WITH_JOIN + 'where t.creator = :user'
 
             Map<String, Object> params = [user : user]
             if (queryMap){
@@ -131,7 +125,7 @@ class TaskService {
      * @param obj the license to which the tasks are attached
      * @return a complete list of tasks
      */
-    List<Task> getTasksByCreatorAndObject(User user, License obj ) {
+    List<Task> getTasksByCreatorAndObject(User user, License obj) {
         (user && obj)? Task.findAllByCreatorAndLicense(user, obj) : []
     }
 
@@ -141,7 +135,7 @@ class TaskService {
      * @param obj the organisation to which the tasks are attached
      * @return a complete list of tasks
      */
-    List<Task> getTasksByCreatorAndObject(User user, Org obj ) {
+    List<Task> getTasksByCreatorAndObject(User user, Org obj) {
         (user && obj) ?  Task.findAllByCreatorAndOrg(user, obj) : []
     }
 
@@ -151,7 +145,7 @@ class TaskService {
      * @param obj the package to which the tasks are attached
      * @return a complete list of tasks
      */
-    List<Task> getTasksByCreatorAndObject(User user, Package obj ) {
+    List<Task> getTasksByCreatorAndObject(User user, Package obj) {
         (user && obj) ?  Task.findAllByCreatorAndPkg(user, obj) : []
     }
 
@@ -173,26 +167,6 @@ class TaskService {
      */
     List<Task> getTasksByCreatorAndObject(User user, SurveyConfig obj) {
         (user && obj) ?  Task.findAllByCreatorAndSurveyConfig(user, obj) : []
-    }
-
-    /**
-     * Chop everything off beyond the user's pagination limit
-     * @param taskInstanceList the complete list of tasks
-     * @param user the user whose default page size should be taken
-     * @param offset the offset of entries
-     * @return the reduced list of tasks
-     */
-    List<Task> chopOffForPageSize(List taskInstanceList, User user, int offset){
-        int taskInstanceCount = taskInstanceList.size() ?: 0
-        if (taskInstanceCount > user.getPageSizeOrDefault()) {
-            try {
-                taskInstanceList = taskInstanceList.subList(offset, offset + user.getPageSizeOrDefault())
-            }
-            catch (IndexOutOfBoundsException e) {
-                taskInstanceList = taskInstanceList.subList(offset, taskInstanceCount)
-            }
-        }
-        taskInstanceList
     }
 
     /**
@@ -292,7 +266,7 @@ class TaskService {
 
         result.validResponsibleOrgs         = contextOrg ? [contextOrg] : []
         result.validResponsibleUsers        = getUserDropdown(contextOrg)
-        result.validPackages                = _getPackagesDropdown(contextOrg)
+        result.validPackages                = _getPackagesDropdown()
         result.validOrgsDropdown            = _getOrgsDropdown(contextOrg)
         result.validSubscriptionsDropdown   = _getSubscriptionsDropdown(contextOrg, false)
         result.validLicensesDropdown        = _getLicensesDropdown(contextOrg, false)
@@ -302,10 +276,9 @@ class TaskService {
 
     /**
      * Gets a list of all packages for dropdown output
-     * @param contextOrg unused
      * @return a list of packages
      */
-    private List<Package> _getPackagesDropdown(Org contextOrg) {
+    private List<Package> _getPackagesDropdown() {
         List<Package> validPackages        = Package.findAll("from Package p where p.name != '' and p.name != null order by lower(p.sortname) asc") // TODO
         validPackages
     }
@@ -325,7 +298,7 @@ class TaskService {
      * @return a list of organisation
      */
     private Set<Map> _getOrgsDropdown(Org contextOrg) {
-        Set validOrgs = [], validOrgsDropdown = []
+        Set<Map> validOrgs = [], validOrgsDropdown = []
         if (contextOrg) {
             boolean isInstitution = (contextOrg.isCustomerType_Inst())
             boolean isConsortium  = (contextOrg.isCustomerType_Consortium())
@@ -335,21 +308,26 @@ class TaskService {
             //def fsq          = filterService.getOrgQuery(params)
             //validOrgs = Org.executeQuery('select o.id, o.name, o.sortname from Org o where (o.status is null or o.status != :orgStatus) order by  LOWER(o.sortname), LOWER(o.name) asc', fsq.queryParams)
 
-            String comboQuery = 'select new map(o.id as id, o.name as name, o.sortname as sortname) from Org o join o.outgoingCombos c where c.toOrg = :toOrg and c.type = :type order by '+params.sort
-            if (isConsortium){
+            if (isConsortium) {
+                String comboQuery = 'select new map(o.id as id, o.name as name, o.sortname as sortname) from Org o join o.outgoingCombos c where c.toOrg = :toOrg and c.type = :type order by '+params.sort
                 validOrgs = Combo.executeQuery(comboQuery,
                         [toOrg: contextOrg,
                         type:  RDStore.COMBO_TYPE_CONSORTIUM])
             }
+            else if (isInstitution) {
+                String consQuery = 'select new map(o.id as id, o.name as name, o.sortname as sortname) from OrgSetting os join os.org o where os.key = :customerType and os.roleValue in (:consortium) order by '+params.sort
+                validOrgs.addAll(Org.executeQuery(consQuery, [customerType: OrgSetting.KEYS.CUSTOMER_TYPE, consortium: Role.findAllByAuthorityInList([CustomerTypeService.ORG_CONSORTIUM_PRO, CustomerTypeService.ORG_CONSORTIUM_BASIC])]))
+            }
+            String provQuery = 'select new map(o.id as id, o.name as name, o.sortname as sortname) from Org o join o.orgType ot where ot in (:providerAgency) order by '+params.sort
+            validOrgs.addAll(Org.executeQuery(provQuery, [providerAgency: [RDStore.OT_PROVIDER, RDStore.OT_AGENCY]]))
+            validOrgs = validOrgs.sort { a, b -> !a.sortname ? !b.sortname ? 0 : 1 : !b.sortname ? -1 : a.sortname <=> b.sortname }
             validOrgs.each { row ->
                 Long optionKey = row.id
-                if (isConsortium) {
-                    String optionValue
-                    if(row.sortname)
-                        optionValue = "${row.name} (${row.sortname})"
-                    else optionValue = "${row.name}"
-                    validOrgsDropdown << [optionKey: optionKey, optionValue: optionValue]
-                }
+                String optionValue
+                if(row.sortname)
+                    optionValue = "${row.name} (${row.sortname})"
+                else optionValue = "${row.name}"
+                validOrgsDropdown << [optionKey: optionKey, optionValue: optionValue]
             }
         }
         validOrgsDropdown
@@ -462,7 +440,7 @@ class TaskService {
             String licensesQueryOhneInstanceOf =
                     'SELECT lic.id, lic.reference, o.roleType, lic.startDate, lic.endDate from License lic left join lic.orgRelations o WHERE  o.org = :lic_org AND o.roleType.id IN (:org_roles) and lic.instanceOf is null order by lic.sortableReference asc'
 
-            if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)){
+            if (contextService.getOrg().isCustomerType_Consortium()){
                 Map<String, Object> qry_params_for_lic = [
                     lic_org:    contextOrg,
                     org_roles:  [
@@ -476,7 +454,7 @@ class TaskService {
                 }
 
             }
-            else if (contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)) {
+            else if (contextService.getOrg().isCustomerType_Inst_Pro()) {
                 Map<String, Object> qry_params_for_lic = [
                     lic_org:    contextOrg,
                     org_roles:  [

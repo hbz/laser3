@@ -12,3 +12,5 @@ grails.plugin.springsecurity.roleHierarchy = '''
     ROLE_YODA > ROLE_ADMIN
     ROLE_ADMIN > ROLE_USER
 '''
+
+grails.plugin.springsecurity.adh.errorPage = null

@@ -122,6 +122,10 @@ class PersonRole implements Comparable<PersonRole>{
         if (tipp)       return 'title:' + tipp.id
     }
 
+    /**
+     * Gets the role type of this link
+     * @return one of {@link #functionType}, {@link #positionType} or {@link #responsibilityType} {@link RefdataValue}s
+     */
     RefdataValue getRoleType() {
         if(functionType)
             functionType

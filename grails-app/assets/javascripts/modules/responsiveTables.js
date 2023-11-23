@@ -40,7 +40,7 @@ responsiveTables = {
           }
           // table header is checkbox
           else if (  th.html().includes("input") ) {
-            $(this).attr('data-label', JSPC.dict.get('responsive.table.selectElement', JSPC.currLanguage)+ ':');
+            $(this).attr('data-label', JSPC.dict.get('responsive.table.selectElement', JSPC.config.language)+ ':');
           }
 
           else

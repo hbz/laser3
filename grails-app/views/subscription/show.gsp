@@ -2,45 +2,41 @@
 <laser:htmlStart message="subscription.details.label" serviceInjection="true"/>
 
 %{-- help sidebar --}%
-<laser:render template="/templates/help/help_subscription_show"/>
+<laser:render template="/templates/help/subscription_show"/>
 <ui:debugInfo>
     <div style="padding: 1em 0;">
         <p>sub.type: ${subscription.type}</p>
 
         <p>sub.subscriber: ${subscription.subscriber}</p>
 
-        <p>sub.instanceOf: <g:if test="${subscription.instanceOf}"><g:link action="show"
-                                                                           id="${subscription.instanceOf.id}">${subscription.instanceOf.name}</g:link>
+        <p>sub.instanceOf: <g:if test="${subscription.instanceOf}">
+            <g:link action="show" id="${subscription.instanceOf.id}">${subscription.instanceOf.name}</g:link>
             ${subscription.instanceOf.getAllocationTerm()}
         </g:if></p>
 
         <p>sub.administrative: ${subscription.administrative}</p>
-
         <p>getCalculatedType(): ${subscription._getCalculatedType()}</p>
+        <p>orgRole(ctxOrg): ${OrgRole.findAllBySubAndOrg(subscription, contextService.getOrg()).roleType.join(', ')}</p>
     </div>
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
 </ui:debugInfo>
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
 <ui:controlButtons>
-    <laser:render template="actions"/>
+    <laser:render template="${customerTypeService.getActionsTemplatePath()}"/>
 </ui:controlButtons>
 
-<g:set var="visibleOrgRelationsJoin" value="${visibleOrgRelations.findAll{it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}.sort{it.org.sortname}.collect{it.org}.join(' – ')}"/>
-
-<ui:h1HeaderWithIcon  referenceYear="${subscription?.referenceYear}" visibleOrgRelationsJoin="${visibleOrgRelationsJoin}">
-
-<laser:render template="iconSubscriptionIsChild"/>
-<ui:xEditable owner="${subscription}" field="name"/>
+<ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" visibleOrgRelations="${visibleOrgRelations}">
+    <laser:render template="iconSubscriptionIsChild"/>
+    <ui:xEditable owner="${subscription}" field="name"/>
 </ui:h1HeaderWithIcon>
 
 <g:if test="${editable}">
     <ui:auditButton class="la-auditButton-header" auditable="[subscription, 'name']" auditConfigs="${auditConfigs}" withoutOptions="true"/>
 </g:if>
-<ui:anualRings object="${subscription}" controller="subscription" action="show" navNext="${navNextSubscription}"
-                  navPrev="${navPrevSubscription}"/>
+<ui:anualRings object="${subscription}" controller="subscription" action="show" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
-<laser:render template="nav"/>
+<laser:render template="${customerTypeService.getNavTemplatePath()}"/>
 
 <g:if test="${permanentTilesProcessRunning}">
     <div class="ui icon warning message">
@@ -57,7 +53,6 @@
 <laser:render template="message"/>
 <laser:render template="/templates/meta/identifier" model="${[object: subscription, editable: editable]}"/>
 
-
 <ui:messages data="${flash}"/>
 <laser:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" />
 
@@ -69,8 +64,7 @@
                     <div class="content">
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.startDate.label')}</dt>
-                            <dd><ui:xEditable owner="${subscription}" field="startDate" type="date"
-                                                 validation="datesCheck"/></dd>
+                            <dd><ui:xEditable owner="${subscription}" field="startDate" type="date" validation="datesCheck"/></dd>
                             <g:if test="${editable}">
                                 <dd class="la-js-editmode-container"><ui:auditButton
                                         auditable="[subscription, 'startDate']" auditConfigs="${auditConfigs}"/></dd>
@@ -87,9 +81,8 @@
                         </dl>
 
                         <dl>
-                            <dt class="control-label">${message(code: 'subscription.manualCancellationDate.label')}</dt>
-                            <dd><ui:xEditable owner="${subscription}" field="manualCancellationDate"
-                                                 type="date"/></dd>
+                            <dt class="control-label">${message(code: 'subscription.manualCancellationDate.label.shy')}</dt>
+                            <dd><ui:xEditable owner="${subscription}" field="manualCancellationDate" type="date"/></dd>
                             <g:if test="${editable}">
                                 <dd class="la-js-editmode-container"><ui:auditButton
                                         auditable="[subscription, 'manualCancellationDate']"
@@ -99,8 +92,7 @@
 
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.referenceYear.label')}</dt>
-                            <dd><ui:xEditable owner="${subscription}" field="referenceYear"
-                                                 type="year"/></dd>
+                            <dd><ui:xEditable owner="${subscription}" field="referenceYear" type="year"/></dd>
                             <g:if test="${editable}">
                                 <dd class="la-js-editmode-container"><ui:auditButton
                                         auditable="[subscription, 'referenceYear']"
@@ -151,14 +143,14 @@
                                                             config="${RDConstants.SUBSCRIPTION_TYPE}"
                                                             constraint="removeValue_administrativeSubscription,removeValue_localSubscription"/>
                                 </dd>
-                                <dd class="la-js-editmode-container"><ui:auditButton
-                                        auditable="[subscription, 'type']" auditConfigs="${auditConfigs}"/></dd>
+                                <dd class="la-js-editmode-container">
+                                    <ui:auditButton auditable="[subscription, 'type']" auditConfigs="${auditConfigs}"/>
+                                </dd>
                             </dl>
                         </sec:ifAnyGranted>
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.kind.label')}</dt>
-                            <dd><ui:xEditableRefData owner="${subscription}" field="kind"
-                                                        config="${RDConstants.SUBSCRIPTION_KIND}"/></dd>
+                            <dd><ui:xEditableRefData owner="${subscription}" field="kind" config="${RDConstants.SUBSCRIPTION_KIND}"/></dd>
                             <g:if test="${editable}">
                                 <dd class="la-js-editmode-container"><ui:auditButton
                                         auditable="[subscription, 'kind']" auditConfigs="${auditConfigs}"/></dd>
@@ -166,8 +158,7 @@
                         </dl>
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.form.label')}</dt>
-                            <dd><ui:xEditableRefData owner="${subscription}" field="form"
-                                                        config="${RDConstants.SUBSCRIPTION_FORM}"/></dd>
+                            <dd><ui:xEditableRefData owner="${subscription}" field="form" config="${RDConstants.SUBSCRIPTION_FORM}"/></dd>
                             <g:if test="${editable}">
                                 <dd class="la-js-editmode-container"><ui:auditButton
                                         auditable="[subscription, 'form']" auditConfigs="${auditConfigs}"/></dd>
@@ -175,63 +166,63 @@
                         </dl>
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.resource.label')}</dt>
-                            <dd><ui:xEditableRefData owner="${subscription}" field="resource"
-                                                        config="${RDConstants.SUBSCRIPTION_RESOURCE}"/></dd>
+                            <dd><ui:xEditableRefData owner="${subscription}" field="resource" config="${RDConstants.SUBSCRIPTION_RESOURCE}"/></dd>
                             <g:if test="${editable}">
                                 <dd class="la-js-editmode-container"><ui:auditButton
                                         auditable="[subscription, 'resource']" auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
-                        <g:if test="${!params.orgBasicMemberView && subscription.instanceOf && contextOrg.id == subscription.getConsortia().id}">
+                        <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia().id}">
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.isInstanceOfSub.label')}</dt>
                                 <dd>
-                                    <g:link controller="subscription" action="show"
-                                            id="${subscription.instanceOf.id}">${subscription.instanceOf}</g:link>
+                                    <g:link controller="subscription" action="show" id="${subscription.instanceOf.id}">${subscription.instanceOf}</g:link>
                                 </dd>
                             </dl>
                         </g:if>
 
-                        <dl>
-                            <dt class="control-label">${message(code: 'subscription.isPublicForApi.label')}</dt>
-                            <dd><ui:xEditableBoolean owner="${subscription}" field="isPublicForApi"/></dd>
-                            <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><ui:auditButton
-                                        auditable="[subscription, 'isPublicForApi']"
-                                        auditConfigs="${auditConfigs}"/></dd>
-                            </g:if>
-                        </dl>
+                        <g:if test="${!contextService.getOrg().isCustomerType_Support()}">
+                            <dl>
+                                <dt class="control-label">${message(code: 'subscription.isPublicForApi.label')}</dt>
+                                <dd><ui:xEditableBoolean owner="${subscription}" field="isPublicForApi"/></dd>
+                                <g:if test="${editable}">
+                                    <dd class="la-js-editmode-container">
+                                        <ui:auditButton auditable="[subscription, 'isPublicForApi']" auditConfigs="${auditConfigs}"/>
+                                    </dd>
+                                </g:if>
+                            </dl>
 
-                        <dl>
-                            <dt class="control-label">${message(code: 'subscription.hasPerpetualAccess.label')}</dt>
-                            <%--<dd><ui:xEditableRefData owner="${subscription}" field="hasPerpetualAccess" config="${RDConstants.Y_N}" /></dd>--%>
-                            <dd><ui:xEditableBoolean owner="${subscription}" field="hasPerpetualAccess"/></dd>
-                            <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><ui:auditButton
-                                        auditable="[subscription, 'hasPerpetualAccess']"
-                                        auditConfigs="${auditConfigs}"/></dd>
-                            </g:if>
-                        </dl>
+                            <dl>
+                                <dt class="control-label">${message(code: 'subscription.hasPerpetualAccess.label')}</dt>
+                                <%--<dd><ui:xEditableRefData owner="${subscription}" field="hasPerpetualAccess" config="${RDConstants.Y_N}" /></dd>--%>
+                                <dd><ui:xEditableBoolean owner="${subscription}" field="hasPerpetualAccess"/></dd>
+                                <g:if test="${editable}">
+                                    <dd class="la-js-editmode-container">
+                                        <ui:auditButton auditable="[subscription, 'hasPerpetualAccess']" auditConfigs="${auditConfigs}"/>
+                                    </dd>
+                                </g:if>
+                            </dl>
 
-                        <dl>
-                            <dt class="control-label">${message(code: 'subscription.hasPublishComponent.label')}</dt>
-                            <dd><ui:xEditableBoolean owner="${subscription}" field="hasPublishComponent"/></dd>
-                            <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><ui:auditButton
-                                        auditable="[subscription, 'hasPublishComponent']"
-                                        auditConfigs="${auditConfigs}"/></dd>
-                            </g:if>
-                        </dl>
+                            <dl>
+                                <dt class="control-label">${message(code: 'subscription.hasPublishComponent.label')}</dt>
+                                <dd><ui:xEditableBoolean owner="${subscription}" field="hasPublishComponent"/></dd>
+                                <g:if test="${editable}">
+                                    <dd class="la-js-editmode-container">
+                                        <ui:auditButton auditable="[subscription, 'hasPublishComponent']" auditConfigs="${auditConfigs}"/>
+                                    </dd>
+                                </g:if>
+                            </dl>
 
-                        <dl>
-                            <dt class="control-label">${message(code: 'subscription.holdingSelection.label')}</dt>
-                            <dd><ui:xEditableRefData owner="${subscription}" field="holdingSelection" config="${RDConstants.SUBSCRIPTION_HOLDING}"/></dd>
-                            <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><ui:auditButton
-                                        auditable="[subscription, 'holdingSelection']"
-                                        auditConfigs="${auditConfigs}"/></dd>
-                            </g:if>
-                        </dl>
+                            <dl>
+                                <dt class="control-label">${message(code: 'subscription.holdingSelection.label')}</dt>
+                                <dd><ui:xEditableRefData owner="${subscription}" field="holdingSelection" config="${RDConstants.SUBSCRIPTION_HOLDING}"/></dd>
+                                <g:if test="${editable}">
+                                    <dd class="la-js-editmode-container">
+                                        <ui:auditButton auditable="[subscription, 'holdingSelection']" auditConfigs="${auditConfigs}"/>
+                                    </dd>
+                                </g:if>
+                            </dl>
+                        </g:if>
 
                     </div>
                 </div>
@@ -417,8 +408,10 @@
     </div><!-- .eleven -->
     <aside class="five wide column la-sidekick">
         <div class="ui one cards">
+
+            <g:if test="${!contextService.getOrg().isCustomerType_Support()}">
             <div id="container-provider">
-                <div class="ui card ">
+                <div class="ui card">
                     <div class="content">
                         <h2 class="ui header">${message(code: 'subscription.organisations.label')}</h2>
                         <laser:render template="/templates/links/orgLinksAsList"
@@ -463,6 +456,7 @@
                     </div>
                 </div>
             </div>
+            </g:if>
 
             <div id="container-billing">
                 <g:if test="${costItemSums.ownCosts || costItemSums.consCosts || costItemSums.subscrCosts}">
@@ -487,7 +481,7 @@
                 </g:if>
             </div>
             <div id="container-links">
-                <div class="ui card"  id="links"></div>
+                <div class="ui card" id="links"></div>
             </div>
             <laser:render template="/templates/sidebar/aside" model="${[ownobj: subscription, owntp: 'subscription']}"/>
         </div>

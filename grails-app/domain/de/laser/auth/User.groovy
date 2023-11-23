@@ -78,10 +78,16 @@ class User {
         (UserRole.findAllByUser(this) as List<UserRole>)*.role as Set<Role>
     }
 
+    /**
+     * Call to encode the password before inserting the new user into the database
+     */
     void beforeInsert() {
         _encodePassword()
     }
 
+    /**
+     * if the password has changed, enocde it before updating the database
+     */
     void beforeUpdate() {
         if (isDirty('password')) {
             _encodePassword()
@@ -146,13 +152,31 @@ class User {
         display ? display : username
     }
 
+    /**
+     * Checks if the user has the given role in the context institution
+     * @param role the {@link Role} to be verified
+     * @return does the user has the given role at the context institution?
+     */
     boolean isFormal(Role role) {
         isFormal(role, BeanStore.getContextService().getOrg())
     }
+
+    /**
+     * Checks if the given user belongs to the given institution
+     * @param org the institution ({@link Org}) to be verified
+     * @return is the given user affiliated to the given institution?
+     */
     boolean isFormal(Org org) {
         //used in user/global/edit.gsp
         (formalOrg?.id == org.id) && (formalRole?.roleType == 'user')
     }
+
+    /**
+     * Checks if the given user has at the given institution the given role
+     * @param role the {@link Role} which should be verified
+     * @param org the institution ({@link Org}) to be verified
+     * @return is the given user affiliated to the given institution and does it has the given role?
+     */
     boolean isFormal(Role role, Org org) {
         (formalRole?.id == role.id) && (formalOrg?.id == org.id)
     }
@@ -186,9 +210,18 @@ class User {
         lastInstAdmin
     }
 
+    /**
+     * Checks if the given user is a global system administrator
+     * @return has the user ADMIN rights?
+     */
     boolean isAdmin() {
         getAuthorities().authority.contains('ROLE_ADMIN')
     }
+
+    /**
+     * Checks if the given user has YODA rights, i.e. is superadmin
+     * @return has the user YODA rights?
+     */
     boolean isYoda() {
         getAuthorities().authority.contains('ROLE_YODA')
     }

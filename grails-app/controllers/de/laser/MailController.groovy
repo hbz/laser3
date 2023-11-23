@@ -9,16 +9,23 @@ import de.laser.survey.SurveyOrg
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.transaction.TransactionStatus
 
+/**
+ * This controller is responsible for the creation and sending of automatised mails. It is currently used only for
+ * the communication of survey related details, but should be used for other communication as well
+ * @see SurveyInfo
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class MailController {
 
     ContextService contextService
     MailSendService mailSendService
-    AccessService accessService
 
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
+    /**
+     * Call to create a custom mail, attached to the given type of object. Currently, only {@link SurveyInfo}s are being supported
+     */
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
+        ctx.contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
     })
     def createOwnMail() {
         log.debug("createOwnMail: " + params)
@@ -31,15 +38,6 @@ class MailController {
         result.contextOrg = contextOrg
         result.contextCustomerType = contextOrg.getCustomerType()
 
-        result.orgList = []
-
-        if (params.list('selectedOrgs')) {
-            List idList = params.list('selectedOrgs')
-            result.orgList = idList.isEmpty() ? [] : Org.findAllByIdInList(idList)
-        }
-
-        result.object = null
-
         result.objectId = params.objectId ?: params.id
         result.objectType = params.objectType
 
@@ -47,7 +45,7 @@ class MailController {
             switch (result.objectType) {
                 case SurveyInfo.class.name:
 
-                    result.editable = contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+                    result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
                     if (!result.editable) {
                         flash.error = g.message(code: "default.notAutorized.message")
@@ -58,6 +56,13 @@ class MailController {
                     result.surveyConfig = result.surveyInfo.surveyConfigs[0]
 
                     result.editable = (result.surveyInfo && result.surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED]) ? result.surveyInfo.isEditable() : false
+
+                    result.orgList = []
+
+                    if (params.list('selectedOrgs')) {
+                        List idList = params.list('selectedOrgs')
+                        result.orgList = idList.isEmpty() ? [] : Org.findAllByIdInList(idList)
+                    }
 
                     if(!result.orgList){
                         flash.error = message(code: 'default.no.selected.org')
@@ -111,6 +116,58 @@ class MailController {
                     }
 
                     break
+                case Org.class.name:
+
+                    result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+
+                    if (!result.editable) {
+                        flash.error = g.message(code: "default.notAutorized.message")
+                        redirect(url: request.getHeader('referer'))
+                    }
+
+                    result.surveyList = []
+
+                    if (params.list('selectedSurveys')) {
+                        List idList = params.list('selectedSurveys')
+                        result.surveyList = idList.isEmpty() ? [] : SurveyInfo.findAllByIdInList(idList)
+                    }
+
+                    if(!result.surveyList){
+                        flash.error = message(code: 'default.no.selected.org')
+                        redirect(url: request.getHeader("referer"))
+                        return
+                    }
+
+                    result.org = Org.get(Long.parseLong(result.objectId))
+
+                    result.orgList =[result.org]
+
+                    result.reminderMail = (params.openOption == 'ReminderMail')  ?: false
+
+                    if (result.editable) {
+
+                        if(result.reminderMail) {
+                            result << mailSendService.mailSendConfigBySurveys(result.surveyList, result.reminderMail)
+
+                            List<User> formalUserList = result.org ? User.findAllByFormalOrg(result.org) : []
+                            List<String> userSurveyNotification = []
+
+                            formalUserList.each { fu ->
+                                if (fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
+                                        fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES) {
+                                    userSurveyNotification << fu.email
+                                }
+                            }
+
+                            result.userSurveyNotificationMails = userSurveyNotification ? userSurveyNotification.join('; ') : ''
+                        }
+                    } else {
+                        flash.error = message(code: 'default.noPermissions')
+                        redirect(url: request.getHeader("referer"))
+                        return
+                    }
+
+                    break
             }
 
 
@@ -123,9 +180,13 @@ class MailController {
         result
     }
 
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
+    /**
+     * Sends the given mail. Depending on the object type the mail is attached to, certain procedures are being followed sending the mail
+     * @return redirect back to the referer
+     */
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
+        ctx.contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
     })
     def processSendMail() {
         log.debug("processSendMail: " + params)
@@ -154,7 +215,7 @@ class MailController {
 
             switch (params.objectType) {
                 case SurveyInfo.class.name:
-                    result.editable = contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+                    result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
                     if (!result.editable) {
                         flash.error = g.message(code: "default.notAutorized.message")
@@ -176,6 +237,40 @@ class MailController {
                     String surveyView = reminderMail ? 'participantsReminder' : 'openParticipantsAgain'
 
                     redirect(action: surveyView, controller: 'survey', id: result.surveyInfo.id, params:[tab: params.tab])
+                    return
+                    break
+                case Org.class.name:
+                    result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+
+                    if (!result.editable) {
+                        flash.error = g.message(code: "default.notAutorized.message")
+                        redirect(url: request.getHeader('referer'))
+                    }
+
+                    result.surveyList = []
+
+                    if (params.list('selectedSurveys')) {
+                        List idList = params.list('selectedSurveys')
+                        result.surveyList = idList.isEmpty() ? [] : SurveyInfo.findAllByIdInList(idList)
+                    }
+
+                    if(!result.surveyList){
+                        flash.error = message(code: 'default.no.selected.org')
+                        redirect(url: request.getHeader("referer"))
+                        return
+                    }
+
+                    result.org = Org.get(Long.parseLong(result.objectId))
+
+                    boolean reminderMail = params.reminderMail == 'false' ? false : true
+
+                    if(result.editable) {
+                        result << mailSendService.mailSendProcessBySurveys(result.surveyList, reminderMail, result.org, params)
+                    }else {
+                        flash.error = message(code: 'default.notAutorized.message')
+                    }
+
+                    redirect(action: 'manageParticipantSurveys', controller: 'myInstitution', id: result.org.id, params:[tab: params.tab])
                     return
                     break
             }

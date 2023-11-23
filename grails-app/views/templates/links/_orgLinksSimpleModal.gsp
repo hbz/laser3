@@ -3,15 +3,20 @@
     <a role="button" class="ui button" data-ui="modal" href="#${tmplModalID}">${tmplButtonText}</a>
 </g:if>
 
-<ui:modal modalSize="medium" id="${tmplModalID}" text="${tmplText}" isEditModal="${editmode}">
+<ui:modal contentClass="scrolling" modalSize="medium" id="${tmplModalID}" text="${tmplText}" isEditModal="${editmode}">
+    <div class="ui info message">
+        <i class="info circle icon"></i> ${message(code: 'subscription.details.linkProvider.minTwoLetters')}
+    </div>
     <g:form id="create_org_role_link_${tmplModalID}" class="ui form" url="[controller:'ajax', action:'addOrgRole']" method="post">
         <input type="hidden" name="parent" value="${parent}" />
         <input type="hidden" name="property" value="${property}" />
         <input type="hidden" name="recip_prop" value="${recip_prop}" />
         <input type="hidden" name="orm_orgRole" value="${tmplRole?.id}" />
         <input type="hidden" name="linkType" value="${linkType}" />
+
+        <label for="${tmplModalID}_orgSearch">${message(code: 'title.search')}</label>
         <input type="text" name="orgSearch" id="${tmplModalID}_orgSearch"/>
-        <div class="la-clear-before" id="${tmplModalID}_providerResultWrapper">
+        <div class="la-clear-before la-padding-top-1em" id="${tmplModalID}_providerResultWrapper">
 
         </div>
         <%--

@@ -4,6 +4,13 @@ import de.laser.RenewSubscriptionService
 import de.laser.base.AbstractJob
 import groovy.util.logging.Slf4j
 
+/**
+ * This job, firing at 02:00 AM every day, checks if local subscriptions marked for automatic renewal have reached their end date and if so,
+ * their a new subscription with is being created automatically for the next running year. Note: the update of the status flag is done one
+ * hour later by the {@link StatusUpdateJob}!
+ * @see de.laser.Subscription
+ * @see RenewSubscriptionService#subscriptionRenewCheck()
+ */
 @Slf4j
 class RenewSubscriptionJob extends AbstractJob {
 

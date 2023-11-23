@@ -10,8 +10,7 @@
               text="${subscription.name}"/>
     <ui:crumb controller="subscription" action="manageDiscountScale" id="${subscription.id}"
               text="${message(code: 'subscription.details.manageDiscountScale.label')}"/>
-    <ui:crumb class="active"
-              text="${message(code: '')}"/>
+    <ui:crumb class="active" text="${message(code: '')}"/>
 </ui:breadcrumbs>
 
 <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}">
@@ -173,14 +172,14 @@
                                           rowspan="2"/>
 
                         <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.startDate"
-                                          title="${message(code: 'default.startDate.label')}"/>
+                                          title="${message(code: 'default.startDate.label.shy')}"/>
 
 
                         <th scope="col" rowspan="2">
                             <a href="#" class="la-popup-tooltip la-delay"
                                data-content="${message(code: 'subscription.numberOfLicenses.label')}"
                                data-position="top center">
-                                <i class="users large icon"></i>
+                                <i class="university large icon"></i>
                             </a>
                         </th>
                         <th scope="col" rowspan="2">
@@ -197,7 +196,7 @@
 
                     <tr>
                         <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.endDate"
-                                          title="${message(code: 'default.endDate.label')}"/>
+                                          title="${message(code: 'default.endDate.label.shy')}"/>
                     </tr>
                     </thead>
                     <g:each in="${subscriptions}" var="s" status="i">

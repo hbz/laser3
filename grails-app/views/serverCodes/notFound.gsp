@@ -32,8 +32,8 @@
                                 </div>
                             </g:each>
                         </div>
-                        <br />
                     </g:if>
+                    <br />
 
                     <p>
                         <button class="ui button la-js-dont-hide-button" onclick="JSPC.helper.goBack()">${message(code: 'default.button.back')}</button>

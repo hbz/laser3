@@ -157,6 +157,7 @@
             <br/>
         </g:if>
 
+        %{-- EXPORT PROBLEM @ laser:render in call stack - ERMS-5437 --}%
         <g:render template="/subscription/export/propertiesPDF" model="${[
                 subscription: subscription, calledFromSurvey: true, contextOrg: contextOrg
         ]}"/>
@@ -219,7 +220,7 @@
 
                 packageInfos.packageInstance = subscriptionPackage.pkg
 
-                Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi?uuid=${subscriptionPackage.pkg.gokbId}")
+                Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: subscriptionPackage.pkg.gokbId])
                 if (queryResult.warning) {
                     List records = queryResult.warning.result
                     packageInfos.packageInstanceRecord = records ? records[0] : [:]

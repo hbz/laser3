@@ -1,11 +1,13 @@
 package de.laser
 
 import de.laser.auth.User
-import de.laser.utils.SwissKnife
 import grails.plugin.asyncmail.AsynchronousMailMessage
 import grails.plugin.asyncmail.enums.MessageStatus
 import grails.plugin.springsecurity.annotation.Secured
 
+/**
+ * This controller takes care of the asynchronously sent mails (or mails about to be sent)
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class MailAsyncController {
 
@@ -29,6 +31,11 @@ class MailAsyncController {
         [resultList: AsynchronousMailMessage.list(params), resultCount: AsynchronousMailMessage.count()]
     }
 
+    /**
+     * Gets the desired mail message with the given ID and passes it to the closure specified
+     * @param cl the action in which the message should be used
+     * @return redirects back to the index page
+     */
     private _withMessage(Closure cl) {
         AsynchronousMailMessage message = AsynchronousMailMessage.get(params.id)
         if (message) {

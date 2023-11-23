@@ -20,7 +20,7 @@
                 <tr>
                     <th>${message(code: 'myinst.renewalUpload.props')}</th>
                     <th>${message(code: 'default.value.label')}</th>
-                    <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                    <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                     <th>${message(code: 'copyElementsIntoObject.audit')}</th>
                     </g:if>
                 </tr>
@@ -31,7 +31,7 @@
                             <input type="text" name="subscription.name" value="${permissionInfo?.sub_name}">
                         </div>
                     </td>
-                    <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                    <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                         <td class="center aligned">
                             <div class="ui checkbox">
                                 <input type="checkbox" name="auditList"
@@ -42,11 +42,11 @@
 
                 </tr>
                 <tr>
-                    <th>${message(code: 'default.startDate.label')}</th>
+                    <th>${message(code: 'default.startDate.label.shy')}</th>
                     <td><ui:datepicker class="wide eight" id="subscription.start_date" name="subscription.start_date"
                                           placeholder="default.date.label" value="${permissionInfo?.sub_startDate}"
                                           required=""/></td>
-                    <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                    <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                         <td class="center aligned">
                             <div class="ui checkbox">
                                 <input type="checkbox" name="auditList"
@@ -56,10 +56,10 @@
                     </g:if>
                 </tr>
                 <tr>
-                    <th>${message(code: 'default.endDate.label')}</th>
+                    <th>${message(code: 'default.endDate.label.shy')}</th>
                     <td><ui:datepicker class="wide eight" id="subscription.end_date" name="subscription.end_date"
                                           placeholder="default.date.label" value="${permissionInfo?.sub_endDate}"/></td>
-                    <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                    <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                         <td class="center aligned">
                             <div class="ui checkbox">
                                 <input type="checkbox" name="auditList"
@@ -69,10 +69,10 @@
                     </g:if>
                 </tr>
                 <tr>
-                    <th>${message(code: 'subscription.referenceYear.label')}</th>
+                    <th>${message(code: 'subscription.referenceYear.label.shy')}</th>
                     <td><ui:datepicker type="year" class="wide eight" id="subscription.reference_year" name="subscription.reference_year"
                                        placeholder="default.date.format.yyyy" value="${permissionInfo?.sub_referenceYear}"/></td>
-                    <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                    <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                         <td class="center aligned">
                             <div class="ui checkbox">
                                 <input type="checkbox" name="auditList"
@@ -93,7 +93,7 @@
                                        name="subscription.isMultiYear" ${subscription.isMultiYear ? 'checked' : ''}/>
                             </div>
                         </td>
-                        <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                        <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                             <td class="center aligned">
                             </td>
                         </g:if>
@@ -112,7 +112,7 @@
                                 name="subStatus"
                                 value="${permissionInfo?.sub_status}"/>
                     </td>
-                    <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                    <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                         <td class="center aligned">
                             <div class="ui checkbox">
                                 <input type="checkbox" name="auditList"

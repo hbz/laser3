@@ -25,8 +25,8 @@
                 <td>
                     ${fieldValue(bean: us, field: "username")}
 
-                    <g:if test="${! SpringSecurityUtils.ifAnyGranted('ROLE_USER')}">
-                        <span class="la-popup-tooltip la-delay" data-content="Dieser Account besitzt keine ROLE_USER-Rechte." data-position="top right">
+                    <g:if test="${! UserRole.findByUser(us)}">
+                        <span class="la-popup-tooltip la-delay" data-content="Dieser Account besitzt keine ROLE." data-position="top right">
                             <i class="icon minus circle red"></i>
                         </span>
                     </g:if>

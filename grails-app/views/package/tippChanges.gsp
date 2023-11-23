@@ -8,6 +8,7 @@
 
 <ui:h1HeaderWithIcon>
     <ui:xEditable owner="${packageInstance}" field="name"/>
+    <laser:render template="/templates/iconObjectIsMine" model="${[isMyPkg: isMyPkg]}"/>
 </ui:h1HeaderWithIcon>
 
 <laser:render template="nav"/>

@@ -95,15 +95,12 @@
                     <g:if test="${controllerName == "myInstitution"}">
                         <th>${message(code: 'default.subscription.label')}</th>
                     </g:if>
-                    <th>${message(code: 'default.startDate.label')}</th>
-                    <th>${message(code: 'default.endDate.label')}</th>
+                    <th>${message(code: 'default.startDate.label.shy')}</th>
+                    <th>${message(code: 'default.endDate.label.shy')}</th>
                     <th>${message(code: 'default.status.label')}</th>
                     <th>${message(code: 'subscription.linktoLicense')}</th>
                     <th class="la-no-uppercase">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                              data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
-                            <i class="map orange icon"></i>
-                        </span>
+                        <ui:multiYearIcon isConsortial="true" />
                     </th>
                     <th class="la-action-info">${message(code: 'default.actions.label')}</th>
                 </tr>
@@ -140,7 +137,7 @@
                                     </span>
                                 </g:if>
 
-                                <ui:customerTypeIcon org="${subscr}" />
+                                <ui:customerTypeProIcon org="${subscr}" />
                             </td>
                         </g:if>
                         <g:if test="${controllerName == "myInstitution"}">
@@ -159,10 +156,7 @@
                         </td>
                         <td>
                             <g:if test="${sub.isMultiYear}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                      data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
-                                    <i class="map orange icon"></i>
-                                </span>
+                                <ui:multiYearIcon isConsortial="true" color="orange" />
                             </g:if>
                         </td>
                         <td class="x">

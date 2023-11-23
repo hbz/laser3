@@ -1,14 +1,21 @@
 package de.laser
 
 import de.laser.annotations.ShouldBePrivate_DoNotUse
+import de.laser.auth.Perm
+import de.laser.auth.PermGrant
+import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.cache.EhcacheWrapper
 import de.laser.cache.SessionCacheWrapper
-import de.laser.storage.RDStore
+import de.laser.storage.BeanStore
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.grails.taglib.GroovyPageAttributes
+import org.springframework.web.context.request.RequestAttributes
+import org.springframework.web.context.request.RequestContextHolder
+
 
 /**
  * This service handles calls related to the current session. Most used is the
@@ -18,7 +25,8 @@ import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 @Transactional
 class ContextService {
 
-    AccessService accessService
+    public final static String RCH_LASER_CONTEXT_ORG    = 'laser_context_org'
+
     CacheService cacheService
     SpringSecurityService springSecurityService
     UserService userService
@@ -30,38 +38,28 @@ class ContextService {
      * @return the institution used for the session (the context org)
      */
     Org getOrg() {
-        // todo
+        RequestAttributes ra = RequestContextHolder.currentRequestAttributes()
 
-        try {
-            Org context = getUser()?.formalOrg
-            if (context) {
-                return (Org) GrailsHibernateUtil.unwrapIfProxy(context)
+        Org context = ra.getAttribute(RCH_LASER_CONTEXT_ORG, RequestAttributes.SCOPE_REQUEST) as Org
+        if (context) {
+            // log.debug 'using ' + RCH_LASER_CONTEXT_ORG
+        }
+        else {
+            try {
+                context = GrailsHibernateUtil.unwrapIfProxy(getUser()?.formalOrg) as Org
+
+//                log.debug 'setting ' + RCH_LASER_CONTEXT_ORG + ' for request .. ' + context
+                ra.setAttribute(RCH_LASER_CONTEXT_ORG, context, RequestAttributes.SCOPE_REQUEST)
+
+//                ra.getAttributeNames(RequestAttributes.SCOPE_REQUEST)
+//                        .findAll {it.startsWith('laser')}
+//                        .each {log.debug '' + it + ' : ' + ra.getAttribute(it, RequestAttributes.SCOPE_REQUEST)}
+            }
+            catch (Exception e) {
+                log.warn('getOrg() - ' + e.getMessage())
             }
         }
-        catch (Exception e) {
-            log.warn('getOrg() - ' + e.getMessage())
-        }
-        return null
-
-//            try {
-//                SessionCacheWrapper scw = getSessionCache()
-//
-//                def context = scw.get('contextOrg')
-//                if (! context) {
-//                    context = getUser()?.formalOrg
-//
-//                    if (context) {
-//                        scw.put('contextOrg', context)
-//                    }
-//                }
-//                if (context) {
-//                    return (Org) GrailsHibernateUtil.unwrapIfProxy(context)
-//                }
-//            }
-//            catch (Exception e) {
-//                log.warn('getOrg() - ' + e.getMessage())
-//            }
-//            return null
+        context
     }
 
     /**
@@ -82,11 +80,23 @@ class ContextService {
 
     // -- Cache --
 
+    /**
+     * Retrieves the user cache with the given prefix for the context user
+     * @param cacheKeyPrefix the cache entry to retrieve
+     * @return the {@link EhcacheWrapper} matching to the given prefix
+     * @see {@link User}
+     */
     EhcacheWrapper getUserCache(String cacheKeyPrefix) {
         cacheService.getSharedUserCache(getUser(), cacheKeyPrefix)
     }
 
-    EhcacheWrapper getSharedOrgCache(String cacheKeyPrefix) {
+    /**
+     * Retrieves the organisation cache with the given prefix for the context institution
+     * @param cacheKeyPrefix the cache entry to retrieve
+     * @return the {@link EhcacheWrapper} matching to the given prefix
+     * @see {@link Org}
+     */
+    EhcacheWrapper getOrgCache(String cacheKeyPrefix) {
         cacheService.getSharedOrgCache(getOrg(), cacheKeyPrefix)
     }
 
@@ -98,100 +108,172 @@ class ContextService {
         return new SessionCacheWrapper()
     }
 
-    // -- Formal checks @ user.isFormal(user.formalRole, user.formalOrg) --> no fake role
-
-    boolean isInstUser_or_ROLEADMIN() {
-        _hasInstRole_or_ROLEADMIN('INST_USER')
-    }
-    boolean isInstEditor_or_ROLEADMIN() {
-        _hasInstRole_or_ROLEADMIN('INST_EDITOR')
-    }
-    boolean isInstAdm_or_ROLEADMIN() {
-        _hasInstRole_or_ROLEADMIN('INST_ADM')
+    String getFormalCacheKeyToken() {
+        User user = getUser()
+        '[' + user.id + ':' + user.formalOrg.id + ':' + user.formalRole.id + ']'
     }
 
-    // -- Formal checks @ user.formalOrg.perm --> with fake role
+    // -- Formal checks @ user.formalOrg
 
     /**
-     * Permission check (granted by customer type) for the current context org.
+     * Checks if the context user belongs to an institution with the given customer types or is a superadmin
+     * @param orgPerms the customer types to verify
+     * @return true if the given permissions are granted, false otherwise
+     * @see CustomerTypeService
      */
-    boolean hasPerm(String orgPerms) {
-        accessService._hasPerm_forOrg_withFakeRole(orgPerms.split(','), getOrg())
-    }
-    boolean hasPerm_or_ROLEADMIN(String orgPerms) {
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-            return true
-        }
-        hasPerm(orgPerms)
+    boolean isInstUser_or_ROLEADMIN(String orgPerms = null) {
+        _hasInstRoleAndPerm_or_ROLEADMIN('INST_USER', orgPerms, false)
     }
 
-    // -- Formal checks @ user.formalOrg.perm + user.isFormal(role, formalOrg) --> with fake role
-
-    boolean hasPermAsInstUser_or_ROLEADMIN(String orgPerms) {
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-            return true
-        }
-        _hasPermAndInstRole_withFakeRole(orgPerms, 'INST_USER')
-    }
-    boolean hasPermAsInstEditor_or_ROLEADMIN(String orgPerms) {
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-            return true
-        }
-        _hasPermAndInstRole_withFakeRole(orgPerms, 'INST_EDITOR')
-    }
-    boolean hasPermAsInstAdm_or_ROLEADMIN(String orgPerms) {
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-            return true
-        }
-        _hasPermAndInstRole_withFakeRole(orgPerms, 'INST_ADM')
+    /**
+     * Checks if the context user belongs as an editor to an institution with the given customer types or is a superadmin
+     * @param orgPerms the customer types to verify
+     * @return true if the given permissions are granted, false otherwise
+     * @see CustomerTypeService
+     */
+    boolean isInstEditor_or_ROLEADMIN(String orgPerms = null) {
+        _hasInstRoleAndPerm_or_ROLEADMIN('INST_EDITOR', orgPerms, false)
     }
 
-    boolean hasPermAsInstRoleAsConsortium_or_ROLEADMIN(String orgPerms, String instUserRole) {
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-            return true
-        }
-        if (getUser() && getOrg() && instUserRole) {
-            if (getOrg().getAllOrgTypeIds().contains( RDStore.OT_CONSORTIUM.id )) {
-                return _hasPermAndInstRole_withFakeRole(orgPerms, instUserRole)
-            }
-        }
-        return false
+    /**
+     * Checks if the context user belongs as a local administrator to an institution with the given customer types or is a superadmin
+     * @param orgPerms the customer types to verify
+     * @return true if the given permissions are granted, false otherwise
+     * @see CustomerTypeService
+     */
+    boolean isInstAdm_or_ROLEADMIN(String orgPerms = null) {
+        _hasInstRoleAndPerm_or_ROLEADMIN('INST_ADM', orgPerms, false)
+    }
+
+    boolean isInstUser_denySupport_or_ROLEADMIN(String orgPerms = null) {
+        _hasInstRoleAndPerm_or_ROLEADMIN('INST_USER', orgPerms, true)
+    }
+
+    boolean isInstEditor_denySupport_or_ROLEADMIN(String orgPerms = null) {
+        _hasInstRoleAndPerm_or_ROLEADMIN('INST_EDITOR', orgPerms, true)
+    }
+
+    boolean isInstAdm_denySupport_or_ROLEADMIN(String orgPerms = null) {
+        _hasInstRoleAndPerm_or_ROLEADMIN('INST_ADM', orgPerms, true)
     }
 
     // -- private
 
-    private boolean _hasInstRole_or_ROLEADMIN(String instUserRole) {
+    /**
+     * Checks if the context user is either a superadmin or has the given role at the context institution and if this institution is of the given customer type
+     * @param instUserRole the user role type to check
+     * @param orgPerms the customer type to check
+     * @return true if the user role and institution customer type match or superadministration role has been granted, false otherwise
+     * @see User
+     * @see CustomerTypeService
+     */
+    private boolean _hasInstRoleAndPerm_or_ROLEADMIN(String instUserRole, String orgPerms, boolean denyCustomerTypeSupport) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
-        userService.hasAffiliation_or_ROLEADMIN(getUser(), getOrg(), instUserRole)
+        boolean check = userService.hasAffiliation_or_ROLEADMIN(getUser(), getOrg(), instUserRole)
+
+        if (check && denyCustomerTypeSupport) {
+            check = !getOrg().isCustomerType_Support()
+        }
+        if (check && orgPerms) {
+            check = _hasPerm(orgPerms)
+        }
+        check
     }
 
+    /**
+     * Checks if the context organisation is an institution at all and if it is of the given customer type.
+     * If no customer type is being submitted, this check returns true (= substitution call)
+     * @param orgPerms the customer type(s) to check
+     * @return true if the context institution has the given customer type or no customer type has been submitted, false otherwise
+     * @see OrgSetting
+     * @see CustomerTypeService
+     */
     @ShouldBePrivate_DoNotUse
-    boolean _hasPermAndInstRole_withFakeRole(String orgPerms, String instUserRole) {
-        if (getUser() && instUserRole) {
-            if (_hasInstRole_or_ROLEADMIN(instUserRole)) {
-                return hasPerm(orgPerms)
+    boolean _hasPerm(String orgPerms) {
+        boolean check = false
+
+        if (orgPerms) {
+            def oss = OrgSetting.get(getOrg(), OrgSetting.KEYS.CUSTOMER_TYPE)
+            if (oss != OrgSetting.SETTING_NOT_FOUND) {
+                orgPerms.split(',').each { op ->
+                    if (!check) {
+                        check = PermGrant.findByPermAndRole(Perm.findByCode(op.toLowerCase().trim()), (Role) oss.getValue())
+                    }
+                }
             }
+        } else {
+            check = true
         }
-        return false
+        check
     }
 
     // ----- REFACTORING ?? -----
 
     /**
      * Replacement call for the abandoned ROLE_ORG_COM_EDITOR
+     * @return true if editor rights are granted or the context institution is a consortium, false otherwise
      */
     // TODO
-    boolean is_ORG_COM_EDITOR() {
-        _hasPermAndInstRole_withFakeRole(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
+    boolean is_ORG_COM_EDITOR_or_ROLEADMIN() {
+        isInstEditor_or_ROLEADMIN() && _hasPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     }
 
+    /**
+     * Checks if the context user is an editor or a superadmin and if so, whether the context organisation is a consortium or an institution looking at its own data
+     * @param inContextOrg are we in the context organisation?
+     * @return true if the context organisation is a consortium or an institution looking at its own data, false otherwise
+     */
     // TODO
-    boolean is_INST_EDITOR_with_PERMS_BASIC(boolean inContextOrg) {
-        boolean a = _hasPermAndInstRole_withFakeRole(CustomerTypeService.ORG_INST_BASIC, 'INST_EDITOR') && inContextOrg
-        boolean b = _hasPermAndInstRole_withFakeRole(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')
+    boolean is_INST_EDITOR_or_ROLEADMIN_with_PERMS_BASIC(boolean inContextOrg) {
+        boolean check = false
+        if (isInstEditor_or_ROLEADMIN()) {
+            check = _hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) || (_hasPerm(CustomerTypeService.ORG_INST_BASIC) && inContextOrg)
+        }
+        check
+    }
 
-        return (a || b)
+    // -----
+
+    boolean checkCachedNavPerms(GroovyPageAttributes attrs) {
+
+        boolean check = false
+        User user = getUser()
+        Org org = getOrg()
+
+        EhcacheWrapper ttl1800 = cacheService.getTTL1800Cache('ContextService/checkCachedNavPerms')
+
+        Map<String, Boolean> permsMap = [:]
+        String permsKey = getFormalCacheKeyToken()
+
+        if (ttl1800.get(permsKey)) {
+            permsMap = ttl1800.get(permsKey) as Map<String, Boolean>
+        }
+
+        String perm =  attrs.instRole + ':' + attrs.orgPerm + ':' + attrs.affiliationOrg + ':' + attrs.specRole
+
+        if (permsMap.get(perm) != null) {
+            check = (boolean) permsMap.get(perm)
+        }
+        else {
+            check = SpringSecurityUtils.ifAnyGranted(attrs.specRole ?: [])
+
+            if (!check) {
+                boolean instRoleCheck = attrs.instRole ? BeanStore.getUserService().hasAffiliation_or_ROLEADMIN(user, org, attrs.instRole) : true
+                boolean orgPermCheck  = attrs.orgPerm ? _hasPerm(attrs.orgPerm) : true
+
+                check = instRoleCheck && orgPermCheck
+
+                if (attrs.instRole && attrs.affiliationOrg && check) { // ???
+                    check = BeanStore.getUserService().hasAffiliation_or_ROLEADMIN(user, attrs.affiliationOrg, attrs.instRole)
+                    // check = user.hasOrgAffiliation_or_ROLEADMIN(attrs.affiliationOrg, attrs.instRole)
+                }
+            }
+            permsMap.put(perm, check)
+            ttl1800.put(permsKey, permsMap)
+        }
+
+        check
     }
 }

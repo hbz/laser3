@@ -16,6 +16,7 @@ import org.springframework.context.MessageSource
 class PackageService {
 
     BatchUpdateService batchUpdateService
+    ContextService contextService
     DeletionService deletionService
     LinkGenerator grailsLinkGenerator
     MessageSource messageSource
@@ -81,8 +82,8 @@ class PackageService {
      * @param pkg the package whose titles should be retrieved
      * @return a set of database IDs
      */
-    Set<Long> getCurrentTippIDs(de.laser.Package pkg) {
-        TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp where tipp.status = :current and tipp.pkg = :pkg',[current: RDStore.TIPP_STATUS_CURRENT, pkg: pkg])
+    Long getCountOfCurrentTippIDs(de.laser.Package pkg) {
+        TitleInstancePackagePlatform.executeQuery('select count(*) from TitleInstancePackagePlatform tipp where tipp.status = :current and tipp.pkg = :pkg',[current: RDStore.TIPP_STATUS_CURRENT, pkg: pkg])[0]
     }
 
     /**
@@ -202,6 +203,11 @@ class PackageService {
         count
     }
 
+    /**
+     * Clears title records which have been marked as removed.
+     * The method is going to be locked while execution because the query may take time to complete
+     * @return true if a cleanup could be performed, false
+     */
     boolean clearRemovedTitles() {
         if(!titleCleanupRunning) {
             titleCleanupRunning = true
@@ -214,5 +220,18 @@ class PackageService {
             return true
         }
         else return false
+    }
+
+    /**
+     * Sets some generally valid parameters for the response; those are the context user / institution, customer type and package to be retrieved and whether this package is being subscribed (= is my package)
+     * @param params the request parameter map
+     * @return a {@link Map} containing general result data
+     */
+    Map<String, Object> getResultGenerics(Map params) {
+        Map<String, Object> result = [user: contextService.getUser(), contextOrg: contextService.getOrg(), packageInstance: Package.get(params.id)]
+        result.contextCustomerType = result.contextOrg.getCustomerType()
+        int relationCheck = SubscriptionPackage.executeQuery('select count(sp) from SubscriptionPackage sp where sp.pkg = :pkg and sp.subscription in (select oo.sub from OrgRole oo join oo.sub sub where oo.org = :context and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true)))', [pkg: result.packageInstance, context: result.contextOrg, current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED])[0]
+        result.isMyPkg = relationCheck > 0
+        result
     }
 }

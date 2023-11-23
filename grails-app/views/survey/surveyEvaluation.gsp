@@ -94,7 +94,7 @@
 </div>
 <div class="ui bottom attached tab segment active">
     <laser:render template="evaluationParticipantsView" model="[showCheckbox: false,
-                                                        tmplConfigShow   : ['lineNumber', 'name', (surveyConfig.pickAndChoose ? 'finishedDate' : ''), (surveyConfig.pickAndChoose ? 'surveyTitlesCount' : ''), 'surveyProperties', 'commentOnlyForOwner']]"/>
+                                                        tmplConfigShow   : ['lineNumber', 'name', (surveyConfig.pickAndChoose ? 'finishedDate' : ''), (surveyConfig.pickAndChoose ? 'surveyTitlesCount' : ''), (surveyConfig.pickAndChoose ? 'uploadTitleListDoc' : ''), 'surveyProperties', 'commentOnlyForOwner', (surveyConfig.pickAndChoose ? 'downloadTitleList' : '')]]"/>
 </div>
 <laser:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal', contactSwitch: true]" />
 

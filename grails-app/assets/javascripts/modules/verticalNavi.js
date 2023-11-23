@@ -69,8 +69,6 @@ verticalNavi = {
                 .sidebar('attach events', '.la-menue-button')
                 .sidebar('setting', 'dimPage', false);
             }
-
-
         });
 
         $('#mainMenue.ui.accordion').accordion();
@@ -80,17 +78,6 @@ verticalNavi = {
         })
         .sidebar('attach events', '.la-menue-button')
         .sidebar('setting', 'dimPage', false);
-
-        //help panell
-        $('.la-help-panel-button').click(function() {
-
-            $('.la-help-panel')
-            .sidebar({
-                context: $('body')
-            })
-            //.sidebar('setting', 'dimPage', false)
-            .sidebar('toggle');
-        });
     }
 }
 

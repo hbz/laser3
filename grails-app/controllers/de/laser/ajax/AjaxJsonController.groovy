@@ -2,8 +2,9 @@ package de.laser.ajax
 
 import de.laser.AlternativeName
 import de.laser.CustomerTypeService
+import de.laser.DiscoverySystemFrontend
+import de.laser.DiscoverySystemIndex
 import de.laser.GenericOIDService
-import de.laser.AccessService
 import de.laser.CompareService
 import de.laser.ContextService
 import de.laser.ControlledListService
@@ -12,12 +13,12 @@ import de.laser.IssueEntitlement
 import de.laser.License
 import de.laser.LicenseService
 import de.laser.LinksGenerationService
+import de.laser.OrganisationService
 import de.laser.ReportingGlobalService
 import de.laser.ReportingLocalService
 import de.laser.SubscriptionDiscountScale
 import de.laser.SubscriptionService
 import de.laser.auth.Role
-import de.laser.ctrl.SubscriptionControllerService
 import de.laser.finance.PriceItem
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
@@ -43,7 +44,6 @@ import de.laser.annotations.DebugInfo
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
-import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -57,11 +57,11 @@ import java.text.SimpleDateFormat
  * Object manipulation is done in the general AJAX controller!
  * @see AjaxController
  * @see AjaxHtmlController
+ * @see AjaxOpenController
  */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxJsonController {
 
-    AccessService accessService
     CompareService compareService
     ContextService contextService
     ControlledListService controlledListService
@@ -69,10 +69,10 @@ class AjaxJsonController {
     GenericOIDService genericOIDService
     LicenseService licenseService
     LinksGenerationService linksGenerationService
+    OrganisationService organisationService
     ReportingGlobalService reportingGlobalService
     ReportingLocalService reportingLocalService
     SubscriptionService subscriptionService
-    SubscriptionControllerService subscriptionControllerService
 
     /**
      * Test call
@@ -203,7 +203,7 @@ class AjaxJsonController {
         queryParams.showConnectedObjs = showConnectedObjs
 
         data = compareService.getMySubscriptions(queryParams)
-        if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if (contextService.getOrg().isCustomerType_Consortium()) {
             if (showSubscriber) {
                 List parents = data.clone()
                 Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
@@ -244,7 +244,7 @@ class AjaxJsonController {
         queryParams.showConnectedLics = showConnectedLics
 
         data = compareService.getMyLicenses(queryParams)
-        if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if (contextService.getOrg().isCustomerType_Consortium()) {
             if (showSubscriber) {
                 List parents = data.clone()
                 Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]
@@ -326,6 +326,11 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Called from views/profile/index.gsp
+     * Gets the selectable values for the default result count per page dropdown
+     * @return a {@link Map} containing the default values as value:text pairs
+     */
     @Secured(['ROLE_USER'])
     def getProfilPageSizeList() {
         List result = [
@@ -337,6 +342,13 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Called from subTransfer.gsp and currentSubTransfers.gsp
+     * Gets the list of subscription discount scales registered for the given subscription
+     * @return a {@link List} of {@link Map}s of structure [value: database id, text: name: discount] for dropdown display
+     * @see Subscription
+     * @see SubscriptionDiscountScale
+     */
     @Secured(['ROLE_USER'])
     def getSubscriptionDiscountScaleList() {
         List result = []
@@ -364,7 +376,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of reference data values belonging to the category linked to the property definition
-     * @return a {@link List} of {@link Map}s of structure [value: database id, name: translated name] fpr dropdown display
+     * @return a {@link List} of {@link Map}s of structure [value: database id, name: translated name] for dropdown display
      */
     @Secured(['ROLE_USER'])
     def getPropRdValues() {
@@ -383,7 +395,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of values belonging to the given property definition
-     * @return a {@link List} of {@link Map}s of structure [value: value, name: translated name] fpr dropdown display; value may be: reference data value key, date or integer/free text value
+     * @return a {@link List} of {@link Map}s of structure [value: value, name: translated name] for dropdown display; value may be: reference data value key, date or integer/free text value
      */
     @Secured(['ROLE_USER'])
     def getPropValues() {
@@ -460,6 +472,11 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Gets the list of selectable status for the given property's owner object type
+     * @return a {@link List} of {@link Map}s of structure [value: database id, text: translated name] for dropdown display
+     * @see PropertyDefinition#descr
+     */
     @Secured(['ROLE_USER'])
     def getOwnerStatus() {
         List<Map<String, Object>> result = []
@@ -471,9 +488,9 @@ class AjaxJsonController {
                 switch(propDef.descr) {
                     case PropertyDefinition.SUB_PROP: statusList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
                         break
-                    case PropertyDefinition.ORG_PROP: statusList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.ORG_STATUS)-RDStore.ORG_STATUS_DELETED)
+                    case PropertyDefinition.ORG_PROP: statusList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.ORG_STATUS)-RDStore.ORG_STATUS_REMOVED)
                         break
-                    case PropertyDefinition.PLA_PROP: statusList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.PLATFORM_STATUS)-RDStore.PLATFORM_STATUS_DELETED)
+                    case PropertyDefinition.PLA_PROP: statusList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.PLATFORM_STATUS)-RDStore.PLATFORM_STATUS_REMOVED)
                         break
                     case PropertyDefinition.LIC_PROP: statusList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS))
                         break
@@ -933,6 +950,18 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    @Secured(['ROLE_USER'])
+    def loadOrganisationForMerge() {
+        Map<String, Object> mergeInfo = [:]
+        if(params.containsKey('source') && params.source.length() > 0) {
+            mergeInfo = organisationService.mergeOrganisations(genericOIDService.resolveOID(params.source), null, true)
+        }
+        else if(params.containsKey('target') && params.target.length() > 0) {
+            mergeInfo = organisationService.mergeOrganisations(genericOIDService.resolveOID(params.target), null, true)
+        }
+        render mergeInfo as JSON
+    }
+
     /**
      * Retrieves all reference data values by the given category for dropdown display
      * @return a {@link List} of {@link Map}s of structure [value: reference data value oid, text: translated reference data value]
@@ -974,12 +1003,20 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Removes the given object without reloading the page calling
+     * @return the success flag as JSON map
+     */
     @Secured(['ROLE_USER'])
     def removeObject() {
         int removed = 0
         Map<String, Object> objId = [id: params.long("objId")]
         switch(params.object) {
             case "altname": removed = AlternativeName.executeUpdate('delete from AlternativeName altname where altname.id = :id', objId)
+                break
+            case "frontend": removed = DiscoverySystemFrontend.executeUpdate('delete from DiscoverySystemFrontend dsf where dsf.id = :id', objId)
+                break
+            case "index": removed = DiscoverySystemIndex.executeUpdate('delete from DiscoverySystemIndex dsi where dsi.id = :id', objId)
                 break
             case "coverage": //TODO migrate SubscriptionController.removeCoverage()
                 break
@@ -1012,7 +1049,7 @@ class AjaxJsonController {
      * @return the issue entitlement holding view
      */
     /*
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -1081,7 +1118,7 @@ class AjaxJsonController {
      * Validation query; checks if the user with the given username exists
      * @return true if there is a {@link User} matching the given input query, false otherwise
      */
-    @DebugInfo(isInstAdm_or_ROLEADMIN = true)
+    @DebugInfo(isInstAdm_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstAdm_or_ROLEADMIN()
     })
@@ -1100,7 +1137,7 @@ class AjaxJsonController {
      */
     @Secured(['ROLE_USER'])
     def getEmailAddresses() {
-        List result = []
+        Map result = [:]
 
         if (params.orgIdList) {
             List<Long> orgIds = params.orgIdList.split(',').collect{ Long.parseLong(it) }
@@ -1137,9 +1174,15 @@ class AjaxJsonController {
             }
 
             List<Person> persons = Person.executeQuery(query, queryParams)
-            if (persons) {
-                result = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
-                        [persons: persons, contentType: RDStore.CCT_EMAIL])
+            persons.each { Person p ->
+                Contact mail = Contact.findByPrsAndContentType(p, RDStore.CCT_EMAIL)
+                if(mail) {
+                    Set<String> mails = result.get("org${p.roleLinks.org.id[0]}".toString())
+                    if(!mails)
+                        mails = []
+                    mails << mail.content
+                    result.put("org${p.roleLinks.org.id[0]}".toString(), mails)
+                }
             }
         }
 
@@ -1148,44 +1191,45 @@ class AjaxJsonController {
 
     // ----- reporting -----
 
-    /**
-     * Checks the current state of the reporting cache
-     * @return a {@link Map} reflecting the existence, the filter cache, query cache and details cache states
-     */
-    @Secured(['ROLE_USER'])
-    def checkReportingCache() {
-
-        Map<String, Object> result = [
-            exists: false
-        ]
-
-        if (params.context in [ BaseConfig.KEY_MYINST, BaseConfig.KEY_SUBSCRIPTION ]) {
-            ReportingCache rCache
-
-            if (params.token) {
-                rCache = new ReportingCache( params.context, params.token )
-                result.token = params.token
-            }
-            else {
-                rCache = new ReportingCache( params.context )
-            }
-
-            result.exists       = rCache.exists()
-            result.filterCache  = rCache.get().filterCache ? true : false
-            result.queryCache   = rCache.get().queryCache ? true : false
-            result.detailsCache = rCache.get().detailsCache ? true : false
-        }
-
-        render result as JSON
-    }
+//    /**
+//     * Checks the current state of the reporting cache
+//     * @return a {@link Map} reflecting the existence, the filter cache, query cache and details cache states
+//     */
+//    @Deprecated
+//    @Secured(['ROLE_USER'])
+//    def checkReportingCache() {
+//
+//        Map<String, Object> result = [
+//            exists: false
+//        ]
+//
+//        if (params.context in [ BaseConfig.KEY_MYINST, BaseConfig.KEY_SUBSCRIPTION ]) {
+//            ReportingCache rCache
+//
+//            if (params.token) {
+//                rCache = new ReportingCache( params.context, params.token )
+//                result.token = params.token
+//            }
+//            else {
+//                rCache = new ReportingCache( params.context )
+//            }
+//
+//            result.exists       = rCache.exists()
+//            result.filterCache  = rCache.get().filterCache ? true : false
+//            result.queryCache   = rCache.get().queryCache ? true : false
+//            result.detailsCache = rCache.get().detailsCache ? true : false
+//        }
+//
+//        render result as JSON
+//    }
 
     /**
      * Outputs a chart from the given report parameters
      * @return the template to output and the one of the results {@link de.laser.ReportingGlobalService#doChart(java.util.Map, grails.web.servlet.mvc.GrailsParameterMap)} or {@link de.laser.ReportingLocalService#doChart(java.util.Map, grails.web.servlet.mvc.GrailsParameterMap)}
      */
-    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     def chart() {
         Map<String, Object> result = [:]
