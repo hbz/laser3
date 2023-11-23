@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5448    23.11.2023  rc-3.3  3.3         David   Feature     Reporting: Jahresring - Einrichtungslizenz
+
 5447    22.11.2023  rc-3.3  3.3         Andreas Bug         Fallback für Titel ohne Identifikatoren implementiert
 
 5446    22.11.2023  rc-3.3  3.3         Andreas Bug         Cache vollständig implementiert
