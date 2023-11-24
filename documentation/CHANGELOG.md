@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      24.11.2023  rc-3.3  3.3.1       Andreas Bug         leere Zeilenenden wurden abgetrennt
+
+--      24.11.2023  rc-3.3  3.3.1       Andreas Bug         Namensraumprüfung musste zugunsten des Syncs entfernt werden
+
 #### day of release 3.3
 
 5449    23.11.2023  rc-3.3  3.3         Andreas Feature     Korrektur von Identifikator-Erklärtexten
