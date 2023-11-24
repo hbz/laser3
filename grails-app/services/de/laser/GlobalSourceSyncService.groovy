@@ -692,7 +692,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             if(pkg?.packageStatus == RDStore.PACKAGE_STATUS_REMOVED) {
                                 log.info("${pkg.name} / ${pkg.gokbId} has been removed, record status is ${record.status}, mark titles in package as removed ...")
                                 log.info("${IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed, ie.lastUpdated = :now where ie.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg) and ie.status != :removed', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED, now: new Date()])} issue entitlements marked as removed")
-                                log.info("${PermanentTitle.executeUpdate('delete from PermanentTitle pt where pt.tipp.pkg = :pkg and pt.tipp.status != :removed', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED])} permanent title (tipps) really deleted")
+                                log.info("${PermanentTitle.executeUpdate('delete from PermanentTitle pt where pt.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status != :removed)', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED])} permanent title (tipps) really deleted")
                                 log.info("${TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.status = :removed, tipp.lastUpdated = :now where tipp.pkg = :pkg and tipp.status != :removed', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED, now: new Date()])} package titles (tipps) marked as removed")
                                 /*
                                 TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqual(pkg, RDStore.TIPP_STATUS_REMOVED).each { TitleInstancePackagePlatform tipp ->
@@ -1705,7 +1705,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 throw new SyncException("Error on updating base title data: ${tippA.getErrors().getAllErrors().toListString()}")
             //these queries have to be observed very closely. They may first cause an extreme bottleneck (the underlying query may have many Sequence Scans), then they direct the issue holdings
             if(oldStatus != newStatus) {
-                int updateCount = IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :newStatus where ie.tipp = :tipp and ie.status != :newStatus', [tipp: tippA, newStatus: newStatus])
+                int updateCount = IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :newStatus where ie.tipp = :tipp and ie.status != :newStatus and ie.status != :removed', [tipp: tippA, newStatus: newStatus, removed: RDStore.TIPP_STATUS_REMOVED])
                 log.debug("status updated for ${tippA.gokbId}: ${oldStatus} to ${newStatus}, concerned are ${updateCount} entitlements")
                 if(newStatus == RDStore.TIPP_STATUS_CURRENT) {
                     IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription s where ie.tipp = :title and ie.status in (:considered) and s.hasPerpetualAccess = true', [title: tippA, considered: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED]]).each { IssueEntitlement ie ->

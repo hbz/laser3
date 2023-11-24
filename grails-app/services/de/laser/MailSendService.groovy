@@ -391,8 +391,8 @@ class MailSendService {
                         }
 
                         String ownerFromMail
-                        if(OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
-                            ownerFromMail = OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY).strValue
+                        if(OrgSetting.get(survey.owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
+                            ownerFromMail = OrgSetting.get(survey.owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY).strValue
                         }
 
                         String mailFrom = ownerFromMail ?: fromMail
