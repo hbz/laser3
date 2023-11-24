@@ -193,9 +193,12 @@
                     </th>
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyTitlesCount')}">
-                <th>
-                    ${message(code: 'surveyEvaluation.titles.currentAndFixedEntitlements')}
-                </th>
+                    <th>
+                        ${message(code: 'surveyEvaluation.titles.currentAndFixedEntitlements')}
+                    </th>
+                    <th>
+                        ${message(code: 'tipp.price.plural')}
+                    </th>
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('uploadTitleListDoc')}">
                     <th>
@@ -336,9 +339,9 @@
                     </g:if>
 
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyTitlesCount')}">
-                        <td class="center aligned">
                             <g:set var="subParticipant"
-                                   value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
+                                value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
+                        <td class="center aligned">
                             <g:set var="ieGroup"
                                    value="${IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subParticipant)}"/>
                             <div class="ui circular label">
@@ -350,6 +353,27 @@
                             </g:else>
                             </div>
 
+                        </td>
+                        <td>
+                            <g:set var="sumListPriceSelectedIEsEUR" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subParticipant, surveyConfig, RDStore.CURRENCY_EUR)}"/>
+                            <g:set var="sumListPriceSelectedIEsUSD" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subParticipant, surveyConfig, RDStore.CURRENCY_USD)}"/>
+                            <g:set var="sumListPriceSelectedIEsGBP" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subParticipant, surveyConfig, RDStore.CURRENCY_GBP)}"/>
+
+                            <g:if test="${sumListPriceSelectedIEsEUR > 0}">
+                                <br>
+                                <g:formatNumber
+                                        number="${sumListPriceSelectedIEsEUR}" type="currency" currencyCode="EUR"/>
+                            </g:if>
+                            <g:if test="${sumListPriceSelectedIEsUSD > 0}">
+                                <br>
+                                <g:formatNumber
+                                        number="${sumListPriceSelectedIEsUSD}" type="currency" currencyCode="USD"/>
+                            </g:if>
+                            <g:if test="${sumListPriceSelectedIEsGBP > 0}">
+                                <br>
+                                <g:formatNumber
+                                        number="${sumListPriceSelectedIEsGBP}" type="currency" currencyCode="GBP"/>
+                            </g:if>
                         </td>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('uploadTitleListDoc')}">
@@ -563,6 +587,9 @@
                     <th>
                         ${message(code: 'surveyEvaluation.titles.currentAndFixedEntitlements')}
                     </th>
+                    <th>
+                        ${message(code: 'tipp.price.plural')}
+                    </th>
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('uploadTitleListDoc')}">
                     <th>
@@ -706,9 +733,9 @@
                     </g:if>
 
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyTitlesCount')}">
+                        <g:set var="subParticipant"
+                               value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
                         <td class="center aligned">
-                            <g:set var="subParticipant"
-                                   value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
                             <g:set var="ieGroup"
                                    value="${IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subParticipant)}"/>
                             <div class="ui circular label">
@@ -720,6 +747,27 @@
                                 </g:else>
                             </div>
 
+                        </td>
+                        <td>
+                            <g:set var="sumListPriceSelectedIEsEUR" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subParticipant, surveyConfig, RDStore.CURRENCY_EUR)}"/>
+                            <g:set var="sumListPriceSelectedIEsUSD" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subParticipant, surveyConfig, RDStore.CURRENCY_USD)}"/>
+                            <g:set var="sumListPriceSelectedIEsGBP" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subParticipant, surveyConfig, RDStore.CURRENCY_GBP)}"/>
+
+                            <g:if test="${sumListPriceSelectedIEsEUR > 0}">
+                                <br>
+                                <g:formatNumber
+                                        number="${sumListPriceSelectedIEsEUR}" type="currency" currencyCode="EUR"/>
+                            </g:if>
+                            <g:if test="${sumListPriceSelectedIEsUSD > 0}">
+                                <br>
+                                <g:formatNumber
+                                        number="${sumListPriceSelectedIEsUSD}" type="currency" currencyCode="USD"/>
+                            </g:if>
+                            <g:if test="${sumListPriceSelectedIEsGBP > 0}">
+                                <br>
+                                <g:formatNumber
+                                        number="${sumListPriceSelectedIEsGBP}" type="currency" currencyCode="GBP"/>
+                            </g:if>
                         </td>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('uploadTitleListDoc')}">
