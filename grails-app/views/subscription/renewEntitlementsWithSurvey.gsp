@@ -421,7 +421,8 @@
                 title_types: ${params.list("title_types")},
                 publishers: ${params.list("pulishers")},
                 hasPerpetualAccess: "${params.hasPerpetualAccess}",
-                titleGroup: "${params.titleGroup}"
+                titleGroup: "${params.titleGroup}",
+                status: ${params.list("status")},
             };
             $.ajax({
                 url: "<g:createLink controller="ajax" action="updateChecked" />",

@@ -487,7 +487,6 @@ class AjaxController {
                   SurveyConfig surveyConfig = SurveyConfig.findById(params.surveyConfigID)
                   IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub)
                   if(issueEntitlementGroup) {
-                      params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
                       params.titleGroup = issueEntitlementGroup.id.toString()
                       Map query = filterService.getIssueEntitlementQuery(params, subscriberSub)
                       List<Long> ieIDList = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
