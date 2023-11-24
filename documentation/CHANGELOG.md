@@ -7,6 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+
+5450    24.11.2023  rc-3.3  3.3         Moe     Bug         Mails werden nicht versendet: sendSurveyEmail()
+
 #### day of release 3.3
 
 5449    23.11.2023  rc-3.3  3.3         Andreas Feature     Korrektur von Identifikator-Erklärtexten
