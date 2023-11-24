@@ -2,13 +2,14 @@
     Map<String, Object> subTabFields = [:],
                         otherFields
     if(fields.value.fields.containsKey('costItemsElements')) {
-        subTabFields.putAll(fields.value.fields.remove('costItemsElements'))
-        otherFields = fields.value.fields
+        subTabFields.putAll(fields.value.fields.get('costItemsElements'))
+        otherFields = fields.value.fields.findAll { Map.Entry f -> f.getKey() != 'costItemsElements' }
     }
     if(fields.key.contains('Contacts')) {
         subTabFields.putAll(fields.value.fields.findAll { Map.Entry f -> f.getKey().contains(subTabPrefix) })
     }
-    else otherFields = fields.value.fields
+    else if(!fields.value.fields.containsKey('costItemsElements'))
+        otherFields = fields.value.fields
 %>
 <g:if test="${subTabFields}">
     <div class="ui grid">
