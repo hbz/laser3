@@ -61,7 +61,7 @@
                 <ui:actionsDropdown>
                     <ui:actionsDropdownItem id="btnAddNewCostItem" message="financials.addNewCost" />
                     <g:if test="${customerTypeService.isConsortium( institution.getCustomerType() ) && !subscription.instanceOf}">
-                        <ui:actionsDropdownItem controller="myInstitution" action="generateFinanceImportWorksheet" params="${[id:subscription.id]}" message="myinst.financeImport.subscription.template"/>
+                        <ui:actionsDropdownItem data-ui="modal" id="generateFinanceImportWorksheet" href="#financeImportTemplate" message="myinst.financeImport.subscription.template"/>
                         <ui:actionsDropdownItem controller="myInstitution" action="financeImport" params="${[id:subscription.id]}" message="menu.institutions.financeImport" />
                     </g:if>
                 </ui:actionsDropdown>
@@ -99,5 +99,6 @@
         <laser:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets,fixedSubscription:subscription,ciTitles:ciTitles]" />
 
         <laser:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal', subscription: subscription]" />
+        <laser:render template="/subscription/financeImportTemplate" />
 
 <laser:htmlEnd />
