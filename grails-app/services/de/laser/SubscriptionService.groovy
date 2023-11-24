@@ -1351,7 +1351,7 @@ join sub.orgRelations or_sub where
         Set<String> selectedTitles = []
         rows.eachWithIndex{ String row, int i ->
             log.debug("now processing record ${i}")
-            ArrayList<String> cols = row.split('\t')
+            ArrayList<String> cols = row.split('\t', -1)
             if(cols.size() == titleRow.size()) {
                 TitleInstancePackagePlatform match = null
                 //cascade: 1. title_id, 2. title_url, 3. identifier map
@@ -1788,7 +1788,7 @@ join sub.orgRelations or_sub where
         rows.remove(0)
         rows.each { row ->
             Map mappingErrorBag = [:], candidate = [properties: [:]]
-            List<String> cols = row.split('\t')
+            List<String> cols = row.split('\t', -1)
             //check if we have some mandatory properties ...
             //status(nullable:false, blank:false) -> to status, defaults to status not set
             if(colMap.status != null) {
@@ -2285,7 +2285,7 @@ join sub.orgRelations or_sub where
                                                        doi  : IdentifierNamespace.findByNsAndNsType('doi', TitleInstancePackagePlatform.class.name)]
         rows.eachWithIndex { row, int i ->
             log.debug("now processing entitlement ${i}")
-            ArrayList<String> cols = row.split('\t')
+            ArrayList<String> cols = row.split('\t', -1)
             Map<String, Object> idCandidate
             if (colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol]) {
                 idCandidate = [namespaces: [namespaces.eissn, namespaces.eisbn], value: cols[colMap.onlineIdentifierCol]]
@@ -2464,7 +2464,7 @@ join sub.orgRelations or_sub where
             rows.eachWithIndex { row, int i ->
                 countRows++
                 log.debug("now processing entitlement ${i+1}")
-                ArrayList<String> cols = row.split('\t')
+                ArrayList<String> cols = row.split('\t', -1)
                 if(cols.size() == titleRow.size()) {
                     TitleInstancePackagePlatform match = null
                     //cascade: 1. title_url, 2. title_id, 3. identifier map
