@@ -2,8 +2,8 @@
     Map<String, Object> subTabFields = [:],
                         otherFields
     if(fields.value.fields.containsKey('costItemsElements')) {
-        subTabFields.putAll(fields.value.fields.get('costItemsElements'))
-        otherFields = fields.value.fields.findAll { Map.Entry f -> f.getKey() != 'costItemsElements' }
+        subTabFields.putAll(fields.value.fields.remove('costItemsElements'))
+        otherFields = fields.value.fields
     }
     if(fields.key.contains('Contacts')) {
         subTabFields.putAll(fields.value.fields.findAll { Map.Entry f -> f.getKey().contains(subTabPrefix) })

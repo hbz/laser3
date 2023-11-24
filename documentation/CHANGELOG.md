@@ -7,6 +7,16 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5451    24.11.2023  rc-3.3  3.3.1       Andreas Bug         diverse Bugs im Zusammenhang mit Kosten
+
+5450    24.11.2023  rc-3.3  3.3.1       Moe     Bug         Mails werden nicht versendet: sendSurveyEmail()
+
+--      24.11.2023  rc-3.3  3.3.1       Andreas Bug         leere Zeilenenden wurden abgetrennt
+
+--      24.11.2023  rc-3.3  3.3.1       Andreas Bug         Namensraumprüfung musste zugunsten des Syncs entfernt werden
+
+#### day of release 3.3
+
 5449    23.11.2023  rc-3.3  3.3         Andreas Feature     Korrektur von Identifikator-Erklärtexten
 
 5448    23.11.2023  rc-3.3  3.3         David   Feature     Reporting: Jahresring - Einrichtungslizenz
