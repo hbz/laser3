@@ -1374,7 +1374,7 @@ class SubscriptionControllerService {
                     excludes.add(PendingChangeConfiguration.TITLE_DELETED+PendingChangeConfiguration.NOTIFICATION_SUFFIX)
                     excludes.addAll(PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key+PendingChangeConfiguration.NOTIFICATION_SUFFIX})
                     Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscription.id, excludes)
-                    List<Subscription> memberSubs = []
+                    List<Long> memberSubs = []
                     members.each { Org cm ->
                         log.debug("Generating separate slaved instances for members")
                         Date startDate = params.valid_from ? DateUtils.parseDateGeneric(params.valid_from) : null
@@ -1463,7 +1463,7 @@ class SubscriptionControllerService {
                                 }
                             }
 
-                            memberSubs << memberSub
+                            memberSubs << memberSub.id
                         }
                                 //}
                     }
@@ -1472,20 +1472,20 @@ class SubscriptionControllerService {
 
                     if(packagesToProcess) {
                         //needed for that the subscriptions are present in the moment of the parallel process
-                        Subscription.withNewTransaction {
+                        globalService.cleanUpGorm()
+                            List<Subscription> updatedSubList = Subscription.findAllByIdInList(memberSubs)
                             executorService.execute({
                                 Thread.currentThread().setName("PackageTransfer_"+result.subscription.id)
                                 packagesToProcess.each { Package pkg ->
-                                    subscriptionService.addToMemberSubscription(result.subscription, memberSubs, pkg, params.linkWithEntitlements == 'on')
+                                    subscriptionService.addToMemberSubscription(result.subscription, updatedSubList, pkg, params.linkWithEntitlements == 'on')
                                     /*
-                                    if()
-                                        subscriptionService.addToSubscriptionCurrentStock(memberSub, result.subscription, pkg)
-                                    else
-                                        subscriptionService.addToSubscription(memberSub, pkg, false)
+                                        if()
+                                            subscriptionService.addToSubscriptionCurrentStock(memberSub, result.subscription, pkg)
+                                        else
+                                            subscriptionService.addToSubscription(memberSub, pkg, false)
                                     */
                                 }
                             })
-                        }
                     }
                 } else {
                     [result:result,status:STATUS_ERROR]
