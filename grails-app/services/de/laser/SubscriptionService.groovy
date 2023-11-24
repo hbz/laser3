@@ -1351,7 +1351,7 @@ join sub.orgRelations or_sub where
         Set<String> selectedTitles = []
         rows.eachWithIndex{ String row, int i ->
             log.debug("now processing record ${i}")
-            ArrayList<String> cols = row.split('\t')
+            ArrayList<String> cols = row.split('\t', -1)
             if(cols.size() == titleRow.size()) {
                 TitleInstancePackagePlatform match = null
                 //cascade: 1. title_id, 2. title_url, 3. identifier map
@@ -1788,7 +1788,7 @@ join sub.orgRelations or_sub where
         rows.remove(0)
         rows.each { row ->
             Map mappingErrorBag = [:], candidate = [properties: [:]]
-            List<String> cols = row.split('\t')
+            List<String> cols = row.split('\t', -1)
             //check if we have some mandatory properties ...
             //status(nullable:false, blank:false) -> to status, defaults to status not set
             if(colMap.status != null) {
@@ -2285,7 +2285,7 @@ join sub.orgRelations or_sub where
                                                        doi  : IdentifierNamespace.findByNsAndNsType('doi', TitleInstancePackagePlatform.class.name)]
         rows.eachWithIndex { row, int i ->
             log.debug("now processing entitlement ${i}")
-            ArrayList<String> cols = row.split('\t')
+            ArrayList<String> cols = row.split('\t', -1)
             Map<String, Object> idCandidate
             if (colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol]) {
                 idCandidate = [namespaces: [namespaces.eissn, namespaces.eisbn], value: cols[colMap.onlineIdentifierCol]]
@@ -2464,36 +2464,36 @@ join sub.orgRelations or_sub where
             rows.eachWithIndex { row, int i ->
                 countRows++
                 log.debug("now processing entitlement ${i+1}")
-                ArrayList<String> cols = row.split('\t')
+                ArrayList<String> cols = row.split('\t', -1)
                 if(cols.size() == titleRow.size()) {
                     TitleInstancePackagePlatform match = null
                     //cascade: 1. title_url, 2. title_id, 3. identifier map
                     if(titleUrlCol >= 0 && cols[titleUrlCol] != null && !cols[titleUrlCol].trim().isEmpty()) {
-                        match = TitleInstancePackagePlatform.findByHostPlatformURLAndPkgInListAndStatusNotEqual(cols[titleUrlCol].trim(), subPkgs, RDStore.TIPP_STATUS_REMOVED)
+                        match = TitleInstancePackagePlatform.findByHostPlatformURLAndPkgInListAndStatus(cols[titleUrlCol].trim(), subPkgs, RDStore.TIPP_STATUS_CURRENT)
                     }
                     if(!match && titleIdCol >= 0 && cols[titleIdCol] != null && !cols[titleIdCol].trim().isEmpty()) {
-                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status != :removed', [subPkgs: subPkgs, value: cols[titleIdCol].trim(), ns: namespaces.title_id, removed: RDStore.TIPP_STATUS_REMOVED])
+                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status = :currentStatus', [subPkgs: subPkgs, value: cols[titleIdCol].trim(), ns: namespaces.title_id, currentStatus: RDStore.TIPP_STATUS_CURRENT])
                         if(matchList.size() == 1)
                             match = matchList[0] as TitleInstancePackagePlatform
                     }
 
                     if(!match && doiCol >= 0 && cols[doiCol] != null && !cols[doiCol].trim().isEmpty()) {
-                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status != :removed', [subPkgs: subPkgs, value: cols[doiCol].trim(), ns: namespaces.doi, removed: RDStore.TIPP_STATUS_REMOVED])
+                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status = :currentStatus', [subPkgs: subPkgs, value: cols[doiCol].trim(), ns: namespaces.doi, currentStatus: RDStore.TIPP_STATUS_CURRENT])
                         if(matchList.size() == 1)
                             match = matchList[0] as TitleInstancePackagePlatform
                     }
                     if(!match && onlineIdentifierCol >= 0 && cols[onlineIdentifierCol] != null && !cols[onlineIdentifierCol].trim().isEmpty()) {
-                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns in (:ns) and tipp.status != :removed', [subPkgs: subPkgs, value: cols[onlineIdentifierCol].trim(), ns: [namespaces.eisbn, namespaces.eissn], removed: RDStore.TIPP_STATUS_REMOVED])
+                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns in (:ns) and tipp.status = :currentStatus', [subPkgs: subPkgs, value: cols[onlineIdentifierCol].trim(), ns: [namespaces.eisbn, namespaces.eissn], currentStatus: RDStore.TIPP_STATUS_CURRENT])
                         if(matchList.size() == 1)
                             match = matchList[0] as TitleInstancePackagePlatform
                     }
                     if(!match && printIdentifierCol >= 0 && cols[printIdentifierCol] != null && !cols[printIdentifierCol].trim().isEmpty()) {
-                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns in (:ns) and tipp.status != :removed', [subPkgs: subPkgs, value: cols[printIdentifierCol].trim(), ns: [namespaces.isbn, namespaces.issn], removed: RDStore.TIPP_STATUS_REMOVED])
+                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns in (:ns) and tipp.status = :currentStatus', [subPkgs: subPkgs, value: cols[printIdentifierCol].trim(), ns: [namespaces.isbn, namespaces.issn], currentStatus: RDStore.TIPP_STATUS_CURRENT])
                         if(matchList.size() == 1)
                             match = matchList[0] as TitleInstancePackagePlatform
                     }
                     if(!match && zdbCol >= 0 && cols[zdbCol] != null && !cols[zdbCol].trim().isEmpty()) {
-                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status != :removed', [subPkgs: subPkgs, value: cols[zdbCol].trim(), ns: namespaces.zdb, removed: RDStore.TIPP_STATUS_REMOVED])
+                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status = :currentStatus', [subPkgs: subPkgs, value: cols[zdbCol].trim(), ns: namespaces.zdb, currentStatus: RDStore.TIPP_STATUS_CURRENT])
                         if(matchList.size() == 1)
                             match = matchList[0] as TitleInstancePackagePlatform
                     }

@@ -179,7 +179,7 @@ class ExportClickMeService {
                             'subscription.holdingSelection'             : [field: 'sub.holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.label'],
                             'subscription.notes'                        : [field: null, label: 'Notes', message: 'default.notes.label'],
                             'subscription.notes.shared'                 : [field: null, label: 'Shared notes', message: 'license.notes.shared'],
-                            'subscription.uuid'                         : [field: 'sub.globalUID', label: 'Laser-UUID',  message: null],
+                            'subscription.uuid'                         : [field: 'sub.globalUID', label: 'LAS:eR-UUID (Institution)',  message: 'default.uuid.inst.label'],
                     ]
             ],
             participant : [
@@ -4550,7 +4550,7 @@ class ExportClickMeService {
                     else if(costItems && selectedCostItemFields.size() > 0){
                         for(int c = 0; c < selectedCostItemElements.all.size(); c++) {
                             CostItem costItem
-                            if(c < costItems.size()-1)
+                            if(c < costItems.size())
                                 costItem = costItems.get(c)
                             if(costItem) {
                                 String cieVal = costItem.costItemElement ? costItem.costItemElement.getI10n('value') : ''

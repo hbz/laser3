@@ -1182,7 +1182,7 @@ class FinanceService {
         rows.eachWithIndex { String row, Integer r ->
             //log.debug("now processing entry ${r}")
             Map mappingErrorBag = [:]
-            List<String> cols = row.split('\t')
+            List<String> cols = row.split('\t', -1)
             //check if we have some mandatory properties ...
             //owner(nullable: false, blank: false) -> to institution, defaults to context org
             CostItem costItem = new CostItem(owner: contextOrg)

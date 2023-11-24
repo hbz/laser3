@@ -1694,7 +1694,6 @@ class SubscriptionControllerService {
                                     catch (EntitlementCreationException e) {
                                         log.debug("Error: Adding tipp ${tipp} to sub ${subscriberSub.id}: " + e.getMessage())
                                         result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps', null, LocaleUtils.getCurrentLocale())
-                                        [result: result, status: STATUS_ERROR]
                                     }
 
                                 }
