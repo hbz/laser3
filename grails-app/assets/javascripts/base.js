@@ -2,7 +2,7 @@ console.log('+ bundle: base.js');
 
 // bundle: assets/javascripts/base.js
 //
-//= require libs/jquery-3.6.3.js
+//= require libs/jquery-3.7.1.js
 //= require libs/jquery.poshytip.js
 //= require libs/jquery-editable-poshytip.js
 //

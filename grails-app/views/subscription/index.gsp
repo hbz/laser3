@@ -183,50 +183,23 @@
         <div class="ui bottom attached tab active segment">
     </g:if>--}%
 
-<ui:tabs actionName="${actionName}">
-    <ui:tabsItem controller="subscription" action="${actionName}"
-                 params="[id: subscription.id, tab: 'currentIEs']"
-                 text="${message(code: "package.show.nav.current")}" tab="currentIEs"
-                 counts="${currentIECounts}"/>
-    <ui:tabsItem controller="subscription" action="${actionName}"
-                 params="[id: subscription.id, tab: 'plannedIEs']"
-                 text="${message(code: "package.show.nav.planned")}" tab="plannedIEs"
-                 counts="${plannedIECounts}"/>
-    <ui:tabsItem controller="subscription" action="${actionName}"
-                 params="[id: subscription.id, tab: 'expiredIEs']"
-                 text="${message(code: "package.show.nav.expired")}" tab="expiredIEs"
-                 counts="${expiredIECounts}"/>
-    <ui:tabsItem controller="subscription" action="${actionName}"
-                 params="[id: subscription.id, tab: 'deletedIEs']"
-                 text="${message(code: "package.show.nav.deleted")}" tab="deletedIEs"
-                 counts="${deletedIECounts}"/>
-    <ui:tabsItem controller="subscription" action="${actionName}"
-                 params="[id: subscription.id, tab: 'allIEs']"
-                 text="${message(code: "menu.public.all_titles")}" tab="allIEs"
-                 counts="${allIECounts}"/>
-</ui:tabs>
+<laser:render template="/templates/titles/top_attached_title_tabs"
+              model="${[
+                      tt_controller: 'subscription',
+                      tt_action:     actionName,
+                      tt_tabs:       ['currentIEs', 'plannedIEs', 'expiredIEs', 'deletedIEs', 'allIEs'],
+                      tt_counts:     [currentIECounts, plannedIECounts, expiredIECounts, deletedIECounts, allIECounts],
+                      tt_params:     [id: subscription.id]
+              ]}" />
 
 <% params.remove('tab')%>
-
 
 <div class="ui bottom attached tab active segment">
 
     <laser:render template="/templates/filter/tipp_ieFilter"/>
 
 <div id="downloadWrapper"></div>
-<%
-    Map<String, String>
-    sortFieldMap = ['tipp.sortname': message(code: 'title.label')]
-    if (journalsOnly) {
-        sortFieldMap['startDate'] = message(code: 'default.from')
-        sortFieldMap['endDate'] = message(code: 'default.to')
-    } else {
-        sortFieldMap['tipp.dateFirstInPrint'] = message(code: 'tipp.dateFirstInPrint')
-        sortFieldMap['tipp.dateFirstOnline'] = message(code: 'tipp.dateFirstOnline')
-    }
-    sortFieldMap['tipp.accessStartDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.from')}"
-    sortFieldMap['tipp.accessEndDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.to')}"
-%>
+
     <div class="ui grid">
         <div class="row">
             <div class="eight wide column">
@@ -243,11 +216,10 @@
         </div><!--.row-->
     </div><!--.grid-->
 
-
 <div class="ui form">
     <div class="three wide fields">
         <div class="field">
-            <ui:sortingDropdown noSelection="${message(code:'default.select.choose.label')}" from="${sortFieldMap}" sort="${params.sort}" order="${params.order}"/>
+            <laser:render template="/templates/titles/sorting_dropdown" model="${[sd_type: 1, sd_journalsOnly: journalsOnly, sd_sort: params.sort, sd_order: params.order]}" />
         </div>
     </div>
 </div>
