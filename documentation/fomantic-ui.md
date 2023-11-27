@@ -1,7 +1,6 @@
 # Read this before you deal with Fomantic UI Build
 
-- change one file back after installing Fomantic UI Fomantic UI from the scratch
-    - in files/frontend/semantic/tasks/build.js we have some core changes because 2 themes
+- change one file back after installing Fomantic UI: in files/frontend/semantic/tasks/build.js we have some core changes because 2 themes
 
 ---
 # Install all the dependencies on your pc
@@ -50,6 +49,12 @@
 
     npm install -g gulp
 
+
+## Change one file back to repository version
+After installing Fomantic UI: in files/frontend/semantic/tasks/build.js we have some core changes because 2 themes.
+So do go to folder 'frontend\semantic\tasks'
+
+    git checkout build.js
 
 
 
