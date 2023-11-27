@@ -1,6 +1,4 @@
 
-### sorting_dropdown ###
-
 <%
     Map<String, String> sd_sortFieldMap = [:]
 %>
@@ -35,11 +33,5 @@
         }
     %>
 </g:elseif>
-
-<br/> sd_type: ${sd_type}
-<br/> sd_journalsOnly: ${sd_journalsOnly}
-<br/> sd_sort: ${sd_sort}
-<br/> sd_order: ${sd_order}
-<br/> sd_sortFieldMap: ${sd_sortFieldMap}
 
 <ui:sortingDropdown noSelection="${message(code:'default.select.choose.label')}" from="${sd_sortFieldMap}" sort="${sd_sort}" order="${sd_order}"/>
