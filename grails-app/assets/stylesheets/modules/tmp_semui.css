@@ -156,6 +156,7 @@ body.myInstitution_dashboard .ui.tab .item .header {
     bottom: 0;
     font-size: 1.1em;
     border-top: 2px solid orange;
+    z-index: 999;
 }
 #systemMaintenanceMode > .segment {
     padding: 3em 0;

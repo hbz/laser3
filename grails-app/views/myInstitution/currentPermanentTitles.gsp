@@ -9,28 +9,13 @@
 
 <ui:messages data="${flash}"/>
 
-<ui:tabs actionName="${actionName}">
-    <ui:tabsItem controller="${controllerName}" action="${actionName}"
-                 params="[tab: 'currentIEs']"
-                 text="${message(code: "package.show.nav.current")}" tab="currentIEs"
-                 counts="${currentTippCounts}"/>
-    <ui:tabsItem class="disabled" controller="${controllerName}" action="${actionName}"
-                 params="[tab: 'plannedIEs']"
-                 text="${message(code: "package.show.nav.planned")}" tab="plannedIEs"
-                 counts="${plannedTippCounts}"/>
-    <ui:tabsItem controller="${controllerName}" action="${actionName}"
-                 params="[tab: 'expiredIEs']"
-                 text="${message(code: "package.show.nav.expired")}" tab="expiredIEs"
-                 counts="${expiredTippCounts}"/>
-    <ui:tabsItem controller="${controllerName}" action="${actionName}"
-                 params="[tab: 'deletedIEs']"
-                 text="${message(code: "package.show.nav.deleted")}" tab="deletedIEs"
-                 counts="${deletedTippCounts}"/>
-    <ui:tabsItem controller="${controllerName}" action="${actionName}"
-                 params="[tab: 'allIEs']"
-                 text="${message(code: "menu.public.all_titles")}" tab="allIEs"
-                 counts="${allTippCounts}"/>
-</ui:tabs>
+<laser:render template="/templates/titles/top_attached_title_tabs"
+              model="${[
+                      tt_controller:    controllerName,
+                      tt_action:        actionName,
+                      tt_tabs:          ['currentIEs', 'plannedIEs', 'expiredIEs', 'deletedIEs', 'allIEs'],
+                      tt_counts:        [currentTippCounts, plannedTippCounts, expiredTippCounts, deletedTippCounts, allTippCounts]
+              ]}" />
 
 <div class="ui bottom attached tab active segment">
 
@@ -42,25 +27,10 @@
     <span class="ui circular  label">${num_tipp_rows}</span> <g:message code="title.filter.result"/>
 </h3>
 
-<%
-    Map<String, String>
-    sortFieldMap = ['tipp.sortname': message(code: 'title.label')]
-    if (journalsOnly) {
-        sortFieldMap['startDate'] = message(code: 'default.from')
-        sortFieldMap['endDate'] = message(code: 'default.to')
-    } else {
-        sortFieldMap['tipp.dateFirstInPrint'] = message(code: 'tipp.dateFirstInPrint')
-        sortFieldMap['tipp.dateFirstOnline'] = message(code: 'tipp.dateFirstOnline')
-    }
-    sortFieldMap['tipp.accessStartDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.from')}"
-    sortFieldMap['tipp.accessEndDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.to')}"
-%>
-
     <div class="ui form">
         <div class="three wide fields">
             <div class="field">
-                <ui:sortingDropdown noSelection="${message(code: 'default.select.choose.label')}" from="${sortFieldMap}"
-                                    sort="${params.sort}" order="${params.order}"/>
+                <laser:render template="/templates/titles/sorting_dropdown" model="${[sd_type: 1, sd_journalsOnly: journalsOnly, sd_sort: params.sort, sd_order: params.order]}" />
             </div>
         </div>
     </div>
