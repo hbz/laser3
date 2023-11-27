@@ -7,32 +7,39 @@
 
     <ui:h1HeaderWithIcon message="menu.public.all_titles" total="${allTippsCounts}" floated="true" />
 
-<ui:tabs actionName="${actionName}">
-    <ui:tabsItem controller="${controllerName}" action="${actionName}"
-                 params="[tab: 'currentTipps']"
-                 text="${message(code: "package.show.nav.current")}" tab="currentTipps"
-                 counts="${currentTippsCounts}"/>
-    <ui:tabsItem controller="${controllerName}" action="${actionName}"
-                 params="[tab: 'plannedTipps']"
-                 text="${message(code: "package.show.nav.planned")}" tab="plannedTipps"
-                 counts="${plannedTippsCounts}"/>
-    <ui:tabsItem controller="${controllerName}" action="${actionName}"
-                 params="[tab: 'expiredTipps']"
-                 text="${message(code: "package.show.nav.expired")}" tab="expiredTipps"
-                 counts="${expiredTippsCounts}"/>
-    <ui:tabsItem controller="${controllerName}" action="${actionName}"
-                 params="[tab: 'deletedTipps']"
-                 text="${message(code: "package.show.nav.deleted")}" tab="deletedTipps"
-                 counts="${deletedTippsCounts}"/>
-    <ui:tabsItem controller="${controllerName}" action="${actionName}"
-                 params="[tab: 'allTipps']"
-                 text="${message(code: "menu.public.all_titles")}" tab="allTipps"
-                 counts="${allTippsCounts}"/>
-</ui:tabs>
+<laser:render template="/templates/titles/top_attached_title_tabs"
+              model="${[
+                      tt_controller:    controllerName,
+                      tt_action:        actionName,
+                      tt_tabs:          ['currentTipps', 'plannedTipps', 'expiredTipps', 'deletedTipps', 'allTipps'],
+                      tt_counts:        [currentTippsCounts, plannedTippsCounts, expiredTippsCounts, deletedTippsCounts, allTippsCounts]
+              ]}" />
+
+%{--<ui:tabs actionName="${actionName}">--}%
+%{--    <ui:tabsItem controller="${controllerName}" action="${actionName}"--}%
+%{--                 params="[tab: 'currentTipps']"--}%
+%{--                 text="${message(code: "package.show.nav.current")}" tab="currentTipps"--}%
+%{--                 counts="${currentTippsCounts}"/>--}%
+%{--    <ui:tabsItem controller="${controllerName}" action="${actionName}"--}%
+%{--                 params="[tab: 'plannedTipps']"--}%
+%{--                 text="${message(code: "package.show.nav.planned")}" tab="plannedTipps"--}%
+%{--                 counts="${plannedTippsCounts}"/>--}%
+%{--    <ui:tabsItem controller="${controllerName}" action="${actionName}"--}%
+%{--                 params="[tab: 'expiredTipps']"--}%
+%{--                 text="${message(code: "package.show.nav.expired")}" tab="expiredTipps"--}%
+%{--                 counts="${expiredTippsCounts}"/>--}%
+%{--    <ui:tabsItem controller="${controllerName}" action="${actionName}"--}%
+%{--                 params="[tab: 'deletedTipps']"--}%
+%{--                 text="${message(code: "package.show.nav.deleted")}" tab="deletedTipps"--}%
+%{--                 counts="${deletedTippsCounts}"/>--}%
+%{--    <ui:tabsItem controller="${controllerName}" action="${actionName}"--}%
+%{--                 params="[tab: 'allTipps']"--}%
+%{--                 text="${message(code: "menu.public.all_titles")}" tab="allTipps"--}%
+%{--                 counts="${allTippsCounts}"/>--}%
+%{--</ui:tabs>--}%
 
 <% params.remove('tab')%>
     <div class="ui bottom attached tab active segment">
-
 
         <laser:render template="/templates/filter/tipp_ieFilter"/>
 
