@@ -16,14 +16,21 @@
 
 2.) install NVM (Node version manager for Windows) on Windows via installation file
 
-3.) install the latest Node.js via NVM version
+3.) restart windows before next step
+
+4.) install the latest Node.js via NVM version
 
 
     nvm install lts
 
-4.) specify the node version you use
+5.) list all the installed node versions with
+
+    nvm list
+
+6.) specify the node version you would like to use e.g. 18.16.0
 
     nvm use 18.16.0
+
 
 ## Update or Install Fomantic UI for the first time
 
