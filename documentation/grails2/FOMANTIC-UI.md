@@ -1,16 +1,17 @@
 # Read this before you deal with Fomantic UI Build
 
-- change one file back after installing Fomantic UI Fomantic UI from the scratch
-    - in files/frontend/semantic/tasks/build.js we have some core changes because 2 themes
+- do not install Fomantic UI from the scratch because we have some core changes
+    - in files/frontend/semantic/src/definitions/modules/dropdown.js because WCAG stuff
+    - in files/frontend/semantic/tasks/build.js because 2 themes
 
 ---
-# Intall all the dependencies on your pc
+# Use the frontend build process but leave the Fomantic UI installation out of the picture
 
-## Install nodejs on Linux
+## install nodejs on Linux
 
     sudo apt-get install --yes nodejs
 
-## Install nodejs on Windows with NVM
+## install nodejs on Windows with NVM
 
 -  go to https://github.com/coreybutler/nvm-windows
 -  there go to "Download Now" and download Windows-Exe and install it
@@ -19,33 +20,24 @@
 
     nvm install 12.13.0
 
-## Install gulp globaly
+## install gulp globaly
 
     npm install -g gulp
 
-## Update or Install Fomantic UI for the first time
+## update fomantic ui
 
-- change the package.json to the new fomantic ui version
-- change the semantic.json to the new fomantic ui version
-- check if the needed node version is installed on your pc with 'nvm current' 
-- go to the folder 'files\frontend'
-
-
-    npm install --ignore-scripts fomantic-ui
-    npm update
-    npm update
-    cd node_modules/fomantic-ui
-    npx gulp install
-
-
-
+    cd frontend/semantic
+    npm update fomantic-ui
 
 ## Build the semantic.min.css and semantic.min.js 
 
-- go to folder 'frontend\semantic'
-
-
      gulp build
+
+---
+
+# Installing fomantic ui from scratch 
+
+- see https://fomantic-ui.com/introduction/getting-started.html
 
 ---
 

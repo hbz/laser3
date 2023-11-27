@@ -1,15 +1,23 @@
-# Building CSS with Gulp
+# Read this before you deal with Fomantic UI Build
 
-## Install Node.js on Linux
+- change one file back after installing Fomantic UI Fomantic UI from the scratch
+    - in files/frontend/semantic/tasks/build.js we have some core changes because 2 themes
+
+---
+# Install all the dependencies on your pc
+
+## Install nodejs on Linux
 
     sudo apt-get install --yes nodejs
 
 ## Install Node.js on Windows with NVM (Node version manager for Windows) to manage Node.js versions
+
 1.) go to https://github.com/coreybutler/nvm-windows/releases and download nvm-setup.exe
 
 2.) install NVM (Node version manager for Windows) on Windows via installation file
 
-3.) install the latest Node.js version
+3.) install the latest Node.js via NVM version
+
 
     nvm install lts
 
@@ -17,55 +25,53 @@
 
     nvm use 18.16.0
 
-## NPM (Nodes Package Manager)
+## Update or Install Fomantic UI for the first time
 
-1.) change directory to files/frontend/semantic
-
-    cd files/frontend/semantic
-
-2.) install GULP
-
-    npm install gulp
-
-3.) build the CSS
-
-    gulp build
+- change the package.json to the new fomantic ui version
+- change the semantic.json to the new fomantic ui version
+- check if the needed node version is installed on your pc with 'nvm current'
+- go to the folder 'files\frontend'
 
 
-# Update fomantic-ui
+    npm install --ignore-scripts fomantic-ui
+    npm update
+    cd node_modules/fomantic-ui
+    npx gulp install
 
-- !!!!!!!!!!! Do not install Fomantic UI from the scratch because we have some core changes because WCAG stuff
+
+## Install gulp globaly
+
+    npm install -g gulp
 
 
-1.) change directory to files/frontend/semantic
 
-    cd files/frontend/semantic
 
-2.) install fomantic-ui (in directory node_modules)
+## Build the semantic.min.css and semantic.min.js
 
-    npm install fomantic-ui
+- go to folder 'frontend\semantic'
 
-3.) now executing carefully overwriting the directory files/frontend/semantic/src with files from files/frontend/node_modules/fomantic-ui/src
-- in files/frontend/semantic/src/definitions/modules/dropdown.js
-- in files/frontend/semantic/tasks/build.js because 2 themes
+
+     gulp build
+
+---
 
 # How to customize CSS
 
-Our custom themes and the default theme overwrite the *.less in 'src/definitions'. The folder 'src/side' is not used yet.
+Our custom themes and the default theme override the *.less in 'src/definitions'. The folder 'src/side' is not used yet.
 
 
 ## Theming
 
 - we got the themes 'laser' and 'accessibility'
 - all changes in css we make by changing inside the theme!
-- the original semantic ui file for gulp building 'app/semantic/tasks/build.js' is changed in order to build two themes at the same time (laser & accessibility)
-- meanwhile the gulp build process temp files are built and moved around
+- the original semantic ui file for gulp bilding 'app/semantic/tasks/build.js' is changed in order to build two themes at the same time (laser & accessibility)
+- meanwile the gulp build process temp files are builded and moved around
 
 ## Example
 
 I would like to change the padding between an icon and content in a list
 
-1.) find the variable in default theme. In this case, there
+1.) find the variable in default theme. In this case there
 
     src/themes/default/elements/list.variables
 
@@ -73,7 +79,7 @@ I would like to change the padding between an icon and content in a list
 
     src/themes/laser/elements/list.variables
 
-3.) change the specific variable only there
+3.) change the specifig variable only there
 
 4.) Change the theme.config
 
@@ -89,7 +95,8 @@ new:
 
     @list       : 'laser';
 
-5.) Build CSS
+5.) Build css
 
     cd semantic
     gulp build
+
