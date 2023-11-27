@@ -24,21 +24,11 @@
         <h3 class="ui icon header la-clear-before la-noMargin-top">
             <span class="ui circular label">${num_tipp_rows}</span> <g:message code="title.filter.result"/>
         </h3>
-<%
-    Map<String, String>
-    sortFieldMap = ['sortname': message(code: 'title.label')]
-    if (journalsOnly) {
-        sortFieldMap['startDate'] = message(code: 'default.from')
-        sortFieldMap['endDate'] = message(code: 'default.to')
-    } else {
-        sortFieldMap['dateFirstInPrint'] = message(code: 'tipp.dateFirstInPrint')
-        sortFieldMap['dateFirstOnline'] = message(code: 'tipp.dateFirstOnline')
-    }
-%>
+
 <div class="ui form">
     <div class="three wide fields">
         <div class="field">
-            <ui:sortingDropdown noSelection="${message(code:'default.select.choose.label')}" from="${sortFieldMap}" sort="${params.sort}" order="${params.order}"/>
+            <laser:render template="/templates/titles/sorting_dropdown" model="${[sd_type: 2, sd_journalsOnly: journalsOnly, sd_sort: params.sort, sd_order: params.order]}" />
         </div>
     </div>
 </div>
