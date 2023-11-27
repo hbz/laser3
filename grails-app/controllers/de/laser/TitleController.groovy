@@ -65,38 +65,6 @@ class TitleController  {
         if (ttParams.status) { params.status = ttParams.status }
         if (ttParams.tab)    { params.tab = ttParams.tab }
 
-//        if(params.tab){
-//            if(params.tab == 'currentTipps'){
-//                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-//            }else if(params.tab == 'plannedTipps'){
-//                params.status = [RDStore.TIPP_STATUS_EXPECTED.id.toString()]
-//            }else if(params.tab == 'expiredTipps'){
-//                params.status = [RDStore.TIPP_STATUS_RETIRED.id.toString()]
-//            }else if(params.tab == 'deletedTipps'){
-//                params.status = [RDStore.TIPP_STATUS_DELETED.id.toString()]
-//            }else if(params.tab == 'allTipps'){
-//                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_EXPECTED.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString(), RDStore.TIPP_STATUS_DELETED.id.toString()]
-//            }
-//        }
-//        else if(params.list('status').size() == 1) {
-//            if(params.list('status')[0] == RDStore.TIPP_STATUS_CURRENT.id.toString()){
-//                params.tab = 'currentTipps'
-//            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_RETIRED.id.toString()){
-//                params.tab = 'expiredTipps'
-//            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_EXPECTED.id.toString()){
-//                params.tab = 'plannedTipps'
-//            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_DELETED.id.toString()){
-//                params.tab = 'deletedTipps'
-//            }
-//        }else{
-//            if(params.list('status').size() > 1){
-//                params.tab = 'allTipps'
-//            }else {
-//                params.tab = 'currentTipps'
-//                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-//            }
-//        }
-
         Map<String, Object> query = filterService.getTippQuery(params, [])
         result.filterSet = query.filterSet
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-256")
@@ -107,13 +75,13 @@ class TitleController  {
         messageDigest.update(checksum.getBytes())
         EhcacheWrapper subCache = cacheService.getTTL300Cache("/title/list/subCache/${messageDigest.digest().encodeHex()}")
 
-
-        println ' ? ---->'
-        println query.query
-        println query.queryParams
-        println params.status
-        println params.status.collect{ it.class }
-        println params.list('status').collect{ it.class }
+//        todo: remove
+//        println ' ? ---->'
+//        println query.query
+//        println query.queryParams
+//        println params.status
+//        println params.status.collect{ it.class }
+//        println params.list('status').collect{ it.class }
 
         List<Long> titlesList = subCache.get('titleIDs') ?: []
         if(!titlesList) {

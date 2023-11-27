@@ -17,29 +17,6 @@
                       tt_counts:        [currentTippCounts, plannedTippCounts, expiredTippCounts, deletedTippCounts, allTippCounts]
               ]}" />
 
-%{--<ui:tabs actionName="${actionName}">--}%
-%{--    <ui:tabsItem controller="${controllerName}" action="${actionName}"--}%
-%{--                 params="[tab: 'currentIEs']"--}%
-%{--                 text="${message(code: "package.show.nav.current")}" tab="currentIEs"--}%
-%{--                 counts="${currentTippCounts}"/>--}%
-%{--    <ui:tabsItem class="disabled" controller="${controllerName}" action="${actionName}"--}%
-%{--                 params="[tab: 'plannedIEs']"--}%
-%{--                 text="${message(code: "package.show.nav.planned")}" tab="plannedIEs"--}%
-%{--                 counts="${plannedTippCounts}"/>--}%
-%{--    <ui:tabsItem controller="${controllerName}" action="${actionName}"--}%
-%{--                 params="[tab: 'expiredIEs']"--}%
-%{--                 text="${message(code: "package.show.nav.expired")}" tab="expiredIEs"--}%
-%{--                 counts="${expiredTippCounts}"/>--}%
-%{--    <ui:tabsItem controller="${controllerName}" action="${actionName}"--}%
-%{--                 params="[tab: 'deletedIEs']"--}%
-%{--                 text="${message(code: "package.show.nav.deleted")}" tab="deletedIEs"--}%
-%{--                 counts="${deletedTippCounts}"/>--}%
-%{--    <ui:tabsItem controller="${controllerName}" action="${actionName}"--}%
-%{--                 params="[tab: 'allIEs']"--}%
-%{--                 text="${message(code: "menu.public.all_titles")}" tab="allIEs"--}%
-%{--                 counts="${allTippCounts}"/>--}%
-%{--</ui:tabs>--}%
-
 <div class="ui bottom attached tab active segment">
 
 <% params.remove('tab') %>

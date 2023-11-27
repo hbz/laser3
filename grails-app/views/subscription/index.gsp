@@ -192,31 +192,7 @@
                       tt_params:     [id: subscription.id]
               ]}" />
 
-%{--<ui:tabs actionName="${actionName}">--}%
-%{--    <ui:tabsItem controller="subscription" action="${actionName}"--}%
-%{--                 params="[id: subscription.id, tab: 'currentIEs']"--}%
-%{--                 text="${message(code: "package.show.nav.current")}" tab="currentIEs"--}%
-%{--                 counts="${currentIECounts}"/>--}%
-%{--    <ui:tabsItem controller="subscription" action="${actionName}"--}%
-%{--                 params="[id: subscription.id, tab: 'plannedIEs']"--}%
-%{--                 text="${message(code: "package.show.nav.planned")}" tab="plannedIEs"--}%
-%{--                 counts="${plannedIECounts}"/>--}%
-%{--    <ui:tabsItem controller="subscription" action="${actionName}"--}%
-%{--                 params="[id: subscription.id, tab: 'expiredIEs']"--}%
-%{--                 text="${message(code: "package.show.nav.expired")}" tab="expiredIEs"--}%
-%{--                 counts="${expiredIECounts}"/>--}%
-%{--    <ui:tabsItem controller="subscription" action="${actionName}"--}%
-%{--                 params="[id: subscription.id, tab: 'deletedIEs']"--}%
-%{--                 text="${message(code: "package.show.nav.deleted")}" tab="deletedIEs"--}%
-%{--                 counts="${deletedIECounts}"/>--}%
-%{--    <ui:tabsItem controller="subscription" action="${actionName}"--}%
-%{--                 params="[id: subscription.id, tab: 'allIEs']"--}%
-%{--                 text="${message(code: "menu.public.all_titles")}" tab="allIEs"--}%
-%{--                 counts="${allIECounts}"/>--}%
-%{--</ui:tabs>--}%
-
 <% params.remove('tab')%>
-
 
 <div class="ui bottom attached tab active segment">
 

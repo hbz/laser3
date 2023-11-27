@@ -1440,40 +1440,6 @@ class MyInstitutionController  {
         if (ttParams.status) { params.status = ttParams.status }
         if (ttParams.tab)    { params.tab = ttParams.tab }
 
-//        if(params.tab){
-//            switch(params.tab) {
-//                case 'currentIEs': params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-//                    break
-//                case 'plannedIEs': params.status = [RDStore.TIPP_STATUS_EXPECTED.id.toString()]
-//                    break
-//                case 'expiredIEs': params.status = [RDStore.TIPP_STATUS_RETIRED.id.toString()]
-//                    break
-//                case 'deletedIEs': params.status = [RDStore.TIPP_STATUS_DELETED.id.toString()]
-//                    break
-//                case 'allIEs': params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_EXPECTED.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString(), RDStore.TIPP_STATUS_DELETED.id.toString()]
-//                    break
-//            }
-//        }
-//        else if(params.list('status').size() == 1) {
-//            switch(params.list('status')[0]) {
-//                case RDStore.TIPP_STATUS_CURRENT.id.toString(): params.tab = 'currentIEs'
-//                    break
-//                case RDStore.TIPP_STATUS_RETIRED.id.toString(): params.tab = 'expiredIEs'
-//                    break
-//                case RDStore.TIPP_STATUS_EXPECTED.id.toString(): params.tab = 'plannedIEs'
-//                    break
-//                case RDStore.TIPP_STATUS_DELETED.id.toString(): params.tab = 'deletedIEs'
-//                    break
-//            }
-//        }else{
-//            if(params.list('status').size() > 1){
-//                params.tab = 'allIEs'
-//            }else {
-//                params.tab = 'currentIEs'
-//                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-//            }
-//        }
-
         Set<RefdataValue> orgRoles = []
         List<String> queryFilter = [], subscriptionQueryFilter = []
 
@@ -1648,12 +1614,10 @@ class MyInstitutionController  {
             qryParams = [cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER], contextOrg: result.institution, roleTypes: orgRoles, current: RDStore.SUBSCRIPTION_CURRENT, removed: RDStore.TIPP_STATUS_REMOVED]
         }
         */
-
-
+//        todo: remove
 //        println ' # # # '
 //        println qryString
 //        println countQueryString
-
 
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-256")
         Map<String, Object> cachingKeys = params.clone()
@@ -1842,38 +1806,6 @@ class MyInstitutionController  {
         Map ttParams = filterService.resolveParamsForTopAttachedTitleTabs(params, 'IEs', true)
         if (ttParams.status) { params.status = ttParams.status }
         if (ttParams.tab)    { params.tab = ttParams.tab }
-
-//        if(params.tab){
-//            if(params.tab == 'currentIEs'){
-//                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-//            }else if(params.tab == 'plannedIEs'){
-//                //params.status = [RDStore.TIPP_STATUS_EXPECTED.id.toString()]
-//            }else if(params.tab == 'expiredIEs'){
-//                params.status = [RDStore.TIPP_STATUS_RETIRED.id.toString()]
-//            }else if(params.tab == 'deletedIEs'){
-//                params.status = [RDStore.TIPP_STATUS_DELETED.id.toString()]
-//            }else if(params.tab == 'allIEs'){
-//                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_EXPECTED.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString(), RDStore.TIPP_STATUS_DELETED.id.toString()]
-//            }
-//        }
-//        else if(params.list('status').size() == 1) {
-//            if(params.list('status')[0] == RDStore.TIPP_STATUS_CURRENT.id.toString()){
-//                params.tab = 'currentIEs'
-//            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_RETIRED.id.toString()){
-//                params.tab = 'expiredIEs'
-//            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_EXPECTED.id.toString()){
-//                //params.tab = 'plannedIEs'
-//            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_DELETED.id.toString()){
-//                params.tab = 'deletedIEs'
-//            }
-//        }else{
-//            if(params.list('status').size() > 1){
-//                params.tab = 'allIEs'
-//            }else {
-//                params.tab = 'currentIEs'
-//                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-//            }
-//        }
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 

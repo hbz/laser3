@@ -239,29 +239,6 @@
                       tt_counts:        [currentIECounts, plannedIECounts, expiredIECounts, deletedIECounts, allIECounts]
               ]}" />
 
-%{--<ui:tabs actionName="${actionName}">--}%
-%{--    <ui:tabsItem controller="${controllerName}" action="${actionName}"--}%
-%{--                 params="[tab: 'currentIEs']"--}%
-%{--                 text="${message(code: "package.show.nav.current")}" tab="currentIEs"--}%
-%{--                 counts="${currentIECounts}"/>--}%
-%{--    <ui:tabsItem controller="${controllerName}" action="${actionName}"--}%
-%{--                 params="[tab: 'plannedIEs']"--}%
-%{--                 text="${message(code: "package.show.nav.planned")}" tab="plannedIEs"--}%
-%{--                 counts="${plannedIECounts}"/>--}%
-%{--    <ui:tabsItem controller="${controllerName}" action="${actionName}"--}%
-%{--                 params="[tab: 'expiredIEs']"--}%
-%{--                 text="${message(code: "package.show.nav.expired")}" tab="expiredIEs"--}%
-%{--                 counts="${expiredIECounts}"/>--}%
-%{--    <ui:tabsItem controller="${controllerName}" action="${actionName}"--}%
-%{--                 params="[tab: 'deletedIEs']"--}%
-%{--                 text="${message(code: "package.show.nav.deleted")}" tab="deletedIEs"--}%
-%{--                 counts="${deletedIECounts}"/>--}%
-%{--    <ui:tabsItem controller="${controllerName}" action="${actionName}"--}%
-%{--                 params="[tab: 'allIEs']"--}%
-%{--                 text="${message(code: "menu.public.all_titles")}" tab="allIEs"--}%
-%{--                 counts="${allIECounts}"/>--}%
-%{--</ui:tabs>--}%
-
 <% params.remove('tab') %>
 
 <%
