@@ -1,13 +1,5 @@
 
-### top_attached_title_tabs ###
-
 <g:set var="tt_params" value="${tt_params ?: [:]}" />
-
-<br/> controller: ${tt_controller}
-<br/> actions: ${tt_action}
-<br/> tabs: ${tt_tabs}
-<br/> counts: ${tt_counts}
-<br/> params: ${tt_params}
 
 <ui:tabs actionName="${tt_action}">
 
