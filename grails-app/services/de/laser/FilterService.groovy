@@ -2366,11 +2366,6 @@ class FilterService {
             }
         }
 
-        //        todo: remove
-//        println ' +---> '
-//        println params
-//        println result
-
         result
     }
 }

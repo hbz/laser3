@@ -1614,10 +1614,6 @@ class MyInstitutionController  {
             qryParams = [cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER], contextOrg: result.institution, roleTypes: orgRoles, current: RDStore.SUBSCRIPTION_CURRENT, removed: RDStore.TIPP_STATUS_REMOVED]
         }
         */
-//        todo: remove
-//        println ' # # # '
-//        println qryString
-//        println countQueryString
 
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-256")
         Map<String, Object> cachingKeys = params.clone()

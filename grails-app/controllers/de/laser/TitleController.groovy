@@ -75,14 +75,6 @@ class TitleController  {
         messageDigest.update(checksum.getBytes())
         EhcacheWrapper subCache = cacheService.getTTL300Cache("/title/list/subCache/${messageDigest.digest().encodeHex()}")
 
-//        todo: remove
-//        println ' ? ---->'
-//        println query.query
-//        println query.queryParams
-//        println params.status
-//        println params.status.collect{ it.class }
-//        println params.list('status').collect{ it.class }
-
         List<Long> titlesList = subCache.get('titleIDs') ?: []
         if(!titlesList) {
             titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
