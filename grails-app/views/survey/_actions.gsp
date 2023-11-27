@@ -186,7 +186,7 @@
         <g:form class="ui form"
                 url="[controller: 'survey', action: 'processEndSurvey', params: [id: params.id], method: 'post']">
             <div class="field">
-                <p><b>${message(code: "endSurvey.button.info")}</b></p>
+                <p><strong>${message(code: "endSurvey.button.info")}</strong></p>
             </div>
         </g:form>
     </ui:modal>

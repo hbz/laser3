@@ -203,10 +203,10 @@
     <div class="ui grid">
         <div class="row">
             <div class="eight wide column">
-                <h3 class="ui icon header la-clear-before la-noMargin-top"><span
-                        class="ui circular  label">${num_ies_rows}</span> <g:message code="title.filter.result"/></h3>
+                <h3 class="ui icon header la-clear-before la-noMargin-top">
+                    <span class="ui circular label">${num_ies_rows}</span> <g:message code="title.filter.result"/>
+                </h3>
             </div>
-
 
             <div class="eight wide column">
                 <div class="field la-field-right-aligned">
@@ -744,12 +744,7 @@
       }
     </g:if>
 
-    $('.la-books.icon').popup({
-        delay: {
-            show: 150, hide: 0
-        }
-      });
-    $('.la-notebook.icon').popup({
+    $('.la-books.icon, .la-notebook.icon').popup({
         delay: {
             show: 150, hide: 0
         }

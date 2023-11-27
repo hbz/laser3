@@ -82,13 +82,6 @@
 
 <laser:render template="nav"/>
 
-
-<%--<sec:ifAnyGranted roles="ROLE_ADMIN">
-    <laser:render template="/templates/pendingChanges"
-              model="${['pendingChanges': pendingChanges, 'flash': flash, 'model': packageInstance]}"/>
-</sec:ifAnyGranted>--%>
-
-
 <ui:messages data="${flash}"/>
 
 <ui:errors bean="${packageInstance}"/>
@@ -129,16 +122,6 @@
 
      //$('#select-all').is( ':checked' )? $('.bulkcheck').attr('checked', false) : $('.bulkcheck').attr('checked', true);
    }
-
-   JSPC.app.confirmSubmit = function () {
-     if ( $('#bulkOperationSelect').val() === 'remove' ) {
-       var agree=confirm("${message(code: 'default.continue.confirm')}");
-          if (agree)
-            return true ;
-          else
-            return false ;
-        }
-      }
 
     $('.kbartExport').click(function(e) {
         e.preventDefault();
