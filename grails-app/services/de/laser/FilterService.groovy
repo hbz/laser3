@@ -2307,4 +2307,69 @@ class FilterService {
         result
     }
 
+    Map<String, Object> resolveParamsForTopAttachedTitleTabs(GrailsParameterMap params, String entites, boolean ignorePlannedIEs = false) {
+        log.debug 'resolveParamsForTopAttachedTitleTabs( .., ' + entites + ', ' + ignorePlannedIEs + ' )'
+
+        Map<String, Object> result = [:]
+
+        // MyInstitutionController.currentTitles()              entites = 'IEs',   ignorePlannedIEs = false
+        // MyInstitutionController.currentPermanentTitles()     entites = 'IEs',   ignorePlannedIEs = true
+        // SubscriptionControllerService.index()                entites = 'IEs',   ignorePlannedIEs = false
+        // TitleController.list()                               entites = 'Tipps', ignorePlannedIEs = false
+
+        if (params.tab) {
+            switch (params.tab) {
+                case 'current' + entites:
+                    result.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                    break
+                case 'planned' + entites:
+                    if (!ignorePlannedIEs) {
+                        result.status = [RDStore.TIPP_STATUS_EXPECTED.id.toString()]
+                    }
+                    break
+                case 'expired' + entites:
+                    result.status = [RDStore.TIPP_STATUS_RETIRED.id.toString()]
+                    break
+                case 'deleted' + entites:
+                    result.status = [RDStore.TIPP_STATUS_DELETED.id.toString()]
+                    break
+                case 'all' + entites:
+                    result.status = [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_EXPECTED.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString(), RDStore.TIPP_STATUS_DELETED.id.toString()]
+                    break
+            }
+        }
+        else if(params.list('status').size() == 1) {
+            switch (params.list('status')[0]) {
+                case RDStore.TIPP_STATUS_CURRENT.id.toString():
+                    result.tab = 'current' + entites
+                    break
+                case RDStore.TIPP_STATUS_RETIRED.id.toString():
+                    result.tab = 'expired' + entites
+                    break
+                case RDStore.TIPP_STATUS_EXPECTED.id.toString():
+                    if (!ignorePlannedIEs) {
+                        result.tab = 'planned' + entites
+                    }
+                    break
+                case RDStore.TIPP_STATUS_DELETED.id.toString():
+                    result.tab = 'deleted' + entites
+                    break
+            }
+        }
+        else {
+            if (params.list('status').size() > 1) {
+                result.tab = 'all' + entites
+            }
+            else {
+                result.tab = 'current' + entites
+                result.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+            }
+        }
+
+        println ' +---> '
+        println params
+        println result
+
+        result
+    }
 }
