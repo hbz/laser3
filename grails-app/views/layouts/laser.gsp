@@ -239,7 +239,9 @@
 
         %{-- system maintenance mode --}%
 
-        <laser:render template="/templates/system/maintenanceMode" />
+        <g:if test="${SystemSetting.findByName('MaintenanceMode').value == 'true'}">
+            <laser:render template="/templates/system/maintenanceMode" />
+        </g:if>
 
         %{-- ??? --}%
 
