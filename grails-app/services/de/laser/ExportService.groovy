@@ -3486,7 +3486,7 @@ class ExportService {
 				}
 			}
 			else {
-				log.debug "now processing record ${outer}"
+//				log.debug "now processing record ${outer}"
 				rows.add(buildRow('excel', title, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, checkPerpetuallyPurchasedTitles, showStatsInMonthRings, subscriber))
 			}
 		}
