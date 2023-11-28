@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      28.11.2023  rc-3.3  3.3.2       Andreas Bug         Rückverweis bei manuellem Titelentknüpfen eingebaut
+
+--      28.11.2023  rc-3.3  3.3.2       Andreas Bug         Verlag-Dropdown lud nicht
+
+5454    28.11.2023  rc-3.3  3.3.2       David   Bug         Profil: CC-Mails gehen raus, auch wenn Haken noch gesetzt ist?
+
+--      28.11.2023  rc-3.3  3.3.2       Andreas Bug         Plattformdaten wurden falsch abgefragt
+
 5451    24.11.2023  rc-3.3  3.3.1       Andreas Bug         diverse Bugs im Zusammenhang mit Kosten
 
 5450    24.11.2023  rc-3.3  3.3.1       Moe     Bug         Mails werden nicht versendet: sendSurveyEmail()

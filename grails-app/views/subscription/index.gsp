@@ -192,7 +192,7 @@
                       tt_params:     [id: subscription.id]
               ]}" />
 
-<% params.remove('tab')%>
+<% String tab = params.remove('tab')%>
 
 <div class="ui bottom attached tab active segment">
 
@@ -495,7 +495,7 @@
                                                             <g:if test="${subscription.ieGroups.size() > 0}">
                                                                 <g:link action="removeEntitlementWithIEGroups"
                                                                         class="ui icon negative button la-modern-button js-open-confirm-modal"
-                                                                        params="${[ieid: ie.id, sub: subscription.id]}"
+                                                                        params="${[ieid: ie.id, sub: subscription.id, tab: tab]}"
                                                                         role="button"
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlementWithIEGroups", args: [ie.tipp.name])}"
                                                                         data-confirm-term-how="delete"
@@ -506,7 +506,7 @@
                                                             <g:else>
                                                                 <g:link action="removeEntitlement"
                                                                         class="ui icon negative button la-modern-button js-open-confirm-modal"
-                                                                        params="${[ieid: ie.id, sub: subscription.id]}"
+                                                                        params="${[ieid: ie.id, sub: subscription.id, tab: tab]}"
                                                                         role="button"
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlement", args: [ie.tipp.name])}"
                                                                         data-confirm-term-how="delete"
