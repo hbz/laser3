@@ -592,14 +592,14 @@
             }
         })
 
+        $('#isNotificationByEmail').change( function (e) {
+            $('#isNotificationCCByEmail').attr("disabled", !this.checked);
+        });
         $('#isRemindByEmail').change( function (e) {
-            if (this.checked) {
-                $('#isRemindCCByEmail').attr("disabled", false);
-            } else {
-                $('#isRemindCCByEmail').attr("disabled", true);
-            }
+            $('#isRemindCCByEmail').attr("disabled", !this.checked)
         });
 
+        $('#isNotificationByEmail').trigger('change');
         $('#isRemindByEmail').trigger('change');
 
 </laser:script>
