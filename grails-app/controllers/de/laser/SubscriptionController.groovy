@@ -1131,7 +1131,7 @@ class SubscriptionController {
             Object[] args = [message(code:'issueEntitlement.label'),params.ieid]
             flash.message = message(code: 'default.deleted.message',args: args) as String
         }
-        redirect action: 'index', id: params.sub
+        redirect action: 'index', id: params.sub, params: [tab: params.tab]
     }
 
     /**
@@ -1150,7 +1150,7 @@ class SubscriptionController {
             Object[] args = [message(code:'issueEntitlement.label'),params.ieid]
             flash.message = message(code: 'default.deleted.message',args: args) as String
         }
-        redirect action: 'index', id: params.sub
+        redirect action: 'index', id: params.sub, params: [tab: params.tab]
     }
 
     /**
