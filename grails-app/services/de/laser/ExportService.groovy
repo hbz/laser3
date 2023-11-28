@@ -3487,7 +3487,7 @@ class ExportService {
 				}
 			}
 			else {
-				log.debug "now processing record ${outer}"
+//				log.debug "now processing record ${outer}"
 				rows.add(buildRow('excel', title, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, checkPerpetuallyPurchasedTitles, showStatsInMonthRings, subscriber))
 			}
 		}
@@ -3983,7 +3983,7 @@ class ExportService {
 			otherTitleIdentifierNamespaces = []
 		}
 			if(showStatsInMonthRings && subscriber) {
-				List<GroovyRowResult> platformData = sql.rows("select plat_title_namespace, plat_guid from platform join title_instance_package_platform on plat_id = tipp_plat_fk join issue_entitlement on ie_tipp_fk = tipp_id ${queryData.subJoin} where ${queryData.where} group by plat_guid, plat_title_namespace", queryData.params)
+				List<GroovyRowResult> platformData = sql.rows("select plat_title_namespace, plat_guid from platform join package on plat_id = pkg_nominal_platform_fk where pkg_id = any(:pkgIds) group by plat_guid, plat_title_namespace", queryData.params)
 				List<Object> platforms = []
 				Set<String> propIdNamespaces = []
 				platformData.each { GroovyRowResult row ->
