@@ -44,6 +44,7 @@ import org.springframework.context.MessageSource
 
 import java.awt.*
 import java.math.RoundingMode
+import java.sql.Connection
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
@@ -483,7 +484,7 @@ class ExportService {
 	 * @param format the format to use for the export (Excel or CSV)
 	 * @param visiblePersons the list of {@link Person}s to export
 	 * @return either an Excel workbook or a character-separated list containing the export
-	 * @deprecated all exports should be made configurable by modal; move this export to {@link ExportClickMeService#exportAddresses(java.util.List, java.util.List, java.util.Map, java.lang.Object, java.lang.Object, de.laser.ExportClickMeService.FORMAT)}
+	 * @deprecated all exports should be made configurable by modal; move this export to {@link ExportClickMeService#exportAddresses(java.util.List, java.util.List, java.util.Map, java.lang.Object, java.lang.Object, java.lang.String, de.laser.ExportClickMeService.FORMAT)}
 	 */
 	@Deprecated
 	def exportAddressbook(String format, List visiblePersons) {
@@ -3492,6 +3493,112 @@ class ExportService {
 		}
 		export.rows = rows
 		log.debug("End generateTitleExportCustom")
+		export
+	}
+
+	Map<String, List> generateRenewalExport(Map configMap, Set showStatsInMonthRings, Org subscriber) {
+		log.debug("Begin generateRenewalExport")
+		boolean checkPerpetuallyPurchasedTitles = false
+		Sql sql = GlobalService.obtainSqlConnection()
+		Connection sqlConn = sql.getDataSource().getConnection()
+		Locale locale = LocaleUtils.getCurrentLocale()
+		//Map<String, Object> data = getTitleData(configMap, TitleInstancePackagePlatform.class.name, sql, showStatsInMonthRings, subscriber)
+		long start = System.currentTimeMillis()
+		Map<String, Object> qryParams = [pkgIds: sqlConn.createArrayOf('bigint', configMap.pkgIds as Object[]), current: RDStore.TIPP_STATUS_CURRENT.id]
+		List identifiers = sql.rows("select tipp_id," +
+				"(select distinct(id_value) from identifier join identifier_namespace on id_ns_fk = idns_id where id_tipp_fk = tipp_id and idns_ns in ('isbn', 'issn')) as print_identifier," +
+				"(select distinct(id_value) from identifier join identifier_namespace on id_ns_fk = idns_id where id_tipp_fk = tipp_id and idns_ns in ('eisbn', 'eissn')) as online_identifier," +
+				"(select distinct(id_value) from identifier join identifier_namespace on id_ns_fk = idns_id where id_tipp_fk = tipp_id and idns_ns = ('doi')) as doi," +
+				"(select distinct(id_value) from identifier join identifier_namespace on id_ns_fk = idns_id where id_tipp_fk = tipp_id and idns_ns = ('title_id')) as proprietary_identifier " +
+				"from title_instance_package_platform where tipp_pkg_fk = any(:pkgIds) and tipp_status_rv_fk = :current", qryParams)
+		log.debug("${System.currentTimeMillis()-start} msecs for identifier")
+		List<String> titleHeaders = [
+				messageSource.getMessage('tipp.name',null,locale),
+				'Print Identifier',
+				'Online Identifier',
+				messageSource.getMessage('tipp.startDate',null,locale),
+				messageSource.getMessage('tipp.startVolume',null,locale),
+				messageSource.getMessage('tipp.startIssue',null,locale),
+				messageSource.getMessage('tipp.endDate',null,locale),
+				messageSource.getMessage('tipp.endVolume',null,locale),
+				messageSource.getMessage('tipp.endIssue',null,locale),
+				messageSource.getMessage('tipp.hostPlatformURL',null,locale),
+				messageSource.getMessage('tipp.firstAuthor',null,locale),
+				messageSource.getMessage('tipp.titleId',null,locale),
+				messageSource.getMessage('tipp.embargo',null,locale),
+				messageSource.getMessage('tipp.coverageDepth',null,locale),
+				messageSource.getMessage('tipp.coverageNote',null,locale),
+				messageSource.getMessage('tipp.titleType',null,locale),
+				messageSource.getMessage('tipp.publisher',null,locale),
+				messageSource.getMessage('tipp.dateFirstInPrint',null,locale),
+				messageSource.getMessage('tipp.dateFirstOnline',null,locale),
+				messageSource.getMessage('tipp.volume',null,locale),
+				messageSource.getMessage('tipp.editionNumber',null,locale),
+				messageSource.getMessage('tipp.firstEditor',null,locale),
+				messageSource.getMessage('tipp.parentTitleId',null,locale),
+				messageSource.getMessage('tipp.precedingTitleId',null,locale),
+				messageSource.getMessage('package.label',null,locale),
+				messageSource.getMessage('platform.label',null,locale),
+				messageSource.getMessage('tipp.lastUpdated',null,locale),
+				messageSource.getMessage('tipp.accessStartDate',null,locale),
+				messageSource.getMessage('tipp.accessEndDate',null,locale),
+				messageSource.getMessage('tipp.medium',null,locale),
+				IdentifierNamespace.ZDB,
+				IdentifierNamespace.DOI,
+				IdentifierNamespace.EZB,
+				messageSource.getMessage('tipp.tippWekbId',null,locale),
+				messageSource.getMessage('tipp.pkgWekbId',null,locale),
+				IdentifierNamespace.ISCI,
+				IdentifierNamespace.ISIL_PAKETSIGEL,
+				IdentifierNamespace.EZB_ANCHOR,
+				messageSource.getMessage('tipp.illIndicator',null,locale),
+				messageSource.getMessage('tipp.supersedingPublicationTitleId',null,locale),
+				messageSource.getMessage('tipp.seriesName',null,locale),
+				messageSource.getMessage('tipp.subjectReference',null,locale),
+				messageSource.getMessage('tipp.status',null,locale),
+				messageSource.getMessage('tipp.accessType',null,locale),
+				messageSource.getMessage('tipp.openAccess',null,locale),
+				IdentifierNamespace.ZDB_PPN,
+				messageSource.getMessage('tipp.listprice_eur',null,locale),
+				messageSource.getMessage('tipp.listprice_gbp',null,locale),
+				messageSource.getMessage('tipp.listprice_usd',null,locale),
+				messageSource.getMessage('tipp.localprice_eur',null,locale),
+				messageSource.getMessage('tipp.localprice_gbp',null,locale),
+				messageSource.getMessage('tipp.localprice_usd',null,locale)]
+		//todo reactivate
+		//titleHeaders.addAll(data.coreTitleIdentifierNamespaces.collect { GroovyRowResult row -> row['idns_ns']})
+		//titleHeaders.addAll(data.otherTitleIdentifierNamespaces.collect { GroovyRowResult row -> row['idns_ns']})
+		if(showStatsInMonthRings){
+			titleHeaders.addAll(showStatsInMonthRings.collect { Date month -> DateUtils.getSDF_yyyyMM().format(month) })
+		}
+		titleHeaders << messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale)
+		titleHeaders << "Pick"
+		List rows = []
+		Map<String,List> export = [titles:titleHeaders]
+		/*
+		data.titles.eachWithIndex { GroovyRowResult title, int outer ->
+			if(entitlementInstance == IssueEntitlement.class.name && data.coverageMap.get(title['ie_id'])) {
+				data.coverageMap.get(title['ie_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
+					log.debug "now processing coverage statement ${inner} for record ${outer}"
+					covStmt.putAll(title)
+					rows.add(buildRow('excel', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, checkPerpetuallyPurchasedTitles, showStatsInMonthRings, subscriber))
+				}
+			}
+			else if(entitlementInstance == TitleInstancePackagePlatform.class.name && data.coverageMap.get(title['tipp_id'])) {
+				data.coverageMap.get(title['tipp_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
+					log.debug "now processing coverage statement ${inner} for record ${outer}"
+					covStmt.putAll(title)
+					rows.add(buildRow('excel', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, checkPerpetuallyPurchasedTitles, showStatsInMonthRings, subscriber))
+				}
+			}
+			else {
+				log.debug "now processing record ${outer}"
+				rows.add(buildRow('excel', title, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, checkPerpetuallyPurchasedTitles, showStatsInMonthRings, subscriber))
+			}
+		}
+		*/
+		//export.rows = rows
+		log.debug("End generateRenewalExport")
 		export
 	}
 
