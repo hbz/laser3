@@ -686,7 +686,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 case RECTYPE_PACKAGE:
                     result.records.eachWithIndex { record, int i ->
                         try {
-                            log.debug("now processing record #${i}")
+//                            log.debug("now processing record #${i}")
                             Package pkg = createOrUpdatePackage(record)
                             //package may be null in case it has been marked as removed and did not exist in LAS:eR before
                             if(pkg?.packageStatus == RDStore.PACKAGE_STATUS_REMOVED) {
