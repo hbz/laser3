@@ -379,16 +379,15 @@ class ProfileController {
             if ( params.isNotificationCCByEmail && ( ! params.notificationCCEmailaddress) ) {
                 flash.error += message(code:'profile.updateProfile.updated.isNotificationCCByEmail.noCCEmailAddressError')
             } else {
-                if (params.notificationCCEmailaddress){
-                    if (formService.validateEmailAddress(params.notificationCCEmailaddress)){
-                        _changeValue( user.getSetting(KEYS.NOTIFICATION_CC_EMAILADDRESS, null),
-                                'notificationCCEmailaddress',
-                                null,
-                                'profile.updateProfile.updated.notificationCCEmailaddress' )
-                    } else {
-                        flash.error += message(code:'profile.updateProfile.updated.email.error')
-                    }
+                if (params.notificationCCEmailaddress == null || params.notificationCCEmailaddress.trim() == '' || formService.validateEmailAddress(params.notificationCCEmailaddress)){
+                    _changeValue( user.getSetting(KEYS.NOTIFICATION_CC_EMAILADDRESS, null),
+                            'notificationCCEmailaddress',
+                            null,
+                            'profile.updateProfile.updated.notificationCCEmailaddress' )
+                } else {
+                    flash.error += message(code:'profile.updateProfile.updated.email.error')
                 }
+
                 _changeValue( user.getSetting(KEYS.IS_NOTIFICATION_CC_BY_EMAIL, RDStore.YN_NO),
                         'isNotificationCCByEmail',
                         "N",
