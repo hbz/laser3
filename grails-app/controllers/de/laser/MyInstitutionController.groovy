@@ -1886,7 +1886,7 @@ class MyInstitutionController  {
         result.allTippCounts = PermanentTitle.executeQuery("select count(*) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status in (:status) and pt.issueEntitlement.status != :ieStatus", [org: result.institution, status: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED], ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
 
         //for tipp_ieFilter
-        params.institution = result.institution
+        params.institution = result.institution.id
         params.filterForPermanentTitle = true
 
         result
