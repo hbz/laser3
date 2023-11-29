@@ -2,7 +2,7 @@
 <ui:modal id="modalAllTitleInfos" text="${message(code: 'title.details')}"
              hideSubmitButton="true">
 
-    <laser:render template="/templates/title_long"
+    <laser:render template="/templates/titles/title_long"
               model="${[ie: ie, tipp: tipp,
                         showPackage: showPackage, showPlattform: showPlattform, showCompact: showCompact, showEmptyFields: showEmptyFields]}"/>
     <br/>
