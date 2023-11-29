@@ -50,10 +50,8 @@
         </div>
 
         <div class="four wide column">
-
             <!-- START TEMPLATE -->
-            <laser:render template="/templates/identifier"
-                          model="${[ie: null, tipp: tipp]}"/>
+            <laser:render template="/templates/identifier" model="${[ie: null, tipp: tipp]}"/>
             <!-- END TEMPLATE -->
         </div>
 
@@ -69,11 +67,9 @@
                                                                      currencyCode="${priceItem.listCurrency.value}"
                                                                      currencySymbol="${priceItem.listCurrency.value}"/>
                                 </div>
-
                             </div>
                         </div>
                     </div>
-
                 </g:if>
             </g:each>
         </div>
@@ -81,11 +77,9 @@
         <div class="one wide column">
             <div class="ui right floated buttons">
                 <div class="right aligned wide column">
-
                 </div>
-
-                <div class="ui icon blue button la-modern-button "><i
-                        class="ui angle double down icon"></i>
+                <div class="ui icon blue button la-modern-button">
+                    <i class="ui angle double down icon"></i>
                 </div>
             </div>
         </div>
