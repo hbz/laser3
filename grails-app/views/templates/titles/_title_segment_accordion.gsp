@@ -36,7 +36,7 @@
             <div class="ui list">
 
                 <!-- START TEMPLATE -->
-                <laser:render template="/templates/title_short_accordion"
+                <laser:render template="/templates/titles/title_short_accordion"
                               model="${[ie         : null, tipp: tipp,
                                         showPackage: showPackage, showPlattform: showPlattform, showEmptyFields: false]}"/>
                 <!-- END TEMPLATE -->

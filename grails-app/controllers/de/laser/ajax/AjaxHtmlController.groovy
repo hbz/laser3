@@ -1201,7 +1201,7 @@ class AjaxHtmlController {
         result.showCompact = params.showCompact
         result.showEmptyFields = params.showEmptyFields
 
-        render template: "/templates/title_modal", model: result
+        render template: "/templates/titles/title_modal", model: result
 
     }
 
@@ -1221,7 +1221,7 @@ class AjaxHtmlController {
         result.showCompact = params.showCompact
         result.showEmptyFields = params.showEmptyFields
 
-        render template: "/templates/title_long_accordion", model: result
+        render template: "/templates/titles/title_long_accordion", model: result
 
     }
 

@@ -442,7 +442,7 @@
 
                                                         <!-- START TEMPLATE -->
                                                         <laser:render
-                                                                template="/templates/title_short_accordion"
+                                                                template="/templates/titles/title_short_accordion"
                                                                 model="${[ie         : ie, tipp: ie.tipp,
                                                                           showPackage: true, showPlattform: true, showEmptyFields: false, sub: subscription.id]}"/>
                                                         <!-- END TEMPLATE -->
@@ -525,7 +525,7 @@
 
 
     %{--
-                                                <laser:render template="/templates/title_long_accordion"
+                                                <laser:render template="/templates/titles/title_long_accordion"
                                                               model="${[ie         : ie, tipp: ie.tipp,
                                                                         showPackage: showPackage, showPlattform: showPlattform, showCompact: showCompact, showEmptyFields: showEmptyFields]}"/>
 

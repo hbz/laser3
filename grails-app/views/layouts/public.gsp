@@ -25,9 +25,7 @@
 
     <body class="public">
 
-        %{-- skip to main content - for screenreader --}%
-
-        <laser:render template="/templates/accessibility/skipContent" />
+        <ui:skipLink />%{-- skip to main content - for screenreader --}%
 
         <g:layoutBody/>%{-- body here --}%
     
