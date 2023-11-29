@@ -54,13 +54,13 @@
                                                 Set<IssueEntitlement> ie_infos = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.org = :context and ie.tipp = :tipp and ie.status != :ieStatus' + instanceFilter, [ieStatus: RDStore.TIPP_STATUS_REMOVED, context: institution, tipp: tipp])
                                             %>
 
-                                            <g:render template="/templates/title_segment_accordion"
+                                            <g:render template="/templates/titles/title_segment_accordion"
                                                       model="[ie: null, tipp: tipp, permanentTitle: PermanentTitle.findByOwnerAndTipp(institution, tipp)]"/>
 
                                             <div class="ui fluid segment content" data-ajaxTargetWrap="true">
                                                 <div class="ui stackable grid" data-ajaxTarget="true">
 
-                                                    <laser:render template="/templates/title_long_accordion"
+                                                    <laser:render template="/templates/titles/title_long_accordion"
                                                                   model="${[ie         : null, tipp: tipp,
                                                                             showPackage: true, showPlattform: true, showEmptyFields: false]}"/>
 
