@@ -1684,6 +1684,10 @@ class SubscriptionControllerService {
                                             issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: result.surveyConfig.issueEntitlementGroupName)
                                             if (!issueEntitlementGroup.save())
                                                 log.error(issueEntitlementGroup.getErrors().getAllErrors().toListString())
+                                            else {
+                                                result.titleGroupID = issueEntitlementGroup.id.toString()
+                                                result.titleGroup = issueEntitlementGroup
+                                            }
                                         }
 
                                         if (issueEntitlementGroup && subscriptionService.addEntitlement(subscriberSub, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
