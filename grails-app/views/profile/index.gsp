@@ -73,7 +73,7 @@
                                 <label for="isNotificationCCByEmail">${message(code: 'profile.isNotificationCCByEmail')}</label>
                             </div>
                             <g:set var="notificationCCEmailaddress" value="${user.getSettingsValue(KEYS.NOTIFICATION_CC_EMAILADDRESS)}"/>
-                            <input type="text" id="emailCC" name="notificationCCEmailaddress" value="${notificationCCEmailaddress}"/>
+                            <input type="text" id="notificationCCEmailaddress" name="notificationCCEmailaddress" value="${notificationCCEmailaddress}"/>
                         </div>
 
                         <table class="ui celled la-js-responsive-table la-table compact table">
@@ -151,7 +151,7 @@
                                 <label for="isRemindCCByEmail">${message(code: 'profile.isRemindCCByEmail')}</label>
                             </div>
                             <g:set var="remindCCEmailaddress" value="${user.getSettingsValue(KEYS.REMIND_CC_EMAILADDRESS)}"/>
-                            <input type="text" id="emailCC" name="remindCCEmailaddress" value="${remindCCEmailaddress}"/>
+                            <input type="text" id="remindCCEmailaddress" name="remindCCEmailaddress" value="${remindCCEmailaddress}"/>
                         </div>
 
                         <table class="ui celled la-js-responsive-table la-table compact table">
@@ -573,21 +573,6 @@
                             }
                         }
                     });
-                    $('.updateReminderSettings').form({
-                        on: 'blur',
-                        inline: true,
-                        fields: {
-                            dashboardReminderPeriod: {
-                                identifier  : 'dashboardReminderPeriod',
-                                rules: [
-                                    {
-                                        type   : 'regExp[/^[0-9]/]',
-                                        prompt : '{name} <g:message code="validation.onlyInteger" />'
-                                    }
-                                ]
-                            }
-                        }
-                    });
 
         $('#password_show_toggler').on('change', function(e) {
             $('input.pw').attr('type', ($(this).is(":checked") ? 'text' : 'password'))
@@ -607,35 +592,14 @@
             }
         })
 
-        $("#unit").on('change', function (e) {
-            var unit = this.options[e.target.selectedIndex].text;
-            var val = $(this).next();
-            if (unit) {
-                switch (unit) {
-                    case 'Day':
-                        JSPC.app.setupUnitAmount(val,7)
-                        break;
-                    case 'Week':
-                        JSPC.app.setupUnitAmount(val,4)
-                        break;
-                    case 'Month':
-                        JSPC.app.setupUnitAmount(val,12)
-                        break
-                    default :
-                        console.log('Impossible selection made!');
-                        break
-                }
-            }
+        $('#isNotificationByEmail').change( function (e) {
+            $('#isNotificationCCByEmail').attr("disabled", !this.checked);
         });
-
         $('#isRemindByEmail').change( function (e) {
-            if (this.checked) {
-                $('#isRemindCCByEmail').attr("disabled", false);
-            } else {
-                $('#isRemindCCByEmail').attr("disabled", true);
-            }
+            $('#isRemindCCByEmail').attr("disabled", !this.checked)
         });
 
+        $('#isNotificationByEmail').trigger('change');
         $('#isRemindByEmail').trigger('change');
 
 </laser:script>
