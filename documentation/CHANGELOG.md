@@ -9,6 +9,12 @@
 
 5456    29.11.2023  rc-3.3  3.3.2       David   Feature     Kundentyp Interne Verwaltung: Fehlende Reiter im Einrichtungsprofil
 
+--      29.11.2023  rc-3.3  3.3.2       Andreas Bug         neue Titelgruppe wurde nicht übergeben => NPE
+
+--      28.11.2023  rc-3.3  3.3.2       Andreas Bug         Rückverweis bei manuellem Titelentknüpfen eingebaut
+
+--      28.11.2023  rc-3.3  3.3.2       Andreas Bug         Verlag-Dropdown lud nicht
+
 5454    28.11.2023  rc-3.3  3.3.2       David   Bug         Profil: CC-Mails gehen raus, auch wenn Haken noch gesetzt ist?
 
 --      28.11.2023  rc-3.3  3.3.2       Andreas Bug         Plattformdaten wurden falsch abgefragt
