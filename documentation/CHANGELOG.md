@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      29.11.2023  rc-3.3  3.3.2       Andreas Bug         neue Titelgruppe wurde nicht übergeben => NPE
+
 --      28.11.2023  rc-3.3  3.3.2       Andreas Bug         Rückverweis bei manuellem Titelentknüpfen eingebaut
 
 --      28.11.2023  rc-3.3  3.3.2       Andreas Bug         Verlag-Dropdown lud nicht
