@@ -152,7 +152,7 @@
                 </g:link>
             </div>
         </main>
-        <laser:render template="footer" />
+        <laser:render template="/layouts/footer" />
 
 </div>
 
