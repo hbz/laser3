@@ -8,6 +8,24 @@
     <ui:subNavItem controller="organisation" action="show" params="${breadcrumbParams}" message="org.nav.details"/>
     <ui:subNavItem controller="organisation" action="ids" params="${breadcrumbParams}" message="${isProviderOrAgency ? 'org.nav.ids' : 'org.nav.idsCids.shy'}"/>
 
+    <g:if test="${inContextOrg}">
+        <ui:subNavItem controller="organisation" action="myPublicContacts" params="${[id: institution.id]}" message="menu.institutions.publicContacts.shy" />
+    </g:if>
+    <g:elseif test="${!isProviderOrAgency}">
+        <ui:subNavItem controller="organisation" action="myPublicContacts" params="${breadcrumbParams}" message="menu.institutions.publicContacts.shy" />
+    </g:elseif>
+
+    <g:if test="${!isProviderOrAgency}">
+        <ui:subNavItem controller="organisation" action="readerNumber" params="${breadcrumbParams}" message="menu.institutions.readerNumbers"/>
+
+        <g:if test="${tmplAccessPointsActive}">
+            <ui:subNavItem controller="organisation" action="accessPoints" class="active" params="${breadcrumbParams}" message="org.nav.accessPoints.shy"/>
+        </g:if>
+        <g:else>
+            <ui:subNavItem controller="organisation" action="accessPoints" params="${breadcrumbParams}" message="org.nav.accessPoints.shy"/>
+        </g:else>
+    </g:if>
+
     <ui:subNavItem controller="organisation" action="notes" params="${breadcrumbParams}" counts="${notesCount}" message="default.notes.label"/>
     <ui:subNavItem controller="organisation" action="tasks" params="${breadcrumbParams}" counts="${tasksCount}" message="menu.institutions.tasks"/>
     <ui:subNavItem controller="organisation" action="documents" params="${breadcrumbParams}" message="default.documents.label" />
