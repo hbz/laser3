@@ -59,7 +59,7 @@
 
     %{-- skip to main content, bypass menu block (for screen reader) related to https://www.w3.org/TR/WCAG20-TECHS/G1.html--}%
 
-    <laser:render template="/templates/accessibility/skipContent" />
+    <ui:skipLink />
 
     %{-- main menu --}%
 
