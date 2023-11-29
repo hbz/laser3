@@ -22,7 +22,10 @@
     }
   }
 }
-// Light Grey Sub Menu
+/*--------------
+   Context Bar
+---------------*/
+
 @media only screen and (min-width: @mobileBreakpoint  ) and (max-width:@laser-breakpoint   ) {
   .ui.menu.la-contextBar .ui.container {
     width: 100%;
@@ -35,15 +38,28 @@
   background-color: @laDecorationColor;
   box-shadow: none;
   .item {
+    margin: 0 1em 0 0;
+    border-right: none;
+    color: @grey;
+    padding:0;
     &::before {
       width: 0;
     }
-    color: @grey;
-    padding:0;
   }
-  .la-context-org {
-    font-size: 0.87em;
+  .la-cb-context.item > .label:hover,
+  .la-cb-info.item > .label:hover {
+    cursor: help;
   }
+  #la-js-cb-context-display,
+  #la-cb-info-display {
+    font-size: 0.87rem;
+  }
+  .la-cb-action.item,
+  .la-cb-action-ext.item {
+      margin: 0 0 0 1px;
+      border-right: none;
+  }
+
   .ui.sub.header.item {
     border-left: none!important;
     border-right: none;
@@ -59,6 +75,9 @@
     font-weight: 700;
   }
 }
+
+
+
 /* only for menu items in role yoda or admin */
 
 
@@ -192,3 +211,5 @@
   overflow-x: auto;
   overflow-y: hidden;
 }
+
+
