@@ -1,46 +1,50 @@
 <%@ page import="de.laser.remote.ApiSource; de.laser.Identifier; de.laser.Subscription; de.laser.License; de.laser.Org; de.laser.storage.RDStore; de.laser.IdentifierNamespace; de.laser.Package; de.laser.TitleInstancePackagePlatform; de.laser.IssueEntitlement; de.laser.I10nTranslation; de.laser.Platform; de.laser.AuditConfig; de.laser.FormService" %>
 <laser:serviceInjection />
 
-<div class="ui four column grid">
-    <div class="ui header row">
-        <div class="column">${message(code: 'identifier.namespace.label')}</div>
-        <div class="column">${message(code: 'default.identifier.label')}</div>
-        <div class="column">${message(code: 'default.note.label')}</div>
-        <g:if test="${editable}">
-            <div class="column">${message(code: 'default.actions.label')}</div>
-        </g:if>
-        <g:else>
-            <div class="column"></div>
-        </g:else>
-    </div>
+<table class="ui table">
+<thead>
+    <tr>
+    <th>${message(code: 'identifier.namespace.label')}</th>
+    <th>${message(code: 'default.identifier.label')}</th>
+
+    <g:if test="${! objIsOrgAndInst}"><%-- hidden if org[type=institution] --%>
+        <th>${message(code: 'default.note.label')}</th>
+        <th>%{--${message(code: 'default.actions.label')}--}%</th>
+    </g:if>
+    </tr>
+</thead>
+<tbody>
     <g:each in="${objectIds}" var="row">
         <g:set var="namespace" value="${row.getKey()}"/>
         <g:each in="${row.getValue()}" var="ident">
-            <div class="ui row">
-                <div class="column">
+            <tr>
+                <td>
                     ${namespace}
                     <g:if test="${ident instanceof Identifier && ident.ns.getI10n('description')}">
-                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${ident.ns.getI10n('description')}">
+                        <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${ident.ns.getI10n('description')}">
                             <i class="question circle icon"></i>
                         </span>
                     </g:if>
-                </div>
-                <div class="column js-copyTriggerParent">
+                </td>
+                <td class="column js-copyTriggerParent">
                     <g:if test="${ident instanceof Identifier}">
                         <g:if test="${!ident.instanceOf}">
                             <ui:xEditable owner="${ident}" field="value"/>
                         </g:if>
-                        <g:else><span class="js-copyTrigger js-copyTopic la-popup-tooltip la-delay"
-                                      data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
+                        <g:else>
+                            <span class="js-copyTrigger js-copyTopic la-popup-tooltip la-delay"
+                                      data-position="top right" data-content="${message(code: 'tooltip.clickToCopySimple')}">
                                     <i class="la-copy grey icon la-js-copyTriggerIcon" aria-hidden="true"></i>
                                     <span class="js-copyTopic">${ident.value}</span>
-                                </span>
+                            </span>
                         </g:else>
-                        <g:if test="${ident.ns.urlPrefix}"><a target="_blank" href="${ident.ns.urlPrefix}${ident.value}"><i title="${ident.ns.getI10n('name')} Link" class="external alternate icon"></i></a></g:if>
+                        <g:if test="${ident.ns.urlPrefix}">
+                            <a target="_blank" href="${ident.ns.urlPrefix}${ident.value}"><i title="${ident.ns.getI10n('name')} Link" class="external alternate icon"></i></a>
+                        </g:if>
                     </g:if>
                     <g:else>
                         <span class="js-copyTrigger la-popup-tooltip la-delay"
-                                      data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
+                                      data-position="top right" data-content="${message(code: 'tooltip.clickToCopySimple')}">
                             <i class="la-copy grey icon la-js-copyTriggerIcon" aria-hidden="true"></i>
                             <span class="js-copyTopic">${ident}</span>
                         </span>
@@ -56,9 +60,9 @@
                             </g:elseif>
                         </g:if>
                     </g:else>
-                </div>
+                </td>
                 <g:if test="${! objIsOrgAndInst}"><%-- hidden if org[type=institution] --%>
-                    <div class="column">
+                    <td class="column">
                         <g:if test="${ident instanceof Identifier}">
                             <g:if test="${!ident.instanceOf}">
                                 <ui:xEditable owner="${ident}" field="note"/>
@@ -67,8 +71,8 @@
                                 ${ident.note}
                             </g:else>
                         </g:if>
-                    </div>
-                    <div class="column">
+                    </td>
+                    <td class="column">
                         <g:if test="${editable && ident instanceof Identifier}">
                             <g:if test="${(object instanceof Subscription || object instanceof License)}">
                                 <g:if test="${showConsortiaFunctions}">
@@ -145,9 +149,10 @@
                         <g:elseif test="${ident instanceof Identifier && ident.instanceOf}">
                             <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
                         </g:elseif>
-                    </div>
+                    </td>
                 </g:if><%-- hidden if org[type=institution] --%>
-            </div>
+            </tr>
         </g:each>
     </g:each>
-</div>
+</tbody>
+</table>
