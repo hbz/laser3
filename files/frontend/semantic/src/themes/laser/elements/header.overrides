@@ -44,7 +44,6 @@ h1~h2.ui.header {
 
 body[class*="Organisation"],
 body[class*="organisation"],
-body[class*="myPublicContacts"],
 body[class*="myInstitution"]{
   .ui.icon.header .icon.la-object {
     display: inline-block;

@@ -2073,7 +2073,7 @@ class OrganisationController  {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     @Check404(domain=Org)
-    def myPublicContacts() {
+    def contacts() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
@@ -2101,7 +2101,7 @@ class OrganisationController  {
         if(params.sort.contains('p.'))
             adrParams.remove('sort')
 
-        List visiblePersons = addressbookService.getVisiblePersons("myPublicContacts", params)
+        List visiblePersons = addressbookService.getVisiblePersons("contacts", params)
         result.num_visiblePersons = visiblePersons.size()
         result.visiblePersons = visiblePersons.drop(result.offset).take(result.max)
 
@@ -2126,7 +2126,7 @@ class OrganisationController  {
 
         params.tab = params.tab ?: 'contacts'
 
-        result.addresses = addressbookService.getVisibleAddresses("myPublicContacts", adrParams)
+        result.addresses = addressbookService.getVisibleAddresses("contacts", adrParams)
 
         result
     }
@@ -2162,7 +2162,7 @@ class OrganisationController  {
             case [ 'addOrgType', 'deleteOrgType' ]:
                 isEditable = userService.hasFormalAffiliation_or_ROLEADMIN(user, Org.get(params.org), 'INST_ADM')
                 break
-            case 'myPublicContacts':
+            case 'contacts':
                 if (inContextOrg) {
                     isEditable = userHasEditableRights
                 }else{
