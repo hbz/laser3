@@ -509,7 +509,7 @@
                     </g:if>
 
                         <g:if test="${(orgInstance.id == institution.id && user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR'))}">
-                            <g:link action="myPublicContacts" controller="organisation" params="[id: orgInstance.id, tab: 'contacts']"
+                            <g:link action="contacts" controller="organisation" params="[id: orgInstance.id, tab: 'contacts']"
                                     class="ui button">${message('code': 'org.edit.contactsAndAddresses')}</g:link>
                         </g:if>
                 </div>
@@ -966,7 +966,7 @@
 
                             <%--
                             <g:if test="${(orgInstance.id == institution.id && user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR'))}">
-                                <g:link action="myPublicContacts" controller="organisation" params="[id: orgInstance.id, tab: 'contacts']"
+                                <g:link action="contacts" controller="organisation" params="[id: orgInstance.id, tab: 'contacts']"
                                         class="ui button">${message('code': 'org.edit.contactsAndAddresses')}</g:link>
                             </g:if>
                             --%>
