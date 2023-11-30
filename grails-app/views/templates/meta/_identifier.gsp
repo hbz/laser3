@@ -25,8 +25,7 @@
         </div>
         <g:if test="${! objIsOrgAndInst}"><%-- hidden if org[type=institution] --%>
             <g:if test="${editable && nsList}">
-                <g:form name="addIdentifier" controller="ajax" action="addIdentifier" class="ui form">
-                    <hr/>
+                <g:form name="addIdentifier" controller="ajax" action="addIdentifier" class="ui segment form">
                     <div class="field">
                         <label for="namespace">${message(code:'identifier.namespace.label')}</label>
                         <ui:dropdownWithI18nExplanations name="namespace" id="namespace" class="ui search dropdown"
@@ -46,10 +45,14 @@
                             <input name="note" id="note" type="text" class="ui" />
                         </div>
                         <g:if test="${institution.isCustomerType_Consortium()}">
+                        <div class="field">
+                            <label for="note">${message(code:'property.audit.menu')}</label>
+
                             <input name="auditNewIdentifier" id="auditNewIdentifier" type="hidden" value="false"/>
                             <button id="auditNewIdentifierToggle" data-content="${message(code: 'property.audit.off.tooltip')}" class="ui icon blue button la-modern-button la-audit-button la-popup-tooltip la-delay">
                                 <i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash"></i>
                             </button>
+                        </div>
                         </g:if>
                         <div class="right aligned field">
                             <label>&nbsp;</label>
