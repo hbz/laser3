@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      30.11.2023  rc-3.3  3.3.3       Andreas Bug         Bezeichner im Menüpunkt getauscht
+
 5456    29.11.2023  rc-3.3  3.3.2       David   Feature     Kundentyp Interne Verwaltung: Fehlende Reiter im Einrichtungsprofil
 
 --      29.11.2023  rc-3.3  3.3.2       Andreas Bug         neue Titelgruppe wurde nicht übergeben => NPE
