@@ -418,8 +418,7 @@
                         </div>
                         <div class="description">
                             <g:if test="${tipp.platform.name}">
-                                <g:link controller="platform" action="show" target="_blank"
-                                        id="${tipp.platform.id}">
+                                <g:link controller="platform" action="show" target="_blank" id="${tipp.platform.id}">
                                     ${tipp.platform.name}
                                 </g:link>
                             </g:if>

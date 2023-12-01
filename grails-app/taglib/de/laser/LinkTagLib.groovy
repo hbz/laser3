@@ -88,4 +88,12 @@ class LinkTagLib {
         out << '<i class="icon la-gokb" aria-hidden="true"></i>'
         out << '</a>'
     }
+
+    def skipLink  = { attrs, body ->
+
+//        out << '<!-- skip to main content / for screenreader --!>'
+        out << '<nav class="la-skipLink" role="navigation" aria-label="' + message(code:'accessibility.jumpLink') + '">'
+        out << '<p><a href="#main" class="la-screenReaderText">"' + message(code:'accessibility.jumpToMain') + '"</a></p>'
+        out << '</nav>'
+    }
 }

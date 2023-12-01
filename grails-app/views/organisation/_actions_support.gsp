@@ -24,6 +24,16 @@
                 <div class="divider"></div>
                 <ui:actionsDropdownItem controller="user" action="create" message="user.create_new.label" params="[org: orgInstance.id]" />
             </g:elseif>
+            <g:elseif test="${actionName == 'readerNumber'}">
+                <g:if test="${editable}">
+                    <div class="divider"></div>
+                    <ui:actionsDropdownItem data-ui="modal" href="#newForUni" message="readerNumber.createForUni.label" />
+                    <ui:actionsDropdownItem data-ui="modal" href="#newForPublic" message="readerNumber.createForPublic.label" />
+                    <ui:actionsDropdownItem data-ui="modal" href="#newForState" message="readerNumber.createForState.label" />
+                    <ui:actionsDropdownItem data-ui="modal" href="#newForResearchInstitute" message="readerNumber.createForResearchInstitute.label" />
+                    <ui:actionsDropdownItem data-ui="modal" href="#newForScientificLibrary" message="readerNumber.createForScientificLibrary.label" />
+                </g:if>
+            </g:elseif>
             <g:elseif test="${actionName == 'addressbook'}">
                 <div class="divider"></div>
                 <g:if test="${editable && !isProviderOrAgency}">
@@ -32,7 +42,7 @@
                 </g:if>
                 <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
             </g:elseif>
-            <g:elseif test="${actionName == 'myPublicContacts'}">
+            <g:elseif test="${actionName == 'contacts'}">
                 <div class="divider"></div>
                 <g:if test="${editable}">
                     <a href="#createPersonModal" class="item" onclick="JSPC.app.personCreate('contactPersonForPublic');"><g:message code="person.create_new.contactPerson.label"/></a>

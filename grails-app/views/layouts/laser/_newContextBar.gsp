@@ -3,7 +3,7 @@
 
 <g:set var="visibilityContextOrgMenu" value="la-show-context-orgMenu" />
 
-<nav class="ui fixed menu la-contextBar" aria-label="${message(code:'wcag.label.modeNavigation')}">
+<nav id="contextBar" class="ui fixed menu" aria-label="${message(code:'wcag.label.modeNavigation')}">
 
     <div class="ui container">
         <button class="ui button big la-menue-button la-modern-button" style="display:none"><i class="bars icon"></i></button>
@@ -233,7 +233,7 @@
 
     </div>%{-- container --}%
 
-</nav>%{-- la-contextBar --}%
+</nav>%{-- contextBar --}%
 
 
 
@@ -295,13 +295,13 @@
 
     /* -- overrides -- */
 
-    .la-contextBar .la-cb-action.item .toggle .icon {
+    #contextBar .la-cb-action.item .toggle .icon {
         color: #fff !important;
     }
-    .la-contextBar .la-cb-action.item .la-toggle-green-red.active {
+    #contextBar .la-cb-action.item .la-toggle-green-red.active {
         background-color: #98b500 !important;
     }
-    .la-contextBar .la-cb-action.item .la-toggle-green-red.inactive {
+    #contextBar .la-cb-action.item .la-toggle-green-red.inactive {
         background-color: #D95F3D !important;
     }
 </style>
@@ -321,15 +321,15 @@
 
 /* -- todo -- */
 
-.la-contextBar .la-cb-action.item .button.purple.active {
+#contextBar .la-cb-action.item .button.purple.active {
     background-color: #2185d0 !important;
 }
-.la-contextBar .la-cb-action.item .button.purple.active .icon {
+#contextBar .la-cb-action.item .button.purple.active .icon {
     color: #fff !important;
 }
-.la-contextBar .la-cb-action.item .button.purple.inactive {
+#contextBar .la-cb-action.item .button.purple.inactive {
 }
-.la-contextBar .la-cb-action.item .button.purple.inactive .icon {
+#contextBar .la-cb-action.item .button.purple.inactive .icon {
     color: #2185d0 !important;
 }
 </style>
@@ -364,14 +364,14 @@
             );
 
             setTimeout( function(){
-                $('main > nav.buttons > .button').each ( function() {
+                $('main > nav.la-js-ctrls > .button').each ( function() {
                     let $item = $('<div class="item la-cb-action-ext"></div>');
                     $('.la-advanced-view').append($item);
                     $item.append(this);
                     $(this).addClass('icon');
                 })
-                $('main > nav.buttons').each ( function() {
-                    let $new = $('<div class="actionExtModalWrapper"></div>');
+                $('main > nav.la-js-ctrls').each ( function() {
+                    let $new = $('<div class="la-action-ext-modalWrapper"></div>');
                     $(this).contents().each ( function() {
                         $new.append($(this));
                     })

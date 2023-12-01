@@ -16,6 +16,7 @@
 
 <laser:render template="breadcrumb"
           model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView, consortialView: consortialView]}"/>
+
 <ui:controlButtons>
     <laser:render template="${customerTypeService.getActionsTemplatePath()}" model="${[org: orgInstance, user: user]}"/>
 </ui:controlButtons>
@@ -509,7 +510,7 @@
                     </g:if>
 
                         <g:if test="${(orgInstance.id == institution.id && user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR'))}">
-                            <g:link action="myPublicContacts" controller="organisation" params="[id: orgInstance.id, tab: 'contacts']"
+                            <g:link action="contacts" controller="organisation" params="[id: orgInstance.id, tab: 'contacts']"
                                     class="ui button">${message('code': 'org.edit.contactsAndAddresses')}</g:link>
                         </g:if>
                 </div>
@@ -966,7 +967,7 @@
 
                             <%--
                             <g:if test="${(orgInstance.id == institution.id && user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR'))}">
-                                <g:link action="myPublicContacts" controller="organisation" params="[id: orgInstance.id, tab: 'contacts']"
+                                <g:link action="contacts" controller="organisation" params="[id: orgInstance.id, tab: 'contacts']"
                                         class="ui button">${message('code': 'org.edit.contactsAndAddresses')}</g:link>
                             </g:if>
                             --%>

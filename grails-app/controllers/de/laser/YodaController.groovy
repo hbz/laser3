@@ -642,33 +642,6 @@ class YodaController {
         redirect controller: 'home'
     }
 
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    @Transactional
-    def remapOriginEditUrl() {
-        List<Identifier> originEditUrls = Identifier.executeQuery("select ident from Identifier ident where lower(ident.ns.ns) = 'originediturl'")
-        originEditUrls.each { originEditUrl ->
-            def obj
-            if(originEditUrl.tipp) {
-                obj = originEditUrl.tipp
-            }
-            else if(originEditUrl.ti) {
-                obj = originEditUrl.ti
-            }
-            else if(originEditUrl.pkg) {
-                obj = originEditUrl.pkg
-            }
-            else if(originEditUrl.org) {
-                obj = originEditUrl.org
-            }
-            if(!obj.originEditUrl) {
-                obj.originEditUrl = new URL(originEditUrl.identifier.value)
-                obj.save()
-            }
-        }
-        redirect controller: 'home'
-    }
-
     @Secured(['ROLE_YODA'])
     Map<String, Object> manageTempUsageFiles() {
         File dir = new File(GlobalService.obtainFileStorageLocation())

@@ -7,21 +7,27 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
---      28.11.2023  rc-3.3  3.3.2       Andreas Bug         Rückverweis bei manuellem Titelentknüpfen eingebaut
+--      30.11.2023  rc-3.3  3.3.2       Andreas Bug         Bezeichner im Menüpunkt getauscht
 
---      28.11.2023  rc-3.3  3.3.2       Andreas Bug         Verlag-Dropdown lud nicht
+5456    29.11.2023  rc-3.3  3.3.1       David   Feature     Kundentyp Interne Verwaltung: Fehlende Reiter im Einrichtungsprofil
 
-5454    28.11.2023  rc-3.3  3.3.2       David   Bug         Profil: CC-Mails gehen raus, auch wenn Haken noch gesetzt ist?
+--      29.11.2023  rc-3.3  3.3.1       Andreas Bug         neue Titelgruppe wurde nicht übergeben => NPE
 
---      28.11.2023  rc-3.3  3.3.2       Andreas Bug         Plattformdaten wurden falsch abgefragt
+--      28.11.2023  rc-3.3  3.3.1       Andreas Bug         Rückverweis bei manuellem Titelentknüpfen eingebaut
 
-5451    24.11.2023  rc-3.3  3.3.1       Andreas Bug         diverse Bugs im Zusammenhang mit Kosten
+--      28.11.2023  rc-3.3  3.3.1       Andreas Bug         Verlag-Dropdown lud nicht
 
-5450    24.11.2023  rc-3.3  3.3.1       Moe     Bug         Mails werden nicht versendet: sendSurveyEmail()
+5454    28.11.2023  rc-3.3  3.3.1       David   Bug         Profil: CC-Mails gehen raus, auch wenn Haken noch gesetzt ist?
 
---      24.11.2023  rc-3.3  3.3.1       Andreas Bug         leere Zeilenenden wurden abgetrennt
+--      28.11.2023  rc-3.3  3.3.1       Andreas Bug         Plattformdaten wurden falsch abgefragt
 
---      24.11.2023  rc-3.3  3.3.1       Andreas Bug         Namensraumprüfung musste zugunsten des Syncs entfernt werden
+5451    24.11.2023  rc-3.3  3.3         Andreas Bug         diverse Bugs im Zusammenhang mit Kosten
+
+5450    24.11.2023  rc-3.3  3.3         Moe     Bug         Mails werden nicht versendet: sendSurveyEmail()
+
+--      24.11.2023  rc-3.3  3.3         Andreas Bug         leere Zeilenenden wurden abgetrennt
+
+--      24.11.2023  rc-3.3  3.3         Andreas Bug         Namensraumprüfung musste zugunsten des Syncs entfernt werden
 
 #### day of release 3.3
 

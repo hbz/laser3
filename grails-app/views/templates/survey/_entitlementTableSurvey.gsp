@@ -59,7 +59,7 @@
                             <div class="ui list">
                                 <!-- START TEMPLATE -->
                                 <laser:render
-                                        template="/templates/title_short_accordion"
+                                        template="/templates/titles/title_short_accordion"
                                         model="${[ie         : ie, tipp: ie.tipp,
                                                   showPackage: true, showPlattform: true, showEmptyFields: false, sub: subscriberSub.id]}"/>
                                 <!-- END TEMPLATE -->
@@ -143,7 +143,7 @@
                 <div class="ui fluid segment content" data-ajaxTargetWrap="true">
                     <div class="ui stackable grid" data-ajaxTarget="true">
 
-                        <laser:render template="/templates/title_long_accordion"
+                        <laser:render template="/templates/titles/title_long_accordion"
                                       model="${[ie         : ie, tipp: ie.tipp,
                                                 showPackage: true, showPlattform: true, showEmptyFields: false]}"/>
 

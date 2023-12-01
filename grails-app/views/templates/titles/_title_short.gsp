@@ -19,8 +19,7 @@
     <g:if test="${!showCompact}">
         <br/>
     </g:if>
-    <laser:render template="/templates/identifier"
-                  model="${[tipp: tipp]}"/>
+    <laser:render template="/templates/identifier" model="${[tipp: tipp]}"/>
     <br/>
 
     <g:if test="${!showCompact}">
@@ -51,7 +50,6 @@
                                 println g.link([action: 'index', controller: 'subscription', id: ie.perpetualAccessBySub.id], "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}")
                             }else {
                                 println RDStore.YN_YES.getI10n('value')
-
                             }
                         }
                         else {
