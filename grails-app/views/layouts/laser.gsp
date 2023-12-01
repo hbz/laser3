@@ -65,7 +65,7 @@
 
     <g:set var="visibilityContextOrgMenu" value="la-hide-context-orgMenu" />
 
-        <div id="mainMenue" class="ui fixed inverted menu la-js-verticalNavi" role="menubar">
+        <nav id="mainMenue" class="ui fixed inverted menu la-js-verticalNavi" role="menubar">
             <div class="ui container" role="none">
                 <ui:link addItemAttributes="true" controller="home" aria-label="${message(code:'default.home.label')}" class="header item la-logo-item">
                     <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
@@ -157,7 +157,7 @@
 
             </div><!-- container -->
 
-        </div><!-- main menu -->
+        </nav><!-- main menu -->
 
         %{-- context bar --}%
 
@@ -168,7 +168,7 @@
         %{-- global content container --}%
 
         <div class="pusher">
-            <main id="main" class="ui main container ${visibilityContextOrgMenu} hidden la-js-mainContent" >
+            <main id="mainContent" class="ui main container ${visibilityContextOrgMenu} hidden">
 
                 %{-- system messages --}%
 
