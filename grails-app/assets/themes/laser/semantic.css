@@ -1695,12 +1695,13 @@ i.icon.la-list-icon:before {
     flex-direction: column;
   }
 
-  #contextBar .la-context-org {
+  #contextBar .la-context-org,
+  #contextBar .la-advanced-view {
     padding: 10px 0!important;
-    align-items: center!important;
   }
 
   #contextBar .la-context-org {
+    margin: 0!important;
     border-top: #f4f8f9 2px solid;
     border-bottom: #f4f8f9 2px solid;
   }

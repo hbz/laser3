@@ -432,12 +432,11 @@ i.icon.la-list-icon{
         position: relative !important;
         flex-direction: column;
         .la-context-org,
-         {
+        .la-advanced-view {
             padding: 10px 0!important;
-            align-items: center!important;
-
         }
         .la-context-org {
+            margin: 0!important;
             border-top: #f4f8f9 2px solid;
             border-bottom: #f4f8f9 2px solid;
         }
