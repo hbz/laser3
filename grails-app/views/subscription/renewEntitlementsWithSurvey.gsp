@@ -103,7 +103,6 @@
             </g:link>--}%
         </ui:exportDropdownItem>
 
-
     </ui:exportDropdown>
     <ui:actionsDropdown>
         <ui:actionsDropdownItem data-ui="modal" id="selectEntitlementsWithKBART" href="#KBARTUploadForm" message="subscription.details.addEntitlements.menu"/>
