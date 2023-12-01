@@ -11,10 +11,10 @@
         </ui:h1HeaderWithIcon>
 
         <ui:controlButtons>
-            <laser:render template="actions" />
+            <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
         </ui:controlButtons>
 
-        <laser:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}"/>
+        <laser:render template="${customerTypeService.getNavTemplatePath()}" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}"/>
 
         <ui:messages data="${flash}"/>
 

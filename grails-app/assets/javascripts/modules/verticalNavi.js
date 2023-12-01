@@ -14,7 +14,7 @@ verticalNavi = {
             // clone hide
             $( '.la-js-verticalNavi-clone' ).hide();
             // sidebar function
-            $('.la-js-mainContent').removeClass('pusher');
+            $('#mainContent').removeClass('pusher');
             $('.la-menue-button').hide();
             $( '.la-js-verticalNavi' ).not('.la-js-verticalNavi-clone').show();
         }

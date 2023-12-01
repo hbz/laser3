@@ -27,12 +27,12 @@
 ---------------*/
 
 @media only screen and (min-width: @mobileBreakpoint  ) and (max-width:@laser-breakpoint   ) {
-  .ui.menu.la-contextBar .ui.container {
+  #contextBar .ui.container {
     width: 100%;
   }
 }
 
-.ui.menu.la-contextBar {
+#contextBar {
   top: 50px;
   z-index: @la-contextBarZIndex;
   background-color: @laDecorationColor;
@@ -161,9 +161,6 @@
   z-index: @mainMenueZIndex;
 }
 
-.la-ctrls .ui.dropdown .menu {
-  z-index: 101;
-}
 /*--------------
     Stackable
 ---------------*/

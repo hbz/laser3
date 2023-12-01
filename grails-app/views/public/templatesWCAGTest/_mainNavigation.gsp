@@ -1,5 +1,5 @@
     <nav aria-label="Hauptmenü für WCAG-Testseite">
-        <div id="mainMenueTest" class="ui inverted stackable menu menubar-navigation" role="menubar"  tabindex="0">
+        <nav id="mainMenueTest" class="ui inverted stackable menu menubar-navigation" role="menubar" tabindex="0">
             <div class="ui container" role="none">
                 <a href="#" aria-label="Start" class="header item la-logo-item">
                     <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
@@ -86,5 +86,5 @@
                     </div>
                 </div>
             </div><!-- container -->
-        </div><!-- main menu -->
+        </nav><!-- main menu -->
     </nav>

@@ -12,7 +12,7 @@
         </ui:exportDropdown>
         </g:if>
 
-        <laser:render template="actions" />
+        <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
 
 %{--        <g:if test="${editable}">
 
@@ -35,7 +35,7 @@
         <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
     </ui:h1HeaderWithIcon>
 
-    <laser:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}" />
+    <laser:render template="${customerTypeService.getNavTemplatePath()}" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}" />
 
     <ui:messages data="${flash}" />
 
@@ -56,11 +56,13 @@
     <div class="ui bottom attached ${activeTab == accessPointType.value ? 'active' : ''} tab segment"
          data-tab="${accessPointType.value}">
 
+        <g:if test="${editable}">
         <g:link action="create" controller="accessPoint" class="ui right floated icon button" params="[id: orgInstance.id, accessMethod: accessPointType.value]">
             <i class="plus icon"></i>
         </g:link>
         <br>
         <br>
+        </g:if>
 
         <table class="ui celled la-js-responsive-table la-table table">
             <thead>
@@ -186,6 +188,5 @@
         </table>
     </div>
 </g:each>
-
 
 <laser:htmlEnd />
