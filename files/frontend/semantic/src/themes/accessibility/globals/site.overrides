@@ -667,10 +667,19 @@ i.icon.la-list-icon{
 
 /*********************************** Responsive Behavior *******************/
 // Light Grey Sub Menu
-@media only screen and (max-width: @computerBreakpoint) {
+@media only screen and (max-width: @tabletBreakpoint) {
     #contextBar {
-        position: absolute !important;
-        top:0!important;
+        position: relative !important;
+        flex-direction: column;
+        .item {
+            padding: 10px 0!important;
+        }
+        .ui.container {
+            width: 100%;
+        }
+    }
+    main.ui.container.main {
+        margin-top: 10px!important;
     }
 }
 @media only screen and (max-width: @tabletBreakpoint  ) {

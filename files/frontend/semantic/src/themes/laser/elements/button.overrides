@@ -211,9 +211,6 @@ a i.circular.la-gokb:hover {
   background-color: @blue;
 }
 
-/*------------------------------------
-         Buttons for Actionmenue
-  ------------------------------------*/
 .la-margin-top-05em {
     margin-top: .5em!important;
 }
