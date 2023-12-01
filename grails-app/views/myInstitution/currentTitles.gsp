@@ -251,9 +251,8 @@
         </div>
     </div>
 
-    <div>
-        <div>
-            <g:if test="${titles}">
+
+    <g:if test="${titles}">
                 <g:set var="counter" value="${offset + 1}"/>
 
                     <g:if test="${titles}">
@@ -400,19 +399,15 @@
                         </div><%-- .content --%>
                     </div><%-- .card --%>
                 </g:if>
-            </g:if>
-            <g:else>
-                <g:if test="${filterSet}">
-                    <br/><strong><g:message code="filter.result.empty.object"
-                                            args="${[message(code: "title.plural")]}"/></strong>
-                </g:if>
-                <g:else>
-                    <br/><strong><g:message code="result.empty.object"
-                                            args="${[message(code: "title.plural")]}"/></strong>
-                </g:else>
-            </g:else>
-        </div>
-    </div>
+    </g:if>
+    <g:else>
+        <g:if test="${filterSet}">
+            <br/><strong><g:message code="filter.result.empty.object" args="${[message(code: "title.plural")]}"/></strong>
+        </g:if>
+        <g:else>
+            <br/><strong><g:message code="result.empty.object" args="${[message(code: "title.plural")]}"/></strong>
+        </g:else>
+    </g:else>
 
 </div>
 <g:if test="${titles}">
