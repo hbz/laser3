@@ -12,14 +12,14 @@
     </g:form>
 </ui:filter>
 <g:if test="${consortiaMembers.size() == 0 && consortiaMembersCount > 0}">
-    <b><g:message code="default.search.empty"/></b>
+    <strong><g:message code="default.search.empty"/></strong>
 </g:if>
 <g:else>
     <br/>
 
-    <h3 class="ui icon header la-clear-before la-noMargin-top"><span
-            class="ui circular  label">${consortiaMembers.size()}</span> <g:message
-            code="surveyParticipants.consortiaMembers"/></h3>
+    <h3 class="ui icon header la-clear-before la-noMargin-top">
+        <span class="ui circular label">${consortiaMembers.size()}</span> <g:message code="surveyParticipants.consortiaMembers"/>
+    </h3>
 
     <br/><br/>
     <g:form action="addSurveyParticipants" controller="survey" method="post" class="ui form"

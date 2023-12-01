@@ -118,16 +118,6 @@
         $('#select-all').is( ":checked")? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
       }
 
-      JSPC.app.confirmSubmit = function () {
-        if ( $('#bulkOperationSelect').val() === 'remove' ) {
-          var agree=confirm("${message(code:'default.continue.confirm')}");
-          if (agree)
-            return true ;
-          else
-            return false ;
-        }
-      }
-
     $('.kbartExport').click(function(e) {
         e.preventDefault();
         $('#globalLoadingIndicator').show();
