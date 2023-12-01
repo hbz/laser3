@@ -41,9 +41,7 @@
                 --%>
             </ui:exportDropdown>
             <ui:actionsDropdown>
-
                 <ui:actionsDropdownItem data-ui="modal" id="copyMailAddresses" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
-
             </ui:actionsDropdown>
 
         </ui:controlButtons>

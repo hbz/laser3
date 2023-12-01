@@ -423,12 +423,12 @@ i.icon.la-list-icon{
 /*********************************** Responsive Behavior *******************/
 // Light Grey Sub Menu
 @media only screen and (max-width: @computerBreakpoint) {
-    .ui.menu.la-contextBar {
+    #contextBar {
         top:0!important;
     }
 }
 @media only screen and (max-width: @largeMonitorBreakpoint) {
-    .ui.menu.la-contextBar {
+    #contextBar {
         .ui.container {
             width: 100%;
         }

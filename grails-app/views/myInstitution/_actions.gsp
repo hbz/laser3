@@ -13,8 +13,7 @@
         <ui:actionsDropdownItem notActive="true" controller="myInstitution" action="currentSubscriptions" params="${[compare: true]+params}" message="menu.my.comp_sub" />
     </ui:actionsDropdown>
 </g:if>
-
-<g:if test="${actionName == 'currentLicenses'}">
+<g:elseif test="${actionName == 'currentLicenses'}">
     <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
         <ui:actionsDropdown>
             <ui:actionsDropdownItem controller="myInstitution" action="emptyLicense" message="license.add.blank" />
@@ -23,9 +22,9 @@
             <ui:actionsDropdownItem notActive="true" controller="myInstitution" action="currentLicenses" params="${[compare: true]+params}" message="menu.my.comp_lic" />
         </ui:actionsDropdown>
     </g:if>
-</g:if>
+</g:elseif>
 %{-- todo - permissions --}%
-<g:if test="${actionName in ['manageMembers', 'addMembers']}">
+<g:elseif test="${actionName in ['manageMembers', 'addMembers']}">
     <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
         <ui:actionsDropdown>
             <g:if test="${comboType != null && comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
@@ -43,7 +42,7 @@
             </ui:actionsDropdown>
         </g:if>
     </g:elseif>
-</g:if>
+</g:elseif>
 
 
 <g:if test="${editable}">
