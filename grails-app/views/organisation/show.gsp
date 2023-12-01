@@ -505,7 +505,7 @@
             <div class="ui card">
                 <div class="content">
                     <g:if test="${orgInstance.isCustomerType_Inst()}">
-                        <h2 class="ui header"><g:message code="org.contactpersons.and.addresses.label"/></h2>
+                        <h2 class="ui header"><g:message code="org.publicContacts.label"/></h2>
                     </g:if>
 
                         <g:if test="${(orgInstance.id == institution.id && user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR'))}">
