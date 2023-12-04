@@ -3712,7 +3712,10 @@ class SurveyController {
             NumberFormat format = NumberFormat.getInstance(LocaleUtils.getCurrentLocale())
             boolean billingSumRounding = params.newBillingSumRounding ? true : false, finalCostRounding = params.newFinalCostRounding ? true : false
             Double cost_billing_currency = params.newCostInBillingCurrency ? format.parse(params.newCostInBillingCurrency).doubleValue() : 0.00
-            //def cost_currency_rate = params.newCostCurrencyRate ? params.double('newCostCurrencyRate', 1.00) : 1.00
+            Double cost_currency_rate = 1.0
+            if(billing_currency != RDStore.CURRENCY_EUR) {
+                cost_currency_rate = params.newCostCurrencyRate ? params.double('newCostCurrencyRate', 1.00) : 1.00
+            }
             //def cost_local_currency = params.newCostInLocalCurrency ? format.parse(params.newCostInLocalCurrency).doubleValue() : 0.00
 
             Double cost_billing_currency_after_tax = params.newCostInBillingCurrencyAfterTax ? format.parse(params.newCostInBillingCurrencyAfterTax).doubleValue() : cost_billing_currency
@@ -3720,6 +3723,7 @@ class SurveyController {
                 cost_billing_currency = Math.round(cost_billing_currency)
             if(finalCostRounding)
                 cost_billing_currency_after_tax = Math.round(cost_billing_currency_after_tax)
+            Double cost_local_currency = cost_billing_currency * cost_currency_rate
             //def cost_local_currency_after_tax = params.newCostInLocalCurrencyAfterTax ? format.parse(params.newCostInLocalCurrencyAfterTax).doubleValue() : cost_local_currency
             //moved to TAX_TYPES
             //def new_tax_rate                      = params.newTaxRate ? params.int( 'newTaxRate' ) : 0
@@ -3814,13 +3818,13 @@ class SurveyController {
                         //newCostItem.taxCode = cost_tax_type -> to taxKey
                         newCostItem.costTitle = params.newCostTitle ?: null
                         newCostItem.costInBillingCurrency = cost_billing_currency as Double
-                        //newCostItem.costInLocalCurrency = cost_local_currency as Double
+                        newCostItem.costInLocalCurrency = cost_local_currency as Double
 
                         newCostItem.billingSumRounding = billingSumRounding
                         newCostItem.finalCostRounding = finalCostRounding
                         newCostItem.costInBillingCurrencyAfterTax = cost_billing_currency_after_tax as Double
-                        //newCostItem.costInLocalCurrencyAfterTax = cost_local_currency_after_tax as Double
-                        //newCostItem.currencyRate = cost_currency_rate as Double
+                        //newCostItem.costInLocalCurrencyAfterTax = cost_local_currency_after_tax as Double calculated on the fly
+                        newCostItem.currencyRate = cost_currency_rate as Double
                         //newCostItem.taxRate = new_tax_rate as Integer -> to taxKey
                         newCostItem.taxKey = tax_key
                         newCostItem.costItemElementConfiguration = cost_item_element_configuration

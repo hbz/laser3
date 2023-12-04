@@ -1273,12 +1273,10 @@ class FinanceService {
             }
             //order(nullable: true, blank: false) -> to order number
             if(colMap.orderNumber != null) {
-                String orderNumber = cols[colMap.orderNumber]
+                String orderNumber = cols[colMap.orderNumber].trim()
                 if(orderNumber) {
-                    List<Order> orderMatches = Order.findAllByOrderNumberAndOwner(orderNumber,contextOrg)
-                    if(orderMatches.size() > 1)
-                        mappingErrorBag.multipleOrderError = orderNumber
-                    else if(orderMatches.size() == 1)
+                    List<Order> orderMatches = Order.findAllByOrderNumberAndOwner(orderNumber,contextOrg,[sort: 'dateCreated', order: 'desc'])
+                    if(orderMatches.size() > 0)
                         costItem.order = orderMatches[0]
                     else if(!orderMatches) {
                         Order order = new Order(orderNumber: orderNumber, owner: contextOrg)
@@ -1291,12 +1289,10 @@ class FinanceService {
             }
             //invoice(nullable: true, blank: false) -> to invoice number
             if(colMap.invoiceNumber != null) {
-                String invoiceNumber = cols[colMap.invoiceNumber]
+                String invoiceNumber = cols[colMap.invoiceNumber].trim()
                 if(invoiceNumber) {
-                    List<Invoice> invoiceMatches = Invoice.findAllByInvoiceNumberAndOwner(invoiceNumber,contextOrg)
-                    if(invoiceMatches.size() > 1)
-                        mappingErrorBag.multipleInvoiceError = invoiceNumber
-                    else if(invoiceMatches.size() == 1)
+                    List<Invoice> invoiceMatches = Invoice.findAllByInvoiceNumberAndOwner(invoiceNumber,contextOrg,[sort: 'dateCreated', order: 'desc'])
+                    if(invoiceMatches.size() > 0)
                         costItem.invoice = invoiceMatches[0]
                     else if(!invoiceMatches) {
                         Invoice invoice = new Invoice(invoiceNumber: invoiceNumber, owner: contextOrg)
@@ -1383,7 +1379,6 @@ class FinanceService {
                 else if(!costItem.costInLocalCurrency && costItem.currencyRate) {
                     costItem.costInLocalCurrency = costItem.costInBillingCurrency * costItem.currencyRate
                     mappingErrorBag.keySet().removeAll(['valueMissing','valueInvalid'])
-                    mappingErrorBag.valueCalculated = true
                 }
             }
             if(costItem.costInLocalCurrency) {
@@ -1402,7 +1397,6 @@ class FinanceService {
                 if(!costItem.costInLocalCurrency && costItem.costInBillingCurrency) {
                     costItem.costInLocalCurrency = costItem.costInBillingCurrency * costItem.currencyRate
                     mappingErrorBag.keySet().removeAll(['valueMissing','valueInvalid'])
-                    mappingErrorBag.valueCalculated = true
                 }
                 else if(!costItem.costInBillingCurrency && costItem.costInLocalCurrency) {
                     costItem.costInBillingCurrency = costItem.costInLocalCurrency * costItem.currencyRate
@@ -1441,7 +1435,6 @@ class FinanceService {
                         default: RefdataValue taxType = RefdataValue.getByValueAndCategory(taxTypeKey, RDConstants.TAX_TYPE)
                             if(!taxType)
                                 taxType = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.TAX_TYPE, taxTypeKey)
-                            //reverse charge must not be displayed here according to Micha, December 3rd, '20!
                             switch(taxType) {
                                 case RDStore.TAX_TYPE_NOT_TAXABLE: taxKey = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
                                     break
@@ -1452,6 +1445,8 @@ class FinanceService {
                                 case RDStore.TAX_TYPE_TAX_CONTAINED_19: taxKey = CostItem.TAX_TYPES.TAX_CONTAINED_19
                                     break
                                 case RDStore.TAX_TYPE_TAX_CONTAINED_7: taxKey = CostItem.TAX_TYPES.TAX_CONTAINED_7
+                                    break
+                                case RDStore.TAX_TYPE_REVERSE_CHARGE: taxKey = CostItem.TAX_TYPES.TAX_REVERSE_CHARGE
                                     break
                                 default: mappingErrorBag.invalidTaxType = "${cols[colMap.taxType]} / ${cols[colMap.taxRate]}"
                                     break
@@ -1601,7 +1596,7 @@ class FinanceService {
                 costItem.datePaid = ci.datePaid ? sdf.parse(ci.datePaid) : null
                 costItem.startDate = ci.startDate ? sdf.parse(ci.startDate) : null
                 costItem.endDate = ci.endDate ? sdf.parse(ci.endDate) : null
-                costItem.isVisibleForSubscriber = params["visibleForSubscriber${c}"] == 'true' ?: false
+                costItem.isVisibleForSubscriber = params["visibleForSubscriber${c}"] == 'on' ?: false
                 if(!costItem.save()) {
                     result.errors << costItem.errors
                 }
