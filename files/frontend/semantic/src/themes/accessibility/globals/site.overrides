@@ -682,8 +682,8 @@ i.icon.la-list-icon{
         }
         .la-context-org {
             margin: 0!important;
-            border-top: #f4f8f9 2px solid;
-            border-bottom: #f4f8f9 2px solid;
+            border-top: @white 1px solid;
+            border-bottom: @white 1px solid;
         }
         .ui.container {
             width: 100%;

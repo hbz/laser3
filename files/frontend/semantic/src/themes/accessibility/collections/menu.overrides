@@ -91,6 +91,7 @@
     border-radius: 0 !important;
     background-color: @blue;
     color: @white;
+
   }
 
   /* -- todo -- */
@@ -123,7 +124,16 @@
       margin: 0 0 0 1px;
       border-right: none;
   }
-
+  .la-cb-action-ext.item {
+    .button {
+      border-right: 1px solid @white;
+    }
+    &:only-child {
+      .button {
+        border-left: 1px solid @white;
+      }
+    }
+  }
   .la-cb-action.item {
     > .button {
       background-color: #d3dae3;

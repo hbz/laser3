@@ -1881,8 +1881,8 @@ i.icon.la-list-icon:before {
 
   #contextBar .la-context-org {
     margin: 0!important;
-    border-top: #f4f8f9 2px solid;
-    border-bottom: #f4f8f9 2px solid;
+    border-top: #FFFFFF 1px solid;
+    border-bottom: #FFFFFF 1px solid;
   }
 
   #contextBar .ui.container {
@@ -55786,6 +55786,14 @@ Floated Menu / Item
 #contextBar .la-cb-action-ext.item {
   margin: 0 0 0 1px;
   border-right: none;
+}
+
+#contextBar .la-cb-action-ext.item .button {
+  border-right: 1px solid #FFFFFF;
+}
+
+#contextBar .la-cb-action-ext.item:only-child .button {
+  border-left: 1px solid #FFFFFF;
 }
 
 #contextBar .la-cb-action.item > .button {
