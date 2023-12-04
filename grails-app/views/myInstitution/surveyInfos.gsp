@@ -127,18 +127,30 @@
 <br />
 
 <g:if test="${editable}">
-    <g:link class="ui button green js-open-confirm-modal"
-            data-confirm-messageUrl="${g.createLink(controller: 'ajaxHtml', action: 'getSurveyFinishMessage', params: [id: surveyInfo.id, surveyConfigID: surveyConfig.id])}"
-            data-confirm-term-how="concludeBinding"
-            data-confirm-replaceHeader="true"
-            controller="myInstitution"
-            action="surveyInfoFinish"
-            data-targetElement="surveyInfoFinish"
-            id="${surveyInfo.id}"
-            params="[surveyConfigID: surveyConfig.id]">
-        <g:message
-                code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info2' : 'surveyResult.finish.info2'}"/>
-    </g:link>
+    <g:if test="${!minimalInput}">
+        <span class="la-delay la-popup-tooltip" data-content="${message(code: 'surveyResult.finish.inputNecessary')}">
+            <g:link class="ui button green disabled"
+                controller="myInstitution"
+                action="surveyInfoFinish"
+                id="${surveyInfo.id}"
+                params="[surveyConfigID: surveyConfig.id]">
+                <g:message code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info2' : 'surveyResult.finish.info2'}"/>
+            </g:link>
+        </span>
+    </g:if>
+    <g:else>
+        <g:link class="ui button green js-open-confirm-modal"
+                data-confirm-messageUrl="${g.createLink(controller: 'ajaxHtml', action: 'getSurveyFinishMessage', params: [id: surveyInfo.id, surveyConfigID: surveyConfig.id])}"
+                data-confirm-term-how="concludeBinding"
+                data-confirm-replaceHeader="true"
+                controller="myInstitution"
+                action="surveyInfoFinish"
+                data-targetElement="surveyInfoFinish"
+                id="${surveyInfo.id}"
+                params="[surveyConfigID: surveyConfig.id]">
+            <g:message code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info2' : 'surveyResult.finish.info2'}"/>
+        </g:link>
+    </g:else>
 </g:if>
 <br />
 <br />
