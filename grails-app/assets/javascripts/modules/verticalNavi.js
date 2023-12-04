@@ -30,6 +30,9 @@ verticalNavi = {
             $('.la-js-verticalNavi-clone').find('div.dropdown').removeClass('dropdown').addClass('item');
             $('.la-js-verticalNavi-clone').find('.menu').removeClass('menu').addClass('content');
             $('.la-js-verticalNavi-clone').addClass('accordion');
+
+            //responsible behavior of floating label in secondary pointing stackable menu
+            $('.secondary.pointing.stackable.menu').find('.ui.floating.blue.circular.label').removeClass('floating');
         }
 
         // Resize the Window
@@ -68,6 +71,9 @@ verticalNavi = {
                 })
                 .sidebar('attach events', '.la-menue-button')
                 .sidebar('setting', 'dimPage', false);
+
+                //responsible behavior of floating label in secondary pointing stackable menu
+                $('.secondary.pointing.stackable.menu').find('.ui.floating.blue.circular.label').removeClass('floating');
             }
         });
 
