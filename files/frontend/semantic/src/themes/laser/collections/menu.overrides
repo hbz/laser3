@@ -110,7 +110,7 @@
   }
   #la-cb-info-display {
     font-weight: bold;
-    color: grey;
+    color: @grey;
     margin-right: 1em;
   }
   .la-cb-action.item,
