@@ -1131,7 +1131,7 @@ class SubscriptionController {
             Object[] args = [message(code:'issueEntitlement.label'),params.ieid]
             flash.message = message(code: 'default.deleted.message',args: args) as String
         }
-        redirect action: 'index', id: params.sub
+        redirect action: 'index', id: params.sub, params: [tab: params.tab]
     }
 
     /**
@@ -1150,7 +1150,7 @@ class SubscriptionController {
             Object[] args = [message(code:'issueEntitlement.label'),params.ieid]
             flash.message = message(code: 'default.deleted.message',args: args) as String
         }
-        redirect action: 'index', id: params.sub
+        redirect action: 'index', id: params.sub, params: [tab: params.tab]
     }
 
     /**
@@ -1741,17 +1741,18 @@ class SubscriptionController {
 
             if(params.tab == 'currentPerpetualAccessIEs') {
                 Set<Subscription> subscriptions = []
-                Set<Long> packageIds = []
+                Set<Long> packageIds = [], subscribers = []
                 if(ctrlResult.result.surveyConfig.pickAndChoosePerpetualAccess) {
                     subscriptions = linksGenerationService.getSuccessionChain(ctrlResult.result.subscriberSub, 'sourceSubscription')
-                    subscriptions.each {
-                        packageIds.addAll(it.packages?.pkg?.id)
+                    subscriptions.each { Subscription s ->
+                        packageIds.addAll(s.packages?.pkg?.id)
+                        subscribers.add(s.getSubscriber().id)
                     }
-                    subscriptions << ctrlResult.result.subscriberSub
-                    packageIds.addAll(ctrlResult.result.subscriberSub.packages?.pkg?.id)
+                    //in SubscriptionControllerService, these equivalent assignments are commented out as of June 2nd, 2023 - I make coherency to the more recent state TODO @moe!
+                    //subscriptions << ctrlResult.result.subscriberSub
+                    //packageIds.addAll(ctrlResult.result.subscriberSub.packages?.pkg?.id)
                 }
-
-                queryMap = [subscriptions: subscriptions, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: packageIds, hasPerpetualAccess: RDStore.YN_YES.id.toString()]
+                queryMap = [subscriptions: subscriptions, ieStatus: RDStore.TIPP_STATUS_CURRENT, subscribers: subscribers, hasPerpetualAccess: RDStore.YN_YES.id.toString()]
             
                 filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentTitles') + '_' + ctrlResult.result.subscriberSub.dropdownNamingConvention())
             }

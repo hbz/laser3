@@ -1707,9 +1707,9 @@ class OrganisationController  {
      * @return a table view of the reader numbers, grouped by semesters on the one hand, due dates on the other
      * @see ReaderNumber
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     @Check404(domain=Org)
     def readerNumber() {
@@ -1791,9 +1791,9 @@ class OrganisationController  {
      * @return a list view of access points
      * @see de.laser.oap.OrgAccessPoint
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     @Check404(domain=Org)
     def accessPoints() {
@@ -2068,9 +2068,9 @@ class OrganisationController  {
      * Call to list the contacts the context institution has attached to the given organisation
      * @return a table view of the contacts
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     @Check404(domain=Org)
     def myPublicContacts() {
@@ -2081,8 +2081,7 @@ class OrganisationController  {
         result.rdvAllPersonFunctions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN]
         result.rdvAllPersonPositions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]
 
-        if(result.institution.isCustomerType_Consortium() && result.orgInstance)
-        {
+        if ((result.institution.isCustomerType_Consortium() || result.institution.isCustomerType_Support() )&& result.orgInstance) {
             params.org = result.orgInstance
             result.rdvAllPersonFunctions << RDStore.PRS_FUNC_GASCO_CONTACT
         }else{
@@ -2201,6 +2200,7 @@ class OrganisationController  {
             default:
                 isEditable = userService.hasFormalAffiliation_or_ROLEADMIN(user, org,'INST_EDITOR')
         }
+        // println '>>> isEditable: ' + isEditable + ' >>> ' + params.action
         isEditable
     }
 }

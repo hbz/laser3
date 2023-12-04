@@ -680,7 +680,7 @@ class ControlledListService {
            Map queryMap = [status: statusList]
 
            if(params.institution && params.filterForPermanentTitle){
-               queryMap.inst = params.institution
+               queryMap.inst = Org.get(params.institution)
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
            if(params.query) {
@@ -760,7 +760,7 @@ class ControlledListService {
            Map queryMap = [status: statusList]
 
            if(params.institution && params.filterForPermanentTitle){
-               queryMap.inst = params.institution
+               queryMap.inst = Org.get(params.institution)
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
 
@@ -840,7 +840,7 @@ class ControlledListService {
            Map queryMap = [status: statusList]
 
            if(params.institution && params.filterForPermanentTitle){
-               queryMap.inst = params.institution
+               queryMap.inst = Org.get(params.institution)
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
            query += " ) group by rdv.id, rdv.value_"+i18n+" order by rdv.value_"+i18n
@@ -921,7 +921,7 @@ class ControlledListService {
            Map queryMap = [status: statusList]
 
            if(params.institution && params.filterForPermanentTitle){
-               queryMap.inst = params.institution
+               queryMap.inst = Org.get(params.institution)
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
 
@@ -1006,7 +1006,7 @@ class ControlledListService {
            Map queryMap = [status: statusList]
 
            if(params.institution && params.filterForPermanentTitle){
-               queryMap.inst = params.institution
+               queryMap.inst = Org.get(params.institution)
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
 
@@ -1086,7 +1086,7 @@ class ControlledListService {
            Map queryMap = [status: statusList]
 
            if(params.institution && params.filterForPermanentTitle){
-               queryMap.inst = params.institution
+               queryMap.inst = Org.get(params.institution)
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
 
@@ -1193,7 +1193,7 @@ class ControlledListService {
            Map queryMap = [status: statusList]
 
            if(params.institution && params.filterForPermanentTitle){
-               queryMap.inst = params.institution
+               queryMap.inst = Org.get(params.institution)
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
 
@@ -1291,7 +1291,7 @@ class ControlledListService {
            Map queryMap = [status: statusList]
 
            if(params.institution && params.filterForPermanentTitle){
-               queryMap.inst = params.institution
+               queryMap.inst = Org.get(params.institution)
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
 
@@ -1376,7 +1376,7 @@ class ControlledListService {
            Map queryMap = [status: statusList]
 
            if(params.institution && params.filterForPermanentTitle){
-               queryMap.inst = params.institution
+               queryMap.inst = Org.get(params.institution)
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
            if(params.query) {

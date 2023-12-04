@@ -1374,7 +1374,7 @@ class SubscriptionControllerService {
                     excludes.add(PendingChangeConfiguration.TITLE_DELETED+PendingChangeConfiguration.NOTIFICATION_SUFFIX)
                     excludes.addAll(PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key+PendingChangeConfiguration.NOTIFICATION_SUFFIX})
                     Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscription.id, excludes)
-                    List<Subscription> memberSubs = []
+                    List<Long> memberSubs = []
                     members.each { Org cm ->
                         log.debug("Generating separate slaved instances for members")
                         Date startDate = params.valid_from ? DateUtils.parseDateGeneric(params.valid_from) : null
@@ -1463,7 +1463,7 @@ class SubscriptionControllerService {
                                 }
                             }
 
-                            memberSubs << memberSub
+                            memberSubs << memberSub.id
                         }
                                 //}
                     }
@@ -1472,20 +1472,20 @@ class SubscriptionControllerService {
 
                     if(packagesToProcess) {
                         //needed for that the subscriptions are present in the moment of the parallel process
-                        Subscription.withNewTransaction {
+                        globalService.cleanUpGorm()
+                            List<Subscription> updatedSubList = Subscription.findAllByIdInList(memberSubs)
                             executorService.execute({
                                 Thread.currentThread().setName("PackageTransfer_"+result.subscription.id)
                                 packagesToProcess.each { Package pkg ->
-                                    subscriptionService.addToMemberSubscription(result.subscription, memberSubs, pkg, params.linkWithEntitlements == 'on')
+                                    subscriptionService.addToMemberSubscription(result.subscription, updatedSubList, pkg, params.linkWithEntitlements == 'on')
                                     /*
-                                    if()
-                                        subscriptionService.addToSubscriptionCurrentStock(memberSub, result.subscription, pkg)
-                                    else
-                                        subscriptionService.addToSubscription(memberSub, pkg, false)
+                                        if()
+                                            subscriptionService.addToSubscriptionCurrentStock(memberSub, result.subscription, pkg)
+                                        else
+                                            subscriptionService.addToSubscription(memberSub, pkg, false)
                                     */
                                 }
                             })
-                        }
                     }
                 } else {
                     [result:result,status:STATUS_ERROR]
@@ -1684,6 +1684,10 @@ class SubscriptionControllerService {
                                             issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: result.surveyConfig.issueEntitlementGroupName)
                                             if (!issueEntitlementGroup.save())
                                                 log.error(issueEntitlementGroup.getErrors().getAllErrors().toListString())
+                                            else {
+                                                result.titleGroupID = issueEntitlementGroup.id.toString()
+                                                result.titleGroup = issueEntitlementGroup
+                                            }
                                         }
 
                                         if (issueEntitlementGroup && subscriptionService.addEntitlement(subscriberSub, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
@@ -1734,6 +1738,20 @@ class SubscriptionControllerService {
                     result.filterSet = query.filterSet
                     List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
 
+                    //sql bridge
+                    Sql sql = GlobalService.obtainSqlConnection()
+                    String mainQry = "select pi_tipp_fk, pi_list_price, row_number() over (partition by pi_tipp_fk order by pi_date_created desc) as rn, count(*) over (partition by pi_tipp_fk) as cn from price_item where pi_list_price is not null and pi_list_currency_rv_fk = :currency and pi_tipp_fk = any(:tippIDs)"
+                    result.tippsListPriceSumEUR = sql.rows('select sum(pi.pi_list_price) as list_price_eur from (' +
+                            mainQry +
+                            ') as pi where pi.rn = 1', [currency: RDStore.CURRENCY_EUR.id, tippIDs: sql.getDataSource().getConnection().createArrayOf('bigint', titlesList as Object[])])[0]['list_price_eur']
+                    result.tippsListPriceSumUSD = sql.rows('select sum(pi.pi_list_price) as list_price_usd from (' +
+                            mainQry +
+                            ') as pi where pi.rn = 1', [currency: RDStore.CURRENCY_USD.id, tippIDs: sql.getDataSource().getConnection().createArrayOf('bigint', titlesList as Object[])])[0]['list_price_usd']
+                    result.tippsListPriceSumGBP = sql.rows('select sum(pi.pi_list_price) as list_price_gbp from (' +
+                            mainQry +
+                            ') as pi where pi.rn = 1', [currency: RDStore.CURRENCY_GBP.id, tippIDs: sql.getDataSource().getConnection().createArrayOf('bigint', titlesList as Object[])])[0]['list_price_gbp']
+                    sql.close()
+                    /*
                     result.tippsListPriceSumEUR = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
                             'where p.listPrice is not null and p.listCurrency = :currency and tipp.status.id = :tiStatus and tipp.id in (' + query.query + ' )', [currency: RDStore.CURRENCY_EUR, tiStatus: RDStore.TIPP_STATUS_CURRENT.id] + query.queryParams)[0] ?: 0
 
@@ -1742,6 +1760,7 @@ class SubscriptionControllerService {
 
                     result.tippsListPriceSumGBP = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
                             'where p.listPrice is not null and p.listCurrency = :currency and tipp.status.id = :tiStatus and tipp.id in (' + query.query + ' )', [currency: RDStore.CURRENCY_GBP, tiStatus: RDStore.TIPP_STATUS_CURRENT.id] + query.queryParams)[0] ?: 0
+                    */
 
                     result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: params.sort, order: params.order]) : []
                     result.num_rows = titlesList.size()
@@ -1783,7 +1802,20 @@ class SubscriptionControllerService {
 
                         result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs, [sort: params.sort, order: params.order, offset: result.offset, max: result.max]) : []
                         result.num_rows = sourceIEs ? IssueEntitlement.countByIdInList(sourceIEs) : 0
-
+                        //sql bridge
+                        Sql sql = GlobalService.obtainSqlConnection()
+                        String mainQry = "select pi_tipp_fk, pi_list_price, row_number() over (partition by pi_tipp_fk order by pi_date_created desc) as rn, count(*) over (partition by pi_tipp_fk) as cn from price_item where pi_list_price is not null and pi_list_currency_rv_fk = :currency and pi_tipp_fk in (select ie_tipp_fk from issue_entitlement where ie_id = any(:ieIDs))"
+                        result.iesTotalListPriceSumEUR = sql.rows('select sum(pi.pi_list_price) as list_price_eur from (' +
+                                mainQry +
+                                ') as pi where pi.rn = 1', [currency: RDStore.CURRENCY_EUR.id, ieIDs: sql.getDataSource().getConnection().createArrayOf('bigint', sourceIEs as Object[])])[0]['list_price_eur']
+                        result.iesTotalListPriceSumUSD = sql.rows('select sum(pi.pi_list_price) as list_price_usd from (' +
+                                mainQry +
+                                ') as pi where pi.rn = 1', [currency: RDStore.CURRENCY_USD.id, ieIDs: sql.getDataSource().getConnection().createArrayOf('bigint', sourceIEs as Object[])])[0]['list_price_usd']
+                        result.iesTotalListPriceSumGBP = sql.rows('select sum(pi.pi_list_price) as list_price_gbp from (' +
+                                mainQry +
+                                ') as pi where pi.rn = 1', [currency: RDStore.CURRENCY_GBP.id, ieIDs: sql.getDataSource().getConnection().createArrayOf('bigint', sourceIEs as Object[])])[0]['list_price_gbp']
+                        sql.close()
+                        /*
                         result.iesTotalListPriceSumEUR = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
                                 'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_EUR, ieIDs: sourceIEs])[0] ?: 0
 
@@ -1792,6 +1824,7 @@ class SubscriptionControllerService {
 
                         result.iesTotalListPriceSumGBP = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
                                 'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_GBP, ieIDs: sourceIEs])[0] ?: 0
+                        */
 
                         List counts = IssueEntitlement.executeQuery('select new map(count(*) as count, status as status) from IssueEntitlement as ie where ie.subscription = :sub and ie.status != :ieStatus and exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ieGroup.id = :titleGroup and iegi.ie = ie) group by status', [titleGroup: Long.parseLong(result.titleGroupID), sub: subscriberSub, ieStatus: RDStore.TIPP_STATUS_REMOVED])
                         result.allIECounts = 0
@@ -1829,6 +1862,20 @@ class SubscriptionControllerService {
                     result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs, [sort: params.sort, order: params.order, offset: result.offset, max: result.max]) : []
                     result.num_rows = sourceIEs ? IssueEntitlement.countByIdInList(sourceIEs) : 0
 
+                    //sql bridge
+                    Sql sql = GlobalService.obtainSqlConnection()
+                    String mainQry = "select pi_tipp_fk, pi_list_price, row_number() over (partition by pi_tipp_fk order by pi_date_created desc) as rn, count(*) over (partition by pi_tipp_fk) as cn from price_item where pi_list_price is not null and pi_list_currency_rv_fk = :currency and pi_tipp_fk in (select ie_tipp_fk from issue_entitlement where ie_id = any(:ieIDs))"
+                    result.iesTotalListPriceSumEUR = sql.rows('select sum(pi.pi_list_price) as list_price_eur from (' +
+                            mainQry +
+                            ') as pi where pi.rn = 1', [currency: RDStore.CURRENCY_EUR.id, ieIDs: sql.getDataSource().getConnection().createArrayOf('bigint', sourceIEs as Object[])])[0]['list_price_eur']
+                    result.iesTotalListPriceSumUSD = sql.rows('select sum(pi.pi_list_price) as list_price_usd from (' +
+                            mainQry +
+                            ') as pi where pi.rn = 1', [currency: RDStore.CURRENCY_USD.id, ieIDs: sql.getDataSource().getConnection().createArrayOf('bigint', sourceIEs as Object[])])[0]['list_price_usd']
+                    result.iesTotalListPriceSumGBP = sql.rows('select sum(pi.pi_list_price) as list_price_gbp from (' +
+                            mainQry +
+                            ') as pi where pi.rn = 1', [currency: RDStore.CURRENCY_GBP.id, ieIDs: sql.getDataSource().getConnection().createArrayOf('bigint', sourceIEs as Object[])])[0]['list_price_gbp']
+                    sql.close()
+                    /*
                     result.iesTotalListPriceSumEUR = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
                             'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_EUR, ieIDs: sourceIEs])[0] ?: 0
 
@@ -1837,6 +1884,7 @@ class SubscriptionControllerService {
 
                     result.iesTotalListPriceSumGBP = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
                             'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_GBP, ieIDs: sourceIEs])[0] ?: 0
+                    */
                 }
 
                 result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(subscriberSub, false)

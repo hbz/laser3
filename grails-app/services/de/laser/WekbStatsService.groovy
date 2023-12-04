@@ -48,6 +48,21 @@ class WekbStatsService {
         }
         Map result = ttl1800.get('wekbNews') as Map
 
+        ['org', 'platform', 'package'].each { type ->
+            ['all', 'created', 'deleted'].each { lst -> // ensure lists
+                if (result[type][lst] == null) {
+                    result[type][lst] = []
+                    log.debug('wekbNews: missed ' + type + '.' + lst)
+                }
+            }
+            ['count', 'countInLaser', 'countUpdated'].each { cnt -> // ensure counts
+                if (result[type][cnt] == null) {
+                    result[type][cnt] = 0
+                    log.debug('wekbNews: missed ' + type + '.' + cnt)
+                }
+            }
+        }
+
         List<String> orgList    = result.org.all.collect{ it.id }
         List<String> pkgList    = result.package.all.collect{ it.id }
         List<String> pltList    = result.platform.all.collect{ it.id }
