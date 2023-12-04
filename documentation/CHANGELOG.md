@@ -7,6 +7,16 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5463    01.12.2023  rc-3.3  3.3.2       Andreas Bug         Auftragsnummer wurde nicht beim Kostenimport verarbeitet
+
+5462    01.12.2023  rc-3.3  3.3.2       Andreas Bug         Filter der Verkaufsebene verarbeitete Identifier nicht
+
+5461    01.12.2023  rc-3.3  3.3.2       Andreas Bug         fehlende Angaben bei Umfragekosten ergänzt
+
+5458    01.12.2023  rc-3.3  3.3.2       Andreas Bug         Abschicken leerer Umfragen verhindert
+
+--      01.12.2023  rc-3.3  3.3.2       Andreas Bug         Berechnung der Listenpreise überbrückt
+
 --      30.11.2023  rc-3.3  3.3.2       Andreas Bug         Bezeichner im Menüpunkt getauscht
 
 5456    29.11.2023  rc-3.3  3.3.1       David   Feature     Kundentyp Interne Verwaltung: Fehlende Reiter im Einrichtungsprofil
