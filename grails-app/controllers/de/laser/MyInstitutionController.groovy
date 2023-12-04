@@ -2306,9 +2306,13 @@ class MyInstitutionController  {
         result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(Long.parseLong(params.surveyConfigID.toString())) : result.surveyInfo.surveyConfigs[0]
 
         result.surveyResults = []
+        result.minimalInput = false
 
         result.surveyConfig.getSortedSurveyProperties().each{ PropertyDefinition propertyDefinition ->
-            result.surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(result.institution, result.surveyConfig, propertyDefinition)
+            SurveyResult surre = SurveyResult.findByParticipantAndSurveyConfigAndType(result.institution, result.surveyConfig, propertyDefinition)
+            if(surre.getValue() != null)
+                result.minimalInput = true
+            result.surveyResults << surre
         }
 
         result.ownerId = result.surveyInfo.owner?.id
