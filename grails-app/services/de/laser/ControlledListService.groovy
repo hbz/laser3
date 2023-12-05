@@ -5,6 +5,7 @@ import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
 import de.laser.finance.Invoice
 import de.laser.finance.Order
+import de.laser.utils.DatabaseUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.storage.RDStore
@@ -863,11 +864,15 @@ class ControlledListService {
         Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
         Set<Map> seriesName = []
         String nameFilter = ""
-        if(query) {
-            nameFilter += "and genfunc_filter_matcher(seriesName, :query) = true"
-            queryParams.query = query
-        }
+        if (query) {
+//            nameFilter += "and genfunc_filter_matcher(seriesName, :query) = true"
+//            queryParams.query = query
+            Map qs = DatabaseUtils.getQueryStruct_ilike('seriesName', query)
+            nameFilter += ' and ' + qs.query
+            queryParams.putAt(qs.name, qs.value)
 
+            println 'getQueryStruct_ilike() ' + qs
+        }
         seriesName = TitleInstancePackagePlatform.executeQuery("select new map(seriesName as name, seriesName as value) from TitleInstancePackagePlatform where seriesName is not null and pkg = :pkg and status = :status "+nameFilter+" group by seriesName order by seriesName", queryParams)
 
         if(seriesName.size() == 0){
@@ -889,9 +894,14 @@ class ControlledListService {
         if(subscription.packages){
             Map<String, Object> queryParams = [pkg: subscription.packages.pkg, removed: RDStore.TIPP_STATUS_REMOVED]
             String nameFilter = ""
-            if(query) {
-                nameFilter += "and genfunc_filter_matcher(seriesName, :query) = true"
-                queryParams.query = query
+            if (query) {
+//                nameFilter += "and genfunc_filter_matcher(seriesName, :query) = true"
+//                queryParams.query = query
+                Map qs = DatabaseUtils.getQueryStruct_ilike('seriesName', query)
+                nameFilter += ' and ' + qs.query
+                queryParams.putAt(qs.name, qs.value)
+
+                println 'getQueryStruct_ilike() ' + qs
             }
             //fomantic UI dropdown expects maps in structure [name: name, value: value]; a pure set is not being accepted ...
             seriesName = TitleInstancePackagePlatform.executeQuery("select new map(seriesName as name, seriesName as value) from TitleInstancePackagePlatform where seriesName is not null and pkg in (:pkg) and status != :removed "+nameFilter+" group by seriesName order by seriesName", queryParams)
@@ -925,9 +935,14 @@ class ControlledListService {
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
 
-           if(params.query) {
-               queryMap.query = params.query
-               query += " and genfunc_filter_matcher(tipp.seriesName, :query) = true"
+           if (params.query) {
+//               queryMap.query = params.query
+//               query += " and genfunc_filter_matcher(tipp.seriesName, :query) = true"
+               Map qs = DatabaseUtils.getQueryStruct_ilike('tipp.seriesName', params.query)
+               query += ' and ' + qs.query
+               queryMap.putAt(qs.name, qs.value)
+
+               println 'getQueryStruct_ilike() ' + qs
            }
 
            query += " group by tipp.seriesName order by tipp.seriesName"
