@@ -49,6 +49,9 @@
     <g:layoutHead/>
 
     <g:render template="/layouts/favicon" />
+    <style>
+        main > nav.buttons > .button { display: none; }
+    </style>
 </head>
 
 <body class="${controllerName}_${actionName}">

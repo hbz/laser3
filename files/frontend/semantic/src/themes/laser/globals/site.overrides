@@ -421,17 +421,31 @@ i.icon.la-list-icon{
     overflow: hidden;
 }
 /*********************************** Responsive Behavior *******************/
-// Light Grey Sub Menu
+// Light Grey Context Menu
 @media only screen and (max-width: @computerBreakpoint) {
     #contextBar {
         top:0!important;
     }
 }
-@media only screen and (max-width: @largeMonitorBreakpoint) {
+@media only screen and (max-width: @tabletBreakpoint) {
     #contextBar {
+        position: relative !important;
+        flex-direction: column;
+        .la-context-org,
+        .la-advanced-view {
+            padding: 10px 0!important;
+        }
+        .la-context-org {
+            margin: 0!important;
+            border-top: #f4f8f9 2px solid;
+            border-bottom: #f4f8f9 2px solid;
+        }
         .ui.container {
             width: 100%;
         }
+    }
+    main.ui.container.main {
+        margin-top: 10px!important;
     }
 }
 @media only screen and (max-width: @tabletBreakpoint  ) {
