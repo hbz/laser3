@@ -6,10 +6,10 @@ import org.apache.commons.lang3.RandomStringUtils
 @Slf4j
 class DatabaseUtils {
 
-    static Map<String, String> getQueryStruct_ilike(String clause, String param) {
+    static Map<String, String> getQueryStruct_ilike(String field, String param) {
 
         String name     = 'p_' + RandomStringUtils.randomAlphanumeric(6)
-        String query    = ' (lower(' + clause + ') like :' + name + ') '
+        String query    = ' (lower(' + field + ') like :' + name + ') '
         String value    = param.toLowerCase().trim()
 
         if (value.startsWith('"')) {

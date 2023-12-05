@@ -711,12 +711,17 @@ class ControlledListService {
         Set<String> mediumTypes = []
         String nameFilter = "", i18n = LocaleUtils.getCurrentLang()
         Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
-        if(query) {
-            nameFilter += "and genfunc_filter_matcher(tipp.medium.value_"+i18n+", :query) = true"
-            queryParams.query = query
+        if (query) {
+//            nameFilter += "and genfunc_filter_matcher(tipp.medium.value_"+i18n+", :query) = true"
+//            queryParams.query = query
+            Map qs = DatabaseUtils.getQueryStruct_ilike('tipp.medium.value_' + i18n, query)
+            nameFilter += ' and ' + qs.query
+            queryParams.putAt(qs.name, qs.value)
+
+            println 'getQueryStruct_ilike() ' + qs
         }
 
-        mediumTypes.addAll(TitleInstancePackagePlatform.executeQuery("select new map(tipp.medium.value_"+i18n+" as name tipp.medium.id as value) from TitleInstancePackagePlatform tipp where tipp.medium is not null and tipp.pkg = :pkg and tipp.status = :status "+nameFilter+" group by tipp.medium.id, tipp.medium.value_"+i18n+" order by tipp.medium.value_"+i18n, queryParams))
+        mediumTypes.addAll(TitleInstancePackagePlatform.executeQuery("select new map(tipp.medium.value_"+i18n+" as name, tipp.medium.id as value) from TitleInstancePackagePlatform tipp where tipp.medium is not null and tipp.pkg = :pkg and tipp.status = :status "+nameFilter+" group by tipp.medium.id, tipp.medium.value_"+i18n+" order by tipp.medium.value_"+i18n, queryParams))
 
         mediumTypes
     }
@@ -732,12 +737,17 @@ class ControlledListService {
         Set<String> mediumTypes = []
         String nameFilter = "", i18n = LocaleUtils.getCurrentLang()
         Map<String, Object> queryParams = [pkg: subscription.packages.pkg, removed: RDStore.TIPP_STATUS_REMOVED]
-        if(query) {
-            nameFilter += "and genfunc_filter_matcher(tipp.medium.value_"+i18n+", :query) = true"
-            queryParams.query = query
+        if (query) {
+//            nameFilter += "and genfunc_filter_matcher(tipp.medium.value_"+i18n+", :query) = true"
+//            queryParams.query = query
+            Map qs = DatabaseUtils.getQueryStruct_ilike('tipp.medium.value_' + i18n, query)
+            nameFilter += ' and ' + qs.query
+            queryParams.putAt(qs.name, qs.value)
+
+            println 'getQueryStruct_ilike() ' + qs
         }
         if(subscription.packages){
-            mediumTypes.addAll(TitleInstancePackagePlatform.executeQuery("select new map(tipp.medium_value_"+i18n+" as name, tipp.medium.id as value) from TitleInstancePackagePlatform tipp where tipp.medium is not null and tipp.pkg in (:pkg) and tipp.status != :removed "+nameFilter+" group by tipp.medium.id, tipp.medium.value_"+i18n+" order by tipp.medium.value_"+i18n, queryParams))
+            mediumTypes.addAll(TitleInstancePackagePlatform.executeQuery("select new map(tipp.medium.value_"+i18n+" as name, tipp.medium.id as value) from TitleInstancePackagePlatform tipp where tipp.medium is not null and tipp.pkg in (:pkg) and tipp.status != :removed "+nameFilter+" group by tipp.medium.id, tipp.medium.value_"+i18n+" order by tipp.medium.value_"+i18n, queryParams))
         }
         mediumTypes
     }
@@ -765,9 +775,14 @@ class ControlledListService {
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
 
-           if(params.query) {
-               queryMap.query = params.query
-               query += " and genfunc_filter_matcher(tipp.medium.value_"+i18n+", :query) = true"
+           if (params.query) {
+//               queryMap.query = params.query
+//               query += " and genfunc_filter_matcher(tipp.medium.value_"+i18n+", :query) = true"
+               Map qs = DatabaseUtils.getQueryStruct_ilike('tipp.medium.value_' + i18n, params.query)
+               query += ' and ' + qs.query
+               queryMap.putAt(qs.name, qs.value)
+
+               println 'getQueryStruct_ilike() ' + qs
            }
            query += " group by tipp.medium.id, tipp.medium.value_"+i18n+" order by tipp.medium.value_"+i18n
 
@@ -1130,9 +1145,14 @@ class ControlledListService {
         SortedSet<String> subjects = new TreeSet<String>()
         Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
         String nameFilter = ""
-        if(query) {
-            queryParams.query = query
-            nameFilter += "and genfunc_filter_matcher(subjectReference, :query) = true"
+        if (query) {
+//            queryParams.query = query
+//            nameFilter += "and genfunc_filter_matcher(subjectReference, :query) = true"
+            Map qs = DatabaseUtils.getQueryStruct_ilike('subjectReference', query)
+            nameFilter += ' and ' + qs.query
+            queryParams.putAt(qs.name, qs.value)
+
+            println 'getQueryStruct_ilike() ' + qs
         }
 
         List<String> rawSubjects = TitleInstancePackagePlatform.executeQuery("select distinct(subjectReference) from TitleInstancePackagePlatform where subjectReference is not null and pkg = :pkg and status = :status "+nameFilter+" order by subjectReference", queryParams)
@@ -1165,9 +1185,14 @@ class ControlledListService {
         List<String> rawSubjects = []
         Map<String, Object> queryParams = [pkg: subscription.packages.pkg, removed: RDStore.TIPP_STATUS_REMOVED]
         String nameFilter = ""
-        if(query) {
-            queryParams.query = query
-            nameFilter += "and genfunc_filter_matcher(subjectReference, :query) = true"
+        if (query) {
+//            queryParams.query = query
+//            nameFilter += "and genfunc_filter_matcher(subjectReference, :query) = true"
+            Map qs = DatabaseUtils.getQueryStruct_ilike('subjectReference', query)
+            nameFilter += ' and ' + qs.query
+            queryParams.putAt(qs.name, qs.value)
+
+            println 'getQueryStruct_ilike() ' + qs
         }
 
         if(subscription.packages){
@@ -1212,9 +1237,14 @@ class ControlledListService {
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
 
-           if(params.query) {
-               queryMap.query = params.query
-               query += " and genfunc_filter_macher(tipp.subjectReference, :query) = true"
+           if (params.query) {
+//               queryMap.query = params.query
+//               query += " and genfunc_filter_macher(tipp.subjectReference, :query) = true"
+               Map qs = DatabaseUtils.getQueryStruct_ilike('tipp.subjectReference', params.query)
+               query += ' and ' + qs.query
+               queryMap.putAt(qs.name, qs.value)
+
+               println 'getQueryStruct_ilike() ' + qs
            }
 
            query += " order by tipp.subjectReference"
