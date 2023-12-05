@@ -1056,9 +1056,10 @@ class ControlledListService {
         Set<Map> languages = []
         String nameFilter = "", i18n = LocaleUtils.getCurrentLang()
         Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
-        if(query) {
-            nameFilter += "and genfunc_filter_matcher(lang.language.value_${i18n}, :query) = true"
-            queryParams.query = query
+        if (query) {
+            Map qs = DatabaseUtils.getQueryStruct_ilike('lang.language.value_' + i18n, query)
+            nameFilter += ' and ' + qs.query
+            queryParams.putAt(qs.name, qs.value)
         }
 
         languages.addAll(TitleInstancePackagePlatform.executeQuery("select new map(lang.language.value_"+i18n+" as name, lang.language.id as value) from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg = :pkg and tipp.status = :status "+nameFilter+" group by lang.language.id, lang.language.value_"+i18n+" order by lang.language.value_" + i18n, queryParams))
@@ -1077,9 +1078,10 @@ class ControlledListService {
         Set<Map> languages = []
         String nameFilter = "", i18n = LocaleUtils.getCurrentLang()
         Map<String, Object> queryParams = [pkg: subscription.packages.pkg, removed: RDStore.TIPP_STATUS_REMOVED]
-        if(query) {
-            nameFilter += "and genfunc_filter_matcher(lang.language.value_${i18n}, :query) = true"
-            queryParams.query = query
+        if (query) {
+            Map qs = DatabaseUtils.getQueryStruct_ilike('lang.language.value_' + i18n, query)
+            nameFilter += ' and ' + qs.query
+            queryParams.putAt(qs.name, qs.value)
         }
 
         if(subscription.packages){
@@ -1111,9 +1113,10 @@ class ControlledListService {
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
 
-           if(params.query) {
-               query += "and genfunc_filter_matcher(lang.language.value_${i18n}, :query) = true"
-               queryMap.query = params.query
+           if (params.query) {
+               Map qs = DatabaseUtils.getQueryStruct_ilike('lang.language.value_' + i18n, params.query)
+               query += ' and ' + qs.query
+               queryMap.putAt(qs.name, qs.value)
            }
 
            query += " group by lang.language.id, lang.language.value_"+i18n+" order by lang.language.value_" + i18n
@@ -1347,9 +1350,10 @@ class ControlledListService {
         Set<String> publishers = []
         Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
         String nameFilter = ""
-        if(query) {
-            nameFilter += " and genfunc_filter_matcher(publisherName, :query) = true "
-            queryParams.query = query
+        if (query) {
+            Map qs = DatabaseUtils.getQueryStruct_ilike('publisherName', query)
+            nameFilter += ' and ' + qs.query
+            queryParams.putAt(qs.name, qs.value)
         }
 
         //publishers.addAll(TitleInstancePackagePlatform.executeQuery("select distinct(orgRole.org.name) from TitleInstancePackagePlatform tipp left join tipp.orgs orgRole where orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and tipp.pkg = :pkg and tipp.status = :status order by orgRole.org.name", [pkg: pkg, status: tippStatus]))
@@ -1371,9 +1375,10 @@ class ControlledListService {
         if(subscription.packages){
             Map<String, Object> queryParams = [pkg: subscription.packages.pkg,current: RDStore.TIPP_STATUS_CURRENT]
             String nameFilter = ""
-            if(query) {
-                nameFilter += " and genfunc_filter_matcher(publisherName, :query) = true "
-                queryParams.query = query
+            if (query) {
+                Map qs = DatabaseUtils.getQueryStruct_ilike('publisherName', query)
+                nameFilter += ' and ' + qs.query
+                queryParams.putAt(qs.name, qs.value)
             }
             //publishers.addAll(TitleInstancePackagePlatform.executeQuery("select distinct(orgRole.org.name) from TitleInstancePackagePlatform tipp left join tipp.orgs orgRole where orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and tipp.pkg in (:pkg) order by orgRole.org.name", [pkg: subscription.packages.pkg]))
             publishers.addAll(TitleInstancePackagePlatform.executeQuery("select new map(publisherName as name, publisherName as value) from TitleInstancePackagePlatform where publisherName is not null and pkg in (:pkg) and status = :current "+nameFilter+" group by publisherName order by publisherName", queryParams))
@@ -1403,9 +1408,10 @@ class ControlledListService {
                queryMap.inst = Org.get(params.institution)
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
-           if(params.query) {
-               queryMap.query = params.query
-               query += " and genfunc_filter_name(tipp.publisherName, :query) = true"
+           if (params.query) {
+               Map qs = DatabaseUtils.getQueryStruct_ilike('tipp.publisherName', params.query)
+               query += ' and ' + qs.query
+               queryMap.putAt(qs.name, qs.value)
            }
            query += " group by tipp.publisherName order by tipp.publisherName"
             //publishers.addAll(TitleInstancePackagePlatform.executeQuery("select distinct(orgRole.org.name) from TitleInstancePackagePlatform tipp left join tipp.orgs orgRole where orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and tipp.pkg in (:pkg) order by orgRole.org.name", [pkg: subscription.packages.pkg]))
