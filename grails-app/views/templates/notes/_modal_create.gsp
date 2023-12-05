@@ -9,7 +9,7 @@
             <input type="text" id="noteTitle" name="noteTitle" />
         </div>
         <div class="field">
-            <label for="noteContent">${message(code:'default.content.label')}:</label>
+            <span style="margin-bottom: 4px"><strong>${message(code:'default.content.label')}:</strong></span>
             <div tabindex="0" id="noteContent" data-placeholder="Tipp: Formatierung beim Kopieren verloren? Einfach erneut mit STRG+A, dann STRG+V einfügen"></div>
 
             <laser:script file="${this.getGroovyPageFileName()}">
