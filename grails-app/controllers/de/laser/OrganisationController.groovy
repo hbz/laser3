@@ -103,19 +103,31 @@ class OrganisationController  {
     def settings() {
         Map<String,Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
-        if(!params.containsKey("tab"))
-            params.tab = "oamonitor"
+        if (! result) {
+            redirect controller: 'organisation', action: 'show', id: params.id
+            return
+        }
+        if (! params.containsKey('tab')) {
+            params.tab = result.orgInstance.isCustomerType_Pro() ? 'oamonitor' : 'natstat'
+        }
+
+        // TODO: erms-5467
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(result.orgInstance, result.institution)
         result.isComboRelated = isComboRelated
         result.contextOrg = result.institution //for the properties template
 
-        Boolean hasAccess = (result.inContextOrg && userService.hasFormalAffiliation(result.user, result.orgInstance, 'INST_ADM')) ||
+        List<Long> orgInstanceTypeIds = result.orgInstance.getAllOrgTypeIds()
+        boolean isProviderOrAgency = (RDStore.OT_PROVIDER.id in orgInstanceTypeIds) || (RDStore.OT_AGENCY.id in orgInstanceTypeIds)
+
+        Boolean hasAccess = ! isProviderOrAgency && (
+                (result.inContextOrg && userService.hasFormalAffiliation(result.user, result.orgInstance, 'INST_ADM')) ||
                 (isComboRelated && userService.hasFormalAffiliation(result.user, result.institution, 'INST_ADM')) ||
                 SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        )
 
         // forbidden access
         if (! hasAccess) {
-            redirect controller: 'organisation', action: 'show', id: org.id
+            redirect controller: 'organisation', action: 'show', id: result.orgInstance.id
             return
         }
 
