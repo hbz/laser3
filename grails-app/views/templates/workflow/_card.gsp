@@ -34,9 +34,6 @@
 
     <div id="wfFlyout" class="ui eight wide flyout" style="padding:50px 0;overflow:scroll"></div>
 
-<style>
-    #container-workflows { width: 100%; }  %{-- TMP --}%
-</style>
 
 <laser:script file="${this.getGroovyPageFileName()}">
 
