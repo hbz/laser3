@@ -795,9 +795,10 @@ class ControlledListService {
         String nameFilter = "", i18n = LocaleUtils.getCurrentLang()
         Set<Map> coverageDepths = []
         Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
-        if(query) {
-            queryParams.query = query
-            nameFilter += "and genfunc_filter_matcher(rdv.value_${i18n}, :query) = true"
+        if (query) {
+            Map qs = DatabaseUtils.getQueryStruct_ilike('rdv.value_' + i18n, query)
+            nameFilter += ' and ' + qs.query
+            queryParams.putAt(qs.name, qs.value)
         }
 
         coverageDepths.addAll(RefdataValue.executeQuery("select new map(rdv.value_"+i18n+" as name, rdv.id as value) from RefdataValue rdv where rdv.value in (select tc.coverageDepth from TIPPCoverage tc join tc.tipp tipp where tc.coverageDepth is not null and tipp.pkg = :pkg and tipp.status = :status) "+nameFilter+" group by rdv.id, rdv.value_"+i18n+" order by rdv.value_"+i18n, queryParams))
@@ -816,9 +817,10 @@ class ControlledListService {
         Set<Map> coverageDepths = []
         Map<String, Object> queryParams = [pkg: subscription.packages.pkg, removed: RDStore.TIPP_STATUS_REMOVED]
         String nameFilter = "", i18n = LocaleUtils.getCurrentLang()
-        if(query) {
-            queryParams.query = query
-            nameFilter += "and genfunc_filter_matcher(rdv.value_"+i18n+", :query) = true"
+        if (query) {
+            Map qs = DatabaseUtils.getQueryStruct_ilike('rdv.value_' + i18n, query)
+            nameFilter += ' and ' + qs.query
+            queryParams.putAt(qs.name, qs.value)
         }
 
         if(subscription.packages){
@@ -850,7 +852,13 @@ class ControlledListService {
                queryMap.inst = Org.get(params.institution)
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
+           if (params.query) {
+               Map qs = DatabaseUtils.getQueryStruct_ilike('rdv.value_' + i18n, params.query)
+               query += ' and ' + qs.query
+               queryMap.putAt(qs.name, qs.value)
+           }
            query += " ) group by rdv.id, rdv.value_"+i18n+" order by rdv.value_"+i18n
+
             coverageDepths = RefdataValue.executeQuery(query, queryMap)
         }
 
@@ -974,9 +982,10 @@ class ControlledListService {
         String nameFilter = "", i18n = LocaleUtils.getCurrentLang()
         Set<Map> ddcs = []
         Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
-        if(query) {
-            nameFilter += "and (genfunc_filter_matcher(ddc.ddc.value_${i18n}, :query) = true or ddc.ddc.value like :query2)"
-            queryParams.query = query
+        if (query) {
+            Map qs = DatabaseUtils.getQueryStruct_ilike('ddc.ddc.value_' + i18n, query)
+            nameFilter += ' and (' + qs.query + ' or ddc.ddc.value like :query2)'
+            queryParams.putAt(qs.name, qs.value)
             queryParams.query2 = "%${query}%"
         }
 
@@ -996,9 +1005,10 @@ class ControlledListService {
         Set<Map> ddcs = []
         String nameFilter = "", i18n = LocaleUtils.getCurrentLang()
         Map<String, Object> queryParams = [pkg: subscription.packages.pkg, status: RDStore.TIPP_STATUS_REMOVED]
-        if(query) {
-            nameFilter += "and (genfunc_filter_matcher(ddc.ddc.value_${i18n}, :query) = true or ddc.ddc.value like :query2)"
-            queryParams.query = query
+        if (query) {
+            Map qs = DatabaseUtils.getQueryStruct_ilike('ddc.ddc.value_' + i18n, query)
+            nameFilter += ' and (' + qs.query + ' or ddc.ddc.value like :query2)'
+            queryParams.putAt(qs.name, qs.value)
             queryParams.query2 = "%${query}%"
         }
 
@@ -1031,9 +1041,10 @@ class ControlledListService {
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
 
-           if(params.query) {
-               query += " and (genfunc_filter_matcher(ddc.ddc.value_${i18n}, :query) = true or ddc.ddc.value like :query2)"
-               queryMap.query = params.query
+           if (params.query) {
+               Map qs = DatabaseUtils.getQueryStruct_ilike('ddc.ddc.value_' + i18n, params.query)
+               query += ' and (' + qs.query + ' or ddc.ddc.value like :query2)'
+               queryMap.putAt(qs.name, qs.value)
                queryMap.query2 = "%${params.query}%"
            }
 
