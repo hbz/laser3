@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5464    06.12.2023  rc-3.3  3.3.2       Moe     Bug         Titelgruppe verhindert das Löschen einer Lizenz
+
 5467    05.12.2023  rc-3.3  3.3.2       David   Bug         Standardreiter Datenweitergabe für LAS:eR-Basic
 
 5463    01.12.2023  rc-3.3  3.3.2       Andreas Bug         Auftragsnummer wurde nicht beim Kostenimport verarbeitet
