@@ -605,14 +605,6 @@ class ControlledListService {
     }
 
     /**
-     * Retrieves all possible title types
-     * @return a list of title types
-     */
-    List getAllPossibleTitleTypes() {
-        return TitleInstancePackagePlatform.executeQuery('select distinct(tipp.titleType) from TitleInstancePackagePlatform tipp where tipp.titleType is not null')
-    }
-
-    /**
      * Called from title filter views
      * Retrieves all possible title types for the given package and the given title status
      * @param pkg the package whose titles should be inspected
@@ -628,7 +620,7 @@ class ControlledListService {
         if (query) {
             Map qs = DatabaseUtils.getQueryStruct_ilike('titleType', query)
             nameFilter += ' and ' + qs.query
-            queryParams.putAt(qs.name, qs.value)
+            queryParams[qs.name] = qs.value
         }
 
         titleTypes = TitleInstancePackagePlatform.executeQuery("select new map(titleType as name, titleType as value) from TitleInstancePackagePlatform where titleType is not null and pkg = :pkg and status = :status "+nameFilter+" group by titleType", queryParams)
@@ -653,7 +645,7 @@ class ControlledListService {
         if (query) {
             Map qs = DatabaseUtils.getQueryStruct_ilike('titleType', query)
             nameFilter += ' and ' + qs.query
-            queryParams.putAt(qs.name, qs.value)
+            queryParams[qs.name] = qs.value
         }
 
         if(subscription.packages){
@@ -689,7 +681,7 @@ class ControlledListService {
            if (params.query) {
                Map qs = DatabaseUtils.getQueryStruct_ilike('titleType', params.query)
                query += ' and ' + qs.query
-               queryMap.putAt(qs.name, qs.value)
+               queryMap[qs.name] = qs.value
            }
            query += " group by titleType order by titleType"
 
@@ -717,7 +709,7 @@ class ControlledListService {
         if (query) {
             Map qs = DatabaseUtils.getQueryStruct_ilike('tipp.medium.value_' + i18n, query)
             nameFilter += ' and ' + qs.query
-            queryParams.putAt(qs.name, qs.value)
+            queryParams[qs.name] = qs.value
         }
 
         mediumTypes.addAll(TitleInstancePackagePlatform.executeQuery("select new map(tipp.medium.value_"+i18n+" as name, tipp.medium.id as value) from TitleInstancePackagePlatform tipp where tipp.medium is not null and tipp.pkg = :pkg and tipp.status = :status "+nameFilter+" group by tipp.medium.id, tipp.medium.value_"+i18n+" order by tipp.medium.value_"+i18n, queryParams))
@@ -739,7 +731,7 @@ class ControlledListService {
         if (query) {
             Map qs = DatabaseUtils.getQueryStruct_ilike('tipp.medium.value_' + i18n, query)
             nameFilter += ' and ' + qs.query
-            queryParams.putAt(qs.name, qs.value)
+            queryParams[qs.name] = qs.value
         }
         if(subscription.packages){
             mediumTypes.addAll(TitleInstancePackagePlatform.executeQuery("select new map(tipp.medium.value_"+i18n+" as name, tipp.medium.id as value) from TitleInstancePackagePlatform tipp where tipp.medium is not null and tipp.pkg in (:pkg) and tipp.status != :removed "+nameFilter+" group by tipp.medium.id, tipp.medium.value_"+i18n+" order by tipp.medium.value_"+i18n, queryParams))
@@ -773,7 +765,7 @@ class ControlledListService {
            if (params.query) {
                Map qs = DatabaseUtils.getQueryStruct_ilike('tipp.medium.value_' + i18n, params.query)
                query += ' and ' + qs.query
-               queryMap.putAt(qs.name, qs.value)
+               queryMap[qs.name] = qs.value
            }
            query += " group by tipp.medium.id, tipp.medium.value_"+i18n+" order by tipp.medium.value_"+i18n
 
@@ -798,7 +790,7 @@ class ControlledListService {
         if (query) {
             Map qs = DatabaseUtils.getQueryStruct_ilike('rdv.value_' + i18n, query)
             nameFilter += ' and ' + qs.query
-            queryParams.putAt(qs.name, qs.value)
+            queryParams[qs.name] = qs.value
         }
 
         coverageDepths.addAll(RefdataValue.executeQuery("select new map(rdv.value_"+i18n+" as name, rdv.id as value) from RefdataValue rdv where rdv.value in (select tc.coverageDepth from TIPPCoverage tc join tc.tipp tipp where tc.coverageDepth is not null and tipp.pkg = :pkg and tipp.status = :status) "+nameFilter+" group by rdv.id, rdv.value_"+i18n+" order by rdv.value_"+i18n, queryParams))
@@ -820,7 +812,7 @@ class ControlledListService {
         if (query) {
             Map qs = DatabaseUtils.getQueryStruct_ilike('rdv.value_' + i18n, query)
             nameFilter += ' and ' + qs.query
-            queryParams.putAt(qs.name, qs.value)
+            queryParams[qs.name] = qs.value
         }
 
         if(subscription.packages){
@@ -855,7 +847,7 @@ class ControlledListService {
            if (params.query) {
                Map qs = DatabaseUtils.getQueryStruct_ilike('rdv.value_' + i18n, params.query)
                query += ' and ' + qs.query
-               queryMap.putAt(qs.name, qs.value)
+               queryMap[qs.name] = qs.value
            }
            query += " ) group by rdv.id, rdv.value_"+i18n+" order by rdv.value_"+i18n
 
@@ -883,9 +875,7 @@ class ControlledListService {
 //            queryParams.query = query
             Map qs = DatabaseUtils.getQueryStruct_ilike('seriesName', query)
             nameFilter += ' and ' + qs.query
-            queryParams.putAt(qs.name, qs.value)
-
-            println 'getQueryStruct_ilike() ' + qs
+            queryParams[qs.name] = qs.value
         }
         seriesName = TitleInstancePackagePlatform.executeQuery("select new map(seriesName as name, seriesName as value) from TitleInstancePackagePlatform where seriesName is not null and pkg = :pkg and status = :status "+nameFilter+" group by seriesName order by seriesName", queryParams)
 
@@ -913,9 +903,7 @@ class ControlledListService {
 //                queryParams.query = query
                 Map qs = DatabaseUtils.getQueryStruct_ilike('seriesName', query)
                 nameFilter += ' and ' + qs.query
-                queryParams.putAt(qs.name, qs.value)
-
-                println 'getQueryStruct_ilike() ' + qs
+                queryParams[qs.name] = qs.value
             }
             //fomantic UI dropdown expects maps in structure [name: name, value: value]; a pure set is not being accepted ...
             seriesName = TitleInstancePackagePlatform.executeQuery("select new map(seriesName as name, seriesName as value) from TitleInstancePackagePlatform where seriesName is not null and pkg in (:pkg) and status != :removed "+nameFilter+" group by seriesName order by seriesName", queryParams)
@@ -954,9 +942,7 @@ class ControlledListService {
 //               query += " and genfunc_filter_matcher(tipp.seriesName, :query) = true"
                Map qs = DatabaseUtils.getQueryStruct_ilike('tipp.seriesName', params.query)
                query += ' and ' + qs.query
-               queryMap.putAt(qs.name, qs.value)
-
-               println 'getQueryStruct_ilike() ' + qs
+               queryMap[qs.name] = qs.value
            }
 
            query += " group by tipp.seriesName order by tipp.seriesName"
@@ -985,7 +971,7 @@ class ControlledListService {
         if (query) {
             Map qs = DatabaseUtils.getQueryStruct_ilike('ddc.ddc.value_' + i18n, query)
             nameFilter += ' and (' + qs.query + ' or ddc.ddc.value like :query2)'
-            queryParams.putAt(qs.name, qs.value)
+            queryParams[qs.name] = qs.value
             queryParams.query2 = "%${query}%"
         }
 
@@ -1008,7 +994,7 @@ class ControlledListService {
         if (query) {
             Map qs = DatabaseUtils.getQueryStruct_ilike('ddc.ddc.value_' + i18n, query)
             nameFilter += ' and (' + qs.query + ' or ddc.ddc.value like :query2)'
-            queryParams.putAt(qs.name, qs.value)
+            queryParams[qs.name] = qs.value
             queryParams.query2 = "%${query}%"
         }
 
@@ -1044,7 +1030,7 @@ class ControlledListService {
            if (params.query) {
                Map qs = DatabaseUtils.getQueryStruct_ilike('ddc.ddc.value_' + i18n, params.query)
                query += ' and (' + qs.query + ' or ddc.ddc.value like :query2)'
-               queryMap.putAt(qs.name, qs.value)
+               queryMap[qs.name] = qs.value
                queryMap.query2 = "%${params.query}%"
            }
 
@@ -1070,7 +1056,7 @@ class ControlledListService {
         if (query) {
             Map qs = DatabaseUtils.getQueryStruct_ilike('lang.language.value_' + i18n, query)
             nameFilter += ' and ' + qs.query
-            queryParams.putAt(qs.name, qs.value)
+            queryParams[qs.name] = qs.value
         }
 
         languages.addAll(TitleInstancePackagePlatform.executeQuery("select new map(lang.language.value_"+i18n+" as name, lang.language.id as value) from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg = :pkg and tipp.status = :status "+nameFilter+" group by lang.language.id, lang.language.value_"+i18n+" order by lang.language.value_" + i18n, queryParams))
@@ -1092,7 +1078,7 @@ class ControlledListService {
         if (query) {
             Map qs = DatabaseUtils.getQueryStruct_ilike('lang.language.value_' + i18n, query)
             nameFilter += ' and ' + qs.query
-            queryParams.putAt(qs.name, qs.value)
+            queryParams[qs.name] = qs.value
         }
 
         if(subscription.packages){
@@ -1127,7 +1113,7 @@ class ControlledListService {
            if (params.query) {
                Map qs = DatabaseUtils.getQueryStruct_ilike('lang.language.value_' + i18n, params.query)
                query += ' and ' + qs.query
-               queryMap.putAt(qs.name, qs.value)
+               queryMap[qs.name] = qs.value
            }
 
            query += " group by lang.language.id, lang.language.value_"+i18n+" order by lang.language.value_" + i18n
@@ -1153,7 +1139,7 @@ class ControlledListService {
         if (query) {
             Map qs = DatabaseUtils.getQueryStruct_ilike('subjectReference', query)
             nameFilter += ' and ' + qs.query
-            queryParams.putAt(qs.name, qs.value)
+            queryParams[qs.name] = qs.value
         }
 
         List<String> rawSubjects = TitleInstancePackagePlatform.executeQuery("select distinct(subjectReference) from TitleInstancePackagePlatform where subjectReference is not null and pkg = :pkg and status = :status "+nameFilter+" order by subjectReference", queryParams)
@@ -1189,7 +1175,7 @@ class ControlledListService {
         if (query) {
             Map qs = DatabaseUtils.getQueryStruct_ilike('subjectReference', query)
             nameFilter += ' and ' + qs.query
-            queryParams.putAt(qs.name, qs.value)
+            queryParams[qs.name] = qs.value
         }
 
         if(subscription.packages){
@@ -1237,7 +1223,7 @@ class ControlledListService {
            if (params.query) {
                Map qs = DatabaseUtils.getQueryStruct_ilike('tipp.subjectReference', params.query)
                query += ' and ' + qs.query
-               queryMap.putAt(qs.name, qs.value)
+               queryMap[qs.name] = qs.value
            }
 
            query += " order by tipp.subjectReference"
@@ -1272,15 +1258,15 @@ class ControlledListService {
         String nameFilter = ""
         Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
         if(query) {
-            nameFilter += "and Year(dateFirstOnline) like :query"
+            nameFilter += "and to_char(Year(dateFirstOnline), '9999') like :query"
             queryParams.query = "%${query}%"
         }
 
         subjects = TitleInstancePackagePlatform.executeQuery("select new map(Year(dateFirstOnline) as name, Year(dateFirstOnline) as value) from TitleInstancePackagePlatform where dateFirstOnline is not null and pkg = :pkg and status = :status "+nameFilter+" group by YEAR(dateFirstOnline) order by YEAR(dateFirstOnline)", queryParams)
 
-        if(subjects.size() == 0){
-            subjects << [name: messageSource.getMessage('default.selectionNotPossible.label', null, LocaleUtils.getCurrentLocale()), value: null]
-        }
+//        if(subjects.size() == 0){
+//            subjects << [name: messageSource.getMessage('default.selectionNotPossible.label', null, LocaleUtils.getCurrentLocale()), value: null]
+//        }
 
         subjects
     }
@@ -1297,16 +1283,16 @@ class ControlledListService {
         String nameFilter = ""
         Map<String, Object> queryParams = [pkg: subscription.packages.pkg,current: RDStore.TIPP_STATUS_CURRENT]
         if(query) {
-            nameFilter += "and Year(dateFirstOnline) like :query"
+            nameFilter += "and to_char(Year(dateFirstOnline), '9999') like :query"
             queryParams.query = "%${query}%"
         }
 
         if(subscription.packages){
             yearsFirstOnline = TitleInstancePackagePlatform.executeQuery("select new map(Year(dateFirstOnline) as name, Year(dateFirstOnline) as value) from TitleInstancePackagePlatform where dateFirstOnline is not null and pkg in (:pkg) and status = :current "+nameFilter+" group by YEAR(dateFirstOnline) order by YEAR(dateFirstOnline)", queryParams)
         }
-        if(yearsFirstOnline.size() == 0){
-            yearsFirstOnline << messageSource.getMessage('default.selectionNotPossible.label', null, LocaleUtils.getCurrentLocale())
-        }
+//        if(yearsFirstOnline.size() == 0){
+//            yearsFirstOnline << [name: messageSource.getMessage('default.selectionNotPossible.label', null, LocaleUtils.getCurrentLocale()), value: null]
+//        }
 
         yearsFirstOnline
     }
@@ -1335,15 +1321,15 @@ class ControlledListService {
 
            if(params.query) {
                queryMap.query = "%${params.query}%"
-               query += " and Year(dateFirstOnline) like :query"
+               query += " and to_char(Year(dateFirstOnline), '9999') like :query"
            }
 
            query += " group by YEAR(tipp.dateFirstOnline) order by YEAR(tipp.dateFirstOnline)"
            yearsFirstOnline = TitleInstancePackagePlatform.executeQuery(query, queryMap)
         }
-        if(yearsFirstOnline.size() == 0){
-            yearsFirstOnline << messageSource.getMessage('default.selectionNotPossible.label', null, LocaleUtils.getCurrentLocale())
-        }
+//        if(yearsFirstOnline.size() == 0){
+//            yearsFirstOnline << [name: messageSource.getMessage('default.selectionNotPossible.label', null, LocaleUtils.getCurrentLocale()), value: null]
+//        }
 
         yearsFirstOnline
     }
@@ -1364,7 +1350,7 @@ class ControlledListService {
         if (query) {
             Map qs = DatabaseUtils.getQueryStruct_ilike('publisherName', query)
             nameFilter += ' and ' + qs.query
-            queryParams.putAt(qs.name, qs.value)
+            queryParams[qs.name] = qs.value
         }
 
         //publishers.addAll(TitleInstancePackagePlatform.executeQuery("select distinct(orgRole.org.name) from TitleInstancePackagePlatform tipp left join tipp.orgs orgRole where orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and tipp.pkg = :pkg and tipp.status = :status order by orgRole.org.name", [pkg: pkg, status: tippStatus]))
@@ -1389,7 +1375,7 @@ class ControlledListService {
             if (query) {
                 Map qs = DatabaseUtils.getQueryStruct_ilike('publisherName', query)
                 nameFilter += ' and ' + qs.query
-                queryParams.putAt(qs.name, qs.value)
+                queryParams[qs.name] = qs.value
             }
             //publishers.addAll(TitleInstancePackagePlatform.executeQuery("select distinct(orgRole.org.name) from TitleInstancePackagePlatform tipp left join tipp.orgs orgRole where orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and tipp.pkg in (:pkg) order by orgRole.org.name", [pkg: subscription.packages.pkg]))
             publishers.addAll(TitleInstancePackagePlatform.executeQuery("select new map(publisherName as name, publisherName as value) from TitleInstancePackagePlatform where publisherName is not null and pkg in (:pkg) and status = :current "+nameFilter+" group by publisherName order by publisherName", queryParams))
@@ -1422,7 +1408,7 @@ class ControlledListService {
            if (params.query) {
                Map qs = DatabaseUtils.getQueryStruct_ilike('tipp.publisherName', params.query)
                query += ' and ' + qs.query
-               queryMap.putAt(qs.name, qs.value)
+               queryMap[qs.name] = qs.value
            }
            query += " group by tipp.publisherName order by tipp.publisherName"
             //publishers.addAll(TitleInstancePackagePlatform.executeQuery("select distinct(orgRole.org.name) from TitleInstancePackagePlatform tipp left join tipp.orgs orgRole where orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and tipp.pkg in (:pkg) order by orgRole.org.name", [pkg: subscription.packages.pkg]))

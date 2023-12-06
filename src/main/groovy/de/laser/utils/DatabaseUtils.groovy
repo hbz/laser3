@@ -6,24 +6,24 @@ import org.apache.commons.lang3.RandomStringUtils
 @Slf4j
 class DatabaseUtils {
 
-    static Map<String, String> getQueryStruct_ilike(String field, String param) {
+    static Map<String, String> getQueryStruct_ilike(String field, String value) {
 
         String name     = 'p_' + RandomStringUtils.randomAlphanumeric(6)
         String query    = ' (lower(' + field + ') like :' + name + ') '
-        String value    = param.toLowerCase().trim()
+        String val      = value.toLowerCase().trim()
 
-        if (value.startsWith('"')) {
-            value = value.substring(1)
-            value = '\"' + value
+        if (val.startsWith('"')) {
+            val = val.substring(1)
+            val = '\"' + val
         }
-        if (value.endsWith('"')) {
-            value = value.substring(0, value.length() - 1)
-            value = value + '\"'
+        if (val.endsWith('"')) {
+            val = val.substring(0, val.length() - 1)
+            val = val + '\"'
         }
-        value = '%' + value + '%'
+        val = '%' + val + '%'
 
-        println 'getQueryStruct_ilike() ' + query + ' # ' + value
+        log.debug('getQueryStruct_ilike() -> ' + query + ' ? ' + val)
 
-        [name: name, value: value, query: query]
+        [name: name, value: val, query: query]
     }
 }
