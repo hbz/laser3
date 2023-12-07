@@ -447,6 +447,38 @@ class AdminController  {
         result
     }
 
+    @Secured(['ROLE_ADMIN'])
+    def identifierValidation() {
+        Map<String, Object> result = [
+                nsList          : IdentifierNamespace.executeQuery('select ns from IdentifierNamespace ns order by ns.ns, ns.nsType'),
+                iMap            : [:],
+                currentLang     : LocaleUtils.getCurrentLang()
+        ]
+
+        result.nsList.each { ns ->
+            if (ns.validationRegex) {
+                List<Identifier> iList = Identifier.executeQuery('select i from Identifier i where i.ns = :ns', [ns: ns])
+                result.iMap[ns.id] = [
+                        count   : iList.size(),
+                        valid   : [],
+                        invalid : []
+                ]
+
+                iList.each { obj ->
+                    def pattern = ~/${ns.validationRegex}/
+                    if (pattern.matcher(obj.value).matches()) {
+                        result.iMap[ns.id].valid << obj
+                    }
+                    else {
+                        result.iMap[ns.id].invalid << obj
+                    }
+                }
+            }
+        }
+        println result
+        result
+    }
+
     /**
      * Checks the state of the files in the data storage, namely if the files have a database record and if there
      * are files matching the UUIDs from the database and if the database records are attached to an object
