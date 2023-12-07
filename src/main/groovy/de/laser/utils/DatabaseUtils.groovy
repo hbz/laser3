@@ -22,8 +22,33 @@ class DatabaseUtils {
         }
         val = '%' + val + '%'
 
-        log.debug('getQueryStruct_ilike() -> ' + query + ' ? ' + val)
+        log.debug('getQueryStruct_ilike(field, value) -> ' + query + ' ? ' + val)
+        [query: query, name: name, value: val]
+    }
 
-        [name: name, value: val, query: query]
+    static Map<String, Object> getQueryStruct_ilike(List<String> fields, String value) {
+
+        String name     = 'p_' + RandomStringUtils.randomAlphanumeric(6)
+        String query    = ''
+        String val      = value.toLowerCase().trim()
+
+        if (val.startsWith('"')) {
+            val = val.substring(1)
+            val = '\"' + val
+        }
+        if (val.endsWith('"')) {
+            val = val.substring(0, val.length() - 1)
+            val = val + '\"'
+        }
+        val = '%' + val + '%'
+
+        List<String> subQueries = []
+        fields.each { field ->
+            subQueries.add(' (lower(' + field + ') like :' + name + ') ')
+        }
+        query = '(' + subQueries.join('or') + ')'
+
+        log.debug('getQueryStruct_ilike(List fields, value) -> ' + query + ' ? ' + val)
+        [query: query, name: name, value: val]
     }
 }
