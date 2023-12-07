@@ -475,7 +475,6 @@ class AdminController  {
                 }
             }
         }
-        println result
         result
     }
 

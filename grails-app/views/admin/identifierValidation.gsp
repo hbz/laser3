@@ -7,8 +7,6 @@
 
 <ui:h1HeaderWithIcon message="menu.admin.identifierValidation" type="admin"/>
 
-<h2 class="ui header">${message(code: "menu.admin.identifierValidation")}</h2>
-
 <div class="ui grid">
     <div class="sixteen wide column">
 
