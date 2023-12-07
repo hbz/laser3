@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      07.12.2023  rc-3.3  3.3.2       Moe     Bug         Kosten öffnen/bearbeiten/kopieren nicht möglich bei verknüpften Kosten mit Titel
+
 5464    06.12.2023  rc-3.3  3.3.2       Moe     Bug         Titelgruppe verhindert das Löschen einer Lizenz
 
 5467    05.12.2023  rc-3.3  3.3.2       David   Bug         Standardreiter Datenweitergabe für LAS:eR-Basic
