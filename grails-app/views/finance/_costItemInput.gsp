@@ -505,7 +505,7 @@
                 JSPC.app.ajaxDropdown($(this), JSPC.app.finance${idSuffix}.selLinks[$(this).attr("id")], '')
             });
         <% if(costItem?.issueEntitlement) {
-            String ieTitleName = costItem.issueEntitlement.name
+            String ieTitleName = costItem.issueEntitlement.tipp.name
             String ieTitleTypeString = costItem.issueEntitlement.tipp.titleType %>
         JSPC.app.finance${idSuffix}.newIE.dropdown('set text',"${ieTitleName} (${ieTitleTypeString}) (${costItem.sub.dropdownNamingConvention(contextService.getOrg())})");
         <%  }
