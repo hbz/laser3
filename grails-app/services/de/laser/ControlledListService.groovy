@@ -48,9 +48,8 @@ class ControlledListService {
                 Map filter = [providerAgency: [RDStore.OR_PROVIDER,RDStore.OR_AGENCY],subscriptions:subIDs]
                 String filterString = " "
                 if (params.query && params.query.length() > 0) {
-                    Map qs = DatabaseUtils.getQueryStruct_ilike('oo.org.name', params.query)
-                    filterString += ' and ' + qs.query
-                    filter[qs.name] = qs.value
+                    filterString += " and genfunc_filter_matcher(oo.org.name, :query) = true "
+                    filter.put('query', params.query)
                 }
                 List providers = Org.executeQuery("select distinct concat('"+Org.class.name+":',oo.org.id), oo.org.sortname from OrgRole oo where oo.sub.id in (:subscriptions) and oo.roleType in (:providerAgency)"+filterString+"order by oo.org.sortname asc",filter)
                 providers.each { p ->
@@ -62,11 +61,8 @@ class ControlledListService {
             String queryString = 'select o from Org o join o.orgType ot where ot in (:providerTypes) and o.status = :current'
             LinkedHashMap filter = [providerTypes:providerAgency, current: RDStore.ORG_STATUS_CURRENT]
             if (params.query && params.query.length() > 0) {
-                Map qs1 = DatabaseUtils.getQueryStruct_ilike(['o.name', 'o.sortname'], params.query)
-                filter[qs1.name] = qs1.value
-                Map qs3 = DatabaseUtils.getQueryStruct_ilike('alt.name', params.query)
-                filter[qs3.name] = qs3.value
-                queryString += ' and ( ' + qs1.query + ' or exists (select alt from o.altnames alt where ' + qs3.query + ') )'
+                queryString += " and (genfunc_filter_matcher(o.name, :query) = true or genfunc_filter_matcher(o.sortname, :query) = true or exists (select alt from o.altnames alt where genfunc_filter_matcher(alt.name, :query) = true)) "
+                filter.put('query', params.query)
             }
             Set<Org> providers = Org.executeQuery(queryString+" order by o.sortname asc",filter)
             providers.each { Org p ->
@@ -94,9 +90,8 @@ class ControlledListService {
         String queryString = 'select o from Org o where o.status != :deleted and o != :context'
         LinkedHashMap filter = [deleted: RDStore.ORG_STATUS_DELETED, context: org]
         if (params.query && params.query.length() > 0) {
-            Map qs = DatabaseUtils.getQueryStruct_ilike(['o.name', 'o.sortname'], params.query)
-            queryString += ' and ' + qs.query
-            filter[qs.name] = qs.value
+            queryString += " and (genfunc_filter_matcher(o.name, :query) = true or genfunc_filter_matcher(o.sortname, :query) = true) "
+            filter.put('query', params.query)
         }
         Set<Org> orgs = Org.executeQuery(queryString+" order by o.name asc",filter)
         orgs.each { Org o ->
@@ -117,9 +112,8 @@ class ControlledListService {
         LinkedHashMap filter = [org:org,orgRoles:[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN,RDStore.OR_SUBSCRIPTION_CONSORTIA]]
         //may be generalised later - here it is where to expand the query filter
         if (params.query && params.query.length() > 0) {
-            Map qs = DatabaseUtils.getQueryStruct_ilike(['s.name', 'orgRoles.org.sortname'], params.query)
-            queryString += ' and ' + qs.query
-            filter[qs.name] = qs.value
+            queryString += " and (genfunc_filter_matcher(s.name, :query) = true or genfunc_filter_matcher(orgRoles.org.sortname, :query) = true) "
+            filter.put('query', params.query)
         }
         def ctx = null
         if(params.ctx && params.ctx.contains(Subscription.class.name)) {
@@ -348,9 +342,8 @@ class ControlledListService {
         String licFilter = ''
         LinkedHashMap filterParams = [org:org,orgRoles:[RDStore.OR_LICENSING_CONSORTIUM,RDStore.OR_LICENSEE]]
         if (params.query && params.query.length() > 0) {
-            Map qs = DatabaseUtils.getQueryStruct_ilike('l.reference', params.query)
-            licFilter += ' and ' + qs.query
-            filterParams[qs.name] = qs.value
+            licFilter = ' and genfunc_filter_matcher(l.reference, :query) = true '
+            filterParams.put('query', params.query)
         }
         def ctx = null
         if(params.ctx && params.ctx.contains(License.class.name)) {
@@ -392,7 +385,7 @@ class ControlledListService {
         LinkedHashMap filter = [org:org,orgRoles:[RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]]
         //may be generalised later - here it is where to expand the query filter
         if(params.query && params.query.length() > 0) {
-            filter.put("query",params.query)
+            filter.put('query', params.query)
             queryString += " and (genfunc_filter_matcher(s.name,:query) = true or genfunc_filter_matcher(orgRoles.org.sortname,:query) = true) "
         }
         if(params.ctx) {
@@ -448,7 +441,7 @@ class ControlledListService {
         String queryString = 'select bc from BudgetCode bc where bc.owner = :owner'
         LinkedHashMap filter = [owner:org]
         if(params.query && params.query.length() > 0) {
-            filter.put("query",params.query)
+            filter.put('query', params.query)
             queryString += " and genfunc_filter_matcher(bc.value,:query) = true"
         }
         queryString += " order by bc.value asc"
@@ -470,7 +463,7 @@ class ControlledListService {
         String queryString = 'select distinct(i.invoiceNumber) from Invoice i where i.owner = :owner'
         LinkedHashMap filter = [owner:org]
         if(params.query && params.query.length() > 0) {
-            filter.put("query",params.query)
+            filter.put('query', params.query)
             queryString += " and genfunc_filter_matcher(i.invoiceNumber,:query) = true"
         }
         queryString += " order by i.invoiceNumber asc"
@@ -492,7 +485,7 @@ class ControlledListService {
         String queryString = 'select distinct(ord.orderNumber) from Order ord where ord.owner = :owner'
         LinkedHashMap filter = [owner:org]
         if(params.query && params.query.length() > 0) {
-            filter.put("query",params.query)
+            filter.put('query', params.query)
             //queryString += " and ord.orderNumber like :query"
             queryString += " and genfunc_filter_matcher(ord.orderNumber,:query) = true"
         }
@@ -515,7 +508,7 @@ class ControlledListService {
         String queryString = 'select distinct(ci.reference) from CostItem ci where ci.owner = :owner and ci.reference != null'
         LinkedHashMap filter = [owner:org]
         if(params.query && params.query.length() > 0) {
-            filter.put("query",params.query)
+            filter.put('query', params.query)
             queryString += " and genfunc_filter_matcher(ci.reference,:query) = true"
         }
         queryString += " order by ci.reference asc"
@@ -1238,7 +1231,7 @@ class ControlledListService {
         Set<Map> subjects = []
         String nameFilter = ""
         Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
-        if(query) {
+        if (query) {
             nameFilter += " and to_char(Year(dateFirstOnline), '9999') like :query "
             queryParams.query = "%${query}%"
         }
@@ -1263,7 +1256,7 @@ class ControlledListService {
         Set<Map> yearsFirstOnline = []
         String nameFilter = ""
         Map<String, Object> queryParams = [pkg: subscription.packages.pkg,current: RDStore.TIPP_STATUS_CURRENT]
-        if(query) {
+        if (query) {
             nameFilter += " and to_char(Year(dateFirstOnline), '9999') like :query "
             queryParams.query = "%${query}%"
         }
@@ -1300,7 +1293,7 @@ class ControlledListService {
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
 
-           if(params.query) {
+           if (params.query) {
                query += " and to_char(Year(dateFirstOnline), '9999') like :query "
                queryMap.query = "%${params.query}%"
            }
@@ -1385,7 +1378,7 @@ class ControlledListService {
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
            if (params.query) {
-               query += " and genfunc_filter_name(tipp.publisherName, :query) = true "
+               query += " and genfunc_filter_matcher(tipp.publisherName, :query) = true "
                queryMap.query = params.query
            }
            query += " group by tipp.publisherName order by tipp.publisherName"
@@ -1421,9 +1414,8 @@ class ControlledListService {
         if(institution.isCustomerType_Consortium())
             consortiumFilter = "and sub.instanceOf is null"
         if (params.query) {
-            Map qs = DatabaseUtils.getQueryStruct_ilike('plat.name', params.query)
-            platNameFilter += ' and ' + qs.query
-            qryParams[qs.name] = qs.value
+            platNameFilter = " and genfunc_filter_matcher(plat.name, :query) = true "
+            qryParams.query = params.query
         }
         String qryString = "select new map(concat('${Platform.class.name}:',plat.id) as value,plat.name as name) from SubscriptionPackage sp join sp.pkg pkg join pkg.nominalPlatform plat where sp.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context ${consortiumFilter}) ${platNameFilter} group by plat.id order by plat.name asc"
         [results: Platform.executeQuery(qryString, qryParams)]
@@ -1436,9 +1428,8 @@ class ControlledListService {
         if(institution.isCustomerType_Consortium())
             consortiumFilter = "and sub.instanceOf is null"
         if (params.query) {
-            Map qs = DatabaseUtils.getQueryStruct_ilike(['org.name', 'org.sortname'], params.query)
-            orgNameFilter += ' and ' + qs.query
-            qryParams[qs.name] = qs.value
+            orgNameFilter = " and (genfunc_filter_matcher(org.name, :query) = true or genfunc_filter_matcher(org.sortname, :query) = true) "
+            qryParams.query = params.query
         }
         String qryString = "select new map(concat('${Org.class.name}:',org.id) as value,org.name as name) from SubscriptionPackage sp join sp.pkg pkg join pkg.orgs oo join oo.org org where sp.subscription in (select sub from OrgRole os join os.sub sub where os.org = :context ${consortiumFilter}) ${orgNameFilter} group by org.id order by org.sortname asc"
         [results: Org.executeQuery(qryString, qryParams)]
