@@ -282,6 +282,22 @@ class FinanceService {
                 if(memberFailures)
                     result.failures = memberFailures
             }
+            else if(params.percentOnCurrentPrice) {
+                Double percentage = 1 + params.double('percentOnCurrentPrice') / 100
+                CostItem.findAllByIdInList(selectedCostItems).each { CostItem ci ->
+                    if(ci.sub) {
+                            ci.billingSumRounding = billingSumRounding != ci.billingSumRounding ? billingSumRounding : ci.billingSumRounding
+                            ci.finalCostRounding = finalCostRounding != ci.finalCostRounding ? finalCostRounding : ci.finalCostRounding
+                            ci.costInBillingCurrency = Math.floor(Math.abs(ci.costInBillingCurrency * percentage))
+                            ci.costInLocalCurrency = Math.floor(Math.abs(ci.costInLocalCurrency * percentage))
+                            if (ci.billingSumRounding) {
+                                ci.costInBillingCurrency = Math.round(ci.costInBillingCurrency)
+                                ci.costInLocalCurrency = Math.round(ci.costInLocalCurrency)
+                            }
+                            ci.save()
+                    }
+                }
+            }
             else {
                 Map<String, Object> configMap = setupConfigMap(params, result.institution)
                 List<CostItem> costItems = CostItem.findAllByIdInList(selectedCostItems)

@@ -181,6 +181,27 @@
                             </div>
                         </g:if>
 
+                        <div class="ui horizontal divider"><g:message code="search.advancedSearch.option.OR"/></div>
+
+                        <div class="fields la-forms-grid">
+                            <fieldset class="sixteen wide field la-account-currency">
+                                <div class="field center aligned">
+
+                                    <label>${message(code: 'surveyCostItems.bulkOption.percentOnSurveyPrice')}</label>
+
+                                    <div class="ui right labeled input">
+                                        <input type="number"
+                                               name="percentOnSurveyPrice"
+                                               id="percentOnSurveyPrice"
+                                               placeholder="${g.message(code: 'surveyCostItems.bulkOption.percentOnSurveyPrice')}"
+                                               value="" step="0.01"/>
+
+                                        <div class="ui basic label">%</div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+
                     </div>
 
                     <div class="two fields">

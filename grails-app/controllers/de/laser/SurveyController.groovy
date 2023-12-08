@@ -1168,6 +1168,10 @@ class SurveyController {
                             CostItem costItem = CostItem.findBySubAndOwnerAndCostItemStatusNotEqualAndCostItemElement(orgSub, surveyCostItem.owner, RDStore.COST_ITEM_DELETED, RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE)
                             surveyCostItem.costInBillingCurrency = costItem ? (costItem.costInBillingCurrency * (1 + (percentOnOldPrice / 100))).round(2) : surveyCostItem.costInBillingCurrency
                         }
+                        else if (params.percentOnSurveyPrice) {
+                            Double percentOnSurveyPrice = params.double('percentOnSurveyPrice', 0.00)
+                            surveyCostItem.costInBillingCurrency = percentOnSurveyPrice ? (surveyCostItem.costInBillingCurrency * (1 + (percentOnSurveyPrice / 100))).round(2) : surveyCostItem.costInBillingCurrency
+                        }
                         else {
                             surveyCostItem.costInBillingCurrency = cost_billing_currency ?: surveyCostItem.costInBillingCurrency
                         }

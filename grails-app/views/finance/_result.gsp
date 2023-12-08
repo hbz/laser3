@@ -93,6 +93,28 @@
                                                 </fieldset>
                                             </div>
 
+                                            <div class="ui horizontal divider"><g:message
+                                                    code="search.advancedSearch.option.OR"/></div>
+                                            <div class="fields la-forms-grid">
+                                                <fieldset
+                                                        class="sixteen wide field la-modal-fieldset-margin-right la-account-currency">
+                                                    <div class="field center aligned">
+
+                                                        <label>${message(code: 'surveyCostItems.bulkOption.percentOnCurrentPrice')}</label>
+
+                                                        <div class="ui right labeled input">
+                                                            <input type="number"
+                                                                   name="percentOnCurrentPrice"
+                                                                   id="percentOnCurrentPrice"
+                                                                   placeholder="${g.message(code: 'surveyCostItems.bulkOption.percentOnCurrentPrice')}"
+                                                                   value="" step="0.01"/>
+
+                                                            <div class="ui basic label">%</div>
+                                                        </div>
+                                                    </div>
+                                                </fieldset>
+                                            </div>
+
                                             <div class="two fields">
                                                 <div class="eight wide field" style="text-align: left;">
                                                     <button class="ui button"
