@@ -69,9 +69,8 @@ class UserService {
         }
 
         if (params.name && params.name != '' ) {
-            Map qs = DatabaseUtils.getQueryStruct_ilike(['u.username', 'u.display'], params.name)
-            whereQuery.add(qs.query)
-            queryParams.put(qs.name, qs.value)
+            whereQuery.add('(genfunc_filter_matcher(u.username, :name) = true or genfunc_filter_matcher(u.display, :name) = true)')
+            queryParams.put('name', params.name)
         }
         String query = baseQuery.join(', ') + (whereQuery ? ' where ' + whereQuery.join(' and ') : '') + ' order by u.username'
         User.executeQuery(query, queryParams /*,params */)
