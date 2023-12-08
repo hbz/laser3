@@ -470,6 +470,7 @@ class AjaxController {
                   newChecked[ie.id.toString()] = params.checked == 'true' ? 'checked' : null
               }*/
 
+              newChecked = [:]
               Subscription baseSub = Subscription.get(params.baseSubID)
 
               if(params.tab == 'allTipps') {
@@ -487,6 +488,23 @@ class AjaxController {
                   SurveyConfig surveyConfig = SurveyConfig.findById(params.surveyConfigID)
                   IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub)
                   if(issueEntitlementGroup) {
+                      if(params.subTab){
+                          if(params.subTab == 'currentIEs'){
+                              params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                          }else if(params.subTab == 'plannedIEs'){
+                              params.status = [RDStore.TIPP_STATUS_EXPECTED.id.toString()]
+                          }else if(params.subTab == 'expiredIEs'){
+                              params.status = [RDStore.TIPP_STATUS_RETIRED.id.toString()]
+                          }else if(params.subTab == 'deletedIEs'){
+                              params.status = [RDStore.TIPP_STATUS_DELETED.id.toString()]
+                          }else if(params.subTab == 'allIEs'){
+                              params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_EXPECTED.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString(), RDStore.TIPP_STATUS_DELETED.id.toString()]
+                          }
+                      } else{
+                          params.currentIEs = 'currentIEs'
+                          params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                      }
+
                       params.titleGroup = issueEntitlementGroup.id.toString()
                       Map query = filterService.getIssueEntitlementQuery(params, subscriberSub)
                       List<Long> ieIDList = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)

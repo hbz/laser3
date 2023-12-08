@@ -305,9 +305,10 @@
 
 
     <g:form name="renewEntitlements" id="${subscriberSub.id}" action="processRenewEntitlementsWithSurvey" class="ui form">
-    <g:hiddenField id="packageId" name="packageId" value="${params.packageId}"/>
-    <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
-    <g:hiddenField name="tab" value="${params.tab}"/>
+        <g:hiddenField id="packageId" name="packageId" value="${params.packageId}"/>
+        <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
+        <g:hiddenField name="tab" value="${params.tab}"/>
+        <g:hiddenField name="subTab" value="${params.subTab}"/>
         <g:if test="${params.tab == 'allTipps' || params.tab == 'selectedIEs' || params.tab == 'currentPerpetualAccessIEs'}">
             <%
                 Map<String, String>
@@ -433,6 +434,7 @@
                     referer: "${actionName}",
                     checked: checked,
                     tab: "${params.tab}",
+                    subTab: "${params.subTab}",
                     baseSubID: "${parentSubscription.id}",
                     newSubID: "${subscriberSub.id}",
                     surveyConfigID: "${surveyConfig.id}"
