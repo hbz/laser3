@@ -9,7 +9,7 @@
 
 --      08.12.2023  rc-3.3  3.3.2       Moe     Bug         500er bei Alle auswählen in Kostenausschüttung
 
-5473    08.12.2023  rc-3.3  3.3.2       Moe     Bug         Kostenausschütung erweitern mit Prozent auf aktuellen Preis und neuen Umfrage Preis
+5473    08.12.2023  rc-3.3  3.3.2       Moe     Feature    Kostenausschütung erweitern mit Prozent auf aktuellen Preis und neuen Umfrage Preis
 
 5453    08.12.2023  rc-3.3  3.3.2       Moe     Bug         Titelumfrage: Titel löschen soll nicht abhängig von den Status-Reiter sein
 
