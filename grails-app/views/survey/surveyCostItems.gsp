@@ -14,7 +14,7 @@
 
 <ui:controlButtons>
     <ui:exportDropdown>
-        <ui:exportDropdownItem>
+        <ui:exportDropdownItem>CLICK ME EXPORT
             <g:link class="item" action="exportSurCostItems" id="${surveyInfo.id}"
                     params="[exportXLSX: true, surveyConfigID: surveyConfig.id]">${message(code: 'survey.exportSurveyCostItems')}</g:link>
         </ui:exportDropdownItem>
