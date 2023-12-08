@@ -952,9 +952,8 @@ class ControlledListService {
         Set<Map> ddcs = []
         Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
         if (query) {
-            nameFilter += " and (genfunc_filter_matcher(ddc.ddc.value_" + i18n + ", :query) = true or ddc.ddc.value like :query2) "
+            nameFilter += " and (genfunc_filter_matcher(ddc.ddc.value_" + i18n + ", :query) = true or genfunc_filter_matcher(ddc.ddc.value, :query) = true) "
             queryParams.query  = query
-            queryParams.query2 = "%${query}%"
         }
 
         ddcs.addAll(TitleInstancePackagePlatform.executeQuery("select new map(concat(ddc.ddc.value,' - ',ddc.ddc.value_"+i18n+") as name, ddc.ddc.id as value) from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg = :pkg and tipp.status = :status "+nameFilter+" group by ddc.ddc.id, ddc.ddc.value, ddc.ddc.value_"+i18n+" order by ddc.ddc.value", queryParams))
@@ -974,9 +973,8 @@ class ControlledListService {
         String nameFilter = "", i18n = LocaleUtils.getCurrentLang()
         Map<String, Object> queryParams = [pkg: subscription.packages.pkg, status: RDStore.TIPP_STATUS_REMOVED]
         if (query) {
-            nameFilter += " and (genfunc_filter_matcher(ddc.ddc.value_" + i18n + ", :query) = true or ddc.ddc.value like :query2) "
+            nameFilter += " and (genfunc_filter_matcher(ddc.ddc.value_" + i18n + ", :query) = true or genfunc_filter_matcher(ddc.ddc.value, :query) = true) "
             queryParams.query  = query
-            queryParams.query2 = "%${query}%"
         }
 
         if(subscription.packages){
@@ -1009,9 +1007,8 @@ class ControlledListService {
            }
 
            if (params.query) {
-               query += " and (genfunc_filter_matcher(ddc.ddc.value_" + i18n + ", :query) = true or ddc.ddc.value like :query2) "
+               query += " and (genfunc_filter_matcher(ddc.ddc.value_" + i18n + ", :query) = true or genfunc_filter_matcher(ddc.ddc.value, :query) = true) "
                queryMap.query  = params.query
-               queryMap.query2 = "%${params.query}%"
            }
 
            query += "group by ddc.ddc.id, ddc.ddc.value, ddc.ddc.value_"+i18n+" order by ddc.ddc.value"
