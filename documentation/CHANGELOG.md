@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      08.12.2023  rc-3.3  3.3.2       Moe     Bug         500er bei Alle auswählen in Kostenausschüttung
+
+5473    08.12.2023  rc-3.3  3.3.2       Moe     Bug         Kostenausschütung erweitern mit Prozent auf aktuellen Preis und neuen Umfrage Preis
+
+5453    08.12.2023  rc-3.3  3.3.2       Moe     Bug         Titelumfrage: Titel löschen soll nicht abhängig von den Status-Reiter sein
+
+5472    08.12.2023  rc-3.3  3.3.2       Moe     Bug         Dauerhafte Titel werden gesetzt wenn man Teilnehmer hinzufügt bei einer Lizenz
+
 --      07.12.2023  rc-3.3  3.3.2       Moe     Bug         Kosten öffnen/bearbeiten/kopieren nicht möglich bei verknüpften Kosten mit Titel
 
 5464    06.12.2023  rc-3.3  3.3.2       Moe     Bug         Titelgruppe verhindert das Löschen einer Lizenz
