@@ -240,9 +240,24 @@ class FinanceService {
         Boolean billingSumRounding = params.newBillingSumRounding == 'on'
         Boolean finalCostRounding = params.newFinalCostRounding == 'on'
         if(params.containsKey('costItemListToggler')) {
-            if(result.subscription)
-                selectedCostItems = getCostItemsForSubscription(params, result).get(params.view).ids
-            else selectedCostItems = getCostItems(params, result).get(params.view).ids
+            if(result.subscription) {
+                Map costItems = getCostItemsForSubscription(params, result)
+                if (costItems.own) {
+                    selectedCostItems = costItems.own.ids
+                }
+                if (costItems.cons) {
+                    selectedCostItems = costItems.cons.ids
+                }
+                if(costItems.coll) {
+                    selectedCostItems = costItems.coll.ids
+                }
+                if (costItems.subscr) {
+                    selectedCostItems = costItems.subscr.ids
+                }
+            }
+            else {
+                selectedCostItems = getCostItems(params, result).get(params.view).ids
+            }
         }
         else {
             params.list("selectedCostItems").each { id ->
