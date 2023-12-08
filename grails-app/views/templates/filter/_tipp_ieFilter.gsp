@@ -440,6 +440,7 @@
                 cache: false
             },
             clearable: true,
+            throttle: 500,
             minCharacters: 0
         });
         if(values.length > 0) {
