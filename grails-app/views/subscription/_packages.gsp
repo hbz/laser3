@@ -189,49 +189,51 @@
                                 <dt>${message(code: 'default.status.label')}</dt>
                                 <dd>${sp.pkg.packageStatus?.getI10n('value')}</dd>
                             </dl>
-                            <dl>
-                                <dt>${message(code: 'package.show.altname')}</dt>
-                                <dd>
-                                    <div class="ui list">
-                                        <g:each in="${packageInstanceRecord.altname}" var="altname">
-                                          <div class="item">
-                                              <i class="box open grey icon"></i>
-                                              <div class="content">
-                                                ${altname}
+                            <g:if test="${packageInstanceRecord}">
+                                <dl>
+                                    <dt>${message(code: 'package.show.altname')}</dt>
+                                    <dd>
+                                        <div class="ui list">
+                                            <g:each in="${packageInstanceRecord.altname}" var="altname">
+                                              <div class="item">
+                                                  <i class="box open grey icon"></i>
+                                                  <div class="content">
+                                                    ${altname}
+                                                  </div>
                                               </div>
-                                          </div>
-                                        </g:each>
-                                    </div>
-                                </dd>
-                            </dl>
-                            <dl>
-                                <dt>${message(code: 'package.curatoryGroup.label')}</dt>
-                                <dd>
-                                    <div class="ui list">
-                                        <g:each in="${packageInstanceRecord.curatoryGroups}" var="curatoryGroup">
-                                            <div class="item">
-                                                <div class="content">
-                                                    ${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}
-                                                    <ui:wekbIconLink type="curatoryGroup" gokbId="${curatoryGroup.curatoryGroup}"/>
+                                            </g:each>
+                                        </div>
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt>${message(code: 'package.curatoryGroup.label')}</dt>
+                                    <dd>
+                                        <div class="ui list">
+                                            <g:each in="${packageInstanceRecord.curatoryGroups}" var="curatoryGroup">
+                                                <div class="item">
+                                                    <div class="content">
+                                                        ${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}
+                                                        <ui:wekbIconLink type="curatoryGroup" gokbId="${curatoryGroup.curatoryGroup}"/>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </g:each>
-                                    </div>
-                                </dd>
-                            </dl>
-                            <dl>
-                                <dt>${message(code: 'package.lastUpdated.label')}</dt>
-                                <dd>
-                                    <g:if test="${packageInstanceRecord.lastUpdatedDisplay}">
-                                        <g:formatDate formatName="default.date.format.notime"
-                                                      date="${DateUtils.parseDateGeneric(packageInstanceRecord.lastUpdatedDisplay)}"/>
-                                    </g:if>
-                                </dd>
-                            </dl>
-                            <dl>
-                                <dt>${message(code: 'package.breakable')}</dt>
-                                <dd>${packageInstanceRecord.breakable ? RefdataValue.getByValueAndCategory(packageInstanceRecord.breakable, RDConstants.PACKAGE_BREAKABLE).getI10n("value") : message(code: 'default.not.available')}</dd>
-                            </dl>
+                                            </g:each>
+                                        </div>
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt>${message(code: 'package.lastUpdated.label')}</dt>
+                                    <dd>
+                                        <g:if test="${packageInstanceRecord.lastUpdatedDisplay}">
+                                            <g:formatDate formatName="default.date.format.notime"
+                                                          date="${DateUtils.parseDateGeneric(packageInstanceRecord.lastUpdatedDisplay)}"/>
+                                        </g:if>
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt>${message(code: 'package.breakable')}</dt>
+                                    <dd>${packageInstanceRecord.breakable ? RefdataValue.getByValueAndCategory(packageInstanceRecord.breakable, RDConstants.PACKAGE_BREAKABLE).getI10n("value") : message(code: 'default.not.available')}</dd>
+                                </dl>
+                            </g:if>
                             <dl>
                                 <dt>${message(code: 'package.contentType.label')}</dt>
                                 <dd>${sp.pkg.contentType?.getI10n("value")}</dd>
@@ -282,88 +284,97 @@
                             </g:else>
                             --%>
                         </div>
-                        <div class="eight wide column">
-                            <dl>
-                                <dt>${message(code: 'package.scope.label')}</dt>
-                                <dd>
-                                    ${packageInstanceRecord.scope ? RefdataValue.getByValueAndCategory(packageInstanceRecord.scope, RDConstants.PACKAGE_SCOPE).getI10n("value") : message(code: 'default.not.available')}
-                                    <g:if test="${packageInstanceRecord.scope == RDStore.PACKAGE_SCOPE_NATIONAL.value}">
-                                        <dl>
-                                            <dt>${message(code: 'package.nationalRange.label')}</dt>
-                                            <g:if test="${packageInstanceRecord.nationalRanges}">
-                                                <dd>
-                                                    <div class="ui bulleted list">
-                                                        <g:each in="${packageInstanceRecord.nationalRanges}" var="nr">
-                                                            <div class="item">${RefdataValue.getByValueAndCategory(nr.value,RDConstants.COUNTRY) ? RefdataValue.getByValueAndCategory(nr.value,RDConstants.COUNTRY).getI10n('value') : nr}</div>
-                                                        </g:each>
+                        <g:if test="${packageInstanceRecord}">
+                            <div class="eight wide column">
+                                <dl>
+                                    <dt>${message(code: 'package.scope.label')}</dt>
+                                    <dd>
+                                        ${packageInstanceRecord.scope ? RefdataValue.getByValueAndCategory(packageInstanceRecord.scope, RDConstants.PACKAGE_SCOPE).getI10n("value") : message(code: 'default.not.available')}
+                                        <g:if test="${packageInstanceRecord.scope == RDStore.PACKAGE_SCOPE_NATIONAL.value}">
+                                            <dl>
+                                                <dt>${message(code: 'package.nationalRange.label')}</dt>
+                                                <g:if test="${packageInstanceRecord.nationalRanges}">
+                                                    <dd>
+                                                        <div class="ui bulleted list">
+                                                            <g:each in="${packageInstanceRecord.nationalRanges}"
+                                                                    var="nr">
+                                                                <div class="item">${RefdataValue.getByValueAndCategory(nr.value, RDConstants.COUNTRY) ? RefdataValue.getByValueAndCategory(nr.value, RDConstants.COUNTRY).getI10n('value') : nr}</div>
+                                                            </g:each>
+                                                        </div>
+                                                    </dd>
+                                                </g:if>
+                                            </dl>
+                                            <dl>
+                                                <dt>${message(code: 'package.regionalRange.label')}</dt>
+                                                <g:if test="${packageInstanceRecord.regionalRanges}">
+                                                    <dd>
+                                                        <div class="ui bulleted list">
+                                                            <g:each in="${packageInstanceRecord.regionalRanges}"
+                                                                    var="rr">
+                                                                <div class="item">${RefdataValue.getByValueAndCategory(rr.value, RDConstants.REGIONS_DE) ? RefdataValue.getByValueAndCategory(rr.value, RDConstants.REGIONS_DE).getI10n('value') : rr}</div>
+                                                            </g:each>
+                                                        </div>
+                                                    </dd>
+                                                </g:if>
+                                            </dl>
+                                        </g:if>
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt>${message(code: 'package.paymentType.label')}</dt>
+                                    <dd>${packageInstanceRecord.paymentType ? RefdataValue.getByValueAndCategory(packageInstanceRecord.paymentType, RDConstants.PAYMENT_TYPE).getI10n("value") : message(code: 'default.not.available')}</dd>
+                                </dl>
+                                <dl>
+                                    <dt>${message(code: 'package.openAccess.label')}</dt>
+                                    <dd>${packageInstanceRecord.openAccess ? RefdataValue.getByValueAndCategory(packageInstanceRecord.openAccess, RDConstants.LICENSE_OA_TYPE)?.getI10n("value") : RDStore.LICENSE_OA_TYPE_EMPTY.getI10n("value")}</dd>
+                                </dl>
+                                <dl>
+                                    <dt>${message(code: 'package.freeTrial.label')}</dt>
+                                    <dd>${packageInstanceRecord.freeTrial ? RefdataValue.getByValueAndCategory(packageInstanceRecord.freeTrial, RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
+                                </dl>
+                                <dl>
+                                    <dt>${message(code: 'package.freeTrialPhase.label')}</dt>
+                                    <dd>${packageInstanceRecord.freeTrialPhase ?: message(code: 'default.not.available')}</dd>
+                                </dl>
+                                <dl>
+                                    <dt>${message(code: 'package.ddc.label')}</dt>
+                                    <dd>
+                                        <div class="ui list">
+                                            <g:each in="${packageInstanceRecord.ddcs}" var="ddc">
+                                                <div class="item">
+                                                    <i class="sitemap grey icon"></i>
+
+                                                    <div class="content">
+                                                        ${RefdataValue.getByValueAndCategory(ddc.value, RDConstants.DDC) ? RefdataValue.getByValueAndCategory(ddc.value, RDConstants.DDC).getI10n('value') : message(code: 'package.ddc.invalid')}
                                                     </div>
-                                                </dd>
-                                            </g:if>
-                                        </dl>
-                                        <dl>
-                                            <dt>${message(code: 'package.regionalRange.label')}</dt>
-                                            <g:if test="${packageInstanceRecord.regionalRanges}">
-                                                <dd>
-                                                    <div class="ui bulleted list">
-                                                        <g:each in="${packageInstanceRecord.regionalRanges}" var="rr">
-                                                            <div class="item">${RefdataValue.getByValueAndCategory(rr.value,RDConstants.REGIONS_DE) ? RefdataValue.getByValueAndCategory(rr.value,RDConstants.REGIONS_DE).getI10n('value') : rr}</div>
-                                                        </g:each>
+                                                </div>
+                                            </g:each>
+                                        </div>
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt>${message(code: 'package.archivingAgency.label')}</dt>
+                                    <dd>
+                                        <div class="ui list">
+                                            <g:each in="${packageInstanceRecord.packageArchivingAgencies}"
+                                                    var="arcAgency">
+                                                <div class="item">
+                                                    <i class="archive grey icon"></i>
+
+                                                    <div class="content">
+                                                        <div class="header">${arcAgency.archivingAgency ? RefdataValue.getByValueAndCategory(arcAgency.archivingAgency, RDConstants.ARCHIVING_AGENCY).getI10n("value") : message(code: 'package.archivingAgency.invalid')}</div>
+
+                                                        <div class="description">${message(code: 'package.archivingAgency.openAccess.label')}: ${arcAgency.openAccess ? RefdataValue.getByValueAndCategory(arcAgency.openAccess, RDConstants.Y_N_P).getI10n("value") : ""}</div>
+
+                                                        <div class="description">${message(code: 'package.archivingAgency.postCancellationAccess.label')}: ${arcAgency.postCancellationAccess ? RefdataValue.getByValueAndCategory(arcAgency.postCancellationAccess, RDConstants.Y_N_P).getI10n("value") : ""}</div>
                                                     </div>
-                                                </dd>
-                                            </g:if>
-                                        </dl>
-                                    </g:if>
-                                </dd>
-                            </dl>
-                            <dl>
-                                <dt>${message(code: 'package.paymentType.label')}</dt>
-                                <dd>${packageInstanceRecord.paymentType ? RefdataValue.getByValueAndCategory(packageInstanceRecord.paymentType,RDConstants.PAYMENT_TYPE).getI10n("value") : message(code: 'default.not.available')}</dd>
-                            </dl>
-                            <dl>
-                                <dt>${message(code: 'package.openAccess.label')}</dt>
-                                <dd>${packageInstanceRecord.openAccess ? RefdataValue.getByValueAndCategory(packageInstanceRecord.openAccess, RDConstants.LICENSE_OA_TYPE)?.getI10n("value") : RDStore.LICENSE_OA_TYPE_EMPTY.getI10n("value")}</dd>
-                            </dl>
-                            <dl>
-                                <dt>${message(code: 'package.freeTrial.label')}</dt>
-                                <dd>${packageInstanceRecord.freeTrial ? RefdataValue.getByValueAndCategory(packageInstanceRecord.freeTrial,RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
-                            </dl>
-                            <dl>
-                                <dt>${message(code: 'package.freeTrialPhase.label')}</dt>
-                                <dd>${packageInstanceRecord.freeTrialPhase ?: message(code: 'default.not.available')}</dd>
-                            </dl>
-                            <dl>
-                                <dt>${message(code: 'package.ddc.label')}</dt>
-                                <dd>
-                                    <div class="ui list">
-                                        <g:each in="${packageInstanceRecord.ddcs}" var="ddc">
-                                            <div class="item">
-                                                <i class="sitemap grey icon"></i>
-                                                <div class="content">
-                                                    ${RefdataValue.getByValueAndCategory(ddc.value,RDConstants.DDC) ? RefdataValue.getByValueAndCategory(ddc.value,RDConstants.DDC).getI10n('value') : message(code:'package.ddc.invalid')}
                                                 </div>
-                                            </div>
-                                        </g:each>
-                                    </div>
-                                </dd>
-                            </dl>
-                            <dl>
-                                <dt>${message(code: 'package.archivingAgency.label')}</dt>
-                                <dd>
-                                    <div class="ui list">
-                                        <g:each in="${packageInstanceRecord.packageArchivingAgencies}" var="arcAgency">
-                                            <div class="item">
-                                                <i class="archive grey icon"></i>
-                                                <div class="content">
-                                                    <div class="header">${arcAgency.archivingAgency ? RefdataValue.getByValueAndCategory(arcAgency.archivingAgency, RDConstants.ARCHIVING_AGENCY).getI10n("value") : message(code: 'package.archivingAgency.invalid')}</div>
-                                                    <div class="description">${message(code: 'package.archivingAgency.openAccess.label')}: ${arcAgency.openAccess ? RefdataValue.getByValueAndCategory(arcAgency.openAccess, RDConstants.Y_N_P).getI10n("value") : ""}</div>
-                                                    <div class="description">${message(code: 'package.archivingAgency.postCancellationAccess.label')}: ${arcAgency.postCancellationAccess ? RefdataValue.getByValueAndCategory(arcAgency.postCancellationAccess, RDConstants.Y_N_P).getI10n("value") : ""}</div>
-                                                </div>
-                                            </div>
-                                        </g:each>
-                                    </div>
-                                </dd>
-                            </dl>
-                        </div>
+                                            </g:each>
+                                        </div>
+                                    </dd>
+                                </dl>
+                            </div>
+                        </g:if>
                         <%--
                         <div class="nine wide column">
                             <g:form controller="subscription" action="setupPendingChangeConfiguration" params="[id:sp.subscription.id,pkg:sp.pkg.id]">

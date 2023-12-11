@@ -2415,6 +2415,7 @@ join sub.orgRelations or_sub where
         Integer countRows = 0
         Integer count = 0
         Integer countSelectTipps = 0
+        Integer countNotSelectTipps = 0
         Org contextOrg = contextService.getOrg()
         Set selectedTipps = [], truncatedRows = []
 
@@ -2517,6 +2518,9 @@ join sub.orgRelations or_sub where
                                     selectedTipps << match.gokbId
                                     countSelectTipps++
                                 }
+                                if (!allowedToSelect) {
+                                    countNotSelectTipps++
+                                }
                             }
                         }
                     }
@@ -2527,7 +2531,7 @@ join sub.orgRelations or_sub where
             }
         }
 
-        return [processRows: countRows, processCount: count, selectedTipps: selectedTipps, countSelectTipps: countSelectTipps]
+        return [processRows: countRows, processCount: count, selectedTipps: selectedTipps, countSelectTipps: countSelectTipps, countNotSelectTipps: countNotSelectTipps]
     }
 
     @Deprecated
@@ -2686,7 +2690,7 @@ join sub.orgRelations or_sub where
                     //property.save(flush:true)
                     if(!prop.save(failOnError: true))
                     {
-                        println(prop.error)
+                        log.error("Error Property save: " +prop.error)
                     }
                 } else if(field == "dateValue") {
                     SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
