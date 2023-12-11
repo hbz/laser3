@@ -47188,7 +47188,14 @@ aside.la-metabox + .la-metabox-spacer {
 }
 
 .ui.segments.la-accordion-segments {
-  border: 1px solid #d3dae3;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 1px solid #d3dae3;
+}
+
+.ui.segments.la-accordion-segments:last-child {
+  border-bottom: none;
 }
 
 .ui.segments.la-accordion-segments > .segment {

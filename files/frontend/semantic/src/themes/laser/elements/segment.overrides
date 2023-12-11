@@ -70,9 +70,12 @@ aside.la-metabox + .la-metabox-spacer {
 }
 // Accordion for 'see more content'
 .ui.segments.la-accordion-segments {
-  border: 1px solid @laDecorationColor;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 1px solid @laDecorationColor;
   &:last-child {
-    //border-bottom:none;
+    border-bottom:none;
   }
   > .segment {
     border-top: none;
