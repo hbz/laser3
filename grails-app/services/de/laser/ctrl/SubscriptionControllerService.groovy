@@ -1774,6 +1774,7 @@ class SubscriptionControllerService {
                         params.sort = params.sort ?: 'tipp.sortname'
                         params.order = params.order ?: 'asc'
 
+                        // params.currentIEs = 'currentIEs' for subTabs with UITagLib tabsItem
                         if(params.subTab){
                             if(params.subTab == 'currentIEs'){
                                 params.currentIEs = 'currentIEs'
@@ -1795,6 +1796,7 @@ class SubscriptionControllerService {
                                 params.currentIEs = 'currentIEs'
                                 params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
                         }
+                        result.listOfStatus = params.status.collect{ it instanceof String ?  RefdataValue.get(Long.parseLong(it)) : RefdataValue.get(it) }
 
                         params.titleGroup = result.titleGroupID
                         Map query = filterService.getIssueEntitlementQuery(params, subscriberSub)

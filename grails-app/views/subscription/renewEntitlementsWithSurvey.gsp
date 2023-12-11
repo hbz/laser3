@@ -304,9 +304,10 @@
 
 
     <g:form name="renewEntitlements" id="${subscriberSub.id}" action="processRenewEntitlementsWithSurvey" class="ui form">
-    <g:hiddenField id="packageId" name="packageId" value="${params.packageId}"/>
-    <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
-    <g:hiddenField name="tab" value="${params.tab}"/>
+        <g:hiddenField id="packageId" name="packageId" value="${params.packageId}"/>
+        <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
+        <g:hiddenField name="tab" value="${params.tab}"/>
+        <g:hiddenField name="subTab" value="${params.subTab}"/>
         <g:if test="${params.tab == 'allTipps' || params.tab == 'selectedIEs' || params.tab == 'currentPerpetualAccessIEs'}">
             <div class="ui form">
                 <div class="three wide fields">
@@ -406,7 +407,8 @@
                 title_types: ${params.list("title_types")},
                 publishers: ${params.list("pulishers")},
                 hasPerpetualAccess: "${params.hasPerpetualAccess}",
-                titleGroup: "${params.titleGroup}"
+                titleGroup: "${params.titleGroup}",
+                status: ${params.list("status")},
             };
             $.ajax({
                 url: "<g:createLink controller="ajax" action="updateChecked" />",
@@ -417,6 +419,7 @@
                     referer: "${actionName}",
                     checked: checked,
                     tab: "${params.tab}",
+                    subTab: "${params.subTab}",
                     baseSubID: "${parentSubscription.id}",
                     newSubID: "${subscriberSub.id}",
                     surveyConfigID: "${surveyConfig.id}"

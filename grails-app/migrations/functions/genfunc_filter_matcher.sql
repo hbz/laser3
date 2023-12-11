@@ -4,7 +4,7 @@ CREATE OR REPLACE FUNCTION GENFUNC_FILTER_MATCHER(content TEXT, test TEXT)
     AS $$
 
 DECLARE
-    VERSION CONSTANT NUMERIC = 4;
+    VERSION CONSTANT NUMERIC = 5;
 
     result_phrases BOOLEAN;
     result_terms BOOLEAN;
@@ -21,7 +21,7 @@ DECLARE
     char_term TEXT;
 
 BEGIN
-    RAISE NOTICE 'Query: [%] contains [%]', content, test;
+    /* RAISE NOTICE 'Query: [%] contains [%]', content, test; */
 
     /* -- find phrase with quotes -- */
 
@@ -30,7 +30,7 @@ BEGIN
             phrases = array_append(phrases, rm_cursor[1]);
         END LOOP;
 
-    RAISE NOTICE 'phrases[] ----> %', phrases;
+    /* RAISE NOTICE 'phrases[] ----> %', phrases; */
 
     /* -- process phrases -- */
 
@@ -42,7 +42,7 @@ BEGIN
                 char_phrase = trim(both '"' from char_phrase);
 
                 IF length(trim(char_phrase)) > 0 THEN
-                    RAISE NOTICE 'char_phrase: [%]',  char_phrase;
+                    /* RAISE NOTICE 'char_phrase: [%]',  char_phrase; */
 
                     select array_append(tmp_phrases, '%'||trim(char_phrase)||'%') into tmp_phrases;
                 END IF;
@@ -52,14 +52,14 @@ BEGIN
 				when content ilike all(tmp_phrases) then true
 				else false
 				end;
-        RAISE NOTICE 'result_phrases --> %', result_phrases;
+        /* RAISE NOTICE 'phrases[] ----> % --> %', phrases, result_phrases; */
     END IF;
 
     /* -- find multiple terms divided by spaces -- */
 
     SELECT * INTO terms FROM regexp_split_to_array(trim(test), '\s+');
 
-    RAISE NOTICE 'terms[]   ----> %', terms;
+    /* RAISE NOTICE 'terms[]   ----> %', terms; */
 
     /* -- process terms -- */
 
@@ -75,7 +75,7 @@ BEGIN
 				when content ilike all(tmp_terms) then true
 				else false
 				end;
-        RAISE NOTICE 'result_terms --> %', result_terms;
+        /* RAISE NOTICE 'terms[] ----> % --> %', terms, result_terms; */
     END IF;
 	
 	if result_phrases is not null and result_terms is not null then

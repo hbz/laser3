@@ -5,6 +5,7 @@ import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserRole
 import de.laser.storage.RDStore
+import de.laser.utils.DatabaseUtils
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -68,8 +69,8 @@ class UserService {
         }
 
         if (params.name && params.name != '' ) {
-            whereQuery.add( '(genfunc_filter_matcher(u.username, :name) = true or genfunc_filter_matcher(u.display, :name) = true)' )
-            queryParams.put('name', "%${params.name.toLowerCase()}%")
+            whereQuery.add('(genfunc_filter_matcher(u.username, :name) = true or genfunc_filter_matcher(u.display, :name) = true)')
+            queryParams.put('name', params.name)
         }
         String query = baseQuery.join(', ') + (whereQuery ? ' where ' + whereQuery.join(' and ') : '') + ' order by u.username'
         User.executeQuery(query, queryParams /*,params */)

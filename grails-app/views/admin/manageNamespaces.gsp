@@ -119,7 +119,7 @@
                     <thead>
 						<tr>
 							<th><g:message code="identifierNamespace.ns.label"/></th>
-							<th></th>
+                            <th><g:message code="default.count.label"/></th>
 							<th><g:message code="default.name.label"/> (${currentLang})</th>
 							<th><g:message code="default.description.label"/> (${currentLang})</th>
 							<th><g:message code="identifierNamespace.family.label"/></th>

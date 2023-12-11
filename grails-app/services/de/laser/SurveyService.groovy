@@ -1599,13 +1599,14 @@ class SurveyService {
      * @param tipp the title whose presence should be checked
      * @return true if the given subscription contains the title, false otherwise
      */
-    IssueEntitlement titleContainedBySubscription(Subscription subscription, TitleInstancePackagePlatform tipp) {
+    IssueEntitlement titleContainedBySubscription(Subscription subscription, TitleInstancePackagePlatform tipp, List<RefdataValue> status) {
         IssueEntitlement ie
+
         if(subscription.packages && tipp.pkg in subscription.packages.pkg) {
-            ie = IssueEntitlement.findBySubscriptionAndStatusAndTipp(subscription, RDStore.TIPP_STATUS_CURRENT, tipp)
+            ie = IssueEntitlement.findBySubscriptionAndStatusInListAndTipp(subscription, status, tipp)
         }else {
             TitleInstancePackagePlatform.findAllByHostPlatformURL(tipp.hostPlatformURL).each {TitleInstancePackagePlatform titleInstancePackagePlatform ->
-                ie = IssueEntitlement.findBySubscriptionAndStatusAndTipp(subscription, RDStore.TIPP_STATUS_CURRENT, titleInstancePackagePlatform) ?: ie
+                ie = IssueEntitlement.findBySubscriptionAndStatusInListAndTipp(subscription, status, titleInstancePackagePlatform) ?: ie
             }
         }
         return ie

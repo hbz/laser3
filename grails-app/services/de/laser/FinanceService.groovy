@@ -240,9 +240,24 @@ class FinanceService {
         Boolean billingSumRounding = params.newBillingSumRounding == 'on'
         Boolean finalCostRounding = params.newFinalCostRounding == 'on'
         if(params.containsKey('costItemListToggler')) {
-            if(result.subscription)
-                selectedCostItems = getCostItemsForSubscription(params, result).get(params.view).ids
-            else selectedCostItems = getCostItems(params, result).get(params.view).ids
+            if(result.subscription) {
+                Map costItems = getCostItemsForSubscription(params, result)
+                if (costItems.own) {
+                    selectedCostItems = costItems.own.ids
+                }
+                if (costItems.cons) {
+                    selectedCostItems = costItems.cons.ids
+                }
+                if(costItems.coll) {
+                    selectedCostItems = costItems.coll.ids
+                }
+                if (costItems.subscr) {
+                    selectedCostItems = costItems.subscr.ids
+                }
+            }
+            else {
+                selectedCostItems = getCostItems(params, result).get(params.view).ids
+            }
         }
         else {
             params.list("selectedCostItems").each { id ->
@@ -281,6 +296,22 @@ class FinanceService {
                 }
                 if(memberFailures)
                     result.failures = memberFailures
+            }
+            else if(params.percentOnCurrentPrice) {
+                Double percentage = 1 + params.double('percentOnCurrentPrice') / 100
+                CostItem.findAllByIdInList(selectedCostItems).each { CostItem ci ->
+                    if(ci.sub) {
+                            ci.billingSumRounding = billingSumRounding != ci.billingSumRounding ? billingSumRounding : ci.billingSumRounding
+                            ci.finalCostRounding = finalCostRounding != ci.finalCostRounding ? finalCostRounding : ci.finalCostRounding
+                            ci.costInBillingCurrency = Math.floor(Math.abs(ci.costInBillingCurrency * percentage))
+                            ci.costInLocalCurrency = Math.floor(Math.abs(ci.costInLocalCurrency * percentage))
+                            if (ci.billingSumRounding) {
+                                ci.costInBillingCurrency = Math.round(ci.costInBillingCurrency)
+                                ci.costInLocalCurrency = Math.round(ci.costInLocalCurrency)
+                            }
+                            ci.save()
+                    }
+                }
             }
             else {
                 Map<String, Object> configMap = setupConfigMap(params, result.institution)

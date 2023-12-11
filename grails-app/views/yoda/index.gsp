@@ -140,6 +140,9 @@
                         <g:link controller="admin" action="dataConsistency" target="_blank">${message(code: "menu.admin.dataConsistency")}</g:link> <span class="ui mini label">Admin</span>
                     </div>
                     <div class="item">
+                        <g:link controller="admin" action="identifierValidation" target="_blank">${message(code: "menu.admin.identifierValidation")}</g:link> <span class="ui mini label">Admin</span>
+                    </div>
+                    <div class="item">
                         <g:link controller="admin" action="fileConsistency" target="_blank">${message(code: "menu.admin.fileConsistency")}</g:link> <span class="ui mini label">Admin</span>
                     </div>
                     <div class="item">

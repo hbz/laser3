@@ -50,6 +50,7 @@ class RDStore {
     public final static RefdataValue COST_ITEM_DELETED  = getRefdataValue('Deleted', RDConstants.COST_ITEM_STATUS)
 
     public final static RefdataValue COST_ITEM_ELEMENT_CONSORTIAL_PRICE = getRefdataValue('price: consortial price', RDConstants.COST_ITEM_ELEMENT)
+    public final static RefdataValue COST_ITEM_ELEMENT_BUDGET_TITLE_PICK = getRefdataValue('budget: title pick and choose', RDConstants.COST_ITEM_ELEMENT)
 
     public final static RefdataValue CUSTOMER_IDENTIFIER_TYPE_DEFAULT = getRefdataValue('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE)
 

@@ -1168,6 +1168,10 @@ class SurveyController {
                             CostItem costItem = CostItem.findBySubAndOwnerAndCostItemStatusNotEqualAndCostItemElement(orgSub, surveyCostItem.owner, RDStore.COST_ITEM_DELETED, RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE)
                             surveyCostItem.costInBillingCurrency = costItem ? (costItem.costInBillingCurrency * (1 + (percentOnOldPrice / 100))).round(2) : surveyCostItem.costInBillingCurrency
                         }
+                        else if (params.percentOnSurveyPrice) {
+                            Double percentOnSurveyPrice = params.double('percentOnSurveyPrice', 0.00)
+                            surveyCostItem.costInBillingCurrency = percentOnSurveyPrice ? (surveyCostItem.costInBillingCurrency * (1 + (percentOnSurveyPrice / 100))).round(2) : surveyCostItem.costInBillingCurrency
+                        }
                         else {
                             surveyCostItem.costInBillingCurrency = cost_billing_currency ?: surveyCostItem.costInBillingCurrency
                         }
@@ -3607,16 +3611,38 @@ class SurveyController {
         if (!result.editable) {
             response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
-        //result.putAll(financeControllerService.setEditVars(result.institution))
 
-        /*   def surveyInfo = SurveyInfo.findByIdAndOwner(params.id, result.institution) ?: null
+        SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
+        String datetoday = sdf.format(new Date())
+        String filename = "${datetoday}_" + g.message(code: "survey.exportSurveyCostItems")
 
-           def surveyConfig = SurveyConfig.findByIdAndSurveyInfo(params.surveyConfigID, surveyInfo)*/
+        if(params.fileformat == 'xlsx') {
+            if (params.filename) {
+                filename =params.filename
+            }
 
-        if (params.exportXLSX) {
-            SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
-            String datetoday = sdf.format(new Date())
-            String filename = "${datetoday}_" + g.message(code: "survey.exportSurveyCostItems")
+            result.costItems = CostItem.findAllBySurveyOrgInListAndCostItemStatusNotEqual(SurveyOrg.findAllBySurveyConfig(result.surveyConfig), RDStore.COST_ITEM_DELETED).sort {it.surveyOrg.org.sortname}
+
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            Map<String, Object> selectedFields = [:]
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+            Set<String> contactSwitch = []
+            contactSwitch.addAll(params.list("contactSwitch"))
+            contactSwitch.addAll(params.list("addressSwitch"))
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSurveyCostItems(result.costItems, selectedFields, ExportClickMeService.FORMAT.XLS, contactSwitch)
+
+            response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }else {
+            redirect(uri: request.getHeader('referer'))
+        }
+
+/*        if (params.exportXLSX) {
             //if(wb instanceof XSSFWorkbook) file += "x";
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -3628,7 +3654,7 @@ class SurveyController {
             return
         } else {
             redirect(uri: request.getHeader('referer'))
-        }
+        }*/
 
     }
 

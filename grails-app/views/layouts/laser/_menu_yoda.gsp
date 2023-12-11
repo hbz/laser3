@@ -161,6 +161,7 @@
                 <div class="divider"></div>
 
                 <ui:link addItemAttributes="true" controller="admin" action="dataConsistency">${message(code: "menu.admin.dataConsistency")}</ui:link>
+                <ui:link addItemAttributes="true" controller="admin" action="identifierValidation">${message(code: "menu.admin.identifierValidation")}</ui:link>
                 <ui:link addItemAttributes="true" controller="admin" action="fileConsistency">${message(code: "menu.admin.fileConsistency")}</ui:link>
                 <ui:link addItemAttributes="true" controller="admin" action="manageDeletedObjects">${message(code: "menu.admin.deletedObjects")}</ui:link>
             </div>
