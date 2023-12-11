@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5475    11.12.2023  rc-3.3  3.3.2       Moe     Bug         Titelumfrage: Titel werden nicht ausgewählt
+
 5470    11.12.2023  rc-3.3  3.3.2       Moe     Bug         Kostentemplate: Falsche Sortierung der ausgegebenen UUIDs
 
 5469    08.12.2023  rc-3.3  3.3.2       Moe     Feature     Umfrage-Kosten Click-Me Export bauen
