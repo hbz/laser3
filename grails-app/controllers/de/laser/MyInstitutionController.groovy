@@ -2113,16 +2113,20 @@ class MyInstitutionController  {
     })
     def generateFinanceImportWorksheet() {
         Subscription subscription = Subscription.get(params.id)
-        Set<String> keys = ["subscription","package","issueEntitlement","budgetCode","referenceCodes","orderNumber","invoiceNumber","status",
+        Set<String> keys = ["subscription", "subscriber.sortname", "subscriber.name", "package","issueEntitlement","budgetCode","referenceCodes","orderNumber","invoiceNumber","status",
                             "element","elementSign","currency","invoiceTotal","exchangeRate","value","taxType","taxRate","invoiceDate","financialYear","title","description","datePaid","dateFrom","dateTo"]
         Set<List<String>> subscriptionRows = []
         Set<String> colHeaders = []
         colHeaders.addAll(keys.collect { String entry -> message(code:"myinst.financeImport.${entry}") })
-        Subscription.executeQuery('select sub from OrgRole oo join oo.sub sub join oo.org org where sub.instanceOf = :parent order by org.sortname', [parent: subscription]).each { Subscription subChild ->
+        Subscription.executeQuery('select sub from OrgRole oo join oo.sub sub join oo.org org where oo.roleType in (:roleType) and sub.instanceOf = :parent order by org.sortname', [roleType: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_CONS], parent: subscription]).each { Subscription subChild ->
             List<String> row = []
             keys.eachWithIndex { String entry, int i ->
                 if(entry == "subscription") {
                     row[i] = subChild.globalUID
+                }else if(entry == "subscriber.sortname") {
+                    row[i] = subChild.subscriber.sortname
+                }else if(entry == "subscriber.name") {
+                    row[i] = subChild.subscriber.name
                 }
                 else row[i] = ""
             }

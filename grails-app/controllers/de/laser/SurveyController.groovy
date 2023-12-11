@@ -1206,7 +1206,14 @@ class SurveyController {
 
         }
 
-        redirect(url: request.getHeader('referer'))
+        params.remove('selectedOrgs')
+        params.removeAll {it.key.toString().contains('new')}
+        params.remove('deleteCostItems')
+        params.remove('percentOnOldPrice')
+        params.remove('percentOnSurveyPrice')
+        params.remove('ciec')
+
+        redirect(action: 'surveyCostItems', id: result.surveyInfo.id, params: params)
     }
 
     /**
@@ -5085,7 +5092,7 @@ class SurveyController {
                         //property.save(flush:true)
                         if(!property.save(failOnError: true))
                         {
-                            println(property.error)
+                            log.error("Error Property save: " +property.error)
                         }
                     } else if(field == "dateValue") {
                         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
