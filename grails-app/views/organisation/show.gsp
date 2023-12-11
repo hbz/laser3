@@ -90,10 +90,6 @@
                     <dl>
                         <dt><g:message code="org.altname.label" /></dt>
                         <dd>
-                        <g:if test="${orgInstance.altnames.size()<=1}"> kleiner gleich 1
-                        </g:if>
-
-                            <g:else>größer als 1</g:else>
                             <div id="altnames" class="ui accordion  la-accordion-showMore">
                                 <g:if test="${orgInstance.altnames}">
                                     <div class="ui raised segments la-accordion-segments">
@@ -118,10 +114,12 @@
                                                     </div>
                                                 </div>
                                                 <div class="four wide right aligned column">
-                                                    <div class="ui icon blue button la-modern-button  la-js-dont-hide-button la-popup-tooltip la-delay la-dropdown-accordion"
-                                                         data-content="${message(code: 'subscription.packages.config.header')}">
-                                                        <i class="ui angle double down icon "></i>
-                                                    </div>
+                                                    <g:if test="${orgInstance.altnames.size()>1}">
+                                                        <div class="ui icon blue button la-modern-button  la-js-dont-hide-button la-popup-tooltip la-delay la-dropdown-accordion"
+                                                             data-content="${message(code: 'subscription.packages.config.header')}">
+                                                            <i class="ui angle double down icon "></i>
+                                                        </div>
+                                                    </g:if>
                                                 </div>
                                             </div>
                                         </div>
