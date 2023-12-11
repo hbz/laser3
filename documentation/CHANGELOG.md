@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5470    11.12.2023  rc-3.3  3.3.2       Moe     Bug         Kostentemplate: Falsche Sortierung der ausgegebenen UUIDs
+
 5469    08.12.2023  rc-3.3  3.3.2       Moe     Feature     Umfrage-Kosten Click-Me Export bauen
 
 5455    08.12.2023  rc-3.3  3.3.2       Moe     Feature     Titelumfrage: Budget und Differenz zu Auswahlsumme als zusätzliche Spalten
