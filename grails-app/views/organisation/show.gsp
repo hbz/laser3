@@ -90,47 +90,71 @@
                     <dl>
                         <dt><g:message code="org.altname.label" /></dt>
                         <dd>
-                            <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion">
+                        <g:if test="${orgInstance.altnames.size()<=1}"> kleiner gleich 1
+                        </g:if>
+
+                            <g:else>größer als 1</g:else>
+                            <div id="altnames" class="ui accordion  la-accordion-showMore">
                                 <g:if test="${orgInstance.altnames}">
-                                    <div class="title" id="altname_title">
-                                        <div data-objId="${genericOIDService.getOID(orgInstance.altnames[0])}">
-                                            <ui:xEditable data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                                          data_confirm_term_how="ok"
-                                                          class="js-open-confirm-modal-xEditable"
-                                                          owner="${orgInstance.altnames[0]}" field="name" overwriteEditable="${editable && orgInstanceRecord == null}"/>
-                                            <g:if test="${editable && orgInstanceRecord == null}">
-                                                <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: orgInstance.altnames[0].id]"
-                                                               data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [orgInstance.altnames[0].name])}"
-                                                               data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(orgInstance.altnames[0])}')">
-                                                    <i class="trash alternate outline icon"></i>
-                                                </ui:remoteLink>
-                                            </g:if>
-                                        </div>
-                                        <i class="dropdown icon"></i>
-                                    </div>
-                                    <div class="content">
-                                        <g:each in="${orgInstance.altnames.drop(1)}" var="altname">
-                                            <div class="ui item" data-objId="${genericOIDService.getOID(altname)}">
-                                                <div class="content la-space-right">
-                                                    <ui:xEditable
-                                                            data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                                            data_confirm_term_how="ok"
-                                                            class="js-open-confirm-modal-xEditable"
-                                                            owner="${altname}" field="name" overwriteEditable="${editable && orgInstanceRecord == null}"/>
-                                                </div>
-                                                <g:if test="${editable && orgInstanceRecord == null}">
-                                                    <div class="content la-space-right">
-                                                        <div class="ui buttons">
-                                                            <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
-                                                                           data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
-                                                                           data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
+                                    <div class="ui raised segments la-accordion-segments">
+                                        <div class="ui fluid segment title" id="altname_title">
+                                            <div class="ui stackable equal width grid">
+                                                <div class="twelve wide column">
+                                                    <div data-objId="${genericOIDService.getOID(orgInstance.altnames[0])}">
+                                                        <ui:xEditable data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                                      data_confirm_term_how="ok"
+                                                                      class="js-open-confirm-modal-xEditable"
+                                                                      owner="${orgInstance.altnames[0]}" field="name" overwriteEditable="${editable && orgInstanceRecord == null}"/>
+                                                        <g:if test="${editable && orgInstanceRecord == null}">
+                                                            <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                                                           controller="ajaxJson"
+                                                                           action="removeObject" params="[object: 'altname', objId: orgInstance.altnames[0].id]"
+                                                                           data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [orgInstance.altnames[0].name])}"
+                                                                           data-confirm-term-how="delete"
+                                                                           data-done="JSPC.app.removeListValue('${genericOIDService.getOID(orgInstance.altnames[0])}')">
                                                                 <i class="trash alternate outline icon"></i>
                                                             </ui:remoteLink>
-                                                        </div>
+                                                        </g:if>
                                                     </div>
-                                                </g:if>
+                                                </div>
+                                                <div class="four wide right aligned column">
+                                                    <div class="ui icon blue button la-modern-button  la-js-dont-hide-button la-popup-tooltip la-delay la-dropdown-accordion"
+                                                         data-content="${message(code: 'subscription.packages.config.header')}">
+                                                        <i class="ui angle double down icon "></i>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </g:each>
+                                        </div>
+                                    <g:if test="${orgInstance.altnames.size()> 1}">
+                                        <div class="ui fluid segment content">
+                                            <div class="ui divided middle aligned  list la-flex-list">
+                                                <g:each in="${orgInstance.altnames.drop(1)}" var="altname">
+                                                    <div class="ui item" data-objId="${genericOIDService.getOID(altname)}">
+                                                        <div class="content la-space-right">
+                                                            <ui:xEditable
+                                                                    data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                                    data_confirm_term_how="ok"
+                                                                    class="js-open-confirm-modal-xEditable"
+                                                                    owner="${altname}" field="name" overwriteEditable="${editable && orgInstanceRecord == null}"/>
+                                                        </div>
+                                                        <g:if test="${editable && orgInstanceRecord == null}">
+                                                            <div class="content la-space-right">
+                                                                <div class="ui buttons">
+                                                                    <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                                                                   controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
+                                                                                   data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
+                                                                                   data-confirm-term-how="delete"
+                                                                                   data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
+                                                                        <i class="trash alternate outline icon"></i>
+                                                                    </ui:remoteLink>
+                                                                </div>
+                                                            </div>
+                                                        </g:if>
+                                                    </div>
+                                                </g:each>
+                                            </div>
+                                        </div>
+                                    </g:if>
                                     </div>
                                 </g:if>
                             </div>
@@ -639,25 +663,34 @@
 
                 <div class="ui card">
                     <div class="content">
-                        <div class="ui accordion">
+                        <div class="ui accordion la-accordion-showMore">
                             <div class="title">
-                                <i class="dropdown icon la-dropdown-accordion"></i>
-                                <div class="ui horizontal relaxed list">
-                                    <div class="item">
-                                        <strong><g:message code="org.platforms.label" /></strong>
-                                        &nbsp;<div class="ui blue circular label">${orgInstance.platforms.size()}</div>
+                                <div class="ui stackable equal width grid">
+                                    <div class="ten wide column">
+                                        <div class="ui horizontal relaxed list">
+                                            <div class="item">
+                                                <strong><g:message code="org.platforms.label" /></strong>
+                                                &nbsp;<div class="ui blue circular label">${orgInstance.platforms.size()}</div>
+                                            </div>
+                                            <div class="item">
+                                                <strong><g:message code="package.plural" /></strong>
+                                                &nbsp;<div class="ui blue circular label">${packages.size()}</div>
+                                            </div>
+                                            <div class="item">
+                                                <strong><g:message code="subscription.plural" /></strong>
+                                                &nbsp;<div class="ui blue circular label">${currentSubscriptionsCount}/${subLinks.size()}</div>
+                                            </div>
+                                            <div class="item">
+                                                <strong><g:message code="license.plural" /></strong>
+                                                &nbsp;<div class="ui blue circular label">${currentLicensesCount}/${licLinks.size()}</div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="item">
-                                        <strong><g:message code="package.plural" /></strong>
-                                        &nbsp;<div class="ui blue circular label">${packages.size()}</div>
-                                    </div>
-                                    <div class="item">
-                                        <strong><g:message code="subscription.plural" /></strong>
-                                        &nbsp;<div class="ui blue circular label">${currentSubscriptionsCount}/${subLinks.size()}</div>
-                                    </div>
-                                    <div class="item">
-                                        <strong><g:message code="license.plural" /></strong>
-                                        &nbsp;<div class="ui blue circular label">${currentLicensesCount}/${licLinks.size()}</div>
+                                    <div class="six wide right aligned column">
+                                        <div class="ui icon blue button la-modern-button  la-js-dont-hide-button la-popup-tooltip la-delay la-dropdown-accordion"
+                                             data-content="${message(code:'subscription.packages.config.header')}">
+                                            <i class="ui angle double down icon "></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -47188,14 +47188,7 @@ aside.la-metabox + .la-metabox-spacer {
 }
 
 .ui.segments.la-accordion-segments {
-  border-top: none;
-  border-left: none;
-  border-right: none;
-  border-bottom: 1px solid #d3dae3;
-}
-
-.ui.segments.la-accordion-segments:last-child {
-  border-bottom: none;
+  border: 1px solid #d3dae3;
 }
 
 .ui.segments.la-accordion-segments > .segment {
@@ -47203,7 +47196,7 @@ aside.la-metabox + .la-metabox-spacer {
 }
 
 .ui.segments.la-accordion-segments .ui.segment:nth-child(2).content {
-  background: #e6dee2;
+  background: #F3EFF0;
 }
 
 .ui.segments.la-accordion-segments .ui.segment:nth-child(2).content .ui.table thead tr:first-child > th,
@@ -50459,7 +50452,7 @@ form {
 
 .ui.form .fields.la-forms-grid,
 .ui.form .fields .field.la-forms-grid {
-  background: #e6dee2;
+  background: #F3EFF0;
 }
 
 .ui.form .fields:last-child .field.la-modal-fieldset-margin .field,

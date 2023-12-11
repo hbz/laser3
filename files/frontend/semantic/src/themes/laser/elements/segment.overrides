@@ -70,12 +70,9 @@ aside.la-metabox + .la-metabox-spacer {
 }
 // Accordion for 'see more content'
 .ui.segments.la-accordion-segments {
-  border-top: none;
-  border-left: none;
-  border-right: none;
-  border-bottom: 1px solid @laDecorationColor;
+  border: 1px solid @laDecorationColor;
   &:last-child {
-    border-bottom:none;
+    //border-bottom:none;
   }
   > .segment {
     border-top: none;
@@ -87,7 +84,6 @@ aside.la-metabox + .la-metabox-spacer {
     }
     background:@laAlternativeBackground;
   }
-
 }
 .ui.la-segment-with-icon {
   position: relative;
