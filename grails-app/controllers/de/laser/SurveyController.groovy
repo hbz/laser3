@@ -1206,7 +1206,14 @@ class SurveyController {
 
         }
 
-        redirect(url: request.getHeader('referer'))
+        params.remove('selectedOrgs')
+        params.removeAll {it.key.toString().contains('new')}
+        params.remove('deleteCostItems')
+        params.remove('percentOnOldPrice')
+        params.remove('percentOnSurveyPrice')
+        params.remove('ciec')
+
+        redirect(action: 'surveyCostItems', id: result.surveyInfo.id, params: params)
     }
 
     /**

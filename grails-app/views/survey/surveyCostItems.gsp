@@ -143,7 +143,7 @@
             </div>
 
             <g:form action="processSurveyCostItemsBulk" data-confirm-id="processSurveyCostItemsBulk_form" name="editCost_${idSuffix}" method="post" class="ui form"
-                    params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']">
+                    params="${params}">
 
                 <div id="bulkCostItems" class="hidden">
                     <h3 class="ui header"><span class="la-long-tooltip la-popup-tooltip la-delay"
