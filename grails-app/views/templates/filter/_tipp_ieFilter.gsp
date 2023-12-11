@@ -2,7 +2,8 @@
 <laser:serviceInjection />
 <g:set var="action" value="${action ?: actionName}"/>
 
-<g:set var="availableStatus" value="${RefdataCategory.getAllRefdataValues(RDConstants.TIPP_STATUS)-RDStore.TIPP_STATUS_REMOVED}"/>
+<g:set var="availableStatus" value="${RefdataCategory.getAllRefdataValues(RDConstants.TIPP_STATUS)-RDStore.TIPP_STATUS_REMOVED}" />
+<g:set var="disableFilter" value="${(allTippsCounts && allTippsCounts > 100000) || (allTippCounts && allTippCounts > 100000)}" />
 
 <g:if test="${action == 'currentPermanentTitles'}">
     <g:set var="availableStatus" value="${availableStatus-RDStore.TIPP_STATUS_EXPECTED}"/>
@@ -97,7 +98,7 @@
         </div>
 
         <div class="four fields">
-            <div class="field">
+            <div class="field ${disableFilter ? 'disabled' : ''}">
                 <label for="series_names">${message(code: 'titleInstance.seriesName.label')}</label>
                 <div class="ui search selection fluid multiple dropdown" id="series_names">
                     <input type="hidden" name="series_names"/>
@@ -119,7 +120,7 @@
                 --%>
             </div>
 
-            <div class="field">
+            <div class="field ${disableFilter ? 'disabled' : ''}">
                 <label for="subject_references">${message(code: 'titleInstance.subjectReference.label')}</label>
                 <div class="ui search selection fluid multiple dropdown" id="subject_references">
                     <input type="hidden" name="subject_references"/>
@@ -436,14 +437,14 @@
         }
         selector.dropdown({
             apiSettings: {
-                url: url,
+                url: url + '&by=' + by + '&obj=' + obj + '&forTitles=' + forTitles + '&query={query}',
                 cache: false
             },
             clearable: true,
             throttle: 500,
             minCharacters: 0
         });
-        if(values.length > 0) {
+        if (values.length > 0) {
             selector.dropdown('queryRemote', '', () => {
                 selector.dropdown('set selected', values);
             });
@@ -456,81 +457,21 @@
     <g:if test="${controllerName == 'package' || fillDropdownsWithPackage}">
         by = 'pkg';
         obj = '${genericOIDService.getOID(packageInstance)}';
-        <%--
-        <g:set var="seriesNames"
-               value="${packageInstance ? controlledListService.getAllPossibleSeriesByPackage(packageInstance,action) : []}"/>
-        <g:set var="subjects"
-               value="${packageInstance ? controlledListService.getAllPossibleSubjectsByPackage(packageInstance,action) : []}"/>
-        <g:set var="ddcs"
-               value="${packageInstance ? controlledListService.getAllPossibleDdcsByPackage(packageInstance,action) : []}"/>
-        <g:set var="languages"
-               value="${packageInstance ? controlledListService.getAllPossibleLanguagesByPackage(packageInstance,action) : []}"/>
-        <g:set var="yearsFirstOnline"
-               value="${packageInstance ? controlledListService.getAllPossibleDateFirstOnlineYearByPackage(packageInstance,action) : []}"/>
-        <g:set var="publishers"
-               value="${packageInstance ? controlledListService.getAllPossiblePublisherByPackage(packageInstance,action) : []}"/>
-        <g:set var="titleTypes"
-               value="${packageInstance ? controlledListService.getAllPossibleTitleTypesByPackage(packageInstance,action) : []}"/>
-        <g:set var="mediumTypes"
-               value="${packageInstance ? controlledListService.getAllPossibleMediumTypesByPackage(packageInstance,action) : []}"/>
-        <g:set var="coverageDepths"
-               value="${packageInstance ? controlledListService.getAllPossibleCoverageDepthsByPackage(packageInstance,action) : []}"/>
-        --%>
     </g:if>
     <g:elseif test="${controllerName == 'subscription'}">
         by = 'sub';
         obj = '${genericOIDService.getOID(subscription)}';
-        <%--
-        <g:set var="seriesNames"
-               value="${subscription ? controlledListService.getAllPossibleSeriesBySub(subscription) : []}"/>
-        <g:set var="subjects"
-               value="${subscription ? controlledListService.getAllPossibleSubjectsBySub(subscription) : []}"/>
-        <g:set var="ddcs"
-               value="${subscription ? controlledListService.getAllPossibleDdcsBySub(subscription) : []}"/>
-        <g:set var="languages"
-               value="${subscription ? controlledListService.getAllPossibleLanguagesBySub(subscription) : []}"/>
-        <g:set var="yearsFirstOnline"
-               value="${subscription ? controlledListService.getAllPossibleDateFirstOnlineYearBySub(subscription) : []}"/>
-        <g:set var="publishers"
-               value="${subscription ? controlledListService.getAllPossiblePublisherBySub(subscription) : []}"/>
-        <g:set var="titleTypes"
-               value="${subscription ? controlledListService.getAllPossibleTitleTypesBySub(subscription) : []}"/>
-        <g:set var="mediumTypes"
-               value="${subscription ? controlledListService.getAllPossibleMediumTypesBySub(subscription) : []}"/>
-        <g:set var="coverageDepths"
-               value="${subscription ? controlledListService.getAllPossibleCoverageDepthsBySub(subscription) : []}"/>
-        --%>
     </g:elseif>
     <g:elseif test="${controllerName == 'title' || action == 'currentPermanentTitles'}">
         by = 'status';
-        <%--
-        <g:set var="seriesNames"
-               value="${params.status ? controlledListService.getAllPossibleSeriesByStatus(params) : []}"/>
-        <g:set var="subjects"
-               value="${params.status ? controlledListService.getAllPossibleSubjectsByStatus(params) : []}"/>
-        <g:set var="ddcs"
-               value="${params.status ? controlledListService.getAllPossibleDdcsByStatus(params) : []}"/>
-        <g:set var="languages"
-               value="${params.status ? controlledListService.getAllPossibleLanguagesByStatus(params) : []}"/>
-        <g:set var="yearsFirstOnline"
-               value="${params.status ? controlledListService.getAllPossibleDateFirstOnlineYearByStatus(params) : []}"/>
-        <g:set var="publishers"
-               value="${params.status ? controlledListService.getAllPossiblePublisherByStatus(params) : []}"/>
-        <g:set var="titleTypes"
-               value="${params.status ? controlledListService.getAllPossibleTitleTypesByStatus(params) : []}"/>
-        <g:set var="mediumTypes"
-               value="${params.status ? controlledListService.getAllPossibleMediumTypesByStatus(params) : []}"/>
-        <g:set var="coverageDepths"
-               value="${params.status ? controlledListService.getAllPossibleCoverageDepthsByStatus(params) : []}"/>
-        --%>
     </g:elseif>
-    JSPC.app.ajaxDropdown($('#series_names'), '<g:createLink controller="ajaxJson" action="getAllPossibleSeries" params="${params}"/>&by='+by+'&obj='+obj+'&forTitles='+forTitles+'&query={query}', '${params.series_names}');
-    JSPC.app.ajaxDropdown($('#subject_references'), '<g:createLink controller="ajaxJson" action="getAllPossibleSubjects" params="${params}"/>&by='+by+'&obj='+obj+'&forTitles='+forTitles+'&query={query}', '${params.subject_references}');
-    JSPC.app.ajaxDropdown($('#ddcs'), '<g:createLink controller="ajaxJson" action="getAllPossibleDdcs" params="${params}"/>&by='+by+'&obj='+obj+'&forTitles='+forTitles+'&query={query}', '${params.ddcs}');
-    JSPC.app.ajaxDropdown($('#languages'), '<g:createLink controller="ajaxJson" action="getAllPossibleLanguages" params="${params}"/>&by='+by+'&obj='+obj+'&forTitles='+forTitles+'&query={query}', '${params.languages}');
-    JSPC.app.ajaxDropdown($('#yearsFirstOnline'), '<g:createLink controller="ajaxJson" action="getAllPossibleDateFirstOnlineYears" params="${params}"/>&by='+by+'&obj='+obj+'&forTitles='+forTitles+'&query={query}', '${params.yearsFirstOnline}');
-    JSPC.app.ajaxDropdown($('#medium'), '<g:createLink controller="ajaxJson" action="getAllPossibleMediumTypes" params="${params}"/>&by='+by+'&obj='+obj+'&forTitles='+forTitles+'&query={query}', '${params.medium}');
-    JSPC.app.ajaxDropdown($('#title_types'), '<g:createLink controller="ajaxJson" action="getAllPossibleTitleTypes" params="${params}"/>&by='+by+'&obj='+obj+'&forTitles='+forTitles+'&query={query}', '${params.title_types}');
-    JSPC.app.ajaxDropdown($('#publishers'), '<g:createLink controller="ajaxJson" action="getAllPossiblePublishers" params="${params}"/>&by='+by+'&obj='+obj+'&forTitles='+forTitles+'&query={query}', '${params.publishers}');
-    JSPC.app.ajaxDropdown($('#coverageDepth'), '<g:createLink controller="ajaxJson" action="getAllPossibleCoverageDepths" params="${params}"/>&by='+by+'&obj='+obj+'&forTitles='+forTitles+'&query={query}', '${params.coverageDepth}');
+    JSPC.app.ajaxDropdown($('#series_names'),       '<g:createLink controller="ajaxJson" action="getAllPossibleSeries" params="${params}"/>', '${params.series_names}');
+    JSPC.app.ajaxDropdown($('#subject_references'), '<g:createLink controller="ajaxJson" action="getAllPossibleSubjects" params="${params}"/>', '${params.subject_references}');
+    JSPC.app.ajaxDropdown($('#ddcs'),               '<g:createLink controller="ajaxJson" action="getAllPossibleDdcs" params="${params}"/>', '${params.ddcs}');
+    JSPC.app.ajaxDropdown($('#languages'),          '<g:createLink controller="ajaxJson" action="getAllPossibleLanguages" params="${params}"/>', '${params.languages}');
+    JSPC.app.ajaxDropdown($('#yearsFirstOnline'),   '<g:createLink controller="ajaxJson" action="getAllPossibleDateFirstOnlineYears" params="${params}"/>', '${params.yearsFirstOnline}');
+    JSPC.app.ajaxDropdown($('#medium'),             '<g:createLink controller="ajaxJson" action="getAllPossibleMediumTypes" params="${params}"/>', '${params.medium}');
+    JSPC.app.ajaxDropdown($('#title_types'),        '<g:createLink controller="ajaxJson" action="getAllPossibleTitleTypes" params="${params}"/>', '${params.title_types}');
+    JSPC.app.ajaxDropdown($('#publishers'),         '<g:createLink controller="ajaxJson" action="getAllPossiblePublishers" params="${params}"/>', '${params.publishers}');
+    JSPC.app.ajaxDropdown($('#coverageDepth'),      '<g:createLink controller="ajaxJson" action="getAllPossibleCoverageDepths" params="${params}"/>', '${params.coverageDepth}');
 </laser:script>
