@@ -103,19 +103,31 @@ class OrganisationController  {
     def settings() {
         Map<String,Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
-        if(!params.containsKey("tab"))
-            params.tab = "oamonitor"
+        if (! result) {
+            redirect controller: 'organisation', action: 'show', id: params.id
+            return
+        }
+        if (! params.containsKey('tab')) {
+            params.tab = result.orgInstance.isCustomerType_Pro() ? 'oamonitor' : 'natstat'
+        }
+
+        // TODO: erms-5467
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(result.orgInstance, result.institution)
         result.isComboRelated = isComboRelated
         result.contextOrg = result.institution //for the properties template
 
-        Boolean hasAccess = (result.inContextOrg && userService.hasFormalAffiliation(result.user, result.orgInstance, 'INST_ADM')) ||
+        List<Long> orgInstanceTypeIds = result.orgInstance.getAllOrgTypeIds()
+        boolean isProviderOrAgency = (RDStore.OT_PROVIDER.id in orgInstanceTypeIds) || (RDStore.OT_AGENCY.id in orgInstanceTypeIds)
+
+        Boolean hasAccess = ! isProviderOrAgency && (
+                (result.inContextOrg && userService.hasFormalAffiliation(result.user, result.orgInstance, 'INST_ADM')) ||
                 (isComboRelated && userService.hasFormalAffiliation(result.user, result.institution, 'INST_ADM')) ||
                 SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        )
 
         // forbidden access
         if (! hasAccess) {
-            redirect controller: 'organisation', action: 'show', id: org.id
+            redirect controller: 'organisation', action: 'show', id: result.orgInstance.id
             return
         }
 
@@ -2081,8 +2093,7 @@ class OrganisationController  {
         result.rdvAllPersonFunctions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN]
         result.rdvAllPersonPositions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]
 
-        if(result.institution.isCustomerType_Consortium() && result.orgInstance)
-        {
+        if ((result.institution.isCustomerType_Consortium() || result.institution.isCustomerType_Support() )&& result.orgInstance) {
             params.org = result.orgInstance
             result.rdvAllPersonFunctions << RDStore.PRS_FUNC_GASCO_CONTACT
         }else{
@@ -2196,19 +2207,12 @@ class OrganisationController  {
                             }
                             break
                     }
-
-                    // todo: ERMS-5456
-                    // todo: READ ONLY here
-                    // todo: handle ROLE_ADMIN/ROLE_YODA
-                    if (contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT  && params.action in ['readerNumber', 'accessPoints']) {
-                        isEditable = false
-                    }
                 }
                 break
             default:
                 isEditable = userService.hasFormalAffiliation_or_ROLEADMIN(user, org,'INST_EDITOR')
         }
-        // todo: println '>>> isEditable: ' + isEditable + ' >>> ' + params.action
+        // println '>>> isEditable: ' + isEditable + ' >>> ' + params.action
         isEditable
     }
 }

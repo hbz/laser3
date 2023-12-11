@@ -81,7 +81,7 @@ class ProfileController {
         }else{
             usedRdvList = refdataService.getUsageDetails()
             i10nAttr = locale.getLanguage() == Locale.GERMAN.getLanguage() ? 'desc_de' : 'desc_en'
-            println(i10nAttr)
+            //println(i10nAttr)
             refdatas = RefdataCategory.executeQuery("from RefdataCategory order by ${i10nAttr}")
         }
 

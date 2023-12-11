@@ -1667,7 +1667,7 @@ class FilterService {
                 base_qry += " and "
             }
 
-            base_qry += " ( lower(tipp.name) like lower(:nameFilter) or lower(tipp.firstAuthor) like lower(:nameFilter) or lower(tipp.firstEditor) like lower(:nameFilter) ) "
+            base_qry += " ( lower(tipp.name) like lower(:nameFilter) or lower(tipp.firstAuthor) like lower(:nameFilter) or lower(tipp.firstEditor) like lower(:nameFilter) or ( exists ( from Identifier ident where ident.tipp.id = tipp.id and ident.value like lower(:nameFilter) ) ) ) "
             qry_params.nameFilter = "%${params.filter.trim()}%"
             filterSet = true
         }
@@ -1953,6 +1953,12 @@ class FilterService {
                     if(configMap.containsKey('ieStatus')) {
                         join += " join issue_entitlement on ie_tipp_fk = tipp_id"
                         subFilter = "ie_subscription_fk = any(:subscriptions)"
+                        if(configMap.containsKey('subscribers')) {
+                            List<Object> subscriberIds = []
+                            subscriberIds.addAll(configMap.subscribers)
+                            params.subscribers = connection.createArrayOf('bigint', subscriberIds.toArray())
+                            whereClauses << "exists(select pt_id from permanent_title where pt_tipp_fk = ie_tipp_fk and pt_owner_fk = any(:subscribers))"
+                        }
                     }
                     else {
                         join += " join subscription_package on sp_pkg_fk = tipp_pkg_fk"

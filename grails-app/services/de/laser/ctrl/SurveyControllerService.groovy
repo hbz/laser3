@@ -183,7 +183,7 @@ class SurveyControllerService {
                     orgsWithMultiYearTermOrgsID << sub.getSubscriber().id
 
                 } else {
-                    println(sub)
+                    //println(sub)
                         currentParticipantIDs << sub.getSubscriber().id
                 }
             }

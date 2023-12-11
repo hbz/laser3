@@ -15,8 +15,7 @@
 <ui:controlButtons>
     <ui:exportDropdown>
         <ui:exportDropdownItem>
-            <g:link class="item" action="exportSurCostItems" id="${surveyInfo.id}"
-                    params="[exportXLSX: true, surveyConfigID: surveyConfig.id]">${message(code: 'survey.exportSurveyCostItems')}</g:link>
+            <a class="item" data-ui="modal" href="#individuallyExportCostItemModal">Export</a>
         </ui:exportDropdownItem>
     </ui:exportDropdown>
     <laser:render template="actions"/>
@@ -144,7 +143,7 @@
             </div>
 
             <g:form action="processSurveyCostItemsBulk" data-confirm-id="processSurveyCostItemsBulk_form" name="editCost_${idSuffix}" method="post" class="ui form"
-                    params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']">
+                    params="${params}">
 
                 <div id="bulkCostItems" class="hidden">
                     <h3 class="ui header"><span class="la-long-tooltip la-popup-tooltip la-delay"
@@ -180,6 +179,27 @@
                                 </fieldset>
                             </div>
                         </g:if>
+
+                        <div class="ui horizontal divider"><g:message code="search.advancedSearch.option.OR"/></div>
+
+                        <div class="fields la-forms-grid">
+                            <fieldset class="sixteen wide field la-account-currency">
+                                <div class="field center aligned">
+
+                                    <label>${message(code: 'surveyCostItems.bulkOption.percentOnSurveyPrice')}</label>
+
+                                    <div class="ui right labeled input">
+                                        <input type="number"
+                                               name="percentOnSurveyPrice"
+                                               id="percentOnSurveyPrice"
+                                               placeholder="${g.message(code: 'surveyCostItems.bulkOption.percentOnSurveyPrice')}"
+                                               value="" step="0.01"/>
+
+                                        <div class="ui basic label">%</div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
 
                     </div>
 
@@ -384,5 +404,8 @@ JSPC.app.addForAllSurveyCostItem = function(orgsIDs) {
                     }
 
 </laser:script>
+
+
+<laser:render template="export/individuallyExportCostItemModal" model="[modalID: 'individuallyExportCostItemModal', contactSwitch: true]" />
 
 <laser:htmlEnd />

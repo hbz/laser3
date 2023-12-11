@@ -180,7 +180,7 @@
 <g:if test="${selectProcess}">
     <ui:msg class="positive" header="${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.label')}">
             <g:message code="renewEntitlementsWithSurvey.issueEntitlementSelect.selectProcess"
-                       args="[selectProcess.processCount, selectProcess.processRows, selectProcess.countSelectTipps]"/>
+                       args="[selectProcess.processCount, selectProcess.processRows, selectProcess.countSelectTipps, selectProcess.countNotSelectTipps, g.createLink(controller: 'subscription', action: 'renewEntitlementsWithSurvey', params: [id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'selectedIEs'])]"/>
     </ui:msg>
 </g:if>
 
@@ -305,9 +305,10 @@
 
 
     <g:form name="renewEntitlements" id="${subscriberSub.id}" action="processRenewEntitlementsWithSurvey" class="ui form">
-    <g:hiddenField id="packageId" name="packageId" value="${params.packageId}"/>
-    <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
-    <g:hiddenField name="tab" value="${params.tab}"/>
+        <g:hiddenField id="packageId" name="packageId" value="${params.packageId}"/>
+        <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
+        <g:hiddenField name="tab" value="${params.tab}"/>
+        <g:hiddenField name="subTab" value="${params.subTab}"/>
         <g:if test="${params.tab == 'allTipps' || params.tab == 'selectedIEs' || params.tab == 'currentPerpetualAccessIEs'}">
             <%
                 Map<String, String>
@@ -421,7 +422,8 @@
                 title_types: ${params.list("title_types")},
                 publishers: ${params.list("pulishers")},
                 hasPerpetualAccess: "${params.hasPerpetualAccess}",
-                titleGroup: "${params.titleGroup}"
+                titleGroup: "${params.titleGroup}",
+                status: ${params.list("status")},
             };
             $.ajax({
                 url: "<g:createLink controller="ajax" action="updateChecked" />",
@@ -432,6 +434,7 @@
                     referer: "${actionName}",
                     checked: checked,
                     tab: "${params.tab}",
+                    subTab: "${params.subTab}",
                     baseSubID: "${parentSubscription.id}",
                     newSubID: "${subscriberSub.id}",
                     surveyConfigID: "${surveyConfig.id}"

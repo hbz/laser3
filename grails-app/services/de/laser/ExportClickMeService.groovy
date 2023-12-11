@@ -1033,7 +1033,7 @@ class ExportClickMeService {
                             */
                             'participant.eInvoice'          : [field: 'sub.subscriber.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
                             'participant.eInvoicePortal'    : [field: 'sub.subscriber.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
-                            'participant.linkResolverBaseURL'    : [field: 'linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
+                            'participant.linkResolverBaseURL'    : [field: 'sub.subscriber.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
                             'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
                             'participant.discoverySystemsFrontend' : [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
                             'participant.discoverySystemsIndex' : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label'],
@@ -1070,6 +1070,66 @@ class ExportClickMeService {
             participantCustomerIdentifiers : [
                     label: 'Customer Identifiers',
                     message: 'exportClickMe.participantCustomerIdentifiers',
+                    fields: [:]
+            ],
+            participantContacts : [
+                    label: 'Contacts',
+                    message: 'org.contacts.label',
+                    subTabs: [],
+                    fields: [:]
+            ],
+            participantAddresses : [
+                    label: 'Addresses',
+                    message: 'org.addresses.label',
+                    fields: [:]
+            ]
+    ]
+
+    static Map<String, Object> EXPORT_SURVEY_COST_ITEM_CONFIG = [
+            costItem : [
+                    label: 'Cost Item',
+                    message: 'costItem.label',
+                    fields: [
+                            'costItem.costItemElement'                  : [field: 'costItemElement', label: 'Cost Item Element', message: 'financials.costItemElement', defaultChecked: 'true'],
+                            'costItem.costTitle'                        : [field: 'costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle', defaultChecked: 'true'],
+                            'costItem.costItemElementConfiguration'     : [field: 'costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration', defaultChecked: 'true'],
+                            'costItem.costItemStatus'                   : [field: 'costItemStatus', label: 'Status', message: 'default.status.label', defaultChecked: 'true'],
+                            'costItem.costInBillingCurrency'            : [field: 'costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total', defaultChecked: 'true'],
+                            'costItem.billingCurrency'                  : [field: 'billingCurrency', label: 'Billing Currency', message: 'default.currency.label', defaultChecked: 'true'],
+                            'costItem.costInBillingCurrencyAfterTax'    : [field: 'costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount', defaultChecked: 'true'],
+                            'costItem.taxType'                          : [field: 'taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType', defaultChecked: 'true'],
+                            'costItem.taxRate'                          : [field: 'taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate', defaultChecked: 'true'],
+                            'costItem.startDate'                        : [field: 'startDate', label: 'Date From', message: 'financials.dateFrom'],
+                            'costItem.endDate'                          : [field: 'endDate', label: 'Date To', message: 'financials.dateTo'],
+                            'costItem.costDescription'                  : [field: 'costDescription', label: 'Description', message: 'default.description.label'],
+                    ]
+            ],
+
+            org : [
+                    label: 'Organisation',
+                    message: 'org.institution.label',
+                    fields: [
+                            'participant.sortname'          : [field: 'surveyOrg.org.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
+                            'participant.name'              : [field: 'surveyOrg.org.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
+                            'participant.funderType'        : [field: 'surveyOrg.org.funderType', label: 'Funder Type', message: 'org.funderType.label'],
+                            'participant.funderHskType'     : [field: 'surveyOrg.org.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
+                            'participant.libraryType'       : [field: 'surveyOrg.org.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
+                            'participant.libraryNetwork'    : [field: 'surveyOrg.org.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
+                            'participant.region'            : [field: 'surveyOrg.org.region', label: 'Region', message: 'org.region.label'],
+                            'participant.country'           : [field: 'surveyOrg.org.country', label: 'Country', message: 'org.country.label'],
+                            'participant.eInvoice'          : [field: 'surveyOrg.org.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
+                            'participant.eInvoicePortal'    : [field: 'surveyOrg.org.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
+                            'participant.linkResolverBaseURL'    : [field: 'surveyOrg.org.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
+                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
+                            'participant.discoverySystemsFrontend' : [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
+                            'participant.discoverySystemsIndex' : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label'],
+                            'participant.uuid'              : [field: 'surveyOrg.org.globalUID', label: 'Laser-UUID',  message: null],
+                    ]
+            ],
+
+            participantIdentifiers : [
+                    label: 'Identifiers',
+                    message: 'exportClickMe.participantIdentifiers',
                     fields: [:]
             ],
             participantContacts : [
@@ -2439,6 +2499,79 @@ class ExportClickMeService {
     }
 
     /**
+     * Gets the cost item fields for the given institution
+     * @return the configuration map for the cost item export
+     */
+    Map<String, Object> getExportSurveyCostItemFields(Subscription sub = null) {
+        Org institution = contextService.getOrg()
+        Map<String, Object> exportFields = [:]
+        String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+
+        EXPORT_SURVEY_COST_ITEM_CONFIG.keySet().each {
+            EXPORT_SURVEY_COST_ITEM_CONFIG.get(it).fields.each {
+                exportFields.put(it.key, it.value)
+            }
+        }
+
+        SortedSet<RefdataValue> contactTypes = new TreeSet<RefdataValue>(), addressTypes = new TreeSet<RefdataValue>()
+        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: institution]))
+        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: institution]))
+        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: institution]))
+        addressTypes.addAll(RefdataCategory.getAllRefdataValues(RDConstants.ADDRESS_TYPE))
+        contactTypes.each { RefdataValue contactType ->
+            exportFields.put("participantContact."+contactType.owner.desc+"."+contactType.value, [field: null, label: contactType.getI10n('value')])
+        }
+        addressTypes.each { RefdataValue addressType ->
+            exportFields.put("participantAddress."+addressType.value, [field: null, label: addressType.getI10n('value')])
+        }
+
+        IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
+            exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+        }
+
+        exportFields
+    }
+
+    /**
+     * Generic call from views
+     * Gets the cost item fields for the given institution
+     * @return the configuration map for the cost item export for UI
+     */
+    Map<String, Object> getExportSurveyCostItemFieldsForUI(SurveyConfig surveyConfig = null) {
+        Org institution = contextService.getOrg()
+
+        Map<String, Object> fields = [:]
+        fields.putAll(EXPORT_SURVEY_COST_ITEM_CONFIG)
+        String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+
+        fields.participantIdentifiers.fields.clear()
+
+        IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
+            fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+        }
+        SortedSet<RefdataValue> contactTypes = new TreeSet<RefdataValue>(), addressTypes = new TreeSet<RefdataValue>()
+        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: institution]))
+        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: institution]))
+        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: institution]))
+        addressTypes.addAll(RefdataCategory.getAllRefdataValues(RDConstants.ADDRESS_TYPE))
+        RefdataCategory funcType = RefdataCategory.getByDesc(RDConstants.PERSON_FUNCTION), posType = RefdataCategory.getByDesc(RDConstants.PERSON_POSITION), respType = RefdataCategory.getByDesc(RDConstants.PERSON_RESPONSIBILITY)
+        List<Map> subTabs = [[view: funcType.desc, label: funcType.getI10n('desc')], [view: posType.desc, label: posType.getI10n('desc')], [view: respType.desc, label: respType.getI10n('desc')]]
+        String subTabActive = funcType.desc
+        fields.participantContacts.fields.clear()
+        fields.participantAddresses.fields.clear()
+        fields.participantContacts.subTabs = subTabs
+        fields.participantContacts.subTabActive = subTabActive
+        contactTypes.each { RefdataValue contactType ->
+            fields.participantContacts.fields.put("participantContact.${contactType.owner.desc}.${contactType.value}", [field: null, label: contactType.getI10n('value')])
+        }
+        addressTypes.each { RefdataValue addressType ->
+            fields.participantAddresses.fields.put("participantAddress.${addressType.value}", [field: null, label: addressType.getI10n('value')])
+        }
+
+        fields
+    }
+
+    /**
      * Gets the organisation fields for the given perspective configuration
      * @param config the organisation type to be exported
      * @return the configuration map for the organisation export
@@ -3535,6 +3668,31 @@ class ExportClickMeService {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
+    def exportSurveyCostItems(ArrayList<CostItem> result, Map<String, Object> selectedFields, FORMAT format, Set<String> contactSources) {
+        Locale locale = LocaleUtils.getCurrentLocale()
+
+        Map<String, Object> selectedExportFields = [:]
+
+        Map<String, Object> configFields = getExportSurveyCostItemFields()
+
+        configFields.keySet().each { String k ->
+            if (k in selectedFields.keySet() ) {
+                selectedExportFields.put(k, configFields.get(k))
+            }
+        }
+        List titles = _exportTitles(selectedExportFields, locale, null, null, contactSources)
+
+        List exportData = []
+        result.each { CostItem costItem ->
+            _setCostItemRow(costItem, selectedExportFields, exportData, format, contactSources)
+        }
+
+        Map sheetData = [:]
+        sheetData[messageSource.getMessage('financials.costItem', null, locale)] = [titleRow: titles, columnData: exportData]
+
+        return exportService.generateXLSXWorkbook(sheetData)
+    }
+
     /**
      * Exports the given fields from the given cost items
      * @param result the organisation set to export
@@ -4241,6 +4399,9 @@ class ExportClickMeService {
                 }else if (fieldKey == 'participant.readerNumbers') {
                     _setOrgFurtherInformation(participantResult.participant, row, fieldKey, format)
                 }
+                else if (fieldKey.contains('discoverySystems')) {
+                    _setOrgFurtherInformation(participantResult.participant, row, fieldKey, format)
+                }
                 else if (fieldKey.startsWith('participantIdentifiers.')) {
                     _setOrgFurtherInformation(participantResult.participant, row, fieldKey, format)
                 }else {
@@ -4695,7 +4856,13 @@ class ExportClickMeService {
         List row = []
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
-        Org org = costItem.sub ? costItem.sub.getSubscriber() : null
+        Org org = null
+
+        if(costItem.sub)
+            org = costItem.sub.getSubscriber()
+
+        if(costItem.surveyOrg)
+            org = costItem.surveyOrg.org
 
         selectedFields.keySet().each { String fieldKey ->
             Map mapSelecetedFields = selectedFields.get(fieldKey)
@@ -4734,6 +4901,9 @@ class ExportClickMeService {
                     _setOrgFurtherInformation(org, row, fieldKey, format, costItem.sub)
                 }
                 else if (fieldKey == 'participant.readerNumbers') {
+                    _setOrgFurtherInformation(org, row, fieldKey, format)
+                }
+                else if (fieldKey.contains('discoverySystems')) {
                     _setOrgFurtherInformation(org, row, fieldKey, format)
                 }
                 else if (fieldKey.startsWith('participantIdentifiers.')) {
@@ -4931,6 +5101,8 @@ class ExportClickMeService {
                 else if (fieldKey.startsWith('participantCustomerIdentifiers.')) {
                     _setOrgFurtherInformation(participantResult.participant, row, fieldKey, format, participantResult.sub)
                 }else if (fieldKey == 'participant.readerNumbers') {
+                    _setOrgFurtherInformation(participantResult.participant, row, fieldKey, format)
+                }else if (fieldKey.contains('discoverySystems')) {
                     _setOrgFurtherInformation(participantResult.participant, row, fieldKey, format)
                 }else if (fieldKey.startsWith('participantIdentifiers.')) {
                     _setOrgFurtherInformation(participantResult.participant, row, fieldKey, format)

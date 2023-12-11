@@ -7,25 +7,61 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-5456    29.11.2023  rc-3.3  3.3.2       David   Feature     Kundentyp Interne Verwaltung: Fehlende Reiter im Einrichtungsprofil
+5476    11.12.2023  rc-3.3  3.3.2       Moe     Bug         Umfrage Kosten: Bei Ausschüttung wird der Filter gelöscht
 
---      29.11.2023  rc-3.3  3.3.2       Andreas Bug         neue Titelgruppe wurde nicht übergeben => NPE
+5475    11.12.2023  rc-3.3  3.3.2       Moe     Bug         Titelumfrage: Titel werden nicht ausgewählt
 
---      28.11.2023  rc-3.3  3.3.2       Andreas Bug         Rückverweis bei manuellem Titelentknüpfen eingebaut
+5470    11.12.2023  rc-3.3  3.3.2       Moe     Bug         Kostentemplate: Falsche Sortierung der ausgegebenen UUIDs
 
---      28.11.2023  rc-3.3  3.3.2       Andreas Bug         Verlag-Dropdown lud nicht
+5469    08.12.2023  rc-3.3  3.3.2       Moe     Feature     Umfrage-Kosten Click-Me Export bauen
 
-5454    28.11.2023  rc-3.3  3.3.2       David   Bug         Profil: CC-Mails gehen raus, auch wenn Haken noch gesetzt ist?
+5455    08.12.2023  rc-3.3  3.3.2       Moe     Feature     Titelumfrage: Budget und Differenz zu Auswahlsumme als zusätzliche Spalten
 
---      28.11.2023  rc-3.3  3.3.2       Andreas Bug         Plattformdaten wurden falsch abgefragt
+--      08.12.2023  rc-3.3  3.3.2       Moe     Bug         500er bei Alle auswählen in Kostenausschüttung
 
-5451    24.11.2023  rc-3.3  3.3.1       Andreas Bug         diverse Bugs im Zusammenhang mit Kosten
+5473    08.12.2023  rc-3.3  3.3.2       Moe     Feature    Kostenausschütung erweitern mit Prozent auf aktuellen Preis und neuen Umfrage Preis
 
-5450    24.11.2023  rc-3.3  3.3.1       Moe     Bug         Mails werden nicht versendet: sendSurveyEmail()
+5453    08.12.2023  rc-3.3  3.3.2       Moe     Bug         Titelumfrage: Titel löschen soll nicht abhängig von den Status-Reiter sein
 
---      24.11.2023  rc-3.3  3.3.1       Andreas Bug         leere Zeilenenden wurden abgetrennt
+5472    08.12.2023  rc-3.3  3.3.2       Moe     Bug         Dauerhafte Titel werden gesetzt wenn man Teilnehmer hinzufügt bei einer Lizenz
 
---      24.11.2023  rc-3.3  3.3.1       Andreas Bug         Namensraumprüfung musste zugunsten des Syncs entfernt werden
+--      07.12.2023  rc-3.3  3.3.2       Moe     Bug         Kosten öffnen/bearbeiten/kopieren nicht möglich bei verknüpften Kosten mit Titel
+
+5464    06.12.2023  rc-3.3  3.3.2       Moe     Bug         Titelgruppe verhindert das Löschen einer Lizenz
+
+5467    05.12.2023  rc-3.3  3.3.2       David   Bug         Standardreiter Datenweitergabe für LAS:eR-Basic
+
+5463    01.12.2023  rc-3.3  3.3.2       Andreas Bug         Auftragsnummer wurde nicht beim Kostenimport verarbeitet
+
+5462    01.12.2023  rc-3.3  3.3.2       Andreas Bug         Filter der Verkaufsebene verarbeitete Identifier nicht
+
+5461    01.12.2023  rc-3.3  3.3.2       Andreas Bug         fehlende Angaben bei Umfragekosten ergänzt
+
+5458    01.12.2023  rc-3.3  3.3.2       Andreas Bug         Abschicken leerer Umfragen verhindert
+
+--      01.12.2023  rc-3.3  3.3.2       Andreas Bug         Berechnung der Listenpreise überbrückt
+
+--      30.11.2023  rc-3.3  3.3.2       Andreas Bug         Bezeichner im Menüpunkt getauscht
+
+5456    29.11.2023  rc-3.3  3.3.1       David   Feature     Kundentyp Interne Verwaltung: Fehlende Reiter im Einrichtungsprofil
+
+--      29.11.2023  rc-3.3  3.3.1       Andreas Bug         neue Titelgruppe wurde nicht übergeben => NPE
+
+--      28.11.2023  rc-3.3  3.3.1       Andreas Bug         Rückverweis bei manuellem Titelentknüpfen eingebaut
+
+--      28.11.2023  rc-3.3  3.3.1       Andreas Bug         Verlag-Dropdown lud nicht
+
+5454    28.11.2023  rc-3.3  3.3.1       David   Bug         Profil: CC-Mails gehen raus, auch wenn Haken noch gesetzt ist?
+
+--      28.11.2023  rc-3.3  3.3.1       Andreas Bug         Plattformdaten wurden falsch abgefragt
+
+5451    24.11.2023  rc-3.3  3.3         Andreas Bug         diverse Bugs im Zusammenhang mit Kosten
+
+5450    24.11.2023  rc-3.3  3.3         Moe     Bug         Mails werden nicht versendet: sendSurveyEmail()
+
+--      24.11.2023  rc-3.3  3.3         Andreas Bug         leere Zeilenenden wurden abgetrennt
+
+--      24.11.2023  rc-3.3  3.3         Andreas Bug         Namensraumprüfung musste zugunsten des Syncs entfernt werden
 
 #### day of release 3.3
 

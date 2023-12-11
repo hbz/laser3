@@ -14,17 +14,17 @@
 
             <g:set var="tipp" value="${ie.tipp}"/>
             <g:set var="ieInNewSub"
-                   value="${surveyService.titleContainedBySubscription(subscriberSub, tipp)}"/>
+                   value="${listOfStatus ? surveyService.titleContainedBySubscription(subscriberSub, tipp, listOfStatus) : null}"/>
             <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
                 <g:set var="participantPerpetualAccessToTitle"
                        value="${surveyService.hasParticipantPerpetualAccessToTitle3(subscriber, tipp)}"/>
-                <g:set var="allowedToSelect"
-                       value="${!(participantPerpetualAccessToTitle) && (!ieInNewSub)}"/>
+                %{--<g:set var="allowedToSelect"
+                       value="${!(participantPerpetualAccessToTitle) && (!ieInNewSub)}"/>--}%
             </g:if>
-            <g:else>
+           %{-- <g:else>
                 <g:set var="allowedToSelect"
                        value="${!ieInNewSub}"/>
-            </g:else>
+            </g:else>--}%
 
             <div class="ui raised segments la-accordion-segments">
 

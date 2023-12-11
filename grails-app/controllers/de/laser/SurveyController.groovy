@@ -1168,6 +1168,10 @@ class SurveyController {
                             CostItem costItem = CostItem.findBySubAndOwnerAndCostItemStatusNotEqualAndCostItemElement(orgSub, surveyCostItem.owner, RDStore.COST_ITEM_DELETED, RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE)
                             surveyCostItem.costInBillingCurrency = costItem ? (costItem.costInBillingCurrency * (1 + (percentOnOldPrice / 100))).round(2) : surveyCostItem.costInBillingCurrency
                         }
+                        else if (params.percentOnSurveyPrice) {
+                            Double percentOnSurveyPrice = params.double('percentOnSurveyPrice', 0.00)
+                            surveyCostItem.costInBillingCurrency = percentOnSurveyPrice ? (surveyCostItem.costInBillingCurrency * (1 + (percentOnSurveyPrice / 100))).round(2) : surveyCostItem.costInBillingCurrency
+                        }
                         else {
                             surveyCostItem.costInBillingCurrency = cost_billing_currency ?: surveyCostItem.costInBillingCurrency
                         }
@@ -1202,7 +1206,14 @@ class SurveyController {
 
         }
 
-        redirect(url: request.getHeader('referer'))
+        params.remove('selectedOrgs')
+        params.removeAll {it.key.toString().contains('new')}
+        params.remove('deleteCostItems')
+        params.remove('percentOnOldPrice')
+        params.remove('percentOnSurveyPrice')
+        params.remove('ciec')
+
+        redirect(action: 'surveyCostItems', id: result.surveyInfo.id, params: params)
     }
 
     /**
@@ -3607,16 +3618,38 @@ class SurveyController {
         if (!result.editable) {
             response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
-        //result.putAll(financeControllerService.setEditVars(result.institution))
 
-        /*   def surveyInfo = SurveyInfo.findByIdAndOwner(params.id, result.institution) ?: null
+        SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
+        String datetoday = sdf.format(new Date())
+        String filename = "${datetoday}_" + g.message(code: "survey.exportSurveyCostItems")
 
-           def surveyConfig = SurveyConfig.findByIdAndSurveyInfo(params.surveyConfigID, surveyInfo)*/
+        if(params.fileformat == 'xlsx') {
+            if (params.filename) {
+                filename =params.filename
+            }
 
-        if (params.exportXLSX) {
-            SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
-            String datetoday = sdf.format(new Date())
-            String filename = "${datetoday}_" + g.message(code: "survey.exportSurveyCostItems")
+            result.costItems = CostItem.findAllBySurveyOrgInListAndCostItemStatusNotEqual(SurveyOrg.findAllBySurveyConfig(result.surveyConfig), RDStore.COST_ITEM_DELETED).sort {it.surveyOrg.org.sortname}
+
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            Map<String, Object> selectedFields = [:]
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+            Set<String> contactSwitch = []
+            contactSwitch.addAll(params.list("contactSwitch"))
+            contactSwitch.addAll(params.list("addressSwitch"))
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSurveyCostItems(result.costItems, selectedFields, ExportClickMeService.FORMAT.XLS, contactSwitch)
+
+            response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }else {
+            redirect(uri: request.getHeader('referer'))
+        }
+
+/*        if (params.exportXLSX) {
             //if(wb instanceof XSSFWorkbook) file += "x";
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -3628,7 +3661,7 @@ class SurveyController {
             return
         } else {
             redirect(uri: request.getHeader('referer'))
-        }
+        }*/
 
     }
 
@@ -3712,7 +3745,10 @@ class SurveyController {
             NumberFormat format = NumberFormat.getInstance(LocaleUtils.getCurrentLocale())
             boolean billingSumRounding = params.newBillingSumRounding ? true : false, finalCostRounding = params.newFinalCostRounding ? true : false
             Double cost_billing_currency = params.newCostInBillingCurrency ? format.parse(params.newCostInBillingCurrency).doubleValue() : 0.00
-            //def cost_currency_rate = params.newCostCurrencyRate ? params.double('newCostCurrencyRate', 1.00) : 1.00
+            Double cost_currency_rate = 1.0
+            if(billing_currency != RDStore.CURRENCY_EUR) {
+                cost_currency_rate = params.newCostCurrencyRate ? params.double('newCostCurrencyRate', 1.00) : 1.00
+            }
             //def cost_local_currency = params.newCostInLocalCurrency ? format.parse(params.newCostInLocalCurrency).doubleValue() : 0.00
 
             Double cost_billing_currency_after_tax = params.newCostInBillingCurrencyAfterTax ? format.parse(params.newCostInBillingCurrencyAfterTax).doubleValue() : cost_billing_currency
@@ -3720,6 +3756,7 @@ class SurveyController {
                 cost_billing_currency = Math.round(cost_billing_currency)
             if(finalCostRounding)
                 cost_billing_currency_after_tax = Math.round(cost_billing_currency_after_tax)
+            Double cost_local_currency = cost_billing_currency * cost_currency_rate
             //def cost_local_currency_after_tax = params.newCostInLocalCurrencyAfterTax ? format.parse(params.newCostInLocalCurrencyAfterTax).doubleValue() : cost_local_currency
             //moved to TAX_TYPES
             //def new_tax_rate                      = params.newTaxRate ? params.int( 'newTaxRate' ) : 0
@@ -3814,13 +3851,13 @@ class SurveyController {
                         //newCostItem.taxCode = cost_tax_type -> to taxKey
                         newCostItem.costTitle = params.newCostTitle ?: null
                         newCostItem.costInBillingCurrency = cost_billing_currency as Double
-                        //newCostItem.costInLocalCurrency = cost_local_currency as Double
+                        newCostItem.costInLocalCurrency = cost_local_currency as Double
 
                         newCostItem.billingSumRounding = billingSumRounding
                         newCostItem.finalCostRounding = finalCostRounding
                         newCostItem.costInBillingCurrencyAfterTax = cost_billing_currency_after_tax as Double
-                        //newCostItem.costInLocalCurrencyAfterTax = cost_local_currency_after_tax as Double
-                        //newCostItem.currencyRate = cost_currency_rate as Double
+                        //newCostItem.costInLocalCurrencyAfterTax = cost_local_currency_after_tax as Double calculated on the fly
+                        newCostItem.currencyRate = cost_currency_rate as Double
                         //newCostItem.taxRate = new_tax_rate as Integer -> to taxKey
                         newCostItem.taxKey = tax_key
                         newCostItem.costItemElementConfiguration = cost_item_element_configuration
@@ -5055,7 +5092,7 @@ class SurveyController {
                         //property.save(flush:true)
                         if(!property.save(failOnError: true))
                         {
-                            println(property.error)
+                            log.error("Error Property save: " +property.error)
                         }
                     } else if(field == "dateValue") {
                         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
