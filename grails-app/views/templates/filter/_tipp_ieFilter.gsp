@@ -82,18 +82,6 @@
                     <div class="default text"><g:message code="default.select.choose.label"/></div>
                     <i class="dropdown icon"></i>
                 </div>
-                <%--
-                <select name="coverageDepth" id="coverageDepth" multiple=""
-                        class="ui search selection dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
-                    <g:each in="${coverageDepths}" var="coverageDepth">
-                        <option <%=(params.list('coverageDepth')?.contains(coverageDepth.value)) ? 'selected="selected"' : ''%>
-                                value="${coverageDepth}">
-                            ${coverageDepth.getI10n("value")}
-                        </option>
-                    </g:each>
-                </select>
-                --%>
             </div>
         </div>
 
@@ -147,17 +135,6 @@
                     <div class="default text"><g:message code="default.select.choose.label"/></div>
                     <i class="dropdown icon"></i>
                 </div>
-                <%--<select name="ddcs" id="ddc" multiple=""
-                        class="ui search selection dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
-
-                    <g:each in="${ddcs}" var="ddc">
-                        <option <%=(params.list('ddcs')?.contains(ddc.id.toString())) ? 'selected="selected"' : ''%>
-                                value="${ddc.id}">
-                            ${ddc.value} - ${ddc.getI10n("value")}
-                        </option>
-                    </g:each>
-                </select>--%>
             </div>
 
             <div class="field">
@@ -167,17 +144,6 @@
                     <div class="default text"><g:message code="default.select.choose.label"/></div>
                     <i class="dropdown icon"></i>
                 </div>
-                <%--<select name="languages" id="language" multiple=""
-                        class="ui search selection dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
-
-                    <g:each in="${languages}" var="language">
-                        <option <%=(params.list('languages')?.contains(language.id.toString())) ? 'selected="selected"' : ''%>
-                                value="${language.id}">
-                            ${language.getI10n("value")}
-                        </option>
-                    </g:each>
-                </select>--%>
             </div>
         </div>
 
@@ -189,17 +155,6 @@
                     <div class="default text"><g:message code="default.select.choose.label"/></div>
                     <i class="dropdown icon"></i>
                 </div>
-                <%--<select name="yearsFirstOnline" id="yearsFirstOnline" multiple=""
-                        class="ui search selection dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
-                    <g:each in="${yearsFirstOnline}"
-                            var="yearFirstOnline">
-                        <option <%=(params.list('yearsFirstOnline')?.contains(yearFirstOnline.toString())) ? 'selected="selected"' : ''%>
-                                value="${yearFirstOnline}">
-                            ${yearFirstOnline}
-                        </option>
-                    </g:each>
-                </select>--%>
             </div>
 
             <div class="field">
@@ -209,15 +164,6 @@
                     <div class="default text"><g:message code="default.select.choose.label"/></div>
                     <i class="dropdown icon"></i>
                 </div>
-                <%--<select name="medium" id="medium" multiple="" class="ui search selection dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
-                    <g:each in="${mediumTypes}" var="mediumType">
-                        <option <%=(params.list('medium')?.contains(mediumType.id.toString())) ? 'selected="selected"' : ''%>
-                                value="${mediumType.id}">
-                            ${mediumType.getI10n("value")}
-                        </option>
-                    </g:each>
-                </select>--%>
             </div>
 
             <div class="field">
@@ -232,17 +178,6 @@
                     <div class="default text"><g:message code="default.select.choose.label"/></div>
                     <i class="dropdown icon"></i>
                 </div>
-                <%--<select name="title_types" id="title_types" multiple=""
-                        class="ui search selection dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
-                    <g:each in="${titleTypes}"
-                            var="titleType">
-                        <option <%=(params.list('title_types')?.contains(titleType)) ? 'selected="selected"' : ''%>
-                                value="${titleType}">
-                            ${titleType.capitalize()}
-                        </option>
-                    </g:each>
-                </select>--%>
             </div>
 
             <div class="field">
@@ -252,21 +187,8 @@
                     <div class="default text"><g:message code="default.select.choose.label"/></div>
                     <i class="dropdown icon"></i>
                 </div>
-                <%--<select name="publishers" id="publishers" multiple=""
-                        class="ui search selection dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
-                    <g:each in="${publishers}"
-                            var="publisher">
-                        <option <%=(params.list('publishers')?.contains(publisher)) ? 'selected="selected"' : ''%>
-                                value="${publisher}">
-                            ${publisher}
-                        </option>
-                    </g:each>
-                </select>--%>
             </div>
-
         </div>
-
 
         <div class="three fields">
             <g:if test="${controllerName == 'subscription' && !showStatsFilter && !notShow}">
@@ -429,15 +351,33 @@
     JSPC.app.ajaxDropdown = function(selector, url, valuesRaw) {
         let values = [];
         let valuesString = valuesRaw.replace(/&amp;quot;/g, '&quot;');
-        if(valuesString.includes(',')) {
+        if (valuesString.includes(',')) {
             values = valuesString.split(',');
         }
         else if(valuesString.length > 0) {
             values.push(valuesString);
         }
-        selector.dropdown({
+
+        <g:if test="${controllerName == 'package' || fillDropdownsWithPackage}">
+            let by = 'pkg';
+            let obj = '${genericOIDService.getOID(packageInstance)}';
+        </g:if>
+        <g:elseif test="${controllerName == 'subscription'}">
+            let by = 'sub';
+            let obj = '${genericOIDService.getOID(subscription)}';
+        </g:elseif>
+        <g:elseif test="${controllerName == 'title' || action == 'currentPermanentTitles'}">
+            let by = 'status';
+            let obj;
+        </g:elseif>
+        <g:else>
+            let by;
+            let obj;
+        </g:else>
+
+        selector.dropdown('destroy').dropdown({
             apiSettings: {
-                url: url + '&by=' + by + '&obj=' + obj + '&forTitles=' + forTitles + '&query={query}',
+                url: url + '&by=' + by + '&obj=' + obj + '&forTitles=${action}&query={query}',
                 cache: false
             },
             clearable: true,
@@ -451,20 +391,6 @@
         }
     }
 
-    let by;
-    let obj;
-    let forTitles = '${action}';
-    <g:if test="${controllerName == 'package' || fillDropdownsWithPackage}">
-        by = 'pkg';
-        obj = '${genericOIDService.getOID(packageInstance)}';
-    </g:if>
-    <g:elseif test="${controllerName == 'subscription'}">
-        by = 'sub';
-        obj = '${genericOIDService.getOID(subscription)}';
-    </g:elseif>
-    <g:elseif test="${controllerName == 'title' || action == 'currentPermanentTitles'}">
-        by = 'status';
-    </g:elseif>
     JSPC.app.ajaxDropdown($('#series_names'),       '<g:createLink controller="ajaxJson" action="getAllPossibleSeries" params="${params}"/>', '${params.series_names}');
     JSPC.app.ajaxDropdown($('#subject_references'), '<g:createLink controller="ajaxJson" action="getAllPossibleSubjects" params="${params}"/>', '${params.subject_references}');
     JSPC.app.ajaxDropdown($('#ddcs'),               '<g:createLink controller="ajaxJson" action="getAllPossibleDdcs" params="${params}"/>', '${params.ddcs}');
