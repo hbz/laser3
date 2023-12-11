@@ -5085,7 +5085,7 @@ class SurveyController {
                         //property.save(flush:true)
                         if(!property.save(failOnError: true))
                         {
-                            println(property.error)
+                            log.error("Error Property save: " +property.error)
                         }
                     } else if(field == "dateValue") {
                         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()

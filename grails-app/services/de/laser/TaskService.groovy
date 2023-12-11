@@ -49,7 +49,7 @@ class TaskService {
         result.taskInstanceList = getTasksByResponsiblesAndObject(user, contextOrg, object)
         result.myTaskInstanceList = getTasksByCreatorAndObject(user,  object)
         result.cmbTaskInstanceList = (result.taskInstanceList + result.myTaskInstanceList).unique()
-        println result
+        //println result
         result
     }
 

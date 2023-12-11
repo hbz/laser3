@@ -2686,7 +2686,7 @@ join sub.orgRelations or_sub where
                     //property.save(flush:true)
                     if(!prop.save(failOnError: true))
                     {
-                        println(prop.error)
+                        log.error("Error Property save: " +prop.error)
                     }
                 } else if(field == "dateValue") {
                     SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
