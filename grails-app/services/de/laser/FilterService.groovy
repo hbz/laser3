@@ -1289,8 +1289,8 @@ class FilterService {
         }
         else if(params.status != '' && params.status != null && listReaderWrapper(params, 'status')) {
             List<Long> status = []
-            listReaderWrapper(params, 'status').each { String statusId ->
-                status << Long.parseLong(statusId)
+            listReaderWrapper(params, 'status').each { def statusId ->
+                status << statusId.toLong()
             }
             base_qry += " and ie.status.id in (:status) "
             qry_params.status = status
@@ -1508,11 +1508,8 @@ class FilterService {
             base_qry += " and ie.tipp.status.id = :status and ie.status.id != :status "
             qry_params.status = params.long('status')
         }
-        else if(params.status != '' && params.status != null && params.list('status')) {
-            List<Long> status = []
-            params.list('status').each { String statusId ->
-                status << Long.parseLong(statusId)
-            }
+        else if (params.list('status').findAll()) {
+            List<Long> status = params.list('status').findAll().collect{ Long.valueOf(it) }
             base_qry += " and ie.status.id in (:status) "
             qry_params.status = status
             filterSet = true
@@ -1694,11 +1691,8 @@ class FilterService {
             qry_params.deleted = RDStore.TIPP_STATUS_REMOVED
         }*/
 
-        if(params.status != '' && params.status != null && params.list('status')) {
-            List<Long> status = []
-            params.list('status').each { String statusId ->
-                status << Long.parseLong(statusId)
-            }
+        if (params.list('status').findAll()) {
+            List<Long> status = params.list('status').findAll().collect{ Long.valueOf(it) }
             if(qry_params.size() > 0){
                 base_qry += " and "
             }

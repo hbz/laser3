@@ -1583,11 +1583,8 @@ class MyInstitutionController  {
         List<String> countQueryFilter = queryFilter.clone()
         Map<String, Object> countQueryParams = qryParams.clone()
 
-        if(params.status != '' && params.status != null && params.list('status')) {
-            List<Long> status = []
-            params.list('status').each { String statusId ->
-                status << RefdataValue.get(statusId)
-            }
+        if (params.list('status').findAll()) {
+            List<RefdataValue> status = params.list('status').findAll().collect{ RefdataValue.get(Long.valueOf(it)) }
             queryFilter << "ie.status in (:status)"
             qryParams.status = status
         }
