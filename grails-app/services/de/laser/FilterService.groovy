@@ -2,6 +2,7 @@ package de.laser
 
 
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.helper.FilterLogic
 import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
@@ -1509,7 +1510,7 @@ class FilterService {
             qry_params.status = params.long('status')
         }
         else if (params.list('status').findAll()) {
-            List<Long> status = params.list('status').findAll().collect{ Long.valueOf(it) }
+            List<Long> status = FilterLogic.getLongList(params, 'status')
             base_qry += " and ie.status.id in (:status) "
             qry_params.status = status
             filterSet = true
@@ -1692,7 +1693,7 @@ class FilterService {
         }*/
 
         if (params.list('status').findAll()) {
-            List<Long> status = params.list('status').findAll().collect{ Long.valueOf(it) }
+            List<Long> status = FilterLogic.getLongList(params, 'status')
             if(qry_params.size() > 0){
                 base_qry += " and "
             }

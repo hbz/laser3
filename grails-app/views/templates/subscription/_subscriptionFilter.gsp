@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.Org; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.helper.FilterLogic; de.laser.CustomerTypeService; de.laser.Org; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
 <laser:serviceInjection />
 
 <ui:filter>
@@ -77,7 +77,7 @@
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" var="status">
-                        <option <%=(params.list('status').contains(status.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=FilterLogic.getLongList(params, 'status').contains(status.id) ? 'selected="selected"' : ''%>
                         value="${status.id}">
                         ${status.getI10n('value')}
                         </option>

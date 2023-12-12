@@ -102,7 +102,7 @@ class FilterLogic {
             }
         }
         else if(params.list('status').size() == 1) {
-            Long statusId = params.list('status')[0]?.toLong()
+            Long statusId = Long.valueOf( params.list('status')[0] ) // String or Long
 
             switch (statusId) {
                 case RDStore.TIPP_STATUS_CURRENT.id:
@@ -134,5 +134,9 @@ class FilterLogic {
         log.debug (debug + '   ->   [tab: ' + params.tab + ', status: ' + params.list('status') + ']')
 
         result
+    }
+
+    static List<Long> getLongList(GrailsParameterMap params, String key) {
+        params.list(key).findAll().collect{ Long.valueOf(it) }
     }
 }

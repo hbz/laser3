@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.IssueEntitlement;de.laser.Platform; de.laser.remote.ApiSource; de.laser.PermanentTitle; de.laser.Subscription" %>
+<%@ page import="de.laser.helper.FilterLogic; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.IssueEntitlement;de.laser.Platform; de.laser.remote.ApiSource; de.laser.PermanentTitle; de.laser.Subscription" %>
 <laser:htmlStart message="myinst.currentTitles.label"/>
 
 <ui:breadcrumbs>
@@ -175,7 +175,7 @@
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${availableStatus}" var="status">
-                        <option <%=(params.list('status')?.contains(status.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=FilterLogic.getLongList(params, 'status').contains(status.id) ? 'selected="selected"' : ''%>
                                 value="${status.id}">
                             ${status.getI10n('value')}
                         </option>
