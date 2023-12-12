@@ -135,8 +135,4 @@ class FilterLogic {
 
         result
     }
-
-    static List<Long> getLongList(GrailsParameterMap params, String key) {
-        params.list(key).findAll().collect{ Long.valueOf(it) }
-    }
 }
