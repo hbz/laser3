@@ -5,7 +5,6 @@ import de.laser.*
 import de.laser.auth.User
 import de.laser.base.AbstractReport
 import de.laser.cache.EhcacheWrapper
-import de.laser.cache.SessionCacheWrapper
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.finance.CostItem
@@ -39,7 +38,6 @@ import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.time.TimeCategory
 import groovy.xml.slurpersupport.GPathResult
-import org.apache.commons.lang3.StringEscapeUtils
 import org.apache.commons.lang3.RandomStringUtils
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -2260,7 +2258,7 @@ class SubscriptionControllerService {
 
             //params.status = params.status ?: (result.subscription.hasPerpetualAccess ? [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString()] : [RDStore.TIPP_STATUS_CURRENT.id.toString()])
 
-            Map ttParams = filterService.resolveParamsForTopAttachedTitleTabs(params, 'IEs')
+            Map ttParams = FilterLogic.resolveParamsForTopAttachedTitleTabs(params, 'IEs')
             if (ttParams.status) { params.status = ttParams.status }
             if (ttParams.tab)    { params.tab = ttParams.tab }
 

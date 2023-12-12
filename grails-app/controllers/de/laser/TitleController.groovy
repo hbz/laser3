@@ -3,6 +3,7 @@ package de.laser
 import de.laser.annotations.DebugInfo
 import de.laser.auth.User
 import de.laser.cache.EhcacheWrapper
+import de.laser.helper.FilterLogic
 import de.laser.storage.RDStore
 import de.laser.utils.SwissKnife
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -61,7 +62,7 @@ class TitleController  {
         result.user = contextService.getUser()
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        Map ttParams = filterService.resolveParamsForTopAttachedTitleTabs(params, 'Tipps')
+        Map ttParams = FilterLogic.resolveParamsForTopAttachedTitleTabs(params, 'Tipps')
         if (ttParams.status) { params.status = ttParams.status }
         if (ttParams.tab)    { params.tab = ttParams.tab }
 
