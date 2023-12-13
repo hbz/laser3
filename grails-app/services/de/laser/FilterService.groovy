@@ -1291,7 +1291,7 @@ class FilterService {
         else if(params.status != '' && params.status != null && listReaderWrapper(params, 'status')) {
             List<Long> status = []
             listReaderWrapper(params, 'status').each { def statusId ->
-                status << statusId.toLong()
+                status << Long.valueOf(statusId)
             }
             base_qry += " and ie.status.id in (:status) "
             qry_params.status = status

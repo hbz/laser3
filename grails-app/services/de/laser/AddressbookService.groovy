@@ -112,12 +112,12 @@ class AddressbookService {
             List<String> posParts = []
             if (params.function){
                 posParts << "pr.functionType.id in (:selectedFunctions) "
-                qParams << [selectedFunctions: filterService.listReaderWrapper(params, 'function').collect{ it -> it instanceof String ? Long.parseLong(it) : it }]
+                qParams << [selectedFunctions: filterService.listReaderWrapper(params, 'function').collect{ Long.valueOf(it) }]
             }
 
             if (params.position){
                 posParts << "pr.positionType.id in (:selectedPositions) "
-                qParams << [selectedPositions: filterService.listReaderWrapper(params, 'position').collect{ it -> it instanceof String ? Long.parseLong(it) : it }]
+                qParams << [selectedPositions: filterService.listReaderWrapper(params, 'position').collect{ Long.valueOf(it) }]
             }
             qParts << '('+posParts.join(' OR ')+')'
         }
@@ -202,7 +202,7 @@ class AddressbookService {
 
         if (params.type) {
             qParts << "(exists (select at from a.type as at where at.id in (:selectedTypes))) "
-            qParams << [selectedTypes: filterService.listReaderWrapper(params, 'type').collect{ it -> it instanceof String ? Long.parseLong(it) : it }]
+            qParams << [selectedTypes: filterService.listReaderWrapper(params, 'type').collect{ Long.valueOf(it) }]
         }
 
         if (params.showOnlyContactPersonForInstitution || params.exportOnlyContactPersonForInstitution){
