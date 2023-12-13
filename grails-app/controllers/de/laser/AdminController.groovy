@@ -599,7 +599,7 @@ class AdminController  {
             }
         }
 
-        Doc doc = Doc.get(Long.parseLong(params.docID))
+        Doc doc = Doc.get( params.long('docID') )
 
         if (!fileCheck(doc)) {
             result.doc = doc
@@ -642,8 +642,8 @@ class AdminController  {
             }
         }
 
-        Doc docWithoutFile = Doc.get(Long.parseLong(params.sourceDoc))
-        Doc docWithFile = Doc.get(Long.parseLong(params.targetDoc))
+        Doc docWithoutFile = Doc.get( params.long('sourceDoc') )
+        Doc docWithFile = Doc.get( params.long('targetDoc') )
 
         if (!fileCheck(docWithoutFile) && fileCheck(docWithFile)) {
 

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.PersonRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Org; de.laser.Person; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.utils.DateUtils" %>
+<%@ page import="de.laser.helper.Params; de.laser.PersonRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Org; de.laser.Person; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.utils.DateUtils" %>
 
 <laser:serviceInjection/>
 
@@ -81,8 +81,7 @@
                 <label for="org">${message(code: 'person.filter.org')}</label>
 
                 <div class="ui input">
-                    <input type="text" id="org" name="org" value="${params.org}"
-                           placeholder="${message(code: 'person.filter.org')}"/>
+                    <input type="text" id="org" name="org" value="${params.org}" placeholder="${message(code: 'person.filter.org')}"/>
                 </div>
             </div>
 
@@ -90,8 +89,7 @@
                 <label for="prs">${message(code: 'person.filter.name')}</label>
 
                 <div class="ui input">
-                    <input type="text" id="prs" name="prs" value="${params.prs}"
-                           placeholder="${message(code: 'person.filter.name')}"/>
+                    <input type="text" id="prs" name="prs" value="${params.prs}" placeholder="${message(code: 'person.filter.name')}"/>
                 </div>
             </div>
             <laser:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
@@ -99,27 +97,23 @@
 
         <div class="two fields">
             <div class="field">
-                <label><g:message code="person.function.label"/></label>
-                <ui:select class="ui dropdown search"
-                              name="function"
-                              from="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}"
-                              multiple=""
-                              optionKey="id"
-                              optionValue="value"
-                              value="${params.function}"
-                              noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                <label for="function"><g:message code="person.function.label"/></label>
+                <select id="function" name="function" multiple="" class="ui dropdown search">
+                    <option value=""><g:message code="default.select.choose.label"/></option>
+                    <g:each in="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}" var="rdv">
+                        <option <%=Params.getLongList(params, 'function').contains(rdv.id) ? 'selected="selected"' : ''%> value="${rdv.id}">${rdv.getI10n('value')}</option>
+                    </g:each>
+                </select>
             </div>
 
             <div class="field">
-                <label><g:message code="person.position.label"/></label>
-                <ui:select class="ui dropdown search"
-                              name="position"
-                              from="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}"
-                              multiple=""
-                              optionKey="id"
-                              optionValue="value"
-                              value="${params.position}"
-                              noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                <label for="position"><g:message code="person.position.label"/></label>
+                <select id="position" name="position" multiple="" class="ui dropdown search">
+                    <option value=""><g:message code="default.select.choose.label"/></option>
+                    <g:each in="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}" var="rdv">
+                        <option <%=Params.getLongList(params, 'position').contains(rdv.id) ? 'selected="selected"' : ''%> value="${rdv.id}">${rdv.getI10n('value')}</option>
+                    </g:each>
+                </select>
             </div>
         </div>
 
@@ -251,7 +245,6 @@
     <g:form action="addressbook" controller="myInstitution" params="${urlParams}">
         <g:hiddenField name="tab" value="${params.tab}"/>
         <laser:render template="/templates/export/individuallyExportForm" model="${[currentTabNotice: true, modalID: 'individuallyExportModal', formFields: formFields, filterFields: filterFields, exportFileName: escapeService.escapeString("${message(code: 'menu.institutions.myAddressbook')}_${DateUtils.getSDF_yyyyMMdd().format(new Date())}"), orgSwitch: true]}"/>
-
     </g:form>
 
 </ui:modal>

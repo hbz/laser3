@@ -255,7 +255,7 @@ class MyInstitutionController  {
             if(params.counterCertified) {
                 result.filterSet = true
                 List<String> counterCertified = params.list("counterCertified")
-                queryParams.counterCeritified = []
+                queryParams.counterCertified = []
                 counterCertified.each { String counter ->
                     RefdataValue rdv = RefdataValue.get(counter)
                     String cert = rdv == RDStore.GENERIC_NULL_VALUE ? "null" : rdv.value
@@ -402,13 +402,9 @@ class MyInstitutionController  {
         }
         result.licenseFilterTable = licenseFilterTable
 
-        if(params.consortium) {
+        if (params.consortium) {
             base_qry += " and ( exists ( select o from l.orgRelations as o where o.roleType = :licCons and o.org.id in (:cons) ) ) "
-            List<Long> consortia = []
-            List<String> selCons = params.list('consortium')
-            selCons.each { String sel ->
-                consortia << Long.parseLong(sel)
-            }
+            List<Long> consortia = Params.getLongList(params, 'consortium')
             qry_params += [licCons:RDStore.OR_LICENSING_CONSORTIUM, cons:consortia]
         }
 
@@ -426,27 +422,16 @@ class MyInstitutionController  {
             qry_params = psq.queryParams
         }
 
-        if(params.licensor) {
-            base_qry += " and ( exists ( select o from l.orgRelations as o where o.roleType in (:licCons) and o.org.id in (:licensors) ) ) "
-            List<Long> licensors = []
-            List<String> selLicensors = params.list('licensor')
-            selLicensors.each { String sel ->
-                licensors << Long.parseLong(sel)
-            }
-            qry_params += [licCons:[RDStore.OR_LICENSOR, RDStore.OR_AGENCY],licensors:licensors]
+        if (params.licensor) {
+            base_qry += " and ( exists ( select o from l.orgRelations as o where o.roleType in (:licAgncy) and o.org.id in (:licensors) ) ) "
+            List<Long> licensors = Params.getLongList(params, 'licensor')
+            qry_params += [licAgncy:[RDStore.OR_LICENSOR, RDStore.OR_AGENCY], licensors:licensors]
         }
 
-        if(params.categorisation) {
+        if (params.categorisation) {
             base_qry += " and l.licenseCategory.id in (:categorisations) "
-            List<Long> categorisations = []
-            List<String> selCategories = params.list('categorisation')
-            selCategories.each { String sel ->
-                categorisations << Long.parseLong(sel)
-            }
-            qry_params.categorisations = categorisations
+            qry_params.categorisations = Params.getLongList(params, 'categorisation')
         }
-
-
 
         if(params.status || !params.filterSubmit) {
             base_qry += " and l.status.id = :status "
@@ -487,14 +472,9 @@ class MyInstitutionController  {
                 qry_params.subStatus = params.subStatus as Long
             }
 
-            if(params.subKind) {
+            if (params.subKind) {
                 subscrQueryFilter << "s.kind.id in (:subKinds)"
-                List<Long> subKinds = []
-                List<String> selKinds = params.list('subKind')
-                selKinds.each { String sel ->
-                    subKinds << Long.parseLong(sel)
-                }
-                qry_params.subKinds = subKinds
+                qry_params.subKinds = Params.getLongList(params, 'subKind')
             }
 
             if (contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()) {
@@ -1436,7 +1416,7 @@ class MyInstitutionController  {
 		Profiler prf = new Profiler()
 		prf.setBenchmark('init')
 
-        Map ttParams = filterService.resolveParamsForTopAttachedTitleTabs(params, 'IEs')
+        Map ttParams = FilterLogic.resolveParamsForTopAttachedTitleTabs(params, 'IEs')
         if (ttParams.status) { params.status = ttParams.status }
         if (ttParams.tab)    { params.tab = ttParams.tab }
 
@@ -1583,11 +1563,8 @@ class MyInstitutionController  {
         List<String> countQueryFilter = queryFilter.clone()
         Map<String, Object> countQueryParams = qryParams.clone()
 
-        if(params.status != '' && params.status != null && params.list('status')) {
-            List<Long> status = []
-            params.list('status').each { String statusId ->
-                status << RefdataValue.get(statusId)
-            }
+        if (params.list('status').findAll()) {
+            List<RefdataValue> status = params.list('status').findAll().collect{ RefdataValue.get(Long.valueOf(it)) }
             queryFilter << "ie.status in (:status)"
             qryParams.status = status
         }
@@ -1799,7 +1776,7 @@ class MyInstitutionController  {
 
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        Map ttParams = filterService.resolveParamsForTopAttachedTitleTabs(params, 'IEs', true)
+        Map ttParams = FilterLogic.resolveParamsForTopAttachedTitleTabs(params, 'IEs', true)
         if (ttParams.status) { params.status = ttParams.status }
         if (ttParams.tab)    { params.tab = ttParams.tab }
 

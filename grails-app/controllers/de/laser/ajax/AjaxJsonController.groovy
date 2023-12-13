@@ -20,6 +20,7 @@ import de.laser.SubscriptionDiscountScale
 import de.laser.SubscriptionService
 import de.laser.auth.Role
 import de.laser.finance.PriceItem
+import de.laser.helper.Params
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
@@ -97,7 +98,7 @@ class AjaxJsonController {
 
         queryParams.status = []
         if (params.get('status')){
-            queryParams.status = params.list('status').collect{ Long.parseLong(it) }
+            queryParams.status = Params.getLongList(params, 'status')
         }
         queryParams.showSubscriber = params.showSubscriber == 'true'
         queryParams.showConnectedObjs = params.showConnectedObjs == 'true'
@@ -162,7 +163,7 @@ class AjaxJsonController {
 
         queryParams.status = []
         if (params.get('status')){
-            queryParams.status = params.list('status').collect{ Long.parseLong(it) }
+            queryParams.status = Params.getLongList(params, 'status')
         }
 
         queryParams.showSubscriber = showSubscriber
@@ -196,7 +197,7 @@ class AjaxJsonController {
         boolean showConnectedObjs = params.showConnectedObjs == 'true'
         Map queryParams = [:]
         if (params.get('status')){
-            queryParams.status = params.list('status').collect{ Long.parseLong(it) }
+            queryParams.status = Params.getLongList(params, 'status')
         }
 
         queryParams.showSubscriber = showSubscriber
@@ -237,7 +238,7 @@ class AjaxJsonController {
         boolean showConnectedLics = params.showConnectedLics == 'true'
         Map queryParams = [:]
         if (params.get('status')){
-            queryParams.status = params.list('status').collect{ Long.parseLong(it) }
+            queryParams.status = Params.getLongList(params, 'status')
         }
 
         queryParams.showSubscriber = showSubscriber

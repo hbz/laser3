@@ -2,6 +2,7 @@ package de.laser
 
 
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.helper.Params
 import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
@@ -1247,8 +1248,6 @@ class FilterService {
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Map result = [:]
 
-
-
         String base_qry
         Map<String,Object> qry_params = [subscriptions: subscriptions]
         boolean filterSet = false
@@ -1291,8 +1290,8 @@ class FilterService {
         }
         else if(params.status != '' && params.status != null && listReaderWrapper(params, 'status')) {
             List<Long> status = []
-            listReaderWrapper(params, 'status').each { String statusId ->
-                status << Long.parseLong(statusId)
+            listReaderWrapper(params, 'status').each { def statusId ->
+                status << Long.valueOf(statusId)
             }
             base_qry += " and ie.status.id in (:status) "
             qry_params.status = status
@@ -1404,7 +1403,6 @@ class FilterService {
             filterSet = true
         }
 
-
         if (params.title_types && params.title_types != "" && listReaderWrapper(params, 'title_types')) {
             base_qry += " and lower(tipp.titleType) in (:title_types)"
             qry_params.title_types = listReaderWrapper(params, 'title_types').collect { ""+it.toLowerCase()+"" }
@@ -1478,8 +1476,6 @@ class FilterService {
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Map result = [:]
 
-
-
         String base_qry
         Map<String,Object> qry_params = [owner: owner]
         boolean filterSet = false
@@ -1513,11 +1509,8 @@ class FilterService {
             base_qry += " and ie.tipp.status.id = :status and ie.status.id != :status "
             qry_params.status = params.long('status')
         }
-        else if(params.status != '' && params.status != null && params.list('status')) {
-            List<Long> status = []
-            params.list('status').each { String statusId ->
-                status << Long.parseLong(statusId)
-            }
+        else if (params.list('status').findAll()) {
+            List<Long> status = Params.getLongList(params, 'status')
             base_qry += " and ie.status.id in (:status) "
             qry_params.status = status
             filterSet = true
@@ -1656,7 +1649,6 @@ class FilterService {
             filterSet = true
         }
 
-
         if (params.filter) {
            /* if (date_filter) {
                 base_qry += "and ( ( :startDate >= tipp.accessStartDate or tipp.accessStartDate is null ) and ( :endDate <= tipp.accessEndDate or tipp.accessEndDate is null) ) "
@@ -1700,11 +1692,8 @@ class FilterService {
             qry_params.deleted = RDStore.TIPP_STATUS_REMOVED
         }*/
 
-        if(params.status != '' && params.status != null && params.list('status')) {
-            List<Long> status = []
-            params.list('status').each { String statusId ->
-                status << Long.parseLong(statusId)
-            }
+        if (params.list('status').findAll()) {
+            List<Long> status = Params.getLongList(params, 'status')
             if(qry_params.size() > 0){
                 base_qry += " and "
             }
@@ -2310,68 +2299,6 @@ class FilterService {
             result = params[key]
         }
         else result = [params[key]]
-        result
-    }
-
-    Map<String, Object> resolveParamsForTopAttachedTitleTabs(GrailsParameterMap params, String entites, boolean ignorePlannedIEs = false) {
-        log.debug 'resolveParamsForTopAttachedTitleTabs( .., ' + entites + ', ' + ignorePlannedIEs + ' )'
-
-        Map<String, Object> result = [:]
-
-        // MyInstitutionController.currentTitles()              entites = 'IEs',   ignorePlannedIEs = false
-        // MyInstitutionController.currentPermanentTitles()     entites = 'IEs',   ignorePlannedIEs = true
-        // SubscriptionControllerService.index()                entites = 'IEs',   ignorePlannedIEs = false
-        // TitleController.list()                               entites = 'Tipps', ignorePlannedIEs = false
-
-        if (params.tab) {
-            switch (params.tab) {
-                case 'current' + entites:
-                    result.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-                    break
-                case 'planned' + entites:
-                    if (!ignorePlannedIEs) {
-                        result.status = [RDStore.TIPP_STATUS_EXPECTED.id.toString()]
-                    }
-                    break
-                case 'expired' + entites:
-                    result.status = [RDStore.TIPP_STATUS_RETIRED.id.toString()]
-                    break
-                case 'deleted' + entites:
-                    result.status = [RDStore.TIPP_STATUS_DELETED.id.toString()]
-                    break
-                case 'all' + entites:
-                    result.status = [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_EXPECTED.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString(), RDStore.TIPP_STATUS_DELETED.id.toString()]
-                    break
-            }
-        }
-        else if(params.list('status').size() == 1) {
-            switch (params.list('status')[0]) {
-                case RDStore.TIPP_STATUS_CURRENT.id.toString():
-                    result.tab = 'current' + entites
-                    break
-                case RDStore.TIPP_STATUS_RETIRED.id.toString():
-                    result.tab = 'expired' + entites
-                    break
-                case RDStore.TIPP_STATUS_EXPECTED.id.toString():
-                    if (!ignorePlannedIEs) {
-                        result.tab = 'planned' + entites
-                    }
-                    break
-                case RDStore.TIPP_STATUS_DELETED.id.toString():
-                    result.tab = 'deleted' + entites
-                    break
-            }
-        }
-        else {
-            if (params.list('status').size() > 1) {
-                result.tab = 'all' + entites
-            }
-            else {
-                result.tab = 'current' + entites
-                result.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-            }
-        }
-
         result
     }
 }

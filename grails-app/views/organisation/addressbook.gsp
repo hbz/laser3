@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org; de.laser.Person; de.laser.PersonRole; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants " %>
+<%@ page import="de.laser.helper.Params; de.laser.Org; de.laser.Person; de.laser.PersonRole; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants " %>
 
 <laser:htmlStart message="menu.institutions.myAddressbook" serviceInjection="true"/>
 
@@ -12,8 +12,7 @@
     <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
 </ui:controlButtons>
 
-<laser:render template="/templates/copyFilteredEmailAddresses"
-          model="[emailAddresses: emailAddresses]"/>
+<laser:render template="/templates/copyFilteredEmailAddresses" model="[emailAddresses: emailAddresses]"/>
 
 <ui:h1HeaderWithIcon text="${orgInstance.name} - ${message(code: 'menu.institutions.myAddressbook')}">
     <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
@@ -32,8 +31,7 @@
                 <label for="prs">${message(code: 'person.filter.name')}</label>
 
                 <div class="ui input">
-                    <input type="text" id="prs" name="prs" value="${params.prs}"
-                           placeholder="${message(code: 'person.filter.name')}"/>
+                    <input type="text" id="prs" name="prs" value="${params.prs}" placeholder="${message(code: 'person.filter.name')}"/>
                 </div>
             </div>
 
@@ -42,27 +40,23 @@
 
         <div class="two fields">
             <div class="field">
-                <label><g:message code="person.function.label"/></label>
-                <ui:select class="ui dropdown search"
-                              name="function"
-                              from="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}"
-                              multiple=""
-                              optionKey="id"
-                              optionValue="value"
-                              value="${params.function}"
-                              noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                <label for="function"><g:message code="person.function.label"/></label>
+                <select id="function" name="function" multiple="" class="ui dropdown search">
+                    <option value=""><g:message code="default.select.choose.label"/></option>
+                    <g:each in="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}" var="rdv">
+                        <option <%=Params.getLongList(params, 'function').contains(rdv.id) ? 'selected="selected"' : ''%> value="${rdv.id}">${rdv.getI10n('value')}</option>
+                    </g:each>
+                </select>
             </div>
 
             <div class="field">
-                <label><g:message code="person.position.label"/></label>
-                <ui:select class="ui dropdown search"
-                              name="position"
-                              from="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}"
-                              multiple=""
-                              optionKey="id"
-                              optionValue="value"
-                              value="${params.position}"
-                              noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                <label for="position"><g:message code="person.position.label"/></label>
+                <select id="position" name="position" multiple="" class="ui dropdown search">
+                    <option value=""><g:message code="default.select.choose.label"/></option>
+                    <g:each in="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}" var="rdv">
+                        <option <%=Params.getLongList(params, 'position').contains(rdv.id) ? 'selected="selected"' : ''%> value="${rdv.id}">${rdv.getI10n('value')}</option>
+                    </g:each>
+                </select>
             </div>
         </div>
 
