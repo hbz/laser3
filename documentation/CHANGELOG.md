@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5485    13.12.2023  dev     3.4         David   Bug         Alle Einrichtungen > Filter: Status geht verloren
+
 5483    13.12.2023  dev     3.4         David   Bug         Meine Verträge - Filterfelder
 
 5482    13.12.2023  dev     3.4         David   Bug         Adressbuch - Filterfelder

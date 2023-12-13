@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.RefdataCategory; de.laser.Person; de.laser.storage.RDStore; de.laser.License; de.laser.RefdataValue; de.laser.interfaces.CalculatedType; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.helper.Params; de.laser.Subscription; de.laser.RefdataCategory; de.laser.Person; de.laser.storage.RDStore; de.laser.License; de.laser.RefdataValue; de.laser.interfaces.CalculatedType; de.laser.storage.RDConstants" %>
 
 <laser:htmlStart text="${message(code:'license.details.incoming.childs',args:[message(code:'consortium.subscriber')])}" serviceInjection="true"/>
 
@@ -36,7 +36,7 @@
                     <select id="subscription" name="subscription" multiple="" class="ui search selection fluid dropdown">
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:each in="${subscriptionsForFilter}" var="sub">
-                            <option <%=(params.list('subscription').contains(sub.id.toString())) ? 'selected="selected"' : '' %> value="${sub.id}">${sub.dropdownNamingConvention()}</option>
+                            <option <%=Params.getLongList(params, 'subscription').contains(sub.id) ? 'selected="selected"' : '' %> value="${sub.id}">${sub.dropdownNamingConvention()}</option>
                         </g:each>
                     </select>
                 </div>

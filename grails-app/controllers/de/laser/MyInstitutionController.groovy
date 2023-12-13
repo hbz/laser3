@@ -182,7 +182,7 @@ class MyInstitutionController  {
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         String instanceFilter = "", perpetualFilter = ""
-        boolean withPerpetualAccess = params.hasPerpetualAccess == RDStore.YN_YES.id.toString()
+        boolean withPerpetualAccess = params.long('hasPerpetualAccess') == RDStore.YN_YES.id
         if(withPerpetualAccess)
             perpetualFilter = " or s2.hasPerpetualAccess = true "
 
@@ -228,7 +228,7 @@ class MyInstitutionController  {
             else if(!params.filterSet) {
                 result.filterSet = true
                 queryParams.status = "Current"
-                params.status = RDStore.PLATFORM_STATUS_CURRENT.id.toString()
+                params.status = RDStore.PLATFORM_STATUS_CURRENT.id
             }
 
             if(params.ipSupport) {
@@ -1564,9 +1564,8 @@ class MyInstitutionController  {
         Map<String, Object> countQueryParams = qryParams.clone()
 
         if (params.list('status').findAll()) {
-            List<RefdataValue> status = params.list('status').findAll().collect{ RefdataValue.get(Long.valueOf(it)) }
             queryFilter << "ie.status in (:status)"
-            qryParams.status = status
+            qryParams.status = Params.getRefdataList(params, 'status')
         }
         countQueryFilter << "ie.status != :removed"
         countQueryParams.removed = RDStore.TIPP_STATUS_REMOVED
