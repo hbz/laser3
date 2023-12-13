@@ -2,6 +2,7 @@ package de.laser
 
 
 import de.laser.annotations.DebugInfo
+import de.laser.helper.Params
 import de.laser.storage.RDStore
 import de.laser.utils.SwissKnife
 import grails.plugin.springsecurity.annotation.Secured
@@ -28,14 +29,14 @@ class CompareController  {
         result.user = contextService.getUser()
         result.contextOrg = contextService.getOrg()
         result.institution = result.contextOrg
-        params.status = params.status ?: [RDStore.LICENSE_CURRENT.id.toString()]
+        params.status = params.status ?: [RDStore.LICENSE_CURRENT.id]
 
         result.objects = []
 
         params.tab = params.tab ?: "compareElements"
 
         if (params.selectedObjects) {
-            result.objects = License.findAllByIdInList(params.list('selectedObjects').collect { Long.parseLong(it) })
+            result.objects = License.findAllByIdInList( Params.getLongList(params, 'selectedObjects') )
         }
 
         if (params.tab == "compareProperties") {
@@ -58,14 +59,14 @@ class CompareController  {
         result.contextOrg = contextService.getOrg()
         SwissKnife.setPaginationParams(result, params, result.user)
         result.institution = result.contextOrg
-        params.status = params.status ?: [RDStore.SUBSCRIPTION_CURRENT.id.toString()]
+        params.status = params.status ?: [RDStore.SUBSCRIPTION_CURRENT.id]
 
         result.objects = []
 
         params.tab = params.tab ?: "compareElements"
 
         if (params.selectedObjects) {
-            result.objects = Subscription.findAllByIdInList(params.list('selectedObjects').collect { Long.parseLong(it) })
+            result.objects = Subscription.findAllByIdInList( Params.getLongList(params, 'selectedObjects') )
         }
 
         if (params.tab == "compareProperties") {
@@ -95,8 +96,8 @@ class CompareController  {
         result.contextOrg = contextService.getOrg()
         SwissKnife.setPaginationParams(result, params, result.user)
         result.institution = result.contextOrg
-        result.objects = Subscription.findAllByIdInList(params.list('selectedObjects[]').collect { Long.parseLong(it) })
-        params.status = params.status ?: [RDStore.SUBSCRIPTION_CURRENT.id.toString()]
+        result.objects = Subscription.findAllByIdInList(params.list('selectedObjects[]').collect { Long.valueOf(it) })
+        params.status = params.status ?: [RDStore.SUBSCRIPTION_CURRENT.id]
         result = result + compareService.compareEntitlements(params, result)
 
         result.ies = result.ies.sort { genericOIDService.resolveOID(it.key).name }

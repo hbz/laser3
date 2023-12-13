@@ -8,7 +8,7 @@ import groovy.util.logging.Slf4j
 class FilterLogic {
 
     static Map<String, Object> resolveParamsForTopAttachedTitleTabs(GrailsParameterMap params, String entites, boolean ignorePlannedIEs = false) {
-        log.debug 'resolveParamsForTopAttachedTitleTabs( .., ' + entites + ', ' + ignorePlannedIEs + ' )'
+        log.debug('resolveParamsForTopAttachedTitleTabs( .., ' + entites + ', ' + ignorePlannedIEs + ' )')
 
         Map<String, Object> result = [:]
 
@@ -70,7 +70,7 @@ class FilterLogic {
     }
 
     static Map<String, Object> resolveParamsForTopAttachedTitleTabs_New(GrailsParameterMap params, String entites, boolean ignorePlannedIEs = false) {
-        log.debug ('resolveParamsForTopAttachedTitleTabs( .., ' + entites + ', ' + ignorePlannedIEs + ' )')
+        log.debug('resolveParamsForTopAttachedTitleTabs( .., ' + entites + ', ' + ignorePlannedIEs + ' )')
 
         String debug = '[tab: ' + params.tab + ', status: ' + params.list('status') + ']'
         Map<String, Object> result = [:]
@@ -131,7 +131,7 @@ class FilterLogic {
             }
         }
 
-        log.debug (debug + '   ->   [tab: ' + params.tab + ', status: ' + params.list('status') + ']')
+        println '! ' + debug + ' -> [tab: ' + params.tab + ', status: ' + params.list('status') + ']'
 
         result
     }

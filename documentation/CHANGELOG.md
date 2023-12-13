@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5481    13.12.2023  dev     3.4         David   Bug         Lizenzen/Verträge vergleichen - Filterstatus
+
 5476    11.12.2023  rc-3.3  3.3.2       Moe     Bug         Umfrage Kosten: Bei Ausschüttung wird der Filter gelöscht
 
 5475    11.12.2023  rc-3.3  3.3.2       Moe     Bug         Titelumfrage: Titel werden nicht ausgewählt
