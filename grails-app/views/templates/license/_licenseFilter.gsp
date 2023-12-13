@@ -89,16 +89,16 @@
                               <div class="inline field">
                                   <div class="ui checkbox">
                                       <label for="checkLicType-${RDStore.OR_LICENSEE}"><g:message code="license.filter.local"/></label>
-                                      <input id="checkLicType-${RDStore.OR_LICENSEE}" name="licTypes" type="checkbox" value="${RDStore.OR_LICENSEE.id.toString()}"
-                                          <g:if test="${params.list('licTypes').contains(RDStore.OR_LICENSEE.id.toString())}"> checked="" </g:if>
+                                      <input id="checkLicType-${RDStore.OR_LICENSEE}" name="licTypes" type="checkbox" value="${RDStore.OR_LICENSEE.id}"
+                                          <g:if test="${Params.getLongList(params, 'licTypes').contains(RDStore.OR_LICENSEE.id)}"> checked="" </g:if>
                                              tabindex="0">
                                   </div>
                               </div>
                               <div class="inline field">
                                   <div class="ui checkbox">
                                       <label for="checkLicType-${RDStore.OR_LICENSEE_CONS}"><g:message code="license.filter.member"/></label>
-                                      <input id="checkLicType-${RDStore.OR_LICENSEE_CONS}" name="licTypes" type="checkbox" value="${RDStore.OR_LICENSEE_CONS.id.toString()}"
-                                          <g:if test="${params.list('licTypes').contains(RDStore.OR_LICENSEE_CONS.id.toString())}"> checked="" </g:if>
+                                      <input id="checkLicType-${RDStore.OR_LICENSEE_CONS}" name="licTypes" type="checkbox" value="${RDStore.OR_LICENSEE_CONS.id}"
+                                          <g:if test="${Params.getLongList(params, 'licTypes').contains(RDStore.OR_LICENSEE_CONS.id)}"> checked="" </g:if>
                                              tabindex="0">
                                   </div>
                               </div>

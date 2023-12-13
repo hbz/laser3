@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.helper.Params; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
 
 <ui:filter>
     <g:form controller="${controllerName}" action="${actionName}" method="get" class="ui form">
@@ -38,7 +38,7 @@
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.IP_AUTHENTICATION)}" var="ip">
-                        <option <%=(params.list('ipSupport')?.contains(ip.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'ipSupport').contains(ip.id) ? 'selected="selected"' : ''%>
                                 value="${ip.id}">
                             ${ip.getI10n("value")}
                         </option>
@@ -56,7 +56,7 @@
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)+ RDStore.GENERIC_NULL_VALUE}" var="shibboleth">
-                        <option <%=(params.list('shibbolethSupport')?.contains(shibboleth.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'shibbolethSupport').contains(shibboleth.id) ? 'selected="selected"' : ''%>
                                 value="${shibboleth.id}">
                             ${shibboleth.getI10n("value")}
                         </option>
@@ -74,7 +74,7 @@
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)+ RDStore.GENERIC_NULL_VALUE}" var="counter">
-                        <option <%=(params.list('counterCertified')?.contains(counter.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'counterCertified').contains(counter.id) ? 'selected="selected"' : ''%>
                                 value="${counter.id}">
                             ${counter.getI10n("value")}
                         </option>
