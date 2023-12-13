@@ -255,7 +255,7 @@ class MyInstitutionController  {
             if(params.counterCertified) {
                 result.filterSet = true
                 List<String> counterCertified = params.list("counterCertified")
-                queryParams.counterCeritified = []
+                queryParams.counterCertified = []
                 counterCertified.each { String counter ->
                     RefdataValue rdv = RefdataValue.get(counter)
                     String cert = rdv == RDStore.GENERIC_NULL_VALUE ? "null" : rdv.value
@@ -430,8 +430,7 @@ class MyInstitutionController  {
 
         if (params.categorisation) {
             base_qry += " and l.licenseCategory.id in (:categorisations) "
-            List<Long> categorisations = Params.getLongList(params, 'categorisation')
-            qry_params.categorisations = categorisations
+            qry_params.categorisations = Params.getLongList(params, 'categorisation')
         }
 
         if(params.status || !params.filterSubmit) {
@@ -473,14 +472,9 @@ class MyInstitutionController  {
                 qry_params.subStatus = params.subStatus as Long
             }
 
-            if(params.subKind) {
+            if (params.subKind) {
                 subscrQueryFilter << "s.kind.id in (:subKinds)"
-                List<Long> subKinds = []
-                List<String> selKinds = params.list('subKind')
-                selKinds.each { String sel ->
-                    subKinds << Long.parseLong(sel)
-                }
-                qry_params.subKinds = subKinds
+                qry_params.subKinds = Params.getLongList(params, 'subKind')
             }
 
             if (contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()) {

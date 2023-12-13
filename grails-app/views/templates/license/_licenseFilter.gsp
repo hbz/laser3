@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.License;de.laser.RefdataCategory;de.laser.interfaces.CalculatedType;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.RefdataValue;de.laser.Links;de.laser.Org" %>
+<%@ page import="de.laser.helper.Params; de.laser.CustomerTypeService; de.laser.License;de.laser.RefdataCategory;de.laser.interfaces.CalculatedType;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.RefdataValue;de.laser.Links;de.laser.Org" %>
 <laser:serviceInjection />
 
   <ui:filter>
@@ -18,7 +18,7 @@
                       <select id="consortium" name="consortium" multiple="" class="ui search selection fluid dropdown">
                           <option value=""><g:message code="default.select.choose.label"/></option>
                           <g:each in="${orgs.consortia}" var="consortium">
-                              <option <%=(params.list('consortium').contains(consortium.id.toString())) ? 'selected="selected"' : ''%> value="${consortium.id}">${consortium.name}</option>
+                              <option <%=Params.getLongList(params, 'consortium').contains(consortium.id) ? 'selected="selected"' : ''%> value="${consortium.id}">${consortium.name}</option>
                           </g:each>
                       </select>
                   </div>
@@ -44,7 +44,7 @@
                   <select id="licensor" name="licensor" multiple="" class="ui search selection fluid dropdown">
                       <option value=""><g:message code="default.select.choose.label"/></option>
                       <g:each in="${orgs.licensors}" var="licensor">
-                          <option <%=(params.list('licensor').contains(licensor.id.toString())) ? 'selected="selected"' : ''%> value="${licensor.id}">${licensor.name}</option>
+                          <option <%=Params.getLongList(params, 'licensor').contains(licensor.id) ? 'selected="selected"' : ''%> value="${licensor.id}">${licensor.name}</option>
                       </g:each>
                   </select>
               </div>
@@ -54,7 +54,7 @@
                   <select id="categorisation" name="categorisation" multiple="" class="ui search selection fluid dropdown">
                       <option value=""><g:message code="default.select.choose.label"/></option>
                       <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_CATEGORY)}" var="categorisation">
-                          <option <%=(params.list('categorisation').contains(categorisation.id.toString())) ? 'selected="selected"' : ''%> value="${categorisation.id}">${categorisation.getI10n("value")}</option>
+                          <option <%=Params.getLongList(params, 'categorisation').contains(categorisation.id) ? 'selected="selected"' : ''%> value="${categorisation.id}">${categorisation.getI10n("value")}</option>
                       </g:each>
                   </select>
               </div>
@@ -74,7 +74,7 @@
                   <select id="subKind" name="subKind" multiple="" class="ui search selection fluid dropdown">
                       <option value=""><g:message code="default.select.choose.label"/></option>
                       <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)}" var="subKind">
-                          <option <%=(params.list('subKind').contains(subKind.id.toString())) ? 'selected="selected"' : ''%> value="${subKind.id}">${subKind.getI10n("value")}</option>
+                          <option <%=Params.getLongList(params, 'subKind').contains(subKind.id) ? 'selected="selected"' : ''%> value="${subKind.id}">${subKind.getI10n("value")}</option>
                       </g:each>
                   </select>
               </div>

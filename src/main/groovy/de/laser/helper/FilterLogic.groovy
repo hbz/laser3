@@ -69,7 +69,7 @@ class FilterLogic {
         result
     }
 
-    static Map<String, Object> resolveParamsForTopAttachedTitleTabs_New(GrailsParameterMap params, String entites, boolean ignorePlannedIEs = false) {
+    static Map<String, Object> resolveParamsForTopAttachedTitleTabs_TODO(GrailsParameterMap params, String entites, boolean ignorePlannedIEs = false) {
         log.debug('resolveParamsForTopAttachedTitleTabs( .., ' + entites + ', ' + ignorePlannedIEs + ' )')
 
         String debug = '[tab: ' + params.tab + ', status: ' + params.list('status') + ']'
