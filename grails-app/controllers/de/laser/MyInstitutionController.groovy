@@ -402,13 +402,9 @@ class MyInstitutionController  {
         }
         result.licenseFilterTable = licenseFilterTable
 
-        if(params.consortium) {
+        if (params.consortium) {
             base_qry += " and ( exists ( select o from l.orgRelations as o where o.roleType = :licCons and o.org.id in (:cons) ) ) "
-            List<Long> consortia = []
-            List<String> selCons = params.list('consortium')
-            selCons.each { String sel ->
-                consortia << Long.parseLong(sel)
-            }
+            List<Long> consortia = Params.getLongList(params, 'consortium')
             qry_params += [licCons:RDStore.OR_LICENSING_CONSORTIUM, cons:consortia]
         }
 
@@ -426,27 +422,17 @@ class MyInstitutionController  {
             qry_params = psq.queryParams
         }
 
-        if(params.licensor) {
-            base_qry += " and ( exists ( select o from l.orgRelations as o where o.roleType in (:licCons) and o.org.id in (:licensors) ) ) "
-            List<Long> licensors = []
-            List<String> selLicensors = params.list('licensor')
-            selLicensors.each { String sel ->
-                licensors << Long.parseLong(sel)
-            }
-            qry_params += [licCons:[RDStore.OR_LICENSOR, RDStore.OR_AGENCY],licensors:licensors]
+        if (params.licensor) {
+            base_qry += " and ( exists ( select o from l.orgRelations as o where o.roleType in (:licAgncy) and o.org.id in (:licensors) ) ) "
+            List<Long> licensors = Params.getLongList(params, 'licensor')
+            qry_params += [licAgncy:[RDStore.OR_LICENSOR, RDStore.OR_AGENCY], licensors:licensors]
         }
 
-        if(params.categorisation) {
+        if (params.categorisation) {
             base_qry += " and l.licenseCategory.id in (:categorisations) "
-            List<Long> categorisations = []
-            List<String> selCategories = params.list('categorisation')
-            selCategories.each { String sel ->
-                categorisations << Long.parseLong(sel)
-            }
+            List<Long> categorisations = Params.getLongList(params, 'categorisation')
             qry_params.categorisations = categorisations
         }
-
-
 
         if(params.status || !params.filterSubmit) {
             base_qry += " and l.status.id = :status "

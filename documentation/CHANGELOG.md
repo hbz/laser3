@@ -7,7 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-5482    13.12.2023  dev     3.4         David   Bug         Meine Einrichtung > Adressbuch - Filterfelder
+5483    13.12.2023  dev     3.4         David   Bug         Meine Verträge - Filterfelder
+
+5482    13.12.2023  dev     3.4         David   Bug         Adressbuch - Filterfelder
 
 5481    13.12.2023  dev     3.4         David   Bug         Lizenzen/Verträge vergleichen - Filterstatus
 
