@@ -3312,7 +3312,7 @@ class SurveyController {
             result.sourceLicenses = License.executeQuery(sourceLicensesQuery, [sub: result.surveyConfig.subscription, linkType: RDStore.LINKTYPE_LICENSE])
         }
         
-        result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList(params.list('targetSubs').collect { it -> Long.parseLong(it) }): null
+        result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList( Params.getLongList(params, 'targetSubs') ): null
 
         result
 
@@ -3369,7 +3369,7 @@ class SurveyController {
 
         if (baseSurveyInfo && baseSurveyConfig) {
 
-            result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList(params.list('targetSubs').collect { it -> Long.parseLong(it) }): null
+            result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList( Params.getLongList(params, 'targetSubs') ): null
 
             List newSurveyIds = []
 

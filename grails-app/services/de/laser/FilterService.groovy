@@ -106,17 +106,17 @@ class FilterService {
 
         if (params.subjectGroup?.size() > 0) {
             query << "exists (select osg from OrgSubjectGroup as osg where osg.org.id = o.id and osg.subjectGroup.id in (:subjectGroup))"
-            queryParams << [subjectGroup : params.list("subjectGroup").collect {Long.parseLong(it)}]
+            queryParams << [subjectGroup : Params.getLongList(params, 'subjectGroup')]
         }
 
         if (params.discoverySystemsFrontend?.size() > 0) {
             query << "exists (select dsf from DiscoverySystemFrontend as dsf where dsf.org.id = o.id and dsf.frontend.id in (:frontends))"
-            queryParams << [frontends : params.list("discoverySystemsFrontend").collect {Long.parseLong(it)}]
+            queryParams << [frontends : Params.getLongList(params, 'discoverySystemsFrontend')]
         }
 
         if (params.discoverySystemsIndex?.size() > 0) {
             query << "exists (select dsi from DiscoverySystemIndex as dsi where dsi.org.id = o.id and dsi.index.id in (:indices))"
-            queryParams << [indices : params.list("discoverySystemsIndex").collect {Long.parseLong(it)}]
+            queryParams << [indices : Params.getLongList(params, 'discoverySystemsIndex')]
         }
 
         if (params.libraryNetwork?.size() > 0) {
@@ -593,7 +593,7 @@ class FilterService {
 
         if(params.ids) {
             query += " and surInfo.id in (:ids)"
-            queryParams << [ids: params.list('ids').collect{Long.parseLong(it)}]
+            queryParams << [ids: Params.getLongList(params, 'ids')]
             params.filterSet = true
         }
 
@@ -617,13 +617,13 @@ class FilterService {
 
         if (params.filterStatus && params.filterStatus != "" && params.list('filterStatus')) {
             query += " and surInfo.status.id in (:filterStatus) "
-            queryParams << [filterStatus : params.list('filterStatus').collect { Long.parseLong(it) }]
+            queryParams << [filterStatus : Params.getLongList(params, 'filterStatus')]
             params.filterSet = true
         }
 
         if (params.filterPvd && params.filterPvd != "" && params.list('filterPvd')) {
             query += " and exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org.id in (:filterPvd))"
-            queryParams << [filterPvd : params.list('filterPvd').collect { Long.parseLong(it) }]
+            queryParams << [filterPvd : Params.getLongList(params, 'filterPvd')]
             params.filterSet = true
         }
 
@@ -853,7 +853,7 @@ class FilterService {
 
         if (params.filterPvd && params.filterPvd != "" && params.list('filterPvd')) {
             query << "exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org.id in (:filterPvd))"
-            queryParams << [filterPvd : params.list('filterPvd').collect { Long.parseLong(it) }]
+            queryParams << [filterPvd : Params.getLongList(params, 'filterPvd')]
             params.filterSet = true
         }
 
@@ -998,7 +998,7 @@ class FilterService {
         }
         if (params.subjectGroup?.size() > 0) {
             base_qry +=  " and exists (select osg from OrgSubjectGroup as osg where osg.org.id = surveyOrg.org.id and osg.subjectGroup.id in (:subjectGroup))"
-            queryParams << [subjectGroup : params.list("subjectGroup").collect {Long.parseLong(it)}]
+            queryParams << [subjectGroup : Params.getLongList(params, 'subjectGroup')]
         }
 
         if (params.libraryNetwork?.size() > 0) {
@@ -1532,13 +1532,13 @@ class FilterService {
 
         if (params.ddcs && params.ddcs != "" && params.list('ddcs')) {
             base_qry += " and exists ( select ddc.id from DeweyDecimalClassification ddc where ddc.tipp = tipp and ddc.ddc.id in (:ddcs) ) "
-            qry_params.ddcs = params.list('ddcs').collect { String key -> Long.parseLong(key) }
+            qry_params.ddcs = Params.getLongList(params, 'ddcs')
             filterSet = true
         }
 
         if (params.languages && params.languages != "" && params.list('languages')) {
             base_qry += " and exists ( select lang.id from Language lang where lang.tipp = tipp and lang.language.id in (:languages) ) "
-            qry_params.languages = params.list('languages').collect { String key -> Long.parseLong(key) }
+            qry_params.languages = Params.getLongList(params, 'languages')
             filterSet = true
         }
 
