@@ -246,7 +246,7 @@ class SubscriptionsQueryService {
                     if (params.subTypes instanceof List<Long>) {
                         subTypes = params.subTypes
                     } else {
-                        subTypes = [params.subTypes instanceof Long ? params.subTypes : Long.parseLong(params.subTypes)]
+                        subTypes = [Long.valueOf(params.subTypes)]
                     }
                 }
             }

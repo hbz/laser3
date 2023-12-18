@@ -2283,7 +2283,7 @@ class MyInstitutionController  {
         result.contextOrg = contextService.getOrg()
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
-        result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(Long.parseLong(params.surveyConfigID.toString())) : result.surveyInfo.surveyConfigs[0]
+        result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.long('surveyConfigID')) : result.surveyInfo.surveyConfigs[0]
 
         result.surveyResults = []
         result.minimalInput = false

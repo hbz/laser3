@@ -799,17 +799,11 @@ class SubscriptionControllerService {
             }
             if(params.ddcs && params.list("ddcs").size() > 0) {
                 query += " and exists (select ddc.id from title.ddcs ddc where ddc.ddc.id in (:ddcs)) "
-                queryParams.ddcs = []
-                params.list("ddcs").each { String ddc ->
-                    queryParams.ddcs << Long.parseLong(ddc)
-                }
+                queryParams.ddcs = Params.getLongList(params, 'ddcs')
             }
             if(params.languages && params.list("languages").size() > 0) {
                 query += " and exists (select lang.id from title.languages lang where lang.language.id in (:languages)) "
-                queryParams.languages = []
-                params.list("languages").each { String lang ->
-                    queryParams.languages << Long.parseLong(lang)
-                }
+                queryParams.languages = Params.getLongList(params, 'languages')
             }
 
             if (params.filter) {
@@ -821,7 +815,7 @@ class SubscriptionControllerService {
 
             if (params.pkgfilter && (params.pkgfilter != '')) {
                 query += " and title.pkg.id = :pkgId "
-                queryParams.pkgId = Long.parseLong(params.pkgfilter)
+                queryParams.pkgId = params.long('pkgfilter')
             }
 
             if(params.summaryOfContent) {
@@ -1510,8 +1504,8 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            Subscription memberSub = Subscription.get(Long.parseLong(params.memberSubID))
-            Org org = Org.get(Long.parseLong(params.memberOrg))
+            Subscription memberSub = Subscription.get(params.long('memberSubID'))
+            Org org = Org.get(params.long('memberOrg'))
             Subscription prevMemberSub = (result.navPrevSubscription.size() > 0) ? result.navPrevSubscription[0].getDerivedSubscriptionBySubscribers(org) : null
             Subscription nextMemberSub = (result.navNextSubscription.size() > 0) ? result.navNextSubscription[0].getDerivedSubscriptionBySubscribers(org) : null
             try {
@@ -2715,7 +2709,7 @@ class SubscriptionControllerService {
                             }
 
                             if (params.issueEntitlementGroupID && params.issueEntitlementGroupID != '') {
-                                issueEntitlementGroup = IssueEntitlementGroup.findById(Long.parseLong(params.issueEntitlementGroupID))
+                                issueEntitlementGroup = IssueEntitlementGroup.findById(params.long('issueEntitlementGroupID'))
                             }
 
                             if (issueEntitlementGroup) {
@@ -3295,7 +3289,7 @@ class SubscriptionControllerService {
                         break
                     case 'removeDiscountScale':
                         if(params.discountScaleId){
-                            SubscriptionDiscountScale sbs = SubscriptionDiscountScale.findById(Long.parseLong(params.discountScaleId))
+                            SubscriptionDiscountScale sbs = SubscriptionDiscountScale.findById(params.long('discountScaleId'))
                             if(sbs) {
                                 sbs.delete()
                             }

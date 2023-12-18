@@ -53,7 +53,7 @@ class SurveyControllerService {
         result.user = contextService.getUser()
 
         result.surveyInfo = SurveyInfo.get(params.id)
-        result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(Long.parseLong(params.surveyConfigID.toString())) : result.surveyInfo.surveyConfigs[0]
+        result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.long('surveyConfigID')) : result.surveyInfo.surveyConfigs[0]
         result.surveyWithManyConfigs = (result.surveyInfo.surveyConfigs?.size() > 1)
 
         result.editable = result.surveyInfo.isEditable() ?: false

@@ -598,7 +598,7 @@ class AjaxHtmlController {
             result.positions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]
 
             if (result.org || (params.org && params.org instanceof String)) {
-                result.org = params.org ? Org.get(Long.parseLong(params.org)) : result.org
+                result.org = params.org ? Org.get(params.long('org')) : result.org
                 List allOrgTypeIds =result.org.getAllOrgTypeIds()
                 if(RDStore.OT_PROVIDER.id in allOrgTypeIds || RDStore.OT_AGENCY.id in allOrgTypeIds){
                     result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FC_DELIVERY_ADDRESS]
