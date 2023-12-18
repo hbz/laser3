@@ -2283,7 +2283,7 @@ class MyInstitutionController  {
         result.contextOrg = contextService.getOrg()
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
-        result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(Long.parseLong(params.surveyConfigID.toString())) : result.surveyInfo.surveyConfigs[0]
+        result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.long('surveyConfigID')) : result.surveyInfo.surveyConfigs[0]
 
         result.surveyResults = []
         result.minimalInput = false
@@ -3996,7 +3996,7 @@ join sub.orgRelations or_sub where
 
         DateFormat sdFormat = DateUtils.getLocalizedSDF_noTime()
 
-        result.participant = Org.get(Long.parseLong(params.id))
+        result.participant = Org.get(params.long('id'))
 
         params.tab = params.tab ?: 'open'
 

@@ -517,7 +517,7 @@ class SurveyController {
         result.user = contextService.getUser()
         result.editable = true
 
-        result.subscription = Subscription.get(Long.parseLong(params.sub))
+        result.subscription = Subscription.get( params.long('sub') )
         if (!result.subscription) {
             redirect action: 'createSubscriptionSurvey'
             return
@@ -542,7 +542,7 @@ class SurveyController {
         result.user = contextService.getUser()
         result.editable = true
 
-        result.subscription = Subscription.get(Long.parseLong(params.sub))
+        result.subscription = Subscription.get( params.long('sub') )
         result.pickAndChoose = true
         if (!result.subscription) {
             redirect action: 'createIssueEntitlementsSurvey'
@@ -579,7 +579,7 @@ class SurveyController {
             }
         }
 
-        Subscription subscription = Subscription.get(Long.parseLong(params.sub))
+        Subscription subscription = Subscription.get( params.long('sub') )
         boolean subSurveyUseForTransfer = (SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(subscription, true)) ? false : (params.subSurveyUseForTransfer ? true : false)
         SurveyInfo surveyInfo
         SurveyInfo.withTransaction { TransactionStatus ts ->
@@ -696,7 +696,7 @@ class SurveyController {
                 redirect(action: 'addSubtoIssueEntitlementsSurvey', params: params)
                 return
             }
-            Subscription subscription = Subscription.get(Long.parseLong(params.sub))
+            Subscription subscription = Subscription.get( params.long('sub') )
             if (subscription && !SurveyConfig.findAllBySubscriptionAndSurveyInfo(subscription, surveyInfo)) {
                 SurveyConfig surveyConfig = new SurveyConfig(
                         subscription: subscription,
@@ -1110,7 +1110,7 @@ class SurveyController {
 
             RefdataValue cost_item_status = (params.newCostItemStatus && params.newCostItemStatus != RDStore.GENERIC_NULL_VALUE.id.toString()) ? (RefdataValue.get(params.long('newCostItemStatus'))) : null
             RefdataValue cost_item_element = params.newCostItemElement ? (RefdataValue.get(params.long('newCostItemElement'))) : null
-            RefdataValue cost_item_element_configuration = (params.ciec && params.ciec != 'null') ? RefdataValue.get(Long.parseLong(params.ciec)) : null
+            RefdataValue cost_item_element_configuration = (params.ciec && params.ciec != 'null') ? RefdataValue.get(params.long('ciec')) : null
 
             String costDescription = params.newDescription ? params.newDescription.trim() : null
             String costTitle = params.newCostTitle ? params.newCostTitle.trim() : null
@@ -2326,10 +2326,10 @@ class SurveyController {
         if (result.surveyInfo && result.editable) {
 
             if (params.selectedProperty) {
-                PropertyDefinition property = PropertyDefinition.get(Long.parseLong(params.selectedProperty))
+                PropertyDefinition property = PropertyDefinition.get(params.long('selectedProperty'))
                 //Config is Sub
                 if (params.surveyConfigID) {
-                    SurveyConfig surveyConfig = SurveyConfig.get(Long.parseLong(params.surveyConfigID))
+                    SurveyConfig surveyConfig = SurveyConfig.get(params.long('surveyConfigID'))
 
                     if (surveyService.addSurPropToSurvey(surveyConfig, property)) {
 
@@ -2405,7 +2405,7 @@ class SurveyController {
         if ((!surveyProperty) && params.pd_name && params.pd_type) {
             RefdataCategory rdc
             if (params.refdatacategory) {
-                rdc = RefdataCategory.findById(Long.parseLong(params.refdatacategory))
+                rdc = RefdataCategory.findById(params.long('refdatacategory'))
             }
 
             Map<String, Object> map = [
@@ -3788,7 +3788,7 @@ class SurveyController {
                         break
                 }
             }
-            RefdataValue cost_item_element_configuration = (params.ciec && params.ciec != 'null') ? RefdataValue.get(Long.parseLong(params.ciec)) : null
+            RefdataValue cost_item_element_configuration = (params.ciec && params.ciec != 'null') ? RefdataValue.get(params.long('ciec')) : null
 
             boolean cost_item_isVisibleForSubscriber = false
             // (params.newIsVisibleForSubscriber ? (RefdataValue.get(params.newIsVisibleForSubscriber).value == 'Yes') : false)
@@ -4485,7 +4485,7 @@ class SurveyController {
             if (params.tab == 'surveyProperties') {
                 result.selectedProperty = params.selectedProperty ?: null
 
-                surveyProperty = params.copyProperty ? PropertyDefinition.get(Long.parseLong(params.copyProperty)) : null
+                surveyProperty = params.copyProperty ? PropertyDefinition.get(params.long('copyProperty')) : null
 
                 propDef = surveyProperty ? PropertyDefinition.getByNameAndDescr(surveyProperty.name, PropertyDefinition.SUB_PROP) : null
                 if (!propDef && surveyProperty) {
@@ -4507,7 +4507,7 @@ class SurveyController {
 
             } else {
                 result.selectedProperty = params.selectedProperty ?: null
-                propDef = params.selectedProperty ? PropertyDefinition.get(Long.parseLong(params.selectedProperty)) : null
+                propDef = params.selectedProperty ? PropertyDefinition.get(params.long('selectedProperty')) : null
             }
 
             Integer countSuccessfulCopy = 0
@@ -5417,7 +5417,7 @@ class SurveyController {
 
         if(params.deleteSurveyUrl){
             SurveyConfig.withTransaction { TransactionStatus ts ->
-                SurveyUrl surveyUrl = SurveyUrl.get(Long.parseLong(params.deleteSurveyUrl))
+                SurveyUrl surveyUrl = SurveyUrl.get(params.long('deleteSurveyUrl'))
                 surveyUrl.delete()
             }
         }else {

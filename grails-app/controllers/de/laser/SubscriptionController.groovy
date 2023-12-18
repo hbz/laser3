@@ -1346,7 +1346,7 @@ class SubscriptionController {
 
         if(result.editable){
 
-            IssueEntitlement issueEntitlement = IssueEntitlement.findById(Long.parseLong(params.singleTitle))
+            IssueEntitlement issueEntitlement = IssueEntitlement.findById(params.long('singleTitle'))
             IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
             if(issueEntitlement && issueEntitlementGroup) {
                 IssueEntitlementGroupItem issueEntitlementGroupItem = IssueEntitlementGroupItem.findByIeGroupAndIe(issueEntitlementGroup, issueEntitlement)
