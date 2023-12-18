@@ -28,7 +28,6 @@ class FilterService {
 
     ContextService contextService
     GenericOIDService genericOIDService
-    MessageSource messageSource
     PropertyService propertyService
 
     /**
@@ -51,7 +50,7 @@ class FilterService {
                 queryParams << [orgType: params.orgType]
             } else if (params.orgType.length() > 0) {
                 query << " exists (select roletype from o.orgType as roletype where roletype.id = :orgType )"
-                queryParams << [orgType: Long.parseLong(params.orgType)]
+                queryParams << [orgType: params.long('orgType')]
             }
         }
         if (params.orgStatus) {
@@ -65,11 +64,11 @@ class FilterService {
         }
         if (params.orgRole?.length() > 0) {
             query << " exists (select ogr from o.links as ogr where ogr.roleType.id = :orgRole )"
-             queryParams << [orgRole : Long.parseLong(params.orgRole)]
+             queryParams << [orgRole : params.long('orgRole')]
         }
         if (params.orgSector?.length() > 0) {
             query << "o.sector.id = :orgSector"
-             queryParams << [orgSector : Long.parseLong(params.orgSector)]
+             queryParams << [orgSector : params.long('orgSector')]
         }
         if (params.orgIdentifier?.length() > 0) {
             query << " ( exists (select ident from Identifier ident join ident.org ioorg " +
@@ -129,7 +128,7 @@ class FilterService {
 
         if (params.customerType?.length() > 0) {
             query << "exists (select oss from OrgSetting as oss where oss.org.id = o.id and oss.key = :customerTypeKey and oss.roleValue.id = :customerType)"
-            queryParams << [customerType : Long.parseLong(params.customerType)]
+            queryParams << [customerType : params.long('customerType')]
             queryParams << [customerTypeKey : OrgSetting.KEYS.CUSTOMER_TYPE]
         }
 
@@ -195,11 +194,11 @@ class FilterService {
         }
         if (params.orgType?.length() > 0) {
             query << " exists (select roletype from o.orgType as roletype where roletype.id = :orgType )"
-             queryParams << [orgType : Long.parseLong(params.orgType)]
+             queryParams << [orgType : params.long('orgType')]
         }
         if (params.orgSector?.length() > 0) {
             query << "o.sector.id = :orgSector"
-             queryParams << [orgSector : Long.parseLong(params.orgSector)]
+             queryParams << [orgSector : params.long('orgSector')]
         }
         if (params.region?.size() > 0) {
             query << "o.region.id in (:region)"
@@ -325,7 +324,7 @@ class FilterService {
 
         if (params.customerType?.length() > 0) {
             query << "exists (select oss from OrgSetting as oss where oss.id = o.id and oss.key = :customerTypeKey and oss.roleValue.id = :customerType)"
-            queryParams << [customerType : Long.parseLong(params.customerType)]
+            queryParams << [customerType : params.long('customerType')]
             queryParams << [customerTypeKey : OrgSetting.KEYS.CUSTOMER_TYPE]
         }
 
@@ -396,7 +395,7 @@ class FilterService {
             }
             else {
                 query << "t.status.id = :statusId"
-                queryParams << [statusId : Long.parseLong(params.taskStatus)]
+                queryParams << [statusId : params.long('taskStatus')]
             }
         }
         if (params.endDateFrom && sdFormat) {
@@ -856,11 +855,11 @@ class FilterService {
         }
         if (params.orgType?.length() > 0) {
             base_qry += " and exists (select roletype from surveyOrg.org.orgType as roletype where roletype.id = :orgType )"
-            queryParams << [orgType : Long.parseLong(params.orgType)]
+            queryParams << [orgType : params.long('orgType')]
         }
         if (params.orgSector?.length() > 0) {
             base_qry += " and surveyOrg.org.sector.id = :orgSector"
-            queryParams << [orgSector : Long.parseLong(params.orgSector)]
+            queryParams << [orgSector : params.long('orgSector')]
         }
         if (params.region?.size() > 0) {
             base_qry += " and surveyOrg.org.region.id in (:region)"
@@ -886,7 +885,7 @@ class FilterService {
 
         if (params.customerType?.length() > 0) {
             base_qry += " and exists (select oss from OrgSetting as oss where oss.id = surveyOrg.org.id and oss.key = :customerTypeKey and oss.roleValue.id = :customerType)"
-            queryParams << [customerType : Long.parseLong(params.customerType)]
+            queryParams << [customerType : params.long('customerType')]
             queryParams << [customerTypeKey : OrgSetting.KEYS.CUSTOMER_TYPE]
         }
 
@@ -1312,7 +1311,7 @@ class FilterService {
 
         if (params.pkgfilter && (params.pkgfilter != '')) {
             base_qry += " and tipp.pkg.id = :pkgId "
-            qry_params.pkgId = Long.parseLong(params.pkgfilter)
+            qry_params.pkgId = params.long('pkgfilter')
             filterSet = true
         }
 

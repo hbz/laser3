@@ -517,7 +517,7 @@ class SurveyController {
         result.user = contextService.getUser()
         result.editable = true
 
-        result.subscription = Subscription.get(Long.parseLong(params.sub))
+        result.subscription = Subscription.get( params.long('sub') )
         if (!result.subscription) {
             redirect action: 'createSubscriptionSurvey'
             return
@@ -542,7 +542,7 @@ class SurveyController {
         result.user = contextService.getUser()
         result.editable = true
 
-        result.subscription = Subscription.get(Long.parseLong(params.sub))
+        result.subscription = Subscription.get( params.long('sub') )
         result.pickAndChoose = true
         if (!result.subscription) {
             redirect action: 'createIssueEntitlementsSurvey'
@@ -579,7 +579,7 @@ class SurveyController {
             }
         }
 
-        Subscription subscription = Subscription.get(Long.parseLong(params.sub))
+        Subscription subscription = Subscription.get( params.long('sub') )
         boolean subSurveyUseForTransfer = (SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(subscription, true)) ? false : (params.subSurveyUseForTransfer ? true : false)
         SurveyInfo surveyInfo
         SurveyInfo.withTransaction { TransactionStatus ts ->
@@ -696,7 +696,7 @@ class SurveyController {
                 redirect(action: 'addSubtoIssueEntitlementsSurvey', params: params)
                 return
             }
-            Subscription subscription = Subscription.get(Long.parseLong(params.sub))
+            Subscription subscription = Subscription.get( params.long('sub') )
             if (subscription && !SurveyConfig.findAllBySubscriptionAndSurveyInfo(subscription, surveyInfo)) {
                 SurveyConfig surveyConfig = new SurveyConfig(
                         subscription: subscription,

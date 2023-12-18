@@ -3996,7 +3996,7 @@ join sub.orgRelations or_sub where
 
         DateFormat sdFormat = DateUtils.getLocalizedSDF_noTime()
 
-        result.participant = Org.get(Long.parseLong(params.id))
+        result.participant = Org.get(params.long('id'))
 
         params.tab = params.tab ?: 'open'
 
