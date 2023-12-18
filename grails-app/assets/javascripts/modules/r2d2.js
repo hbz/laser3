@@ -639,7 +639,13 @@ r2d2 = {
 
         // accordions
 
-        $(ctxSel + ' .ui.accordion').accordion();
+        $(ctxSel + ' .ui.accordion').not('.la-accordion-showMore').accordion();
+
+        $(ctxSel + ' .la-accordion-showMore').accordion({
+                exclusive: false
+            }
+        );
+
 
         $(ctxSel + ' .ui.la-metabox.accordion').accordion({
 
