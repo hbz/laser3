@@ -96,55 +96,35 @@ class FilterService {
 
         if (params.region?.size() > 0) {
             query << "o.region.id in (:region)"
-            List<String> selRegions = params.list("region")
-            List<Long> regions = []
-            selRegions.each { String sel ->
-                regions << Long.parseLong(sel)
-            }
-            queryParams << [region : regions]
+            queryParams << [region : Params.getLongList(params, 'region')]
         }
 
         if (params.subjectGroup?.size() > 0) {
             query << "exists (select osg from OrgSubjectGroup as osg where osg.org.id = o.id and osg.subjectGroup.id in (:subjectGroup))"
-            queryParams << [subjectGroup : params.list("subjectGroup").collect {Long.parseLong(it)}]
+            queryParams << [subjectGroup : Params.getLongList(params, 'subjectGroup')]
         }
 
         if (params.discoverySystemsFrontend?.size() > 0) {
             query << "exists (select dsf from DiscoverySystemFrontend as dsf where dsf.org.id = o.id and dsf.frontend.id in (:frontends))"
-            queryParams << [frontends : params.list("discoverySystemsFrontend").collect {Long.parseLong(it)}]
+            queryParams << [frontends : Params.getLongList(params, 'discoverySystemsFrontend')]
         }
 
         if (params.discoverySystemsIndex?.size() > 0) {
             query << "exists (select dsi from DiscoverySystemIndex as dsi where dsi.org.id = o.id and dsi.index.id in (:indices))"
-            queryParams << [indices : params.list("discoverySystemsIndex").collect {Long.parseLong(it)}]
+            queryParams << [indices : Params.getLongList(params, 'discoverySystemsIndex')]
         }
 
         if (params.libraryNetwork?.size() > 0) {
             query << "o.libraryNetwork.id in (:libraryNetwork)"
-            List<String> selLibraryNetworks = params.list("libraryNetwork")
-            List<Long> libraryNetworks = []
-            selLibraryNetworks.each { String sel ->
-                libraryNetworks << Long.parseLong(sel)
-            }
-            queryParams << [libraryNetwork : libraryNetworks]
+            queryParams << [libraryNetwork : Params.getLongList(params, 'libraryNetwork')]
         }
         if (params.libraryType?.size() > 0) {
             query << "o.libraryType.id in (:libraryType)"
-            List<String> selLibraryTypes = params.list("libraryType")
-            List<Long> libraryTypes = []
-            selLibraryTypes.each { String sel ->
-                libraryTypes << Long.parseLong(sel)
-            }
-            queryParams << [libraryType : libraryTypes]
+            queryParams << [libraryType : Params.getLongList(params, 'libraryType')]
         }
         if (params.country?.size() > 0) {
             query << "o.country.id in (:country)"
-            List<String> selCountries = params.list("country")
-            List<Long> countries = []
-            selCountries.each { String sel ->
-                countries << Long.parseLong(sel)
-            }
-            queryParams << [country : countries]
+            queryParams << [country : Params.getLongList(params, 'country')]
         }
 
         if (params.customerType?.length() > 0) {
@@ -399,7 +379,7 @@ class FilterService {
      * @param sdFormat the date format to use to parse dates
      * @return the map containing the query and the prepared query parameters
      */
-    Map<String, Object> getTaskQuery(Map params, DateFormat sdFormat) {
+    Map<String, Object> getTaskQuery(GrailsParameterMap params, DateFormat sdFormat) {
         Map<String, Object> result = [:]
         def query = []
         Map<String, Object> queryParams = [:]
@@ -449,7 +429,7 @@ class FilterService {
      * @return the map containing the query and the prepared query parameters
      */
     @Deprecated
-    Map<String,Object> getDocumentQuery(Map params) {
+    Map<String,Object> getDocumentQuery(GrailsParameterMap params) {
         Map result = [:]
         List query = []
         Map<String,Object> queryParams = [:]
@@ -593,7 +573,7 @@ class FilterService {
 
         if(params.ids) {
             query += " and surInfo.id in (:ids)"
-            queryParams << [ids: params.list('ids').collect{Long.parseLong(it)}]
+            queryParams << [ids: Params.getLongList(params, 'ids')]
             params.filterSet = true
         }
 
@@ -617,13 +597,13 @@ class FilterService {
 
         if (params.filterStatus && params.filterStatus != "" && params.list('filterStatus')) {
             query += " and surInfo.status.id in (:filterStatus) "
-            queryParams << [filterStatus : params.list('filterStatus').collect { Long.parseLong(it) }]
+            queryParams << [filterStatus : Params.getLongList(params, 'filterStatus')]
             params.filterSet = true
         }
 
         if (params.filterPvd && params.filterPvd != "" && params.list('filterPvd')) {
             query += " and exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org.id in (:filterPvd))"
-            queryParams << [filterPvd : params.list('filterPvd').collect { Long.parseLong(it) }]
+            queryParams << [filterPvd : Params.getLongList(params, 'filterPvd')]
             params.filterSet = true
         }
 
@@ -671,102 +651,6 @@ class FilterService {
         }
 
         result.query = query
-        result.queryParams = queryParams
-        result
-    }
-
-    /**
-     * @deprecated replaced by {@link #getParticipantSurveyQuery_New(grails.web.servlet.mvc.GrailsParameterMap, java.text.DateFormat, de.laser.Org)}
-     */
-    @Deprecated
-    Map<String,Object> getParticipantSurveyQuery(Map params, DateFormat sdFormat, Org org) {
-        Map result = [:]
-        List query = []
-        Map<String,Object> queryParams = [:]
-        if(params.name) {
-            query << " (genfunc_filter_matcher(surInfo.name, :name) = true or exists ( select surC from SurveyConfig as surC where surC.surveyInfo = surC and (genfunc_filter_matcher(surC.subscription.name, :name) = true))) "
-            queryParams << [name:"${params.name}"]
-        }
-        if(params.status) {
-            query << "surResult.surveyConfig.surveyInfo.status = :status"
-            queryParams << [status: RefdataValue.get(params.status)]
-        }
-        if(params.type) {
-            query << "surResult.surveyConfig.surveyInfo.type = :type"
-            queryParams << [type: RefdataValue.get(params.type)]
-        }
-
-        if(params.owner) {
-            query << "surInfo.owner = :owner"
-            queryParams << [owner: params.owner instanceof Org ?: Org.get(params.owner) ]
-        }
-
-        if (params.currentDate) {
-
-            params.currentDate = (params.currentDate instanceof Date) ? params.currentDate : sdFormat.parse(params.currentDate)
-
-            query << "surResult.surveyConfig.surveyInfo.startDate <= :startDate and (surResult.surveyConfig.surveyInfo.endDate >= :endDate or surResult.surveyConfig.surveyInfo.endDate is null)"
-
-            queryParams << [startDate : params.currentDate]
-            queryParams << [endDate : params.currentDate]
-
-            query << "surResult.surveyConfig.surveyInfo.status = :status"
-            queryParams << [status: RDStore.SURVEY_SURVEY_STARTED]
-
-        }
-
-        if (params.startDate && sdFormat && !params.currentDate) {
-
-            params.startDate = (params.startDate instanceof Date) ? params.startDate : sdFormat.parse(params.startDate)
-
-            query << "surveyconfig.surveyInfo.startDate >= :startDate"
-            queryParams << [startDate : params.startDate]
-        }
-        if (params.endDate && sdFormat && !params.currentDate) {
-
-            params.endDate = params.endDate instanceof Date ? params.endDate : sdFormat.parse(params.endDate)
-
-            query << "(surResult.surveyConfig.surveyInfo.endDate <= :endDate or surResult.surveyConfig.surveyInfo.endDate is null)"
-            queryParams << [endDate : params.endDate]
-        }
-
-
-
-        if(params.tab == "new"){
-            query << "(surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated = sr.lastUpdated and surOrg.finishDate is null))"
-            queryParams << [status: RDStore.SURVEY_SURVEY_STARTED]
-        }
-
-        if(params.tab == "processed"){
-            query << "(surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated < sr.lastUpdated and surOrg.finishDate is null))"
-            queryParams << [status: RDStore.SURVEY_SURVEY_STARTED]
-        }
-
-        if(params.tab == "finish"){
-            query << "(surOrg.finishDate is not null)"
-        }
-
-        if(params.tab == "notFinish"){
-            query << "((surInfo.status in (:status)) and surOrg.finishDate is null)"
-            queryParams << [status: [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED]]
-        }
-
-        if(params.consortiaOrg) {
-            query << "surResult.owner = :owner"
-            queryParams << [owner: params.consortiaOrg]
-        }
-
-
-        String defaultOrder = " order by " + (params.sort ?: " LOWER(surResult.surveyConfig.surveyInfo.name)") + " " + (params.order ?: "asc")
-
-        if (query.size() > 0) {
-            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg left join surConfig.propertySet surResult  where (surOrg.org = :org)  and " + query.join(" and ") + defaultOrder
-        } else {
-            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg left join surConfig.propertySet surResult where (surOrg.org = :org) " + defaultOrder
-        }
-        queryParams << [org : org]
-
-
         result.queryParams = queryParams
         result
     }
@@ -853,7 +737,7 @@ class FilterService {
 
         if (params.filterPvd && params.filterPvd != "" && params.list('filterPvd')) {
             query << "exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org.id in (:filterPvd))"
-            queryParams << [filterPvd : params.list('filterPvd').collect { Long.parseLong(it) }]
+            queryParams << [filterPvd : Params.getLongList(params, 'filterPvd')]
             params.filterSet = true
         }
 
@@ -980,45 +864,24 @@ class FilterService {
         }
         if (params.region?.size() > 0) {
             base_qry += " and surveyOrg.org.region.id in (:region)"
-            List<String> selRegions = params.list("region")
-            List<Long> regions = []
-            selRegions.each { String sel ->
-                regions << Long.parseLong(sel)
-            }
-            queryParams << [region : regions]
+            queryParams << [region : Params.getLongList(params, 'region')]
         }
         if (params.country?.size() > 0) {
             base_qry += " and surveyOrg.org.country.id in (:country)"
-            List<String> selCountries = params.list("country")
-            List<Long> countries = []
-            selCountries.each { String sel ->
-                countries << Long.parseLong(sel)
-            }
-            queryParams << [country : countries]
+            queryParams << [country : Params.getLongList(params, 'country')]
         }
         if (params.subjectGroup?.size() > 0) {
             base_qry +=  " and exists (select osg from OrgSubjectGroup as osg where osg.org.id = surveyOrg.org.id and osg.subjectGroup.id in (:subjectGroup))"
-            queryParams << [subjectGroup : params.list("subjectGroup").collect {Long.parseLong(it)}]
+            queryParams << [subjectGroup : Params.getLongList(params, 'subjectGroup')]
         }
 
         if (params.libraryNetwork?.size() > 0) {
             base_qry += " and surveyOrg.org.libraryNetwork.id in (:libraryNetwork)"
-            List<String> selLibraryNetworks = params.list("libraryNetwork")
-            List<Long> libraryNetworks = []
-            selLibraryNetworks.each { String sel ->
-                libraryNetworks << Long.parseLong(sel)
-            }
-            queryParams << [libraryNetwork : libraryNetworks]
+            queryParams << [libraryNetwork : Params.getLongList(params, 'libraryNetwork')]
         }
-
         if (params.libraryType?.size() > 0) {
             base_qry += " and surveyOrg.org.libraryType.id in (:libraryType)"
-            List<String> selLibraryTypes = params.list("libraryType")
-            List<Long> libraryTypes = []
-            selLibraryTypes.each { String sel ->
-                libraryTypes << Long.parseLong(sel)
-            }
-            queryParams << [libraryType : libraryTypes]
+            queryParams << [libraryType : Params.getLongList(params, 'libraryType')]
         }
 
         if (params.customerType?.length() > 0) {
@@ -1149,83 +1012,6 @@ class FilterService {
 
         result
 
-    }
-
-    /**
-     * Processes the given filter parameters and generates a base for the package title query
-     * @param params the filter parameter map
-     * @param qry_params the query filter map
-     * @param showDeletedTipps should deleted titles be shown or not?
-     * @param asAt the date when the package holding should be considered (because of access start and end dates)
-     * @param forBase which instance is the base from which titles should be retrieved?
-     * @return the map containing the query and the prepared query parameters
-     */
-    Map<String,Object> generateBasePackageQuery(params, qry_params, showDeletedTipps, asAt, forBase) {
-        Locale locale = LocaleUtils.getCurrentLocale()
-        String base_qry
-        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null,locale))
-        boolean filterSet = false
-        if(forBase == 'Package')
-            base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkgInstance "
-        else if(forBase == 'Platform')
-            base_qry = "from TitleInstancePackagePlatform as tipp where tipp.platform = :platInstance "
-
-        if (params.mode != 'advanced') {
-            base_qry += "and tipp.status = :tippStatusCurrent "
-            qry_params.tippStatusCurrent = RDStore.TIPP_STATUS_CURRENT
-            filterSet = true
-        }
-        else if (params.mode == 'advanced' && showDeletedTipps != true) {
-            base_qry += "and tipp.status != :tippStatusRemoved "
-            qry_params.tippStatusRemoved = RDStore.TIPP_STATUS_REMOVED
-        }
-
-        if (asAt != null) {
-            base_qry += " and ( ( :startDate >= tipp.accessStartDate or tipp.accessStartDate is null ) and ( :endDate <= tipp.accessEndDate or tipp.accessEndDate is null ) ) "
-            qry_params.startDate = asAt
-            qry_params.endDate = asAt
-            filterSet = true
-        }
-
-        if (params.filter) {
-            //causes GC overhead
-            //base_qry += " and ( genfunc_filter_matcher(tipp.name,:title) = true or ( exists ( select id.id from Identifier id where genfunc_filter_matcher(id.value,:title) = true and id.tipp = tipp ) ) )"
-            base_qry += " and genfunc_filter_matcher(tipp.name,:title) = true "
-            qry_params.title = params.filter
-            filterSet = true
-        }
-
-        if (params.coverageNoteFilter) {
-            base_qry += "and genfunc_filter_matcher(tipp.coverageNote,:coverageNote) = true"
-            qry_params.coverageNote = params.coverageNoteFilter
-            filterSet = true
-        }
-
-        if (params.endsAfter) {
-            base_qry += " and (select max(tc.endDate) from TIPPCoverage tc where tc.tipp = tipp) >= :endDate"
-            qry_params.endDate = sdf.parse(params.endsAfter)
-            filterSet = true
-        }
-
-        if (params.startsBefore) {
-            base_qry += " and (select min(tc.startDate) from TIPPCoverage tc where tc.tipp = tipp) <= :startDate"
-            qry_params.startDate = sdf.parse(params.startsBefore)
-            filterSet = true
-        }
-
-        if (params.accessStartDate) {
-            base_qry += " and tipp.accessStartDate <= :accessStartDate"
-            qry_params.accessStartDate = sdf.parse(params.accessStartDate)
-            filterSet = true
-        }
-
-        if (params.accessEndDate) {
-            base_qry += " and tipp.accessEndDate >= :accessEndDate"
-            qry_params.accessEndDate = sdf.parse(params.accessEndDate)
-            filterSet = true
-        }
-
-        return [base_qry:base_qry,qry_params:qry_params,filterSet:filterSet]
     }
 
     /**
@@ -1532,13 +1318,13 @@ class FilterService {
 
         if (params.ddcs && params.ddcs != "" && params.list('ddcs')) {
             base_qry += " and exists ( select ddc.id from DeweyDecimalClassification ddc where ddc.tipp = tipp and ddc.ddc.id in (:ddcs) ) "
-            qry_params.ddcs = params.list('ddcs').collect { String key -> Long.parseLong(key) }
+            qry_params.ddcs = Params.getLongList(params, 'ddcs')
             filterSet = true
         }
 
         if (params.languages && params.languages != "" && params.list('languages')) {
             base_qry += " and exists ( select lang.id from Language lang where lang.tipp = tipp and lang.language.id in (:languages) ) "
-            qry_params.languages = params.list('languages').collect { String key -> Long.parseLong(key) }
+            qry_params.languages = Params.getLongList(params, 'languages')
             filterSet = true
         }
 

@@ -1885,7 +1885,7 @@ class MyInstitutionController  {
 
             if (params.ddc && params.list('ddc').size() > 0) {
                 qry3 += " and ((exists (select ddc.id from DeweyDecimalClassification ddc where ddc.ddc.id in (:ddcs) and ddc.tipp.pkg = pkg)) or (exists (select ddc.id from DeweyDecimalClassification ddc where ddc.ddc.id in (:ddcs) and ddc.pkg = pkg)))"
-                qryParams3.put('ddcs', params.list("ddc").collect { String ddc -> Long.parseLong(ddc) })
+                qryParams3.put('ddcs', Params.getLongList(params, 'ddc'))
             }
 
             qry3 += " group by pkg, s"
@@ -3114,31 +3114,34 @@ class MyInstitutionController  {
         Map<String, Object> queryParams = [ctxOrg: contextService.getOrg()]
 
         if (result.filterTargetType) {
-            if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_AGENCY.id.toString()) {
+            Long filterTargetType = Long.valueOf(result.filterTargetType)
+
+            if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_AGENCY.id) {
                 idQuery = idQuery + ' and wf.org is not null'
                 idQuery = idQuery + ' and exists (select ot from wf.org.orgType as ot where ot = :orgType )'
                 queryParams.put('orgType', RDStore.OT_AGENCY)
             }
-            if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION.id.toString()) {
+            if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION.id) {
                 idQuery = idQuery + ' and wf.org is not null'
                 idQuery = idQuery + ' and exists (select ot from wf.org.orgType as ot where ot = :orgType )'
                 queryParams.put('orgType', RDStore.OT_INSTITUTION)
             }
-            else if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_LICENSE.id.toString()) {
+            else if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_LICENSE.id) {
                 idQuery = idQuery + ' and wf.license is not null'
             }
-            else if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_OWNER.id.toString()) {
+            else if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_OWNER.id) {
                 idQuery = idQuery + ' and wf.org = :ctxOrg'
             }
-            else if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_PROVIDER.id.toString()) {
+            else if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_PROVIDER.id) {
                 idQuery = idQuery + ' and wf.org is not null'
                 idQuery = idQuery + ' and exists (select ot from wf.org.orgType as ot where ot = :orgType )'
                 queryParams.put('orgType', RDStore.OT_PROVIDER)
             }
-            if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION.id.toString()) {
+            if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION.id) {
                 idQuery = idQuery + ' and wf.subscription is not null'
             }
         }
+
         if (result.filterTemplates) {
             if (result.filterTemplates == 'yes') {
                 idQuery = idQuery + ' and wf.template = true'
@@ -3170,10 +3173,12 @@ class MyInstitutionController  {
         result.currentWorkflows = WfChecklist.executeQuery(resultQuery, [idList: checklistIds])
 
         if (result.filterStatus) {
-            if (result.filterStatus == RDStore.WF_WORKFLOW_STATUS_OPEN.id.toString()) {
+            Long filterStatus = Long.valueOf(result.filterStatus)
+
+            if (filterStatus == RDStore.WF_WORKFLOW_STATUS_OPEN.id) {
                 result.currentWorkflows = result.openWorkflows
             }
-            else if (result.filterStatus == RDStore.WF_WORKFLOW_STATUS_DONE.id.toString()) {
+            else if (filterStatus == RDStore.WF_WORKFLOW_STATUS_DONE.id) {
                 result.currentWorkflows = result.doneWorkflows
             }
         }
@@ -3399,7 +3404,7 @@ join sub.orgRelations or_sub where
         if(providers || params.filterPvd) {
             querySubs += " and or_pa.org.id in (:providers)"
             if(params.filterPvd){
-                queryParamsSubs << [providers: params.list('filterPvd').collect { Long.parseLong(it) }]
+                queryParamsSubs << [providers: Params.getLongList(params, 'filterPvd')]
             }
             else {
                 queryParamsSubs << [providers: providers.collect { it.id }]
