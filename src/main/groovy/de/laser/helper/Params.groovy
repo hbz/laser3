@@ -37,34 +37,31 @@ class Params {
         getLongList(map, key).collect{ RefdataValue.get(it) }
     }
 
+    static List<Long> getLongList_forCommaSeparatedString(GrailsParameterMap params, String key) {
+        List result = []
+
+        if (params.get(key)) {
+            result = params.get(key).split(',').collect{
+                if (it.trim() && it.trim() != 'null') { Long.valueOf(it.trim()) }
+            }.findAll()
+        }
+        result
+    }
+
+    static List<Long> getLongList_forCommaSeparatedString(LinkedHashMap map, String key) {
+        List result = []
+
+        if (map.get(key)) {
+            result = map.get(key).split(',').collect{
+                if (it.trim() && it.trim() != 'null') { Long.valueOf(it.trim()) }
+            }.findAll()
+        }
+        result
+    }
+
     // ---
 
     static void test() {
-
-        GrailsWebRequest grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
-        GrailsParameterMap gpm = grailsWebRequest.params
-
-        gpm.test1 = 1
-        gpm.test2 = [1, 2, 3, 4, null]
-        gpm.test3 = ['10', '20', '30', '40', null]
-        gpm.test4 = []
-        gpm.test5 = [null]
-        gpm.test6 = null
-        gpm.test7 = ''
-
-        println '--- GrailsParameterMap ---'
-
-        println getLongList(gpm, 'test1')
-        println getLongList(gpm, 'test2')
-        println getLongList(gpm, 'test3')
-        println getLongList(gpm, 'test4')
-        println getLongList(gpm, 'test5')
-        println getLongList(gpm, 'test6')
-        println getLongList(gpm, 'test7')
-        println getLongList(gpm, 'test999')
-
-        println getRefdataList(gpm, 'test2')
-        println getRefdataList(gpm, 'test3')
 
         Map map = new LinkedHashMap()
 
@@ -74,20 +71,72 @@ class Params {
         map.test4 = []
         map.test5 = [null]
         map.test6 = null
-        map.test7 = ''
+        map.test7 = 'null'
+        map.test8 = ''
+        map.test9 = ['33 ', ' 34 ', ' 35', '36', 'null', '', null]
+        map.test10 = '55, 66,77 , ,88'
+        map.test11 = '55, 66,77 ,null,99'
 
-        println '--- LinkedHashMap ---'
+        GrailsWebRequest grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
+        GrailsParameterMap gpm = grailsWebRequest.params
 
-        println getLongList(map, 'test1')
-        println getLongList(map, 'test2')
-        println getLongList(map, 'test3')
-        println getLongList(map, 'test4')
-        println getLongList(map, 'test5')
-        println getLongList(map, 'test6')
-        println getLongList(map, 'test7')
-        println getLongList(map, 'test999')
+        map.each { k, v -> gpm.put(k, v)}
 
-        println getRefdataList(map, 'test2')
-        println getRefdataList(map, 'test3')
+
+        Closure test_gll = { key ->
+            def a = getLongList(gpm, key)
+            def b = getLongList(map, key)
+
+            if (a.equals(b)) {
+                println 'OK     #' + key + '     ' + a + ' == ' + b
+            } else {
+                println 'FAILED #' + key + '     ' + a + ' != ' + b
+            }
+        }
+
+        Closure test_grdl = { key ->
+            def a = getRefdataList(gpm, key)
+            def b = getRefdataList(map, key)
+
+            if (a.equals(b)) {
+                println 'OK     #' + key + '     ' + a + ' == ' + b
+            } else {
+                println 'FAILED #' + key + '     ' + a + ' != ' + b
+            }
+        }
+
+        Closure test_gll_fcss = { key ->
+            def a = getLongList_forCommaSeparatedString(gpm, key)
+            def b = getLongList_forCommaSeparatedString(map, key)
+
+            if (a.equals(b)) {
+                println 'OK     #' + key + '     ' + a + ' == ' + b
+            } else {
+                println 'FAILED #' + key + '     ' + a + ' != ' + b
+            }
+        }
+
+        println '--- getLongList ---'
+        test_gll('test1')
+        test_gll('test2')
+        test_gll('test3')
+        test_gll('test4')
+        test_gll('test5')
+        test_gll('test6')
+        // test_gll('test7') // String 'null' --> NumberFormatException
+        test_gll('test8')
+        // test_gll('test9') // --> multiple NumberFormatException
+        test_gll('test99999')
+
+        println '--- getRefdataList ---'
+        test_grdl('test2')
+        test_grdl('test3')
+
+        println '--- getLongList_byCommaSeparatedString ---'
+        test_gll_fcss('test6')
+        test_gll_fcss('test7')
+        test_gll_fcss('test8')
+        test_gll_fcss('test10')
+        test_gll_fcss('test11')
     }
 }

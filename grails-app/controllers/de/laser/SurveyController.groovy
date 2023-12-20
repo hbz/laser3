@@ -2935,7 +2935,7 @@ class SurveyController {
         result.surveyOrgList = []
 
         if (params.get('orgsIDs')) {
-            List idList = (params.get('orgsIDs')?.split(',').collect { Long.valueOf(it.trim()) }).toList()
+            List<Long> idList = Params.getLongList_forCommaSeparatedString(params, 'orgsIDs')
             List<Org> orgList = Org.findAllByIdInList(idList)
             result.surveyOrgList = orgList.isEmpty() ? [] : SurveyOrg.findAllByOrgInListAndSurveyConfig(orgList, result.surveyConfig)
         }
@@ -3679,7 +3679,7 @@ class SurveyController {
         result.orgList = []
 
         if (params.get('orgListIDs')) {
-            List idList = (params.get('orgListIDs').split(',').collect { Long.valueOf(it.trim()) }).toList()
+            List<Long> idList = Params.getLongList_forCommaSeparatedString(params, 'orgListIDs')
             result.orgList = idList.isEmpty() ? [] : Org.findAllByIdInList(idList)
         }
 
