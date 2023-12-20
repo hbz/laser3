@@ -3,6 +3,7 @@
 <laser:serviceInjection/>
 
 <g:set var="ptOwner" value="${institution ?: contextService.getOrg()}"/>
+<button class="ui button la-js-closeAllAccordions">${message(code: "accordion.button.closeAll")}</button>
 
 <g:if test="${tipps}">
     <div class="ui fluid card">

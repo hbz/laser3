@@ -823,9 +823,6 @@
     });
     <g:if test="${params.asAt && params.asAt.length() > 0}">$(function() { document.body.style.background = "#fcf8e3"; });</g:if>
 
-    $(".la-accordion-showMore").accordion({
-            exclusive: false
-        });
 
     $("[data-ajaxTippId]").on('click', function(e) {
             var tippID = $(this).attr('data-ajaxTippId');
