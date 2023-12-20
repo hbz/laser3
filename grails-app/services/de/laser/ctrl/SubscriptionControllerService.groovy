@@ -1788,7 +1788,7 @@ class SubscriptionControllerService {
                                 params.currentIEs = 'currentIEs'
                                 params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
                         }
-                        result.listOfStatus = params.status.collect{ it instanceof String ?  RefdataValue.get(Long.parseLong(it)) : RefdataValue.get(it) }
+                        result.listOfStatus = Params.getRefdataList(params, 'status')
 
                         params.titleGroup = result.titleGroupID
                         Map query = filterService.getIssueEntitlementQuery(params, subscriberSub)
@@ -3319,9 +3319,9 @@ class SubscriptionControllerService {
             if (result.editable) {
 
                 if(params.processCopyButton == 'yes') {
-                    result.copyDiscountScales = params.copyDiscountScale ? SubscriptionDiscountScale.findAllByIdInList(params.list('copyDiscountScale').collect { it -> Long.parseLong(it) }) : null
+                    result.copyDiscountScales = params.copyDiscountScale ? SubscriptionDiscountScale.findAllByIdInList(Params.getLongList(params, 'copyDiscountScale')) : null
                     if (result.copyDiscountScales) {
-                        result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList(params.list('targetSubs').collect { it -> Long.parseLong(it) }) : null
+                        result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList(Params.getLongList(params, 'targetSubs')) : null
 
                         if (result.targetSubs) {
                             result.targetSubs.each { Subscription sub ->

@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.helper.Params
 import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
@@ -163,18 +163,7 @@ class SubscriptionsQueryService {
 
         if (params.providers && params.providers != "") {
             base_qry += (" and  exists ( select orgR from OrgRole as orgR where orgR.sub = s and orgR.org.id in (:providers)) ")
-            if (params instanceof GrailsParameterMap) {
-                qry_params.put('providers', (params.list('providers').collect { Long.parseLong(it) }))
-            } else {
-                if (params.providers instanceof List<String>) {
-                    qry_params.put('providers', (params.providers.collect { Long.parseLong(it) }))
-                } else {
-                    if (params.providers instanceof List<Long>) {
-                        qry_params.put('providers', (params.providers))
-                    }
-                }
-            }
-
+            qry_params.put('providers', Params.getLongList(params, 'providers'))
             filterSet = true
         }
 

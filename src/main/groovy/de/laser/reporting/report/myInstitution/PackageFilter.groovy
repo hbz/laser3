@@ -6,6 +6,7 @@ import de.laser.Package
 import de.laser.Platform
 import de.laser.RefdataValue
 import de.laser.Subscription
+import de.laser.helper.Params
 import de.laser.storage.BeanStore
 import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
@@ -105,7 +106,7 @@ class PackageFilter extends BaseFilter {
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
 
                     if (p == 'nominalPlatform') {
-                        Long[] pList = params.list(key).collect{ Long.parseLong(it) }
+                        Long[] pList = Params.getLongList(params, key)
 
                         queryParts.add('Platform plt')
                         whereParts.add('pkg.nominalPlatform = plt and plt.id in (:p' + (++pCount) + ')')
@@ -114,7 +115,7 @@ class PackageFilter extends BaseFilter {
                         filterLabelValue = Platform.getAll(pList).collect{ it.name }
                     }
                     else if (p == 'orProvider') {
-                        Long[] pList = params.list(key).collect{ Long.parseLong(it) }
+                        Long[] pList = Params.getLongList(params, key)
 
                         queryParts.add('OrgRole ro')
                         whereParts.add('ro.pkg = pkg and ro.org.id in (:p' + (++pCount) + ')')
@@ -125,7 +126,7 @@ class PackageFilter extends BaseFilter {
                         filterLabelValue = Org.getAll(pList).collect{ it.name }
                     }
                     else if (p == 'subscriptionStatus') {
-                        Long[] pList = params.list(key).collect{ Long.parseLong(it) }
+                        Long[] pList = Params.getLongList(params, key)
 
                         queryParts.add('Subscription sub')
                         whereParts.add('sub.status.id in (:p' + (++pCount) + ')')

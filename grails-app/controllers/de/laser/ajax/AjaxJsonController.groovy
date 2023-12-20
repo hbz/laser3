@@ -1141,7 +1141,7 @@ class AjaxJsonController {
         Map result = [:]
 
         if (params.orgIdList) {
-            List<Long> orgIds = params.orgIdList.split(',').collect{ Long.parseLong(it) }
+            List<Long> orgIds = Params.getLongList_forCommaSeparatedString(params, 'orgIdList')
             List<Org> orgList = orgIds ? Org.findAllByIdInList(orgIds) : []
 
             String query = "select distinct p from Person as p inner join p.roleLinks pr where pr.org in (:orgs) "
@@ -1165,7 +1165,7 @@ class AjaxJsonController {
             }
 
             if (params.selectedRoleTypIds) {
-                List<Long> selectedRoleTypIds = params.selectedRoleTypIds.split(',').collect { Long.parseLong(it) }
+                List<Long> selectedRoleTypIds = Params.getLongList_forCommaSeparatedString(params, 'selectedRoleTypIds')
                 List<RefdataValue> selectedRoleTypes = selectedRoleTypIds ? RefdataValue.findAllByIdInList(selectedRoleTypIds) : []
 
                 if (selectedRoleTypes) {
