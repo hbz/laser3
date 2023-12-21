@@ -28,6 +28,11 @@
   background: #f1ebe5;
   border: none;
 }
+.ui.segment.la-segmentNotVisable {
+    background: none;
+    border: none;
+    box-shadow: none;
+}
 // Filter Selected
 
 .la-filter-selected {
@@ -87,7 +92,6 @@ aside.la-metabox + .la-metabox-spacer {
     }
     background:@laAlternativeBackground;
   }
-
 }
 .ui.la-segment-with-icon {
   position: relative;

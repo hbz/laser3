@@ -3,24 +3,24 @@
 <laser:serviceInjection/>
 
 <g:set var="ptOwner" value="${institution ?: contextService.getOrg()}"/>
-<button class="ui button la-js-closeAllAccordions">${message(code: "accordion.button.closeAll")}</button>
+
 
 <g:if test="${tipps}">
-    <div class="ui fluid card">
-        <div class="content">
-            <div class="ui accordion la-accordion-showMore">
-                <g:each in="${tipps}" var="tipp">
-                    <div class="ui raised segments la-accordion-segments">
+        <div class="ui fluid card">
+            <div class="content">
+                <div class="ui accordion la-accordion-showMore">
+                    <g:each in="${tipps}" var="tipp">
+                        <div class="ui raised segments la-accordion-segments">
 
-                        <g:render template="/templates/title_segment_accordion"
-                                  model="[ie: null, tipp: tipp, permanentTitle: PermanentTitle.findByOwnerAndTipp(ptOwner, tipp)]"/>
+                            <g:render template="/templates/title_segment_accordion"
+                                      model="[ie: null, tipp: tipp, permanentTitle: PermanentTitle.findByOwnerAndTipp(ptOwner, tipp)]"/>
 
-                        <g:render template="/templates/title_content_segment_accordion" model="[ie: null, tipp: tipp]"/>
-                    </div>
-                </g:each>
+                            <g:render template="/templates/title_content_segment_accordion" model="[ie: null, tipp: tipp]"/>
+                        </div>
+                    </g:each>
+                </div>
             </div>
         </div>
-    </div>
 </g:if>
 <g:else>
     <g:if test="${filterSet}">

@@ -6713,6 +6713,14 @@ a i.circular.la-gokb:hover {
   border-bottom-right-radius: 0.28571429rem;
 }
 
+.la-margin-top-05em {
+  margin-top: 0.5em !important;
+}
+
+.la-margin-bottom-1em {
+  margin-bottom: 1em!important;
+}
+
 /*------------------------------------
          Buttons for debug infos
   ------------------------------------*/
@@ -40039,7 +40047,6 @@ a.ui.label {
 .ui.ribbon.label {
   position: relative;
   margin: 0;
-  min-width: -webkit-max-content;
   min-width: max-content;
   border-radius: 0 0.28571429rem 0.28571429rem 0;
   border-color: rgba(0, 0, 0, 0.15);
@@ -43600,7 +43607,6 @@ dd {
 }
 
 .ui.card .la-label-list .description {
-  width: -webkit-fit-content;
   width: -moz-fit-content;
   width: fit-content;
 }
@@ -46351,6 +46357,12 @@ dd {
 .ui.segment.la-search {
   background: #f1ebe5;
   border: none;
+}
+
+.ui.segment.la-segmentNotVisable {
+  background: none;
+  border: none;
+  box-shadow: none;
 }
 
 /* Grey */
@@ -52508,7 +52520,6 @@ legend {
   left: 100%;
   /* IE needs 0, all others support max-content to show dropdown icon inline, so keep both settings! */
   min-width: 0;
-  min-width: -webkit-max-content;
   min-width: max-content;
   margin: 0 0 0 0;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08);
@@ -66778,7 +66789,6 @@ body.dimmable > .dimmer {
   display: none;
   outline: none;
   top: 100%;
-  min-width: -webkit-max-content;
   min-width: max-content;
   margin: 0;
   padding: 0;
@@ -67186,7 +67196,6 @@ select.ui.dropdown {
 }
 
 .ui.compact.selection.dropdown > .menu:not(.multiline) {
-  width: -webkit-max-content;
   width: max-content;
 }
 
@@ -71094,7 +71103,6 @@ a.ui.nag {
   top: 0;
   right: 0;
   /* Fixes content being squished when inline (moz only) */
-  min-width: -webkit-min-content;
   min-width: min-content;
   z-index: 1900;
   border: 1px solid #D4D4D5;

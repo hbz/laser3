@@ -95,9 +95,12 @@
             }
         %>
         <div class="ui form">
-            <div class="three wide fields">
+            <div class="two wide fields">
                 <div class="field">
                     <ui:sortingDropdown noSelection="${message(code:'default.select.choose.label')}" from="${sortFieldMap}" sort="${params.sort}" order="${params.order}"/>
+                </div>
+                 <div class="field la-field-noLabel">
+                    <button class="ui button la-js-closeAllAccordions right floated ">${message(code: "accordion.button.closeAll")}</button>
                 </div>
             </div>
         </div>
@@ -109,6 +112,10 @@
                 </div>
             </div>
         </div>
+<div class="ui clearing segment la-segmentNotVisable">
+    <button class="ui button la-js-closeAllAccordions right floated">${message(code: "accordion.button.closeAll")}</button>
+</div>
+
 
         <g:if test="${titlesList}">
             <ui:paginate action="current" controller="package" params="${params}"

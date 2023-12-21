@@ -166,6 +166,12 @@ a i.circular.la-gokb:hover {
     border-top-right-radius: @borderRadius;
     border-bottom-right-radius: @borderRadius;
 }
+.la-margin-top-05em {
+    margin-top: .5em!important;
+}
+.la-margin-bottom-1em {
+    margin-bottom: 1em!important;
+}
 /*------------------------------------
          Buttons for debug infos
   ------------------------------------*/
