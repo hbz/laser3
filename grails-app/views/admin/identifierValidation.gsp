@@ -1,3 +1,4 @@
+<%@ page import="de.laser.IdentifierNamespace" %>
 <laser:htmlStart message="menu.admin.identifierValidation" />
 
 <ui:breadcrumbs>
@@ -24,23 +25,32 @@
             </thead>
             <tbody>
                 <g:each in="${nsList}" var="ns">
+                    <g:set var="isCore" value="${ns.ns in IdentifierNamespace.CORE_ORG_NS || ns.ns in IdentifierNamespace.CORE_PROVIDER_NS || ns.ns in IdentifierNamespace.CORE_TITLE_NS}" />
+                    <g:set var="isInvalid" value="${iMap[ns.id].invalid.size() > 0}" />
+
                     <tr>
-                        <td>${ns.ns}</td>
+                        <td>
+                            <g:if test="${isCore}">
+                                ${ns.ns}
+                                <strong data-position="top left" class="la-popup-tooltip la-delay" data-content="Core Namespace">
+                                    <i class="exclamation circle orange icon" aria-hidden="true"></i>
+                                </strong>
+                            </g:if>
+                            <g:else>
+                                ${ns.ns}
+                            </g:else>
+                        </td>
                         <td>${ns."name_${currentLang}"}</td>
                         <td>${ns.nsType}</td>
                         <td>${ns.validationRegex}</td>
+                        <td>${iMap[ns.id].count}</td>
 
-                        <g:if test="${iMap.containsKey(ns.id)}">
-                            <td>${iMap[ns.id].count}</td>
-                            <td>${iMap[ns.id].valid.size()} / ${iMap[ns.id].invalid.size()}</td>
-                            <td>${iMap[ns.id].invalid.collect{ '[' + it.id + ':'+ it.value + ']'}.join(', ')}</td>
-                        </g:if>
-                        <g:else>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </g:else>
+                        <td class="${isInvalid ? 'error' : 'positive'} center aligned">
+                            <strong>${iMap[ns.id].valid.size()} / ${iMap[ns.id].invalid.size()}</strong>
+                        </td>
+                        <td>${iMap[ns.id].invalid.collect{ '[' + it.id + ':'+ it.value + ']'}.join(', ')}</td>
                     </tr>
+
                 </g:each>
             </tbody>
         </table>
