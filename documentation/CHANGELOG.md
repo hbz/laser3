@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5489    03.01.2024  rc-3.3  3.3.3       David   Bug         Alle Pakete: Filter Kuratorengruppentyp liefert keine Ergebnisse
+
 5490    02.01.2024  rc-3.3  3.3.3       David   Bug         404 Übersicht Referenzwerte
 
 5485    13.12.2023  dev     3.4         David   Bug         Alle Einrichtungen > Filter: Status geht verloren
