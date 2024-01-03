@@ -121,9 +121,9 @@ class PackageController {
         if (params.containsKey('curatoryGroupProvider') ^ params.containsKey('curatoryGroupOther')) {
             result.filterSet = true
             if(params.curatoryGroupProvider)
-                queryParams.curatoryGroupType = "provider"
+                queryParams.curatoryGroupType = "Provider"
             else if(params.curatoryGroupOther)
-                queryParams.curatoryGroupType = "other" //setting to this includes also missing ones, this is already implemented in we:kb
+                queryParams.curatoryGroupType = "Other" //setting to this includes also missing ones, this is already implemented in we:kb
         }
 
         Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
