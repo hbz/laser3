@@ -1,6 +1,6 @@
 <laser:htmlStart message="menu.admin.mergeOrganisations" serviceInjection="true"/>
 
-    <ui:h1HeaderWithIcon text="${message(code: 'menu.admin.mergeOrganisations')}" />
+    <ui:h1HeaderWithIcon message="menu.admin.mergeOrganisations" />
 
     <g:if test="${mergeResult}">
         <g:if test="${mergeResult.status == orgnaisationService.RESULT_SUCCESS}">

@@ -6,7 +6,7 @@
     <ui:subNavItem controller="subscription" action="show" params="${[id:params.id]}" message="subscription.details.details.label" />
 
     <g:if test="${showConsortiaFunctions && !subscription.instanceOf}">
-        <ui:subNavItem controller="subscription" action="members" counts="${currentMembersCounts}" params="${[id:params.id]}" message="${"subscription.details.consortiaMembers.label"}" />
+        <ui:subNavItem controller="subscription" action="members" counts="${currentMembersCounts}" params="${[id:params.id]}" message="subscription.details.consortiaMembers.label" />
     </g:if>
 
     %{--Custom URL mapping for re-use of index--}%
