@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5490    02.01.2024  rc-3.3  3.3.3       David   Bug         404 Übersicht Referenzwerte
+
 5476    11.12.2023  rc-3.3  3.3.2       Moe     Bug         Umfrage Kosten: Bei Ausschüttung wird der Filter gelöscht
 
 5475    11.12.2023  rc-3.3  3.3.2       Moe     Bug         Titelumfrage: Titel werden nicht ausgewählt
