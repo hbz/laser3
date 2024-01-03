@@ -92,12 +92,12 @@
     <table class="ui sortable celled la-js-responsive-table la-table la-hover-table compact table">
         <thead>
         <tr>
+            <th scope="col" class="two wide">${message(code:'default.date.label')}</th>
             <th scope="col" class="two wide">${message(code:'default.category.label')}</th>
             <th scope="col" class="two wide">${message(code:'default.relevance.label')}</th>
             <th scope="col" class="two wide">${message(code:'default.source.label')}</th>
             <th scope="col" class="three wide">${message(code:'default.event.label')}</th>
             <th scope="col" class="five wide">Payload</th>
-            <th scope="col" class="two wide">${message(code:'default.date.label')}</th>
         </tr>
         </thead>
         <tbody>
@@ -115,14 +115,14 @@
                 }
             %>
             <tr>
+                <td class="${tdClass}">
+                    <g:formatDate date="${el.created}" format="${message(code:'default.date.format.noZ')}" />
+                </td>
                 <td class="${tdClass}"> ${el.category} </td>
                 <td class="${tdClass}"> ${el.relevance} </td>
                 <td class="${tdClass}"> ${el.source} </td>
                 <td class="${tdClass}"> ${el.event} </td>
                 <td class="${tdClass}"> ${el.payload?.replaceAll(',', ', ')} </td>
-                <td class="${tdClass}">
-                    <g:formatDate date="${el.created}" format="${message(code:'default.date.format.noZ')}" />
-                </td>
             </tr>
         </g:each>
         </tbody>

@@ -26,6 +26,8 @@ class ReportingFilter {
     Date dateCreated
     Date lastUpdated
 
+    static belongsTo = [owner: User]
+
     static mapping = {
         id              column: 'rf_id'
         version         column: 'rf_version'

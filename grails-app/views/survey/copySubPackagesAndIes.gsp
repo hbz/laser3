@@ -254,7 +254,7 @@
                             <br>
 
                             <div class="ui middle aligned selection list">
-                                <b><g:message code="package.plural"/>:</b>
+                                <strong><g:message code="package.plural"/>:</strong>
                                 <g:each in="${parentSubscription.packages}" var="sp">
                                     <div class="item"><div class="content">
                                         <g:link controller="subscription" action="index" id="${parentSubscription.id}"
@@ -288,7 +288,7 @@
                             <br>
 
                             <div class="ui middle aligned selection list">
-                                <b><g:message code="package.plural"/>:</b>
+                                <strong><g:message code="package.plural"/>:</strong>
                                 <g:each in="${parentSuccessorSubscription.packages}" var="sp">
                                     <div class="item"><div class="content">
                                         <g:link controller="subscription" action="index"

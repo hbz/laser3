@@ -145,9 +145,9 @@
         </div>
 
         <div class="field" id="radioGroup">
-            <label for="radioGroup">
+            <span style="margin-bottom: 4px"><strong>
                 <g:message code="task.responsible.label" />
-            </label>
+            </strong></span>
             <div class="two fields">
                 <div class="field wide eight ${hasErrors(bean: taskInstance, field: 'responsible', 'error')} required">
                     <fieldset>

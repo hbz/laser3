@@ -182,7 +182,7 @@ class MyInstitutionController  {
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         String instanceFilter = "", perpetualFilter = ""
-        boolean withPerpetualAccess = params.hasPerpetualAccess == RDStore.YN_YES.id.toString()
+        boolean withPerpetualAccess = params.long('hasPerpetualAccess') == RDStore.YN_YES.id
         if(withPerpetualAccess)
             perpetualFilter = " or s2.hasPerpetualAccess = true "
 
@@ -228,7 +228,7 @@ class MyInstitutionController  {
             else if(!params.filterSet) {
                 result.filterSet = true
                 queryParams.status = "Current"
-                params.status = RDStore.PLATFORM_STATUS_CURRENT.id.toString()
+                params.status = RDStore.PLATFORM_STATUS_CURRENT.id
             }
 
             if(params.ipSupport) {
@@ -255,7 +255,7 @@ class MyInstitutionController  {
             if(params.counterCertified) {
                 result.filterSet = true
                 List<String> counterCertified = params.list("counterCertified")
-                queryParams.counterCeritified = []
+                queryParams.counterCertified = []
                 counterCertified.each { String counter ->
                     RefdataValue rdv = RefdataValue.get(counter)
                     String cert = rdv == RDStore.GENERIC_NULL_VALUE ? "null" : rdv.value
@@ -402,13 +402,9 @@ class MyInstitutionController  {
         }
         result.licenseFilterTable = licenseFilterTable
 
-        if(params.consortium) {
+        if (params.consortium) {
             base_qry += " and ( exists ( select o from l.orgRelations as o where o.roleType = :licCons and o.org.id in (:cons) ) ) "
-            List<Long> consortia = []
-            List<String> selCons = params.list('consortium')
-            selCons.each { String sel ->
-                consortia << Long.parseLong(sel)
-            }
+            List<Long> consortia = Params.getLongList(params, 'consortium')
             qry_params += [licCons:RDStore.OR_LICENSING_CONSORTIUM, cons:consortia]
         }
 
@@ -426,27 +422,16 @@ class MyInstitutionController  {
             qry_params = psq.queryParams
         }
 
-        if(params.licensor) {
-            base_qry += " and ( exists ( select o from l.orgRelations as o where o.roleType in (:licCons) and o.org.id in (:licensors) ) ) "
-            List<Long> licensors = []
-            List<String> selLicensors = params.list('licensor')
-            selLicensors.each { String sel ->
-                licensors << Long.parseLong(sel)
-            }
-            qry_params += [licCons:[RDStore.OR_LICENSOR, RDStore.OR_AGENCY],licensors:licensors]
+        if (params.licensor) {
+            base_qry += " and ( exists ( select o from l.orgRelations as o where o.roleType in (:licAgncy) and o.org.id in (:licensors) ) ) "
+            List<Long> licensors = Params.getLongList(params, 'licensor')
+            qry_params += [licAgncy:[RDStore.OR_LICENSOR, RDStore.OR_AGENCY], licensors:licensors]
         }
 
-        if(params.categorisation) {
+        if (params.categorisation) {
             base_qry += " and l.licenseCategory.id in (:categorisations) "
-            List<Long> categorisations = []
-            List<String> selCategories = params.list('categorisation')
-            selCategories.each { String sel ->
-                categorisations << Long.parseLong(sel)
-            }
-            qry_params.categorisations = categorisations
+            qry_params.categorisations = Params.getLongList(params, 'categorisation')
         }
-
-
 
         if(params.status || !params.filterSubmit) {
             base_qry += " and l.status.id = :status "
@@ -487,14 +472,9 @@ class MyInstitutionController  {
                 qry_params.subStatus = params.subStatus as Long
             }
 
-            if(params.subKind) {
+            if (params.subKind) {
                 subscrQueryFilter << "s.kind.id in (:subKinds)"
-                List<Long> subKinds = []
-                List<String> selKinds = params.list('subKind')
-                selKinds.each { String sel ->
-                    subKinds << Long.parseLong(sel)
-                }
-                qry_params.subKinds = subKinds
+                qry_params.subKinds = Params.getLongList(params, 'subKind')
             }
 
             if (contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()) {
@@ -1436,39 +1416,9 @@ class MyInstitutionController  {
 		Profiler prf = new Profiler()
 		prf.setBenchmark('init')
 
-        if(params.tab){
-            switch(params.tab) {
-                case 'currentIEs': params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-                    break
-                case 'plannedIEs': params.status = [RDStore.TIPP_STATUS_EXPECTED.id.toString()]
-                    break
-                case 'expiredIEs': params.status = [RDStore.TIPP_STATUS_RETIRED.id.toString()]
-                    break
-                case 'deletedIEs': params.status = [RDStore.TIPP_STATUS_DELETED.id.toString()]
-                    break
-                case 'allIEs': params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_EXPECTED.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString(), RDStore.TIPP_STATUS_DELETED.id.toString()]
-                    break
-            }
-        }
-        else if(params.list('status').size() == 1) {
-            switch(params.list('status')[0]) {
-                case RDStore.TIPP_STATUS_CURRENT.id.toString(): params.tab = 'currentIEs'
-                    break
-                case RDStore.TIPP_STATUS_RETIRED.id.toString(): params.tab = 'expiredIEs'
-                    break
-                case RDStore.TIPP_STATUS_EXPECTED.id.toString(): params.tab = 'plannedIEs'
-                    break
-                case RDStore.TIPP_STATUS_DELETED.id.toString(): params.tab = 'deletedIEs'
-                    break
-            }
-        }else{
-            if(params.list('status').size() > 1){
-                params.tab = 'allIEs'
-            }else {
-                params.tab = 'currentIEs'
-                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-            }
-        }
+        Map ttParams = FilterLogic.resolveParamsForTopAttachedTitleTabs(params, 'IEs')
+        if (ttParams.status) { params.status = ttParams.status }
+        if (ttParams.tab)    { params.tab = ttParams.tab }
 
         Set<RefdataValue> orgRoles = []
         List<String> queryFilter = [], subscriptionQueryFilter = []
@@ -1613,13 +1563,9 @@ class MyInstitutionController  {
         List<String> countQueryFilter = queryFilter.clone()
         Map<String, Object> countQueryParams = qryParams.clone()
 
-        if(params.status != '' && params.status != null && params.list('status')) {
-            List<Long> status = []
-            params.list('status').each { String statusId ->
-                status << RefdataValue.get(statusId)
-            }
+        if (params.list('status').findAll()) {
             queryFilter << "ie.status in (:status)"
-            qryParams.status = status
+            qryParams.status = Params.getRefdataList(params, 'status')
         }
         countQueryFilter << "ie.status != :removed"
         countQueryParams.removed = RDStore.TIPP_STATUS_REMOVED
@@ -1644,6 +1590,7 @@ class MyInstitutionController  {
             qryParams = [cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER], contextOrg: result.institution, roleTypes: orgRoles, current: RDStore.SUBSCRIPTION_CURRENT, removed: RDStore.TIPP_STATUS_REMOVED]
         }
         */
+
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-256")
         Map<String, Object> cachingKeys = params.clone()
         cachingKeys.remove("offset")
@@ -1828,37 +1775,9 @@ class MyInstitutionController  {
 
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        if(params.tab){
-            if(params.tab == 'currentIEs'){
-                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-            }else if(params.tab == 'plannedIEs'){
-                //params.status = [RDStore.TIPP_STATUS_EXPECTED.id.toString()]
-            }else if(params.tab == 'expiredIEs'){
-                params.status = [RDStore.TIPP_STATUS_RETIRED.id.toString()]
-            }else if(params.tab == 'deletedIEs'){
-                params.status = [RDStore.TIPP_STATUS_DELETED.id.toString()]
-            }else if(params.tab == 'allIEs'){
-                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_EXPECTED.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString(), RDStore.TIPP_STATUS_DELETED.id.toString()]
-            }
-        }
-        else if(params.list('status').size() == 1) {
-            if(params.list('status')[0] == RDStore.TIPP_STATUS_CURRENT.id.toString()){
-                params.tab = 'currentIEs'
-            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_RETIRED.id.toString()){
-                params.tab = 'expiredIEs'
-            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_EXPECTED.id.toString()){
-                //params.tab = 'plannedIEs'
-            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_DELETED.id.toString()){
-                params.tab = 'deletedIEs'
-            }
-        }else{
-            if(params.list('status').size() > 1){
-                params.tab = 'allIEs'
-            }else {
-                params.tab = 'currentIEs'
-                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-            }
-        }
+        Map ttParams = FilterLogic.resolveParamsForTopAttachedTitleTabs(params, 'IEs', true)
+        if (ttParams.status) { params.status = ttParams.status }
+        if (ttParams.tab)    { params.tab = ttParams.tab }
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
@@ -1966,7 +1885,7 @@ class MyInstitutionController  {
 
             if (params.ddc && params.list('ddc').size() > 0) {
                 qry3 += " and ((exists (select ddc.id from DeweyDecimalClassification ddc where ddc.ddc.id in (:ddcs) and ddc.tipp.pkg = pkg)) or (exists (select ddc.id from DeweyDecimalClassification ddc where ddc.ddc.id in (:ddcs) and ddc.pkg = pkg)))"
-                qryParams3.put('ddcs', params.list("ddc").collect { String ddc -> Long.parseLong(ddc) })
+                qryParams3.put('ddcs', Params.getLongList(params, 'ddc'))
             }
 
             qry3 += " group by pkg, s"
@@ -2364,7 +2283,7 @@ class MyInstitutionController  {
         result.contextOrg = contextService.getOrg()
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
-        result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(Long.parseLong(params.surveyConfigID.toString())) : result.surveyInfo.surveyConfigs[0]
+        result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.long('surveyConfigID')) : result.surveyInfo.surveyConfigs[0]
 
         result.surveyResults = []
         result.minimalInput = false
@@ -3195,31 +3114,34 @@ class MyInstitutionController  {
         Map<String, Object> queryParams = [ctxOrg: contextService.getOrg()]
 
         if (result.filterTargetType) {
-            if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_AGENCY.id.toString()) {
+            Long filterTargetType = Long.valueOf(result.filterTargetType)
+
+            if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_AGENCY.id) {
                 idQuery = idQuery + ' and wf.org is not null'
                 idQuery = idQuery + ' and exists (select ot from wf.org.orgType as ot where ot = :orgType )'
                 queryParams.put('orgType', RDStore.OT_AGENCY)
             }
-            if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION.id.toString()) {
+            if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION.id) {
                 idQuery = idQuery + ' and wf.org is not null'
                 idQuery = idQuery + ' and exists (select ot from wf.org.orgType as ot where ot = :orgType )'
                 queryParams.put('orgType', RDStore.OT_INSTITUTION)
             }
-            else if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_LICENSE.id.toString()) {
+            else if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_LICENSE.id) {
                 idQuery = idQuery + ' and wf.license is not null'
             }
-            else if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_OWNER.id.toString()) {
+            else if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_OWNER.id) {
                 idQuery = idQuery + ' and wf.org = :ctxOrg'
             }
-            else if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_PROVIDER.id.toString()) {
+            else if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_PROVIDER.id) {
                 idQuery = idQuery + ' and wf.org is not null'
                 idQuery = idQuery + ' and exists (select ot from wf.org.orgType as ot where ot = :orgType )'
                 queryParams.put('orgType', RDStore.OT_PROVIDER)
             }
-            if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION.id.toString()) {
+            if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION.id) {
                 idQuery = idQuery + ' and wf.subscription is not null'
             }
         }
+
         if (result.filterTemplates) {
             if (result.filterTemplates == 'yes') {
                 idQuery = idQuery + ' and wf.template = true'
@@ -3251,10 +3173,12 @@ class MyInstitutionController  {
         result.currentWorkflows = WfChecklist.executeQuery(resultQuery, [idList: checklistIds])
 
         if (result.filterStatus) {
-            if (result.filterStatus == RDStore.WF_WORKFLOW_STATUS_OPEN.id.toString()) {
+            Long filterStatus = Long.valueOf(result.filterStatus)
+
+            if (filterStatus == RDStore.WF_WORKFLOW_STATUS_OPEN.id) {
                 result.currentWorkflows = result.openWorkflows
             }
-            else if (result.filterStatus == RDStore.WF_WORKFLOW_STATUS_DONE.id.toString()) {
+            else if (filterStatus == RDStore.WF_WORKFLOW_STATUS_DONE.id) {
                 result.currentWorkflows = result.doneWorkflows
             }
         }
@@ -3480,7 +3404,7 @@ join sub.orgRelations or_sub where
         if(providers || params.filterPvd) {
             querySubs += " and or_pa.org.id in (:providers)"
             if(params.filterPvd){
-                queryParamsSubs << [providers: params.list('filterPvd').collect { Long.parseLong(it) }]
+                queryParamsSubs << [providers: Params.getLongList(params, 'filterPvd')]
             }
             else {
                 queryParamsSubs << [providers: providers.collect { it.id }]
@@ -4072,7 +3996,7 @@ join sub.orgRelations or_sub where
 
         DateFormat sdFormat = DateUtils.getLocalizedSDF_noTime()
 
-        result.participant = Org.get(Long.parseLong(params.id))
+        result.participant = Org.get(params.long('id'))
 
         params.tab = params.tab ?: 'open'
 

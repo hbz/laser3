@@ -156,6 +156,7 @@ body.myInstitution_dashboard .ui.tab .item .header {
     bottom: 0;
     font-size: 1.1em;
     border-top: 2px solid orange;
+    z-index: 999;
 }
 #systemMaintenanceMode > .segment {
     padding: 3em 0;
@@ -306,4 +307,8 @@ body.survey_copyElementsIntoSurvey nav.tabular .item .content .description
     font-weight: normal;
     line-height: 1.2em;
     margin-top: 0.25em;
+}
+.trumbowyg-editor[contenteditable=true]:empty::before{
+    content: attr(data-placeholder);
+    color: #999;
 }

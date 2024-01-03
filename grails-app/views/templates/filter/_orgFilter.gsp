@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.helper.Params; de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore" %>
 
 <%
     String lang = LocaleUtils.getCurrentLang()
@@ -68,7 +68,7 @@
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:set var="identifierNamespaces" value="${IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS, [sort: 'name_de'])}" scope="request"/>
                         <g:each in="${identifierNamespaces}" var="idns">
-                            <option <%=(params.list('identifierNamespace').contains(idns.id.toString())) ? 'selected="selected"' : '' %> value="${idns.id}">${idns.getI10n("name") ?: idns.ns}</option>
+                            <option <%=Params.getLongList(params, 'identifierNamespace').contains(idns.id) ? 'selected="selected"' : '' %> value="${idns.id}">${idns.getI10n("name") ?: idns.ns}</option>
                         </g:each>
                     </select>
                 </div>
@@ -161,8 +161,12 @@
                     <g:if test="${orgStatusSet == null || orgStatusSet.isEmpty()}">
                         <g:set var="orgStatusSet" value="${RefdataCategory.getAllRefdataValues([RDConstants.ORG_STATUS])-RDStore.ORG_STATUS_REMOVED}" scope="request"/>
                     </g:if>
-                    <ui:select class="ui dropdown multiple search selection" id="orgStatus" name="orgStatus"
-                               from="${orgStatusSet}" optionKey="id" optionValue="value" value="${params.orgStatus}" />
+                    <select id="orgStatus" name="orgStatus" multiple="" class="ui selection fluid dropdown">
+                        <option value=""><g:message code="default.select.choose.label"/></option>
+                        <g:each in="${orgStatusSet}" var="orgStatus">
+                            <option <%=Params.getLongList(params, 'orgStatus').contains(orgStatus.id) ? 'selected="selected"' : ''%> value="${orgStatus.id}">${orgStatus.getI10n('value')}</option>
+                        </g:each>
+                    </select>
                 </div>
             </g:if>
 
@@ -194,7 +198,7 @@
                     <select name="providerRole" id="providerRole" multiple="" class="ui fluid select dropdown search">
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:each in="${providerRoles}" var="providerRole">
-                            <option <%= (params.list('providerRole').contains(providerRole.id.toString())) ? 'selected="selected"' : '' %> value="${providerRole.id}">${providerRole.value}</option>
+                            <option <%=Params.getLongList(params, 'providerRole').contains(providerRole.id) ? 'selected="selected"' : '' %> value="${providerRole.id}">${providerRole.value}</option>
                         </g:each>
                     </select>
                 </div>
@@ -224,7 +228,7 @@
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:set var="libraryNetworks" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.LIBRARY_NETWORK])}" scope="request"/>
                         <g:each in="${libraryNetworks}" var="rdv">
-                            <option <%=(params.list('libraryNetwork').contains(rdv.id.toString())) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
+                            <option <%=Params.getLongList(params, 'libraryNetwork').contains(rdv.id) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
                         </g:each>
                     </select>
                 </div>
@@ -237,7 +241,7 @@
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:set var="libraryTypes" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.LIBRARY_TYPE])}" scope="request"/>
                         <g:each in="${libraryTypes}" var="rdv">
-                            <option <%=(params.list('libraryType').contains(rdv.id.toString())) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
+                            <option <%=Params.getLongList(params, 'libraryType').contains(rdv.id) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
                         </g:each>
                     </select>
                 </div>
@@ -274,7 +278,7 @@
                     <select id="legallyObligedBy" name="legallyObligedBy" multiple="" class="ui search select dropdown">
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:each in="${legalObligations}" var="legalObligation">
-                            <option <%=(params.list('legallyObligedBy').contains(legalObligation.id.toString())) ? 'selected="selected"' : '' %> value="${legalObligation.id}">${legalObligation.sortname}</option>
+                            <option <%=Params.getLongList(params, 'legallyObligedBy').contains(legalObligation.id) ? 'selected="selected"' : '' %> value="${legalObligation.id}">${legalObligation.sortname}</option>
                         </g:each>
                     </select>
                 </div>
@@ -299,7 +303,7 @@
                         <option value="">${message(code: 'default.select.choose.label')}</option>
 
                         <g:each in="${providers.sort { it.name }}" var="provider">
-                            <option <%=(params.list('filterPvd').contains(provider.id.toString())) ? 'selected="selected"' : ''%>
+                            <option <%=Params.getLongList(params, 'filterPvd').contains(provider.id) ? 'selected="selected"' : ''%>
                                     value="${provider.id}">
                                 ${provider.name}
                             </option>
@@ -324,7 +328,7 @@
                     <select id="subscription" name="subscription" multiple="" class="ui selection fluid dropdown">
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:each in="${subscriptions}" var="sub">
-                            <option <%=(params.list('subscription').contains(sub.id.toString())) ? 'selected="selected"' : '' %> value="${sub.id}">${sub.dropdownNamingConvention()}</option>
+                            <option <%=Params.getLongList(params, 'subscription').contains(sub.id) ? 'selected="selected"' : '' %> value="${sub.id}">${sub.dropdownNamingConvention()}</option>
                         </g:each>
                     </select>
                 </div>
@@ -343,7 +347,7 @@
                     <%--<select id="subscriptionStatus" name="subscription" multiple="" class="ui selection fluid dropdown">
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:each in="${subscriptions}" var="sub">
-                            <option <%=(params.list('subscription').contains(sub.id.toString())) ? 'selected="selected"' : '' %> value="${sub.id}">${sub.dropdownNamingConvention()}</option>
+                            <option <%=Params.getLongList(params, 'subscription').contains(sub.id) ? 'selected="selected"' : '' %> value="${sub.id}">${sub.dropdownNamingConvention()}</option>
                         </g:each>
                     </select>--%>
                 </div>
@@ -402,7 +406,7 @@
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:set var="subjectGroups" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.SUBJECT_GROUP])}" scope="request"/>
                         <g:each in="${subjectGroups}" var="rdv">
-                            <option <%=(params.list('subjectGroup').contains(rdv.id.toString())) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
+                            <option <%=Params.getLongList(params, 'subjectGroup').contains(rdv.id) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
                         </g:each>
                     </select>
                 </div>
@@ -415,7 +419,7 @@
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:set var="frontends" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.DISCOVERY_SYSTEM_FRONTEND])}" scope="request"/>
                         <g:each in="${frontends}" var="rdv">
-                            <option <%=(params.list('discoverySystemsFrontend').contains(rdv.id.toString())) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
+                            <option <%=Params.getLongList(params, 'discoverySystemsFrontend').contains(rdv.id) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
                         </g:each>
                     </select>
                 </div>
@@ -428,7 +432,7 @@
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:set var="indices" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.DISCOVERY_SYSTEM_INDEX])}" scope="request"/>
                         <g:each in="${indices}" var="rdv">
-                            <option <%=(params.list('discoverySystemsIndex').contains(rdv.id.toString())) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
+                            <option <%=Params.getLongList(params, 'discoverySystemsIndex').contains(rdv.id) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
                         </g:each>
                     </select>
                 </div>

@@ -56,7 +56,7 @@
                         </div>
                     </g:if>
 
-                %{-- <g:if test="${actionName != 'myPublicContacts'}">
+                %{-- <g:if test="${actionName != 'contacts'}">
                      <div class="field">
                          <g:if test="${institution}">
                              <label for="functionOrg">
@@ -79,7 +79,7 @@
                      </div>
                  </g:if>--}%
 
-                %{--<g:if test="${actionName != 'myPublicContacts'}">
+                %{--<g:if test="${actionName != 'contacts'}">
                     <div class="field">
 
                         <g:if test="${institution}">

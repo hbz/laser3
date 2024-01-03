@@ -2,7 +2,7 @@
 <ui:modal id="modalAllTitleInfos" text="${message(code: 'title.details')}"
              hideSubmitButton="true">
 
-    <laser:render template="/templates/title_long"
+    <laser:render template="/templates/titles/title_long"
               model="${[ie: ie, tipp: tipp,
                         showPackage: showPackage, showPlattform: showPlattform, showCompact: showCompact, showEmptyFields: showEmptyFields]}"/>
     <br/>
@@ -34,14 +34,12 @@
                 <i class="grey calendar icon la-popup-tooltip la-delay"
                    data-content="${message(code: 'subscription.details.access_start')}"></i>
                 <g:if test="${editable}">
-                    <ui:xEditable owner="${ie}" type="date"
-                                     field="accessStartDate"/>
+                    <ui:xEditable owner="${ie}" type="date" field="accessStartDate"/>
                     <i class="grey question circle icon la-popup-tooltip la-delay"
                        data-content="${message(code: 'subscription.details.access_start.note')}"></i>
                 </g:if>
                 <g:else>
-                    <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                  date="${ie.accessStartDate}"/>
+                    <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${ie.accessStartDate}"/>
                 </g:else>
             </div>
 
@@ -54,8 +52,7 @@
                        data-content="${message(code: 'subscription.details.access_end.note')}"></i>
                 </g:if>
                 <g:else>
-                    <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                  date="${ie.accessEndDate}"/>
+                    <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${ie.accessEndDate}"/>
                 </g:else>
             </div>
         </div>

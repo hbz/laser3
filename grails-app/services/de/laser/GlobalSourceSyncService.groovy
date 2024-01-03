@@ -101,11 +101,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
         defineMapFields()
         //we need to consider that there may be several sources per instance
         List<GlobalRecordSource> jobs = GlobalRecordSource.findAllByActive(true)
+        SystemEvent.createEvent('GSSS_JSON_START', ['jobs': jobs.size()])
+
         jobs.each { GlobalRecordSource source ->
             this.source = source
             maxTimestamp = 0
             try {
-                SystemEvent.createEvent('GSSS_JSON_START',['jobId':source.id])
                 Thread.currentThread().setName("GlobalDataSync_Json")
                 this.apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)
                 Date oldDate = source.haveUpTo

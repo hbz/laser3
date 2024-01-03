@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.LocaleUtils; de.laser.RefdataCategory; de.laser.I10nTranslation; de.laser.storage.RDConstants; de.laser.RefdataValue;de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.helper.Params; de.laser.utils.LocaleUtils; de.laser.RefdataCategory; de.laser.I10nTranslation; de.laser.storage.RDConstants; de.laser.RefdataValue;de.laser.storage.RDStore;" %>
 
 <g:set var="languageSuffix" value="${LocaleUtils.getCurrentLang()}"/>
 
@@ -7,7 +7,7 @@
     <select id="filterCountry" name="country" multiple="" class="ui search selection fluid dropdown">
         <option value="">${message(code: 'default.select.choose.label')}</option>
         <g:each in="${RefdataCategory.getAllRefdataValues([RDConstants.COUNTRY])}" var="rdv">
-            <option <%=(params.list('country').contains(rdv.id.toString())) ? 'selected="selected"' : ''%>
+            <option <%=Params.getLongList(params, 'country').contains(rdv.id) ? 'selected="selected"' : ''%>
                     value="${rdv.id}">${rdv.getI10n("value")}</option>
         </g:each>
     </select>

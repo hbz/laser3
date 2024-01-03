@@ -17,12 +17,10 @@
     <div class="ui icon error message">
         <i class="exclamation triangle icon"></i>
         <i class="close icon"></i>
-
         <div class="content">
             <div class="header">
                 ${message(code: 'message.attention')}
             </div>
-
             <p>${error}</p>
         </div>
     </div>

@@ -49,7 +49,7 @@
                         <td class="titleCell">
 
                             <!-- START TEMPLATE -->
-                                <laser:render template="/templates/title_short"
+                                <laser:render template="/templates/titles/title_short"
                                           model="${[ie: ie, tipp: ie.tipp,
                                                     showPackage: showPackage, showPlattform: showPlattform, showCompact: true, showEmptyFields: false, overwriteEditable: false]}"/>
                             <!-- END TEMPLATE -->

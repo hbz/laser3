@@ -186,7 +186,7 @@ class PropertyService {
             RefdataCategory rdc = null
             if (params.pd_type == RefdataValue.class.name) {
                 if (params.refdatacategory) {
-                    rdc = RefdataCategory.findById( Long.parseLong(params.refdatacategory) )
+                    rdc = RefdataCategory.findById( params.long('refdatacategory') )
                 }
                 if (! rdc) {
                     return ['error', messageSource.getMessage('propertyDefinition.descr.missing2', null, locale)]
