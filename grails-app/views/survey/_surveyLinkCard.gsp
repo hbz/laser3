@@ -1,7 +1,7 @@
 <%@ page import="de.laser.survey.SurveyLinks; de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.Subscription; de.laser.storage.RDStore;" %>
 
 <g:if test="${contextOrg?.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
-    <ui:card message="${message(code: 'surveyLinks.label')}" class="la-js-hideable" href="#surveyLinks"
+    <ui:card message="surveyLinks.label" class="la-js-hideable" href="#surveyLinks"
                 editable="${editable && controllerName == 'survey' && actionName == 'show'}">
         <div class="ui small feed content la-js-dont-hide-this-card">
             <div class="ui grid summary">
@@ -66,7 +66,7 @@
 <g:else>
     <g:set var="surveyLinks" value="${SurveyLinks.findAllBySourceSurvey(surveyConfig.surveyInfo)}"/>
     <g:if test="${surveyLinks.size() > 0}">
-        <ui:card message="${message(code: 'surveyLinks.label')}" class="la-js-hideable">
+        <ui:card message="surveyLinks.label" class="la-js-hideable">
             <div class="ui small feed content la-js-dont-hide-this-card">
                 <div class="ui grid summary">
                     <div class="sixteen wide column">
