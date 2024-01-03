@@ -46,8 +46,7 @@
 
                     </dl>
 
-                    <ui:card message="${message(code: 'surveyconfig.url.plural.label')}" href="#surveyUrls"
-                             editable="${editable}">
+                    <ui:card message="surveyconfig.url.plural.label" href="#surveyUrls" editable="${editable}">
                         <g:each in="${surveyConfig.surveyUrls}" var="surveyUrl" status="i">
                             <dl>
                                 <dt class="control-label">

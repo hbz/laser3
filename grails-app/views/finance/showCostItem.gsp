@@ -1,6 +1,4 @@
-<laser:htmlStart message="${g.message(code: "financials.editCost")}"
-                 serviceInjection="true"/>
-
+<laser:htmlStart message="financials.editCost" serviceInjection="true"/>
 
 <ui:breadcrumbs>
     <g:if test="${costItem.sub}">

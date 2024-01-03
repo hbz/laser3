@@ -10,8 +10,8 @@
         </ui:debugInfo>
         <ui:breadcrumbs>
             <%--<ui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}" />--%>
-            <ui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label')}" />
-            <ui:crumb class="active"  message="${subscription.name}" />
+            <ui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label" />
+            <ui:crumb class="active" text="${subscription.name}" />
         </ui:breadcrumbs>
         <ui:controlButtons>
             <ui:exportDropdown>
