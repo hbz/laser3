@@ -825,6 +825,9 @@ r2d2 = {
                     case "unlink":
                         $jscb.html(JSPC.dict.get('confirm.dialog.unlink', JSPC.config.language) + '<i aria-hidden="true" class="la-chain broken icon"></i>');
                         break;
+                    case "unset":
+                        $jscb.html(JSPC.dict.get('confirm.dialog.unset', JSPC.config.language) + '<i aria-hidden="true" class="eraser icon"></i>');
+                        break;
                     case "share":
                         $jscb.html(JSPC.dict.get('confirm.dialog.share', JSPC.config.language) + '<i aria-hidden="true" class="la-share icon"></i>');
                         break;
