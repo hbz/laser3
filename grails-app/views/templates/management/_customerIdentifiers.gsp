@@ -11,7 +11,7 @@
             <ui:tabsItem controller="subscription" action="membersSubscriptionsManagement" tab="${platform.id.toString()}" subTab="tabPlat" params="${params + [tab: 'customerIdentifiers', tabPlat: platform.id.toString()]}" text="${platform.name}"/>
         </g:each>
     </ui:tabs>
-    <div class="ui bottom attached tab active">
+    <div class="ui bottom attached tab active segment">
         <table class="ui la-js-responsive-table la-table table">
             <thead>
             <tr>

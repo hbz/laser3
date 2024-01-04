@@ -164,13 +164,12 @@
             </g:if>
         </g:if>
         <g:else>
-            <div class="ui segment">
                 <ui:tabs>
                     <g:each in="${platformInstanceRecords.values()}" var="platform">
                         <ui:tabsItem controller="subscription" action="stats" tab="${platform.id.toString()}" params="${params + [tab: platform.id.toString()]}" text="${platform.name}"/>
                     </g:each>
                 </ui:tabs>
-                <div class="ui bottom attached tab active" id="customerIdWrapper">
+                <div class="ui bottom attached tab active segment" id="customerIdWrapper">
                     <table class="ui la-js-responsive-table la-table table">
                         <thead>
                         <tr>
@@ -217,7 +216,7 @@
                         </tbody>
                     </table>
                 </div>
-            </div>
+
             <g:if test="${reportTypes}">
                 <g:if test="${revision == AbstractReport.COUNTER_4}">
                     <ui:msg icon="ui info icon" class="info" header="${message(code: 'default.usage.counter4reportInfo.header')}" message="default.usage.counter4reportInfo.text" noClose="true"/>
