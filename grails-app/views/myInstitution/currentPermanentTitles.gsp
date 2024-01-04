@@ -26,11 +26,14 @@
 <h3 class="ui icon header la-clear-before la-noMargin-top">
     <span class="ui circular label">${num_tipp_rows}</span> <g:message code="title.filter.result"/>
 </h3>
-
+<g:if test="${titles}">
     <div class="ui form">
-        <div class="three wide fields">
+        <div class="two wide fields">
             <div class="field">
                 <laser:render template="/templates/titles/sorting_dropdown" model="${[sd_type: 1, sd_journalsOnly: journalsOnly, sd_sort: params.sort, sd_order: params.order]}" />
+            </div>
+            <div class="field la-field-noLabel">
+                <button class="ui button la-js-closeAll-showMore right floated ">${message(code: "accordion.button.closeAll")}</button>
             </div>
         </div>
     </div>
@@ -175,7 +178,6 @@
                                                                         </div>
                                                                     </div>
                                                                 </g:each>
-
                                                             </div>
                                                         </div>
                                                     </div><%-- My Area END --%>
@@ -187,6 +189,9 @@
                             </div><%-- .content --%>
                         </div><%-- .card --%>
                     </g:if>
+                    <div class="ui clearing segment la-segmentNotVisable">
+                        <button class="ui button la-js-closeAll-showMore right floated">${message(code: "accordion.button.closeAll")}</button>
+                    </div>
                 </g:if>
                 <g:else>
                     <g:if test="${filterSet}">
@@ -200,9 +205,9 @@
         </div>
 
     </div>
-    <g:if test="${titles}">
+
         <ui:paginate action="currentPermanentTitles" controller="myInstitution" params="${params}" max="${max}" total="${num_tipp_rows}"/>
-    </g:if>
+</g:if>
 
 </div>
 
