@@ -25,8 +25,14 @@
             </thead>
             <tbody>
             <g:each in="${keyPairs}" var="pair" status="rowno">
-                <g:set var="overwriteEditable_ci" value="${editable || contextService.getOrg().id in [pair.owner.id, pair.customer.id]}" />
 
+%{-- TODO: erms-5495 --}%
+%{--                <g:set var="overwriteEditable_ci" value="${editable}" />--}%
+                <%
+                    boolean overwriteEditable_ci = contextService.getUser().isAdmin() ||
+                            userService.hasFormalAffiliation(contextService.getUser(), pair.owner, 'INST_EDITOR') ||
+                            userService.hasFormalAffiliation(contextService.getUser(), pair.customer, 'INST_EDITOR')
+                %>
                 <tr>
                     <td>${pair.customer.sortname ?: pair.customer.name}</td>
                     <td>${pair.getProvider()} : ${pair.platform.name}</td>
