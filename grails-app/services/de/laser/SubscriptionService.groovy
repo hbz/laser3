@@ -1589,7 +1589,7 @@ join sub.orgRelations or_sub where
         CustomerIdentifier ci = CustomerIdentifier.get(id)
         ci.value = null
         ci.requestorKey = null
-        ci.note = null
+        // ci.note = null
         ci.save()
     }
 
