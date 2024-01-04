@@ -517,7 +517,10 @@ class MyInstitutionController  {
             result.orgRoles.put(oo.lic.id,oo.roleType)
         }
         prf.setBenchmark('get consortia')
-        Set<Org> consortia = Org.executeQuery("select os.org from OrgSetting os where os.key = 'CUSTOMER_TYPE' and os.roleValue in (select r from Role r where authority = 'ORG_CONSORTIUM_BASIC') order by os.org.name asc")
+        Set<Org> consortia = Org.executeQuery(
+                "select os.org from OrgSetting os where os.key = 'CUSTOMER_TYPE' and os.roleValue in (select r from Role r where authority in (:consList)) order by os.org.name asc",
+                [consList: ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO']]
+        )
         prf.setBenchmark('get licensors')
         Set<Org> licensors = orgTypeService.getOrgsForTypeLicensor()
         Map<String,Set<Org>> orgs = [consortia:consortia,licensors:licensors]

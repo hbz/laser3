@@ -78,8 +78,6 @@
         var selectedObjects = ${raw(objects?.id as String)};
 
         dropdownSelectedObjects.empty();
-        dropdownSelectedObjects.append('<option selected="true"disabled>${message(code: 'default.select.choose.label')}</option>');
-        dropdownSelectedObjects.prop('selectedIndex', 0);
 
         $.ajax({
                 url: url,
