@@ -301,7 +301,7 @@
         </ui:tabs>
         <br>
     </g:if>
-<g:if test="${titlesList || sourceIEs}">
+
 
     <g:form name="renewEntitlements" id="${subscriberSub.id}" action="processRenewEntitlementsWithSurvey" class="ui form">
         <g:hiddenField id="packageId" name="packageId" value="${params.packageId}"/>
@@ -367,7 +367,7 @@
     </div>
 
 </g:form>
-</g:if>
+
 </div>
 <g:if test="${sourceIEs || titlesList}">
     <ui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params + [pagination: true]}"
