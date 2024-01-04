@@ -41,10 +41,16 @@
     background-color: transparent!important;
   }
   .item {
+    padding:0;
+  }
+  #la-js-cb-context-display {
+    color: @white;
+  }
+  .la-advanced-view > .item,
+  .la-context-org > .item {
     margin: 0 1em 0 0;
     border-right: none;
     color: @white;
-    padding:0;
     &::before {
       width: 0;
     }

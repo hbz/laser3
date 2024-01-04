@@ -55730,13 +55730,22 @@ Floated Menu / Item
 }
 
 #contextBar .item {
-  margin: 0 1em 0 0;
-  border-right: none;
-  color: #FFFFFF;
   padding: 0;
 }
 
-#contextBar .item::before {
+#contextBar #la-js-cb-context-display {
+  color: #FFFFFF;
+}
+
+#contextBar .la-advanced-view > .item,
+#contextBar .la-context-org > .item {
+  margin: 0 1em 0 0;
+  border-right: none;
+  color: #FFFFFF;
+}
+
+#contextBar .la-advanced-view > .item::before,
+#contextBar .la-context-org > .item::before {
   width: 0;
 }
 
