@@ -752,12 +752,12 @@ class SubscriptionController {
      * Call to unset the given customer identifier
      * @return redirects to the referer
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
-    def deleteCustomerIdentifier() {
-        subscriptionService.deleteCustomerIdentifier(params.long("deleteCI"))
+    def unsetCustomerIdentifier() {
+        subscriptionService.unsetCustomerIdentifier(params.long("deleteCI"))
         redirect(url: request.getHeader("referer"))
     }
 

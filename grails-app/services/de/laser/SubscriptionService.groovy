@@ -1585,10 +1585,11 @@ join sub.orgRelations or_sub where
      * @param id the customer number ID to unser
      * @return true if the unsetting was successful, false otherwise
      */
-    boolean deleteCustomerIdentifier(Long id) {
+    boolean unsetCustomerIdentifier(Long id) {
         CustomerIdentifier ci = CustomerIdentifier.get(id)
         ci.value = null
         ci.requestorKey = null
+        ci.note = null
         ci.save()
     }
 

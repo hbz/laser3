@@ -25,24 +25,26 @@
             </thead>
             <tbody>
             <g:each in="${keyPairs}" var="pair" status="rowno">
+                <g:set var="overwriteEditable_ci" value="${editable || contextService.getOrg().id in [pair.owner.id, pair.customer.id]}" />
+
                 <tr>
                     <td>${pair.customer.sortname ?: pair.customer.name}</td>
                     <td>${pair.getProvider()} : ${pair.platform.name}</td>
-                    <td><ui:xEditable owner="${pair}" field="value"/></td>
-                    <td><ui:xEditable owner="${pair}" field="requestorKey"/></td>
-                    <td><ui:xEditable owner="${pair}" field="note"/></td>
+                    <td><ui:xEditable owner="${pair}" field="value" overwriteEditable="${overwriteEditable_ci}" /></td>
+                    <td><ui:xEditable owner="${pair}" field="requestorKey" overwriteEditable="${overwriteEditable_ci}" /></td>
+                    <td><ui:xEditable owner="${pair}" field="note" overwriteEditable="${overwriteEditable_ci}" /></td>
                     <td>
-                        <g:if test="${editable}">
+                        <g:if test="${overwriteEditable_ci}">
                             <g:link controller="subscription"
-                                    action="deleteCustomerIdentifier"
+                                    action="unsetCustomerIdentifier"
                                     id="${subscription.id}"
                                     params="${[deleteCI: pair.id]}"
-                                    class="ui button icon red js-open-confirm-modal"
-                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.customeridentifier", args: ["" + pair.getProvider() + " : " + pair.platform + " " + pair.value])}"
-                                    data-confirm-term-how="delete"
+                                    class="ui button icon red la-modern-button js-open-confirm-modal"
+                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.unset.customeridentifier", args: ["" + pair.getProvider() + " : " + (pair.platform?:'') + " " + (pair.value?:'')])}"
+                                    data-confirm-term-how="unset"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="trash alternate outline icon"></i>
+                                <i class="eraser icon"></i>
                             </g:link>
                         </g:if>
                     </td>
