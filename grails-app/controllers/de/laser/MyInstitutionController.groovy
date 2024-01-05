@@ -233,35 +233,17 @@ class MyInstitutionController  {
 
             if(params.ipSupport) {
                 result.filterSet = true
-                List<String> ipSupport = params.list("ipSupport")
-                queryParams.ipAuthentication = []
-                ipSupport.each { String ip ->
-                    RefdataValue rdv = RefdataValue.get(ip)
-                    queryParams.ipAuthentication = rdv.value
-                }
+                queryParams.ipAuthentication = Params.getRefdataList(params, 'ipSupport').collect{ it.value }
             }
-
             if(params.shibbolethSupport) {
                 result.filterSet = true
-                List<String> shibbolethSupport = params.list("shibbolethSupport")
-                queryParams.shibbolethAuthentication = []
-                shibbolethSupport.each { String shibboleth ->
-                    RefdataValue rdv = RefdataValue.get(shibboleth)
-                    String shibb = rdv == RDStore.GENERIC_NULL_VALUE ? "null" : rdv.value
-                    queryParams.shibbolethAuthentication = shibb
-                }
+                queryParams.shibbolethAuthentication = Params.getRefdataList(params, 'shibbolethSupport').collect{ (it == RDStore.GENERIC_NULL_VALUE) ? 'null' : it.value }
             }
-
             if(params.counterCertified) {
                 result.filterSet = true
-                List<String> counterCertified = params.list("counterCertified")
-                queryParams.counterCertified = []
-                counterCertified.each { String counter ->
-                    RefdataValue rdv = RefdataValue.get(counter)
-                    String cert = rdv == RDStore.GENERIC_NULL_VALUE ? "null" : rdv.value
-                    queryParams.counterCertified << cert
-                }
+                queryParams.counterCertified = Params.getRefdataList(params, 'counterCertified').collect{ (it == RDStore.GENERIC_NULL_VALUE) ? 'null' : it.value }
             }
+
             List wekbIds = gokbService.doQuery([max:10000, offset:0], params.clone(), queryParams).records.collect { Map hit -> hit.uuid }
 
             qryParams3.wekbIds = wekbIds
