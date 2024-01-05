@@ -639,7 +639,20 @@ r2d2 = {
 
         // accordions
 
-        $(ctxSel + ' .ui.accordion').accordion();
+        $(ctxSel + ' .ui.accordion').not('.la-accordion-showMore').accordion();
+
+        $(ctxSel + ' .la-accordion-showMore').accordion({
+                exclusive: false
+            }
+        );
+        $('.la-js-closeAll-showMore').on('click', function () {
+            $('.accordion.la-accordion-showMore .la-accordion-segments .segment.content').each(function (i, e) {
+                if ($(e).hasClass("active")) {
+                    $('.la-accordion-showMore').accordion("close", i);
+                }
+            });
+        });
+
 
         $(ctxSel + ' .ui.la-metabox.accordion').accordion({
 

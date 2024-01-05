@@ -138,7 +138,7 @@
             </div>
         </g:if>
 
-        <g:if test="${(tipp.titleType == 'Book') && (tipp.editionStatement || showEmptyFields)}">
+%{--        <g:if test="${(tipp.titleType == 'Book') && (tipp.editionStatement || showEmptyFields)}">
             <div class="item">
                 <i class="grey icon copy la-popup-tooltip la-delay"
                    data-content="${message(code: 'title.editionStatement.label')}"></i>
@@ -153,7 +153,7 @@
                     </div>
                 </div>
             </div>
-        </g:if>
+        </g:if>--}%
 
         <g:if test="${(tipp.titleType == 'Book') && (tipp.editionNumber || showEmptyFields)}">
             <div class="item">
