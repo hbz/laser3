@@ -309,13 +309,18 @@
         <g:hiddenField name="tab" value="${params.tab}"/>
         <g:hiddenField name="subTab" value="${params.subTab}"/>
         <g:if test="${params.tab == 'allTipps' || params.tab == 'selectedIEs' || params.tab == 'currentPerpetualAccessIEs'}">
-            <div class="ui form">
-                <div class="three wide fields">
-                    <div class="field">
-                        <laser:render template="/templates/titles/sorting_dropdown" model="${[sd_type: 1, sd_journalsOnly: journalsOnly, sd_sort: params.sort, sd_order: params.order]}" />
+
+                <div class="ui form">
+                    <div class="two wide fields">
+                        <div class="field">
+                            <laser:render template="/templates/titles/sorting_dropdown" model="${[sd_type: 1, sd_journalsOnly: journalsOnly, sd_sort: params.sort, sd_order: params.order]}" />
+                        </div>
+                        <div class="field la-field-noLabel">
+                            <button class="ui button la-js-closeAll-showMore right floated ">${message(code: "accordion.button.closeAll")}</button>
+                        </div>
                     </div>
                 </div>
-            </div>
+
         </g:if>
 
         <g:if test="${params.tab == 'allTipps'}">
@@ -362,6 +367,7 @@
     </div>
 
 </g:form>
+
 </div>
 <g:if test="${sourceIEs || titlesList}">
     <ui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params + [pagination: true]}"

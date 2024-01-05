@@ -93,23 +93,30 @@
 </h3>
 
 <div id="downloadWrapper"></div>
-
-<div class="ui form">
-    <div class="three wide fields">
-        <div class="field">
-            <laser:render template="/templates/titles/sorting_dropdown" model="${[sd_type: 2, sd_journalsOnly: journalsOnly, sd_sort: params.sort, sd_order: params.order]}" />
-        </div>
-    </div>
-</div>
-<div class="ui grid">
-    <div class="row">
-        <div class="column">
-            <laser:render template="/templates/tipps/table_accordion" model="[tipps: titlesList, showPackage: false, showPlattform: true]"/>
-        </div>
-    </div>
-</div>
-
 <g:if test="${titlesList}">
+    <div class="ui form">
+        <div class="two wide fields">
+            <div class="field">
+                <laser:render template="/templates/titles/sorting_dropdown" model="${[sd_type: 2, sd_journalsOnly: journalsOnly, sd_sort: params.sort, sd_order: params.order]}" />
+            </div>
+            <div class="field la-field-noLabel">
+                <button class="ui button la-js-closeAll-showMore right floated ">${message(code: "accordion.button.closeAll")}</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui grid">
+        <div class="row">
+            <div class="column">
+                <laser:render template="/templates/tipps/table_accordion" model="[tipps: titlesList, showPackage: false, showPlattform: true]"/>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui clearing segment la-segmentNotVisable">
+        <button class="ui button la-js-closeAll-showMore right floated">${message(code: "accordion.button.closeAll")}</button>
+    </div>
+
     <ui:paginate action="current" controller="package" params="${params}" max="${max}" total="${num_tipp_rows}"/>
 </g:if>
 

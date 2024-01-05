@@ -242,14 +242,18 @@
 <% params.remove('tab') %>
 
 <div class="ui bottom attached tab active segment">
-
-    <div class="ui form">
-        <div class="three wide fields">
-            <div class="field">
-                <laser:render template="/templates/titles/sorting_dropdown" model="${[sd_type: 1, sd_journalsOnly: journalsOnly, sd_sort: params.sort, sd_order: params.order]}" />
+    <g:if test="${titles}">
+        <div class="ui form">
+            <div class="two wide fields">
+                <div class="field">
+                    <laser:render template="/templates/titles/sorting_dropdown" model="${[sd_type: 1, sd_journalsOnly: journalsOnly, sd_sort: params.sort, sd_order: params.order]}" />
+                </div>
+                <div class="field la-field-noLabel">
+                    <button class="ui button la-js-closeAll-showMore right floated ">${message(code: "accordion.button.closeAll")}</button>
+                </div>
             </div>
         </div>
-    </div>
+    </g:if>
 
 
     <g:if test="${titles}">
@@ -398,6 +402,9 @@
                             </div><%-- .accordions --%>
                         </div><%-- .content --%>
                     </div><%-- .card --%>
+                    <div class="ui clearing segment la-segmentNotVisable">
+                            <button class="ui button la-js-closeAll-showMore right floated">${message(code: "accordion.button.closeAll")}</button>
+                    </div>
                 </g:if>
     </g:if>
     <g:else>
