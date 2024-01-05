@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5498    05.01.2024  dev     3.3.4(+)    David   Bug         /survey/surveyTitles: Fehler wenn man auf andere Seiten klickt
+
 5457    04.01.2024  dev     3.3.4(+)    David   Bug         Eintragung Schlüsselpaar im Statistikreiter
 
 5489    03.01.2024  rc-3.3  3.3.3       David   Bug         Alle Pakete: Filter Kuratorengruppentyp liefert keine Ergebnisse

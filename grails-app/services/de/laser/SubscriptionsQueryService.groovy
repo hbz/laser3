@@ -257,7 +257,7 @@ class SubscriptionsQueryService {
             if (params.status != 'FETCH_ALL') {
                 if(params.status instanceof List || params.status instanceof String[]){
                     base_qry += " and (s.status.id in (:status) "
-                    qry_params.put('status', params.status.collect { it instanceof Long ? it : Long.parseLong(it) })
+                    qry_params.put('status', params.status.collect { Long.valueOf(it) })
                     filterSet = true
                 }else {
                     base_qry += " and (s.status.id = :status "

@@ -4423,19 +4423,19 @@ class SurveyController {
                 }
                 if(params.tab == 'customProperties') {
                     newMap.newCustomProperty = (sub) ? sub.propertySet.find {
-                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty)) && it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
+                        it.type.id == Long.valueOf(result.selectedProperty) && it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
                     } : null
                     newMap.oldCustomProperty = (newMap.oldSub) ? newMap.oldSub.propertySet.find {
-                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty)) && it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
+                        it.type.id == Long.valueOf(result.selectedProperty) && it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
                     } : null
                 }
 
                 if(params.tab == 'privateProperties') {
                     newMap.newPrivateProperty = (sub) ? sub.propertySet.find {
-                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty)) && it.type.tenant?.id == result.contextOrg.id
+                        it.type.id == Long.valueOf(result.selectedProperty) && it.type.tenant?.id == result.contextOrg.id
                     } : null
                     newMap.oldPrivateProperty = (newMap.oldSub) ? newMap.oldSub.propertySet.find {
-                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty)) && it.type.tenant?.id == result.contextOrg.id
+                        it.type.id == Long.valueOf(result.selectedProperty) && it.type.tenant?.id == result.contextOrg.id
                     } : null
                 }
 
