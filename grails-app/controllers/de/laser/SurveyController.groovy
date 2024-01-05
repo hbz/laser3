@@ -632,6 +632,18 @@ class SurveyController {
                         surveyService.addSubMembers(surveyConfig)
                     }
                 }
+
+                //Alle Title-Umfragen Teilnahme-Merkmale hinzufügen
+                if (surveyConfig.pickAndChoose) {
+                    SurveyConfigProperties configProperty = new SurveyConfigProperties(
+                            surveyProperty: PropertyStore.SURVEY_PROPERTY_PARTICIPATION,
+                            surveyConfig: surveyConfig,
+                            mandatoryProperty: true)
+
+                    if (configProperty.save()) {
+                        surveyService.addSubMembers(surveyConfig)
+                    }
+                }
             }
             else {
                 surveyInfo.delete()
