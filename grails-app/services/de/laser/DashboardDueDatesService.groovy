@@ -249,7 +249,12 @@ class DashboardDueDatesService {
                     else if(obj instanceof Task) {
                         dashDueDateRow.classLabel = messageSource.getMessage('task.label', null, language)
                         dashDueDateRow.link = grailsLinkGenerator.link(obj.getDisplayArgs())
-                        dashDueDateRow.objLabel = obj.title
+                        String objectName = obj.geObjectName()
+                        if(objectName != ''){
+                            dashDueDateRow.objLabel = obj.title + ' ('+objectName+')'
+                        }else {
+                            dashDueDateRow.objLabel = obj.title
+                        }
                     }
                     else if (obj instanceof AbstractPropertyWithCalculatedLastUpdated) {
                         dashDueDateRow.classLabel = messageSource.getMessage('attribute', null, language)+': '
