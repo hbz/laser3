@@ -144,7 +144,7 @@ class Task {
         displayArgs
     }
 
-    String geObjectName() {
+    String getObjectName() {
         String name = ''
         if (license) {
             name = license.reference
