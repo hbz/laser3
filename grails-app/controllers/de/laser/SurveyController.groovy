@@ -632,6 +632,18 @@ class SurveyController {
                         surveyService.addSubMembers(surveyConfig)
                     }
                 }
+
+                //Alle Title-Umfragen Teilnahme-Merkmale hinzufügen
+                if (surveyConfig.pickAndChoose) {
+                    SurveyConfigProperties configProperty = new SurveyConfigProperties(
+                            surveyProperty: PropertyStore.SURVEY_PROPERTY_PARTICIPATION,
+                            surveyConfig: surveyConfig,
+                            mandatoryProperty: true)
+
+                    if (configProperty.save()) {
+                        surveyService.addSubMembers(surveyConfig)
+                    }
+                }
             }
             else {
                 surveyInfo.delete()
@@ -962,7 +974,7 @@ class SurveyController {
         result.selectedParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsq.query, fsq.queryParams, params)
         result.selectedSubParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsq.query, fsq.queryParams, params)
 
-        params.tab = params.tab ?: (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY ? 'selectedParticipants' : 'selectedSubParticipants')
+        params.tab = params.tab ?: (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY ? 'selectedParticipants' : ((result.selectedSubParticipantsCount == 0) ? 'selectedParticipants' : 'selectedSubParticipants'))
 
         result
 

@@ -33,6 +33,7 @@
 <ui:filter>
     <g:form action="${actionName}" controller="${controllerName}" method="get" class="ui small form clearing">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
+        <input type="hidden" name="referenceYears" value="${params.referenceYears}"/>
 
         <div class="four fields">
             <% /* 1-1 */ %>
