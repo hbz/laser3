@@ -31,18 +31,7 @@
                         <tr>
                             <g:sortableColumn property="semester" title="${message(code: 'readerNumber.semester.label')}" params="${[tableA:true]}"/>
                             <g:each in="${semesterCols}" var="column">
-                                <th>
-                                    ${column}
-                                    <g:if test="${editable}">
-                                        <%--<g:if test="${!(column in RefdataCategory.getAllRefdataValues(RDConstants.NUMBER_TYPE).collect {rdv->rdv.getI10n("value")})}">
-                                            <g:link class="ui icon button js-open-confirm-modal" controller="readerNumber" action="delete"
-                                                    data-confirm-tokenMsg="${message(code: 'readerNumber.confirm.delete')}"
-                                                    data-confirm-term-how="ok" params="${[referenceGroup:column,org:params.id]}">
-                                                <i class="red times icon"></i>
-                                            </g:link>
-                                        </g:if>--%>
-                                    </g:if>
-                                </th>
+                                <th>${column}</th>
                             </g:each>
                             <th><g:message code="readerNumber.sum.label"/></th>
                             <th><g:message code="readerNumber.notes"/></th>

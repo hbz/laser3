@@ -59,9 +59,7 @@
             </g:if>
             <g:if test="${!showStatsFilter && !(action in ['renewEntitlementsWithSurvey', 'current', 'planned', 'expired', 'deleted'])}">
                 <div class="field">
-                    <label for="status">
-                        ${message(code: 'default.status.label')}
-                    </label>
+                    <label for="status">${message(code: 'default.status.label')}</label>
                     <select name="status" id="status" multiple=""
                             class="ui search selection dropdown">
                         <option value="">${message(code: 'default.select.choose.label')}</option>

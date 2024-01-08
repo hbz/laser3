@@ -4,13 +4,12 @@
     <g:form controller="${controllerName}" action="${actionName}" method="get" class="ui form">
         <div class="three fields">
             <div class="field">
-                <label>${message(code:'default.search.text')}</label>
-                <input type="text" name="q" placeholder="${message(code:'default.search.ph')}" value="${params.q}" />
+                <label for="q">${message(code:'default.search.text')}</label>
+                <input type="text" id="q" name="q" placeholder="${message(code:'default.search.ph')}" value="${params.q}" />
             </div>
 
             <div class="field">
                 <label for="provider">${message(code: 'default.provider.label')}</label>
-
                 <div class="ui input">
                     <input type="text" id="provider" name="provider"
                            placeholder="${message(code: 'default.search.ph')}"
@@ -19,7 +18,7 @@
             </div>
 
             <div class="field">
-                <label>${message(code: 'default.status.label')}</label>
+                <label for="status">${message(code: 'default.status.label')}</label>
                 <ui:select class="ui dropdown" name="status"
                               from="${ RefdataCategory.getAllRefdataValues(RDConstants.PLATFORM_STATUS) }"
                               optionKey="id"
@@ -32,9 +31,7 @@
         <div class="three fields">
             <div class="field">
                 <label for="ipSupport">${message(code: 'platform.auth.ip.supported')}</label>
-
-                <select name="ipSupport" id="ipSupport" multiple=""
-                        class="ui search selection dropdown">
+                <select name="ipSupport" id="ipSupport" multiple="" class="ui search selection dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.IP_AUTHENTICATION)}" var="ip">
@@ -47,12 +44,8 @@
             </div>
 
             <div class="field">
-                <label for="shibbolethSupport">
-                    ${message(code: 'platform.auth.shibboleth.supported')}
-                </label>
-
-                <select name="shibbolethSupport" id="shibbolethSupport" multiple=""
-                        class="ui search selection dropdown">
+                <label for="shibbolethSupport">${message(code: 'platform.auth.shibboleth.supported')}</label>
+                <select name="shibbolethSupport" id="shibbolethSupport" multiple="" class="ui search selection dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)+ RDStore.GENERIC_NULL_VALUE}" var="shibboleth">
@@ -65,12 +58,8 @@
             </div>
 
             <div class="field">
-                <label for="counterCertified">
-                    ${message(code: 'platform.stats.counter.certified')}
-                </label>
-
-                <select name="counterCertified" id="counterCertified" multiple=""
-                        class="ui search selection dropdown">
+                <label for="counterCertified">${message(code: 'platform.stats.counter.certified')}</label>
+                <select name="counterCertified" id="counterCertified" multiple="" class="ui search selection dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)+ RDStore.GENERIC_NULL_VALUE}" var="counter">
@@ -86,7 +75,7 @@
         <div class="three fields">
             <div class="field">
                 <g:if test="${controllerName == 'myInstitution'}">
-                    <label>${message(code:'subscription.hasPerpetualAccess.label')}</label>
+                    <label for="hasPerpetualAccess">${message(code:'subscription.hasPerpetualAccess.label')}</label>
                     <ui:select class="ui fluid dropdown" name="hasPerpetualAccess"
                                from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                optionKey="id"
@@ -97,9 +86,7 @@
             </div>
             <div class="field"></div>
             <div class="field">
-                <label for="isMyX">
-                    <g:message code="filter.isMyX.label" />
-                </label>
+                <label for="isMyX"><g:message code="filter.isMyX.label" /></label>
                 <%
                     List<Map> isMyXOptions = []
                     isMyXOptions.add([ id: 'wekb_exclusive',    value: "${message(code:'filter.wekb.exclusive')}" ])

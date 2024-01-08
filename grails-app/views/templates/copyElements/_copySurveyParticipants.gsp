@@ -99,7 +99,7 @@
                                 <th><g:message code="sidewide.number"/></th>
                                 <th>${message(code: 'default.sortname.label')}</th>
                                 <th>${message(code: 'default.name.label')}</th>
-                                <th class=" center aligned">
+                                <th class="center aligned">
                                     <g:if test="${targetObject}">
                                         <input class="setDeletionConfirm" type="checkbox" data-action="delete"
                                                onClick="JSPC.app.toggleAllCheckboxes(this)"/>

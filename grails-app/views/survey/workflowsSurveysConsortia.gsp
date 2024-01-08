@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyOrg; de.laser.RefdataCategory; de.laser.survey.SurveyResult; de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.helper.Params; de.laser.survey.SurveyOrg; de.laser.RefdataCategory; de.laser.survey.SurveyResult; de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
 <laser:htmlStart message="currentSurveys.label" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -68,7 +68,7 @@
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${providers.sort { it.name }}" var="provider">
-                        <option <%=(params.list('filterPvd').contains(provider.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'filterPvd').contains(provider.id) ? 'selected="selected"' : ''%>
                         value="${provider.id}">
                         ${provider.name}
                         </option>

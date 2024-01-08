@@ -166,7 +166,7 @@
         <g:else>
                 <ui:tabs>
                     <g:each in="${platformInstanceRecords.values()}" var="platform">
-                        <ui:tabsItem controller="subscription" action="stats" tab="${platform.id.toString()}" params="${params + [tab: platform.id.toString()]}" text="${platform.name}"/>
+                        <ui:tabsItem controller="subscription" action="stats" tab="${platform.id.toString()}" params="${params + [tab: platform.id]}" text="${platform.name}"/>
                     </g:each>
                 </ui:tabs>
                 <div class="ui bottom attached tab active segment" id="customerIdWrapper">

@@ -224,7 +224,7 @@
                     <laser:render template="/templates/titles/sorting_dropdown" model="${[sd_type: 1, sd_journalsOnly: journalsOnly, sd_sort: params.sort, sd_order: params.order]}" />
                 </div>
                 <div class="field la-field-noLabel">
-                    <button class="ui button la-js-closeAll-showMore right floated ">${message(code: "accordion.button.closeAll")}</button>
+                    <button class="ui button la-js-closeAll-showMore right floated">${message(code: "accordion.button.closeAll")}</button>
                 </div>
             </div>
         </div>

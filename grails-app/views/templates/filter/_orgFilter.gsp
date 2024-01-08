@@ -344,12 +344,6 @@
                                   class="ui dropdown"
                                   noSelection="${['':message(code:'default.select.choose.label')]}"
                     />
-                    <%--<select id="subscriptionStatus" name="subscription" multiple="" class="ui selection fluid dropdown">
-                        <option value="">${message(code:'default.select.choose.label')}</option>
-                        <g:each in="${subscriptions}" var="sub">
-                            <option <%=Params.getLongList(params, 'subscription').contains(sub.id) ? 'selected="selected"' : '' %> value="${sub.id}">${sub.dropdownNamingConvention()}</option>
-                        </g:each>
-                    </select>--%>
                 </div>
             </g:if>
             <g:if test="${field.equalsIgnoreCase('subValidOn')}">
