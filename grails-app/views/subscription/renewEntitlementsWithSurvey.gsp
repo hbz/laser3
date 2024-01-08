@@ -254,7 +254,8 @@
 <div id="downloadWrapper"></div>
 
 <br />
-<ui:tabs actionName="${actionName}">
+
+    <ui:tabs actionName="${actionName}">
     <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                     params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'allTipps']"
                     text="${message(code: "renewEntitlementsWithSurvey.selectableTitles")}" tab="allTipps"
@@ -275,7 +276,8 @@
     </g:link>
 </ui:tabs>
 
-<div class="ui bottom attached tab active segment">
+    <div class="ui bottom attached tab active segment">
+    <g:if test="${titlesList || sourceIEs}">
     <g:if test="${(params.tab == 'selectedIEs' && titleGroup)}">
         <ui:tabs actionName="${actionName}">
             <ui:tabsItem controller="subscription" action="${actionName}"
@@ -348,31 +350,36 @@
             </g:if>
 
             <div class="eight wide field" style="text-align: right;">
-                <g:if test="${contextOrg.id == surveyConfig.surveyInfo.owner.id}">
-                    <g:link controller="survey" action="evaluationParticipant"
-                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: subscriber.id]"
-                            class="ui button">
-                        <g:message code="surveyInfo.backToSurvey"/>
-                    </g:link>
-                </g:if>
-                <g:else>
-                    <g:link controller="myInstitution" action="surveyInfos"
-                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]"
-                            class="ui button">
-                        <g:message code="surveyInfo.backToSurvey"/>
-                    </g:link>
-                </g:else>
+                <button class="ui button la-js-closeAll-showMore right floated">${message(code: "accordion.button.closeAll")}</button>
             </div>
         </div>
     </div>
 
 </g:form>
+</g:if>
 
 </div>
-<g:if test="${sourceIEs || titlesList}">
+
+    <div class="ui clearing segment la-segmentNotVisable ">
+        <g:if test="${contextOrg.id == surveyConfig.surveyInfo.owner.id}">
+            <g:link controller="survey" action="evaluationParticipant"
+                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: subscriber.id]"
+                    class="ui button right floated">
+                <g:message code="surveyInfo.backToSurvey"/>
+            </g:link>
+        </g:if>
+        <g:else>
+            <g:link controller="myInstitution" action="surveyInfos"
+                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]"
+                    class="ui button right floated">
+                <g:message code="surveyInfo.backToSurvey"/>
+            </g:link>
+        </g:else>
+    </div>
+
     <ui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params + [pagination: true]}"
                     max="${max}" total="${num_rows}"/>
-</g:if>
+
 
 <laser:render template="export/exportUsageForSurvey" />
 
