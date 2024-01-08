@@ -1873,7 +1873,7 @@ class SurveyService {
             //sql bridge
             Sql sql = GlobalService.obtainSqlConnection()
             BigDecimal sumListPrice = sql.rows("select sum(pi.pi_list_price) as sum_list_price from (select pi_tipp_fk, pi_list_price, row_number() over (partition by pi_tipp_fk order by pi_date_created desc) as rn, count(*) over (partition by pi_tipp_fk) as cn from price_item where pi_list_price is not null and pi_list_currency_rv_fk = :currency and pi_tipp_fk in (select ie_tipp_fk from issue_entitlement join issue_entitlement_group_item on ie_id = igi_ie_fk where igi_ie_group_fk = :ieGroup and ie_status_rv_fk <> :status)) as pi where pi.rn = 1", [ieGroup: issueEntitlementGroup.id, currency: currency.id, status: RDStore.TIPP_STATUS_REMOVED.id])[0]['sum_list_price']
-            sumListPrice
+            sumListPrice ?: 0.0
             /*
             BigDecimal sumListPrice = issueEntitlementGroup ?
                     IssueEntitlementGroupItem.executeQuery("select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency and p.tipp in (select igi.ie.tipp from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup and igi.ie.status != :status)",
