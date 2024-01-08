@@ -161,9 +161,6 @@ class Task {
         else if (surveyConfig) {
             name = surveyConfig.surveyInfo.name
         }
-        else {
-            name = ''
-        }
         name
     }
 }
