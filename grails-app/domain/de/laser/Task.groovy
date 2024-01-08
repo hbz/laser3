@@ -143,4 +143,24 @@ class Task {
         }
         displayArgs
     }
+
+    String getObjectName() {
+        String name = ''
+        if (license) {
+            name = license.reference
+        }
+        else if (org) {
+            name = org.name
+        }
+        else if (pkg) {
+            name = pkg.name
+        }
+        else if (subscription) {
+            name = subscription.name
+        }
+        else if (surveyConfig) {
+            name = surveyConfig.surveyInfo.name
+        }
+        name
+    }
 }

@@ -120,7 +120,7 @@ class UserService {
                         log.debug("set legallyObligedBy for ${formalOrg} -> ${contextService.getOrg()}")
                     }
                 }
-                user.getSetting(UserSetting.KEYS.DASHBOARD_TAB, RDStore.US_DASHBOARD_TAB_DUE_DATES)
+                user.getSetting(UserSetting.KEYS.DASHBOARD_TAB, RDStore.US_DASHBOARD_TAB_SURVEYS)
             }
         }
         user

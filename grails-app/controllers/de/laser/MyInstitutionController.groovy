@@ -2190,7 +2190,7 @@ class MyInstitutionController  {
             if(!(newYear in result.surveyYears)){
                 result.surveyYears << newYear
             }
-            params.validOnYear = [newYear]
+            //params.validOnYear = [newYear]
         }
 
         result.propList = PropertyDefinition.findAll( "select sur.type from SurveyResult as sur where sur.participant = :contextOrg order by sur.type.name_de asc", [contextOrg: result.contextOrg]).groupBy {it}.collect {it.key}

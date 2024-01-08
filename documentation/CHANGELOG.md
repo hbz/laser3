@@ -9,7 +9,21 @@
 
 5498    05.01.2024  dev     3.3.4(+)    David   Bug         /survey/surveyTitles: Fehler wenn man auf andere Seiten klickt
 
+5492    05.01.2024  rc-3.3  3.3.3       Moe     Bug         Mein Lizenz-Monitor Filter
+
+5487    05.01.2024  rc-3.3  3.3.3       Moe     Bug         Umfrageteilnehmer Reiter
+
+5486    05.01.2024  rc-3.3  3.3.3       Moe     Bug         Titelumfrage: Teilnahme-Merkmal rein
+
+5499    05.01.2024  rc-3.3  3.3.3       Moe     Bug         fehlende Info der Mail von Fällige Termine
+
 5457    04.01.2024  dev     3.3.4(+)    David   Bug         Eintragung Schlüsselpaar im Statistikreiter
+
+--      04.01.2024  rc-3.3  3.3.3       Moe     Bug         Bugfix Umfrage
+
+5497    04.01.2024  rc-3.3  3.3.3       Moe     Bug         Neue User Dashboard Reiter auf Umfrage umstellen
+
+5496    04.01.2024  rc-3.3  3.3.3       Moe     Bug         Umfrage fallen weg
 
 5489    03.01.2024  rc-3.3  3.3.3       David   Bug         Alle Pakete: Filter Kuratorengruppentyp liefert keine Ergebnisse
 
