@@ -4197,15 +4197,6 @@ join sub.orgRelations or_sub where
 
         //params.remove('filterPropDef')
 
-        //Set<Subscription> validSubChildren = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent order by oo.org.sortname asc",[parent:result.parentSub])
-        /*Sortieren
-        result.validSubChilds = validSubChilds.sort { Subscription a, Subscription b ->
-            def sa = a.getSubscriber()
-            def sb = b.getSubscriber()
-            (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
-        }*/
-        //result.validSubChilds = validSubChildren
-
         if(propDef) {
             result.putAll(propertyService.getAvailableProperties(propDef, result.institution, params))
             result.countObjWithoutProp = result.withoutProp.size()
@@ -4221,26 +4212,6 @@ join sub.orgRelations or_sub where
             result.filterPropDef = propDef
         }
 
-        /*
-        def oldID = params.id
-        params.id = result.parentSub.id
-
-        ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
-        result.filteredSubChilds = new ArrayList<Subscription>()
-        result.validSubChilds.each { Subscription sub ->
-            List<Org> subscr = sub.getAllSubscribers()
-            def filteredSubscr = []
-            subscr.each { Org subOrg ->
-                if (filteredOrgIds.contains(subOrg.id)) {
-                    filteredSubscr << subOrg
-                }
-            }
-            if (filteredSubscr) {
-                result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
-            }
-        }
-
-        params.id = oldID*/
         //prepare next pagination
         params.withoutPropOffset = result.withoutPropOffset
         params.withPropOffset = result.withPropOffset
