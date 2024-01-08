@@ -405,7 +405,7 @@ class AjaxJsonController {
         if (params.oid != "undefined") {
             PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(params.oid)
             if (propDef) {
-                List<AbstractPropertyWithCalculatedLastUpdated> values
+                List<AbstractPropertyWithCalculatedLastUpdated> values = []
                 if (propDef.tenant) {
                     switch (propDef.descr) {
                         case PropertyDefinition.SUB_PROP: values = SubscriptionProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.getOrg(),false)
