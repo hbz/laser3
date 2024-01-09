@@ -505,15 +505,15 @@ class FinanceService {
         }
         NumberFormat format = NumberFormat.getInstance( userInputLocale )
         //row 1
-        Double costBillingCurrency = params.newCostInBillingCurrency ? format.parse(params.newCostInBillingCurrency).doubleValue() : 0.0 //0.00
+        Double costBillingCurrency = params.newCostInBillingCurrency ? format.parse(params.newCostInBillingCurrency).doubleValue() : null //0.00
         RefdataValue billingCurrency = RefdataValue.get(params.long('newCostCurrency')) //billingCurrency should be not null
         //value is transient
         Double costBillingCurrencyAfterTax = params.newCostInBillingCurrencyAfterTax ? format.parse(params.newCostInBillingCurrencyAfterTax).doubleValue() : costBillingCurrency
         //row 2
-        Double currencyRate = params.newCostCurrencyRate ? format.parse(params.newCostCurrencyRate) : 1.0 //1.00
+        Double currencyRate = params.newCostCurrencyRate ? format.parse(params.newCostCurrencyRate) : 0.0 //1.00
         CostItem.TAX_TYPES taxKey = setTaxKey(params.newTaxRate)
         //row 3
-        Double costLocalCurrency = params.newCostInLocalCurrency ? format.parse(params.newCostInLocalCurrency).doubleValue() : 0.0 //0.00
+        Double costLocalCurrency = params.newCostInLocalCurrency ? format.parse(params.newCostInLocalCurrency).doubleValue() : null //0.00
         //value is transient
         Double costLocalCurrencyAfterTax = params.newCostInLocalCurrencyAfterTax ? format.parse(params.newCostInLocalCurrencyAfterTax).doubleValue() : costLocalCurrency
         //block footer
