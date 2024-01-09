@@ -1181,10 +1181,37 @@ class SurveyController {
                             Subscription orgSub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(surveyCostItem.surveyOrg.org)
                             CostItem costItem = CostItem.findBySubAndOwnerAndCostItemStatusNotEqualAndCostItemElement(orgSub, surveyCostItem.owner, RDStore.COST_ITEM_DELETED, RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE)
                             surveyCostItem.costInBillingCurrency = costItem ? (costItem.costInBillingCurrency * (1 + (percentOnOldPrice / 100))).round(2) : surveyCostItem.costInBillingCurrency
+
+                            int taxRate = 0 //fallback
+                            if(surveyCostItem.taxKey)
+                                taxRate = surveyCostItem.taxKey.taxRate
+
+                            surveyCostItem.costInBillingCurrencyAfterTax = surveyCostItem.costInBillingCurrency ? surveyCostItem.costInBillingCurrency * (1.0 + (0.01 * taxRate)) : surveyCostItem.costInBillingCurrency
+
+                            if (surveyCostItem.billingSumRounding) {
+                                surveyCostItem.costInBillingCurrency = surveyCostItem.costInBillingCurrency ? Math.round(surveyCostItem.costInBillingCurrency) : surveyCostItem.costInBillingCurrency
+                            }
+                            if (surveyCostItem.finalCostRounding) {
+                                surveyCostItem.costInBillingCurrencyAfterTax = surveyCostItem.costInBillingCurrencyAfterTax ? Math.round(surveyCostItem.costInBillingCurrencyAfterTax) : surveyCostItem.costInBillingCurrencyAfterTax
+                            }
+
                         }
                         else if (params.percentOnSurveyPrice) {
                             Double percentOnSurveyPrice = params.double('percentOnSurveyPrice', 0.00)
                             surveyCostItem.costInBillingCurrency = percentOnSurveyPrice ? (surveyCostItem.costInBillingCurrency * (1 + (percentOnSurveyPrice / 100))).round(2) : surveyCostItem.costInBillingCurrency
+
+                            int taxRate = 0 //fallback
+                            if(surveyCostItem.taxKey)
+                                taxRate = surveyCostItem.taxKey.taxRate
+
+                            surveyCostItem.costInBillingCurrencyAfterTax = surveyCostItem.costInBillingCurrency ? surveyCostItem.costInBillingCurrency * (1.0 + (0.01 * taxRate)) : surveyCostItem.costInBillingCurrencyAfterTax
+
+                            if (surveyCostItem.billingSumRounding) {
+                                surveyCostItem.costInBillingCurrency = surveyCostItem.costInBillingCurrency ? Math.round(surveyCostItem.costInBillingCurrency) : surveyCostItem.costInBillingCurrency
+                            }
+                            if (surveyCostItem.finalCostRounding) {
+                                surveyCostItem.costInBillingCurrencyAfterTax = surveyCostItem.costInBillingCurrencyAfterTax ? Math.round(surveyCostItem.costInBillingCurrencyAfterTax) : surveyCostItem.costInBillingCurrencyAfterTax
+                            }
                         }
                         else {
                             surveyCostItem.costInBillingCurrency = cost_billing_currency ?: surveyCostItem.costInBillingCurrency
@@ -1206,7 +1233,7 @@ class SurveyController {
                         //surveyCostItem.costInLocalCurrency = cost_local_currency ?: surveyCostItem.costInLocalCurrency
                         surveyCostItem.billingSumRounding = billingSumRounding != surveyCostItem.billingSumRounding ? billingSumRounding : surveyCostItem.billingSumRounding
                         if(surveyCostItem.billingSumRounding)
-                            surveyCostItem.costInBillingCurrency = Math.round(surveyCostItem.costInBillingCurrency)
+                            surveyCostItem.costInBillingCurrency = surveyCostItem.costInBillingCurrency ? Math.round(surveyCostItem.costInBillingCurrency) : surveyCostItem.costInBillingCurrency
                         surveyCostItem.finalCostRounding = finalCostRounding != surveyCostItem.finalCostRounding ? finalCostRounding : surveyCostItem.finalCostRounding
 
                         //println( params.newFinalCostRounding)
@@ -3759,10 +3786,10 @@ class SurveyController {
             NumberFormat format = NumberFormat.getInstance(LocaleUtils.getCurrentLocale())
             boolean billingSumRounding = params.newBillingSumRounding ? true : false, finalCostRounding = params.newFinalCostRounding ? true : false
             Double cost_billing_currency = params.newCostInBillingCurrency ? format.parse(params.newCostInBillingCurrency).doubleValue() : 0.00
-            Double cost_currency_rate = 1.0
-            if(billing_currency != RDStore.CURRENCY_EUR) {
-                cost_currency_rate = params.newCostCurrencyRate ? params.double('newCostCurrencyRate', 1.00) : 1.00
-            }
+            //Double cost_currency_rate = 1.0
+            //if(billing_currency != RDStore.CURRENCY_EUR) {
+            //    cost_currency_rate = params.newCostCurrencyRate ? params.double('newCostCurrencyRate', 1.00) : 0.00
+            //}
             //def cost_local_currency = params.newCostInLocalCurrency ? format.parse(params.newCostInLocalCurrency).doubleValue() : 0.00
 
             Double cost_billing_currency_after_tax = params.newCostInBillingCurrencyAfterTax ? format.parse(params.newCostInBillingCurrencyAfterTax).doubleValue() : cost_billing_currency
@@ -3770,7 +3797,7 @@ class SurveyController {
                 cost_billing_currency = Math.round(cost_billing_currency)
             if(finalCostRounding)
                 cost_billing_currency_after_tax = Math.round(cost_billing_currency_after_tax)
-            Double cost_local_currency = cost_billing_currency * cost_currency_rate
+            //Double cost_local_currency = cost_billing_currency * cost_currency_rate
             //def cost_local_currency_after_tax = params.newCostInLocalCurrencyAfterTax ? format.parse(params.newCostInLocalCurrencyAfterTax).doubleValue() : cost_local_currency
             //moved to TAX_TYPES
             //def new_tax_rate                      = params.newTaxRate ? params.int( 'newTaxRate' ) : 0
@@ -3865,13 +3892,13 @@ class SurveyController {
                         //newCostItem.taxCode = cost_tax_type -> to taxKey
                         newCostItem.costTitle = params.newCostTitle ?: null
                         newCostItem.costInBillingCurrency = cost_billing_currency as Double
-                        newCostItem.costInLocalCurrency = cost_local_currency as Double
+                        //newCostItem.costInLocalCurrency = cost_local_currency as Double
 
                         newCostItem.billingSumRounding = billingSumRounding
                         newCostItem.finalCostRounding = finalCostRounding
                         newCostItem.costInBillingCurrencyAfterTax = cost_billing_currency_after_tax as Double
                         //newCostItem.costInLocalCurrencyAfterTax = cost_local_currency_after_tax as Double calculated on the fly
-                        newCostItem.currencyRate = cost_currency_rate as Double
+                        //newCostItem.currencyRate = cost_currency_rate as Double
                         //newCostItem.taxRate = new_tax_rate as Integer -> to taxKey
                         newCostItem.taxKey = tax_key
                         newCostItem.costItemElementConfiguration = cost_item_element_configuration
@@ -4215,10 +4242,32 @@ class SurveyController {
                     copyCostItem.surveyOrg = null
                     copyCostItem.isVisibleForSubscriber = params.isVisibleForSubscriber ? true : false
                     copyCostItem.sub = participantSub
-                    if(costItem.billingCurrency == RDStore.CURRENCY_EUR){
+
+                    int taxRate = 0 //fallback
+                    if(copyCostItem.taxKey)
+                        taxRate = copyCostItem.taxKey.taxRate
+
+                    if(copyCostItem.billingCurrency == RDStore.CURRENCY_EUR){
                         copyCostItem.currencyRate = 1.0
-                        copyCostItem.costInLocalCurrency = costItem.costInBillingCurrency
+                        copyCostItem.costInLocalCurrency = copyCostItem.costInBillingCurrency
+                        copyCostItem.costInLocalCurrencyAfterTax = copyCostItem.costInLocalCurrency ? copyCostItem.costInLocalCurrency * (1.0 + (0.01 * taxRate)) : null
+                        copyCostItem.costInBillingCurrencyAfterTax = copyCostItem.costInBillingCurrency ? copyCostItem.costInBillingCurrency * (1.0 + (0.01 * taxRate)) : null
+                    }else {
+                        copyCostItem.currencyRate = 0.00
+                        copyCostItem.costInLocalCurrency = null
+                        copyCostItem.costInLocalCurrencyAfterTax = null
+                        copyCostItem.costInBillingCurrencyAfterTax = copyCostItem.costInBillingCurrency ? copyCostItem.costInBillingCurrency * (1.0 + (0.01 * taxRate)) : null
                     }
+
+                    if (copyCostItem.billingSumRounding) {
+                        copyCostItem.costInBillingCurrency = copyCostItem.costInBillingCurrency ? Math.round(copyCostItem.costInBillingCurrency) : null
+                        copyCostItem.costInLocalCurrency = copyCostItem.costInLocalCurrency ? Math.round(copyCostItem.costInLocalCurrency) : null
+                    }
+                    if (copyCostItem.finalCostRounding) {
+                        copyCostItem.costInBillingCurrencyAfterTax = copyCostItem.costInBillingCurrencyAfterTax ? Math.round(copyCostItem.costInBillingCurrencyAfterTax) : null
+                        copyCostItem.costInLocalCurrencyAfterTax = copyCostItem.costInLocalCurrencyAfterTax ? Math.round(copyCostItem.costInLocalCurrencyAfterTax) : null
+                    }
+
                     Org org = participantSub.getSubscriber()
                     SurveyResult surveyResult = org ? SurveyResult.findBySurveyConfigAndParticipantAndTypeAndStringValueIsNotNull(result.surveyConfig, org, PropertyStore.SURVEY_PROPERTY_ORDER_NUMBER) : null
 
@@ -4331,9 +4380,30 @@ class SurveyController {
                     copyCostItem.surveyOrg = null
                     copyCostItem.isVisibleForSubscriber = params.isVisibleForSubscriber ? true : false
                     copyCostItem.sub = participantSub
-                    if(costItem.billingCurrency == RDStore.CURRENCY_EUR){
+
+                    int taxRate = 0 //fallback
+                    if(copyCostItem.taxKey)
+                        taxRate = copyCostItem.taxKey.taxRate
+
+                    if(copyCostItem.billingCurrency == RDStore.CURRENCY_EUR){
                         copyCostItem.currencyRate = 1.0
-                        copyCostItem.costInLocalCurrency = costItem.costInBillingCurrency
+                        copyCostItem.costInLocalCurrency = copyCostItem.costInBillingCurrency
+                        copyCostItem.costInLocalCurrencyAfterTax = copyCostItem.costInLocalCurrency ? copyCostItem.costInLocalCurrency * (1.0 + (0.01 * taxRate)) : null
+                        copyCostItem.costInBillingCurrencyAfterTax = copyCostItem.costInBillingCurrency ? copyCostItem.costInBillingCurrency * (1.0 + (0.01 * taxRate)) : null
+                    }else {
+                        copyCostItem.currencyRate = 0.00
+                        copyCostItem.costInLocalCurrency = null
+                        copyCostItem.costInLocalCurrencyAfterTax = null
+                        copyCostItem.costInBillingCurrencyAfterTax = copyCostItem.costInBillingCurrency ? copyCostItem.costInBillingCurrency * (1.0 + (0.01 * taxRate)) : null
+                    }
+
+                    if (copyCostItem.billingSumRounding) {
+                        copyCostItem.costInBillingCurrency = copyCostItem.costInBillingCurrency ? Math.round(copyCostItem.costInBillingCurrency) : null
+                        copyCostItem.costInLocalCurrency = copyCostItem.costInLocalCurrency ? Math.round(copyCostItem.costInLocalCurrency) : null
+                    }
+                    if (copyCostItem.finalCostRounding) {
+                        copyCostItem.costInBillingCurrencyAfterTax = copyCostItem.costInBillingCurrencyAfterTax ? Math.round(copyCostItem.costInBillingCurrencyAfterTax) : null
+                        copyCostItem.costInLocalCurrencyAfterTax = copyCostItem.costInLocalCurrencyAfterTax ? Math.round(copyCostItem.costInLocalCurrencyAfterTax) : null
                     }
 
                     if(copyCostItem.save()) {
