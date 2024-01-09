@@ -280,7 +280,7 @@ class OrganisationController  {
     })
     def listInstitution() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
-        params.orgType   = RDStore.OT_INSTITUTION.id.toString()
+        params.orgType   = RDStore.OT_INSTITUTION.id
         params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
         if(!params.sort)
             params.sort = " LOWER(o.sortname)"
@@ -388,7 +388,7 @@ class OrganisationController  {
     })
     Map listConsortia() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
-        params.customerType   = Role.findByAuthority('ORG_CONSORTIUM_PRO').id.toString()
+        params.customerType = [Role.findByAuthority('ORG_CONSORTIUM_PRO').id, Role.findByAuthority('ORG_CONSORTIUM_BASIC').id]
         if(!params.sort)
             params.sort = " LOWER(o.sortname)"
         Map<String, Object> fsq = filterService.getOrgQuery(params)

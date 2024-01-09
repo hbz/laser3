@@ -312,3 +312,9 @@ body.survey_copyElementsIntoSurvey nav.tabular .item .content .description
     content: attr(data-placeholder);
     color: #999;
 }
+
+/* customer type hack @ ui:customerTypeProIcon */
+
+.icon.teal.la-list-icon:before {
+    color: #00b5ad;
+}

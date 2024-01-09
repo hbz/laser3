@@ -97,7 +97,7 @@
 
                             def gascoEntry = OrgSetting.get(org, OrgSetting.KEYS.GASCO_ENTRY)
                             if (gascoEntry != OrgSetting.SETTING_NOT_FOUND && gascoEntry.getValue()?.value == 'Yes') {
-                                println ' <i class="icon green layer group"></i>'
+                                println ' <i class="icon blue layer group"></i>'
                                 gascoEntry = gascoEntry.getValue()
                             } else {
                                 gascoEntry = RDStore.YN_NO

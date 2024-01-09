@@ -35,14 +35,11 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('lineNumber')}">
                 <th>${message(code: 'sidewide.number')}</th>
             </g:if>
-
             <g:if test="${tmplConfigItem.equalsIgnoreCase('sortname')}">
-                <g:sortableColumn title="${message(code: 'org.sortname.label')}"
-                                  property="lower(o.sortname)" params="${request.getParameterMap()}"/>
+                <g:sortableColumn title="${message(code: 'org.sortname.label')}" property="lower(o.sortname)" params="${request.getParameterMap()}"/>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
-                <g:sortableColumn title="${message(code: 'org.fullName.label')}" property="lower(o.name)"
-                                  params="${request.getParameterMap()}"/>
+                <g:sortableColumn title="${message(code: 'org.fullName.label')}" property="lower(o.name)" params="${request.getParameterMap()}"/>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('altname')}">
                 <th>${message(code: 'org.altname.label')}</th>
@@ -258,6 +255,7 @@
                 <th scope="row" class="la-th-column la-main-object">
                     <div class="la-flexbox">
                         <ui:customerTypeProIcon org="${org}" cssClass="la-list-icon" />
+
                         <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
                             ${fieldValue(bean: org, field: "name")}
                         </g:if>
