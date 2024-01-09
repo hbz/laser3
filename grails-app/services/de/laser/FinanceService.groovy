@@ -32,7 +32,6 @@ import java.util.regex.Pattern
 @Transactional
 class FinanceService {
 
-    AccessService accessService
     ContextService contextService
     DeletionService deletionService
     EscapeService escapeService
@@ -66,7 +65,7 @@ class FinanceService {
                 if (params.selectedSubs) {
                     subsToDo.clear()
                     if (params.selectedSubs instanceof String)
-                        subsToDo << Subscription.get(Long.parseLong(params.selectedSubs))
+                        subsToDo << Subscription.get(params.long('selectedSubs'))
                     else if (params.selectedSubs instanceof String[]) {
                         params.selectedSubs.each { selectedSubs ->
                             subsToDo <<  Subscription.get(Long.parseLong(selectedSubs))
@@ -122,7 +121,7 @@ class FinanceService {
             subsToDo.each { Subscription sub ->
                 List<CostItem> copiedCostItems = []
                 if(params.costItemId && params.mode != 'copy') {
-                    newCostItem = CostItem.get(Long.parseLong(params.costItemId))
+                    newCostItem = CostItem.get(params.long('costItemId'))
                     //get copied cost items
                     copiedCostItems = CostItem.findAllByCopyBaseAndCostItemStatusNotEqualAndOwnerNotEqualAndSubIsNotNull(newCostItem, RDStore.COST_ITEM_DELETED, result.institution)
                     if(params.newOrderNumber == null || params.newOrderNumber.length() < 1) {
@@ -139,7 +138,7 @@ class FinanceService {
                 else {
                     newCostItem = new CostItem()
                     if(params.mode == 'copy' && sub?._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && sub?.getSubscriber() == result.institution)
-                        newCostItem.copyBase = CostItem.get(Long.parseLong(params.costItemId))
+                        newCostItem.copyBase = CostItem.get(params.long('costItemId'))
                 }
                 newCostItem.owner = (Org) result.institution
                 newCostItem.sub = sub
@@ -487,7 +486,7 @@ class FinanceService {
         RefdataValue costItemElement = params.newCostItemElement ? (RefdataValue.get(params.long('newCostItemElement'))): null    //admin fee, platform, etc
         RefdataValue elementSign
         try {
-            elementSign = RefdataValue.get(Long.parseLong(params.ciec))
+            elementSign = RefdataValue.get(params.long('ciec'))
         }
         catch (Exception ignored) {
             elementSign = null
@@ -862,7 +861,7 @@ class FinanceService {
             //we have to distinct between not existent and present but zero length
             if(params.filterSubStatus) {
                 subFilterQuery += " and sub.status = :filterSubStatus "
-                queryParams.filterSubStatus = RefdataValue.get(Long.parseLong(params.filterSubStatus))
+                queryParams.filterSubStatus = RefdataValue.get(params.long('filterSubStatus'))
             }
             //!params.filterSubStatus is insufficient because it checks also the presence of a value - but the absence of a value is a valid setting (= all status except deleted; that is captured by the genericExcludes field)
             else if(!params.subscription && !params.sub && !params.id && !params.containsKey('filterSubStatus')) {

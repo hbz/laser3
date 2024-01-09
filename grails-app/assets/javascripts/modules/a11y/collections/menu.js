@@ -37,6 +37,7 @@ a11yMenu = {
             },
             selectOnKeydown        : false,
             on: 'hover',
+            allowTab: false,
             onHide         : function() {
                 $(this).attr("aria-expanded", "false"); // a11y
             },

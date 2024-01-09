@@ -570,7 +570,7 @@ r2d2 = {
         //tooltip
         tooltip.init(ctxSel);
 
-        $(ctxSel + " a[href], " + ctxSel + " input.js-wait-wheel").not("a[href^='#'], a[href*='ajax'], a[target='_blank'], .js-open-confirm-modal, a[data-tab], a[data-content], a.la-ctrls , .close, .js-no-wait-wheel, .trigger-modal").click(function() {
+        $(ctxSel + " a[href], " + ctxSel + " input.js-wait-wheel").not("a[href^='#'], a[href*='ajax'], a[target='_blank'], .js-open-confirm-modal, a[data-tab], a[data-content], .close, .js-no-wait-wheel, .trigger-modal").click(function() {
             $('html').css('cursor', 'wait');
         });
 
@@ -639,7 +639,20 @@ r2d2 = {
 
         // accordions
 
-        $(ctxSel + ' .ui.accordion').accordion();
+        $(ctxSel + ' .ui.accordion').not('.la-accordion-showMore').accordion();
+
+        $(ctxSel + ' .la-accordion-showMore').accordion({
+                exclusive: false
+            }
+        );
+        $('.la-js-closeAll-showMore').on('click', function () {
+            $('.accordion.la-accordion-showMore .la-accordion-segments .segment.content').each(function (i, e) {
+                if ($(e).hasClass("active")) {
+                    $('.la-accordion-showMore').accordion("close", i);
+                }
+            });
+        });
+
 
         $(ctxSel + ' .ui.la-metabox.accordion').accordion({
 
@@ -824,6 +837,9 @@ r2d2 = {
                         break;
                     case "unlink":
                         $jscb.html(JSPC.dict.get('confirm.dialog.unlink', JSPC.config.language) + '<i aria-hidden="true" class="la-chain broken icon"></i>');
+                        break;
+                    case "unset":
+                        $jscb.html(JSPC.dict.get('confirm.dialog.unset', JSPC.config.language) + '<i aria-hidden="true" class="eraser icon"></i>');
                         break;
                     case "share":
                         $jscb.html(JSPC.dict.get('confirm.dialog.share', JSPC.config.language) + '<i aria-hidden="true" class="la-share icon"></i>');

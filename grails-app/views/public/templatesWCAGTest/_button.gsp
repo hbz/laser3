@@ -51,7 +51,7 @@
                         class="ui icon mini button la-audit-button la-audit-button la-popup-tooltip la-delay meinToggleButton"
                         params="['toggle': params.toggle=='true'?false:true]"
                     >
-                        <i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash "></i>
+                        <i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash"></i>
 
                     </g:link>
 
@@ -107,7 +107,7 @@
                             aria-labelledby="wcag_mlbbjc4mb"
                             params="['toggle': params.toggle=='true'?false:true]"
                     >
-                        <i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash "></i>
+                        <i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash"></i>
 
                     </g:link>
 

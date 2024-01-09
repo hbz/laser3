@@ -39,7 +39,7 @@
                                     <ui:multiYearIcon />
                                 </th>
                                 <th>${message(code: 'default.status.label')}</th>
-                                <th class=" center aligned">
+                                <th class="center aligned">
                                     <input type="checkbox" data-action="copy" onClick="JSPC.app.toggleAllCheckboxes(this)" checked/>
                                 </th>
                             </tr>
@@ -61,7 +61,7 @@
                                             </g:if>
                                         </td>
                                         <td>${sub.status.getI10n('value')}</td>
-                                        <td class=" center aligned">
+                                        <td class="center aligned">
                                             <g:set var="orgInSurveyRenewal" value="${sub.isOrgInSurveyRenewal()}"/>
                                             <g:if test="${!orgInSurveyRenewal}">
                                                 <div class="ui checkbox la-toggle-radio la-replace">

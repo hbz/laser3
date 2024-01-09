@@ -21,10 +21,8 @@
                                         <g:link controller="survey" action="show"
                                                 id="${surveyLink.targetSurvey.id}">${surveyLink.targetSurvey.name}</g:link>
 
-                                        (<b><g:message
-                                            code="default.type.label"/></b>: ${surveyLink.targetSurvey.type.getI10n('value')},
-                                        <b><g:message
-                                                code="default.status.label"/></b>: ${surveyLink.targetSurvey.status.getI10n('value')})
+                                        (<strong><g:message code="default.type.label"/></strong>: ${surveyLink.targetSurvey.type.getI10n('value')},
+                                        <strong><g:message code="default.status.label"/></strong>: ${surveyLink.targetSurvey.status.getI10n('value')})
                                     </td>
                                     <td>
                                         <g:if test="${surveyLink.targetSurvey.startDate}"><g:formatDate

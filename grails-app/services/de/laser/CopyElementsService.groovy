@@ -520,7 +520,7 @@ class CopyElementsService {
      * @param params the request parameters
      * @return the source and target objects for the next copy step
      */
-    Map copyObjectElements_DatesOwnerRelations(Map params) {
+    Map copyObjectElements_DatesOwnerRelations(GrailsParameterMap params) {
         Map<String, Object> result = [:]
         FlashScope flash = getCurrentFlashScope()
 
@@ -631,7 +631,7 @@ class CopyElementsService {
      * @param params the request parameters
      * @return the source and target objects for the next copy step
      */
-    Map copyObjectElements_DocsTasksWorkflows(Map params) {
+    Map copyObjectElements_DocsTasksWorkflows(GrailsParameterMap params) {
         Map<String, Object> result = [:]
         FlashScope flash = getCurrentFlashScope()
 
@@ -710,7 +710,7 @@ class CopyElementsService {
     }
 
     @Deprecated
-    Map copyObjectElements_Identifiers(Map params) {
+    Map copyObjectElements_Identifiers(GrailsParameterMap params) {
         Map<String, Object> result = [:]
         FlashScope flash = getCurrentFlashScope()
 
@@ -750,7 +750,7 @@ class CopyElementsService {
      * @param params the request parameters
      * @return the source and target objects for the next copy step
      */
-    Map copyObjectElements_Subscriber(Map params) {
+    Map copyObjectElements_Subscriber(GrailsParameterMap params) {
         Map<String, Object> result = [:]
         FlashScope flash = getCurrentFlashScope()
 
@@ -794,7 +794,7 @@ class CopyElementsService {
      * @param params the request parameters
      * @return the source and target objects for the next copy step
      */
-    Map copyObjectElements_Properties(Map params) {
+    Map copyObjectElements_Properties(GrailsParameterMap params) {
         LinkedHashMap result = [:]
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         boolean isRenewSub = params.isRenewSub ? true : false
@@ -843,7 +843,7 @@ class CopyElementsService {
      * @param params the request parameters
      * @return the source and target objects for the next copy step
      */
-    Map copyObjectElements_PackagesEntitlements(Map params) {
+    Map copyObjectElements_PackagesEntitlements(GrailsParameterMap params) {
         Map<String, Object> result = [:]
         FlashScope flash = getCurrentFlashScope()
         long userId = contextService.getUser().id

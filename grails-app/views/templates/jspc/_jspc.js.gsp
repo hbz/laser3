@@ -73,6 +73,7 @@ JSPC = {
             'confirm.dialog.ok',
             'confirm.dialog.share',
             'confirm.dialog.unlink',
+            'confirm.dialog.unset',
             'copied',
             'default.actions.label',
             'default.informations',

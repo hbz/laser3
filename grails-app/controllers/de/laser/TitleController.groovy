@@ -3,6 +3,7 @@ package de.laser
 import de.laser.annotations.DebugInfo
 import de.laser.auth.User
 import de.laser.cache.EhcacheWrapper
+import de.laser.helper.FilterLogic
 import de.laser.storage.RDStore
 import de.laser.utils.SwissKnife
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -61,37 +62,9 @@ class TitleController  {
         result.user = contextService.getUser()
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        if(params.tab){
-            if(params.tab == 'currentTipps'){
-                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-            }else if(params.tab == 'plannedTipps'){
-                params.status = [RDStore.TIPP_STATUS_EXPECTED.id.toString()]
-            }else if(params.tab == 'expiredTipps'){
-                params.status = [RDStore.TIPP_STATUS_RETIRED.id.toString()]
-            }else if(params.tab == 'deletedTipps'){
-                params.status = [RDStore.TIPP_STATUS_DELETED.id.toString()]
-            }else if(params.tab == 'allTipps'){
-                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_EXPECTED.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString(), RDStore.TIPP_STATUS_DELETED.id.toString()]
-            }
-        }
-        else if(params.list('status').size() == 1) {
-            if(params.list('status')[0] == RDStore.TIPP_STATUS_CURRENT.id.toString()){
-                params.tab = 'currentTipps'
-            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_RETIRED.id.toString()){
-                params.tab = 'expiredTipps'
-            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_EXPECTED.id.toString()){
-                params.tab = 'plannedTipps'
-            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_DELETED.id.toString()){
-                params.tab = 'deletedTipps'
-            }
-        }else{
-            if(params.list('status').size() > 1){
-                params.tab = 'allTipps'
-            }else {
-                params.tab = 'currentTipps'
-                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-            }
-        }
+        Map ttParams = FilterLogic.resolveParamsForTopAttachedTitleTabs(params, 'Tipps')
+        if (ttParams.status) { params.status = ttParams.status }
+        if (ttParams.tab)    { params.tab = ttParams.tab }
 
         Map<String, Object> query = filterService.getTippQuery(params, [])
         result.filterSet = query.filterSet

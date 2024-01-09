@@ -35,14 +35,11 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('lineNumber')}">
                 <th>${message(code: 'sidewide.number')}</th>
             </g:if>
-
             <g:if test="${tmplConfigItem.equalsIgnoreCase('sortname')}">
-                <g:sortableColumn title="${message(code: 'org.sortname.label')}"
-                                  property="lower(o.sortname)" params="${request.getParameterMap()}"/>
+                <g:sortableColumn title="${message(code: 'org.sortname.label')}" property="lower(o.sortname)" params="${request.getParameterMap()}"/>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
-                <g:sortableColumn title="${message(code: 'org.fullName.label')}" property="lower(o.name)"
-                                  params="${request.getParameterMap()}"/>
+                <g:sortableColumn title="${message(code: 'org.fullName.label')}" property="lower(o.name)" params="${request.getParameterMap()}"/>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('altname')}">
                 <th>${message(code: 'org.altname.label')}</th>
@@ -258,6 +255,7 @@
                 <th scope="row" class="la-th-column la-main-object">
                     <div class="la-flexbox">
                         <ui:customerTypeProIcon org="${org}" cssClass="la-list-icon" />
+
                         <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
                             ${fieldValue(bean: org, field: "name")}
                         </g:if>
@@ -313,16 +311,6 @@
                     <g:each in="${PersonRole.findAllByFunctionTypeAndOrg(RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, org)}"
                             var="personRole">
                         <g:if test="${personRole.prs.isPublic || (!personRole.prs.isPublic && personRole.prs.tenant?.id == contextService.getOrg().id)}">
-                                <%--
-                                <g:if test="${! personRole.prs.isPublic}">
-                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
-                                        <i class="address card outline icon"></i>
-                                    </span>
-                                </g:if>
-                                <g:else>
-                                    <i class="address card icon"></i>
-                                </g:else>
-                                --%>
                                 ${personRole.getPrs()?.getFirst_name()} ${personRole.getPrs()?.getLast_name()} <br />
 
                                 <g:each in="${Contact.findAllByPrsAndContentType(
@@ -520,18 +508,6 @@
                                 <g:set var="ol" value="${ol+1}"/>
                             </g:if>
                         </g:if>
-                    <%--
-                    <g:if test="${pl?.functionType?.value && (! pl.prs.isPublic) && pl?.prs?.tenant?.id == contextService.getOrg().id}">
-                        <laser:render template="/templates/cpa/person_details" model="${[
-                                personRole          : pl,
-                                tmplShowDeleteButton: false,
-                                tmplConfigShow      : ['E-Mail', 'Mail', 'Phone'],
-                                controller          : 'organisation',
-                                action              : 'show',
-                                id                  : org.id
-                        ]}"/>
-                    </g:if>
-                    --%>
                     </g:each>
                 </td>
             </g:if>
@@ -760,20 +736,11 @@
                         <g:if test="${orgSub.isCurrentMultiYearSubscriptionNew()}">
                             <g:message code="surveyOrg.perennialTerm.available"/>
                             <br />
-                            <g:link controller="subscription" action="show"
-                                    id="${orgSub.id}">
-                                ${orgSub.name}
-                            </g:link>
                         </g:if>
-                        <g:else>
-                            <g:link controller="subscription" action="show"
-                                    id="${orgSub.id}">
-                                ${orgSub.name}
-                            </g:link>
-                        </g:else>
+
+                        <g:link controller="subscription" action="show" id="${orgSub.id}">${orgSub.name}</g:link>
 
                         <ui:xEditableAsIcon owner="${orgSub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea" overwriteEditable="${false}"/>
-
                     </g:if>
                 </td>
             </g:if>
@@ -783,26 +750,14 @@
                         <g:if test="${orgSub.isCurrentMultiYearSubscriptionNew()}">
                             <g:message code="surveyOrg.perennialTerm.available"/>
                             <br />
-                            <g:link controller="subscription" action="show"
-                                    id="${orgSub.id}">
-                                <g:formatDate formatName="default.date.format.notime"
-                                              date="${orgSub.startDate}"/><br />
-                                <g:formatDate formatName="default.date.format.notime"
-                                              date="${orgSub.endDate}"/>
-                            </g:link>
                         </g:if>
-                        <g:else>
-                            <g:link controller="subscription" action="show"
-                                    id="${orgSub.id}">
-                                <g:formatDate formatName="default.date.format.notime"
-                                              date="${orgSub.startDate}"/><br />
-                                <g:formatDate formatName="default.date.format.notime"
-                                              date="${orgSub.endDate}"/>
-                            </g:link>
-                        </g:else>
+
+                        <g:link controller="subscription" action="show" id="${orgSub.id}">
+                            <g:formatDate formatName="default.date.format.notime" date="${orgSub.startDate}"/><br />
+                            <g:formatDate formatName="default.date.format.notime" date="${orgSub.endDate}"/>
+                        </g:link>
 
                         <ui:xEditableAsIcon owner="${orgSub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea" overwriteEditable="${false}"/>
-
                     </g:if>
                 </td>
             </g:if>
@@ -812,18 +767,9 @@
                         <g:if test="${orgSub.isCurrentMultiYearSubscriptionNew()}">
                             <g:message code="surveyOrg.perennialTerm.available"/>
                             <br />
-                            <g:link controller="subscription" action="show"
-                                    id="${orgSub.id}">
-                                ${orgSub.status.getI10n('value')}
-                            </g:link>
                         </g:if>
-                        <g:else>
-                            <g:link controller="subscription" action="show"
-                                    id="${orgSub.id}">
-                                ${orgSub.status.getI10n('value')}
-                            </g:link>
-                        </g:else>
 
+                        <g:link controller="subscription" action="show" id="${orgSub.id}">${orgSub.status.getI10n('value')}</g:link>
                     </g:if>
                 </td>
             </g:if>

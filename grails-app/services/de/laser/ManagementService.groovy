@@ -6,6 +6,7 @@ import de.laser.ctrl.SubscriptionControllerService
 import de.laser.finance.CostItem
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
+import de.laser.helper.Params
 import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.ShareSupport
 import de.laser.utils.AppUtils
@@ -1012,7 +1013,7 @@ class ManagementService {
             }
             else {
                 if(params.selectedSubscriptionIds) {
-                    Set<Long> ids = params.selectedSubscriptionIds.split(',').collect { String idKey -> Long.parseLong(idKey) }
+                    List<Long> ids = Params.getLongList_forCommaSeparatedString(params, 'selectedSubscriptionIds')
                     subscriptions = Subscription.findAllByIdInList(ids)
                 }
                 else subscriptions = []

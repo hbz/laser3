@@ -747,13 +747,17 @@ class DeletionService {
      * @return a map returning the information about the user
      */
     Map<String, Object> deleteUser(User user, User replacement, boolean dryRun) {
+        if (!dryRun) {
+            log.debug('deleteUser(' + user.id + ' -> ' + replacement?.id + ') .. called by #' + contextService.getUser().id)
+        }
 
         Map<String, Object> result = [:]
 
         // gathering references
 
-        List userRoles      = new ArrayList(user.roles)
-        List userSettings   = UserSetting.findAllWhere(user: user)
+        List userRoles          = new ArrayList(user.roles)
+        List userSettings       = UserSetting.findAllWhere(user: user)
+        List reportingFilter    = ReportingFilter.findAllByOwner(user)
 
         List ddds = DashboardDueDate.findAllByResponsibleUser(user)
 
@@ -768,6 +772,7 @@ class DeletionService {
         result.info << ['Einstellungen', userSettings]
 
         result.info << ['DashboardDueDate', ddds]
+        result.info << ['Reporting Filter', reportingFilter]
         result.info << ['Aufgaben', tasks, FLAG_SUBSTITUTE]
 
         // checking constraints and/or processing
@@ -805,6 +810,8 @@ class DeletionService {
                     userSettings.each { tmp -> tmp.delete() }
 
                     ddds.each { tmp -> tmp.delete() }
+
+                    reportingFilter.each { tmp -> tmp.delete() }
 
                     tasks.each { tmp ->
                         if (tmp.creator.id == user.id) {

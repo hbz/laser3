@@ -5,7 +5,6 @@ import de.laser.*
 import de.laser.auth.User
 import de.laser.base.AbstractReport
 import de.laser.cache.EhcacheWrapper
-import de.laser.cache.SessionCacheWrapper
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.finance.CostItem
@@ -39,7 +38,6 @@ import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.time.TimeCategory
 import groovy.xml.slurpersupport.GPathResult
-import org.apache.commons.lang3.StringEscapeUtils
 import org.apache.commons.lang3.RandomStringUtils
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -801,17 +799,11 @@ class SubscriptionControllerService {
             }
             if(params.ddcs && params.list("ddcs").size() > 0) {
                 query += " and exists (select ddc.id from title.ddcs ddc where ddc.ddc.id in (:ddcs)) "
-                queryParams.ddcs = []
-                params.list("ddcs").each { String ddc ->
-                    queryParams.ddcs << Long.parseLong(ddc)
-                }
+                queryParams.ddcs = Params.getLongList(params, 'ddcs')
             }
             if(params.languages && params.list("languages").size() > 0) {
                 query += " and exists (select lang.id from title.languages lang where lang.language.id in (:languages)) "
-                queryParams.languages = []
-                params.list("languages").each { String lang ->
-                    queryParams.languages << Long.parseLong(lang)
-                }
+                queryParams.languages = Params.getLongList(params, 'languages')
             }
 
             if (params.filter) {
@@ -823,7 +815,7 @@ class SubscriptionControllerService {
 
             if (params.pkgfilter && (params.pkgfilter != '')) {
                 query += " and title.pkg.id = :pkgId "
-                queryParams.pkgId = Long.parseLong(params.pkgfilter)
+                queryParams.pkgId = params.long('pkgfilter')
             }
 
             if(params.summaryOfContent) {
@@ -1512,8 +1504,8 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            Subscription memberSub = Subscription.get(Long.parseLong(params.memberSubID))
-            Org org = Org.get(Long.parseLong(params.memberOrg))
+            Subscription memberSub = Subscription.get(params.long('memberSubID'))
+            Org org = Org.get(params.long('memberOrg'))
             Subscription prevMemberSub = (result.navPrevSubscription.size() > 0) ? result.navPrevSubscription[0].getDerivedSubscriptionBySubscribers(org) : null
             Subscription nextMemberSub = (result.navNextSubscription.size() > 0) ? result.navNextSubscription[0].getDerivedSubscriptionBySubscribers(org) : null
             try {
@@ -1796,7 +1788,7 @@ class SubscriptionControllerService {
                                 params.currentIEs = 'currentIEs'
                                 params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
                         }
-                        result.listOfStatus = params.status.collect{ it instanceof String ?  RefdataValue.get(Long.parseLong(it)) : RefdataValue.get(it) }
+                        result.listOfStatus = Params.getRefdataList(params, 'status')
 
                         params.titleGroup = result.titleGroupID
                         Map query = filterService.getIssueEntitlementQuery(params, subscriberSub)
@@ -2260,39 +2252,9 @@ class SubscriptionControllerService {
 
             //params.status = params.status ?: (result.subscription.hasPerpetualAccess ? [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString()] : [RDStore.TIPP_STATUS_CURRENT.id.toString()])
 
-            if(params.tab){
-                if(params.tab == 'currentIEs'){
-                    params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-                }else if(params.tab == 'plannedIEs'){
-                    params.status = [RDStore.TIPP_STATUS_EXPECTED.id.toString()]
-                }else if(params.tab == 'expiredIEs'){
-                    params.status = [RDStore.TIPP_STATUS_RETIRED.id.toString()]
-                }else if(params.tab == 'deletedIEs'){
-                    params.status = [RDStore.TIPP_STATUS_DELETED.id.toString()]
-                }else if(params.tab == 'allIEs'){
-                    params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_EXPECTED.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString(), RDStore.TIPP_STATUS_DELETED.id.toString()]
-                }
-            }
-            else if(params.list('status').size() == 1) {
-                if(params.list('status')[0] == RDStore.TIPP_STATUS_CURRENT.id.toString()){
-                    params.tab = 'currentIEs'
-                }else if(params.list('status')[0] == RDStore.TIPP_STATUS_RETIRED.id.toString()){
-                    params.tab = 'expiredIEs'
-                }else if(params.list('status')[0] == RDStore.TIPP_STATUS_EXPECTED.id.toString()){
-                    params.tab = 'plannedIEs'
-                }else if(params.list('status')[0] == RDStore.TIPP_STATUS_DELETED.id.toString()){
-                    params.tab = 'deletedIEs'
-                }
-            }else{
-                if(params.list('status').size() > 1){
-                    params.tab = 'allIEs'
-                }else {
-                    params.tab = 'currentIEs'
-                    params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-                }
-            }
-
-
+            Map ttParams = FilterLogic.resolveParamsForTopAttachedTitleTabs(params, 'IEs')
+            if (ttParams.status) { params.status = ttParams.status }
+            if (ttParams.tab)    { params.tab = ttParams.tab }
 
             Map query = filterService.getIssueEntitlementQuery(params, result.subscription)
             result.filterSet = query.filterSet
@@ -2747,7 +2709,7 @@ class SubscriptionControllerService {
                             }
 
                             if (params.issueEntitlementGroupID && params.issueEntitlementGroupID != '') {
-                                issueEntitlementGroup = IssueEntitlementGroup.findById(Long.parseLong(params.issueEntitlementGroupID))
+                                issueEntitlementGroup = IssueEntitlementGroup.findById(params.long('issueEntitlementGroupID'))
                             }
 
                             if (issueEntitlementGroup) {
@@ -3327,7 +3289,7 @@ class SubscriptionControllerService {
                         break
                     case 'removeDiscountScale':
                         if(params.discountScaleId){
-                            SubscriptionDiscountScale sbs = SubscriptionDiscountScale.findById(Long.parseLong(params.discountScaleId))
+                            SubscriptionDiscountScale sbs = SubscriptionDiscountScale.findById(params.long('discountScaleId'))
                             if(sbs) {
                                 sbs.delete()
                             }
@@ -3357,9 +3319,9 @@ class SubscriptionControllerService {
             if (result.editable) {
 
                 if(params.processCopyButton == 'yes') {
-                    result.copyDiscountScales = params.copyDiscountScale ? SubscriptionDiscountScale.findAllByIdInList(params.list('copyDiscountScale').collect { it -> Long.parseLong(it) }) : null
+                    result.copyDiscountScales = params.copyDiscountScale ? SubscriptionDiscountScale.findAllByIdInList(Params.getLongList(params, 'copyDiscountScale')) : null
                     if (result.copyDiscountScales) {
-                        result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList(params.list('targetSubs').collect { it -> Long.parseLong(it) }) : null
+                        result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList(Params.getLongList(params, 'targetSubs')) : null
 
                         if (result.targetSubs) {
                             result.targetSubs.each { Subscription sub ->

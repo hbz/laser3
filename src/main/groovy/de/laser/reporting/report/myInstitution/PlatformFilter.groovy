@@ -1,6 +1,7 @@
 package de.laser.reporting.report.myInstitution
 
 import de.laser.*
+import de.laser.helper.Params
 import de.laser.storage.BeanStore
 import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
@@ -113,7 +114,7 @@ class PlatformFilter extends BaseFilter {
                 // --> custom implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
                     if (p == 'org') {
-                        Long[] pList = params.list(key).collect{ Long.parseLong(it) }
+                        Long[] pList = Params.getLongList(params, key)
 
                         whereParts.add( 'plt.org.id in (:p' + (++pCount) + ')')
                         queryParams.put( 'p' + pCount, pList )
@@ -152,7 +153,7 @@ class PlatformFilter extends BaseFilter {
                         filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
                     else if (p == 'subscriptionStatus') {
-                        Long[] pList = params.list(key).collect{ Long.parseLong(it) }
+                        Long[] pList = Params.getLongList(params, key)
 
                         queryParts.add('Subscription sub')
                         whereParts.add('sub.status.id in (:p' + (++pCount) + ')')

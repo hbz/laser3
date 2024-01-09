@@ -1,16 +1,15 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.helper.Params; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
 
 <ui:filter>
     <g:form controller="${controllerName}" action="${actionName}" method="get" class="ui form">
         <div class="three fields">
             <div class="field">
-                <label>${message(code:'default.search.text')}</label>
-                <input type="text" name="q" placeholder="${message(code:'default.search.ph')}" value="${params.q}" />
+                <label for="q">${message(code:'default.search.text')}</label>
+                <input type="text" id="q" name="q" placeholder="${message(code:'default.search.ph')}" value="${params.q}" />
             </div>
 
             <div class="field">
                 <label for="provider">${message(code: 'default.provider.label')}</label>
-
                 <div class="ui input">
                     <input type="text" id="provider" name="provider"
                            placeholder="${message(code: 'default.search.ph')}"
@@ -19,7 +18,7 @@
             </div>
 
             <div class="field">
-                <label>${message(code: 'default.status.label')}</label>
+                <label for="status">${message(code: 'default.status.label')}</label>
                 <ui:select class="ui dropdown" name="status"
                               from="${ RefdataCategory.getAllRefdataValues(RDConstants.PLATFORM_STATUS) }"
                               optionKey="id"
@@ -32,13 +31,11 @@
         <div class="three fields">
             <div class="field">
                 <label for="ipSupport">${message(code: 'platform.auth.ip.supported')}</label>
-
-                <select name="ipSupport" id="ipSupport" multiple=""
-                        class="ui search selection dropdown">
+                <select name="ipSupport" id="ipSupport" multiple="" class="ui search selection dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.IP_AUTHENTICATION)}" var="ip">
-                        <option <%=(params.list('ipSupport')?.contains(ip.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'ipSupport').contains(ip.id) ? 'selected="selected"' : ''%>
                                 value="${ip.id}">
                             ${ip.getI10n("value")}
                         </option>
@@ -47,16 +44,12 @@
             </div>
 
             <div class="field">
-                <label for="shibbolethSupport">
-                    ${message(code: 'platform.auth.shibboleth.supported')}
-                </label>
-
-                <select name="shibbolethSupport" id="shibbolethSupport" multiple=""
-                        class="ui search selection dropdown">
+                <label for="shibbolethSupport">${message(code: 'platform.auth.shibboleth.supported')}</label>
+                <select name="shibbolethSupport" id="shibbolethSupport" multiple="" class="ui search selection dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)+ RDStore.GENERIC_NULL_VALUE}" var="shibboleth">
-                        <option <%=(params.list('shibbolethSupport')?.contains(shibboleth.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'shibbolethSupport').contains(shibboleth.id) ? 'selected="selected"' : ''%>
                                 value="${shibboleth.id}">
                             ${shibboleth.getI10n("value")}
                         </option>
@@ -65,16 +58,12 @@
             </div>
 
             <div class="field">
-                <label for="counterCertified">
-                    ${message(code: 'platform.stats.counter.certified')}
-                </label>
-
-                <select name="counterCertified" id="counterCertified" multiple=""
-                        class="ui search selection dropdown">
+                <label for="counterCertified">${message(code: 'platform.stats.counter.certified')}</label>
+                <select name="counterCertified" id="counterCertified" multiple="" class="ui search selection dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)+ RDStore.GENERIC_NULL_VALUE}" var="counter">
-                        <option <%=(params.list('counterCertified')?.contains(counter.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'counterCertified').contains(counter.id) ? 'selected="selected"' : ''%>
                                 value="${counter.id}">
                             ${counter.getI10n("value")}
                         </option>
@@ -86,7 +75,7 @@
         <div class="three fields">
             <div class="field">
                 <g:if test="${controllerName == 'myInstitution'}">
-                    <label>${message(code:'subscription.hasPerpetualAccess.label')}</label>
+                    <label for="hasPerpetualAccess">${message(code:'subscription.hasPerpetualAccess.label')}</label>
                     <ui:select class="ui fluid dropdown" name="hasPerpetualAccess"
                                from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                optionKey="id"
@@ -97,9 +86,7 @@
             </div>
             <div class="field"></div>
             <div class="field">
-                <label for="isMyX">
-                    <g:message code="filter.isMyX.label" />
-                </label>
+                <label for="isMyX"><g:message code="filter.isMyX.label" /></label>
                 <%
                     List<Map> isMyXOptions = []
                     isMyXOptions.add([ id: 'wekb_exclusive',    value: "${message(code:'filter.wekb.exclusive')}" ])

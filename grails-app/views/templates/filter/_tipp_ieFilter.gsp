@@ -1,4 +1,4 @@
-<%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.base.AbstractReport" %>
+<%@ page import="de.laser.helper.Params; de.laser.TitleInstancePackagePlatform; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.base.AbstractReport" %>
 <laser:serviceInjection />
 <g:set var="action" value="${action ?: actionName}"/>
 
@@ -59,15 +59,13 @@
             </g:if>
             <g:if test="${!showStatsFilter && !(action in ['renewEntitlementsWithSurvey', 'current', 'planned', 'expired', 'deleted'])}">
                 <div class="field">
-                    <label for="status">
-                        ${message(code: 'default.status.label')}
-                    </label>
+                    <label for="status">${message(code: 'default.status.label')}</label>
                     <select name="status" id="status" multiple=""
                             class="ui search selection dropdown">
                         <option value="">${message(code: 'default.select.choose.label')}</option>
 
                         <g:each in="${availableStatus}" var="status">
-                            <option <%=(params.list('status')?.contains(status.id.toString())) ? 'selected="selected"' : ''%>
+                            <option <%=Params.getLongList(params, 'status').contains(status.id) ? 'selected="selected"' : ''%>
                                     value="${status.id}">
                                 ${status.getI10n('value')}
                             </option>

@@ -120,7 +120,7 @@
                                           role="button"
                                           ariaLabel="Termin wieder auf Ihrem Dashboard anzeigen lassen"
                         >
-                            <i class="icon bell slash la-js-editmode-icon "></i>
+                            <i class="icon bell slash la-js-editmode-icon"></i>
                         </ui:remoteLink>
                     </g:if>
                     <g:else>

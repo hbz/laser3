@@ -1,4 +1,4 @@
-<div id="unlinkPackageModal" class="ui modal ">
+<div id="unlinkPackageModal" class="ui modal">
 
     <div class="header">
         <h6 class="ui header">${message(code: 'default.button.unlink.label')}: ${pkg}</h6>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.storage.PropertyStore; de.laser.Org; de.laser.PersonRole; de.laser.OrgRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Contact; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
+<%@ page import="de.laser.helper.Params; de.laser.Subscription; de.laser.storage.PropertyStore; de.laser.Org; de.laser.PersonRole; de.laser.OrgRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Contact; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
 
 <laser:htmlStart message="menu.public.gasco_monitor">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
@@ -41,11 +41,10 @@
                                         <g:else>
                                             <div class="inline field">
                                         </g:else>
-
                                             <div class="ui checkbox">
                                                 <label for="checkSubType-${subKind.id}">${subKind.getI10n('value')}</label>
                                                 <input id="checkSubType-${subKind.id}" name="subKinds" type="checkbox" value="${subKind.id}"
-                                                    <g:if test="${params.list('subKinds').contains(subKind.id.toString())}"> checked="" </g:if>
+                                                    <g:if test="${Params.getLongList(params, 'subKinds').contains(subKind.id)}"> checked="" </g:if>
                                                     <g:if test="${initQuery}"> checked="" </g:if>
                                                        tabindex="0">
                                             </div>

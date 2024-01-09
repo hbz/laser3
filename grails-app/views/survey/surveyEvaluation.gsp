@@ -17,17 +17,6 @@
                 <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
             </ui:exportDropdownItem>
 
-            %{--<ui:exportDropdownItem>
-                <g:link class="item" action="surveyEvaluation" id="${surveyInfo.id}"
-                        params="[surveyConfigID: surveyConfig.id, exportXLSX: true]">${message(code: 'survey.exportSurvey')}</g:link>
-            </ui:exportDropdownItem>
-
-            <g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
-            <ui:exportDropdownItem>
-                <g:link class="item" action="surveyEvaluation" id="${surveyInfo.id}"
-                        params="[surveyConfigID: surveyConfig.id, exportXLSX: true, surveyCostItems: true]">${message(code: 'survey.exportSurveyCostItems')}</g:link>
-            </ui:exportDropdownItem>
-            </g:if>--}%
         </ui:exportDropdown>
     </g:if>
 
@@ -74,21 +63,21 @@
             controller="survey" action="surveyEvaluation"
             params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllFinish']">
         ${message(code: 'surveyEvaluation.participantsViewAllFinish')}
-        <div class="ui floating blue circular label">${participantsFinishTotal}</div>
+        <span class="ui floating blue circular label">${participantsFinishTotal}</span>
     </g:link>
 
     <g:link class="item ${params.tab == 'participantsViewAllNotFinish' ? 'active' : ''}"
             controller="survey" action="surveyEvaluation"
             params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllNotFinish']">
         ${message(code: 'surveyEvaluation.participantsViewAllNotFinish')}
-        <div class="ui floating blue circular label">${participantsNotFinishTotal}</div>
+        <span class="ui floating blue circular label">${participantsNotFinishTotal}</span>
     </g:link>
 
     <g:link class="item ${params.tab == 'participantsView' ? 'active' : ''}"
             controller="survey" action="surveyEvaluation"
             params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsView']">
         ${message(code: 'surveyEvaluation.participantsView')}
-        <div class="ui floating blue circular label">${participantsTotal}</div>
+        <span class="ui floating blue circular label">${participantsTotal}</span>
     </g:link>
 
 </div>

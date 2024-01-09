@@ -12,14 +12,14 @@
 </ui:filter>
 
 <g:if test="${selectedParticipants.size() == 0 && selectedParticipantsCount > 0}">
-    <b><g:message code="default.search.empty"/></b>
+    <strong><g:message code="default.search.empty"/></strong>
 </g:if>
 <g:else>
     <br/>
 
-    <h3 class="ui icon header la-clear-before la-noMargin-top"><span
-            class="ui circular  label">${selectedParticipants.size()}</span> <g:message
-            code="surveyParticipants.selectedParticipants"/></h3>
+    <h3 class="ui icon header la-clear-before la-noMargin-top">
+        <span class="ui circular label">${selectedParticipants.size()}</span> <g:message code="surveyParticipants.selectedParticipants"/>
+    </h3>
 
     <br/><br/>
     <g:form action="deleteSurveyParticipants" data-confirm-id="deleteSurveyParticipants_form" controller="survey"

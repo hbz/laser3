@@ -4,7 +4,7 @@
 
 <g:set var="modalID" value="${modalID ?: 'copyEmailaddresses_ajaxModal'}"/>
 
-<ui:modal id="${modalID}" text="${message(code:'menu.institutions.copy_emailaddresses', args:[orgList?.size()?:0])}" hideSubmitButton="true">
+<ui:modal id="${modalID}" text="${message(code:'menu.institutions.copy_emailaddresses', args:[orgList?.size()?:0])}" hideSubmitButton="true" contentClass="scrolling">
     <g:set var="rdvAllPersonFunctions" value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}" scope="request"/>
     <g:set var="rdvAllPersonPositions" value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}" scope="request"/>
     <div class="ui form la-filter segment la-clear-before">
@@ -55,7 +55,7 @@
             ${message(code:'menu.institutions.copy_emailaddresses_to_emailclient')}
         </button>
     </div>
-    <table class="ui table">
+    <table class="ui table la-noSticky">
         <thead>
             <tr>
                 <th><g:checkBox name="copyMailToggler" id="copyMailToggler" checked="true"/></th>

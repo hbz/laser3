@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.helper.Params
 import de.laser.interfaces.CalculatedType
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -208,8 +209,7 @@ class DocstoreService {
 
                 try {
                     RefdataValue dc = params.bulk_docConf ? RefdataValue.get(params.bulk_docConf) : null
-                    List<Long> idList = params.bulk_docIdList.split(',').collect { it as Long }
-
+                    List<Long> idList = Params.getLongList_forCommaSeparatedString(params, 'bulk_docIdList')
                     idList.each { id ->
                         Doc doc = Doc.get(id)
                         if (doc.owner.id == result.contextOrg.id) {

@@ -143,6 +143,7 @@
                                 <td>${ci.requestorKey}</td>
                                 <td>${ci.note}</td>
                                 <td>
+                                    %{-- TODO: erms-5495 --}%
                                     <%  boolean editable_this_ci = (ci.customer.id == institution.id || isComboRelated) %>
                                     <g:if test="${editable_customeridentifier && editable_this_ci}">
                                         <button class="ui icon button blue la-modern-button" onclick="JSPC.app.IdContoller.editCustomerIdentifier(${ci.id});"
