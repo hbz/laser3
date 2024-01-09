@@ -930,7 +930,9 @@ class SurveyController {
         params.orgType = RDStore.OT_INSTITUTION.id.toString()
         params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
 
-        params.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id.toString())
+        if(params.tab == 'selectedParticipants') {
+            params.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id.toString())
+        }
 
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
