@@ -47,9 +47,9 @@
             <div class="ui masthead center aligned segment">
                 <div class="ui container">
 
-                    <div class="ui grid ">
+                    <div class="ui grid">
                         <div class="five wide column la-hero left aligned">
-                            <h1 class="ui inverted header ">
+                            <h1 class="ui inverted header">
                                 ${message(code: 'landingpage.hero.h1')}
                             </h1>
                             <h2 style="padding-bottom: 1rem;">

@@ -2991,7 +2991,7 @@ class MyInstitutionController  {
 
             // new: filter preset
             result.comboType = 'Consortium'
-            params.orgType = RDStore.OT_INSTITUTION.id.toString()
+            params.orgType = RDStore.OT_INSTITUTION.id
             params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
 
             if (params.selectedOrgs) {
@@ -3190,7 +3190,6 @@ class MyInstitutionController  {
 
         // new: filter preset
         result.comboType = RDStore.COMBO_TYPE_CONSORTIUM
-        //params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
@@ -3201,8 +3200,6 @@ class MyInstitutionController  {
         queryParams.comboType = result.comboType.value
         queryParams.invertDirection = true
         Map<String, Object> fsq = filterService.getOrgComboQuery(queryParams, result.institution)
-        //def tmpQuery = "select o.id " + fsq.query.minus("select o ")
-        //def memberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
 
 		prf.setBenchmark('query')
 
@@ -3210,7 +3207,7 @@ class MyInstitutionController  {
         result.totalConsortia    = totalConsortia
         result.consortiaCount    = totalConsortia.size()
         result.consortia         = totalConsortia.drop((int) result.offset).take((int) result.max)
-        String header = message(code: 'menu.my.consortia')
+
         String exportHeader = message(code: 'export.my.consortia')
         SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
         // Write the output to a file

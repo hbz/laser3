@@ -129,7 +129,7 @@
 <%-- private properties --%>
 
 <!-- TODO div class="ui card la-dl-no-table la-js-hideable" -->
-<div class="ui card la-dl-no-table ">
+<div class="ui card la-dl-no-table">
     <div class="content">
         <h2 class="ui header">${message(code:'subscription.properties.private')} ${contextOrg.name}</h2>
         <g:set var="propertyWrapper" value="private-property-wrapper-${contextOrg.id}" />

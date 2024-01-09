@@ -250,7 +250,7 @@
                     <thead>
                         <tr>
                             <th class="six wide">Title/Name</th>
-                            <th class="ten wide ">${message(code: 'search.additionalinfo')}</th>
+                            <th class="ten wide">${message(code: 'search.additionalinfo')}</th>
                         </tr>
                     </thead>
                     <g:each in="${hits}" var="hit">

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfig; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.survey.SurveyResult; de.laser.survey.SurveyConfig; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem;" %>
+<%@ page import="de.laser.helper.Params; de.laser.survey.SurveyConfig; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.survey.SurveyResult; de.laser.survey.SurveyConfig; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem;" %>
 
 <laser:htmlStart message="currentSurveys.label" serviceInjection="true" />
 
@@ -27,9 +27,7 @@
     <g:form action="currentSurveys" controller="myInstitution" method="post" class="ui small form" params="[tab: params.tab ]">
         <div class="three fields">
             <div class="field">
-                <label for="name">${message(code: 'surveyInfo.name.label')}
-                </label>
-
+                <label for="name">${message(code: 'surveyInfo.name.label')}</label>
                 <div class="ui input">
                     <input type="text" id="name" name="name"
                            placeholder="${message(code: 'default.search.ph')}"
@@ -79,13 +77,12 @@
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${providers.sort { it.name }}" var="provider">
-                        <option <%=(params.list('filterPvd').contains(provider.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'filterPvd').contains(provider.id) ? 'selected="selected"' : ''%>
                         value="${provider.id}">
                         ${provider.name}
                         </option>
                     </g:each>
                 </select>
-
             </div>
 
             <div class="field">
@@ -100,7 +97,6 @@
                         </option>
                     </g:each>
                 </select>
-
             </div>
 
         </div>
@@ -155,14 +151,10 @@
         </div>
 
         <div class="field la-field-right-aligned">
-
             <div class="field la-field-right-aligned">
-                <a href="${request.forwardURI}"
-                   class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-                <input type="submit" class="ui primary button"
-                       value="${message(code: 'default.button.filter.label')}">
+                <a href="${request.forwardURI}" class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
+                <input type="submit" class="ui primary button" value="${message(code: 'default.button.filter.label')}">
             </div>
-
         </div>
     </g:form>
 </ui:filter>

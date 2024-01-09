@@ -45,13 +45,8 @@ class FilterService {
              queryParams << [orgNameContains : "${params.orgNameContains}"]
         }
         if (params.orgType) {
-            if (params.orgType instanceof List) {
-                query << " exists (select roletype from o.orgType as roletype where roletype.id in (:orgType) )"
-                queryParams << [orgType: params.orgType]
-            } else if (params.orgType.length() > 0) {
-                query << " exists (select roletype from o.orgType as roletype where roletype.id = :orgType )"
-                queryParams << [orgType: params.long('orgType')]
-            }
+            query << " exists (select roletype from o.orgType as roletype where roletype.id in (:orgType) )"
+            queryParams << [orgType: Params.getLongList(params, 'orgType')]
         }
         if (params.orgStatus) {
             List selectedStatus = listReaderWrapper(params, 'orgStatus').collect { key -> key instanceof String ? Long.parseLong(key) : key }
@@ -93,11 +88,6 @@ class FilterService {
             query << " ( exists ( select customerID from CustomerIdentifier customerID where customerID.customer = o and ( ${customerIDClause.join(' or ')} ) ) ) "
         }
 
-        if (params.region?.size() > 0) {
-            query << "o.region.id in (:region)"
-            queryParams << [region : Params.getLongList(params, 'region')]
-        }
-
         if (params.subjectGroup?.size() > 0) {
             query << "exists (select osg from OrgSubjectGroup as osg where osg.org.id = o.id and osg.subjectGroup.id in (:subjectGroup))"
             queryParams << [subjectGroup : Params.getLongList(params, 'subjectGroup')]
@@ -121,15 +111,20 @@ class FilterService {
             query << "o.libraryType.id in (:libraryType)"
             queryParams << [libraryType : Params.getLongList(params, 'libraryType')]
         }
-        if (params.country?.size() > 0) {
+        if (params.country) {
             query << "o.country.id in (:country)"
             queryParams << [country : Params.getLongList(params, 'country')]
         }
 
-        if (params.customerType?.length() > 0) {
-            query << "exists (select oss from OrgSetting as oss where oss.org.id = o.id and oss.key = :customerTypeKey and oss.roleValue.id = :customerType)"
-            queryParams << [customerType : params.long('customerType')]
-            queryParams << [customerTypeKey : OrgSetting.KEYS.CUSTOMER_TYPE]
+        if (params.region) {
+            query << "o.region.id in (:region)"
+            queryParams << [region : Params.getLongList(params, 'region')]
+        }
+
+        if (params.customerType) {
+            query << "exists (select oss from OrgSetting as oss where oss.org.id = o.id and oss.key = :customerTypeKey and oss.roleValue.id in (:customerTypeList))"
+            queryParams << [customerTypeList : Params.getLongList(params, 'customerType')]
+            queryParams << [customerTypeKey  : OrgSetting.KEYS.CUSTOMER_TYPE]
         }
 
         if (params.isLegallyObliged in ['yes', 'no']) {
