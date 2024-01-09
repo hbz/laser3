@@ -18,6 +18,7 @@ import org.springframework.context.MessageSource
 import org.springframework.validation.ObjectError
 import org.springframework.web.multipart.MultipartFile
 
+import java.math.RoundingMode
 import java.text.NumberFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -281,12 +282,28 @@ class FinanceService {
                         if(lastYearEquivalent) {
                             ci.billingSumRounding = billingSumRounding != ci.billingSumRounding ? billingSumRounding : ci.billingSumRounding
                             ci.finalCostRounding = finalCostRounding != ci.finalCostRounding ? finalCostRounding : ci.finalCostRounding
-                            ci.costInBillingCurrency = Math.floor(Math.abs(lastYearEquivalent.costInBillingCurrency * percentage))
-                            ci.costInLocalCurrency = Math.floor(Math.abs(lastYearEquivalent.costInLocalCurrency * percentage))
+
+                            ci.costInBillingCurrency = ci.costInBillingCurrency ? BigDecimal.valueOf(ci.costInBillingCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInBillingCurrency
+                            ci.costInLocalCurrency = ci.costInLocalCurrency ? BigDecimal.valueOf(ci.costInLocalCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInLocalCurrency
+
+
+                            int taxRate = 0 //fallback
+                            if(ci.taxKey)
+                                taxRate = ci.taxKey.taxRate
+
+                            ci.costInBillingCurrencyAfterTax = ci.costInBillingCurrency * (1.0 + (0.01 * taxRate))
+                            ci.costInLocalCurrencyAfterTax = ci.costInLocalCurrency * (1.0 + (0.01 * taxRate))
+
                             if (ci.billingSumRounding) {
                                 ci.costInBillingCurrency = Math.round(ci.costInBillingCurrency)
                                 ci.costInLocalCurrency = Math.round(ci.costInLocalCurrency)
                             }
+
+                            if (ci.finalCostRounding) {
+                                ci.costInBillingCurrencyAfterTax = Math.round(ci.costInBillingCurrencyAfterTax)
+                                ci.costInLocalCurrencyAfterTax = Math.round(ci.costInLocalCurrencyAfterTax)
+                            }
+
                             ci.save()
                         }
                         else {
@@ -303,12 +320,31 @@ class FinanceService {
                     if(ci.sub) {
                             ci.billingSumRounding = billingSumRounding != ci.billingSumRounding ? billingSumRounding : ci.billingSumRounding
                             ci.finalCostRounding = finalCostRounding != ci.finalCostRounding ? finalCostRounding : ci.finalCostRounding
-                            ci.costInBillingCurrency = Math.floor(Math.abs(ci.costInBillingCurrency * percentage))
-                            ci.costInLocalCurrency = Math.floor(Math.abs(ci.costInLocalCurrency * percentage))
+                            ci.costInBillingCurrency = ci.costInBillingCurrency ? BigDecimal.valueOf(ci.costInBillingCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInBillingCurrency
+                            ci.costInLocalCurrency = ci.costInLocalCurrency ? BigDecimal.valueOf(ci.costInLocalCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInLocalCurrency
                             if (ci.billingSumRounding) {
                                 ci.costInBillingCurrency = Math.round(ci.costInBillingCurrency)
                                 ci.costInLocalCurrency = Math.round(ci.costInLocalCurrency)
                             }
+
+                            int taxRate = 0 //fallback
+                            if(ci.taxKey)
+                                taxRate = ci.taxKey.taxRate
+
+                            ci.costInBillingCurrencyAfterTax = ci.costInBillingCurrency * (1.0 + (0.01 * taxRate))
+                            ci.costInLocalCurrencyAfterTax = ci.costInLocalCurrency * (1.0 + (0.01 * taxRate))
+
+                            if (ci.billingSumRounding) {
+                                ci.costInBillingCurrency = Math.round(ci.costInBillingCurrency)
+                                ci.costInLocalCurrency = Math.round(ci.costInLocalCurrency)
+                            }
+
+                            if (ci.finalCostRounding) {
+                                ci.costInBillingCurrencyAfterTax = Math.round(ci.costInBillingCurrencyAfterTax)
+                                ci.costInLocalCurrencyAfterTax = Math.round(ci.costInLocalCurrencyAfterTax)
+                            }
+
+
                             ci.save()
                     }
                 }
@@ -330,29 +366,24 @@ class FinanceService {
                             taxRate = costItem.taxKey.taxRate
                         costItem.billingSumRounding = billingSumRounding != costItem.billingSumRounding ? billingSumRounding : costItem.billingSumRounding
                         costItem.finalCostRounding = finalCostRounding != costItem.finalCostRounding ? finalCostRounding : costItem.finalCostRounding
+
                         if(configMap.currencyRate) {
                             costItem.currencyRate = configMap.currencyRate
-                            if(!configMap.containsKey('costLocalCurrency')) {
-                                costItem.costInLocalCurrency = configMap.currencyRate * costItem.costInBillingCurrency
-                                costItem.costInLocalCurrencyAfterTax = costItem.costInLocalCurrency * (1.0 + (0.01 * taxRate))
-                            }
+                            costItem.costInLocalCurrency = configMap.currencyRate * costItem.costInBillingCurrency
+                            costItem.costInLocalCurrencyAfterTax = costItem.costInLocalCurrency * (1.0 + (0.01 * taxRate))
                         }
                         if(configMap.costBillingCurrency) {
                             costItem.costInBillingCurrency = configMap.costBillingCurrency
                             costItem.costInBillingCurrencyAfterTax = configMap.costBillingCurrency * (1.0 + (0.01 * taxRate))
-                            if(!configMap.containsKey('costLocalCurrency')) {
-                                costItem.costInLocalCurrency = costItem.currencyRate * configMap.costBillingCurrency
-                                costItem.costInLocalCurrencyAfterTax = costItem.costInLocalCurrency * (1.0 + (0.01 * taxRate))
-                            }
+                            costItem.costInLocalCurrency = costItem.currencyRate * configMap.costBillingCurrency
+                            costItem.costInLocalCurrencyAfterTax = costItem.costInLocalCurrency * (1.0 + (0.01 * taxRate))
                         }
                         costItem.billingCurrency = configMap.billingCurrency ?: costItem.billingCurrency
                         if(configMap.costLocalCurrency) {
                             costItem.costInLocalCurrency = configMap.costLocalCurrency
                             costItem.costInLocalCurrencyAfterTax = costItem.costInLocalCurrency * (1.0 + (0.01 * taxRate))
-                            if(!configMap.containsKey('costBillingCurrency')) {
-                                costItem.costInBillingCurrency = configMap.costLocalCurrency / costItem.currencyRate
-                                costItem.costInBillingCurrencyAfterTax = configMap.costBillingCurrency * (1.0 + (0.01 * taxRate))
-                            }
+                            costItem.costInBillingCurrency = configMap.costLocalCurrency / costItem.currencyRate
+                            costItem.costInBillingCurrencyAfterTax = configMap.costBillingCurrency * (1.0 + (0.01 * taxRate))
                         }
                         if (costItem.billingSumRounding) {
                             costItem.costInBillingCurrency = Math.round(costItem.costInBillingCurrency)
