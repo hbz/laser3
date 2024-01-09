@@ -48,7 +48,7 @@
                             ${message(code:'package.label')}
                         </g:elseif>
                         <g:elseif test="${objCat.value.first() instanceof Platform}">
-                            ${message(code:'platform.label')} /
+                            ${message(code:'platform.label')}
                         </g:elseif>
                     </th>
                     <th class="three wide"></th>

@@ -10,9 +10,15 @@
 <br />
 <h2 class="ui icon header la-clear-before la-noMargin-top"><i class="icon question circle outline"></i> <g:message code="help.contentHelp"/></h2>
 
+<style>
+.segment > p.header {
+    font-size: 100% !important;
+}
+</style>
+
 <div class="ui segment">
-    <p>
-        <strong><g:message code="help.contentHelp.manuel.title"/></strong>
+    <p class="ui header">
+        <g:message code="help.contentHelp.manuel.title"/>
     </p>
     <p>
         <g:message code="help.contentHelp.manuel.content"/>:
@@ -21,8 +27,8 @@
 </div>
 
 <div class="ui segment">
-    <p>
-        <strong><g:message code="help.contentHelp.properties.title"/></strong>
+    <p class="ui header">
+        <g:message code="help.contentHelp.properties.title"/>
     </p>
     <p>
         <g:link class="item" controller="profile" action="properties">${message(code: 'menu.user.properties')}</g:link>
@@ -35,8 +41,8 @@
 <h2 class="ui icon header la-clear-before la-noMargin-top"><i class="icon question circle outline"></i> <g:message code="help.technicalHelp"/></h2>
 
 <div class="ui segment">
-    <p>
-        <strong><g:message code="help.technicalHelp.spellcheck.title"/></strong>
+    <p class="ui header">
+        <g:message code="help.technicalHelp.spellcheck.title"/>
     </p>
     <div class="ui relaxed list">
         <p>
@@ -67,8 +73,8 @@
 </div>
 
 <div class="ui segment">
-    <p>
-        <strong><g:message code="help.technicalHelp.browsercache.title"/></strong>
+    <p class="ui header">
+        <g:message code="help.technicalHelp.browsercache.title"/>
     </p>
     <div class="ui relaxed list">
         <p>
