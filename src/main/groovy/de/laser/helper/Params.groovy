@@ -66,6 +66,40 @@ class Params {
         result
     }
 
+//    // takes String; removes 0, null and empty values
+//    static List<Long> getLongList_forCommaSeparatedOIDString(GrailsParameterMap params, String key) {
+//        List result = []
+//
+//        if (params.get(key)) {
+//            result = params.get(key).split(',').collect{
+//                if (it.trim() && it.contains(':')) {
+//                    String id = it.trim().split(':')[1]
+//                    if (id != 'null') {
+//                        Long.valueOf(id)
+//                    }
+//                }
+//            }.findAll()
+//        }
+//        result
+//    }
+//
+//    // takes String; removes 0, null and empty values
+//    static List<Long> getLongList_forCommaSeparatedOIDString(LinkedHashMap map, String key) {
+//        List result = []
+//
+//        if (map.get(key)) {
+//            result = map.get(key).split(',').collect{
+//                if (it.trim() && it.contains(':')) {
+//                    String id = it.trim().split(':')[1]
+//                    if (id != 'null') {
+//                        Long.valueOf(id)
+//                    }
+//                }
+//            }.findAll()
+//        }
+//        result
+//    }
+
     // ---
 
     static void test() {
@@ -86,7 +120,8 @@ class Params {
         map.test11 = '0, 55, 66,77 ,null,99'
         map.test12 = '0'
 
-//        map.test20 = [0, 1990, null, Year.parse('1991'), '0', '1992', 'null', ' 1993 ', '']
+//        map.test20 = 'de.laser.Org:1, de.laser.Org:2 , test:3 ,blubb_4,de.laser.Org:null,,null'
+//        map.test30 = [0, 1990, null, Year.parse('1991'), '0', '1992', 'null', ' 1993 ', '']
 
         GrailsWebRequest grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
         GrailsParameterMap gpm = grailsWebRequest.params
@@ -126,6 +161,17 @@ class Params {
             }
         }
 
+//        Closure test_gll_fcsoids = { key ->
+//            def a = getLongList_forCommaSeparatedOIDString(gpm, key)
+//            def b = getLongList_forCommaSeparatedOIDString(map, key)
+//
+//            if (a.equals(b)) {
+//                println 'OK     #' + key + '     ' + a + ' == ' + b
+//            } else {
+//                println 'FAILED #' + key + '     ' + a + ' != ' + b
+//            }
+//        }
+
         println '--- getLongList ---'
         test_gll('test1')
         test_gll('test0')
@@ -153,5 +199,11 @@ class Params {
         test_gll_fcss('test10')
         test_gll_fcss('test11')
         test_gll_fcss('test11')
+
+//        println '--- getLongList_forCommaSeparatedOIDString ---'
+//        test_gll_fcsoids('test6')
+//        test_gll_fcsoids('test7')
+//        test_gll_fcsoids('test8')
+//        test_gll_fcsoids('test20')
     }
 }
