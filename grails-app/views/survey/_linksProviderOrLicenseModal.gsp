@@ -52,7 +52,7 @@
     <laser:script file="${this.getGroovyPageFileName()}">
         $("#${linkField}").dropdown({
             apiSettings: {
-                url: "<g:createLink controller="ajaxJson" action="${lookupName}"/>?status=FETCH_ALL&query={query}",
+                url: "<g:createLink controller="ajaxJson" action="${lookupName}"/>?query={query}",
                 cache: false
             },
             clearable: true,
