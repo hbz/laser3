@@ -143,13 +143,10 @@ class FinanceController  {
         try {
             Map<String,Object> result = financeControllerService.getResultGenerics(params)
             result.financialData = financeService.getCostItemsForSubscription(params,result)
-            if (result.institution.isCustomerType_Consortium()) {
-                if(!result.subscription.instanceOf){
-                    result.currentSurveysCounts = SurveyConfig.findAllBySubscription(result.subscription).size()
-                    result.currentCostItemCounts = "${result.financialData.own.count}/${result.financialData.cons.count}"
-                }
-                result.currentMembersCounts =  Subscription.executeQuery('select count(s) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',[parent: result.subscription, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])[0]
-            }
+            result.currentSurveysCounts = SurveyConfig.executeQuery('select count(*) from SurveyConfig where subscription = (:sub)', [sub: result.subscription])[0]
+            result.currentCostItemCounts = "${result.financialData.own.count}/${result.financialData.cons.count}"
+            result.currentMembersCounts =  Subscription.executeQuery('select count(*) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',[parent: result.subscription, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])[0]
+
             result.workflowCount = workflowService.getWorkflowCount(result.subscription, result.contextOrg)
 
             result.idSuffix = 'bulk'
