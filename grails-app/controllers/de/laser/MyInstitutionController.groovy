@@ -421,7 +421,7 @@ class MyInstitutionController  {
                 params.status = RDStore.LICENSE_CURRENT.id
                 result.filterSet = true
             }
-            qry_params.status = params.status as Long
+            qry_params.status = params.long('status')
         }
 
 
@@ -451,7 +451,7 @@ class MyInstitutionController  {
                     params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id
                     result.filterSet = true
                 }
-                qry_params.subStatus = params.subStatus as Long
+                qry_params.subStatus = params.long('subStatus')
             }
 
             if (params.subKind) {
@@ -1548,7 +1548,7 @@ class MyInstitutionController  {
         List<String> countQueryFilter = queryFilter.clone()
         Map<String, Object> countQueryParams = qryParams.clone()
 
-        if (params.list('status').findAll()) {
+        if (params.status) {
             queryFilter << "ie.status in (:status)"
             qryParams.status = Params.getRefdataList(params, 'status')
         }
@@ -4110,8 +4110,7 @@ join sub.orgRelations or_sub where
                                     [pdg: propDefGroup]
                             )
 
-                            params.list('propertyDefinition')?.each { pd ->
-
+                            params.list('propertyDefinition').each { pd ->
                                 new PropertyDefinitionGroupItem(
                                         propDef: pd,
                                         propDefGroup: propDefGroup
@@ -4506,16 +4505,14 @@ join sub.orgRelations or_sub where
      * @param params the parameter map containing the property definition parameters
      * @return success or error messages
      */
-    private _deletePrivatePropertyDefinition(params) {
+    private _deletePrivatePropertyDefinition(GrailsParameterMap params) {
         PropertyDefinition.withTransaction {
             log.debug("delete private property definition for institution: " + params)
 
             String messages = ""
             Org tenant = contextService.getOrg()
-            def deleteIds = params.list('deleteIds')
 
-            deleteIds.each { did ->
-                Long id = Long.parseLong(did)
+            Params.getLongList(params, 'deleteIds').each { id ->
                 PropertyDefinition privatePropDef = PropertyDefinition.findWhere(id: id, tenant: tenant)
                 if (privatePropDef) {
 

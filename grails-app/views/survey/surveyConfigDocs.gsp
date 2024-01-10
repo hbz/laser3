@@ -42,10 +42,6 @@
 </h2>
 <br />
 
-%{--<p><strong>${message(code: 'surveyConfigDocs.info')}</strong></p>
-<br />--}%
-
-
 <g:if test="${surveyConfig}">
 
     <div class="ui grid">

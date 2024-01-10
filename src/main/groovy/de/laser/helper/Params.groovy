@@ -12,7 +12,11 @@ class Params {
 
     // takes String or Long; removes 0, null and empty values
     static List<Long> getLongList(GrailsParameterMap params, String key) {
-        params.list(key).findAll().collect{ Long.valueOf(it) }.findAll()
+        params.list(key).findAll().collect{
+            if (it != 'FETCH_ALL') { // workaround until FETCH_ALL is removed // TODO: erms-5511
+                Long.valueOf(it)
+            }
+        }.findAll()
     }
 
     // takes String or Long; removes 0, null and empty values
@@ -21,11 +25,17 @@ class Params {
 
         if (map.containsKey(key)) {
             if (map.get(key) instanceof List) {
-                result = map.get(key).findAll().collect{ Long.valueOf(it) }
+                result = map.get(key).findAll().collect{
+                    if (it != 'FETCH_ALL') { // workaround until FETCH_ALL is removed // TODO: erms-5511
+                        Long.valueOf(it)
+                    }
+                }
             }
             else {
                 if (map.get(key)) {
-                    result.add(Long.valueOf(map.get(key)))
+                    if (map.get(key) != 'FETCH_ALL') { // workaround until FETCH_ALL is removed // TODO: erms-5511
+                        result.add(Long.valueOf(map.get(key)))
+                    }
                 }
             }
         }
@@ -119,6 +129,7 @@ class Params {
         map.test10 = '0, 55, 66,77 , ,88'
         map.test11 = '0, 55, 66,77 ,null,99'
         map.test12 = '0'
+        map.test13 = 'FETCH_ALL'
 
 //        map.test20 = 'de.laser.Org:1, de.laser.Org:2 , test:3 ,blubb_4,de.laser.Org:null,,null'
 //        map.test30 = [0, 1990, null, Year.parse('1991'), '0', '1992', 'null', ' 1993 ', '']
@@ -184,6 +195,7 @@ class Params {
         test_gll('test8')
         // test_gll('test9') // --> multiple NumberFormatException ; TODO
         test_gll('test12')
+        test_gll('test13')
         test_gll('test99999')
 
         println '--- getRefdataList ---'

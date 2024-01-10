@@ -134,6 +134,37 @@ class FinanceController  {
         }
     }
 
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+    })
+    def compareSubMemberCostItems() {
+        log.debug("FinanceController::compareSubMemberCostItems() ${params}")
+        try {
+            Map<String,Object> result = financeControllerService.getResultGenerics(params)
+            result.financialData = financeService.getCostItemsForSubscription(params,result)
+            result.currentSurveysCounts = SurveyConfig.executeQuery('select count(*) from SurveyConfig where subscription = (:sub)', [sub: result.subscription])[0]
+            result.currentCostItemCounts = "${result.financialData.own.count}/${result.financialData.cons.count}"
+            result.currentMembersCounts =  Subscription.executeQuery('select count(*) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',[parent: result.subscription, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])[0]
+
+            result.workflowCount = workflowService.getWorkflowCount(result.subscription, result.contextOrg)
+
+            result.idSuffix = 'bulk'
+
+            result.offset = result.offsets.consOffset
+            result.data = result.financialData.cons
+
+            result.fixedSubscription = result.subscription
+
+            result
+        }
+        catch (FinancialDataException e) {
+            flash.error = e.getMessage()
+            redirect controller: 'myInstitution', action: 'currentSubscriptions'
+            return
+        }
+    }
+
     /**
      * Exports the given financial data. Beware that multi-tab view is only possible in Excel; bare text exports
      * can only display the currently visible (= active) tab!

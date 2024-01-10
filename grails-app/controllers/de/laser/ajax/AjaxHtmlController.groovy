@@ -361,7 +361,7 @@ class AjaxHtmlController {
 
     /**
      * Retrieves a list of provider and agency {@link Org}s for table view
-     * @return the result of {@link de.laser.ControlledListService#getProvidersAgencies(java.util.Map)}
+     * @return the result of {@link de.laser.ControlledListService#getProvidersAgencies(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupProvidersAgencies() {
@@ -758,7 +758,7 @@ class AjaxHtmlController {
             token:  params.token,
             query:  params.query
         ]
-        result.id = params.id ? params.id != 'null' ? params.id as Long : '' : ''
+        result.id = params.id ? (params.id != 'null' ? params.long('id') : '') : ''
 
         if (params.context == BaseConfig.KEY_MYINST) {
             reportingGlobalService.doChartDetails( result, params ) // manipulates result

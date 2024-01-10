@@ -10,6 +10,7 @@ import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.mvc.FlashScope
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 import org.springframework.validation.FieldError
 
@@ -82,7 +83,7 @@ class UserService {
      * @param flash the message container
      * @return the new user object or the error messages (null) in case of failure
      */
-    User addNewUser(Map params, FlashScope flash) {
+    User addNewUser(GrailsParameterMap params, FlashScope flash) {
         Locale locale = LocaleUtils.getCurrentLocale()
         User user = new User(params)
         user.enabled = true

@@ -16,6 +16,7 @@ import de.laser.system.SystemEvent
 import de.laser.usage.StatsSyncServiceOptions
 import de.laser.usage.SushiClient
 import grails.gorm.transactions.Transactional
+import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.json.JsonOutput
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
@@ -131,7 +132,7 @@ class StatsSyncService {
      * Adds the platform and reporting institution IDs to the query parameter map
      * @param params the request parameter map
      */
-    void addFilters(params) {
+    void addFilters(GrailsParameterMap params) {
         queryParams = [:]
         if (params.supplier != 'null'){
             queryParams['supplier'] = params.supplier as long

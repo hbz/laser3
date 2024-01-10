@@ -362,19 +362,23 @@ class LicenseController {
         result.subscriptions = []
         result.putAll(_setSubscriptionFilterData())
         result.subscriptionsForFilter = []
-        if(params.status != 'FETCH_ALL') {
-            result.subscriptionsForFilter.addAll(Subscription.executeQuery("select l.destinationSubscription from Links l join l.destinationSubscription s where s.status.id = :status and l.sourceLicense = :lic and l.linkType = :linkType" , [status:params.status as Long, lic:result.license, linkType:RDStore.LINKTYPE_LICENSE] ))
+
+        if(params.status) {
+            result.subscriptionsForFilter.addAll(
+                    Subscription.executeQuery("select l.destinationSubscription from Links l join l.destinationSubscription s where s.status.id = :status and l.sourceLicense = :lic and l.linkType = :linkType",
+                    [status:params.long('status'), lic:result.license, linkType:RDStore.LINKTYPE_LICENSE]
+            ))
         }
-        else if(params.status == 'FETCH_ALL') {
+        else {
             result.subscriptionsForFilter.addAll(Subscription.executeQuery("select l.destinationSubscription from Links l where l.sourceLicense = :lic and l.linkType = :linkType" , [lic:result.license, linkType:RDStore.LINKTYPE_LICENSE] ))
         }
         if(result.license._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.license.getLicensingConsortium().id == result.institution.id) {
             Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
             Map<String,Object> queryParams = [lic:result.license, subscriberRoleTypes:subscriberRoleTypes, linkType:RDStore.LINKTYPE_LICENSE]
             String whereClause = ""
-            if(params.status != 'FETCH_ALL') {
+            if (params.status) {
                 whereClause += " and s.status.id = :status"
-                queryParams.status = params.status as Long
+                queryParams.status = params.long('status')
             }
             if(result.validOn) {
                 whereClause += " and ( ( s.startDate is null or s.startDate >= :validOn ) and ( s.endDate is null or s.endDate <= :validOn ) )"
@@ -457,6 +461,7 @@ class LicenseController {
             response.sendError(401); return
         }
         result.putAll(_setSubscriptionFilterData())
+
         Set<License> validMemberLicenses = License.findAllByInstanceOf(result.license)
         Set<Map<String,Object>> filteredMemberLicenses = []
         validMemberLicenses.each { License memberLicense ->
@@ -469,8 +474,9 @@ class LicenseController {
                 subQueryParams.validOn = result.dateRestriction
             }
             Set<Subscription> subscriptions = Subscription.executeQuery("select l.destinationSubscription from Links l join l.destinationSubscription s where l.sourceLicense = :lic and l.linkType = :linkType"+dateFilter,subQueryParams)
-            if(params.status != 'FETCH_ALL') {
-                subscriptions.removeAll { Subscription s -> s.status.id != params.status as Long }
+
+            if (params.status) {
+                subscriptions.removeAll { Subscription s -> s.status.id != params.long('status') }
             }
             if (params.subRunTimeMultiYear || params.subRunTime) {
                 if (params.subRunTimeMultiYear && !params.subRunTime) {
@@ -487,11 +493,14 @@ class LicenseController {
             //}
             //}
         }
-        String subQuery = "select l.destinationSubscription from Links l join l.destinationSubscription s where l.sourceLicense in (:licenses) and l.linkType = :linkType"
-        if(params.status == "FETCH_ALL" && validMemberLicenses)
-            result.subscriptionsForFilter = Subscription.executeQuery(subQuery,[linkType:RDStore.LINKTYPE_LICENSE,licenses:validMemberLicenses])
-        else if(validMemberLicenses) {
-            result.subscriptionsForFilter = Subscription.executeQuery(subQuery+" and s.status = :status",[linkType:RDStore.LINKTYPE_LICENSE, licenses:validMemberLicenses, status:RefdataValue.get(params.status as Long)])
+
+        if(validMemberLicenses) {
+            String subQuery = "select l.destinationSubscription from Links l join l.destinationSubscription s where l.sourceLicense in (:licenses) and l.linkType = :linkType "
+            if (params.status) {
+                result.subscriptionsForFilter = Subscription.executeQuery(subQuery + "and s.status = :status", [linkType:RDStore.LINKTYPE_LICENSE, licenses:validMemberLicenses, status:RefdataValue.get(params.long('status'))])
+            } else {
+                result.subscriptionsForFilter = Subscription.executeQuery(subQuery, [linkType:RDStore.LINKTYPE_LICENSE, licenses:validMemberLicenses])
+            }
         }
         result.validMemberLicenses = filteredMemberLicenses
         result
@@ -534,9 +543,6 @@ class LicenseController {
             if (!params.filterSet) {
                 params.status = RDStore.SUBSCRIPTION_CURRENT.id
                 result.defaultSet = true
-            }
-            else {
-                params.status = 'FETCH_ALL'
             }
         }
         result
