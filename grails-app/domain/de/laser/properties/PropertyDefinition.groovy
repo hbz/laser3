@@ -553,23 +553,6 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         return 0
     }
 
-    @Deprecated
-    @Transient
-    void removeProperty() {
-        log.debug("removeProperty")
-
-        withTransaction {
-            PropertyDefinition.executeUpdate('delete from LicenseProperty c where c.type = :self', [self: this])
-            PropertyDefinition.executeUpdate('delete from OrgProperty c where c.type = :self', [self: this])
-            PropertyDefinition.executeUpdate('delete from PersonProperty c where c.type = :self', [self: this])
-            PropertyDefinition.executeUpdate('delete from PlatformProperty c where c.type = :self', [self: this])
-            PropertyDefinition.executeUpdate('delete from SubscriptionProperty c where c.type = :self', [self: this])
-            PropertyDefinition.executeUpdate('delete from SurveyResult c where c.type = :self', [self: this])
-
-            this.delete()
-        }
-    }
-
     /**
      * Gets the translated value type name for the given type key
      * @param key the value type to determine

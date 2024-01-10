@@ -3,9 +3,8 @@
 <g:if test="${editmode}">
 
         <a role="button"
-           class="ui button la-modern-button ${tmplCss}"
+           class="ui button la-modern-button la-popup-tooltip la-delay ${tmplCss}"
            data-ui="modal" href="#${tmplModalID}"
-           class="la-popup-tooltip la-delay"
            data-content="${message(code:'license.details.editLink')}">
             <g:if test="${tmplIcon}">
                 <i class="${tmplIcon} icon"></i>

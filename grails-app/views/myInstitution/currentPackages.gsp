@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Package; de.laser.RefdataValue" %>
+<%@ page import="de.laser.helper.Params; de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Package; de.laser.RefdataValue" %>
 <laser:htmlStart message="menu.my.packages" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -44,7 +44,7 @@
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${ddcs}" var="ddc">
-                        <option <%=(params.list('ddc')?.contains(ddc.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'ddc').contains(ddc.id) ? 'selected="selected"' : ''%>
                                 value="${ddc.id}">
                             ${ddc.value} - ${ddc.getI10n("value")}
                         </option>

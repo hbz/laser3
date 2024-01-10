@@ -4,6 +4,7 @@ import de.laser.auth.User
 import de.laser.finance.CostItem
 import de.laser.config.ConfigDefaults
 import de.laser.finance.PriceItem
+import de.laser.helper.Params
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
 import de.laser.stats.Counter4ApiSource
@@ -1328,17 +1329,11 @@ class SurveyService {
             }
             if(params.ddcs && params.list("ddcs").size() > 0) {
                 filter += " and exists (select ddc.id from title.ddcs ddc where ddc.ddc.id in (:ddcs)) "
-                queryParams.ddcs = []
-                params.list("ddcs").each { String ddc ->
-                    queryParams.ddcs << Long.parseLong(ddc)
-                }
+                queryParams.ddcs = Params.getLongList(params, 'ddcs')
             }
             if(params.languages && params.list("languages").size() > 0) {
                 filter += " and exists (select lang.id from title.languages lang where lang.language.id in (:languages)) "
-                queryParams.languages = []
-                params.list("languages").each { String lang ->
-                    queryParams.languages << Long.parseLong(lang)
-                }
+                queryParams.languages = Params.getLongList(params, 'languages')
             }
 
             if (params.filter) {
@@ -1350,7 +1345,7 @@ class SurveyService {
 
             if (params.pkgfilter && (params.pkgfilter != '')) {
                 filter += " and title.pkg.id = :pkgId "
-                queryParams.pkgId = Long.parseLong(params.pkgfilter)
+                queryParams.pkgId = params.long('pkgfilter')
             }
 
             if(params.summaryOfContent) {

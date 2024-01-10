@@ -1,11 +1,11 @@
     <nav aria-label="Hauptmenü für WCAG-Testseite">
-        <div id="mainMenueTest" class="ui inverted stackable menu" role="menubar">
+        <nav id="mainMenueTest" class="ui inverted stackable menu menubar-navigation" role="menubar" tabindex="0">
             <div class="ui container" role="none">
                 <a href="#" aria-label="Start" class="header item la-logo-item">
                     <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
                 </a>
-                <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
-                    Alle
+                <div class="ui dropdown item" role="none">
+                    <a role="menuitem" aria-haspopup="true" tabindex="0">Alle</a>
                     <i class="dropdown icon"></i>
                    <div class="menu" role="menu" aria-label="das Menu">
                         <a id="1" href="#" class="item"  role="menuitem" aria-label="Alle Pakete" >Alle Pakete</a>
@@ -13,8 +13,8 @@
                         <a id="3" href="#" class="item" role="menuitem" aria-label="Alle Organisationen" >Alle Organisationen</a>
                     </div>
                 </div>
-                <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
-                    Meine Objekte
+                <div class="ui dropdown item" role="none">
+                    <a role="menuitem" aria-haspopup="true" tabindex="0">Meine Objekte</a>
                     <i class="dropdown icon"></i>
                     <div class="menu" role="menu">
                         <a id="4" href="#" class="item" role="menuitem" >Meine Lizenzen</a>
@@ -26,8 +26,8 @@
                         <a id="10" href="#" class="item" role="menuitem" >Meine Dokumente</a>
                     </div>
                 </div>
-                <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
-                    Meine Einrichtung
+                <div class="ui dropdown item" role="none">
+                    <a role="menuitem" aria-haspopup="true" tabindex="0">Meine Einrichtung</a>
                     <i class="dropdown icon"></i>
                     <div class="menu" role="menu">
                         <a id="11" href="#" class="item" role="menuitem" >Dashboard</a>
@@ -58,7 +58,7 @@
                        data-content="Erweiterte Suche">
                         <i class="large icons">
                             <i class="search icon"></i>
-                            <i class="top right grey corner plus icon "></i>
+                            <i class="top right grey corner plus icon"></i>
                         </i>
                     </a>
                     <div class="ui dropdown item la-noBorder" role="menuitem" aria-haspopup="true">
@@ -86,5 +86,5 @@
                     </div>
                 </div>
             </div><!-- container -->
-        </div><!-- main menu -->
+        </nav><!-- main menu -->
     </nav>

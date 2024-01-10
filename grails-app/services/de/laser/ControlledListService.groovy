@@ -5,7 +5,7 @@ import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
 import de.laser.finance.Invoice
 import de.laser.finance.Order
-import de.laser.utils.DatabaseUtils
+import de.laser.helper.Params
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.storage.RDStore
@@ -664,11 +664,8 @@ class ControlledListService {
     Set<String> getAllPossibleTitleTypesByStatus(GrailsParameterMap params) {
         Set<String> titleTypes = []
 
-       if(params.status != '' && params.status != null && params.list('status')) {
-            List<Long> statusList = []
-            params.list('status').each { String statusId ->
-                statusList << Long.parseLong(statusId)
-            }
+       if (params.list('status').findAll()) {
+           List<Long> statusList = Params.getLongList(params, 'status')
            String query = "select new map(titleType as name, titleType as value) from TitleInstancePackagePlatform tipp where tipp.titleType is not null and tipp.status.id in (:status) "
            Map queryMap = [status: statusList]
 
@@ -744,11 +741,8 @@ class ControlledListService {
         Set<String> mediumTypes = []
         String i18n = LocaleUtils.getCurrentLang()
 
-       if(params.status != '' && params.status != null && params.list('status')) {
-            List<Long> statusList = []
-            params.list('status').each { String statusId ->
-                statusList << Long.parseLong(statusId)
-            }
+       if (params.list('status').findAll()) {
+           List<Long> statusList = Params.getLongList(params, 'status')
            String query = "select new map(tipp.medium.value_"+i18n+" as name, tipp.medium.id as value) from TitleInstancePackagePlatform tipp where tipp.medium is not null and tipp.status.id in (:status) "
            Map queryMap = [status: statusList]
 
@@ -824,11 +818,8 @@ class ControlledListService {
         Set<Map> coverageDepths = []
         String i18n = LocaleUtils.getCurrentLang()
 
-       if(params.status != '' && params.status != null && params.list('status')) {
-            List<Long> statusList = []
-            params.list('status').each { String statusId ->
-                statusList << Long.parseLong(statusId)
-            }
+       if (params.list('status').findAll()) {
+           List<Long> statusList = Params.getLongList(params, 'status')
            String query = "select new map(rdv.value_"+i18n+" as name, rdv.id as value) from RefdataValue rdv where rdv.value in (select tc.coverageDepth from TIPPCoverage tc join tc.tipp tipp where tc.coverageDepth is not null and tipp.status.id in (:status) "
            Map queryMap = [status: statusList]
 
@@ -909,11 +900,8 @@ class ControlledListService {
     Set getAllPossibleSeriesByStatus(GrailsParameterMap params) {
         Set<Map> seriesName = []
 
-       if(params.status != '' && params.status != null && params.list('status')) {
-            List<Long> statusList = []
-            params.list('status').each { String statusId ->
-                statusList << Long.parseLong(statusId)
-            }
+       if (params.list('status').findAll()) {
+           List<Long> statusList = Params.getLongList(params, 'status')
            //fomantic UI dropdown expects maps in structure [name: name, value: value]; a pure set is not being accepted ...
            String query = "select new map(tipp.seriesName as name, tipp.seriesName as value) from TitleInstancePackagePlatform as tipp where tipp.seriesName is not null and tipp.status.id in (:status) "
            Map queryMap = [status: statusList]
@@ -993,11 +981,8 @@ class ControlledListService {
         Set<Map> ddcs = []
         String i18n = LocaleUtils.getCurrentLang()
 
-       if(params.status != '' && params.status != null && params.list('status')) {
-            List<Long> statusList = []
-            params.list('status').each { String statusId ->
-                statusList << Long.parseLong(statusId)
-            }
+       if (params.list('status').findAll()) {
+           List<Long> statusList = Params.getLongList(params, 'status')
            String query = "select new map(concat(ddc.ddc.value,' - ',ddc.ddc.value_"+i18n+") as name, ddc.ddc.id as value) from DeweyDecimalClassification ddc join ddc.tipp tipp where tipp.status.id in (:status) "
            Map queryMap = [status: statusList]
 
@@ -1072,11 +1057,8 @@ class ControlledListService {
         Set<Map> languages = []
         String i18n = LocaleUtils.getCurrentLang()
 
-       if(params.status != '' && params.status != null && params.list('status')) {
-            List<Long> statusList = []
-            params.list('status').each { String statusId ->
-                statusList << Long.parseLong(statusId)
-            }
+       if (params.list('status').findAll()) {
+           List<Long> statusList = Params.getLongList(params, 'status')
            String query = "select new map(lang.language.value_"+i18n+" as name, lang.language.id as value) from Language lang join lang.tipp tipp where tipp.status.id in (:status) "
            Map queryMap = [status: statusList]
 
@@ -1178,12 +1160,8 @@ class ControlledListService {
         SortedSet<String> subjects = new TreeSet<String>()
         List<String> rawSubjects = []
 
-       if(params.status != '' && params.status != null && params.list('status')) {
-            List<Long> statusList = []
-            params.list('status').each { String statusId ->
-                statusList << Long.parseLong(statusId)
-            }
-
+       if (params.list('status').findAll()) {
+           List<Long> statusList = Params.getLongList(params, 'status')
            String query = "select distinct(tipp.subjectReference) from TitleInstancePackagePlatform tipp where tipp.subjectReference is not null and tipp.status.id in (:status) "
            Map queryMap = [status: statusList]
 
@@ -1277,11 +1255,8 @@ class ControlledListService {
     Set getAllPossibleDateFirstOnlineYearByStatus(GrailsParameterMap params) {
         Set<Map> yearsFirstOnline = []
 
-       if(params.status != '' && params.status != null && params.list('status')) {
-            List<Long> statusList = []
-            params.list('status').each { String statusId ->
-                statusList << Long.parseLong(statusId)
-            }
+       if (params.list('status').findAll()) {
+           List<Long> statusList = Params.getLongList(params, 'status')
            String query = "select new map(Year(dateFirstOnline) as name, Year(dateFirstOnline) as value) from TitleInstancePackagePlatform tipp where tipp.dateFirstOnline is not null and tipp.status.id in (:status) "
            Map queryMap = [status: statusList]
 
@@ -1362,11 +1337,8 @@ class ControlledListService {
     Set<String> getAllPossiblePublisherByStatus(GrailsParameterMap params) {
         Set<String> publishers = []
 
-       if(params.status != '' && params.status != null && params.list('status')) {
-            List<Long> statusList = []
-            params.list('status').each { String statusId ->
-                statusList << Long.parseLong(statusId)
-            }
+       if (params.list('status').findAll()) {
+           List<Long> statusList = Params.getLongList(params, 'status')
            String query = "select new map(tipp.publisherName as name, tipp.publisherName as value) from TitleInstancePackagePlatform tipp where tipp.publisherName is not null and tipp.status.id in (:status) "
            Map queryMap = [status: statusList]
 

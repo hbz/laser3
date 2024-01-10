@@ -144,7 +144,7 @@ class Task {
         displayArgs
     }
 
-    String geObjectName() {
+    String getObjectName() {
         String name = ''
         if (license) {
             name = license.reference
@@ -160,9 +160,6 @@ class Task {
         }
         else if (surveyConfig) {
             name = surveyConfig.surveyInfo.name
-        }
-        else {
-            name = ''
         }
         name
     }

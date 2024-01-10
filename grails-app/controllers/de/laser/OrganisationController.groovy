@@ -280,7 +280,7 @@ class OrganisationController  {
     })
     def listInstitution() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
-        params.orgType   = RDStore.OT_INSTITUTION.id.toString()
+        params.orgType   = RDStore.OT_INSTITUTION.id
         params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
         if(!params.sort)
             params.sort = " LOWER(o.sortname)"
@@ -388,7 +388,7 @@ class OrganisationController  {
     })
     Map listConsortia() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
-        params.customerType   = Role.findByAuthority('ORG_CONSORTIUM_PRO').id.toString()
+        params.customerType = [Role.findByAuthority('ORG_CONSORTIUM_PRO').id, Role.findByAuthority('ORG_CONSORTIUM_BASIC').id]
         if(!params.sort)
             params.sort = " LOWER(o.sortname)"
         Map<String, Object> fsq = filterService.getOrgQuery(params)
@@ -1213,6 +1213,8 @@ class OrganisationController  {
         result.hasAccessToCustomeridentifier = ((inContextOrg && userService.hasFormalAffiliation(result.user, result.institution, 'INST_USER')) ||
                 (isComboRelated && userService.hasFormalAffiliation(result.user, result.institution, 'INST_USER')) ||
                 SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) && OrgSetting.get(result.orgInstance, OrgSetting.KEYS.CUSTOMER_TYPE) != OrgSetting.SETTING_NOT_FOUND
+
+        // TODO: erms-5495
 
         if (result.hasAccessToCustomeridentifier) {
 
@@ -2085,7 +2087,7 @@ class OrganisationController  {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     @Check404(domain=Org)
-    def myPublicContacts() {
+    def contacts() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
@@ -2113,7 +2115,7 @@ class OrganisationController  {
         if(params.sort.contains('p.'))
             adrParams.remove('sort')
 
-        List visiblePersons = addressbookService.getVisiblePersons("myPublicContacts", params)
+        List visiblePersons = addressbookService.getVisiblePersons("contacts", params)
         result.num_visiblePersons = visiblePersons.size()
         result.visiblePersons = visiblePersons.drop(result.offset).take(result.max)
 
@@ -2138,7 +2140,7 @@ class OrganisationController  {
 
         params.tab = params.tab ?: 'contacts'
 
-        result.addresses = addressbookService.getVisibleAddresses("myPublicContacts", adrParams)
+        result.addresses = addressbookService.getVisibleAddresses("contacts", adrParams)
 
         result
     }
@@ -2174,7 +2176,7 @@ class OrganisationController  {
             case [ 'addOrgType', 'deleteOrgType' ]:
                 isEditable = userService.hasFormalAffiliation_or_ROLEADMIN(user, Org.get(params.org), 'INST_ADM')
                 break
-            case 'myPublicContacts':
+            case 'contacts':
                 if (inContextOrg) {
                     isEditable = userHasEditableRights
                 }else{

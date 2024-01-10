@@ -57,7 +57,7 @@
                                   optionValue="${{ it.getI10n('value') }}"
                                   name="subStatus"
                                   id="subStatus"
-                                  value="${Subscription.get(params.id).status?.id.toString()}"/>
+                                  value="${Subscription.get(params.id).status?.id}"/>
                     </div>
                     <div class="field">
                         <label><g:message code="license.label"/></label>
