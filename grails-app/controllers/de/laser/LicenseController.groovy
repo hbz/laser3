@@ -364,7 +364,10 @@ class LicenseController {
         result.subscriptionsForFilter = []
 
         if(params.status) {
-            result.subscriptionsForFilter.addAll(Subscription.executeQuery("select l.destinationSubscription from Links l join l.destinationSubscription s where s.status.id = :status and l.sourceLicense = :lic and l.linkType = :linkType" , [status:params.status as Long, lic:result.license, linkType:RDStore.LINKTYPE_LICENSE] ))
+            result.subscriptionsForFilter.addAll(
+                    Subscription.executeQuery("select l.destinationSubscription from Links l join l.destinationSubscription s where s.status.id = :status and l.sourceLicense = :lic and l.linkType = :linkType",
+                    [status:params.long('status'), lic:result.license, linkType:RDStore.LINKTYPE_LICENSE]
+            ))
         }
         else {
             result.subscriptionsForFilter.addAll(Subscription.executeQuery("select l.destinationSubscription from Links l where l.sourceLicense = :lic and l.linkType = :linkType" , [lic:result.license, linkType:RDStore.LINKTYPE_LICENSE] ))

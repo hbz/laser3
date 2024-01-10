@@ -5,6 +5,7 @@ import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.annotations.RefdataInfo
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.helper.Params
 import de.laser.storage.RDConstants
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.GenericHelper
@@ -172,7 +173,7 @@ class ReportingTagLib {
         ]
         if ( GenericHelper.isFieldMultiple(attrs.config, attrs.refdata) ) {
             map.put('multiple', true)
-            map.put('value', params.list(filterName).collect { Long.parseLong(it) })
+            map.put('value', Params.getLongList(params, filterName))
         }
         else {
             map.put('value', params.int(filterName))

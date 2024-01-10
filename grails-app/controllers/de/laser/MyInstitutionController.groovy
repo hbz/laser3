@@ -421,7 +421,7 @@ class MyInstitutionController  {
                 params.status = RDStore.LICENSE_CURRENT.id
                 result.filterSet = true
             }
-            qry_params.status = params.status as Long
+            qry_params.status = params.long('status')
         }
 
 
@@ -451,7 +451,7 @@ class MyInstitutionController  {
                     params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id
                     result.filterSet = true
                 }
-                qry_params.subStatus = params.subStatus as Long
+                qry_params.subStatus = params.long('subStatus')
             }
 
             if (params.subKind) {

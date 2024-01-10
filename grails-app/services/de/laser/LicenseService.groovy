@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.helper.Params
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
 
@@ -83,15 +83,10 @@ class LicenseService {
                 )
             )))"""
 
-            if (params.status) {
-                if(params.status instanceof List){
-                    base_qry += " and l.status.id in (:status) "
-                    qry_params.put('status', params.status.collect { Long.valueOf(it) })
-                }else {
-                    base_qry += " and l.status.id = :status "
-                    qry_params.put('status', (params.status as Long))
-                }
-            }
+        if (params.status) {
+            base_qry += " and l.status.id in (:status) "
+            qry_params.put('status', Params.getLongList(params, 'status'))
+        }
 
         return [base_qry, qry_params]
     }
@@ -108,13 +103,8 @@ class LicenseService {
             )"""
 
         if (params.status) {
-            if(params.status instanceof List){
-                base_qry += " and l.status.id in (:status) "
-                qry_params.put('status', params.status.collect { Long.valueOf(it) })
-            }else {
-                base_qry += " and l.status.id = :status "
-                qry_params.put('status', (params.status as Long))
-            }
+            base_qry += " and l.status.id in (:status) "
+            qry_params.put('status', Params.getLongList(params, 'status'))
         }
 
         return [ base_qry, qry_params ]
@@ -132,13 +122,8 @@ class LicenseService {
             )"""
 
         if (params.status) {
-            if(params.status instanceof List){
-                base_qry += " and l.status.id in (:status) "
-                qry_params.put('status', params.status.collect { Long.valueOf(it) })
-            }else {
-                base_qry += " and l.status.id = :status "
-                qry_params.put('status', (params.status as Long))
-            }
+            base_qry += " and l.status.id in (:status) "
+            qry_params.put('status', Params.getLongList(params, 'status'))
         }
 
         return [ base_qry, qry_params ]
