@@ -14,7 +14,18 @@
                 href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
     </g:if>
 </div>
+<g:if test="${(tipp.titleType == 'Book') && (tipp.editionStatement || showEmptyFields)}">
+    <div class="item">
+        <i class="grey icon copy la-popup-tooltip la-delay"
+           data-content="${message(code: 'title.editionStatement.label')}"></i>
 
+        <div class="content">
+            <div class="description">
+                ${message(code: 'title.editionStatement.label') + ':'} ${tipp.editionStatement}
+            </div>
+        </div>
+    </div>
+</g:if>
 <div class="item">
     <g:if test="${controllerName != 'tipp' && tipp.id}">
         <g:link class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"

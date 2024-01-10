@@ -11,10 +11,10 @@
                 <g:each in="${tipps}" var="tipp">
                     <div class="ui raised segments la-accordion-segments">
 
-                        <g:render template="/templates/title_segment_accordion"
+                        <g:render template="/templates/titles/title_segment_accordion"
                                   model="[ie: null, tipp: tipp, permanentTitle: PermanentTitle.findByOwnerAndTipp(ptOwner, tipp)]"/>
 
-                        <g:render template="/templates/title_content_segment_accordion" model="[ie: null, tipp: tipp]"/>
+                        <g:render template="/templates/titles/title_content_segment_accordion" model="[ie: null, tipp: tipp]"/>
                     </div>
                 </g:each>
             </div>

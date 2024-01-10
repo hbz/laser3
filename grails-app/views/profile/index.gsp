@@ -34,7 +34,7 @@
                             <label for="profile_username">${message(code: 'profile.username')}</label>
                             <input type="text" readonly="readonly" id="profile_username" value="${user.username}"/>
                         </div>
-                        <div class="field ">
+                        <div class="field">
                             <label for="profile_display">${message(code: 'profile.display')}</label>
                             <input type="text" name="profile_display" id="profile_display" value="${user.display}"/>
                         </div>

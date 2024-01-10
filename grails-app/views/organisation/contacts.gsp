@@ -43,8 +43,7 @@
                     <label for="prs">${message(code: 'person.filter.name')}</label>
 
                     <div class="ui input">
-                        <input type="text" id="prs" name="prs" value="${params.prs}"
-                               placeholder="${message(code: 'person.filter.name')}"/>
+                        <input type="text" id="prs" name="prs" value="${params.prs}" placeholder="${message(code: 'person.filter.name')}"/>
                     </div>
                 </div>
 
@@ -74,10 +73,8 @@
 
             <div class="field la-field-right-aligned">
                 <label></label>
-                <a href="${request.forwardURI}"
-                   class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-                <input type="submit" class="ui primary button"
-                       value="${message(code: 'default.button.filter.label')}">
+                <a href="${request.forwardURI}" class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
+                <input type="submit" class="ui primary button" value="${message(code: 'default.button.filter.label')}">
             </div>
         </g:form>
     </ui:filter>
@@ -88,7 +85,7 @@
                         tmplConfigShow: ['lineNumber', 'name', 'showContacts', 'function', 'position']
               ]}"/>
 
-    <ui:paginate action="myPublicContacts" controller="organisation" params="${params}"
+    <ui:paginate action="contacts" controller="organisation" params="${params}"
                     max="${max}"
                     total="${num_visiblePersons}"/>
 
@@ -151,7 +148,7 @@
                         tmplConfigShow: ['lineNumber', 'name', 'showAddresses', 'function', 'position']
               ]}"/>
 
-    <ui:paginate action="myPublicContacts" controller="organisation" params="${params}"
+    <ui:paginate action="contacts" controller="organisation" params="${params}"
                     max="${max}"
                     total="${num_visiblePersons}"/>
 

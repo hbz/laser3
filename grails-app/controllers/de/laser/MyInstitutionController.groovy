@@ -182,7 +182,7 @@ class MyInstitutionController  {
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         String instanceFilter = "", perpetualFilter = ""
-        boolean withPerpetualAccess = params.hasPerpetualAccess == RDStore.YN_YES.id.toString()
+        boolean withPerpetualAccess = params.long('hasPerpetualAccess') == RDStore.YN_YES.id
         if(withPerpetualAccess)
             perpetualFilter = " or s2.hasPerpetualAccess = true "
 
@@ -228,40 +228,22 @@ class MyInstitutionController  {
             else if(!params.filterSet) {
                 result.filterSet = true
                 queryParams.status = "Current"
-                params.status = RDStore.PLATFORM_STATUS_CURRENT.id.toString()
+                params.status = RDStore.PLATFORM_STATUS_CURRENT.id
             }
 
             if(params.ipSupport) {
                 result.filterSet = true
-                List<String> ipSupport = params.list("ipSupport")
-                queryParams.ipAuthentication = []
-                ipSupport.each { String ip ->
-                    RefdataValue rdv = RefdataValue.get(ip)
-                    queryParams.ipAuthentication = rdv.value
-                }
+                queryParams.ipAuthentication = Params.getRefdataList(params, 'ipSupport').collect{ it.value }
             }
-
             if(params.shibbolethSupport) {
                 result.filterSet = true
-                List<String> shibbolethSupport = params.list("shibbolethSupport")
-                queryParams.shibbolethAuthentication = []
-                shibbolethSupport.each { String shibboleth ->
-                    RefdataValue rdv = RefdataValue.get(shibboleth)
-                    String shibb = rdv == RDStore.GENERIC_NULL_VALUE ? "null" : rdv.value
-                    queryParams.shibbolethAuthentication = shibb
-                }
+                queryParams.shibbolethAuthentication = Params.getRefdataList(params, 'shibbolethSupport').collect{ (it == RDStore.GENERIC_NULL_VALUE) ? 'null' : it.value }
             }
-
             if(params.counterCertified) {
                 result.filterSet = true
-                List<String> counterCertified = params.list("counterCertified")
-                queryParams.counterCeritified = []
-                counterCertified.each { String counter ->
-                    RefdataValue rdv = RefdataValue.get(counter)
-                    String cert = rdv == RDStore.GENERIC_NULL_VALUE ? "null" : rdv.value
-                    queryParams.counterCertified << cert
-                }
+                queryParams.counterCertified = Params.getRefdataList(params, 'counterCertified').collect{ (it == RDStore.GENERIC_NULL_VALUE) ? 'null' : it.value }
             }
+
             List wekbIds = gokbService.doQuery([max:10000, offset:0], params.clone(), queryParams).records.collect { Map hit -> hit.uuid }
 
             qryParams3.wekbIds = wekbIds
@@ -402,13 +384,9 @@ class MyInstitutionController  {
         }
         result.licenseFilterTable = licenseFilterTable
 
-        if(params.consortium) {
+        if (params.consortium) {
             base_qry += " and ( exists ( select o from l.orgRelations as o where o.roleType = :licCons and o.org.id in (:cons) ) ) "
-            List<Long> consortia = []
-            List<String> selCons = params.list('consortium')
-            selCons.each { String sel ->
-                consortia << Long.parseLong(sel)
-            }
+            List<Long> consortia = Params.getLongList(params, 'consortium')
             qry_params += [licCons:RDStore.OR_LICENSING_CONSORTIUM, cons:consortia]
         }
 
@@ -426,27 +404,16 @@ class MyInstitutionController  {
             qry_params = psq.queryParams
         }
 
-        if(params.licensor) {
-            base_qry += " and ( exists ( select o from l.orgRelations as o where o.roleType in (:licCons) and o.org.id in (:licensors) ) ) "
-            List<Long> licensors = []
-            List<String> selLicensors = params.list('licensor')
-            selLicensors.each { String sel ->
-                licensors << Long.parseLong(sel)
-            }
-            qry_params += [licCons:[RDStore.OR_LICENSOR, RDStore.OR_AGENCY],licensors:licensors]
+        if (params.licensor) {
+            base_qry += " and ( exists ( select o from l.orgRelations as o where o.roleType in (:licAgncy) and o.org.id in (:licensors) ) ) "
+            List<Long> licensors = Params.getLongList(params, 'licensor')
+            qry_params += [licAgncy:[RDStore.OR_LICENSOR, RDStore.OR_AGENCY], licensors:licensors]
         }
 
-        if(params.categorisation) {
+        if (params.categorisation) {
             base_qry += " and l.licenseCategory.id in (:categorisations) "
-            List<Long> categorisations = []
-            List<String> selCategories = params.list('categorisation')
-            selCategories.each { String sel ->
-                categorisations << Long.parseLong(sel)
-            }
-            qry_params.categorisations = categorisations
+            qry_params.categorisations = Params.getLongList(params, 'categorisation')
         }
-
-
 
         if(params.status || !params.filterSubmit) {
             base_qry += " and l.status.id = :status "
@@ -487,14 +454,9 @@ class MyInstitutionController  {
                 qry_params.subStatus = params.subStatus as Long
             }
 
-            if(params.subKind) {
+            if (params.subKind) {
                 subscrQueryFilter << "s.kind.id in (:subKinds)"
-                List<Long> subKinds = []
-                List<String> selKinds = params.list('subKind')
-                selKinds.each { String sel ->
-                    subKinds << Long.parseLong(sel)
-                }
-                qry_params.subKinds = subKinds
+                qry_params.subKinds = Params.getLongList(params, 'subKind')
             }
 
             if (contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()) {
@@ -537,7 +499,10 @@ class MyInstitutionController  {
             result.orgRoles.put(oo.lic.id,oo.roleType)
         }
         prf.setBenchmark('get consortia')
-        Set<Org> consortia = Org.executeQuery("select os.org from OrgSetting os where os.key = 'CUSTOMER_TYPE' and os.roleValue in (select r from Role r where authority = 'ORG_CONSORTIUM_BASIC') order by os.org.name asc")
+        Set<Org> consortia = Org.executeQuery(
+                "select os.org from OrgSetting os where os.key = 'CUSTOMER_TYPE' and os.roleValue in (select r from Role r where authority in (:consList)) order by os.org.name asc",
+                [consList: ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO']]
+        )
         prf.setBenchmark('get licensors')
         Set<Org> licensors = orgTypeService.getOrgsForTypeLicensor()
         Map<String,Set<Org>> orgs = [consortia:consortia,licensors:licensors]
@@ -1436,39 +1401,9 @@ class MyInstitutionController  {
 		Profiler prf = new Profiler()
 		prf.setBenchmark('init')
 
-        if(params.tab){
-            switch(params.tab) {
-                case 'currentIEs': params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-                    break
-                case 'plannedIEs': params.status = [RDStore.TIPP_STATUS_EXPECTED.id.toString()]
-                    break
-                case 'expiredIEs': params.status = [RDStore.TIPP_STATUS_RETIRED.id.toString()]
-                    break
-                case 'deletedIEs': params.status = [RDStore.TIPP_STATUS_DELETED.id.toString()]
-                    break
-                case 'allIEs': params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_EXPECTED.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString(), RDStore.TIPP_STATUS_DELETED.id.toString()]
-                    break
-            }
-        }
-        else if(params.list('status').size() == 1) {
-            switch(params.list('status')[0]) {
-                case RDStore.TIPP_STATUS_CURRENT.id.toString(): params.tab = 'currentIEs'
-                    break
-                case RDStore.TIPP_STATUS_RETIRED.id.toString(): params.tab = 'expiredIEs'
-                    break
-                case RDStore.TIPP_STATUS_EXPECTED.id.toString(): params.tab = 'plannedIEs'
-                    break
-                case RDStore.TIPP_STATUS_DELETED.id.toString(): params.tab = 'deletedIEs'
-                    break
-            }
-        }else{
-            if(params.list('status').size() > 1){
-                params.tab = 'allIEs'
-            }else {
-                params.tab = 'currentIEs'
-                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-            }
-        }
+        Map ttParams = FilterLogic.resolveParamsForTopAttachedTitleTabs(params, 'IEs')
+        if (ttParams.status) { params.status = ttParams.status }
+        if (ttParams.tab)    { params.tab = ttParams.tab }
 
         Set<RefdataValue> orgRoles = []
         List<String> queryFilter = [], subscriptionQueryFilter = []
@@ -1613,13 +1548,9 @@ class MyInstitutionController  {
         List<String> countQueryFilter = queryFilter.clone()
         Map<String, Object> countQueryParams = qryParams.clone()
 
-        if(params.status != '' && params.status != null && params.list('status')) {
-            List<Long> status = []
-            params.list('status').each { String statusId ->
-                status << RefdataValue.get(statusId)
-            }
+        if (params.list('status').findAll()) {
             queryFilter << "ie.status in (:status)"
-            qryParams.status = status
+            qryParams.status = Params.getRefdataList(params, 'status')
         }
         countQueryFilter << "ie.status != :removed"
         countQueryParams.removed = RDStore.TIPP_STATUS_REMOVED
@@ -1644,6 +1575,7 @@ class MyInstitutionController  {
             qryParams = [cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER], contextOrg: result.institution, roleTypes: orgRoles, current: RDStore.SUBSCRIPTION_CURRENT, removed: RDStore.TIPP_STATUS_REMOVED]
         }
         */
+
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-256")
         Map<String, Object> cachingKeys = params.clone()
         cachingKeys.remove("offset")
@@ -1828,37 +1760,9 @@ class MyInstitutionController  {
 
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        if(params.tab){
-            if(params.tab == 'currentIEs'){
-                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-            }else if(params.tab == 'plannedIEs'){
-                //params.status = [RDStore.TIPP_STATUS_EXPECTED.id.toString()]
-            }else if(params.tab == 'expiredIEs'){
-                params.status = [RDStore.TIPP_STATUS_RETIRED.id.toString()]
-            }else if(params.tab == 'deletedIEs'){
-                params.status = [RDStore.TIPP_STATUS_DELETED.id.toString()]
-            }else if(params.tab == 'allIEs'){
-                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_EXPECTED.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString(), RDStore.TIPP_STATUS_DELETED.id.toString()]
-            }
-        }
-        else if(params.list('status').size() == 1) {
-            if(params.list('status')[0] == RDStore.TIPP_STATUS_CURRENT.id.toString()){
-                params.tab = 'currentIEs'
-            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_RETIRED.id.toString()){
-                params.tab = 'expiredIEs'
-            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_EXPECTED.id.toString()){
-                //params.tab = 'plannedIEs'
-            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_DELETED.id.toString()){
-                params.tab = 'deletedIEs'
-            }
-        }else{
-            if(params.list('status').size() > 1){
-                params.tab = 'allIEs'
-            }else {
-                params.tab = 'currentIEs'
-                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-            }
-        }
+        Map ttParams = FilterLogic.resolveParamsForTopAttachedTitleTabs(params, 'IEs', true)
+        if (ttParams.status) { params.status = ttParams.status }
+        if (ttParams.tab)    { params.tab = ttParams.tab }
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
@@ -1966,7 +1870,7 @@ class MyInstitutionController  {
 
             if (params.ddc && params.list('ddc').size() > 0) {
                 qry3 += " and ((exists (select ddc.id from DeweyDecimalClassification ddc where ddc.ddc.id in (:ddcs) and ddc.tipp.pkg = pkg)) or (exists (select ddc.id from DeweyDecimalClassification ddc where ddc.ddc.id in (:ddcs) and ddc.pkg = pkg)))"
-                qryParams3.put('ddcs', params.list("ddc").collect { String ddc -> Long.parseLong(ddc) })
+                qryParams3.put('ddcs', Params.getLongList(params, 'ddc'))
             }
 
             qry3 += " group by pkg, s"
@@ -2286,7 +2190,7 @@ class MyInstitutionController  {
             if(!(newYear in result.surveyYears)){
                 result.surveyYears << newYear
             }
-            params.validOnYear = [newYear]
+            //params.validOnYear = [newYear]
         }
 
         result.propList = PropertyDefinition.findAll( "select sur.type from SurveyResult as sur where sur.participant = :contextOrg order by sur.type.name_de asc", [contextOrg: result.contextOrg]).groupBy {it}.collect {it.key}
@@ -2364,7 +2268,7 @@ class MyInstitutionController  {
         result.contextOrg = contextService.getOrg()
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
-        result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(Long.parseLong(params.surveyConfigID.toString())) : result.surveyInfo.surveyConfigs[0]
+        result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.long('surveyConfigID')) : result.surveyInfo.surveyConfigs[0]
 
         result.surveyResults = []
         result.minimalInput = false
@@ -3087,7 +2991,7 @@ class MyInstitutionController  {
 
             // new: filter preset
             result.comboType = 'Consortium'
-            params.orgType = RDStore.OT_INSTITUTION.id.toString()
+            params.orgType = RDStore.OT_INSTITUTION.id
             params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
 
             if (params.selectedOrgs) {
@@ -3195,31 +3099,34 @@ class MyInstitutionController  {
         Map<String, Object> queryParams = [ctxOrg: contextService.getOrg()]
 
         if (result.filterTargetType) {
-            if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_AGENCY.id.toString()) {
+            Long filterTargetType = Long.valueOf(result.filterTargetType)
+
+            if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_AGENCY.id) {
                 idQuery = idQuery + ' and wf.org is not null'
                 idQuery = idQuery + ' and exists (select ot from wf.org.orgType as ot where ot = :orgType )'
                 queryParams.put('orgType', RDStore.OT_AGENCY)
             }
-            if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION.id.toString()) {
+            if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION.id) {
                 idQuery = idQuery + ' and wf.org is not null'
                 idQuery = idQuery + ' and exists (select ot from wf.org.orgType as ot where ot = :orgType )'
                 queryParams.put('orgType', RDStore.OT_INSTITUTION)
             }
-            else if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_LICENSE.id.toString()) {
+            else if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_LICENSE.id) {
                 idQuery = idQuery + ' and wf.license is not null'
             }
-            else if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_OWNER.id.toString()) {
+            else if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_OWNER.id) {
                 idQuery = idQuery + ' and wf.org = :ctxOrg'
             }
-            else if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_PROVIDER.id.toString()) {
+            else if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_PROVIDER.id) {
                 idQuery = idQuery + ' and wf.org is not null'
                 idQuery = idQuery + ' and exists (select ot from wf.org.orgType as ot where ot = :orgType )'
                 queryParams.put('orgType', RDStore.OT_PROVIDER)
             }
-            if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION.id.toString()) {
+            if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION.id) {
                 idQuery = idQuery + ' and wf.subscription is not null'
             }
         }
+
         if (result.filterTemplates) {
             if (result.filterTemplates == 'yes') {
                 idQuery = idQuery + ' and wf.template = true'
@@ -3251,10 +3158,12 @@ class MyInstitutionController  {
         result.currentWorkflows = WfChecklist.executeQuery(resultQuery, [idList: checklistIds])
 
         if (result.filterStatus) {
-            if (result.filterStatus == RDStore.WF_WORKFLOW_STATUS_OPEN.id.toString()) {
+            Long filterStatus = Long.valueOf(result.filterStatus)
+
+            if (filterStatus == RDStore.WF_WORKFLOW_STATUS_OPEN.id) {
                 result.currentWorkflows = result.openWorkflows
             }
-            else if (result.filterStatus == RDStore.WF_WORKFLOW_STATUS_DONE.id.toString()) {
+            else if (filterStatus == RDStore.WF_WORKFLOW_STATUS_DONE.id) {
                 result.currentWorkflows = result.doneWorkflows
             }
         }
@@ -3281,7 +3190,6 @@ class MyInstitutionController  {
 
         // new: filter preset
         result.comboType = RDStore.COMBO_TYPE_CONSORTIUM
-        //params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
@@ -3292,8 +3200,6 @@ class MyInstitutionController  {
         queryParams.comboType = result.comboType.value
         queryParams.invertDirection = true
         Map<String, Object> fsq = filterService.getOrgComboQuery(queryParams, result.institution)
-        //def tmpQuery = "select o.id " + fsq.query.minus("select o ")
-        //def memberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
 
 		prf.setBenchmark('query')
 
@@ -3301,7 +3207,7 @@ class MyInstitutionController  {
         result.totalConsortia    = totalConsortia
         result.consortiaCount    = totalConsortia.size()
         result.consortia         = totalConsortia.drop((int) result.offset).take((int) result.max)
-        String header = message(code: 'menu.my.consortia')
+
         String exportHeader = message(code: 'export.my.consortia')
         SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
         // Write the output to a file
@@ -3480,7 +3386,7 @@ join sub.orgRelations or_sub where
         if(providers || params.filterPvd) {
             querySubs += " and or_pa.org.id in (:providers)"
             if(params.filterPvd){
-                queryParamsSubs << [providers: params.list('filterPvd').collect { Long.parseLong(it) }]
+                queryParamsSubs << [providers: Params.getLongList(params, 'filterPvd')]
             }
             else {
                 queryParamsSubs << [providers: providers.collect { it.id }]
@@ -4072,7 +3978,7 @@ join sub.orgRelations or_sub where
 
         DateFormat sdFormat = DateUtils.getLocalizedSDF_noTime()
 
-        result.participant = Org.get(Long.parseLong(params.id))
+        result.participant = Org.get(params.long('id'))
 
         params.tab = params.tab ?: 'open'
 
@@ -4288,15 +4194,6 @@ join sub.orgRelations or_sub where
 
         //params.remove('filterPropDef')
 
-        //Set<Subscription> validSubChildren = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent order by oo.org.sortname asc",[parent:result.parentSub])
-        /*Sortieren
-        result.validSubChilds = validSubChilds.sort { Subscription a, Subscription b ->
-            def sa = a.getSubscriber()
-            def sb = b.getSubscriber()
-            (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
-        }*/
-        //result.validSubChilds = validSubChildren
-
         if(propDef) {
             result.putAll(propertyService.getAvailableProperties(propDef, result.institution, params))
             result.countObjWithoutProp = result.withoutProp.size()
@@ -4312,26 +4209,6 @@ join sub.orgRelations or_sub where
             result.filterPropDef = propDef
         }
 
-        /*
-        def oldID = params.id
-        params.id = result.parentSub.id
-
-        ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
-        result.filteredSubChilds = new ArrayList<Subscription>()
-        result.validSubChilds.each { Subscription sub ->
-            List<Org> subscr = sub.getAllSubscribers()
-            def filteredSubscr = []
-            subscr.each { Org subOrg ->
-                if (filteredOrgIds.contains(subOrg.id)) {
-                    filteredSubscr << subOrg
-                }
-            }
-            if (filteredSubscr) {
-                result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
-            }
-        }
-
-        params.id = oldID*/
         //prepare next pagination
         params.withoutPropOffset = result.withoutPropOffset
         params.withPropOffset = result.withPropOffset

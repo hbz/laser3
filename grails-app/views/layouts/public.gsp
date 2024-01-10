@@ -25,6 +25,8 @@
 
     <body class="public">
 
+        <ui:skipLink />%{-- skip to main content - for screenreader --}%
+
         <g:layoutBody/>%{-- body here --}%
     
         <div id="Footer">

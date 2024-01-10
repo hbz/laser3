@@ -2,7 +2,7 @@
 <laser:serviceInjection />
 <g:if test="${isMyPlatform || isMyPkg || isMyOrg}">
 
-<div class="la-additionalIcon">
+<span class="la-additionalIcon">
   <g:if test="${isMyPlatform}">
     <i class="icon circular star la-objectIsMine la-popup-tooltip la-delay" data-content="${message(code: 'license.relationship.platform')}" data-position="left center" data-variation="tiny" ></i>
   </g:if>
@@ -12,7 +12,7 @@
   <g:if test="${isMyOrg}">
     <i class="icon circular star la-objectIsMine la-popup-tooltip la-delay" data-content="${message(code: 'license.relationship.org')}" data-position="left center" data-variation="tiny" ></i>
   </g:if>
-</div>
+</span>
 
 %{--<laser:script file="${this.getGroovyPageFileName()}">--}%
 %{--  $(document).ready(function() {--}%

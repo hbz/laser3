@@ -8,7 +8,7 @@ class DropdownTagLib {
 
     def controlButtons = { attrs, body ->
 
-        out << '<nav class="ui icon buttons la-ctrls la-js-dont-hide-button" aria-label="' + message(code: 'wcag.label.actionMenu') + '">'
+        out << '<nav class="ui icon buttons la-js-ctrls la-js-dont-hide-button" aria-label="' + message(code: 'wcag.label.actionMenu') + '">'
         out <<   body()
         out << '</nav>'
     }

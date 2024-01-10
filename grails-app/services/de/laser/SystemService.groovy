@@ -102,21 +102,31 @@ class SystemService {
 
             if (recipients) {
                 SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd_HHmmss()
-                List<SystemEvent> events = SystemEvent.executeQuery(
-                        "select se from SystemEvent se where se.created > (CURRENT_DATE-1) and se.relevance in ('WARNING', 'ERROR') order by se.created desc"
-                )
+
+                String query             = "from SystemEvent se where se.created > (CURRENT_DATE-1) and se.relevance in ('WARNING', 'ERROR')"
+                List<SystemEvent> seList = SystemEvent.executeQuery( "select se " + query + " order by se.created desc" )
+                List relCounts           = SystemEvent.executeQuery( "select se.relevance, count(*) " + query + " group by se.relevance order by se.relevance desc" )
+
+                Map<String, Object> eCounts = [:]
+                seList.each { e ->
+                    String key   = "${e.getSource()} -> ${e.getEvent()}"
+                    eCounts[key] = eCounts[key] ? eCounts[key] + 1 : 1
+                }
 
                 Map<String, Object> output = [
                         system      : "${ConfigMapper.getLaserSystemId()}",
                         server      : "${AppUtils.getCurrentServer()}",
                         created     : "${sdf.format(new Date())}",
-                        data_type   : "SystemEvent",
-                        data_count  : events.size(),
+                        meta        :  [
+                                data_type   : "SystemEvent",
+                                level_count : relCounts.collectEntries{ it },
+                                event_count : eCounts
+                        ],
                         data        : []
                 ]
 
-                if (events) {
-                    events.each { e ->
+                if (seList) {
+                    seList.each { e ->
                         Map<String, Object> data = [
                                 created : "${sdf.format(e.created)}",
                                 level   : "${e.relevance.value}",

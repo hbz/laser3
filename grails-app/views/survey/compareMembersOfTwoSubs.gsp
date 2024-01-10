@@ -349,7 +349,7 @@
                                            value="${!(participant.id in parentSuccessortParticipantsList?.id)}"/>
                                     <g:set var="participantSub"
                                            value="${parentSubscription.getDerivedSubscriptionBySubscribers(participant)}"/>
-                                    <tr class=" ${termination ? 'negative' : ''}">
+                                    <tr class="${termination ? 'negative' : ''}">
                                         <g:set var="count" value="${count + 1}"/>
                                         <td>${count}</td>
                                         <td class="titleCell">
@@ -413,7 +413,7 @@
                                 <g:if test="${participant.id in parentSuccessortParticipantsList?.id}">
                                     <g:set var="participantSub"
                                            value="${parentSuccessorSubscription.getDerivedSubscriptionBySubscribers(participant)}"/>
-                                    <tr class=" ${participant.id in parentParticipantsList?.id ? '' : 'positive'}">
+                                    <tr class="${participant.id in parentParticipantsList?.id ? '' : 'positive'}">
                                         <g:set var="count2" value="${count2 + 1}"/>
                                         <td>${count2}</td>
                                         <td class="titleCell">

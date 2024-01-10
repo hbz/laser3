@@ -517,7 +517,7 @@ class SurveyController {
         result.user = contextService.getUser()
         result.editable = true
 
-        result.subscription = Subscription.get(Long.parseLong(params.sub))
+        result.subscription = Subscription.get( params.long('sub') )
         if (!result.subscription) {
             redirect action: 'createSubscriptionSurvey'
             return
@@ -542,7 +542,7 @@ class SurveyController {
         result.user = contextService.getUser()
         result.editable = true
 
-        result.subscription = Subscription.get(Long.parseLong(params.sub))
+        result.subscription = Subscription.get( params.long('sub') )
         result.pickAndChoose = true
         if (!result.subscription) {
             redirect action: 'createIssueEntitlementsSurvey'
@@ -579,7 +579,7 @@ class SurveyController {
             }
         }
 
-        Subscription subscription = Subscription.get(Long.parseLong(params.sub))
+        Subscription subscription = Subscription.get( params.long('sub') )
         boolean subSurveyUseForTransfer = (SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(subscription, true)) ? false : (params.subSurveyUseForTransfer ? true : false)
         SurveyInfo surveyInfo
         SurveyInfo.withTransaction { TransactionStatus ts ->
@@ -627,6 +627,18 @@ class SurveyController {
                     /*if (configProperty.save() && configProperty2.save()) {
                         surveyService.addSubMembers(surveyConfig)
                     }*/
+
+                    if (configProperty.save()) {
+                        surveyService.addSubMembers(surveyConfig)
+                    }
+                }
+
+                //Alle Title-Umfragen Teilnahme-Merkmale hinzufügen
+                if (surveyConfig.pickAndChoose) {
+                    SurveyConfigProperties configProperty = new SurveyConfigProperties(
+                            surveyProperty: PropertyStore.SURVEY_PROPERTY_PARTICIPATION,
+                            surveyConfig: surveyConfig,
+                            mandatoryProperty: true)
 
                     if (configProperty.save()) {
                         surveyService.addSubMembers(surveyConfig)
@@ -696,7 +708,7 @@ class SurveyController {
                 redirect(action: 'addSubtoIssueEntitlementsSurvey', params: params)
                 return
             }
-            Subscription subscription = Subscription.get(Long.parseLong(params.sub))
+            Subscription subscription = Subscription.get( params.long('sub') )
             if (subscription && !SurveyConfig.findAllBySubscriptionAndSurveyInfo(subscription, surveyInfo)) {
                 SurveyConfig surveyConfig = new SurveyConfig(
                         subscription: subscription,
@@ -962,7 +974,7 @@ class SurveyController {
         result.selectedParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsq.query, fsq.queryParams, params)
         result.selectedSubParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsq.query, fsq.queryParams, params)
 
-        params.tab = params.tab ?: (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY ? 'selectedParticipants' : 'selectedSubParticipants')
+        params.tab = params.tab ?: (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY ? 'selectedParticipants' : ((result.selectedSubParticipantsCount == 0) ? 'selectedParticipants' : 'selectedSubParticipants'))
 
         result
 
@@ -1110,7 +1122,7 @@ class SurveyController {
 
             RefdataValue cost_item_status = (params.newCostItemStatus && params.newCostItemStatus != RDStore.GENERIC_NULL_VALUE.id.toString()) ? (RefdataValue.get(params.long('newCostItemStatus'))) : null
             RefdataValue cost_item_element = params.newCostItemElement ? (RefdataValue.get(params.long('newCostItemElement'))) : null
-            RefdataValue cost_item_element_configuration = (params.ciec && params.ciec != 'null') ? RefdataValue.get(Long.parseLong(params.ciec)) : null
+            RefdataValue cost_item_element_configuration = (params.ciec && params.ciec != 'null') ? RefdataValue.get(params.long('ciec')) : null
 
             String costDescription = params.newDescription ? params.newDescription.trim() : null
             String costTitle = params.newCostTitle ? params.newCostTitle.trim() : null
@@ -2326,10 +2338,10 @@ class SurveyController {
         if (result.surveyInfo && result.editable) {
 
             if (params.selectedProperty) {
-                PropertyDefinition property = PropertyDefinition.get(Long.parseLong(params.selectedProperty))
+                PropertyDefinition property = PropertyDefinition.get(params.long('selectedProperty'))
                 //Config is Sub
                 if (params.surveyConfigID) {
-                    SurveyConfig surveyConfig = SurveyConfig.get(Long.parseLong(params.surveyConfigID))
+                    SurveyConfig surveyConfig = SurveyConfig.get(params.long('surveyConfigID'))
 
                     if (surveyService.addSurPropToSurvey(surveyConfig, property)) {
 
@@ -2405,7 +2417,7 @@ class SurveyController {
         if ((!surveyProperty) && params.pd_name && params.pd_type) {
             RefdataCategory rdc
             if (params.refdatacategory) {
-                rdc = RefdataCategory.findById(Long.parseLong(params.refdatacategory))
+                rdc = RefdataCategory.findById(params.long('refdatacategory'))
             }
 
             Map<String, Object> map = [
@@ -2935,7 +2947,7 @@ class SurveyController {
         result.surveyOrgList = []
 
         if (params.get('orgsIDs')) {
-            List idList = (params.get('orgsIDs')?.split(',').collect { Long.valueOf(it.trim()) }).toList()
+            List<Long> idList = Params.getLongList_forCommaSeparatedString(params, 'orgsIDs')
             List<Org> orgList = Org.findAllByIdInList(idList)
             result.surveyOrgList = orgList.isEmpty() ? [] : SurveyOrg.findAllByOrgInListAndSurveyConfig(orgList, result.surveyConfig)
         }
@@ -3312,7 +3324,7 @@ class SurveyController {
             result.sourceLicenses = License.executeQuery(sourceLicensesQuery, [sub: result.surveyConfig.subscription, linkType: RDStore.LINKTYPE_LICENSE])
         }
         
-        result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList(params.list('targetSubs').collect { it -> Long.parseLong(it) }): null
+        result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList( Params.getLongList(params, 'targetSubs') ): null
 
         result
 
@@ -3369,7 +3381,7 @@ class SurveyController {
 
         if (baseSurveyInfo && baseSurveyConfig) {
 
-            result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList(params.list('targetSubs').collect { it -> Long.parseLong(it) }): null
+            result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList( Params.getLongList(params, 'targetSubs') ): null
 
             List newSurveyIds = []
 
@@ -3679,7 +3691,7 @@ class SurveyController {
         result.orgList = []
 
         if (params.get('orgListIDs')) {
-            List idList = (params.get('orgListIDs').split(',').collect { Long.valueOf(it.trim()) }).toList()
+            List<Long> idList = Params.getLongList_forCommaSeparatedString(params, 'orgListIDs')
             result.orgList = idList.isEmpty() ? [] : Org.findAllByIdInList(idList)
         }
 
@@ -3788,7 +3800,7 @@ class SurveyController {
                         break
                 }
             }
-            RefdataValue cost_item_element_configuration = (params.ciec && params.ciec != 'null') ? RefdataValue.get(Long.parseLong(params.ciec)) : null
+            RefdataValue cost_item_element_configuration = (params.ciec && params.ciec != 'null') ? RefdataValue.get(params.long('ciec')) : null
 
             boolean cost_item_isVisibleForSubscriber = false
             // (params.newIsVisibleForSubscriber ? (RefdataValue.get(params.newIsVisibleForSubscriber).value == 'Yes') : false)
@@ -4423,19 +4435,19 @@ class SurveyController {
                 }
                 if(params.tab == 'customProperties') {
                     newMap.newCustomProperty = (sub) ? sub.propertySet.find {
-                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty)) && it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
+                        it.type.id == Long.valueOf(result.selectedProperty) && it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
                     } : null
                     newMap.oldCustomProperty = (newMap.oldSub) ? newMap.oldSub.propertySet.find {
-                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty)) && it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
+                        it.type.id == Long.valueOf(result.selectedProperty) && it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
                     } : null
                 }
 
                 if(params.tab == 'privateProperties') {
                     newMap.newPrivateProperty = (sub) ? sub.propertySet.find {
-                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty)) && it.type.tenant?.id == result.contextOrg.id
+                        it.type.id == Long.valueOf(result.selectedProperty) && it.type.tenant?.id == result.contextOrg.id
                     } : null
                     newMap.oldPrivateProperty = (newMap.oldSub) ? newMap.oldSub.propertySet.find {
-                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty)) && it.type.tenant?.id == result.contextOrg.id
+                        it.type.id == Long.valueOf(result.selectedProperty) && it.type.tenant?.id == result.contextOrg.id
                     } : null
                 }
 
@@ -4485,7 +4497,7 @@ class SurveyController {
             if (params.tab == 'surveyProperties') {
                 result.selectedProperty = params.selectedProperty ?: null
 
-                surveyProperty = params.copyProperty ? PropertyDefinition.get(Long.parseLong(params.copyProperty)) : null
+                surveyProperty = params.copyProperty ? PropertyDefinition.get(params.long('copyProperty')) : null
 
                 propDef = surveyProperty ? PropertyDefinition.getByNameAndDescr(surveyProperty.name, PropertyDefinition.SUB_PROP) : null
                 if (!propDef && surveyProperty) {
@@ -4507,7 +4519,7 @@ class SurveyController {
 
             } else {
                 result.selectedProperty = params.selectedProperty ?: null
-                propDef = params.selectedProperty ? PropertyDefinition.get(Long.parseLong(params.selectedProperty)) : null
+                propDef = params.selectedProperty ? PropertyDefinition.get(params.long('selectedProperty')) : null
             }
 
             Integer countSuccessfulCopy = 0
@@ -5417,7 +5429,7 @@ class SurveyController {
 
         if(params.deleteSurveyUrl){
             SurveyConfig.withTransaction { TransactionStatus ts ->
-                SurveyUrl surveyUrl = SurveyUrl.get(Long.parseLong(params.deleteSurveyUrl))
+                SurveyUrl surveyUrl = SurveyUrl.get(params.long('deleteSurveyUrl'))
                 surveyUrl.delete()
             }
         }else {

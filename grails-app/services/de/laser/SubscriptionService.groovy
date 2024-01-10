@@ -420,12 +420,12 @@ class SubscriptionService {
         }
         if (params.subTypes?.size() > 0) {
             query += " and subT.type.id in (:subTypes) "
-            qarams.put('subTypes', params.list('subTypes').collect { it -> Long.parseLong(it) })
+            qarams.put('subTypes', Params.getLongList(params, 'subTypes'))
         }
 
         if (params.subKinds?.size() > 0) {
             query += " and subT.kind.id in (:subKinds) "
-            qarams.put('subKinds', params.list('subKinds').collect { Long.parseLong(it) })
+            qarams.put('subKinds', Params.getLongList(params, 'subKinds'))
         }
 
         if (params.isPublicForApi) {
@@ -1585,10 +1585,11 @@ join sub.orgRelations or_sub where
      * @param id the customer number ID to unser
      * @return true if the unsetting was successful, false otherwise
      */
-    boolean deleteCustomerIdentifier(Long id) {
+    boolean unsetCustomerIdentifier(Long id) {
         CustomerIdentifier ci = CustomerIdentifier.get(id)
         ci.value = null
         ci.requestorKey = null
+        // ci.note = null
         ci.save()
     }
 

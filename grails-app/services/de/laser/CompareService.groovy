@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.helper.Params
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
@@ -122,7 +122,7 @@ class CompareService {
      * @param params a parameter map containing filter settings
      * @return a (filtered) list of licenses
      */
-    List getMyLicenses(Map params) {
+    List getMyLicenses(Map params, boolean onlyIds = false) {
 
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
@@ -157,22 +157,12 @@ class CompareService {
         }
 
         if (params.status) {
-            if (params.status instanceof List) {
-                base_qry += " and l.status.id in (:status) "
-                qry_params.put('status', params.status.collect { it instanceof Long ? it : Long.parseLong(it) })
-
-            } else {
-                base_qry += " and l.status.id = :status "
-                qry_params.put('status', (params.status as Long))
-            }
+            base_qry += " and l.status.id in (:status) "
+            qry_params.put('status', Params.getLongList(params, 'status'))
         }
-
         base_qry += " order by lower(trim(l.reference)) asc"
 
-        List<License> totalLicenses = License.executeQuery("select l " + base_qry, qry_params)
-
-        totalLicenses
-
+        License.executeQuery( (onlyIds ? "select l.id " : "select l ") + base_qry, qry_params)
     }
 
     /**
@@ -180,7 +170,7 @@ class CompareService {
      * @param params a parameter map containing filter settings
      * @return a (filtered) list of subscriptions
      */
-    List getMySubscriptions(Map params) {
+    List getMySubscriptions(Map params, boolean onlyIds = false) {
 
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
@@ -201,23 +191,12 @@ class CompareService {
         }
 
         if (params.status) {
-            if (params.status instanceof List) {
-                base_qry += " and s.status.id in (:status) "
-                qry_params.put('status', params.status.collect { it instanceof Long ? it : Long.parseLong(it) })
-
-            } else {
-                base_qry += " and s.status.id = :status "
-                qry_params.put('status', (params.status as Long))
-            }
+            base_qry += " and s.status.id in (:status) "
+            qry_params.put('status', Params.getLongList(params, 'status'))
         }
-
-
         base_qry += " order by lower(trim(s.name)) asc"
 
-        List<Subscription> totalSubscriptions = Subscription.executeQuery("select s " + base_qry, qry_params)
-
-        totalSubscriptions
-
+        Subscription.executeQuery( (onlyIds ? "select s.id " : "select s ") + base_qry, qry_params)
     }
 
     /**

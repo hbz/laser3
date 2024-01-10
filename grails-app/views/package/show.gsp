@@ -42,7 +42,7 @@ making obsolete package/actions
 <ui:errors bean="${packageInstance}"/>
 
 <g:if test="${packageInstanceRecord}">
-    <div class="ui grid">
+    <div class="ui stackable grid">
 
         <div class="eleven wide column">
             <div class="la-inline-lists">

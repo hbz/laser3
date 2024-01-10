@@ -119,7 +119,7 @@
         </table>
     </g:elseif>
     <g:else>
-        <b><g:message code="default.stats.error.noReportAvailable"/></b>
+        <strong><g:message code="default.stats.error.noReportAvailable"/></strong>
     </g:else>
     <div class="localLoadingIndicator" hidden="hidden">
         <div class="ui inline medium text loader active">Aktualisiere Daten ..</div>

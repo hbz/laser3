@@ -878,7 +878,7 @@ class UiTagLib {
         String linkBody = (text && message) ? text + " - " + message : text + message
         String cssClass = ((this.pageScope.variables?.actionName == attrs.action && (attrs.tab == params.tab || attrs.tab == params[attrs.subTab])) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
-        String counts = (attrs.counts >= 0) ? '<div class="ui '  + ' circular label">' + attrs.counts + '</div>' : null
+        String counts = (attrs.counts >= 0) ? '<span class="ui '  + ' circular label">' + attrs.counts + '</span>' : null
 
         linkBody = counts ? linkBody + counts : linkBody
 

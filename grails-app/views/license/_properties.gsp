@@ -19,7 +19,7 @@
 
 <g:if test="${memberProperties}">%{-- check for content --}%
     <g:if test="${license._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL}">
-        <div class="ui card la-dl-no-table ">
+        <div class="ui card la-dl-no-table">
             <div class="content">
                 <h2 class="ui header">${message(code:'license.properties.consortium')}</h2>
                 <div id="member_props_div">

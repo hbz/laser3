@@ -7,6 +7,38 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5505    08.01.2024  rc-3.3  3.3.3       David   Feature     "Alle Konsortialstellen" liefert unvollständige Treffermenge
+
+5498    05.01.2024  rc-3.3  3.3.3       David   Bug         /survey/surveyTitles: Fehler wenn man auf andere Seiten klickt
+
+5492    05.01.2024  rc-3.3  3.3.3       Moe     Bug         Mein Lizenz-Monitor Filter
+
+5487    05.01.2024  rc-3.3  3.3.3       Moe     Bug         Umfrageteilnehmer Reiter
+
+5486    05.01.2024  rc-3.3  3.3.3       Moe     Bug         Titelumfrage: Teilnahme-Merkmal rein
+
+5499    05.01.2024  rc-3.3  3.3.3       Moe     Bug         fehlende Info der Mail von Fällige Termine
+
+5457    04.01.2024  rc-3.3  3.3.3       David   Bug         Eintragung Schlüsselpaar im Statistikreiter
+
+--      04.01.2024  rc-3.3  3.3.3       Moe     Bug         Bugfix Umfrage
+
+5497    04.01.2024  rc-3.3  3.3.3       Moe     Bug         Neue User Dashboard Reiter auf Umfrage umstellen
+
+5496    04.01.2024  rc-3.3  3.3.3       Moe     Bug         Umfrage fallen weg
+
+5489    03.01.2024  rc-3.3  3.3.3       David   Bug         Alle Pakete: Filter Kuratorengruppentyp liefert keine Ergebnisse
+
+5490    02.01.2024  rc-3.3  3.3.3       David   Bug         404 Übersicht Referenzwerte
+
+5485    13.12.2023  rc-3.3  3.3.3       David   Bug         Alle Einrichtungen > Filter: Status geht verloren
+
+5483    13.12.2023  rc-3.3  3.3.3       David   Bug         Meine Verträge - Filterfelder
+
+5482    13.12.2023  rc-3.3  3.3.3       David   Bug         Adressbuch - Filterfelder
+
+5481    13.12.2023  rc-3.3  3.3.3       David   Bug         Lizenzen/Verträge vergleichen - Filterstatus
+
 5476    11.12.2023  rc-3.3  3.3.2       Moe     Bug         Umfrage Kosten: Bei Ausschüttung wird der Filter gelöscht
 
 5475    11.12.2023  rc-3.3  3.3.2       Moe     Bug         Titelumfrage: Titel werden nicht ausgewählt

@@ -4,6 +4,7 @@ import de.laser.auth.User
 import de.laser.finance.CostItem
 import de.laser.config.ConfigDefaults
 import de.laser.finance.PriceItem
+import de.laser.helper.Params
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
 import de.laser.stats.Counter4ApiSource
@@ -1328,17 +1329,11 @@ class SurveyService {
             }
             if(params.ddcs && params.list("ddcs").size() > 0) {
                 filter += " and exists (select ddc.id from title.ddcs ddc where ddc.ddc.id in (:ddcs)) "
-                queryParams.ddcs = []
-                params.list("ddcs").each { String ddc ->
-                    queryParams.ddcs << Long.parseLong(ddc)
-                }
+                queryParams.ddcs = Params.getLongList(params, 'ddcs')
             }
             if(params.languages && params.list("languages").size() > 0) {
                 filter += " and exists (select lang.id from title.languages lang where lang.language.id in (:languages)) "
-                queryParams.languages = []
-                params.list("languages").each { String lang ->
-                    queryParams.languages << Long.parseLong(lang)
-                }
+                queryParams.languages = Params.getLongList(params, 'languages')
             }
 
             if (params.filter) {
@@ -1350,7 +1345,7 @@ class SurveyService {
 
             if (params.pkgfilter && (params.pkgfilter != '')) {
                 filter += " and title.pkg.id = :pkgId "
-                queryParams.pkgId = Long.parseLong(params.pkgfilter)
+                queryParams.pkgId = params.long('pkgfilter')
             }
 
             if(params.summaryOfContent) {
@@ -1878,7 +1873,7 @@ class SurveyService {
             //sql bridge
             Sql sql = GlobalService.obtainSqlConnection()
             BigDecimal sumListPrice = sql.rows("select sum(pi.pi_list_price) as sum_list_price from (select pi_tipp_fk, pi_list_price, row_number() over (partition by pi_tipp_fk order by pi_date_created desc) as rn, count(*) over (partition by pi_tipp_fk) as cn from price_item where pi_list_price is not null and pi_list_currency_rv_fk = :currency and pi_tipp_fk in (select ie_tipp_fk from issue_entitlement join issue_entitlement_group_item on ie_id = igi_ie_fk where igi_ie_group_fk = :ieGroup and ie_status_rv_fk <> :status)) as pi where pi.rn = 1", [ieGroup: issueEntitlementGroup.id, currency: currency.id, status: RDStore.TIPP_STATUS_REMOVED.id])[0]['sum_list_price']
-            sumListPrice
+            sumListPrice ?: 0.0
             /*
             BigDecimal sumListPrice = issueEntitlementGroup ?
                     IssueEntitlementGroupItem.executeQuery("select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency and p.tipp in (select igi.ie.tipp from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup and igi.ie.status != :status)",

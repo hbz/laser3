@@ -3,7 +3,7 @@
 
 <g:set var="visibilityContextOrgMenu" value="la-show-context-orgMenu" />
 
-<nav class="ui fixed menu la-contextBar" aria-label="${message(code:'wcag.label.modeNavigation')}">
+<nav id="contextBar" class="ui fixed menu" aria-label="${message(code:'wcag.label.modeNavigation')}">
 
     <div class="ui container">
         <button class="ui button big la-menue-button la-modern-button" style="display:none"><i class="bars icon"></i></button>
@@ -13,7 +13,7 @@
             <ui:cbItemUserAffiliation user="${contextUser}" />
             <ui:cbItemUserSysRole user="${contextUser}" />
 
-            <div id="la-cb-context-display" data-display="${contextOrg?.name}">
+            <div id="la-js-cb-context-display" data-display="${contextOrg?.name}">
                 ${contextOrg?.name}
             </div>
         </div>
@@ -233,112 +233,14 @@
 
     </div>%{-- container --}%
 
-</nav>%{-- la-contextBar --}%
+</nav>%{-- contextBar --}%
 
-
-
-%{-- stable --}%
-<style>
-    #la-cb-info-display {
-        font-size: 0.87em;
-        font-weight: bold;
-        color: grey;
-        margin-right: 1em;
-    }
-
-    .la-cb-context.item,
-    .la-cb-info.item {
-        margin: 0 1em 0 0 !important;
-        border-right: none !important;
-    }
-    .la-cb-context.item > .label,
-    .la-cb-info.item > .label {
-        margin: 0 !important;
-        padding: 0.5em 1em !important;
-        background-color: #e3eaf3 !important;
-    }
-    .la-cb-context.item > .label:hover,
-    .la-cb-info.item > .label:hover {
-        cursor: help;
-    }
-    .la-cb-context.item > .label > .icon,
-    .la-cb-info.item > .label > .icon {
-        margin: 0 !important;
-    }
-
-    .la-cb-info.item + .la-cb-action.item,
-    .la-cb-info.item + .la-cb-action-ext.item {
-        margin-left: 1em !important;
-    }
-
-    .la-cb-action.item,
-    .la-cb-action-ext.item {
-        margin: 0 0 0 1px !important;
-        border-right: none !important;
-    }
-
-    .la-cb-action.item > .button {
-        background-color: rgba(0,0,0, 0.1) !important;
-        /*background-color: #004678  !important;*/
-    }
-    .la-cb-action.item > .button:hover {
-        background-color: rgba(0,0,0, 0.2) !important;
-        /*background-color: #003668 !important;*/
-    }
-    .la-cb-action.item > .button > .icon {
-        color: #004678 !important;
-        /*color: #fff !important;*/
-    }
-    .la-cb-action.item > .button:hover > .icon {
-        color: #000 !important;
-    }
-
-    /* -- overrides -- */
-
-    .la-contextBar .la-cb-action.item .toggle .icon {
-        color: #fff !important;
-    }
-    .la-contextBar .la-cb-action.item .la-toggle-green-red.active {
-        background-color: #98b500 !important;
-    }
-    .la-contextBar .la-cb-action.item .la-toggle-green-red.inactive {
-        background-color: #D95F3D !important;
-    }
-</style>
-
-%{-- unstable --}%
-<style>
-    .la-cb-info.item > .label {
-        border: 1px solid #e3eaf3 !important;
-    }
-
-    .la-cb-action.item > .button,
-    .la-cb-action-ext.item > .button {
-        height: 40px !important;
-        width: 42px !important;
-        border-radius: 0 !important;
-    }
-
-/* -- todo -- */
-
-.la-contextBar .la-cb-action.item .button.purple.active {
-    background-color: #2185d0 !important;
-}
-.la-contextBar .la-cb-action.item .button.purple.active .icon {
-    color: #fff !important;
-}
-.la-contextBar .la-cb-action.item .button.purple.inactive {
-}
-.la-contextBar .la-cb-action.item .button.purple.inactive .icon {
-    color: #2185d0 !important;
-}
-</style>
 
 <laser:script file="${this.getGroovyPageFileName()}">
 
     JSPC.app.contextBar = {
 
-        $cbContextDisplay:  $('#la-cb-context-display'),
+        $cbContextDisplay:  $('#la-js-cb-context-display'),
         $cbInfoDisplay:     $('#la-cb-info-display'),
 
         init: function() {
@@ -349,7 +251,7 @@
                 function() {
                     JSPC.app.contextBar.$cbContextDisplay.removeClass('active');
                     setTimeout( function(){
-                        $('#la-cb-context-display:not(.active)').text(JSPC.app.contextBar.$cbContextDisplay.attr('data-display'));
+                        $('#la-js-cb-context-display:not(.active)').text(JSPC.app.contextBar.$cbContextDisplay.attr('data-display'));
                     }, 750);
                 }
             );
@@ -364,14 +266,14 @@
             );
 
             setTimeout( function(){
-                $('main > nav.buttons > .button').each ( function() {
+                $('main > nav.la-js-ctrls > .button').each ( function() {
                     let $item = $('<div class="item la-cb-action-ext"></div>');
                     $('.la-advanced-view').append($item);
                     $item.append(this);
                     $(this).addClass('icon');
                 })
-                $('main > nav.buttons').each ( function() {
-                    let $new = $('<div class="actionExtModalWrapper"></div>');
+                $('main > nav.la-js-ctrls').each ( function() {
+                    let $new = $('<div class="la-action-ext-modalWrapper"></div>');
                     $(this).contents().each ( function() {
                         $new.append($(this));
                     })
@@ -436,6 +338,4 @@
     JSPC.app.contextBar.init();
 </laser:script>
 
-<style>
-    main > nav.buttons > .button { display: none; }
-</style>
+

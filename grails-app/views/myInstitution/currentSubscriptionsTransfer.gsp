@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Subscription; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.Org; de.laser.CustomerTypeService; de.laser.Doc; de.laser.survey.SurveyOrg;" %>
+<%@ page import="de.laser.helper.Params; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Subscription; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.Org; de.laser.CustomerTypeService; de.laser.Doc; de.laser.survey.SurveyOrg;" %>
 
 <laser:htmlStart message="menu.my.currentSubscriptionsTransfer" serviceInjection="true"/>
 
@@ -33,6 +33,7 @@
 <ui:filter>
     <g:form action="${actionName}" controller="${controllerName}" method="get" class="ui small form clearing">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
+        <input type="hidden" name="referenceYears" value="${params.referenceYears}"/>
 
         <div class="four fields">
             <% /* 1-1 */ %>
@@ -94,7 +95,7 @@
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}" var="form">
-                        <option <%=(params.list('form').contains(form.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'form').contains(form.id) ? 'selected="selected"' : ''%>
                                 value="${form.id}">
                             ${form.getI10n('value')}
                         </option>
@@ -109,7 +110,7 @@
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"
                             var="resource">
-                        <option <%=(params.list('resource').contains(resource.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'resource').contains(resource.id) ? 'selected="selected"' : ''%>
                                 value="${resource.id}">
                             ${resource.getI10n('value')}
                         </option>
@@ -127,7 +128,7 @@
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)}" var="subKind">
-                        <option <%=(params.list('subKinds').contains(subKind.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'subKinds').contains(subKind.id) ? 'selected="selected"' : ''%>
                                 value="${subKind.id}">
                             ${subKind.getI10n('value')}
                         </option>
@@ -176,7 +177,7 @@
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}"
                             var="holdingSelection">
-                        <option <%=(params.list('holdingSelection').contains(holdingSelection.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'holdingSelection').contains(holdingSelection.id) ? 'selected="selected"' : ''%>
                                 value="${holdingSelection.id}">
                             ${holdingSelection.getI10n('value')}
                         </option>
@@ -224,7 +225,7 @@
                                         <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
                                         <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox"
                                                value="${subType.id}"
-                                            <g:if test="${params.list('subTypes').contains(subType.id.toString())}">checked=""</g:if>
+                                            <g:if test="${Params.getLongList(params, 'subTypes').contains(subType.id)}">checked=""</g:if>
                                                tabindex="0">
                                     </div>
                                 </div>

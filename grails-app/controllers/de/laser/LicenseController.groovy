@@ -317,7 +317,7 @@ class LicenseController {
             }
             else {
                 try {
-                    subscriptionService.setOrgLicRole(Subscription.get(Long.parseLong(params.subscription)),newLicense,unlink)
+                    subscriptionService.setOrgLicRole(Subscription.get(params.long('subscription')), newLicense, unlink)
                 }
                 catch (NumberFormatException e) {
                     log.error("Invalid identifier supplied!")

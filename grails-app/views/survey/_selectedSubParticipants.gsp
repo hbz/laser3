@@ -34,14 +34,14 @@
     </g:form>
 </ui:filter>
 <g:if test="${selectedSubParticipants.size() == 0 && selectedSubParticipantsCount > 0}">
-    <b><g:message code="default.search.empty"/></b>
+    <strong><g:message code="default.search.empty"/></strong>
 </g:if>
 <g:else>
     <br/>
 
-    <h3 class="ui icon header la-clear-before la-noMargin-top"><span
-            class="ui circular  label">${selectedSubParticipants.size()}</span> <g:message
-            code="surveyParticipants.selectedSubParticipants"/></h3>
+    <h3 class="ui icon header la-clear-before la-noMargin-top">
+        <span class="ui circular label">${selectedSubParticipants.size()}</span> <g:message code="surveyParticipants.selectedSubParticipants"/>
+    </h3>
 
     <br/><br/>
 

@@ -1,12 +1,9 @@
 <div class="ui fluid segment content" data-ajaxTargetWrap="true">
     <div class="ui stackable grid" data-ajaxTarget="true">
 
-        <laser:render template="/templates/title_long_accordion"
+        <laser:render template="/templates/titles/title_long_accordion"
                       model="${[ie         : ie, tipp: tipp,
                                 showPackage: true, showPlattform: true, showEmptyFields: showEmptyFields]}"/>
-
-
-
 
         <div class="three wide column">
             <div class="ui list la-label-list">
@@ -15,9 +12,7 @@
 
                     <div class="item">
                         <div class="content">
-                            <g:formatDate
-                                    format="${message(code: 'default.date.format.notime')}"
-                                    date="${tipp.accessStartDate}"/>
+                            <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tipp.accessStartDate}"/>
                         </div>
                     </div>
 
@@ -28,9 +23,7 @@
                     <ui:dateDevider/>
                     <div class="item">
                         <div class="content">
-                            <g:formatDate
-                                    format="${message(code: 'default.date.format.notime')}"
-                                    date="${tipp.accessEndDate}"/>
+                            <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tipp.accessEndDate}"/>
                         </div>
                     </div>
                 </g:if>

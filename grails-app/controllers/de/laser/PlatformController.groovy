@@ -4,6 +4,7 @@ import de.laser.annotations.Check404
 import de.laser.auth.User
 import de.laser.ctrl.PlatformControllerService
 import de.laser.annotations.DebugInfo
+import de.laser.helper.Params
 import de.laser.remote.ApiSource
 import de.laser.storage.RDStore
 import de.laser.utils.SwissKnife
@@ -87,36 +88,17 @@ class PlatformController  {
             params.status = RDStore.PLATFORM_STATUS_CURRENT.id.toString()
         }
 
-        if(params.ipSupport) {
+        if (params.ipSupport) {
             result.filterSet = true
-            List<String> ipSupport = params.list("ipSupport")
-            queryParams.ipAuthentication = []
-            ipSupport.each { String ip ->
-                RefdataValue rdv = RefdataValue.get(ip)
-                queryParams.ipAuthentication << rdv.value
-            }
+            queryParams.ipAuthentication = Params.getRefdataList(params, 'ipSupport').collect{ it.value }
         }
-
-        if(params.shibbolethSupport) {
+        if (params.shibbolethSupport) {
             result.filterSet = true
-            List<String> shibbolethSupport = params.list("shibbolethSupport")
-            queryParams.shibbolethAuthentication = []
-            shibbolethSupport.each { String shibboleth ->
-                RefdataValue rdv = RefdataValue.get(shibboleth)
-                String auth = rdv == RDStore.GENERIC_NULL_VALUE ? "null" : rdv.value
-                queryParams.shibbolethAuthentication << auth
-            }
+            queryParams.shibbolethAuthentication = Params.getRefdataList(params, 'shibbolethSupport').collect{ (it == RDStore.GENERIC_NULL_VALUE) ? 'null' : it.value }
         }
-
-        if(params.counterCertified) {
+        if (params.counterCertified) {
             result.filterSet = true
-            List<String> counterCertified = params.list("counterCertified")
-            queryParams.counterCertified = []
-            counterCertified.each { String counter ->
-                RefdataValue rdv = RefdataValue.get(counter)
-                String cert = rdv == RDStore.GENERIC_NULL_VALUE ? "null" : rdv.value
-                queryParams.counterCertified = cert
-            }
+            queryParams.counterCertified = Params.getRefdataList(params, 'counterCertified').collect{ (it == RDStore.GENERIC_NULL_VALUE) ? 'null' : it.value }
         }
 
         // overridden pagination - all uuids are required

@@ -1,6 +1,6 @@
 import java.text.SimpleDateFormat
 
-version '3.3.3'
+version '3.3.4'
 group 'de.laser'
 
 // ---[ build script ]---
@@ -123,10 +123,10 @@ dependencies {
     implementation 'commons-io:commons-io:2.11.0'                           // 2021
     implementation 'com.github.albfernandez:juniversalchardet:2.4.0'        // 2020
     implementation 'io.github.gpc:asynchronous-mail:3.1.2'                  // 2023
-    implementation 'org.apache.commons:commons-lang3:3.13.0'                // 2023
+    implementation 'org.apache.commons:commons-lang3:3.14.0'                // 2023
     implementation 'org.apache.poi:poi-ooxml:3.17'                          // 2017 : [freeze] : 5.x available
     implementation 'org.codehaus.gpars:gpars:1.2.1'                         // 2014
-    implementation 'org.codehaus.janino:janino:3.1.10'                      // 2023 : logback
+    implementation 'org.codehaus.janino:janino:3.1.11'                      // 2023 : logback
     implementation 'org.liquibase:liquibase-core:4.19.0'                    // 2023 : + org.grails.plugins:database-migration // [freeze - not 4.19.1]
     implementation 'org.quartz-scheduler:quartz:2.3.2'                      // 2019
 
@@ -134,7 +134,7 @@ dependencies {
 
     runtimeOnly 'org.apache.tomcat:tomcat-jdbc'
     runtimeOnly 'javax.xml.bind:jaxb-api:2.3.1'                             // 2018 : [?]
-    runtimeOnly 'org.postgresql:postgresql:42.6.0'                          // 2023
+    runtimeOnly 'org.postgresql:postgresql:42.7.0'                          // 2023
 }
 
 springBoot {

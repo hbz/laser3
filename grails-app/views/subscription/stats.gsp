@@ -164,13 +164,12 @@
             </g:if>
         </g:if>
         <g:else>
-            <div class="ui segment">
                 <ui:tabs>
                     <g:each in="${platformInstanceRecords.values()}" var="platform">
-                        <ui:tabsItem controller="subscription" action="stats" tab="${platform.id.toString()}" params="${params + [tab: platform.id.toString()]}" text="${platform.name}"/>
+                        <ui:tabsItem controller="subscription" action="stats" tab="${platform.id.toString()}" params="${params + [tab: platform.id]}" text="${platform.name}"/>
                     </g:each>
                 </ui:tabs>
-                <div class="ui bottom attached tab active" id="customerIdWrapper">
+                <div class="ui bottom attached tab active segment" id="customerIdWrapper">
                     <table class="ui la-js-responsive-table la-table table">
                         <thead>
                         <tr>
@@ -184,24 +183,31 @@
                         </thead>
                         <tbody>
                         <g:each in="${keyPairs}" var="pair" status="rowno">
+                        %{-- TODO: erms-5495 --}%
+                        %{--                <g:set var="overwriteEditable_ci" value="${editable}" />--}%
+                            <%
+                                boolean overwriteEditable_ci = contextService.getUser().isAdmin() ||
+                                        userService.hasFormalAffiliation(contextService.getUser(), pair.owner, 'INST_EDITOR') ||
+                                        userService.hasFormalAffiliation(contextService.getUser(), pair.customer, 'INST_EDITOR')
+                            %>
                             <tr>
                                 <td>${pair.customer.sortname ?: pair.customer.name}</td>
                                 <td>${pair.getProvider()} : ${pair.platform.name}</td>
-                                <td><ui:xEditable owner="${pair}" field="value"/></td>
-                                <td><ui:xEditable owner="${pair}" field="requestorKey"/></td>
-                                <td><ui:xEditable owner="${pair}" field="note"/></td>
+                                <td><ui:xEditable owner="${pair}" field="value" overwriteEditable="${overwriteEditable_ci}" /></td>
+                                <td><ui:xEditable owner="${pair}" field="requestorKey" overwriteEditable="${overwriteEditable_ci}" /></td>
+                                <td><ui:xEditable owner="${pair}" field="note" overwriteEditable="${overwriteEditable_ci}" /></td>
                                 <td>
-                                    <g:if test="${editable}">
+                                    <g:if test="${overwriteEditable_ci}">
                                         <g:link controller="subscription"
-                                                action="deleteCustomerIdentifier"
+                                                action="unsetCustomerIdentifier"
                                                 id="${subscription.id}"
                                                 params="${[deleteCI: pair.id]}"
-                                                class="ui button icon red js-open-confirm-modal"
-                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.customeridentifier", args: ["" + pair.getProvider() + " : " + pair.platform + " " + pair.value])}"
-                                                data-confirm-term-how="delete"
+                                                class="ui button icon red la-modern-button js-open-confirm-modal"
+                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.unset.customeridentifier", args: ["" + pair.getProvider() + " : " + (pair.platform?:'') + " " + (pair.value?:'')])}"
+                                                data-confirm-term-how="unset"
                                                 role="button"
                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                            <i class="trash alternate outline icon"></i>
+                                            <i class="eraser icon"></i>
                                         </g:link>
                                     </g:if>
                                 </td>
@@ -210,7 +216,7 @@
                         </tbody>
                     </table>
                 </div>
-            </div>
+
             <g:if test="${reportTypes}">
                 <g:if test="${revision == AbstractReport.COUNTER_4}">
                     <ui:msg icon="ui info icon" class="info" header="${message(code: 'default.usage.counter4reportInfo.header')}" message="default.usage.counter4reportInfo.text" noClose="true"/>
@@ -264,13 +270,19 @@
             </g:if>
             <g:elseif test="${error}">
                 <ui:msg icon="ui times icon" class="error" noClose="true">
-                    <g:message code="default.stats.error.${error}" args="${errorArgs}"/>
                     <g:if test="${error == 'noCustomerId'}">
-                        <%-- proxies are coming!!! --%>
+                        <g:message code="default.stats.error.${error}.local" args="${errorArgs}"/>
+
                         <g:if test="${contextOrg.id == subscription.getConsortia()?.id}">
-                            <g:link controller="subscription" action="membersSubscriptionsManagement" id="${subscription.instanceOf.id}" params="[tab: 'customerIdentifiers', isSiteReloaded: false]"><g:message code="org.customerIdentifier"/></g:link>
+                            <br/>
+                            Alternativ: <g:link controller="subscription" action="membersSubscriptionsManagement" id="${subscription.instanceOf.id}" params="[tab: 'customerIdentifiers', isSiteReloaded: false]">
+                            <g:message code="subscriptionsManagement.subscriptions.members"/> &rarr; <g:message code="org.customerIdentifier"/>
+                        </g:link>
                         </g:if>
                     </g:if>
+                    <g:else>
+                        <g:message code="default.stats.error.${error}" args="${errorArgs}"/>
+                    </g:else>
                 </ui:msg>
             </g:elseif>
             <div id="reportWrapper"></div>

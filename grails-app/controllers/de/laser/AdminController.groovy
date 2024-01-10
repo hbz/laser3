@@ -327,7 +327,7 @@ class AdminController  {
         String query2en = "select rdv.rdv_value_en from refdata_value rdv, refdata_category rdc where rdv.rdv_owner = rdc.rdc_id and rdc.rdc_description = 'ddc'"
 
         String query3 = "select org_name from org"
-        String query4 = "select ti_title from title_instance"
+        String query4 = "select tipp_name from title_instance_package_platform"
 
         result.examples = [
                 country : [
@@ -349,8 +349,8 @@ class AdminController  {
                         'current_en'  : RefdataValue.executeQuery( "select name from Org order by name", [max: limit] )
                 ],
                 title : [
-                        'de_DE.UTF-8' : sql.rows( query4 + ' order by ti_title COLLATE "de_DE" limit ' + limit ).collect{ it.ti_title },
-                        'en_US.UTF-8' : sql.rows( query4 + ' order by ti_title COLLATE "en_US" limit ' + limit ).collect{ it.ti_title },
+                        'de_DE.UTF-8' : sql.rows( query4 + ' order by tipp_name COLLATE "de_DE" limit ' + limit ).collect{ it.tipp_name },
+                        'en_US.UTF-8' : sql.rows( query4 + ' order by tipp_name COLLATE "en_US" limit ' + limit ).collect{ it.tipp_name },
                         'current_de'  : RefdataValue.executeQuery( "select name from TitleInstancePackagePlatform order by name", [max: limit] ),
                         'current_en'  : RefdataValue.executeQuery( "select name from TitleInstancePackagePlatform order by name", [max: limit] )
                 ]
@@ -360,13 +360,13 @@ class AdminController  {
         result.examples['country'][de_x_icu] = sql.rows(query1de + ' order by rdv.rdv_value_de COLLATE "' + de_x_icu + '" limit ' + limit).collect { it.rdv_value_de }
         result.examples['ddc'    ][de_x_icu] = sql.rows(query2de + ' order by rdv.rdv_value_de COLLATE "' + de_x_icu + '" limit ' + limit).collect { it.rdv_value_de }
         result.examples['org'    ][de_x_icu] = sql.rows(query3 + ' order by org_name COLLATE "' + de_x_icu + '" limit ' + limit).collect { it.org_name }
-        result.examples['title'  ][de_x_icu] = sql.rows(query4 + ' order by ti_title COLLATE "' + de_x_icu + '" limit ' + limit).collect { it.ti_title }
+        result.examples['title'  ][de_x_icu] = sql.rows(query4 + ' order by tipp_name COLLATE "' + de_x_icu + '" limit ' + limit).collect { it.tipp_name }
 
         String en_x_icu = DatabaseInfo.EN_US_U_VA_POSIX_X_ICU
         result.examples['country'][en_x_icu] = sql.rows(query1en + ' order by rdv.rdv_value_en COLLATE "' + en_x_icu + '" limit ' + limit).collect { it.rdv_value_en }
         result.examples['ddc'    ][en_x_icu] = sql.rows(query2en + ' order by rdv.rdv_value_en COLLATE "' + en_x_icu + '" limit ' + limit).collect { it.rdv_value_en }
         result.examples['org'    ][en_x_icu] = sql.rows(query3 + ' order by org_name COLLATE "' + en_x_icu + '" limit ' + limit).collect { it.org_name }
-        result.examples['title'  ][en_x_icu] = sql.rows(query4 + ' order by ti_title COLLATE "' + en_x_icu + '" limit ' + limit).collect { it.ti_title }
+        result.examples['title'  ][en_x_icu] = sql.rows(query4 + ' order by tipp_name COLLATE "' + en_x_icu + '" limit ' + limit).collect { it.tipp_name }
 
         result
     }
@@ -450,13 +450,12 @@ class AdminController  {
     @Secured(['ROLE_ADMIN'])
     def identifierValidation() {
         Map<String, Object> result = [
-                nsList          : IdentifierNamespace.executeQuery('select ns from IdentifierNamespace ns order by ns.ns, ns.nsType'),
+                nsList          : IdentifierNamespace.executeQuery('select ns from IdentifierNamespace ns where ns.validationRegex is not null order by ns.ns, ns.nsType'),
                 iMap            : [:],
                 currentLang     : LocaleUtils.getCurrentLang()
         ]
 
         result.nsList.each { ns ->
-            if (ns.validationRegex) {
                 List<Identifier> iList = Identifier.executeQuery('select i from Identifier i where i.ns = :ns', [ns: ns])
                 result.iMap[ns.id] = [
                         count   : iList.size(),
@@ -473,7 +472,6 @@ class AdminController  {
                         result.iMap[ns.id].invalid << obj
                     }
                 }
-            }
         }
         result
     }
@@ -599,7 +597,7 @@ class AdminController  {
             }
         }
 
-        Doc doc = Doc.get(Long.parseLong(params.docID))
+        Doc doc = Doc.get( params.long('docID') )
 
         if (!fileCheck(doc)) {
             result.doc = doc
@@ -642,8 +640,8 @@ class AdminController  {
             }
         }
 
-        Doc docWithoutFile = Doc.get(Long.parseLong(params.sourceDoc))
-        Doc docWithFile = Doc.get(Long.parseLong(params.targetDoc))
+        Doc docWithoutFile = Doc.get( params.long('sourceDoc') )
+        Doc docWithFile = Doc.get( params.long('targetDoc') )
 
         if (!fileCheck(docWithoutFile) && fileCheck(docWithFile)) {
 

@@ -20,6 +20,7 @@ import de.laser.SubscriptionDiscountScale
 import de.laser.SubscriptionService
 import de.laser.auth.Role
 import de.laser.finance.PriceItem
+import de.laser.helper.Params
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
@@ -97,7 +98,7 @@ class AjaxJsonController {
 
         queryParams.status = []
         if (params.get('status')){
-            queryParams.status = params.list('status').collect{ Long.parseLong(it) }
+            queryParams.status = Params.getLongList(params, 'status')
         }
         queryParams.showSubscriber = params.showSubscriber == 'true'
         queryParams.showConnectedObjs = params.showConnectedObjs == 'true'
@@ -162,7 +163,7 @@ class AjaxJsonController {
 
         queryParams.status = []
         if (params.get('status')){
-            queryParams.status = params.list('status').collect{ Long.parseLong(it) }
+            queryParams.status = Params.getLongList(params, 'status')
         }
 
         queryParams.showSubscriber = showSubscriber
@@ -196,7 +197,7 @@ class AjaxJsonController {
         boolean showConnectedObjs = params.showConnectedObjs == 'true'
         Map queryParams = [:]
         if (params.get('status')){
-            queryParams.status = params.list('status').collect{ Long.parseLong(it) }
+            queryParams.status = Params.getLongList(params, 'status')
         }
 
         queryParams.showSubscriber = showSubscriber
@@ -237,7 +238,7 @@ class AjaxJsonController {
         boolean showConnectedLics = params.showConnectedLics == 'true'
         Map queryParams = [:]
         if (params.get('status')){
-            queryParams.status = params.list('status').collect{ Long.parseLong(it) }
+            queryParams.status = Params.getLongList(params, 'status')
         }
 
         queryParams.showSubscriber = showSubscriber
@@ -404,7 +405,7 @@ class AjaxJsonController {
         if (params.oid != "undefined") {
             PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(params.oid)
             if (propDef) {
-                List<AbstractPropertyWithCalculatedLastUpdated> values
+                List<AbstractPropertyWithCalculatedLastUpdated> values = []
                 if (propDef.tenant) {
                     switch (propDef.descr) {
                         case PropertyDefinition.SUB_PROP: values = SubscriptionProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.getOrg(),false)
@@ -560,9 +561,9 @@ class AjaxJsonController {
     def getRegions() {
         SortedSet<RefdataValue> result = new TreeSet<RefdataValue>()
         if (params.country) {
-            List<String> countryIds = params.country.split(',')
-            countryIds.each { String c ->
-                switch (RefdataValue.get(Long.parseLong(c)).value) {
+            List<Long> countryIds = Params.getLongList_forCommaSeparatedString(params, 'country')
+            countryIds.each { c ->
+                switch (RefdataValue.get(c).value) {
                     case 'DE':
                         result.addAll( RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE]) )
                         break
@@ -1140,7 +1141,7 @@ class AjaxJsonController {
         Map result = [:]
 
         if (params.orgIdList) {
-            List<Long> orgIds = params.orgIdList.split(',').collect{ Long.parseLong(it) }
+            List<Long> orgIds = Params.getLongList_forCommaSeparatedString(params, 'orgIdList')
             List<Org> orgList = orgIds ? Org.findAllByIdInList(orgIds) : []
 
             String query = "select distinct p from Person as p inner join p.roleLinks pr where pr.org in (:orgs) "
@@ -1164,7 +1165,7 @@ class AjaxJsonController {
             }
 
             if (params.selectedRoleTypIds) {
-                List<Long> selectedRoleTypIds = params.selectedRoleTypIds.split(',').collect { Long.parseLong(it) }
+                List<Long> selectedRoleTypIds = Params.getLongList_forCommaSeparatedString(params, 'selectedRoleTypIds')
                 List<RefdataValue> selectedRoleTypes = selectedRoleTypIds ? RefdataValue.findAllByIdInList(selectedRoleTypIds) : []
 
                 if (selectedRoleTypes) {
