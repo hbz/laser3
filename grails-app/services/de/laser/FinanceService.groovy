@@ -283,8 +283,8 @@ class FinanceService {
                             ci.billingSumRounding = billingSumRounding != ci.billingSumRounding ? billingSumRounding : ci.billingSumRounding
                             ci.finalCostRounding = finalCostRounding != ci.finalCostRounding ? finalCostRounding : ci.finalCostRounding
 
-                            ci.costInBillingCurrency = ci.costInBillingCurrency ? BigDecimal.valueOf(ci.costInBillingCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInBillingCurrency
-                            ci.costInLocalCurrency = ci.costInLocalCurrency ? BigDecimal.valueOf(ci.costInLocalCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInLocalCurrency
+                            ci.costInBillingCurrency = lastYearEquivalent.costInBillingCurrency ? BigDecimal.valueOf(lastYearEquivalent.costInBillingCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInBillingCurrency
+                            ci.costInLocalCurrency = lastYearEquivalent.costInLocalCurrency ? BigDecimal.valueOf(lastYearEquivalent.costInLocalCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInLocalCurrency
 
 
                             int taxRate = 0 //fallback
