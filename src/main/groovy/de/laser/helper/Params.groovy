@@ -13,7 +13,7 @@ class Params {
     // takes String or Long; removes 0, null and empty values
     static List<Long> getLongList(GrailsParameterMap params, String key) {
         params.list(key).findAll().collect{
-            if (it != 'FETCH_ALL') { // workaround until FETCH_ALL is removed
+            if (it != 'FETCH_ALL') { // workaround until FETCH_ALL is removed // TODO: erms-5511
                 Long.valueOf(it)
             }
         }.findAll()
@@ -26,14 +26,14 @@ class Params {
         if (map.containsKey(key)) {
             if (map.get(key) instanceof List) {
                 result = map.get(key).findAll().collect{
-                    if (it != 'FETCH_ALL') { // workaround until FETCH_ALL is removed
+                    if (it != 'FETCH_ALL') { // workaround until FETCH_ALL is removed // TODO: erms-5511
                         Long.valueOf(it)
                     }
                 }
             }
             else {
                 if (map.get(key)) {
-                    if (map.get(key) != 'FETCH_ALL') { // workaround until FETCH_ALL is removed
+                    if (map.get(key) != 'FETCH_ALL') { // workaround until FETCH_ALL is removed // TODO: erms-5511
                         result.add(Long.valueOf(map.get(key)))
                     }
                 }
