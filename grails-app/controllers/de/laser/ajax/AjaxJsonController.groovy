@@ -613,7 +613,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of budget codes for dropdown display
-     * @return the result of {@link de.laser.ControlledListService#getBudgetCodes(java.util.Map)}
+     * @return the result of {@link de.laser.ControlledListService#getBudgetCodes(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupBudgetCodes() {
@@ -624,7 +624,7 @@ class AjaxJsonController {
      * Retrieves a list of various elements for dropdown display; was used for the myInstitution/document view to attach documents to all kinds of objects
      * @see de.laser.DocContext
      * @see de.laser.Doc
-     * @return the result of {@link de.laser.ControlledListService#getElements(java.util.Map)}
+     * @return the result of {@link de.laser.ControlledListService#getElements(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupCombined() {
@@ -633,7 +633,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of invoice numbers for dropdown display
-     * @return the result of {@link de.laser.ControlledListService#getInvoiceNumbers(java.util.Map)}
+     * @return the result of {@link de.laser.ControlledListService#getInvoiceNumbers(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupInvoiceNumbers() {
@@ -642,7 +642,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of issue entitlements for dropdown display
-     * @return the result of {@link de.laser.ControlledListService#getIssueEntitlements(java.util.Map)}
+     * @return the result of {@link de.laser.ControlledListService#getIssueEntitlements(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupIssueEntitlements() {
@@ -657,7 +657,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of licenses for dropdown display
-     * @return the result of {@link de.laser.ControlledListService#getLicenses(java.util.Map)}
+     * @return the result of {@link de.laser.ControlledListService#getLicenses(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupLicenses() {
@@ -666,7 +666,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of order numbers for dropdown display
-     * @return the result of {@link de.laser.ControlledListService#getOrderNumbers(java.util.Map)}
+     * @return the result of {@link de.laser.ControlledListService#getOrderNumbers(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupOrderNumbers() {
@@ -675,7 +675,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of provider and agency {@link Org}s for dropdown display
-     * @return the result of {@link de.laser.ControlledListService#getProvidersAgencies(java.util.Map)}
+     * @return the result of {@link de.laser.ControlledListService#getProvidersAgencies(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupProvidersAgencies() {
@@ -684,7 +684,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of {@link Org}s in general for dropdown display
-     * @return the result of {@link de.laser.ControlledListService#getOrgs(java.util.Map)}
+     * @return the result of {@link de.laser.ControlledListService#getOrgs(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupOrgs() {
@@ -721,7 +721,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of cost item references for dropdown display
-     * @return the result of {@link de.laser.ControlledListService#getReferences(java.util.Map)}
+     * @return the result of {@link de.laser.ControlledListService#getReferences(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupReferences() {
@@ -746,7 +746,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of subscriptions for dropdown display
-     * @return the result of {@link de.laser.ControlledListService#getSubscriptions(java.util.Map)}
+     * @return the result of {@link de.laser.ControlledListService#getSubscriptions(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupSubscriptions() {
@@ -773,7 +773,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of subscription packages for dropdown display
-     * @return the result of {@link de.laser.ControlledListService#getSubscriptionPackages(java.util.Map)}
+     * @return the result of {@link de.laser.ControlledListService#getSubscriptionPackages(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupSubscriptionPackages() {
@@ -788,7 +788,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of subscriptions and licenses for dropdown display
-     * @return the composite result of {@link de.laser.ControlledListService#getLicenses(java.util.Map)} and {@link de.laser.ControlledListService#getSubscriptions(java.util.Map)}
+     * @return the composite result of {@link de.laser.ControlledListService#getLicenses(grails.web.servlet.mvc.GrailsParameterMap)} and {@link de.laser.ControlledListService#getSubscriptions(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupSubscriptionsLicenses() {
@@ -801,7 +801,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of current and intended subscriptions for dropdown display
-     * @return the filtered result of {@link de.laser.ControlledListService#getSubscriptions(java.util.Map)}
+     * @return the filtered result of {@link de.laser.ControlledListService#getSubscriptions(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupCurrentAndIndendedSubscriptions() {
@@ -812,7 +812,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of title groups for dropdown display
-     * @return the result of {@link de.laser.ControlledListService#getTitleGroups(java.util.Map)}
+     * @return the result of {@link de.laser.ControlledListService#getTitleGroups(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupTitleGroups() {

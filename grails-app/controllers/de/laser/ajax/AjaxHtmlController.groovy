@@ -361,7 +361,7 @@ class AjaxHtmlController {
 
     /**
      * Retrieves a list of provider and agency {@link Org}s for table view
-     * @return the result of {@link de.laser.ControlledListService#getProvidersAgencies(java.util.Map)}
+     * @return the result of {@link de.laser.ControlledListService#getProvidersAgencies(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupProvidersAgencies() {

@@ -52,7 +52,7 @@ class Invoice {
   }
 
     /**
-     * @deprecated use {@link de.laser.ControlledListService#getInvoiceNumbers(java.util.Map)} instead
+     * @deprecated use {@link de.laser.ControlledListService#getInvoiceNumbers(grails.web.servlet.mvc.GrailsParameterMap)} instead
      */
     @Deprecated
     @Transient

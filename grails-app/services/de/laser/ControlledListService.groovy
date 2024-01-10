@@ -33,7 +33,7 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing a sorted list of providers, an empty one if no providers match the filter
      */
-    Map getProvidersAgencies(Map params) {
+    Map getProvidersAgencies(GrailsParameterMap params) {
         LinkedHashMap result = [results:[]]
         Set<RefdataValue> providerAgency = []
         Org org = contextService.getOrg()
@@ -84,7 +84,7 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing a sorted list of organisations, an empty one if no organisations match the filter
      */
-    Map getOrgs(Map params) {
+    Map getOrgs(GrailsParameterMap params) {
         LinkedHashMap result = [results:[]]
         Org org = genericOIDService.resolveOID(params.ctx)
         String queryString = 'select o from Org o where o.status != :deleted and o != :context'
@@ -105,7 +105,7 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing a sorted list of subscriptions, an empty one if no subscriptions match the filter
      */
-    Map getSubscriptions(Map params) {
+    Map getSubscriptions(GrailsParameterMap params) {
         Org org = contextService.getOrg()
         LinkedHashMap result = [results:[]]
         String queryString = 'select distinct s, org.sortname from Subscription s join s.orgRelations orgRoles join orgRoles.org org left join s.propertySet sp where org = :org and orgRoles.roleType in ( :orgRoles )'
@@ -262,7 +262,7 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing a list of issue entitlements, an empty one if no issue entitlements match the filter
      */
-    Map getIssueEntitlements(Map params) {
+    Map getIssueEntitlements(GrailsParameterMap params) {
         Org org = contextService.getOrg()
         LinkedHashMap issueEntitlements = [results:[]]
         //build up set of subscriptions which are owned by the current institution or instances of such - or filter for a given subscription
@@ -305,7 +305,7 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing a list of issue entitlement groups, an empty one if no issue entitlement group match the filter
      */
-    Map getTitleGroups(Map params) {
+    Map getTitleGroups(GrailsParameterMap params) {
         Org org = contextService.getOrg()
         LinkedHashMap issueEntitlementGroup = [results:[]]
         //build up set of subscriptions which are owned by the current institution or instances of such - or filter for a given subscription
@@ -335,7 +335,7 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing licenses, an empty one if no licenses match the filter
      */
-    Map getLicenses(Map params) {
+    Map getLicenses(GrailsParameterMap params) {
         Org org = contextService.getOrg()
         LinkedHashMap licenses = [results:[]]
         List<License> result = []
@@ -378,7 +378,7 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing a sorted list of issue entitlements, an empty one if no issue entitlements match the filter
      */
-    Map getSubscriptionPackages(Map params) {
+    Map getSubscriptionPackages(GrailsParameterMap params) {
         Org org = contextService.getOrg()
         LinkedHashMap result = [results:[]]
         String queryString = 'select distinct s, orgRoles.org.sortname from Subscription s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in ( :orgRoles )'
@@ -435,7 +435,7 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing a sorted list of budget codes, an empty one if no budget codes match the filter
      */
-    Map getBudgetCodes(Map params) {
+    Map getBudgetCodes(GrailsParameterMap params) {
         Map result = [results:[]]
         Org org = contextService.getOrg()
         String queryString = 'select bc from BudgetCode bc where bc.owner = :owner'
@@ -457,7 +457,7 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing a sorted list of invoice numbers, an empty one if no invoice numbers match the filter
      */
-    Map getInvoiceNumbers(Map params) {
+    Map getInvoiceNumbers(GrailsParameterMap params) {
         Map result = [results:[]]
         Org org = contextService.getOrg()
         String queryString = 'select distinct(i.invoiceNumber) from Invoice i where i.owner = :owner'
@@ -479,7 +479,7 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing a sorted list of invoice numbers, an empty one if no invoice numbers match the filter
      */
-    Map getOrderNumbers(Map params) {
+    Map getOrderNumbers(GrailsParameterMap params) {
         Map result = [results:[]]
         Org org = contextService.getOrg()
         String queryString = 'select distinct(ord.orderNumber) from Order ord where ord.owner = :owner'
@@ -502,7 +502,7 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing a sorted list of references, an empty one if no references match the filter
      */
-    Map getReferences(Map params) {
+    Map getReferences(GrailsParameterMap params) {
         Map result = [results:[]]
         Org org = contextService.getOrg()
         String queryString = 'select distinct(ci.reference) from CostItem ci where ci.owner = :owner and ci.reference != null'
@@ -521,7 +521,7 @@ class ControlledListService {
 
     /**
      * Moved from {@link de.laser.ctrl.OrganisationControllerService#getResultGenericsAndCheckAccess(de.laser.OrganisationController, grails.web.servlet.mvc.GrailsParameterMap)}
-     * Retrieves a list of organisations, too, just like {@link #getOrgs(java.util.Map)} does, but used is the context institution, the list is moreover not
+     * Retrieves a list of organisations, too, just like {@link #getOrgs(grails.web.servlet.mvc.GrailsParameterMap)} does, but used is the context institution, the list is moreover not
      * filterable and retrieved are the instititutions linked by combo to the given institution or providers and agencies
      * @return a map containing a sorted list of organisations, an empty one if no results are being obtained
      * @see Combo
@@ -546,7 +546,7 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing a sorted list of objects, sorted by their name; an empty list if no objects match the filter
      */
-    Map getElements(Map params) {
+    Map getElements(GrailsParameterMap params) {
         Map result = [results:[]]
         Org org = contextService.getOrg()
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()

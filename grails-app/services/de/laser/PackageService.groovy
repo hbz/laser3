@@ -6,6 +6,7 @@ import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import grails.web.mapping.LinkGenerator
+import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.Sql
 import org.springframework.context.MessageSource
 
@@ -227,7 +228,7 @@ class PackageService {
      * @param params the request parameter map
      * @return a {@link Map} containing general result data
      */
-    Map<String, Object> getResultGenerics(Map params) {
+    Map<String, Object> getResultGenerics(GrailsParameterMap params) {
         Map<String, Object> result = [user: contextService.getUser(), contextOrg: contextService.getOrg(), packageInstance: Package.get(params.id)]
         result.contextCustomerType = result.contextOrg.getCustomerType()
         int relationCheck = SubscriptionPackage.executeQuery('select count(sp) from SubscriptionPackage sp where sp.pkg = :pkg and sp.subscription in (select oo.sub from OrgRole oo join oo.sub sub where oo.org = :context and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true)))', [pkg: result.packageInstance, context: result.contextOrg, current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED])[0]

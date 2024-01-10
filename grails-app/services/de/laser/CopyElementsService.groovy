@@ -106,7 +106,7 @@ class CopyElementsService {
      * @param params the request parameter map
      * @return the related objects each for both source and target objects
      */
-    Map loadDataFor_DatesOwnerRelations(Map params) {
+    Map loadDataFor_DatesOwnerRelations(GrailsParameterMap params) {
         Map<String, Object> result = [:]
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         Object targetObject = params.targetObjectId ? genericOIDService.resolveOID(params.targetObjectId) : null
@@ -168,7 +168,7 @@ class CopyElementsService {
      * @param params the request parameter map
      * @return the related objects each for both source and target objects
      */
-    Map loadDataFor_DocsTasksWorkflows(Map params) {
+    Map loadDataFor_DocsTasksWorkflows(GrailsParameterMap params) {
         Map<String, Object> result = [:]
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         Object targetObject = null
@@ -192,7 +192,7 @@ class CopyElementsService {
      * @param params the request parameter map
      * @return the subscribers each for both source and target objects
      */
-    Map loadDataFor_Subscriber(Map params) {
+    Map loadDataFor_Subscriber(GrailsParameterMap params) {
         Map<String, Object> result = [:]
         result.sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
 
@@ -211,7 +211,7 @@ class CopyElementsService {
      * @param params the request parameter map
      * @return the public and private properties each for both source and target objects
      */
-    Map loadDataFor_Properties(Map params) {
+    Map loadDataFor_Properties(GrailsParameterMap params) {
         LinkedHashMap result = [customProperties: [:], privateProperties: [:]]
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         Object targetObject = null
@@ -248,7 +248,7 @@ class CopyElementsService {
      * @param params the request parameter map
      * @return the subscription holdings each for both source and target objects
      */
-    Map loadDataFor_PackagesEntitlements(Map params) {
+    Map loadDataFor_PackagesEntitlements(GrailsParameterMap params) {
         Map<String, Object> result = [:]
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         Object targetObject = params.targetObjectId ? genericOIDService.resolveOID(params.targetObjectId) : null

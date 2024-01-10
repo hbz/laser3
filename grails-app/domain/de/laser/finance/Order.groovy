@@ -32,7 +32,7 @@ class Order {
   }
 
     /**
-     * @deprecated use {@link de.laser.ControlledListService#getOrderNumbers(java.util.Map)} instead
+     * @deprecated use {@link de.laser.ControlledListService#getOrderNumbers(grails.web.servlet.mvc.GrailsParameterMap)} instead
      */
     @Deprecated
     @Transient

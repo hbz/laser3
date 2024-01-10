@@ -10,13 +10,12 @@ import de.laser.annotations.DebugInfo
 import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
-import org.springframework.context.MessageSource
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
@@ -512,7 +511,7 @@ class PackageController {
 
     /**
      * Call to see planned titles of the package
-     * @return {@link #planned_expired_deleted(java.lang.Object, java.lang.Object)}
+     * @return {@link #planned_expired_deleted(grails.web.servlet.mvc.GrailsParameterMap, java.lang.Object)}
      */
     @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
@@ -524,7 +523,7 @@ class PackageController {
 
     /**
      * Call to see expired titles of the package
-     * @return {@link #planned_expired_deleted(java.lang.Object, java.lang.Object)}
+     * @return {@link #planned_expired_deleted(grails.web.servlet.mvc.GrailsParameterMap, java.lang.Object)}
      */
     @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
@@ -536,7 +535,7 @@ class PackageController {
 
     /**
      * Call to see deleted titles of the package
-     * @return {@link #planned_expired_deleted(java.lang.Object, java.lang.Object)}
+     * @return {@link #planned_expired_deleted(grails.web.servlet.mvc.GrailsParameterMap, java.lang.Object)}
      */
     @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
@@ -558,7 +557,7 @@ class PackageController {
     @Secured(closure = {
         ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
-    def planned_expired_deleted(params, func) {
+    def planned_expired_deleted(GrailsParameterMap params, func) {
         log.debug("planned_expired_deleted ${params}");
         Map<String, Object> result = packageService.getResultGenerics(params)
 
