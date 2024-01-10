@@ -87,7 +87,7 @@ class WekbStatsService {
             result.counts.deleted   = result.org.deleted.size() + result.platform.deleted.size()    + result.package.deleted.size()
         }
         catch (Exception e) {
-            log.error 'failed getCurrentChanges()', e
+            log.error 'failed getCurrentChanges() -> ' + e.getMessage()
 
             // debug
             println " count             ${result.org.count} - ${result.platform.count} - ${result.package.count}"
