@@ -28,7 +28,7 @@
                     <th>${message(code: 'myinst.emptySubscription.name')}</th>
                     <td>
                         <div class="ui form field">
-                            <input type="text" name="subscription.name" value="${permissionInfo?.sub_name}">
+                            <input type="text" name="subscription.name" value="${permissionInfo.sub_name}">
                         </div>
                     </td>
                     <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
@@ -44,7 +44,7 @@
                 <tr>
                     <th>${message(code: 'default.startDate.label.shy')}</th>
                     <td><ui:datepicker class="wide eight" id="subscription.start_date" name="subscription.start_date"
-                                          placeholder="default.date.label" value="${permissionInfo?.sub_startDate}"
+                                          placeholder="default.date.label" value="${permissionInfo.sub_startDate}"
                                           required=""/></td>
                     <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                         <td class="center aligned">
@@ -58,7 +58,7 @@
                 <tr>
                     <th>${message(code: 'default.endDate.label.shy')}</th>
                     <td><ui:datepicker class="wide eight" id="subscription.end_date" name="subscription.end_date"
-                                          placeholder="default.date.label" value="${permissionInfo?.sub_endDate}"/></td>
+                                          placeholder="default.date.label" value="${permissionInfo.sub_endDate}"/></td>
                     <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                         <td class="center aligned">
                             <div class="ui checkbox">
@@ -71,7 +71,7 @@
                 <tr>
                     <th>${message(code: 'subscription.referenceYear.label.shy')}</th>
                     <td><ui:datepicker type="year" class="wide eight" id="subscription.reference_year" name="subscription.reference_year"
-                                       placeholder="default.date.format.yyyy" value="${permissionInfo?.sub_referenceYear}"/></td>
+                                       placeholder="default.date.format.yyyy" value="${permissionInfo.sub_referenceYear}"/></td>
                     <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                         <td class="center aligned">
                             <div class="ui checkbox">
@@ -110,7 +110,7 @@
                                 optionKey="id"
                                 optionValue="${{ it.getI10n('value') }}"
                                 name="subStatus"
-                                value="${permissionInfo?.sub_status}"/>
+                                value="${permissionInfo.sub_status}"/>
                     </td>
                     <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                         <td class="center aligned">

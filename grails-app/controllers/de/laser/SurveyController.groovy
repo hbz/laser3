@@ -871,6 +871,7 @@ class SurveyController {
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         if(result.subscription.packages) {
+            // @Moe - fixed status here; ignore selected frontend values?
             params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
             Map<String, Object> query = filterService.getTippQuery(params, result.subscription.packages.pkg)
             result.filterSet = query.filterSet
