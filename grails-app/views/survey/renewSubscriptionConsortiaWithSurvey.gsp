@@ -35,24 +35,22 @@
 
 
 <g:form action="processRenewalWithSurvey" method="post" enctype="multipart/form-data" params="${params}">
-
-    <div>
-        <hr />
+    <input type="hidden" name="subscription.old_subid" value="${permissionInfo.sub_id}"/>
 
         <table class="ui celled la-js-responsive-table la-table table">
-            <tbody>
-            <input type="hidden" name="subscription.old_subid" value="${permissionInfo?.sub_id}"/>
-
+            <thead>
             <tr>
                 <th>${message(code: 'myinst.renewalUpload.props')}</th>
                 <th>${message(code: 'default.value.label')}</th>
                 <th>${message(code: 'copyElementsIntoObject.audit')}</th>
             </tr>
+            </thead>
+            <tbody>
             <tr>
                 <th>${message(code: 'myinst.emptySubscription.name')}</th>
                 <td>
                     <div class="ui form field">
-                        <input type="text" name="subscription.name" value="${permissionInfo?.sub_name}">
+                        <input type="text" name="subscription.name" value="${permissionInfo.sub_name}">
                     </div>
                 </td>
                 <td class="center aligned">
@@ -64,7 +62,7 @@
             </tr>
             <tr>
                 <th>${message(code: 'default.startDate.label.shy')}</th>
-                <td><ui:datepicker class="wide eight" id="subscription.start_date" name="subscription.start_date" placeholder="default.date.label" value="${permissionInfo?.sub_startDate}" required="" /></td>
+                <td><ui:datepicker class="wide eight" id="subscription.start_date" name="subscription.start_date" placeholder="default.date.label" value="${permissionInfo.sub_startDate}" required="" /></td>
                 <td class="center aligned">
                     <div class="ui checkbox">
                         <input type="checkbox" name="auditList" value="startDate" ${AuditConfig.getConfig(subscription, 'startDate') ? 'checked': ''} />
@@ -73,7 +71,7 @@
             </tr>
             <tr>
                 <th>${message(code: 'default.endDate.label.shy')}</th>
-                <td><ui:datepicker class="wide eight" id="subscription.end_date" name="subscription.end_date" placeholder="default.date.label" value="${permissionInfo?.sub_endDate}" /></td>
+                <td><ui:datepicker class="wide eight" id="subscription.end_date" name="subscription.end_date" placeholder="default.date.label" value="${permissionInfo.sub_endDate}" /></td>
                 <td class="center aligned">
                     <div class="ui checkbox">
                         <input type="checkbox" name="auditList" value="endDate" ${AuditConfig.getConfig(subscription, 'endDate') ? 'checked': ''} />
@@ -82,7 +80,7 @@
             </tr>
             <tr>
                 <th>${message(code: 'subscription.referenceYear.label.shy')}</th>
-                <td><ui:datepicker class="wide eight" id="subscription.reference_year" name="subscription.reference_year" placeholder="default.date.format.yyyy" value="${permissionInfo?.sub_referenceYear}" type="year"/></td>
+                <td><ui:datepicker class="wide eight" id="subscription.reference_year" name="subscription.reference_year" placeholder="default.date.format.yyyy" value="${permissionInfo.sub_referenceYear}" type="year"/></td>
                 <td class="center aligned">
                     <div class="ui checkbox">
                         <input type="checkbox" name="auditList" value="referenceYear" ${AuditConfig.getConfig(subscription, 'referenceYear') ? 'checked': ''} />
@@ -97,7 +95,7 @@
                           optionKey="id"
                           optionValue="${{ it.getI10n('value') }}"
                           name="subStatus"
-                          value="${permissionInfo?.sub_status}"
+                          value="${permissionInfo.sub_status}"
                           />
                 </td>
                 <td class="center aligned">
@@ -113,7 +111,7 @@
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
                               name="subKind"
-                              value="${permissionInfo?.sub_kind}"
+                              value="${permissionInfo.sub_kind}"
                     />
                 </td>
                 <td class="center aligned">
@@ -130,7 +128,7 @@
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
                               name="subForm"
-                              value="${permissionInfo?.sub_form}"
+                              value="${permissionInfo.sub_form}"
                               />
                 </td>
                 <td class="center aligned">
@@ -146,7 +144,7 @@
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
                               name="subResource"
-                              value="${permissionInfo?.sub_resource}"
+                              value="${permissionInfo.sub_resource}"
                     />
                 </td>
                 <td class="center aligned">
@@ -162,7 +160,7 @@
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
                               name="subIsPublicForApi"
-                              value="${permissionInfo?.sub_isPublicForApi}"
+                              value="${permissionInfo.sub_isPublicForApi}"
                     />
                 </td>
                 <td class="center aligned">
@@ -178,7 +176,7 @@
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
                               name="subHasPerpetualAccess"
-                              value="${permissionInfo?.sub_hasPerpetualAccess}"
+                              value="${permissionInfo.sub_hasPerpetualAccess}"
                     />
                 </td>
                 <td class="center aligned">
@@ -194,7 +192,7 @@
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
                               name="subHasPublishComponent"
-                              value="${permissionInfo?.sub_hasPublishComponent}"
+                              value="${permissionInfo.sub_hasPublishComponent}"
                     />
                 </td>
                 <td class="center aligned">
@@ -211,7 +209,7 @@
                                   optionKey="id"
                                   optionValue="${{ it.getI10n('value') }}"
                                   name="subHoldingSelection"
-                                  value="${permissionInfo?.sub_holdingSelection}"
+                                  value="${permissionInfo.sub_holdingSelection}"
                         />
                     </td>
                     <td class="center aligned">
@@ -225,11 +223,9 @@
         </table>
 
         <div class="la-float-right">
-            <button type="submit"
-                    class="ui button">${message(code: 'myinst.renewalUpload.renew')}</button>
+            <button type="submit" class="ui button">${message(code: 'myinst.renewalUpload.renew')}</button>
         </div>
 
-    </div>
 </g:form>
 
 <laser:htmlEnd />

@@ -392,7 +392,7 @@ class SubscriptionService {
             statusQuery = " and subT.status.id = :status "
             qarams.put('status',RDStore.SUBSCRIPTION_CURRENT.id)
             params.status = RDStore.SUBSCRIPTION_CURRENT.id
-            //params.hasPerpetualAccess = RDStore.YN_YES.id.toString()
+            //params.hasPerpetualAccess = RDStore.YN_YES.id
             result.defaultSet = true
         }
         if(params.long("status") == RDStore.SUBSCRIPTION_CURRENT.id && params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) {
