@@ -123,7 +123,7 @@ class SurveyController {
 
         params.max = result.max
         params.offset = result.offset
-        //params.filterStatus = params.filterStatus ?: ((params.size() > 4) ? "" : [RDStore.SURVEY_SURVEY_STARTED.id.toString(), RDStore.SURVEY_READY.id.toString(), RDStore.SURVEY_IN_PROCESSING.id.toString()])
+        //params.filterStatus = params.filterStatus ?: ((params.size() > 4) ? "" : [RDStore.SURVEY_SURVEY_STARTED.id, RDStore.SURVEY_READY.id, RDStore.SURVEY_IN_PROCESSING.id])
         prf.setBenchmark("before properties")
 
         result.propList = PropertyDefinition.executeQuery( "select surpro.surveyProperty from SurveyConfigProperties as surpro join surpro.surveyConfig surConfig join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg order by surpro.surveyProperty.name_de asc", [contextOrg: result.institution]).groupBy {it}.collect {it.key}
@@ -927,11 +927,11 @@ class SurveyController {
         }
 
         // new: filter preset
-        params.orgType = RDStore.OT_INSTITUTION.id.toString()
-        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
+        params.orgType = RDStore.OT_INSTITUTION.id
+        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id
 
         if(params.tab == 'selectedParticipants') {
-            params.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id.toString())
+            params.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id)
         }
 
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
@@ -941,9 +941,9 @@ class SurveyController {
 
         GrailsParameterMap cloneParams = params.clone()
         cloneParams.removeAll {it.value != ''}
-        cloneParams.orgType = RDStore.OT_INSTITUTION.id.toString()
-        cloneParams.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
-        cloneParams.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id.toString())
+        cloneParams.orgType = RDStore.OT_INSTITUTION.id
+        cloneParams.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id
+        cloneParams.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id)
         cloneParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         cloneParams.sub = result.subscription
 
@@ -1011,8 +1011,8 @@ class SurveyController {
         params.tab = params.tab ?: 'selectedSubParticipants'
 
         // new: filter preset
-        params.orgType = RDStore.OT_INSTITUTION.id.toString()
-        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
+        params.orgType = RDStore.OT_INSTITUTION.id
+        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id
 
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
@@ -2929,7 +2929,7 @@ class SurveyController {
         }
 
         result.orgConfigurations = orgConfigurations as JSON
-        //result.selectedCostItemElement = params.selectedCostItemElement ?: RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id.toString()
+        //result.selectedCostItemElement = params.selectedCostItemElement ?: RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
 
         result.participant = Org.get(params.participant)
         result.surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, result.participant)
@@ -2969,7 +2969,7 @@ class SurveyController {
         }
 
         result.orgConfigurations = orgConfigurations as JSON
-        //result.selectedCostItemElement = params.selectedCostItemElement ?: RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id.toString()
+        //result.selectedCostItemElement = params.selectedCostItemElement ?: RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
 
         result.setting = 'bulkForAll'
 
@@ -3515,15 +3515,15 @@ class SurveyController {
                                  sub_referenceYear: newReferenceYear,
                                  sub_name         : subscription.name,
                                  sub_id           : subscription.id,
-                                 sub_status       : RDStore.SUBSCRIPTION_INTENDED.id.toString(),
-                                 sub_type         : subscription.type?.id?.toString(),
-                                 sub_form         : subscription.form?.id?.toString(),
-                                 sub_resource     : subscription.resource?.id?.toString(),
-                                 sub_kind         : subscription.kind?.id?.toString(),
-                                 sub_isPublicForApi : subscription.isPublicForApi ? RDStore.YN_YES.id.toString() : RDStore.YN_NO.id.toString(),
-                                 sub_hasPerpetualAccess : subscription.hasPerpetualAccess ? RDStore.YN_YES.id.toString() : RDStore.YN_NO.id.toString(),
-                                 sub_hasPublishComponent : subscription.hasPublishComponent ? RDStore.YN_YES.id.toString() : RDStore.YN_NO.id.toString(),
-                                 sub_holdingSelection : subscription.holdingSelection?.id?.toString()
+                                 sub_status       : RDStore.SUBSCRIPTION_INTENDED.id,
+                                 sub_type         : subscription.type?.id,
+                                 sub_form         : subscription.form?.id,
+                                 sub_resource     : subscription.resource?.id,
+                                 sub_kind         : subscription.kind?.id,
+                                 sub_isPublicForApi : subscription.isPublicForApi ? RDStore.YN_YES.id : RDStore.YN_NO.id,
+                                 sub_hasPerpetualAccess : subscription.hasPerpetualAccess ? RDStore.YN_YES.id : RDStore.YN_NO.id,
+                                 sub_hasPublishComponent : subscription.hasPublishComponent ? RDStore.YN_YES.id : RDStore.YN_NO.id,
+                                 sub_holdingSelection : subscription.holdingSelection?.id
 
         ]
 

@@ -94,15 +94,14 @@
                         <ui:sortingDropdown noSelection="${message(code:'default.select.choose.label')}" from="${sortFieldMap}" sort="${params.sort}" order="${params.order}"/>
                     </div>
                      <div class="field la-field-noLabel">
-                        <button class="ui button la-js-closeAll-showMore right floated ">${message(code: "accordion.button.closeAll")}</button>
+                        <button class="ui button la-js-closeAll-showMore right floated">${message(code: "accordion.button.closeAll")}</button>
                     </div>
                 </div>
             </div>
             <div class="ui grid">
                 <div class="row">
                     <div class="column">
-                        <laser:render template="/templates/tipps/table_accordion"
-                                      model="[tipps: titlesList, showPackage: false, showPlattform: true]"/>
+                        <laser:render template="/templates/tipps/table_accordion" model="[tipps: titlesList, showPackage: false, showPlattform: true]"/>
                     </div>
                 </div>
             </div>

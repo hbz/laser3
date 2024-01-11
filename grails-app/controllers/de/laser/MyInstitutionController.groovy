@@ -1279,14 +1279,10 @@ class MyInstitutionController  {
         if(!(params.tab in ['notes', 'documents', 'properties'])){
             //Important
             if (!contextService.getOrg().isCustomerType_Consortium()) {
-                if(params.subTypes == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id.toString()){
+                if (Params.getLongList(params, 'subTypes').contains(RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id)){
                     flash.error = message(code: 'subscriptionsManagement.noPermission.forSubsWithTypeConsortial') as String
                 }
-                else if(RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id.toString() in params.list('subTypes')){
-                    flash.error = message(code: 'subscriptionsManagement.noPermission.forSubsWithTypeConsortial') as String
-                }
-
-                params.subTypes = [RDStore.SUBSCRIPTION_TYPE_LOCAL.id.toString()]
+                params.subTypes = [RDStore.SUBSCRIPTION_TYPE_LOCAL.id]
             }
         }
 
@@ -2992,7 +2988,7 @@ class MyInstitutionController  {
             // new: filter preset
             result.comboType = 'Consortium'
             params.orgType = RDStore.OT_INSTITUTION.id
-            params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
+            params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id
 
             if (params.selectedOrgs) {
                 if (formService.validateToken(params)) {
@@ -3192,7 +3188,7 @@ class MyInstitutionController  {
         result.comboType = RDStore.COMBO_TYPE_CONSORTIUM
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
+        params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id
         GrailsParameterMap queryParams = params.clone() as GrailsParameterMap
 
         result.filterSet    = params.filterSet ? true : false
@@ -3311,7 +3307,7 @@ class MyInstitutionController  {
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
         if(!params.subStatus) {
             if(!params.filterSet) {
-                params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
+                params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id
                 result.filterSet = true
             }
         }

@@ -2270,9 +2270,9 @@ class SubscriptionControllerService {
             }
 
             if(result.subscription.ieGroups.size() > 0) {
-                Map configMap = params.clone()
-                configMap.forCount = true
-                Map query2 = filterService.getIssueEntitlementQuery(configMap, result.subscription)
+                GrailsParameterMap paramsClone = params.clone()
+                paramsClone.forCount = true
+                Map query2 = filterService.getIssueEntitlementQuery(paramsClone, result.subscription)
                 result.num_ies = IssueEntitlement.executeQuery("select count(*) " + query2.query, query2.queryParams)[0]
             }
             result.num_ies_rows = entitlements.size()
@@ -2909,7 +2909,7 @@ class SubscriptionControllerService {
             if(params.chkall == 'on') {
                 Map<String, Object> cfgMap = [:]
                 cfgMap.putAll(params)
-                Map<String, Object> query = filterService.getIssueEntitlementQuery(cfgMap, result.subscription)
+                Map<String, Object> query = filterService.getIssueEntitlementQuery(params, result.subscription)
                 //if(params.bulkOperation == "edit") {
                     if(GlobalService.isset(params, 'bulk_local_price') && GlobalService.isset(params, 'bulk_local_currency')) {
                         NumberFormat format = NumberFormat.getInstance( LocaleUtils.getCurrentLocale() )

@@ -398,7 +398,6 @@ class OrganisationController  {
         // TODO [ticket=2276]
         availableOrgs.removeAll(customerTypeService.getAllOrgsByCustomerType(CustomerTypeService.ORG_SUPPORT))
 
-        String header = message(code: 'menu.public.all_cons')
         String exportHeader = message(code: 'export.all.consortia')
         SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
         // Write the output to a file
@@ -408,7 +407,7 @@ class OrganisationController  {
         GrailsParameterMap queryParams = params.clone() as GrailsParameterMap
         queryParams.clear()
         queryParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
-        queryParams.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
+        queryParams.subStatus = RDStore.SUBSCRIPTION_CURRENT.id
         queryParams.invertDirection = true
         Map<String, Object> currentConsortiaQMap = filterService.getOrgComboQuery(queryParams, result.contextOrg as Org)
         result.consortiaIds = Org.executeQuery(currentConsortiaQMap.query, currentConsortiaQMap.queryParams).collect{ it.id }
