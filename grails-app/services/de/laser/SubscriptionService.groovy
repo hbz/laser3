@@ -282,20 +282,11 @@ class SubscriptionService {
         Set<Year> availableReferenceYears = Subscription.executeQuery('select s.referenceYear from OrgRole oo join oo.sub s where s.referenceYear != null and oo.org = :contextOrg and s.instanceOf != null order by s.referenceYear', [contextOrg: contextOrg])
         result.referenceYears = availableReferenceYears
 
-        /*
-        String query = "select ci, subT, roleT.org from CostItem ci join ci.owner orgK join ci.sub subT join subT.instanceOf subK " +
-                "join subK.orgRelations roleK join subT.orgRelations roleTK join subT.orgRelations roleT " +
-                "where orgK = :org and orgK = roleK.org and roleK.roleType = :rdvCons " +
-                "and orgK = roleTK.org and roleTK.roleType = :rdvCons " +
-                "and roleT.roleType = :rdvSubscr "
-        */
-
         // CostItem ci
 
         prf.setBenchmark('filter query')
 
         String query
-        Long statusId
         Map qarams
         Map<Subscription,Set<License>> linkedLicenses = [:]
 
@@ -410,32 +401,32 @@ class SubscriptionService {
             qarams = psq.queryParams
         }
 
-        if (params.form?.size() > 0) {
+        if (params.form) {
             query += " and subT.form.id = :form "
             qarams.put('form', params.long('form'))
         }
-        if (params.resource?.size() > 0) {
+        if (params.resource) {
             query += " and subT.resource.id = :resource "
             qarams.put('resource', params.long('resource'))
         }
-        if (params.subTypes?.size() > 0) {
+        if (params.subTypes) {
             query += " and subT.type.id in (:subTypes) "
             qarams.put('subTypes', Params.getLongList(params, 'subTypes'))
         }
 
-        if (params.subKinds?.size() > 0) {
+        if (params.subKinds) {
             query += " and subT.kind.id in (:subKinds) "
             qarams.put('subKinds', Params.getLongList(params, 'subKinds'))
         }
 
         if (params.isPublicForApi) {
             query += " and subT.isPublicForApi = :isPublicForApi "
-            qarams.put('isPublicForApi', (params.isPublicForApi == RDStore.YN_YES.id.toString()))
+            qarams.put('isPublicForApi', (params.long('isPublicForApi') == RDStore.YN_YES.id))
         }
 
         if (params.hasPublishComponent) {
             query += " and subT.hasPublishComponent = :hasPublishComponent "
-            qarams.put('hasPublishComponent', (params.hasPublishComponent == RDStore.YN_YES.id.toString()))
+            qarams.put('hasPublishComponent', (params.long('hasPublishComponent') == RDStore.YN_YES.id))
         }
 
         if (params.subRunTimeMultiYear || params.subRunTime) {

@@ -202,22 +202,22 @@ class CompareService {
     /**
      * Retrieves a set of issue entitlements for the given subscription (defined in configMap), loading from the given offset
      * the given maximum count of objects
-     * @param grailsParameterMap the parameter map with query parameters
+     * @param params the parameter map with query parameters
      * @param configMap a map containing configuration params to restrict loading
      * @return a list of issue entitlements
      */
-    Map compareEntitlements(GrailsParameterMap grailsParameterMap, Map<String, Object> configMap) {
+    Map compareEntitlements(GrailsParameterMap params, Map<String, Object> configMap) {
         List objects = configMap.objects
         LinkedHashMap result = [ies: [:]]
-        GrailsParameterMap newMap = grailsParameterMap.clone()
-        for (Iterator<Integer> iterator = newMap.iterator(); iterator.hasNext();) {
+        GrailsParameterMap paramsClone = params.clone()
+        for (Iterator<Integer> iterator = paramsClone.iterator(); iterator.hasNext();) {
             if(iterator.next()) {
                 iterator.remove()
             }
         }
         objects.each { object ->
             Map ies = result.ies
-            Map query = filterService.getIssueEntitlementQuery(newMap, object)
+            Map query = filterService.getIssueEntitlementQuery(paramsClone, object)
             String queryString = 'select ie ' + query.query
             Map queryParams = query.queryParams+[max:configMap.max, offset:configMap.offset]
             List objEntitlements = IssueEntitlement.executeQuery(queryString, queryParams)

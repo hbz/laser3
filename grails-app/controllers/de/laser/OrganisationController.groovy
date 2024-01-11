@@ -398,7 +398,6 @@ class OrganisationController  {
         // TODO [ticket=2276]
         availableOrgs.removeAll(customerTypeService.getAllOrgsByCustomerType(CustomerTypeService.ORG_SUPPORT))
 
-        String header = message(code: 'menu.public.all_cons')
         String exportHeader = message(code: 'export.all.consortia')
         SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
         // Write the output to a file

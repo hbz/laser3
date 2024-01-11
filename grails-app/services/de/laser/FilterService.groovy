@@ -1013,7 +1013,7 @@ class FilterService {
      * @param subscription the subscriptions whose dates should be considered
      * @return the map containing the query and the prepared query parameters
      */
-    Map<String, Object> getIssueEntitlementQuery(Map params, Subscription subscription) {
+    Map<String, Object> getIssueEntitlementQuery(GrailsParameterMap params, Subscription subscription) {
         getIssueEntitlementQuery(params, [subscription])
     }
 
@@ -1023,7 +1023,7 @@ class FilterService {
      * @param subscriptions the subscriptions whose dates should be considered
      * @return the map containing the query and the prepared query parameters
      */
-    Map<String,Object> getIssueEntitlementQuery(Map params, Collection<Subscription> subscriptions) {
+    Map<String,Object> getIssueEntitlementQuery(GrailsParameterMap params, Collection<Subscription> subscriptions) {
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Map result = [:]
 
@@ -1085,15 +1085,6 @@ class FilterService {
             qry_params.current = RDStore.TIPP_STATUS_CURRENT
         }
 
-        /*if(params.mode != 'advanced') {
-            base_qry += " and ie.status = :current "
-            qry_params.current = RDStore.TIPP_STATUS_CURRENT
-        }
-        else {
-            base_qry += " and ie.status != :removed "
-            qry_params.deleted = RDStore.TIPP_STATUS_REMOVED
-        }*/
-
         if (params.pkgfilter && (params.pkgfilter != '')) {
             base_qry += " and tipp.pkg.id = :pkgId "
             qry_params.pkgId = Long.parseLong(params.pkgfilter)
@@ -1106,7 +1097,6 @@ class FilterService {
                 base_qry += " and exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ieGroup.id = :titleGroup and iegi.ie = ie) "
                 qry_params.titleGroup = Long.parseLong(params.titleGroup)
             }
-
         }
 
         if (params.inTitleGroups && (params.inTitleGroups != '') && !params.forCount) {
@@ -1236,13 +1226,11 @@ class FilterService {
             base_qry += "order by tipp.sortname"
         }
 
-
         result.query = base_qry
         result.queryParams = qry_params
         result.filterSet = filterSet
         
         result
-
     }
 
     /**
@@ -1399,7 +1387,6 @@ class FilterService {
         result.filterSet = filterSet
 
         result
-
     }
 
     /**
@@ -1462,15 +1449,6 @@ class FilterService {
             qry_params.issueEntitlementStatus = params.issueEntitlementStatus
         }
 
-       /* if(params.mode != 'advanced') {
-            base_qry += " and tipp.status = :current "
-            qry_params.current = RDStore.TIPP_STATUS_CURRENT
-        }
-        else {
-            base_qry += " and tipp.status != :removed "
-            qry_params.deleted = RDStore.TIPP_STATUS_REMOVED
-        }*/
-
         if (params.list('status').findAll()) {
             List<Long> status = Params.getLongList(params, 'status')
             if(qry_params.size() > 0){
@@ -1494,15 +1472,6 @@ class FilterService {
             base_qry += " tipp.status = :current "
             qry_params.current = RDStore.TIPP_STATUS_CURRENT
         }
-
-        /*if (params.planned) {
-            base_qry += " and ( coalesce(tipp.accessStartDate, tipp.pkg.startDate) >= :date ) "
-            qry_params.date = new Date()
-        }
-        if (params.expired) {
-            base_qry += " and ( tipp.accessEndDate <= :date ) "
-            qry_params.date = new Date()
-        }*/
 
         if (params.ddcs && params.ddcs != "" && listReaderWrapper(params, 'ddcs')) {
             if(qry_params.size() > 0){
@@ -2064,6 +2033,7 @@ class FilterService {
      * @return a list containing the parameter values
      */
     List listReaderWrapper(Map params, String key) {
+        log.debug ('listReaderWrapper: ' + key + ' @ ' + params.toMapString())
         List result
         if(params instanceof GrailsParameterMap) {
             result = params.list(key)
