@@ -927,11 +927,11 @@ class SurveyController {
         }
 
         // new: filter preset
-        params.orgType = RDStore.OT_INSTITUTION.id.toString()
-        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
+        params.orgType = RDStore.OT_INSTITUTION.id
+        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id
 
         if(params.tab == 'selectedParticipants') {
-            params.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id.toString())
+            params.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id)
         }
 
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
@@ -941,9 +941,9 @@ class SurveyController {
 
         GrailsParameterMap cloneParams = params.clone()
         cloneParams.removeAll {it.value != ''}
-        cloneParams.orgType = RDStore.OT_INSTITUTION.id.toString()
-        cloneParams.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
-        cloneParams.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id.toString())
+        cloneParams.orgType = RDStore.OT_INSTITUTION.id
+        cloneParams.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id
+        cloneParams.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id)
         cloneParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         cloneParams.sub = result.subscription
 
@@ -1011,8 +1011,8 @@ class SurveyController {
         params.tab = params.tab ?: 'selectedSubParticipants'
 
         // new: filter preset
-        params.orgType = RDStore.OT_INSTITUTION.id.toString()
-        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
+        params.orgType = RDStore.OT_INSTITUTION.id
+        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id
 
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 

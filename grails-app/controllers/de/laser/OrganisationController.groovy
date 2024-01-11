@@ -408,7 +408,7 @@ class OrganisationController  {
         GrailsParameterMap queryParams = params.clone() as GrailsParameterMap
         queryParams.clear()
         queryParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
-        queryParams.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
+        queryParams.subStatus = RDStore.SUBSCRIPTION_CURRENT.id
         queryParams.invertDirection = true
         Map<String, Object> currentConsortiaQMap = filterService.getOrgComboQuery(queryParams, result.contextOrg as Org)
         result.consortiaIds = Org.executeQuery(currentConsortiaQMap.query, currentConsortiaQMap.queryParams).collect{ it.id }

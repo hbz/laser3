@@ -85,7 +85,7 @@ class PlatformController  {
         else if(!params.filterSet) {
             result.filterSet = true
             queryParams.status = "Current"
-            params.status = RDStore.PLATFORM_STATUS_CURRENT.id.toString()
+            params.status = RDStore.PLATFORM_STATUS_CURRENT.id
         }
 
         if (params.ipSupport) {

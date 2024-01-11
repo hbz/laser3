@@ -57,13 +57,13 @@ class FilterService {
             query << "o.status.id != :orgStatus"
             queryParams.orgStatus = RDStore.ORG_STATUS_REMOVED.id
         }
-        if (params.orgRole?.length() > 0) {
+        if (params.orgRole) {
             query << " exists (select ogr from o.links as ogr where ogr.roleType.id = :orgRole )"
              queryParams << [orgRole : params.long('orgRole')]
         }
-        if (params.orgSector?.length() > 0) {
-            query << "o.sector.id = :orgSector"
-             queryParams << [orgSector : params.long('orgSector')]
+        if (params.orgSector) {
+            query << "o.sector.id in (:orgSector)"
+             queryParams << [orgSector : Params.getLongList(params, 'orgSector')]
         }
         if (params.orgIdentifier?.length() > 0) {
             query << " ( exists (select ident from Identifier ident join ident.org ioorg " +
@@ -88,34 +88,33 @@ class FilterService {
             query << " ( exists ( select customerID from CustomerIdentifier customerID where customerID.customer = o and ( ${customerIDClause.join(' or ')} ) ) ) "
         }
 
-        if (params.subjectGroup?.size() > 0) {
+        if (params.subjectGroup) {
             query << "exists (select osg from OrgSubjectGroup as osg where osg.org.id = o.id and osg.subjectGroup.id in (:subjectGroup))"
             queryParams << [subjectGroup : Params.getLongList(params, 'subjectGroup')]
         }
 
-        if (params.discoverySystemsFrontend?.size() > 0) {
+        if (params.discoverySystemsFrontend) {
             query << "exists (select dsf from DiscoverySystemFrontend as dsf where dsf.org.id = o.id and dsf.frontend.id in (:frontends))"
             queryParams << [frontends : Params.getLongList(params, 'discoverySystemsFrontend')]
         }
-
-        if (params.discoverySystemsIndex?.size() > 0) {
+        if (params.discoverySystemsIndex) {
             query << "exists (select dsi from DiscoverySystemIndex as dsi where dsi.org.id = o.id and dsi.index.id in (:indices))"
             queryParams << [indices : Params.getLongList(params, 'discoverySystemsIndex')]
         }
 
-        if (params.libraryNetwork?.size() > 0) {
+        if (params.libraryNetwork) {
             query << "o.libraryNetwork.id in (:libraryNetwork)"
             queryParams << [libraryNetwork : Params.getLongList(params, 'libraryNetwork')]
         }
-        if (params.libraryType?.size() > 0) {
+        if (params.libraryType) {
             query << "o.libraryType.id in (:libraryType)"
             queryParams << [libraryType : Params.getLongList(params, 'libraryType')]
         }
+
         if (params.country) {
             query << "o.country.id in (:country)"
             queryParams << [country : Params.getLongList(params, 'country')]
         }
-
         if (params.region) {
             query << "o.region.id in (:region)"
             queryParams << [region : Params.getLongList(params, 'region')]
@@ -187,13 +186,13 @@ class FilterService {
              queryParams << [orgNameContains1 : "${params.orgNameContains}"]
              queryParams << [orgNameContains2 : "${params.orgNameContains}"]
         }
-        if (params.orgType?.length() > 0) {
-            query << " exists (select roletype from o.orgType as roletype where roletype.id = :orgType )"
-             queryParams << [orgType : params.long('orgType')]
+        if (params.orgType) {
+            query << "exists (select roletype from o.orgType as roletype where roletype.id in (:orgType) )"
+             queryParams << [orgType : Params.getLongList(params, 'orgType')]
         }
-        if (params.orgSector?.length() > 0) {
-            query << "o.sector.id = :orgSector"
-             queryParams << [orgSector : params.long('orgSector')]
+        if (params.orgSector) {
+            query << "o.sector.id in (:orgSector)"
+             queryParams << [orgSector : Params.getLongList(params, 'orgSector')]
         }
         if (params.region?.size() > 0) {
             query << "o.region.id in (:region)"
