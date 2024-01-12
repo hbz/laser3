@@ -9,6 +9,16 @@
 
 5520    12.01.2024  rc-3.3  3.3.5       David   Bug         Vertrag anlegen als neuer Kundentyp
 
+5512    09.01.2024  rc-3.3  3.3.3       Moe     Bug         Teilnehmerkosten vergleichen
+
+5488    09.01.2024  rc-3.3  3.3.3       Moe     Bug         Kostenausschütung rundet Preise ohne dies zu wollen
+
+5506    09.01.2024  rc-3.3  3.3.3       Moe     Bug         Kostenasuschüttung: Wert in EUR und Endpreis in EUR nicht korrekt
+
+5510    09.01.2024  rc-3.3  3.3.3       Moe     Bug         Kosten anlegen: Standartwerte
+
+5509    09.01.2024  rc-3.3  3.3.3       Moe     Bug         Umfrage-Kosten: Fehlende Angaben
+
 5505    08.01.2024  rc-3.3  3.3.3       David   Feature     "Alle Konsortialstellen" liefert unvollständige Treffermenge
 
 5498    05.01.2024  rc-3.3  3.3.3       David   Bug         /survey/surveyTitles: Fehler wenn man auf andere Seiten klickt
