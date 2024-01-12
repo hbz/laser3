@@ -21,7 +21,7 @@ class PdfUtils {
         if (format == LANDSCAPE_DYNAMIC) {
             pageStruct = [
                     orientation : 'Landscape',
-                    pageSize    : '',
+                    pageSize    : 'A4',
                     width       : model.mainHeader.size() * 15,
                     height      : 35,
             ] as Map<String, Object>
@@ -42,20 +42,15 @@ class PdfUtils {
             model.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
         }
 
-        if (pageStruct) {
-            wkhtmltoxService.makePdf(
-                    view            : view,
-                    model           : model,
-                    pageSize        : pageStruct.pageSize,
-                    orientation     : pageStruct.orientation,
-                    marginLeft      : 10,
-                    marginRight     : 10,
-                    marginTop       : 15,
-                    marginBottom    : 15
-            )
-        }
-        else {
-            log.debug ('no pageStruct @ getPdf()')
-        }
+        wkhtmltoxService.makePdf(
+                view            : view,
+                model           : model,
+                pageSize        : pageStruct.pageSize,
+                orientation     : pageStruct.orientation,
+                marginLeft      : 10,
+                marginRight     : 10,
+                marginTop       : 15,
+                marginBottom    : 15
+        )
     }
 }
