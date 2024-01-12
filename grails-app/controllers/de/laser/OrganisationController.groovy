@@ -5,7 +5,6 @@ import de.laser.annotations.DebugInfo
 import de.laser.cache.EhcacheWrapper
 import de.laser.ctrl.OrganisationControllerService
 import de.laser.ctrl.UserControllerService
-import de.laser.custom.CustomWkhtmltoxService
 import de.laser.properties.OrgProperty
 import de.laser.auth.Role
 import de.laser.auth.User
@@ -23,7 +22,6 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
-import org.grails.plugins.wkhtmltopdf.WkhtmltoxService
 import org.springframework.validation.FieldError
 
 import javax.servlet.ServletOutputStream
@@ -60,7 +58,6 @@ class OrganisationController  {
     UserControllerService userControllerService
     UserService userService
     WorkflowService workflowService
-    CustomWkhtmltoxService wkhtmltoxService
 
     //-----
 

@@ -3,7 +3,6 @@ package de.laser
 import de.laser.annotations.Check404
 import de.laser.auth.User
 import de.laser.ctrl.LicenseControllerService
-import de.laser.custom.CustomWkhtmltoxService
 import de.laser.helper.Params
 import de.laser.utils.LocaleUtils
 import de.laser.storage.RDConstants
@@ -35,11 +34,9 @@ class LicenseController {
     ContextService contextService
     CopyElementsService copyElementsService
     CustomerTypeService customerTypeService
-    CustomWkhtmltoxService wkhtmltoxService
     DeletionService deletionService
     DocstoreService docstoreService
     EscapeService escapeService
-    ExecutorWrapperService executorWrapperService
     FilterService filterService
     FormService formService
     GenericOIDService genericOIDService

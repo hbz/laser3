@@ -5,7 +5,6 @@ import de.laser.annotations.DebugInfo
 import de.laser.auth.User
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
-import de.laser.custom.CustomWkhtmltoxService
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
@@ -41,7 +40,6 @@ class SubscriptionController {
     ContextService contextService
     CopyElementsService copyElementsService
     CustomerTypeService customerTypeService
-    CustomWkhtmltoxService wkhtmltoxService
     DeletionService deletionService
     DocstoreService docstoreService
     EscapeService escapeService

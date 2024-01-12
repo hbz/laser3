@@ -11,8 +11,8 @@ class PdfUtils {
     public static final String PORTRAIT_FIXED_A4   = 'PORTRAIT_FIXED_A4'
 
 
-    static byte[] getPdf(Map<String, Object> pdfOutput, String format, String template) {
-        log.debug('getPdf( ' + format + ', ' + template + ' )')
+    static byte[] getPdf(Map<String, Object> model, String format, String view) {
+        log.debug('getPdf( ' + format + ', ' + view + ' )')
 
         CustomWkhtmltoxService wkhtmltoxService = Holders.grailsApplication.mainContext.getBean('wkhtmltoxService') as CustomWkhtmltoxService
 
@@ -22,7 +22,7 @@ class PdfUtils {
             pageStruct = [
                     orientation : 'Landscape',
                     pageSize    : '',
-                    width       : pdfOutput.mainHeader.size() * 15,
+                    width       : model.mainHeader.size() * 15,
                     height      : 35,
             ] as Map<String, Object>
 
@@ -31,23 +31,21 @@ class PdfUtils {
             else if (pageStruct.width > 85 * 2) { pageStruct.pageSize = 'A2' }
             else if (pageStruct.width > 85)     { pageStruct.pageSize = 'A3' }
 
-            pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
+            model.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
         }
         else if (format == PORTRAIT_FIXED_A4) {
             pageStruct = [
                     orientation : 'Portrait',
-                    pageSize    : 'A4',
-                    width       : 85,
-                    height      : 35,
+                    pageSize    : 'A4'
             ] as Map<String, Object>
 
-            pdfOutput.struct = [pageStruct.width, pageStruct.height, pageStruct.pageSize + ' ' + pageStruct.orientation]
+            model.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
         }
 
         if (pageStruct) {
             wkhtmltoxService.makePdf(
-                    view            : template,
-                    model           : pdfOutput,
+                    view            : view,
+                    model           : model,
                     pageSize        : pageStruct.pageSize,
                     orientation     : pageStruct.orientation,
                     marginLeft      : 10,
