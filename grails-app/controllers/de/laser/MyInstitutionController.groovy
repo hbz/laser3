@@ -736,7 +736,9 @@ class MyInstitutionController  {
             Org org = contextService.getOrg()
 
             // todo: ERMS-5520
-            List<Long> defaultOrgType = contextService.getOrg().isCustomerType_Consortium() ? [RDStore.OT_CONSORTIUM.id] : [RDStore.OT_INSTITUTION.id]
+            boolean isConsOrSupport     = contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()
+            List<Long> defaultOrgType   = isConsOrSupport ? [RDStore.OT_CONSORTIUM.id] : [RDStore.OT_INSTITUTION.id]
+
             params.asOrgType = params.asOrgType ? [params.long('asOrgType')] : defaultOrgType
 
             if (! userService.hasFormalAffiliation(user, org, 'INST_EDITOR')) {
@@ -801,7 +803,7 @@ class MyInstitutionController  {
 
                 log.debug("adding org link to new license")
                 OrgRole orgRole
-                if (params.asOrgType && (RDStore.OT_CONSORTIUM.id in Params.getLongList(params, 'asOrgType'))) {
+                if (isConsOrSupport) {
                     orgRole = new OrgRole(lic: licenseInstance, org: org, roleType: RDStore.OR_LICENSING_CONSORTIUM)
                 } else {
                     orgRole = new OrgRole(lic: licenseInstance, org: org, roleType: RDStore.OR_LICENSEE)
