@@ -33,6 +33,7 @@ import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
 import de.laser.workflow.WfChecklist
 import grails.gsp.PageRenderer
@@ -571,22 +572,8 @@ class MyInstitutionController  {
                 return
             case 'pdf':
                 Map<String, Object> pdfOutput = exportClickMeService.exportLicenses(totalLicenses, selectedFields, result.institution, ExportClickMeService.FORMAT.PDF)
-                Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.mainHeader.size()*15, height: 35]
-                if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
-                else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
-                else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
-                else if (pageStruct.width > 85)    { pageStruct.pageSize = 'A3' }
-                pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
-                byte[] pdf = wkhtmltoxService.makePdf(
-                        view: '/templates/export/_individuallyExportPdf',
-                        model: pdfOutput,
-                        pageSize: pageStruct.pageSize,
-                        orientation: pageStruct.orientation,
-                        marginLeft: 10,
-                        marginRight: 10,
-                        marginTop: 15,
-                        marginBottom: 15
-                )
+
+                byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
                 response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
                 response.setContentType('application/pdf')
                 response.outputStream.withStream { it << pdf }
@@ -995,22 +982,8 @@ class MyInstitutionController  {
                 return
             case 'pdf':
                 Map<String, Object> pdfOutput = exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, result.institution, ExportClickMeService.FORMAT.PDF)
-                Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.mainHeader.size()*15, height: 35]
-                if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
-                else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
-                else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
-                else if (pageStruct.width > 85)    { pageStruct.pageSize = 'A3' }
-                pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
-                byte[] pdf = wkhtmltoxService.makePdf(
-                        view: '/templates/export/_individuallyExportPdf',
-                        model: pdfOutput,
-                        pageSize: pageStruct.pageSize,
-                        orientation: pageStruct.orientation,
-                        marginLeft: 10,
-                        marginRight: 10,
-                        marginTop: 15,
-                        marginBottom: 15
-                )
+
+                byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
                 response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
                 response.setContentType('application/pdf')
                 response.outputStream.withStream { it << pdf }
@@ -2847,22 +2820,8 @@ class MyInstitutionController  {
                     return
                 case 'pdf':
                     Map<String, Object> pdfOutput = exportClickMeService.exportAddresses(visiblePersons, visibleAddresses, selectedFields, params.exportOnlyContactPersonForInstitution == 'true', params.exportOnlyContactPersonForProviderAgency == 'true', null, ExportClickMeService.FORMAT.PDF)
-                    Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.mainHeader.size()*15, height: 35]
-                    if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
-                    else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
-                    else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
-                    else if (pageStruct.width > 85)    { pageStruct.pageSize = 'A3' }
-                    pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
-                    byte[] pdf = wkhtmltoxService.makePdf(
-                            view: '/templates/export/_individuallyExportPdf',
-                            model: pdfOutput,
-                            pageSize: pageStruct.pageSize,
-                            orientation: pageStruct.orientation,
-                            marginLeft: 10,
-                            marginRight: 10,
-                            marginTop: 15,
-                            marginBottom: 15
-                    )
+
+                    byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
                     response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
                     response.setContentType('application/pdf')
                     response.outputStream.withStream { it << pdf }
@@ -3241,22 +3200,8 @@ class MyInstitutionController  {
                     return
                 case 'pdf':
                     Map<String, Object> pdfOutput = exportClickMeService.exportOrgs(totalConsortia, selectedFields, 'consortium', ExportClickMeService.FORMAT.PDF, contactSwitch)
-                    Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.mainHeader.size()*15, height: 35]
-                    if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
-                    else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
-                    else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
-                    else if (pageStruct.width > 85)    { pageStruct.pageSize = 'A3' }
-                    pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
-                    byte[] pdf = wkhtmltoxService.makePdf(
-                            view: '/templates/export/_individuallyExportPdf',
-                            model: pdfOutput,
-                            pageSize: pageStruct.pageSize,
-                            orientation: pageStruct.orientation,
-                            marginLeft: 10,
-                            marginRight: 10,
-                            marginTop: 15,
-                            marginBottom: 15
-                    )
+
+                    byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
                     response.setHeader('Content-disposition', 'attachment; filename="'+ file +'.pdf"')
                     response.setContentType('application/pdf')
                     response.outputStream.withStream { it << pdf }
@@ -3458,22 +3403,8 @@ join sub.orgRelations or_sub where
                 return
             case 'pdf':
                 Map<String, Object> pdfOutput = exportClickMeService.exportOrgs(totalMembers, selectedFields, 'member', ExportClickMeService.FORMAT.PDF, contactSwitch, configMap)
-                Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.mainHeader.size()*15, height: 35]
-                if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
-                else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
-                else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
-                else if (pageStruct.width > 85)    { pageStruct.pageSize = 'A3' }
-                pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
-                byte[] pdf = wkhtmltoxService.makePdf(
-                        view: '/templates/export/_individuallyExportPdf',
-                        model: pdfOutput,
-                        pageSize: pageStruct.pageSize,
-                        orientation: pageStruct.orientation,
-                        marginLeft: 10,
-                        marginRight: 10,
-                        marginTop: 15,
-                        marginBottom: 15
-                )
+
+                byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
                 response.setHeader('Content-disposition', 'attachment; filename="'+ file +'.pdf"')
                 response.setContentType('application/pdf')
                 response.outputStream.withStream { it << pdf }
@@ -3529,22 +3460,8 @@ join sub.orgRelations or_sub where
                 return
             case 'pdf':
                 Map<String, Object> pdfOutput = exportClickMeService.exportConsortiaParticipations(result.entries, selectedFields, result.institution, contactSwitch, ExportClickMeService.FORMAT.PDF)
-                Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.mainHeader.size()*15, height: 35]
-                if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
-                else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
-                else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
-                else if (pageStruct.width > 85)    { pageStruct.pageSize = 'A3' }
-                pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
-                byte[] pdf = wkhtmltoxService.makePdf(
-                        view: '/templates/export/_individuallyExportPdf',
-                        model: pdfOutput,
-                        pageSize: pageStruct.pageSize,
-                        orientation: pageStruct.orientation,
-                        marginLeft: 10,
-                        marginRight: 10,
-                        marginTop: 15,
-                        marginBottom: 15
-                )
+
+                byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
                 response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
                 response.setContentType('application/pdf')
                 response.outputStream.withStream { it << pdf }

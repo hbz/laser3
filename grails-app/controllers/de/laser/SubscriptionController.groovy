@@ -15,6 +15,7 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.utils.DateUtils
+import de.laser.utils.PdfUtils
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.sql.Sql
@@ -97,22 +98,11 @@ class SubscriptionController {
                 ctrlResult.result.tasks = taskService.getTasksForExport((User) ctrlResult.result.user, (Org) ctrlResult.result.institution, (Subscription) ctrlResult.result.subscription)
                 ctrlResult.result.documents = docstoreService.getDocumentsForExport((Org) ctrlResult.result.institution, (Subscription) ctrlResult.result.subscription)
                 ctrlResult.result.notes = docstoreService.getNotesForExport((Org) ctrlResult.result.institution, (Subscription) ctrlResult.result.subscription)
-                Map<String, Object> pageStruct = [
-                        width       : 85,
-                        height      : 35,
-                        pageSize    : 'A4',
-                        orientation : 'Portrait'
-                ]
-                ctrlResult.result.struct = [pageStruct.width, pageStruct.height, pageStruct.pageSize + ' ' + pageStruct.orientation]
-                byte[] pdf = wkhtmltoxService.makePdf(
-                        view: customerTypeService.getCustomerTypeDependingView('/subscription/subscriptionPdf'),
-                        model: ctrlResult.result,
-                        pageSize: pageStruct.pageSize,
-                        orientation: pageStruct.orientation,
-                        marginLeft: 10,
-                        marginRight: 10,
-                        marginTop: 15,
-                        marginBottom: 15
+
+                byte[] pdf = PdfUtils.getPdf(
+                        ctrlResult.result as Map<String, Object>,
+                        PdfUtils.PORTRAIT_FIXED_A4,
+                        customerTypeService.getCustomerTypeDependingView('/subscription/subscriptionPdf')
                 )
                 response.setHeader('Content-disposition', 'attachment; filename="'+ escapeService.escapeString(ctrlResult.result.subscription.dropdownNamingConvention()) +'.pdf"')
                 response.setContentType('application/pdf')
@@ -603,22 +593,8 @@ class SubscriptionController {
                         return
                     case 'pdf':
                         Map<String, Object> pdfOutput = exportClickMeService.exportSubscriptionMembers(ctrlResult.result.filteredSubChilds, selectedFields, ctrlResult.result.subscription, ctrlResult.result.institution, contactSwitch, ExportClickMeService.FORMAT.PDF)
-                        Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.mainHeader.size()*15, height: 35]
-                        if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
-                        else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
-                        else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
-                        else if (pageStruct.width > 85)    { pageStruct.pageSize = 'A3' }
-                        pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
-                        byte[] pdf = wkhtmltoxService.makePdf(
-                                view: '/templates/export/_individuallyExportPdf',
-                                model: pdfOutput,
-                                pageSize: pageStruct.pageSize,
-                                orientation: pageStruct.orientation,
-                                marginLeft: 10,
-                                marginRight: 10,
-                                marginTop: 15,
-                                marginBottom: 15
-                        )
+
+                        byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
                         response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
                         response.setContentType('application/pdf')
                         response.outputStream.withStream { it << pdf }
