@@ -2252,7 +2252,7 @@ class SubscriptionControllerService {
 
             //params.status = params.status ?: (result.subscription.hasPerpetualAccess ? [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString()] : [RDStore.TIPP_STATUS_CURRENT.id.toString()])
 
-            Map ttParams = FilterLogic.resolveParamsForTopAttachedTitleTabs(params, 'IEs')
+            Map ttParams = FilterLogic.resolveTabAndStatusForTitleTabsMenu(params, 'IEs')
             if (ttParams.status) { params.status = ttParams.status }
             if (ttParams.tab)    { params.tab = ttParams.tab }
 
@@ -2909,7 +2909,7 @@ class SubscriptionControllerService {
             if(params.chkall == 'on') {
                 Map<String, Object> cfgMap = [:]
                 cfgMap.putAll(params)
-                Map<String, Object> query = filterService.getIssueEntitlementQuery(params, result.subscription)
+                Map<String, Object> query = filterService.getIssueEntitlementQuery(params.clone() as GrailsParameterMap, result.subscription)
                 //if(params.bulkOperation == "edit") {
                     if(GlobalService.isset(params, 'bulk_local_price') && GlobalService.isset(params, 'bulk_local_currency')) {
                         NumberFormat format = NumberFormat.getInstance( LocaleUtils.getCurrentLocale() )

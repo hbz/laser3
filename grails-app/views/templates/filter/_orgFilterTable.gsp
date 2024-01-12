@@ -515,24 +515,24 @@
                 <td class="center aligned">
                     <div class="la-flexbox">
                         <%
-                        def subStatus
+                        // TODO: ERMS-5518 - false numberOfSubscriptions !?
+                        Long subStatus = params.subStatus ? params.long('subStatus') : null
                         if(actionName == 'currentProviders') {
-                            subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
+                            subStatus = RDStore.SUBSCRIPTION_CURRENT.id
                         }
-                        else subStatus = params.subStatus
 
                         if(params.filterPvd && params.filterPvd != "" && params.list('filterPvd')){
                             (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(
-                                    [org: org, actionName: actionName, status: subStatus ?: null, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null, providers: params.list('filterPvd')]
+                                    [org: org, actionName: actionName, status: subStatus, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null, providers: params.list('filterPvd')]
                             )
                         }else {
                             (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(
-                                    [org: org, actionName: actionName, status: subStatus ?: null, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null]
+                                    [org: org, actionName: actionName, status: subStatus, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null]
                             )
                         }
                         def numberOfSubscriptions = Subscription.executeQuery("select s.id " + base_qry, qry_params).size()
                         /*if(params.subPerpetual == "on") {
-                            (base_qry2, qry_params2) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: subStatus == RDStore.SUBSCRIPTION_CURRENT.id.toString() ? RDStore.SUBSCRIPTION_EXPIRED.id.toString() : null, hasPerpetualAccess: RDStore.YN_YES.id.toString()])
+                            (base_qry2, qry_params2) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: subStatus == RDStore.SUBSCRIPTION_CURRENT.id ? RDStore.SUBSCRIPTION_EXPIRED.id : null, hasPerpetualAccess: RDStore.YN_YES.id])
                             numberOfSubscriptions+=Subscription.executeQuery("select s.id " + base_qry2, qry_params2).size()
                         }*/
                         %>
@@ -546,7 +546,7 @@
                         </g:if>
                         <g:elseif test="${actionName == 'currentConsortia'}">
                             <g:link controller="myInstitution" action="currentSubscriptions"
-                                    params="${[consortia: genericOIDService.getOID(org), status: subStatus ?: null, validOn: params.subValidOn, filterSet: true]}"
+                                    params="${[consortia: genericOIDService.getOID(org), status: subStatus, validOn: params.subValidOn, filterSet: true]}"
                                     title="${message(code: 'org.subscriptions.tooltip', args: [org.name])}">
                                 <div class="ui blue circular label">
                                     ${numberOfSubscriptions}
