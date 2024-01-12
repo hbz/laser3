@@ -781,112 +781,6 @@ class AjaxController {
     }
 
     /**
-     * Inserts a new custom property definition, i.e. a type of property which is usable by every institution.
-     * Beware: the inserted reference data category does not survive database resets nor is that available throughout the instances;
-     * this has to be considered when running this webapp on multiple instances!
-     * If you wish to insert a reference data category which persists and is available on different instances, enter the parameters in PropertyDefinition.csv. This resource file is
-     * (currently, as of August 14th, '23) located at /src/main/webapp/setup.
-     * Note the global usability of this property definition; see {@link MyInstitutionController#managePrivatePropertyDefinitions()} with params.cmd == add for property types which
-     * are for an institution's internal usage only
-     */
-    @Secured(['ROLE_USER'])
-    @Transactional
-    def addCustomPropertyType() {
-        def newProp
-        def error
-        def msg
-        def ownerClass = params.ownerClass // we might need this for addCustomPropertyValue
-        def owner      = CodeUtils.getDomainClass( ownerClass )?.get(params.ownerId)
-
-        // TODO ownerClass
-        if (PropertyDefinition.findByNameAndDescrAndTenantIsNull(params.cust_prop_name, params.cust_prop_desc)) {
-            error = message(code: 'propertyDefinition.name.unique')
-        }
-        else {
-            if (params.cust_prop_type.equals(RefdataValue.class.name)) {
-                if (params.refdatacategory) {
-
-                    Map<String, Object> map = [
-                            token       : params.cust_prop_name,
-                            category    : params.cust_prop_desc,
-                            type        : params.cust_prop_type,
-                            rdc         : RefdataCategory.get(params.refdatacategory)?.getDesc(),
-                            multiple    : (params.cust_prop_multiple_occurence == 'on'),
-                            i10n        : [
-                                    name_de: params.cust_prop_name?.trim(),
-                                    name_en: params.cust_prop_name?.trim(),
-                                    expl_de: params.cust_prop_expl?.trim(),
-                                    expl_en: params.cust_prop_expl?.trim()
-                            ]
-                    ]
-
-                    newProp = PropertyDefinition.construct(map)
-                }
-                else {
-                    error = message(code: 'ajax.addCustPropertyType.error')
-                }
-            }
-            else {
-                    Map<String, Object> map = [
-                            token       : params.cust_prop_name,
-                            category    : params.cust_prop_desc,
-                            type        : params.cust_prop_type,
-                            multiple    : (params.cust_prop_multiple_occurence == 'on'),
-                            i10n        : [
-                                    name_de: params.cust_prop_name?.trim(),
-                                    name_en: params.cust_prop_name?.trim(),
-                                    expl_de: params.cust_prop_expl?.trim(),
-                                    expl_en: params.cust_prop_expl?.trim()
-                            ]
-                    ]
-
-                    newProp = PropertyDefinition.construct(map)
-            }
-
-            if (newProp?.hasErrors()) {
-                log.error(newProp.errors.toString())
-                error = message(code: 'default.error')
-            }
-            else {
-                msg = message(code: 'ajax.addCustPropertyType.success')
-                newProp.save()
-
-                if (params.autoAdd == "on" && newProp) {
-                    params.propIdent = newProp.id.toString()
-                    chain(action: "addCustomPropertyValue", params: params)
-                }
-            }
-        }
-
-        request.setAttribute("editable", params.editable == "true")
-
-        if (params.reloadReferer) {
-            flash.newProp = newProp
-            flash.error = error
-            flash.message = msg
-            redirect(url: params.reloadReferer)
-        }
-        else if (params.redirect) {
-            flash.newProp = newProp
-            flash.error = error
-            flash.message = msg
-            redirect(controller:"propertyDefinition", action:"create")
-        }
-        else {
-            Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
-
-            render(template: "/templates/properties/custom", model: [
-                    ownobj: owner,
-                    customProperties: owner.propertySet,
-                    newProp: newProp,
-                    error: error,
-                    message: msg,
-                    orphanedProperties: allPropDefGroups.orphanedProperties
-            ])
-        }
-    }
-
-    /**
      * Adds a value to a custom property and updates the property enumeration fragment
      */
   @Secured(['ROLE_USER'])
@@ -895,7 +789,7 @@ class AjaxController {
       def error
       def newProp
       def owner = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
-        PropertyDefinition type = PropertyDefinition.get(params.propIdent.toLong())
+        PropertyDefinition type = PropertyDefinition.get(params.long('propIdent'))
         Org contextOrg = contextService.getOrg()
       def existingProp = owner.propertySet.find { it.type.name == type.name && it.tenant?.id == contextOrg.id }
 
@@ -1035,7 +929,7 @@ class AjaxController {
         def newProp
         Org tenant = Org.get(params.tenantId)
           def owner  = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
-          PropertyDefinition type   = PropertyDefinition.get(params.propIdent.toLong())
+          PropertyDefinition type = PropertyDefinition.get(params.long('propIdent'))
 
         if (! type) { // new property via select2; tmp deactivated
           error = message(code:'propertyDefinition.private.deactivated')
