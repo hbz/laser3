@@ -177,7 +177,7 @@
                     <td class="x">
                         <g:if test="${org.isCustomerType_Consortium() || org.isCustomerType_Support()}">
                             <button type="button" class="ui icon button la-modern-button la-popup-tooltip la-delay"
-                                    data-gascoTarget="${Org.class.name}:${org.id}"
+                                    data-gascoTarget="${org.id}"
                                     data-gascoEntry="${gascoEntry.class.name}:${gascoEntry.id}"
                                     data-orgName="${org.name}"
                                     data-ui="modal"
@@ -187,7 +187,7 @@
 
                         <g:if test="${org.isCustomerType_Inst()}">
                             <button type="button" class="ui icon button la-modern-button la-popup-tooltip la-delay"
-                                    data-liTarget="${Org.class.name}:${org.id}"
+                                    data-liTarget="${org.id}"
                                     data-createdBy="${org.createdBy?.id}"
                                     data-legallyObligedBy="${org.legallyObligedBy?.id}"
                                     data-orgName="${org.name}"
@@ -197,7 +197,7 @@
                         </g:if>
 
                         <button type="button" class="ui icon button la-modern-button la-popup-tooltip la-delay"
-                                data-ctTarget="${Org.class.name}:${org.id}"
+                                data-ctTarget="${org.id}"
                                 data-customerType="${customerType}"
                                 data-orgName="${org.name}"
                                 data-ui="modal"
@@ -205,7 +205,7 @@
                                 data-content="Kundentyp ändern" data-position="top left"><i class="user icon"></i></button>
 
                         <button type="button" class="ui icon button la-modern-button la-popup-tooltip la-delay"
-                                data-alTarget="${Org.class.name}:${org.id}"
+                                data-alTarget="${org.id}"
                                 data-apiLevel="${apiLevel}"
                                 data-orgName="${org.name}"
                                 data-ui="modal"
@@ -236,7 +236,7 @@
                 <label for="gascoEntry">${message(code:'org.gascoEntry.label')}</label>
                 <ui:select id="gascoEntry" name="gascoEntry"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
-                              optionKey="${{ RefdataValue.class.name + ':' + it.id }}"
+                              optionKey="id"
                               optionValue="value"
                               class="ui dropdown"
                 />

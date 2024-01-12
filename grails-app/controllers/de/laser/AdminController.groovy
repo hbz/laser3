@@ -670,9 +670,9 @@ class AdminController  {
         Map<String, Object> result = [:]
         SwissKnife.setPaginationParams(result, params, contextService.getUser())
 
-        if (params.cmd == 'changeApiLevel') {
-            Org target = (Org) genericOIDService.resolveOID(params.target)
+        Org target = params.target ? Org.get(params.long('target')) : null
 
+        if (params.cmd == 'changeApiLevel') {
             if (ApiToolkit.getAllApiLevels().contains(params.apiLevel)) {
                 ApiToolkit.setApiLevel(target, params.apiLevel)
             }
@@ -683,7 +683,6 @@ class AdminController  {
             target.save()
         }
         else if (params.cmd == 'deleteCustomerType') {
-            Org target = (Org) genericOIDService.resolveOID(params.target)
             def oss = OrgSetting.get(target, OrgSetting.KEYS.CUSTOMER_TYPE)
             if (oss != OrgSetting.SETTING_NOT_FOUND) {
                 oss.delete()
@@ -694,7 +693,6 @@ class AdminController  {
             ApiToolkit.removeApiLevel(target)
         }
         else if (params.cmd == 'changeCustomerType') {
-            Org target = (Org) genericOIDService.resolveOID(params.target)
             Role customerType = Role.get(params.customerType)
 
             def osObj = OrgSetting.get(target, OrgSetting.KEYS.CUSTOMER_TYPE)
@@ -720,8 +718,7 @@ class AdminController  {
             }
         }
         else if (params.cmd == 'changeGascoEntry') {
-            Org target = (Org) genericOIDService.resolveOID(params.target)
-            RefdataValue option = (RefdataValue) genericOIDService.resolveOID(params.gascoEntry)
+            RefdataValue option = RefdataValue.get(params.long('gascoEntry'))
 
             if (target && option) {
                 def oss = OrgSetting.get(target, OrgSetting.KEYS.GASCO_ENTRY)
@@ -737,8 +734,6 @@ class AdminController  {
             target.save()
         }
         else if (params.cmd == 'changeLegalInformation') {
-            Org target = (Org) genericOIDService.resolveOID(params.target)
-
             if (target) {
                 target.createdBy = Org.get(params.createdBy)
                 target.legallyObligedBy = Org.get(params.legallyObligedBy)

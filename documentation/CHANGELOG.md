@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5521    12.01.2024  dev     3.4         David   Feature     Refactoring: PDF-Export
+
 5505    08.01.2024  rc-3.3  3.3.3       David   Feature     "Alle Konsortialstellen" liefert unvollständige Treffermenge
 
 5498    05.01.2024  rc-3.3  3.3.3       David   Bug         /survey/surveyTitles: Fehler wenn man auf andere Seiten klickt

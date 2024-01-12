@@ -25,6 +25,7 @@ import de.laser.survey.SurveyResult
 import de.laser.survey.SurveyUrl
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -2285,9 +2286,6 @@ class SurveyController {
         result.institution = result.participant
         result.ownerView = (result.contextOrg.id == result.surveyInfo.owner.id)
 
-        String pageSize = 'A4'
-        String orientation = 'Portrait'
-
         SimpleDateFormat sdf = DateUtils.getSDF_forFilename()
         String filename
 
@@ -2298,18 +2296,7 @@ class SurveyController {
             filename = sdf.format(new Date()) + '_reporting'
         }
 
-        def pdf = wkhtmltoxService.makePdf(
-                view: '/survey/export/pdf/participantResult',
-                model: result,
-                // header: '',
-                // footer: '',
-                pageSize: pageSize,
-                orientation: orientation,
-                marginLeft: 10,
-                marginTop: 15,
-                marginBottom: 15,
-                marginRight: 10
-        )
+        byte[] pdf = PdfUtils.getPdf(result, PdfUtils.PORTRAIT_FIXED_A4, '/survey/export/pdf/participantResult')
 
         response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.pdf"')
         response.setContentType('application/pdf')

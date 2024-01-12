@@ -153,7 +153,7 @@
                                         <g:link controller="organisation"
                                                 action="deleteCustomerIdentifier"
                                                 id="${orgInstance.id}"
-                                                params="${[deleteCI:genericOIDService.getOID(ci)]}"
+                                                params="${[deleteCI:ci.id]}"
                                                 class="ui button icon red la-modern-button js-open-confirm-modal"
                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.customeridentifier", args: [""+ci.getProvider()+" : "+ci.platform+" "+ci.value])}"
                                                 data-confirm-term-how="delete"

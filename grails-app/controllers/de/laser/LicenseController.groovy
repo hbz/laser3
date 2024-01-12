@@ -3,7 +3,6 @@ package de.laser
 import de.laser.annotations.Check404
 import de.laser.auth.User
 import de.laser.ctrl.LicenseControllerService
-import de.laser.custom.CustomWkhtmltoxService
 import de.laser.helper.Params
 import de.laser.utils.LocaleUtils
 import de.laser.storage.RDConstants
@@ -16,6 +15,7 @@ import de.laser.helper.Profiler
 import de.laser.storage.RDStore
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinitionGroup
+import de.laser.utils.PdfUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -34,11 +34,9 @@ class LicenseController {
     ContextService contextService
     CopyElementsService copyElementsService
     CustomerTypeService customerTypeService
-    CustomWkhtmltoxService wkhtmltoxService
     DeletionService deletionService
     DocstoreService docstoreService
     EscapeService escapeService
-    ExecutorWrapperService executorWrapperService
     FilterService filterService
     FormService formService
     GenericOIDService genericOIDService
@@ -166,22 +164,10 @@ class LicenseController {
             result.documents = docstoreService.getDocumentsForExport((Org) result.institution, (License) result.license)
             result.notes = docstoreService.getNotesForExport((Org) result.institution, (License) result.license)
 
-            Map<String, Object> pageStruct = [
-                    width       : 85,
-                    height      : 35,
-                    pageSize    : 'A4',
-                    orientation : 'Portrait'
-            ]
-            result.struct = [pageStruct.width, pageStruct.height, pageStruct.pageSize + ' ' + pageStruct.orientation]
-            byte[] pdf = wkhtmltoxService.makePdf(
-                    view: customerTypeService.getCustomerTypeDependingView('/license/licensePdf'),
-                    model: result,
-                    pageSize: pageStruct.pageSize,
-                    orientation: pageStruct.orientation,
-                    marginLeft: 10,
-                    marginRight: 10,
-                    marginTop: 15,
-                    marginBottom: 15
+            byte[] pdf = PdfUtils.getPdf(
+                    result,
+                    PdfUtils.PORTRAIT_FIXED_A4,
+                    customerTypeService.getCustomerTypeDependingView('/license/licensePdf')
             )
             response.setHeader('Content-disposition', 'attachment; filename="'+ escapeService.escapeString(result.license.dropdownNamingConvention()) +'.pdf"')
             response.setContentType('application/pdf')

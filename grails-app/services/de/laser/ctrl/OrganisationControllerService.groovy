@@ -176,7 +176,7 @@ class OrganisationControllerService {
     Map<String,Object> deleteCustomerIdentifier(OrganisationController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller,params)
         Locale locale = LocaleUtils.getCurrentLocale()
-        CustomerIdentifier ci = (CustomerIdentifier) genericOIDService.resolveOID(params.deleteCI)
+        CustomerIdentifier ci = CustomerIdentifier.get(params.long('deleteCI'))
         Org owner = ci.owner
         if (ci) {
             ci.delete()
