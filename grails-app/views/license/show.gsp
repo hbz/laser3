@@ -1,8 +1,22 @@
-<%@ page import="de.laser.Subscription;de.laser.License;de.laser.DocContext;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.properties.PropertyDefinition;de.laser.interfaces.CalculatedType" %>
+<%@ page import="de.laser.Subscription;de.laser.License;de.laser.OrgRole;de.laser.DocContext;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.properties.PropertyDefinition;de.laser.interfaces.CalculatedType" %>
 <laser:htmlStart message="license.details.label" serviceInjection="true"/>
 
         <ui:debugInfo>
-            <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+            <div style="padding: 1em 0;">
+                <p>lic.licenseCategory: ${license.licenseCategory}</p>
+
+                <p>lic.licensingConsortium: ${license.licensingConsortium}</p>
+                <p>lic.licensor: ${license.licensor}</p>
+                <p>lic.licensee: ${license.licensee}</p>
+
+                <p>lic.instanceOf: <g:if test="${license.instanceOf}">
+                    <g:link action="show" id="${license.instanceOf.id}">${license.instanceOf.reference}</g:link>
+                </g:if></p>
+
+                <p>getCalculatedType(): ${license._getCalculatedType()}</p>
+                <p>orgRole(ctxOrg): ${OrgRole.findAllByLicAndOrg(license, contextService.getOrg()).roleType.join(', ')}</p>
+            </div>
+            <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
         </ui:debugInfo>
 
         <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>

@@ -735,13 +735,9 @@ class MyInstitutionController  {
             User user = contextService.getUser()
             Org org = contextService.getOrg()
 
-            Set<RefdataValue> defaultOrgRoleType = []
-            if (contextService.getOrg().isCustomerType_Consortium())
-                defaultOrgRoleType << RDStore.OT_CONSORTIUM.id.toString()
-            else defaultOrgRoleType << RDStore.OT_INSTITUTION.id.toString()
-
-            params.asOrgType = params.asOrgType ? [params.asOrgType] : defaultOrgRoleType
-
+            // todo: ERMS-5520
+            List<Long> defaultOrgType = contextService.getOrg().isCustomerType_Consortium() ? [RDStore.OT_CONSORTIUM.id] : [RDStore.OT_INSTITUTION.id]
+            params.asOrgType = params.asOrgType ? [params.long('asOrgType')] : defaultOrgType
 
             if (! userService.hasFormalAffiliation(user, org, 'INST_EDITOR')) {
                 flash.error = message(code:'myinst.error.noAdmin', args:[org.name]) as String
@@ -805,7 +801,7 @@ class MyInstitutionController  {
 
                 log.debug("adding org link to new license")
                 OrgRole orgRole
-                if (params.asOrgType && (RDStore.OT_CONSORTIUM.id.toString() in params.asOrgType)) {
+                if (params.asOrgType && (RDStore.OT_CONSORTIUM.id in Params.getLongList(params, 'asOrgType'))) {
                     orgRole = new OrgRole(lic: licenseInstance, org: org, roleType: RDStore.OR_LICENSING_CONSORTIUM)
                 } else {
                     orgRole = new OrgRole(lic: licenseInstance, org: org, roleType: RDStore.OR_LICENSEE)
