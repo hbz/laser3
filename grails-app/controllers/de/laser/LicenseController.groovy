@@ -4,6 +4,7 @@ import de.laser.annotations.Check404
 import de.laser.auth.User
 import de.laser.ctrl.LicenseControllerService
 import de.laser.custom.CustomWkhtmltoxService
+import de.laser.helper.Params
 import de.laser.utils.LocaleUtils
 import de.laser.storage.RDConstants
 import de.laser.properties.LicenseProperty
@@ -486,8 +487,8 @@ class LicenseController {
                 }
             }
             if(params.subscription) {
-                List<String> subFilter = params.list("subscription")
-                subscriptions.removeAll { Subscription s -> !subFilter.contains(s.id.toString()) }
+                List<Long> subFilter = Params.getLongList(params, 'subscription')
+                subscriptions.removeAll { Subscription s -> !subFilter.contains(s.id) }
             }
             filteredMemberLicenses << [license:memberLicense,subs:subscriptions.size()]
             //}

@@ -30,12 +30,29 @@ class FilterService {
     GenericOIDService genericOIDService
     PropertyService propertyService
 
+    class Result {
+        Result (String query = null, Map<String, Object>queryParams = [:], boolean isFilterSet = false) {
+            this.query        = query
+            this.queryParams  = queryParams
+            this.isFilterSet  = isFilterSet
+
+            log.debug('query:       ' + query)
+            log.debug('queryParams: ' + queryParams.toMapString())
+        }
+
+        String query
+        Map<String, Object> queryParams
+        boolean isFilterSet
+    }
+
     /**
      * Processes organisation filters and generates a query to fetch organisations
      * @param params the filter parameter map
      * @return the map containing the query and the prepared query parameters
      */
     Map<String, Object> getOrgQuery(GrailsParameterMap params) {
+        int hashCode = params.hashCode()
+
         Map<String, Object> result = [:]
         ArrayList<String> query = []
         Map<String, Object> queryParams = [:]
@@ -164,7 +181,9 @@ class FilterService {
         }
         result.queryParams = queryParams
 
-        log.debug(result.toMapString())
+        if (params.hashCode() != hashCode) {
+            log.debug 'GrailsParameterMap was modified @ getOrgQuery()'
+        }
         result
     }
 
@@ -176,6 +195,8 @@ class FilterService {
      * @return the map containing the query and the prepared query parameters
      */
     Map<String, Object> getOrgComboQuery(GrailsParameterMap params, Org org) {
+        int hashCode = params.hashCode()
+
         Map<String, Object> result = [:]
         ArrayList<String> query = ["(o.status is null or o.status != :orgStatus)"]
         Map<String, Object> queryParams = ["orgStatus" : RDStore.ORG_STATUS_DELETED]
@@ -363,6 +384,10 @@ class FilterService {
             result.query = "select o from Org as o, Combo as c where "+direction+" and c.type.value = :comboType " + defaultOrder
         }
         result.queryParams = queryParams
+
+        if (params.hashCode() != hashCode) {
+            log.debug 'GrailsParameterMap was modified @ getOrgComboQuery()'
+        }
         result
     }
 
@@ -373,6 +398,8 @@ class FilterService {
      * @return the map containing the query and the prepared query parameters
      */
     Map<String, Object> getTaskQuery(GrailsParameterMap params, DateFormat sdFormat) {
+        int hashCode = params.hashCode()
+
         Map<String, Object> result = [:]
         def query = []
         Map<String, Object> queryParams = [:]
@@ -411,6 +438,9 @@ class FilterService {
         result.query = query
         result.queryParams = queryParams
 
+        if (params.hashCode() != hashCode) {
+            log.debug 'GrailsParameterMap was modified @ getTaskQuery()'
+        }
         result
     }
 
@@ -423,7 +453,9 @@ class FilterService {
      */
     @Deprecated
     Map<String,Object> getDocumentQuery(GrailsParameterMap params) {
-        Map result = [:]
+        int hashCode = params.hashCode()
+
+        Map<String, Object> result = [:]
         List query = []
         Map<String,Object> queryParams = [:]
         if(params.docTitle) {
@@ -481,6 +513,10 @@ class FilterService {
             result.query = " and "+query.join(" and ")
         else result.query = ""
         result.queryParams = queryParams
+
+        if (params.hashCode() != hashCode) {
+            log.debug 'GrailsParameterMap was modified @ getDocumentQuery()'
+        }
         result
     }
 
@@ -492,7 +528,9 @@ class FilterService {
      * @return the map containing the query and the prepared query parameters
      */
     Map<String,Object> getSurveyConfigQueryConsortia(GrailsParameterMap params, DateFormat sdFormat, Org contextOrg) {
-        Map result = [:]
+        int hashCode = params.hashCode()
+
+        Map<String, Object> result = [:]
         Map<String,Object> queryParams = [:]
         String query
 
@@ -645,6 +683,10 @@ class FilterService {
 
         result.query = query
         result.queryParams = queryParams
+
+        if (params.hashCode() != hashCode) {
+            log.debug 'GrailsParameterMap was modified @ getSurveyConfigQueryConsortia()'
+        }
         result
     }
 
@@ -656,7 +698,9 @@ class FilterService {
      * @return the map containing the query and the prepared query parameters
      */
     Map<String,Object> getParticipantSurveyQuery_New(GrailsParameterMap params, DateFormat sdFormat, Org org) {
-        Map result = [:]
+        int hashCode = params.hashCode()
+
+        Map<String, Object> result = [:]
         List query = []
         Map<String,Object> queryParams = [:]
 
@@ -828,6 +872,10 @@ class FilterService {
         }
 
         result.queryParams = queryParams
+
+        if (params.hashCode() != hashCode) {
+            log.debug 'GrailsParameterMap was modified @ getParticipantSurveyQuery_New()'
+        }
         result
     }
 
@@ -838,7 +886,9 @@ class FilterService {
      * @return the map containing the query and the prepared query parameters
      */
     Map<String,Object> getSurveyOrgQuery(GrailsParameterMap params, SurveyConfig surveyConfig) {
-        Map result = [:]
+        int hashCode = params.hashCode()
+
+        Map<String, Object> result = [:]
         String base_qry = "from SurveyOrg as surveyOrg where surveyOrg.surveyConfig = :surveyConfig "
         Map<String,Object> queryParams = [surveyConfig: surveyConfig]
 
@@ -1003,8 +1053,10 @@ class FilterService {
         result.query = base_qry
         result.queryParams = queryParams
 
+        if (params.hashCode() != hashCode) {
+            log.debug 'GrailsParameterMap was modified @ getSurveyOrgQuery()'
+        }
         result
-
     }
 
     /**
@@ -1024,8 +1076,10 @@ class FilterService {
      * @return the map containing the query and the prepared query parameters
      */
     Map<String,Object> getIssueEntitlementQuery(GrailsParameterMap params, Collection<Subscription> subscriptions) {
+        int hashCode = params.hashCode()
+
+        Map<String, Object> result = [:]
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-        Map result = [:]
 
         String base_qry
         Map<String,Object> qry_params = [subscriptions: subscriptions]
@@ -1229,7 +1283,10 @@ class FilterService {
         result.query = base_qry
         result.queryParams = qry_params
         result.filterSet = filterSet
-        
+
+        if (params.hashCode() != hashCode) {
+            log.debug 'GrailsParameterMap was modified @ getIssueEntitlementQuery()'
+        }
         result
     }
 
@@ -1240,8 +1297,10 @@ class FilterService {
      * @return the map containing the query and the prepared query parameters
      */
     Map<String,Object> getPermanentTitlesQuery(GrailsParameterMap params, Org owner) {
+        int hashCode = params.hashCode()
+
+        Map<String, Object> result = [:]
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-        Map result = [:]
 
         String base_qry
         Map<String,Object> qry_params = [owner: owner]
@@ -1344,6 +1403,7 @@ class FilterService {
             qry_params.dateFirstOnlineTo = sdf.parse(params.dateFirstOnlineTo)
         }
 
+        // todo: ERMS-5517 > multiple values @ currentPermanentTitles
         if(params.yearsFirstOnline) {
             base_qry += " and (Year(tipp.dateFirstOnline) in (:yearsFirstOnline)) "
             qry_params.yearsFirstOnline = params.list('yearsFirstOnline').collect { Integer.parseInt(it) }
@@ -1386,6 +1446,9 @@ class FilterService {
         result.queryParams = qry_params
         result.filterSet = filterSet
 
+        if (params.hashCode() != hashCode) {
+            log.debug 'GrailsParameterMap was modified @ getPermanentTitlesQuery()'
+        }
         result
     }
 
@@ -1396,8 +1459,8 @@ class FilterService {
      * @return the map containing the query and the prepared query parameters
      */
     Map<String,Object> getTippQuery(Map params, List<Package> pkgs) {
+        Map<String, Object> result = [:]
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-        Map result = [:]
 
         String base_qry = "select tipp.id from TitleInstancePackagePlatform as tipp where "
         Map<String,Object> qry_params = [:]

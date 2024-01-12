@@ -1960,7 +1960,7 @@ class SubscriptionController {
                                  sub_referenceYear: newReferenceYear ?: null,
                                  sub_name         : subscription.name,
                                  sub_id           : subscription.id,
-                                 sub_status       : RDStore.SUBSCRIPTION_INTENDED.id.toString()]
+                                 sub_status       : RDStore.SUBSCRIPTION_INTENDED.id]
         result
     }
 

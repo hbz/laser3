@@ -735,13 +735,9 @@ class MyInstitutionController  {
             User user = contextService.getUser()
             Org org = contextService.getOrg()
 
-            Set<RefdataValue> defaultOrgRoleType = []
-            if (contextService.getOrg().isCustomerType_Consortium())
-                defaultOrgRoleType << RDStore.OT_CONSORTIUM.id.toString()
-            else defaultOrgRoleType << RDStore.OT_INSTITUTION.id.toString()
-
-            params.asOrgType = params.asOrgType ? [params.asOrgType] : defaultOrgRoleType
-
+            // todo: ERMS-5520
+            List<Long> defaultOrgType = contextService.getOrg().isCustomerType_Consortium() ? [RDStore.OT_CONSORTIUM.id] : [RDStore.OT_INSTITUTION.id]
+            params.asOrgType = params.asOrgType ? [params.long('asOrgType')] : defaultOrgType
 
             if (! userService.hasFormalAffiliation(user, org, 'INST_EDITOR')) {
                 flash.error = message(code:'myinst.error.noAdmin', args:[org.name]) as String
@@ -805,7 +801,7 @@ class MyInstitutionController  {
 
                 log.debug("adding org link to new license")
                 OrgRole orgRole
-                if (params.asOrgType && (RDStore.OT_CONSORTIUM.id.toString() in params.asOrgType)) {
+                if (params.asOrgType && (RDStore.OT_CONSORTIUM.id in Params.getLongList(params, 'asOrgType'))) {
                     orgRole = new OrgRole(lic: licenseInstance, org: org, roleType: RDStore.OR_LICENSING_CONSORTIUM)
                 } else {
                     orgRole = new OrgRole(lic: licenseInstance, org: org, roleType: RDStore.OR_LICENSEE)
@@ -1397,7 +1393,7 @@ class MyInstitutionController  {
 		Profiler prf = new Profiler()
 		prf.setBenchmark('init')
 
-        Map ttParams = FilterLogic.resolveParamsForTopAttachedTitleTabs(params, 'IEs')
+        Map ttParams = FilterLogic.resolveTabAndStatusForTitleTabsMenu(params, 'IEs')
         if (ttParams.status) { params.status = ttParams.status }
         if (ttParams.tab)    { params.tab = ttParams.tab }
 
@@ -1756,7 +1752,7 @@ class MyInstitutionController  {
 
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        Map ttParams = FilterLogic.resolveParamsForTopAttachedTitleTabs(params, 'IEs', true)
+        Map ttParams = FilterLogic.resolveTabAndStatusForTitleTabsMenu(params, 'IEs', true)
         if (ttParams.status) { params.status = ttParams.status }
         if (ttParams.tab)    { params.tab = ttParams.tab }
 
@@ -4325,7 +4321,7 @@ join sub.orgRelations or_sub where
      * Displays and manages private property definitions for this institution.
      * If the add command is specified (i.e. params.cmd is set), this method inserts a new private property definition;
      * usage is restricted to the context institution.
-     * To add a custom property definition (which is usable for every institution), the route is {@link de.laser.ajax.AjaxController#addCustomPropertyType()}
+     * To add a custom property definition (which is usable for every institution).
      * (but consider the annotation there!)
      */
     @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.IN_BETWEEN)

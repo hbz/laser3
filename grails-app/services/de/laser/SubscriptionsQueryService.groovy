@@ -220,25 +220,8 @@ class SubscriptionsQueryService {
             }
         }
 
-        def subTypes = []
         if (params.containsKey('subTypes')) {
-            if (params instanceof GrailsParameterMap) {
-                params.list('subTypes').each{
-                    subTypes.add(Long.parseLong(it))
-                }
-            } else { //TODO refactoring this bugfix
-                if (params.subTypes instanceof List<String>) {
-                    params.subTypes.each{
-                        subTypes.add(Long.parseLong(it))
-                    }
-                } else {
-                    if (params.subTypes instanceof List<Long>) {
-                        subTypes = params.subTypes
-                    } else {
-                        subTypes = [Long.valueOf(params.subTypes)]
-                    }
-                }
-            }
+            List<Long> subTypes = Params.getLongList(params, 'subTypes')
             if (subTypes) {
                 base_qry += " and s.type.id in (:subTypes) "
                 qry_params.put('subTypes', subTypes)
@@ -247,8 +230,11 @@ class SubscriptionsQueryService {
         }
 
         if (params.containsKey('subKinds')) {
-            base_qry += " and s.kind.id in (:subKinds) "
-            qry_params.put('subKinds', params.list('subKinds').collect { Long.parseLong(it) })
+            List<Long> subKinds = Params.getLongList(params, 'subKinds')
+            if (subKinds) {
+                base_qry += " and s.kind.id in (:subKinds) "
+                qry_params.put('subKinds', subKinds)
+            }
             filterSet = true
         }
 
@@ -290,7 +276,6 @@ class SubscriptionsQueryService {
             filterSet = true
         }
 
-
         if (params.form) {
             base_qry += " and s.form.id in (:form) "
             qry_params.put('form', params.list("form").collect { Long.parseLong(it) })
@@ -311,13 +296,13 @@ class SubscriptionsQueryService {
 
         if (params.isPublicForApi) {
             base_qry += " and s.isPublicForApi = :isPublicForApi "
-            qry_params.put('isPublicForApi', (params.isPublicForApi == RDStore.YN_YES.id.toString()) ? true : false)
+            qry_params.put('isPublicForApi', Long.valueOf(params.isPublicForApi) == RDStore.YN_YES.id)
             filterSet = true
         }
 
         if (params.hasPublishComponent) {
             base_qry += " and s.hasPublishComponent = :hasPublishComponent "
-            qry_params.put('hasPublishComponent', (params.hasPublishComponent == RDStore.YN_YES.id.toString()) ? true : false)
+            qry_params.put('hasPublishComponent', Long.valueOf(params.hasPublishComponent) == RDStore.YN_YES.id)
             filterSet = true
         }
 

@@ -62,7 +62,7 @@ class TitleController  {
         result.user = contextService.getUser()
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        Map ttParams = FilterLogic.resolveParamsForTopAttachedTitleTabs(params, 'Tipps')
+        Map ttParams = FilterLogic.resolveTabAndStatusForTitleTabsMenu(params, 'Tipps')
         if (ttParams.status) { params.status = ttParams.status }
         if (ttParams.tab)    { params.tab = ttParams.tab }
 
