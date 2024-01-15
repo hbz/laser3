@@ -555,7 +555,7 @@
                         </g:elseif>
                         <g:elseif test="${actionName == 'currentProviders'}">
                             <g:link controller="myInstitution" action="currentSubscriptions"
-                                    params="${[identifier: org.globalUID, status: [RDStore.SUBSCRIPTION_CURRENT.id.toString()], isSiteReloaded: 'yes']}"
+                                    params="${[identifier: org.globalUID, status: RDStore.SUBSCRIPTION_CURRENT.id, isSiteReloaded: 'yes']}"
                                     title="${message(code: 'org.subscriptions.tooltip', args: [org.name])}">
                                 <div class="ui blue circular label">
                                     ${numberOfSubscriptions}

@@ -8,7 +8,7 @@
     </h3>
     <ui:tabs>
         <g:each in="${platforms}" var="platform">
-            <ui:tabsItem controller="subscription" action="membersSubscriptionsManagement" tab="${platform.id.toString()}" subTab="tabPlat" params="${params + [tab: 'customerIdentifiers', tabPlat: platform.id.toString()]}" text="${platform.name}"/>
+            <ui:tabsItem controller="subscription" action="membersSubscriptionsManagement" tab="${platform.id.toString()}" subTab="tabPlat" params="${params + [tab: 'customerIdentifiers', tabPlat: platform.id]}" text="${platform.name}"/>
         </g:each>
     </ui:tabs>
     <div class="ui bottom attached tab active segment">

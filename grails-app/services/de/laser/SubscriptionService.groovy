@@ -386,7 +386,7 @@ class SubscriptionService {
             //params.hasPerpetualAccess = RDStore.YN_YES.id
             result.defaultSet = true
         }
-        if(params.long("status") == RDStore.SUBSCRIPTION_CURRENT.id && params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) {
+        if (params.long("status") == RDStore.SUBSCRIPTION_CURRENT.id && params.long('hasPerpetualAccess') == RDStore.YN_YES.id) {
             statusQuery = " and (subT.status.id = :status or subT.hasPerpetualAccess = true) "
         }
         else if (params.hasPerpetualAccess) {
