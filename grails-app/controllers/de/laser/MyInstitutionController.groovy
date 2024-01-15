@@ -7,7 +7,6 @@ import de.laser.cache.SessionCacheWrapper
 import de.laser.convenience.Marker
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.UserControllerService
-import de.laser.custom.CustomWkhtmltoxService
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.auth.Role
@@ -91,7 +90,6 @@ class MyInstitutionController  {
     TaskService taskService
     UserControllerService userControllerService
     UserService userService
-    CustomWkhtmltoxService wkhtmltoxService
     WorkflowService workflowService
     MailSendService mailSendService
 
@@ -1925,35 +1923,6 @@ class MyInstitutionController  {
         result << preCon
 
         render template: '/templates/tasks/modal_create', model: result
-    }
-
-    /**
-     * Call for the list of entitlement changes of the last 600 days
-     * @return a list of changes to be accepted or rejected
-     * @see PendingChange
-     */
-    @Deprecated
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
-    @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
-    })
-    def changes() {
-        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-
-        SwissKnife.setPaginationParams(result, params, (User) result.user)
-        result.acceptedOffset = 0
-        def periodInDays = 600
-        Map<String,Object> pendingChangeConfigMap = [
-                contextOrg: result.institution,
-                consortialView: (result.institution as Org).isCustomerType_Consortium(),
-                periodInDays:periodInDays,
-                max:result.max,
-                offset:result.acceptedOffset
-        ]
-
-        result.putAll(pendingChangeService.getChanges_old(pendingChangeConfigMap))
-
-        result
     }
 
     /**
@@ -4257,14 +4226,14 @@ join sub.orgRelations or_sub where
                 break
             case 'toggleMandatory':
                 PropertyDefinition.withTransaction { TransactionStatus ts ->
-                    PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.pd)
+                    PropertyDefinition pd = PropertyDefinition.get(params.long('pd'))
                     pd.mandatory = !pd.mandatory
                     pd.save()
                 }
                 break
             case 'toggleMultipleOccurrence':
                 PropertyDefinition.withTransaction { TransactionStatus ts ->
-                    PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.pd)
+                    PropertyDefinition pd = PropertyDefinition.get(params.long('pd'))
                     pd.multipleOccurrence = !pd.multipleOccurrence
                     pd.save()
                 }
@@ -4336,50 +4305,6 @@ join sub.orgRelations or_sub where
     })
     Object managePropertyDefinitions() {
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-
-        if(params.xcgPdTo) {
-            PropertyDefinition pdFrom = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdFrom)
-            PropertyDefinition pdTo = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdTo)
-            String oldName = pdFrom.tenant ? "${pdFrom.getI10n("name")} (priv.)" : pdFrom.getI10n("name")
-            String newName = pdTo.tenant ? "${pdTo.getI10n("name")} (priv.)" : pdTo.getI10n("name")
-            if (pdFrom && pdTo) {
-                try {
-                    int count = propertyService.replacePropertyDefinitions(pdFrom, pdTo, params.overwrite == 'on', false)
-                    flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [count, oldName, newName])
-                }
-                catch (Exception e) {
-                    e.printStackTrace()
-                    flash.error = message(code: 'menu.institutions.replace_prop.error', args: [oldName, newName])
-                }
-            }
-        }
-                //PropertyDefinition.withTransaction { TransactionStatus ts ->
-                    switch(params.cmd) {
-                        /*
-                        case 'toggleMandatory': pd.mandatory = !pd.mandatory
-                            pd.save()
-                            break
-                        case 'toggleMultipleOccurrence': pd.multipleOccurrence = !pd.multipleOccurrence
-                            pd.save()
-                            break
-                         */
-                        case 'replacePropertyDefinition':
-                            break
-                            /*
-                        case 'deletePropertyDefinition':
-                            if (! pd.isHardData) {
-                                try {
-                                    pd.delete()
-                                    flash.message = message(code:'propertyDefinition.delete.success',[pd.getI10n('name')])
-                                }
-                                catch(Exception e) {
-                                    flash.error = message(code:'propertyDefinition.delete.failure.default',[pd.getI10n('name')])
-                                }
-                            }
-                            break
-                        */
-                    }
-                //}
 
         result.languageSuffix = LocaleUtils.getCurrentLang()
 

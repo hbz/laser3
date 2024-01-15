@@ -879,7 +879,8 @@ SELECT * FROM (
     def managePropertyDefinitions() {
 
         if (params.cmd){
-            PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.pd)
+            PropertyDefinition pd = PropertyDefinition.get(params.long('pd'))
+
             switch(params.cmd) {
                 case 'toggleMandatory':
                     if(pd) {

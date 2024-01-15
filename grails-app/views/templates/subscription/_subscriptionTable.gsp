@@ -272,21 +272,7 @@
                                         </g:link>--}%
                                     </g:if>
                                 </g:if>
-                                <%--<g:if test="${statsWibid && (s.getCommaSeperatedPackagesIsilList()?.trim()) && s.hasPlatformWithUsageSupplierId()}">
-                                    <ui:statsLink class="ui icon button la-modern-button"
-                                                     base="${ConfigMapper.getStatsApiUrl()}"
-                                                     module="statistics"
-                                                     controller="default"
-                                                     action="select"
-                                                     target="_blank"
-                                                     params="[mode:usageMode,
-                                                              packages:s.getCommaSeperatedPackagesIsilList(),
-                                                              institutions:statsWibid
-                                                     ]"
-                                                     title="Springe zu Statistik im Nationalen Statistikserver"> <!-- TODO message -->
-                                        <i class="chart bar outline icon"></i>
-                                    </ui:statsLink>
-                                </g:if>--%>
+
                             </g:if>
                             <g:if test="${'showLinking' in tableConfig}">
                                 <%

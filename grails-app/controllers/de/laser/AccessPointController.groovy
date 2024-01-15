@@ -178,7 +178,7 @@ class AccessPointController  {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def processCreate() {
-        RefdataValue accessMethod = (RefdataValue) genericOIDService.resolveOID(params.accessMethod)
+        RefdataValue accessMethod = RefdataValue.get(params.long('accessMethod'))
         Map<String,Object> ctrlResult = accessPointControllerService.createAccessPoint(params,accessMethod)
         if (ctrlResult.status == AccessPointControllerService.STATUS_ERROR) {
             flash.message = ctrlResult.result.error
