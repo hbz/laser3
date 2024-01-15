@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.auth.User
+import de.laser.helper.Params
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
 
@@ -112,12 +113,12 @@ class AddressbookService {
             List<String> posParts = []
             if (params.function){
                 posParts << "pr.functionType.id in (:selectedFunctions) "
-                qParams << [selectedFunctions: filterService.listReaderWrapper(params, 'function').collect{ Long.valueOf(it) }]
+                qParams << [selectedFunctions: Params.getLongList(params, 'function')]
             }
 
             if (params.position){
                 posParts << "pr.positionType.id in (:selectedPositions) "
-                qParams << [selectedPositions: filterService.listReaderWrapper(params, 'position').collect{ Long.valueOf(it) }]
+                qParams << [selectedPositions: Params.getLongList(params, 'position')]
             }
             qParts << '('+posParts.join(' OR ')+')'
         }
@@ -202,7 +203,7 @@ class AddressbookService {
 
         if (params.type) {
             qParts << "(exists (select at from a.type as at where at.id in (:selectedTypes))) "
-            qParams << [selectedTypes: filterService.listReaderWrapper(params, 'type').collect{ Long.valueOf(it) }]
+            qParams << [selectedTypes: Params.getLongList(params, 'type')]
         }
 
         if (params.showOnlyContactPersonForInstitution || params.exportOnlyContactPersonForInstitution){

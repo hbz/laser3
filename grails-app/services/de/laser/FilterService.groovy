@@ -66,9 +66,8 @@ class FilterService {
             queryParams << [orgType: Params.getLongList(params, 'orgType')]
         }
         if (params.orgStatus) {
-            List selectedStatus = listReaderWrapper(params, 'orgStatus').collect { key -> key instanceof String ? Long.parseLong(key) : key }
             query << "o.status.id in (:orgStatus)"
-            queryParams.orgStatus = selectedStatus
+            queryParams.orgStatus = Params.getLongList(params, 'orgStatus')
         }
         else {
             query << "o.status.id != :orgStatus"
@@ -215,28 +214,18 @@ class FilterService {
             query << "o.sector.id in (:orgSector)"
              queryParams << [orgSector : Params.getLongList(params, 'orgSector')]
         }
-        if (params.region?.size() > 0) {
+        if (params.region) {
             query << "o.region.id in (:region)"
-            List<String> selRegions = listReaderWrapper(params,"region")
-            List<Long> regions = []
-            selRegions.each { String sel ->
-                regions << Long.parseLong(sel)
-            }
-            queryParams << [region : regions]
+            queryParams << [region : Params.getLongList(params, 'region')]
         }
-        if (params.country?.size() > 0) {
+        if (params.country) {
             query << "o.country.id in (:country)"
-            List<String> selCountries = listReaderWrapper(params, "country")
-            List<Long> countries = []
-            selCountries.each { String sel ->
-                countries << Long.parseLong(sel)
-            }
-            queryParams << [country : countries]
+            queryParams << [country : Params.getLongList(params, 'country')]
         }
 
-        if (params.subjectGroup?.size() > 0) {
+        if (params.subjectGroup) {
             query << "exists (select osg from OrgSubjectGroup as osg where osg.org.id = o.id and osg.subjectGroup.id in (:subjectGroup))"
-            queryParams << [subjectGroup : listReaderWrapper(params, "subjectGroup").collect {Long.parseLong(it)}]
+            queryParams << [subjectGroup : Params.getLongList(params, "subjectGroup")]
         }
 
         if (params.discoverySystemsFrontend?.size() > 0) {
@@ -249,24 +238,14 @@ class FilterService {
             queryParams << [indices : listReaderWrapper(params, "discoverySystemsIndex").collect {Long.parseLong(it)}]
         }
 
-        if (params.libraryNetwork?.size() > 0) {
+        if (params.libraryNetwork) {
             query << "o.libraryNetwork.id in (:libraryNetwork)"
-            List<String> selLibraryNetworks = listReaderWrapper(params, "libraryNetwork")
-            List<Long> libraryNetworks = []
-            selLibraryNetworks.each { String sel ->
-                libraryNetworks << Long.parseLong(sel)
-            }
-            queryParams << [libraryNetwork : libraryNetworks]
+            queryParams << [libraryNetwork : Params.getLongList(params, "libraryNetwork")]
         }
 
-        if (params.libraryType?.size() > 0) {
+        if (params.libraryType) {
             query << "o.libraryType.id in (:libraryType)"
-            List<String> selLibraryTypes = listReaderWrapper(params, "libraryType")
-            List<Long> libraryTypes = []
-            selLibraryTypes.each { String sel ->
-                libraryTypes << Long.parseLong(sel)
-            }
-            queryParams << [libraryType : libraryTypes]
+            queryParams << [libraryType : Params.getLongList(params, "libraryType")]
         }
 
         if (params.subStatus || params.subValidOn || params.subPerpetual) {
