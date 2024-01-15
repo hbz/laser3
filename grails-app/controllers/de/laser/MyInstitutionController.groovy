@@ -722,7 +722,6 @@ class MyInstitutionController  {
             User user = contextService.getUser()
             Org org = contextService.getOrg()
 
-            // todo: ERMS-5520
             boolean isConsOrSupport     = contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()
             List<Long> defaultOrgType   = isConsOrSupport ? [RDStore.OT_CONSORTIUM.id] : [RDStore.OT_INSTITUTION.id]
 
