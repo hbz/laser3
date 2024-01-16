@@ -45,7 +45,7 @@
                     <select class="ui dropdown" name="pkgfilter" id="pkgfilter">
                         <option value="">${message(code: 'default.all')}</option>
                         <g:each in="${subscription.packages}" var="sp">
-                            <option value="${sp.pkg.id}" ${sp.pkg.id.toString() == params.pkgfilter ? 'selected=true' : ''}>${sp.pkg.name}</option>
+                            <option value="${sp.pkg.id}" ${sp.pkg.id == params.long('pkgfilter') ? 'selected=true' : ''}>${sp.pkg.name}</option>
                         </g:each>
                     </select>
                 </div>

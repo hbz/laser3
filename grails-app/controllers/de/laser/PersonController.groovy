@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.annotations.DebugInfo
+import de.laser.helper.Params
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import grails.converters.JSON
@@ -310,7 +311,7 @@ class PersonController  {
             }
 
             personInstance.getPersonRoleByOrg(personRoleOrg).each { psr ->
-                if (psr.functionType && !(psr.functionType.id.toString() in params.list('functionType'))) {
+                if (psr.functionType && !(psr.functionType.id in Params.getLongList(params, 'functionType'))) {
                     personInstance.removeFromRoleLinks(psr)
                     psr.delete()
                 }
@@ -338,7 +339,7 @@ class PersonController  {
             }
 
             personInstance.getPersonRoleByOrg(personRoleOrg).each { psr ->
-                if (psr.positionType && !(psr.positionType.id.toString() in params.list('positionType'))) {
+                if (psr.positionType && !(psr.positionType.id in Params.getLongList(params, 'positionType'))) {
                     personInstance.removeFromRoleLinks(psr)
                     psr.delete()
                 }

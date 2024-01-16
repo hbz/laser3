@@ -7,7 +7,6 @@ import de.laser.cache.SessionCacheWrapper
 import de.laser.convenience.Marker
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.UserControllerService
-import de.laser.custom.CustomWkhtmltoxService
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.auth.Role
@@ -91,7 +90,6 @@ class MyInstitutionController  {
     TaskService taskService
     UserControllerService userControllerService
     UserService userService
-    CustomWkhtmltoxService wkhtmltoxService
     WorkflowService workflowService
     MailSendService mailSendService
 
@@ -722,7 +720,6 @@ class MyInstitutionController  {
             User user = contextService.getUser()
             Org org = contextService.getOrg()
 
-            // todo: ERMS-5520
             boolean isConsOrSupport     = contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()
             List<Long> defaultOrgType   = isConsOrSupport ? [RDStore.OT_CONSORTIUM.id] : [RDStore.OT_INSTITUTION.id]
 
@@ -842,13 +839,18 @@ class MyInstitutionController  {
 
         GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
         tmpParams.constraint_orgIds = orgIds
-        def fsq  = filterService.getOrgQuery(tmpParams)
+
+        FilterService.Result fsr  = filterService.getOrgQuery(tmpParams)
+        List orgListTotal = []
 
         result.filterSet = params.filterSet ? true : false
         if (params.filterPropDef) {
-            fsq = propertyService.evalFilterQuery(tmpParams, fsq.query, 'o', fsq.queryParams)
+            Map<String, Object> efq = propertyService.evalFilterQuery(tmpParams, fsr.query, 'o', fsr.queryParams)
+            orgListTotal = Org.findAll(efq.query, efq.queryParams)
         }
-        List orgListTotal = Org.findAll(fsq.query, fsq.queryParams)
+        else {
+            orgListTotal = Org.findAll(fsr.query, fsr.queryParams)
+        }
         result.wekbRecords = organisationService.getWekbOrgRecords(params, result)
 
         if (params.isMyX) {
@@ -1929,35 +1931,6 @@ class MyInstitutionController  {
     }
 
     /**
-     * Call for the list of entitlement changes of the last 600 days
-     * @return a list of changes to be accepted or rejected
-     * @see PendingChange
-     */
-    @Deprecated
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
-    @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
-    })
-    def changes() {
-        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-
-        SwissKnife.setPaginationParams(result, params, (User) result.user)
-        result.acceptedOffset = 0
-        def periodInDays = 600
-        Map<String,Object> pendingChangeConfigMap = [
-                contextOrg: result.institution,
-                consortialView: (result.institution as Org).isCustomerType_Consortium(),
-                periodInDays:periodInDays,
-                max:result.max,
-                offset:result.acceptedOffset
-        ]
-
-        result.putAll(pendingChangeService.getChanges_old(pendingChangeConfigMap))
-
-        result
-    }
-
-    /**
      * Call for the finance import starting page; the mappings are being explained here and an example sheet for submitting data to import
      * @return the finance import entry view
      */
@@ -2969,8 +2942,8 @@ class MyInstitutionController  {
             }
             result.filterSet = params.filterSet ? true : false
 
-            Map<String, Object> fsq = filterService.getOrgQuery(params)
-            List<Org> availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, params)
+            FilterService.Result fsr = filterService.getOrgQuery(params)
+            List<Org> availableOrgs = Org.executeQuery(fsr.query, fsr.queryParams, params)
             Set<Org> currentMembers = Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :current and c.type = :comboType', [current: result.institution, comboType: RefdataValue.getByValueAndCategory(result.comboType, RDConstants.COMBO_TYPE)])
             result.availableOrgs = availableOrgs - currentMembers
 
@@ -3316,24 +3289,7 @@ join sub.orgRelations or_sub where
             }
         }
 
-
-
         List<Org> providers = Org.executeQuery(queryProviders, queryParamsProviders)
-
-
-/*        List<Subscription> subscriptions = []
-        if(providers || params.filterPvd) {
-            querySubs += " and or_pa.org.id in (:providers)"
-            if(params.filterPvd){
-                queryParamsSubs << [providers: Params.getLongList(params, 'filterPvd')]
-            }
-            else {
-                queryParamsSubs << [providers: providers.collect { it.id }]
-            }
-            subscriptions = Subscription.executeQuery(querySubs, queryParamsSubs)
-        }
-        result.subscriptions = subscriptions*/
-
         result.providers = providers
 
 		prf.setBenchmark('query')
@@ -4258,14 +4214,14 @@ join sub.orgRelations or_sub where
                 break
             case 'toggleMandatory':
                 PropertyDefinition.withTransaction { TransactionStatus ts ->
-                    PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.pd)
+                    PropertyDefinition pd = PropertyDefinition.get(params.long('pd'))
                     pd.mandatory = !pd.mandatory
                     pd.save()
                 }
                 break
             case 'toggleMultipleOccurrence':
                 PropertyDefinition.withTransaction { TransactionStatus ts ->
-                    PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.pd)
+                    PropertyDefinition pd = PropertyDefinition.get(params.long('pd'))
                     pd.multipleOccurrence = !pd.multipleOccurrence
                     pd.save()
                 }
@@ -4337,50 +4293,6 @@ join sub.orgRelations or_sub where
     })
     Object managePropertyDefinitions() {
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-
-        if(params.xcgPdTo) {
-            PropertyDefinition pdFrom = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdFrom)
-            PropertyDefinition pdTo = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdTo)
-            String oldName = pdFrom.tenant ? "${pdFrom.getI10n("name")} (priv.)" : pdFrom.getI10n("name")
-            String newName = pdTo.tenant ? "${pdTo.getI10n("name")} (priv.)" : pdTo.getI10n("name")
-            if (pdFrom && pdTo) {
-                try {
-                    int count = propertyService.replacePropertyDefinitions(pdFrom, pdTo, params.overwrite == 'on', false)
-                    flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [count, oldName, newName])
-                }
-                catch (Exception e) {
-                    e.printStackTrace()
-                    flash.error = message(code: 'menu.institutions.replace_prop.error', args: [oldName, newName])
-                }
-            }
-        }
-                //PropertyDefinition.withTransaction { TransactionStatus ts ->
-                    switch(params.cmd) {
-                        /*
-                        case 'toggleMandatory': pd.mandatory = !pd.mandatory
-                            pd.save()
-                            break
-                        case 'toggleMultipleOccurrence': pd.multipleOccurrence = !pd.multipleOccurrence
-                            pd.save()
-                            break
-                         */
-                        case 'replacePropertyDefinition':
-                            break
-                            /*
-                        case 'deletePropertyDefinition':
-                            if (! pd.isHardData) {
-                                try {
-                                    pd.delete()
-                                    flash.message = message(code:'propertyDefinition.delete.success',[pd.getI10n('name')])
-                                }
-                                catch(Exception e) {
-                                    flash.error = message(code:'propertyDefinition.delete.failure.default',[pd.getI10n('name')])
-                                }
-                            }
-                            break
-                        */
-                    }
-                //}
 
         result.languageSuffix = LocaleUtils.getCurrentLang()
 

@@ -10,7 +10,6 @@ import de.laser.survey.SurveyConfig
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.springframework.context.MessageSource
 import groovy.sql.Sql
 
 import java.sql.Connection
@@ -31,7 +30,7 @@ class FilterService {
     PropertyService propertyService
 
     class Result {
-        Result (String query = null, Map<String, Object>queryParams = [:], boolean isFilterSet = false) {
+        Result(String query = null, Map<String, Object>queryParams = [:], boolean isFilterSet = false) {
             this.query        = query
             this.queryParams  = queryParams
             this.isFilterSet  = isFilterSet
@@ -40,9 +39,9 @@ class FilterService {
             log.debug('queryParams: ' + queryParams.toMapString())
         }
 
-        String query
-        Map<String, Object> queryParams
-        boolean isFilterSet
+        public String query
+        public Map<String, Object> queryParams
+        public boolean isFilterSet
     }
 
     /**
@@ -50,10 +49,9 @@ class FilterService {
      * @param params the filter parameter map
      * @return the map containing the query and the prepared query parameters
      */
-    Map<String, Object> getOrgQuery(GrailsParameterMap params) {
+    Result getOrgQuery(GrailsParameterMap params) {
         int hashCode = params.hashCode()
 
-        Map<String, Object> result = [:]
         ArrayList<String> query = []
         Map<String, Object> queryParams = [:]
 
@@ -66,9 +64,8 @@ class FilterService {
             queryParams << [orgType: Params.getLongList(params, 'orgType')]
         }
         if (params.orgStatus) {
-            List selectedStatus = listReaderWrapper(params, 'orgStatus').collect { key -> key instanceof String ? Long.parseLong(key) : key }
             query << "o.status.id in (:orgStatus)"
-            queryParams.orgStatus = selectedStatus
+            queryParams.orgStatus = Params.getLongList(params, 'orgStatus')
         }
         else {
             query << "o.status.id != :orgStatus"
@@ -174,17 +171,13 @@ class FilterService {
 
         String defaultOrder = " order by " + (params.sort ?: " LOWER(o.sortname)") + " " + (params.order ?: "asc")
 
-        if (query.size() > 0) {
-            result.query = "from Org o where " + query.join(" and ") + defaultOrder
-        } else {
-            result.query = "from Org o " + defaultOrder
-        }
-        result.queryParams = queryParams
+        String hql = (query.size() > 0 ? "from Org o where " + query.join(" and ") : "from Org o ") + defaultOrder
 
         if (params.hashCode() != hashCode) {
             log.debug 'GrailsParameterMap was modified @ getOrgQuery()'
         }
-        result
+
+        new Result( hql, queryParams )
     }
 
     /**
@@ -201,7 +194,6 @@ class FilterService {
         ArrayList<String> query = ["(o.status is null or o.status != :orgStatus)"]
         Map<String, Object> queryParams = ["orgStatus" : RDStore.ORG_STATUS_DELETED]
 
-        // ERMS-1592, ERMS-1596
         if (params.orgNameContains?.length() > 0) {
             query << "(genfunc_filter_matcher(o.name, :orgNameContains1) = true or genfunc_filter_matcher(o.sortname, :orgNameContains2) = true) "
              queryParams << [orgNameContains1 : "${params.orgNameContains}"]
@@ -215,58 +207,38 @@ class FilterService {
             query << "o.sector.id in (:orgSector)"
              queryParams << [orgSector : Params.getLongList(params, 'orgSector')]
         }
-        if (params.region?.size() > 0) {
+        if (params.region) {
             query << "o.region.id in (:region)"
-            List<String> selRegions = listReaderWrapper(params,"region")
-            List<Long> regions = []
-            selRegions.each { String sel ->
-                regions << Long.parseLong(sel)
-            }
-            queryParams << [region : regions]
+            queryParams << [region : Params.getLongList(params, 'region')]
         }
-        if (params.country?.size() > 0) {
+        if (params.country) {
             query << "o.country.id in (:country)"
-            List<String> selCountries = listReaderWrapper(params, "country")
-            List<Long> countries = []
-            selCountries.each { String sel ->
-                countries << Long.parseLong(sel)
-            }
-            queryParams << [country : countries]
+            queryParams << [country : Params.getLongList(params, 'country')]
         }
 
-        if (params.subjectGroup?.size() > 0) {
+        if (params.subjectGroup) {
             query << "exists (select osg from OrgSubjectGroup as osg where osg.org.id = o.id and osg.subjectGroup.id in (:subjectGroup))"
-            queryParams << [subjectGroup : listReaderWrapper(params, "subjectGroup").collect {Long.parseLong(it)}]
+            queryParams << [subjectGroup : Params.getLongList(params, "subjectGroup")]
         }
 
-        if (params.discoverySystemsFrontend?.size() > 0) {
+        if (params.discoverySystemsFrontend) {
             query << "exists (select dsf from DiscoverySystemFrontend as dsf where dsf.org.id = o.id and dsf.frontend.id in (:frontends))"
-            queryParams << [frontends : listReaderWrapper(params, "discoverySystemsFrontend").collect {Long.parseLong(it)}]
+            queryParams << [frontends : Params.getLongList(params, "discoverySystemsFrontend")]
         }
 
-        if (params.discoverySystemsIndex?.size() > 0) {
+        if (params.discoverySystemsIndex) {
             query << "exists (select dsi from DiscoverySystemIndex as dsi where dsi.org.id = o.id and dsi.index.id in (:indices))"
-            queryParams << [indices : listReaderWrapper(params, "discoverySystemsIndex").collect {Long.parseLong(it)}]
+            queryParams << [indices : Params.getLongList(params, "discoverySystemsIndex")]
         }
 
-        if (params.libraryNetwork?.size() > 0) {
+        if (params.libraryNetwork) {
             query << "o.libraryNetwork.id in (:libraryNetwork)"
-            List<String> selLibraryNetworks = listReaderWrapper(params, "libraryNetwork")
-            List<Long> libraryNetworks = []
-            selLibraryNetworks.each { String sel ->
-                libraryNetworks << Long.parseLong(sel)
-            }
-            queryParams << [libraryNetwork : libraryNetworks]
+            queryParams << [libraryNetwork : Params.getLongList(params, "libraryNetwork")]
         }
 
-        if (params.libraryType?.size() > 0) {
+        if (params.libraryType) {
             query << "o.libraryType.id in (:libraryType)"
-            List<String> selLibraryTypes = listReaderWrapper(params, "libraryType")
-            List<Long> libraryTypes = []
-            selLibraryTypes.each { String sel ->
-                libraryTypes << Long.parseLong(sel)
-            }
-            queryParams << [libraryType : libraryTypes]
+            queryParams << [libraryType : Params.getLongList(params, "libraryType")]
         }
 
         if (params.subStatus || params.subValidOn || params.subPerpetual) {
@@ -310,9 +282,9 @@ class FilterService {
             query << subQuery
         }
 
-        if (params.filterPvd && params.filterPvd != "" && listReaderWrapper(params, 'filterPvd')) {
+        if (params.filterPvd) {
             String subQuery = " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and exists (select orgRole from OrgRole orgRole where orgRole.sub = sub and orgRole.org.id in (:filterPvd)) "
-            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg(), filterPvd : listReaderWrapper(params, 'filterPvd').collect { Long.parseLong(it) }]
+            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg(), filterPvd: Params.getLongList(params, 'filterPvd')]
 
             if (params.subStatus) {
                 subQuery +=  " and (sub.status = :subStatus" // ( closed in line 213; needed to prevent consortia members without any subscriptions because or would lift up the other restrictions)
@@ -404,7 +376,6 @@ class FilterService {
         def query = []
         Map<String, Object> queryParams = [:]
 
-        // ERMS-1592, ERMS-1596
         if (params.taskName) {
             query << "genfunc_filter_matcher(t.title, :taskName) = true "
             queryParams << [taskName : "${params.taskName}"]
@@ -412,7 +383,7 @@ class FilterService {
         if (params.taskStatus) {
             if (params.taskStatus == 'not done') {
                 query << "t.status.id != :rdvDone"
-                queryParams << [rdvDone : RDStore.TASK_STATUS_DONE?.id]
+                queryParams << [rdvDone : RDStore.TASK_STATUS_DONE.id]
             }
             else {
                 query << "t.status.id = :statusId"
@@ -475,7 +446,6 @@ class FilterService {
             Set targetQuery = []
             List subs = [], orgs = [], licenses = [], pkgs = []
             targetOIDs.each { t ->
-                //sorry, I hate def, but here, I cannot avoid using it ...
                 def target = genericOIDService.resolveOID(t)
                 switch(target.class.name) {
                     case Subscription.class.name: targetQuery << "dc.subscription in (:subs)"
@@ -632,7 +602,7 @@ class FilterService {
             params.filterSet = true
         }
 
-        if (params.filterPvd && params.filterPvd != "" && params.list('filterPvd')) {
+        if (params.filterPvd) {
             query += " and exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org.id in (:filterPvd))"
             queryParams << [filterPvd : Params.getLongList(params, 'filterPvd')]
             params.filterSet = true
@@ -772,9 +742,9 @@ class FilterService {
             params.filterSet = true
         }
 
-        if (params.filterPvd && params.filterPvd != "" && params.list('filterPvd')) {
+        if (params.filterPvd) {
             query << "exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org.id in (:filterPvd))"
-            queryParams << [filterPvd : Params.getLongList(params, 'filterPvd')]
+            queryParams << [filterPvd: Params.getLongList(params, 'filterPvd')]
             params.filterSet = true
         }
 
@@ -897,32 +867,32 @@ class FilterService {
             queryParams << [orgNameContains1 : "${params.orgNameContains}"]
             queryParams << [orgNameContains2 : "${params.orgNameContains}"]
         }
-        if (params.orgType?.length() > 0) {
+        if (params.orgType) {
             base_qry += " and exists (select roletype from surveyOrg.org.orgType as roletype where roletype.id = :orgType )"
             queryParams << [orgType : params.long('orgType')]
         }
-        if (params.orgSector?.length() > 0) {
+        if (params.orgSector) {
             base_qry += " and surveyOrg.org.sector.id = :orgSector"
             queryParams << [orgSector : params.long('orgSector')]
         }
-        if (params.region?.size() > 0) {
+        if (params.region) {
             base_qry += " and surveyOrg.org.region.id in (:region)"
             queryParams << [region : Params.getLongList(params, 'region')]
         }
-        if (params.country?.size() > 0) {
+        if (params.country) {
             base_qry += " and surveyOrg.org.country.id in (:country)"
             queryParams << [country : Params.getLongList(params, 'country')]
         }
-        if (params.subjectGroup?.size() > 0) {
+        if (params.subjectGroup) {
             base_qry +=  " and exists (select osg from OrgSubjectGroup as osg where osg.org.id = surveyOrg.org.id and osg.subjectGroup.id in (:subjectGroup))"
             queryParams << [subjectGroup : Params.getLongList(params, 'subjectGroup')]
         }
 
-        if (params.libraryNetwork?.size() > 0) {
+        if (params.libraryNetwork) {
             base_qry += " and surveyOrg.org.libraryNetwork.id in (:libraryNetwork)"
             queryParams << [libraryNetwork : Params.getLongList(params, 'libraryNetwork')]
         }
-        if (params.libraryType?.size() > 0) {
+        if (params.libraryType) {
             base_qry += " and surveyOrg.org.libraryType.id in (:libraryType)"
             queryParams << [libraryType : Params.getLongList(params, 'libraryType')]
         }

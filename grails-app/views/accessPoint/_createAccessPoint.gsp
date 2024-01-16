@@ -2,7 +2,7 @@
 <laser:serviceInjection/>
 
     <ui:form controller="accessPoint" action="processCreate" id="${orgInstance.id}">
-        <g:hiddenField name="accessMethod" value="${genericOIDService.getOID(accessMethod)}" />
+        <g:hiddenField name="accessMethod" value="${accessMethod.id}" />
 
         <g:if test="${accessMethod == RDStore.ACCESS_POINT_TYPE_IP}">
             <laser:render template="name" model="${[nameOptions: availableOptions.collectEntries(),
