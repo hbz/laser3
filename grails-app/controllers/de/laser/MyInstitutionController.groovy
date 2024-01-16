@@ -841,16 +841,15 @@ class MyInstitutionController  {
         tmpParams.constraint_orgIds = orgIds
 
         FilterService.Result fsr  = filterService.getOrgQuery(tmpParams)
-        List orgListTotal = []
 
         result.filterSet = params.filterSet ? true : false
         if (params.filterPropDef) {
             Map<String, Object> efq = propertyService.evalFilterQuery(tmpParams, fsr.query, 'o', fsr.queryParams)
-            orgListTotal = Org.findAll(efq.query, efq.queryParams)
+            fsr.query = efq.query
+            fsr.queryParams = efq.queryParams as Map<String, Object>
         }
-        else {
-            orgListTotal = Org.findAll(fsr.query, fsr.queryParams)
-        }
+        List<Org> orgListTotal = Org.findAll(fsr.query, fsr.queryParams)
+
         result.wekbRecords = organisationService.getWekbOrgRecords(params, result)
 
         if (params.isMyX) {

@@ -221,7 +221,7 @@ class OrganisationController  {
         FilterService.Result fsr = filterService.getOrgQuery(params)
         result.filterSet = params.filterSet ? true : false
 
-        List orgListTotal  = Org.findAll(fsr.query, fsr.queryParams)
+        List<Org> orgListTotal  = Org.findAll(fsr.query, fsr.queryParams)
         result.orgListTotal = orgListTotal.size()
         result.orgList = orgListTotal.drop((int) result.offset).take((int) result.max)
 
@@ -508,7 +508,7 @@ class OrganisationController  {
         params.sort        = params.sort ?: " LOWER(o.sortname), LOWER(o.name)"
 
         FilterService.Result fsr = filterService.getOrgQuery(params)
-        List orgListTotal = Org.findAll(fsr.query, fsr.queryParams)
+        List<Org> orgListTotal = Org.findAll(fsr.query, fsr.queryParams)
         result.filterSet = params.filterSet ? true : false
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
