@@ -3298,10 +3298,12 @@ join sub.orgRelations or_sub where
 		prf.setBenchmark('query')
 
         if (params.filterPropDef && memberIds) {
-            fsr = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname asc", 'o', [oids: memberIds])
+            Map<String, Object> efq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname asc", 'o', [oids: memberIds])
+            fsr.query = efq.query
+            fsr.queryParams = efq.queryParams as Map<String, Object>
         }
 
-        List totalMembers      = Org.executeQuery(fsr.query, fsr.queryParams)
+        List totalMembers = Org.executeQuery(fsr.query, fsr.queryParams)
         if(params.orgListToggler) {
             Combo.withTransaction {
                 Combo.executeUpdate('delete from Combo c where c.toOrg = :context and c.fromOrg.id in (:ids)', [context: result.institution, ids: memberIds])

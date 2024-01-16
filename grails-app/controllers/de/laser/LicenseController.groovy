@@ -552,14 +552,12 @@ class LicenseController {
 
         if (tmpParams.filterPropDef) {
             Map<String, Object> efq = propertyService.evalFilterQuery(tmpParams, fsr.query, 'o', fsr.queryParams)
+            fsr.query = efq.query
+            fsr.queryParams = efq.queryParams as Map<String, Object>
+        }
 
-            efq.query = efq.query.replaceFirst("select o from ", "select o.id from ")
-            Org.executeQuery(efq.query, efq.queryParams, tmpParams)
-        }
-        else {
-            fsr.query = fsr.query.replaceFirst("select o from ", "select o.id from ")
-            Org.executeQuery(fsr.query, fsr.queryParams, tmpParams)
-        }
+        fsr.query = fsr.query.replaceFirst("select o from ", "select o.id from ")
+        Org.executeQuery(fsr.query, fsr.queryParams, tmpParams)
     }
 
     /**

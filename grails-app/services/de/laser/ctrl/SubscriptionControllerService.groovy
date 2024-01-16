@@ -3747,17 +3747,14 @@ class SubscriptionControllerService {
         FilterService.Result fsr = filterService.getOrgComboQuery(orgParams, result.institution as Org)
         if (fsr.isFilterSet) { orgParams.filterSet = true }
 
-        List<Long> filteredOrgIds = []
         if (params.filterPropDef) {
             Map<String, Object> efq = propertyService.evalFilterQuery(params, fsr.query, 'o', fsr.queryParams)
+            fsr.query = efq.query
+            fsr.queryParams = efq.queryParams as Map<String, Object>
+        }
+        fsr.query = fsr.query.replaceFirst("select o from ", "select o.id from ")
+        List<Long> filteredOrgIds = Org.executeQuery(fsr.query, fsr.queryParams, orgParams+[id:parentSub.id])
 
-            efq.query = efq.query.replaceFirst("select o from ", "select o.id from ")
-            filteredOrgIds = Org.executeQuery(efq.query, efq.queryParams, orgParams+[id:parentSub.id])
-        }
-        else {
-            fsr.query = fsr.query.replaceFirst("select o from ", "select o.id from ")
-            filteredOrgIds = Org.executeQuery(fsr.query, fsr.queryParams, orgParams+[id:parentSub.id])
-        }
         Set rows = Subscription.executeQuery("select sub,o from OrgRole oo join oo.sub sub join oo.org o where sub.instanceOf = :parent"+sort,[parent:parentSub])
         List<Map> filteredSubChilds = []
         rows.each { row ->

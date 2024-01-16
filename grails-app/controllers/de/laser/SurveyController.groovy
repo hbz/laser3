@@ -961,7 +961,9 @@ class SurveyController {
         List consortiaMemberIds = Org.executeQuery(tmpQuery, fsr.queryParams)
 
         if (params.filterPropDef && consortiaMemberIds) {
-            fsr = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname", 'o', [oids: consortiaMemberIds])
+            Map<String, Object> efq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname", 'o', [oids: consortiaMemberIds])
+            fsr.query = efq.query
+            fsr.queryParams = efq.queryParams as Map<String, Object>
         }
         result.consortiaMembers = Org.executeQuery(fsr.query, fsr.queryParams, params)
 
@@ -1029,7 +1031,9 @@ class SurveyController {
         List consortiaMemberIds = Org.executeQuery(tmpQuery, fsr.queryParams)
 
         if (params.filterPropDef && consortiaMemberIds) {
-            fsr = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname", 'o', [oids: consortiaMemberIds])
+            Map<String, Object> efq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname", 'o', [oids: consortiaMemberIds])
+            fsr.query = efq.query
+            fsr.queryParams = efq.queryParams as Map<String, Object>
         }
 
         result.editable = (result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
