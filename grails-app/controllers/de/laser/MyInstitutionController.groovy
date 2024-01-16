@@ -3284,24 +3284,7 @@ join sub.orgRelations or_sub where
             }
         }
 
-
-
         List<Org> providers = Org.executeQuery(queryProviders, queryParamsProviders)
-
-
-/*        List<Subscription> subscriptions = []
-        if(providers || params.filterPvd) {
-            querySubs += " and or_pa.org.id in (:providers)"
-            if(params.filterPvd){
-                queryParamsSubs << [providers: Params.getLongList(params, 'filterPvd')]
-            }
-            else {
-                queryParamsSubs << [providers: providers.collect { it.id }]
-            }
-            subscriptions = Subscription.executeQuery(querySubs, queryParamsSubs)
-        }
-        result.subscriptions = subscriptions*/
-
         result.providers = providers
 
 		prf.setBenchmark('query')

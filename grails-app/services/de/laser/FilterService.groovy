@@ -29,8 +29,8 @@ class FilterService {
     GenericOIDService genericOIDService
     PropertyService propertyService
 
-    class Result {
-        Result (String query = null, Map<String, Object>queryParams = [:], boolean isFilterSet = false) {
+    class FilterServiceResult {
+        FilterServiceResult (String query = null, Map<String, Object>queryParams = [:], boolean isFilterSet = false) {
             this.query        = query
             this.queryParams  = queryParams
             this.isFilterSet  = isFilterSet
@@ -199,7 +199,6 @@ class FilterService {
         ArrayList<String> query = ["(o.status is null or o.status != :orgStatus)"]
         Map<String, Object> queryParams = ["orgStatus" : RDStore.ORG_STATUS_DELETED]
 
-        // ERMS-1592, ERMS-1596
         if (params.orgNameContains?.length() > 0) {
             query << "(genfunc_filter_matcher(o.name, :orgNameContains1) = true or genfunc_filter_matcher(o.sortname, :orgNameContains2) = true) "
              queryParams << [orgNameContains1 : "${params.orgNameContains}"]
@@ -288,9 +287,9 @@ class FilterService {
             query << subQuery
         }
 
-        if (params.filterPvd && params.filterPvd != "" && listReaderWrapper(params, 'filterPvd')) {
+        if (params.filterPvd) {
             String subQuery = " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and exists (select orgRole from OrgRole orgRole where orgRole.sub = sub and orgRole.org.id in (:filterPvd)) "
-            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg(), filterPvd : listReaderWrapper(params, 'filterPvd').collect { Long.parseLong(it) }]
+            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg(), filterPvd: Params.getLongList(params, 'filterPvd')]
 
             if (params.subStatus) {
                 subQuery +=  " and (sub.status = :subStatus" // ( closed in line 213; needed to prevent consortia members without any subscriptions because or would lift up the other restrictions)
@@ -382,7 +381,6 @@ class FilterService {
         def query = []
         Map<String, Object> queryParams = [:]
 
-        // ERMS-1592, ERMS-1596
         if (params.taskName) {
             query << "genfunc_filter_matcher(t.title, :taskName) = true "
             queryParams << [taskName : "${params.taskName}"]
@@ -390,7 +388,7 @@ class FilterService {
         if (params.taskStatus) {
             if (params.taskStatus == 'not done') {
                 query << "t.status.id != :rdvDone"
-                queryParams << [rdvDone : RDStore.TASK_STATUS_DONE?.id]
+                queryParams << [rdvDone : RDStore.TASK_STATUS_DONE.id]
             }
             else {
                 query << "t.status.id = :statusId"
@@ -609,7 +607,7 @@ class FilterService {
             params.filterSet = true
         }
 
-        if (params.filterPvd && params.filterPvd != "" && params.list('filterPvd')) {
+        if (params.filterPvd) {
             query += " and exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org.id in (:filterPvd))"
             queryParams << [filterPvd : Params.getLongList(params, 'filterPvd')]
             params.filterSet = true
@@ -749,9 +747,9 @@ class FilterService {
             params.filterSet = true
         }
 
-        if (params.filterPvd && params.filterPvd != "" && params.list('filterPvd')) {
+        if (params.filterPvd) {
             query << "exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org.id in (:filterPvd))"
-            queryParams << [filterPvd : Params.getLongList(params, 'filterPvd')]
+            queryParams << [filterPvd: Params.getLongList(params, 'filterPvd')]
             params.filterSet = true
         }
 

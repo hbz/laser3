@@ -463,9 +463,9 @@ class SubscriptionService {
         if('withCostItems' in tableConf) {
             prf.setBenchmark('costs init')
 
-            if (params.filterPvd && params.filterPvd != "" && params.list('filterPvd')) {
+            if (params.filterPvd) {
                 query = query + " and exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.sub.id = subT.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and exists (select orgRole from OrgRole orgRole where orgRole.sub = sub and orgRole.org.id in (:filterPvd))) "
-                qarams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextOrg, filterPvd: params.list('filterPvd').collect { Long.parseLong(it) }]
+                qarams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextOrg, filterPvd: Params.getLongList(params, 'filterPvd')]
             }
 
 
