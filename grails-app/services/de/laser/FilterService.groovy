@@ -10,7 +10,6 @@ import de.laser.survey.SurveyConfig
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.springframework.context.MessageSource
 import groovy.sql.Sql
 
 import java.sql.Connection
@@ -228,14 +227,14 @@ class FilterService {
             queryParams << [subjectGroup : Params.getLongList(params, "subjectGroup")]
         }
 
-        if (params.discoverySystemsFrontend?.size() > 0) {
+        if (params.discoverySystemsFrontend) {
             query << "exists (select dsf from DiscoverySystemFrontend as dsf where dsf.org.id = o.id and dsf.frontend.id in (:frontends))"
-            queryParams << [frontends : listReaderWrapper(params, "discoverySystemsFrontend").collect {Long.parseLong(it)}]
+            queryParams << [frontends : Params.getLongList(params, "discoverySystemsFrontend")]
         }
 
-        if (params.discoverySystemsIndex?.size() > 0) {
+        if (params.discoverySystemsIndex) {
             query << "exists (select dsi from DiscoverySystemIndex as dsi where dsi.org.id = o.id and dsi.index.id in (:indices))"
-            queryParams << [indices : listReaderWrapper(params, "discoverySystemsIndex").collect {Long.parseLong(it)}]
+            queryParams << [indices : Params.getLongList(params, "discoverySystemsIndex")]
         }
 
         if (params.libraryNetwork) {
@@ -454,7 +453,6 @@ class FilterService {
             Set targetQuery = []
             List subs = [], orgs = [], licenses = [], pkgs = []
             targetOIDs.each { t ->
-                //sorry, I hate def, but here, I cannot avoid using it ...
                 def target = genericOIDService.resolveOID(t)
                 switch(target.class.name) {
                     case Subscription.class.name: targetQuery << "dc.subscription in (:subs)"
@@ -876,32 +874,32 @@ class FilterService {
             queryParams << [orgNameContains1 : "${params.orgNameContains}"]
             queryParams << [orgNameContains2 : "${params.orgNameContains}"]
         }
-        if (params.orgType?.length() > 0) {
+        if (params.orgType) {
             base_qry += " and exists (select roletype from surveyOrg.org.orgType as roletype where roletype.id = :orgType )"
             queryParams << [orgType : params.long('orgType')]
         }
-        if (params.orgSector?.length() > 0) {
+        if (params.orgSector) {
             base_qry += " and surveyOrg.org.sector.id = :orgSector"
             queryParams << [orgSector : params.long('orgSector')]
         }
-        if (params.region?.size() > 0) {
+        if (params.region) {
             base_qry += " and surveyOrg.org.region.id in (:region)"
             queryParams << [region : Params.getLongList(params, 'region')]
         }
-        if (params.country?.size() > 0) {
+        if (params.country) {
             base_qry += " and surveyOrg.org.country.id in (:country)"
             queryParams << [country : Params.getLongList(params, 'country')]
         }
-        if (params.subjectGroup?.size() > 0) {
+        if (params.subjectGroup) {
             base_qry +=  " and exists (select osg from OrgSubjectGroup as osg where osg.org.id = surveyOrg.org.id and osg.subjectGroup.id in (:subjectGroup))"
             queryParams << [subjectGroup : Params.getLongList(params, 'subjectGroup')]
         }
 
-        if (params.libraryNetwork?.size() > 0) {
+        if (params.libraryNetwork) {
             base_qry += " and surveyOrg.org.libraryNetwork.id in (:libraryNetwork)"
             queryParams << [libraryNetwork : Params.getLongList(params, 'libraryNetwork')]
         }
-        if (params.libraryType?.size() > 0) {
+        if (params.libraryType) {
             base_qry += " and surveyOrg.org.libraryType.id in (:libraryType)"
             queryParams << [libraryType : Params.getLongList(params, 'libraryType')]
         }
