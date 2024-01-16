@@ -47,7 +47,7 @@ class FilterService {
     /**
      * Processes organisation filters and generates a query to fetch organisations
      * @param params the filter parameter map
-     * @return the map containing the query and the prepared query parameters
+     * @return the result containing the query and the prepared query parameters
      */
     Result getOrgQuery(GrailsParameterMap params) {
         int hashCode = params.hashCode()
@@ -185,14 +185,14 @@ class FilterService {
      * linked by combo to the given institution are fetched
      * @param params the filter parameter map
      * @param org the consortium to which the institutions are linked
-     * @return the map containing the query and the prepared query parameters
+     * @return the result containing the query and the prepared query parameters
      */
-    Map<String, Object> getOrgComboQuery(GrailsParameterMap params, Org org) {
+    Result getOrgComboQuery(GrailsParameterMap params, Org org) {
         int hashCode = params.hashCode()
 
-        Map<String, Object> result = [:]
         ArrayList<String> query = ["(o.status is null or o.status != :orgStatus)"]
         Map<String, Object> queryParams = ["orgStatus" : RDStore.ORG_STATUS_DELETED]
+        boolean isFilterSet = false
 
         if (params.orgNameContains?.length() > 0) {
             query << "(genfunc_filter_matcher(o.name, :orgNameContains1) = true or genfunc_filter_matcher(o.sortname, :orgNameContains2) = true) "
@@ -306,7 +306,8 @@ class FilterService {
             }
 
             query << subQuery+")"
-            params.filterSet = true
+            // params.filterSet = true // ERMS-5516
+            isFilterSet = true
         }
 
         if (params.customerType?.length() > 0) {
@@ -345,22 +346,23 @@ class FilterService {
          queryParams << [org : org]
          queryParams << [comboType : params.comboType]
 
+        String hql = ''
         String defaultOrder = " order by " + (params.sort && (!params.consSort && !params.ownSort && !params.subscrSort) ? params.sort : " LOWER(o.sortname)") + " " + (params.order && (!params.consSort && !params.ownSort && !params.subscrSort) ? params.order : "asc")
 
         String direction = "c.fromOrg = o and c.toOrg = :org"
         if(params.invertDirection)
             direction = "c.fromOrg = :org and c.toOrg = o"
         if (query.size() > 0) {
-            result.query = "select o from Org as o, Combo as c where " + query.join(" and ") + " and "+direction+" and c.type.value = :comboType " + defaultOrder
+            hql = "select o from Org as o, Combo as c where " + query.join(" and ") + " and " + direction + " and c.type.value = :comboType " + defaultOrder
         } else {
-            result.query = "select o from Org as o, Combo as c where "+direction+" and c.type.value = :comboType " + defaultOrder
+            hql = "select o from Org as o, Combo as c where " + direction + " and c.type.value = :comboType " + defaultOrder
         }
-        result.queryParams = queryParams
 
         if (params.hashCode() != hashCode) {
             log.debug 'GrailsParameterMap was modified @ getOrgComboQuery()'
         }
-        result
+
+        new Result( hql, queryParams, isFilterSet )
     }
 
     /**

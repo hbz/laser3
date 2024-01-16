@@ -1068,8 +1068,10 @@ class SubscriptionControllerService {
             result.defaultEndYear = sdf.format(cal.getTime())
             if(contextService.getOrg().isCustomerType_Consortium()) {
                 params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
-                Map<String,Object> fsq = filterService.getOrgComboQuery(params, result.institution)
-                result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
+                FilterService.Result fsr = filterService.getOrgComboQuery(params, result.institution as Org)
+                if (fsr.isFilterSet) { params.filterSet = true }
+
+                result.members = Org.executeQuery(fsr.query, fsr.queryParams, params)
             }
             [result:result,status:STATUS_OK]
         }
@@ -1288,8 +1290,10 @@ class SubscriptionControllerService {
             result.superOrgType = [messageSource.getMessage('consortium.superOrgType',null,locale)]
             result.memberType = [messageSource.getMessage('consortium.subscriber',null,locale)]
             result.propList= PropertyDefinition.findAllPublicAndPrivateOrgProp(result.institution)
-            Map<String,Object> fsq = filterService.getOrgComboQuery(params, result.institution)
-            result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
+            FilterService.Result fsr = filterService.getOrgComboQuery(params, result.institution as Org)
+            if (fsr.isFilterSet) { params.filterSet = true }
+
+            result.members = Org.executeQuery(fsr.query, fsr.queryParams, params)
             result.members_disabled = Subscription.executeQuery("select oo.org.id from OrgRole oo join oo.sub s where s.instanceOf = :io",[io: result.subscription])
             result.validPackages = result.subscription.packages?.sort { it.pkg.name }
             result.memberLicenses = License.executeQuery("select l from License l where l.instanceOf in (select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType)",[subscription:result.subscription, linkType:RDStore.LINKTYPE_LICENSE])
@@ -3740,12 +3744,20 @@ class SubscriptionControllerService {
             if(params.order)
                 sort += params.order
         }
-        Map<String,Object> fsq = filterService.getOrgComboQuery(orgParams, result.institution)
+        FilterService.Result fsr = filterService.getOrgComboQuery(orgParams, result.institution as Org)
+        if (fsr.isFilterSet) { orgParams.filterSet = true }
+
+        List<Long> filteredOrgIds = []
         if (params.filterPropDef) {
-            fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)
+            Map<String, Object> efq = propertyService.evalFilterQuery(params, fsr.query, 'o', fsr.queryParams)
+
+            efq.query = efq.query.replaceFirst("select o from ", "select o.id from ")
+            filteredOrgIds = Org.executeQuery(efq.query, efq.queryParams, orgParams+[id:parentSub.id])
         }
-        fsq.query = fsq.query.replaceFirst("select o from ", "select o.id from ")
-        List<Long> filteredOrgIds = Org.executeQuery(fsq.query, fsq.queryParams, orgParams+[id:parentSub.id])
+        else {
+            fsr.query = fsr.query.replaceFirst("select o from ", "select o.id from ")
+            filteredOrgIds = Org.executeQuery(fsr.query, fsr.queryParams, orgParams+[id:parentSub.id])
+        }
         Set rows = Subscription.executeQuery("select sub,o from OrgRole oo join oo.sub sub join oo.org o where sub.instanceOf = :parent"+sort,[parent:parentSub])
         List<Map> filteredSubChilds = []
         rows.each { row ->

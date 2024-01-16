@@ -393,8 +393,10 @@ class OrganisationController  {
         queryParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         queryParams.subStatus = RDStore.SUBSCRIPTION_CURRENT.id
         queryParams.invertDirection = true
-        Map<String, Object> currentConsortiaQMap = filterService.getOrgComboQuery(queryParams, result.contextOrg as Org)
-        result.consortiaIds = Org.executeQuery(currentConsortiaQMap.query, currentConsortiaQMap.queryParams).collect{ it.id }
+        FilterService.Result currentConsortiaFsr = filterService.getOrgComboQuery(queryParams, result.contextOrg as Org)
+        if (currentConsortiaFsr.isFilterSet) { queryParams.filterSet = true }
+
+        result.consortiaIds = Org.executeQuery(currentConsortiaFsr.query, currentConsortiaFsr.queryParams).collect{ it.id }
         // ? ---
 
         if (params.isMyX) {
