@@ -841,16 +841,15 @@ class MyInstitutionController  {
         tmpParams.constraint_orgIds = orgIds
 
         FilterService.Result fsr  = filterService.getOrgQuery(tmpParams)
-        List orgListTotal = []
 
         result.filterSet = params.filterSet ? true : false
         if (params.filterPropDef) {
             Map<String, Object> efq = propertyService.evalFilterQuery(tmpParams, fsr.query, 'o', fsr.queryParams)
-            orgListTotal = Org.findAll(efq.query, efq.queryParams)
+            fsr.query = efq.query
+            fsr.queryParams = efq.queryParams as Map<String, Object>
         }
-        else {
-            orgListTotal = Org.findAll(fsr.query, fsr.queryParams)
-        }
+        List<Org> orgListTotal = Org.findAll(fsr.query, fsr.queryParams)
+
         result.wekbRecords = organisationService.getWekbOrgRecords(params, result)
 
         if (params.isMyX) {
@@ -3125,11 +3124,12 @@ class MyInstitutionController  {
 
         queryParams.comboType = result.comboType.value
         queryParams.invertDirection = true
-        Map<String, Object> fsq = filterService.getOrgComboQuery(queryParams, result.institution)
+        FilterService.Result fsr = filterService.getOrgComboQuery(queryParams, result.institution as Org)
+        if (fsr.isFilterSet) { queryParams.filterSet = true }
 
 		prf.setBenchmark('query')
 
-        List totalConsortia      = Org.executeQuery(fsq.query, fsq.queryParams)
+        List totalConsortia      = Org.executeQuery(fsr.query, fsr.queryParams)
         result.totalConsortia    = totalConsortia
         result.consortiaCount    = totalConsortia.size()
         result.consortia         = totalConsortia.drop((int) result.offset).take((int) result.max)
@@ -3237,9 +3237,11 @@ class MyInstitutionController  {
         else result.filterSet    = params.filterSet ? true : false*/
 
         params.comboType = result.comboType.value
-        Map<String, Object> fsq = filterService.getOrgComboQuery(params, result.institution)
-        String tmpQuery = "select o.id " + fsq.query.minus("select o ")
-        List memberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
+        FilterService.Result fsr = filterService.getOrgComboQuery(params, result.institution as Org)
+        if (fsr.isFilterSet) { params.filterSet = true }
+
+        String tmpQuery = "select o.id " + fsr.query.minus("select o ")
+        List memberIds = Org.executeQuery(tmpQuery, fsr.queryParams)
 
         Map queryParamsProviders = [
                 subOrg      : result.institution,
@@ -3295,10 +3297,12 @@ join sub.orgRelations or_sub where
 		prf.setBenchmark('query')
 
         if (params.filterPropDef && memberIds) {
-            fsq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname asc", 'o', [oids: memberIds])
+            Map<String, Object> efq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname asc", 'o', [oids: memberIds])
+            fsr.query = efq.query
+            fsr.queryParams = efq.queryParams as Map<String, Object>
         }
 
-        List totalMembers      = Org.executeQuery(fsq.query, fsq.queryParams)
+        List totalMembers = Org.executeQuery(fsr.query, fsr.queryParams)
         if(params.orgListToggler) {
             Combo.withTransaction {
                 Combo.executeUpdate('delete from Combo c where c.toOrg = :context and c.fromOrg.id in (:ids)', [context: result.institution, ids: memberIds])

@@ -268,8 +268,9 @@ class SubscriptionService {
 
         SwissKnife.setPaginationParams(result, params, contextUser)
 
-        Map<String,Object> fsq = filterService.getOrgComboQuery(params+[comboType:RDStore.COMBO_TYPE_CONSORTIUM.value,sort:'o.sortname'], contextOrg)
-        result.filterConsortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams)
+        FilterService.Result fsr = filterService.getOrgComboQuery(params+[comboType:RDStore.COMBO_TYPE_CONSORTIUM.value,sort:'o.sortname'], contextOrg)
+        if (fsr.isFilterSet) { params.filterSet = true }
+        result.filterConsortiaMembers = Org.executeQuery(fsr.query, fsr.queryParams)
 
         prf.setBenchmark('filterSubTypes & filterPropList')
 

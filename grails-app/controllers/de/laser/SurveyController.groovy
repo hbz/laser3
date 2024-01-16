@@ -949,18 +949,23 @@ class SurveyController {
         cloneParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         cloneParams.sub = result.subscription
 
-        Map<String,Object> countFsq = filterService.getOrgComboQuery(cloneParams, result.institution)
+        FilterService.Result countFsr = filterService.getOrgComboQuery(cloneParams, result.institution as Org)
+        if (countFsr.isFilterSet) { cloneParams.filterSet = true }
 
-        result.consortiaMembersCount = Org.executeQuery("select o.id " + countFsq.query.minus("select o "), countFsq.queryParams).size()
+        result.consortiaMembersCount = Org.executeQuery("select o.id " + countFsr.query.minus("select o "), countFsr.queryParams).size()
 
-        Map<String,Object> fsq = filterService.getOrgComboQuery(params, result.institution)
-        String tmpQuery = "select o.id " + fsq.query.minus("select o ")
-        List consortiaMemberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
+        FilterService.Result fsr = filterService.getOrgComboQuery(params, result.institution as Org)
+        if (fsr.isFilterSet) { params.filterSet = true }
+
+        String tmpQuery = "select o.id " + fsr.query.minus("select o ")
+        List consortiaMemberIds = Org.executeQuery(tmpQuery, fsr.queryParams)
 
         if (params.filterPropDef && consortiaMemberIds) {
-            fsq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname", 'o', [oids: consortiaMemberIds])
+            Map<String, Object> efq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname", 'o', [oids: consortiaMemberIds])
+            fsr.query = efq.query
+            fsr.queryParams = efq.queryParams as Map<String, Object>
         }
-        result.consortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams, params)
+        result.consortiaMembers = Org.executeQuery(fsr.query, fsr.queryParams, params)
 
         if(result.surveyConfig.pickAndChoose){
 
@@ -975,8 +980,8 @@ class SurveyController {
         result.selectedParticipantsCount = surveyOrgs.orgsWithoutSubIDs ? surveyOrgs.orgsWithoutSubIDs.size() : 0
         result.selectedSubParticipantsCount = surveyOrgs.orgsWithSubIDs? surveyOrgs.orgsWithSubIDs.size() : 0
 
-        result.selectedParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsq.query, fsq.queryParams, params)
-        result.selectedSubParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsq.query, fsq.queryParams, params)
+        result.selectedParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsr.query, fsr.queryParams, params)
+        result.selectedSubParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsr.query, fsr.queryParams, params)
 
         params.tab = params.tab ?: (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY ? 'selectedParticipants' : ((result.selectedSubParticipantsCount == 0) ? 'selectedParticipants' : 'selectedSubParticipants'))
 
@@ -1019,12 +1024,16 @@ class SurveyController {
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
         params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
-        Map<String,Object> fsq = filterService.getOrgComboQuery(params, result.institution)
-        String tmpQuery = "select o.id " + fsq.query.minus("select o ")
-        List consortiaMemberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
+        FilterService.Result fsr = filterService.getOrgComboQuery(params, result.institution)
+        if (fsr.isFilterSet) { params.filterSet = true }
+
+        String tmpQuery = "select o.id " + fsr.query.minus("select o ")
+        List consortiaMemberIds = Org.executeQuery(tmpQuery, fsr.queryParams)
 
         if (params.filterPropDef && consortiaMemberIds) {
-            fsq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname", 'o', [oids: consortiaMemberIds])
+            Map<String, Object> efq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname", 'o', [oids: consortiaMemberIds])
+            fsr.query = efq.query
+            fsr.queryParams = efq.queryParams as Map<String, Object>
         }
 
         result.editable = (result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
@@ -1040,8 +1049,8 @@ class SurveyController {
 
         Map<String,Object> surveyOrgs = result.surveyConfig?.getSurveyOrgsIDs()
 
-        result.selectedParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsq.query, fsq.queryParams, params)
-        result.selectedSubParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsq.query, fsq.queryParams, params)
+        result.selectedParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsr.query, fsr.queryParams, params)
+        result.selectedSubParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsr.query, fsr.queryParams, params)
 
         result.selectedCostItemElement = params.selectedCostItemElement ? params.selectedCostItemElement.toString() : RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id.toString()
 

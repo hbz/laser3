@@ -546,13 +546,18 @@ class LicenseController {
         tmpParams.remove("offset")
         if (contextService.getOrg().isCustomerType_Consortium())
             tmpParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
-        Map<String,Object> fsq = filterService.getOrgComboQuery(tmpParams, result.institution)
+
+        FilterService.Result fsr = filterService.getOrgComboQuery(tmpParams, result.institution as Org)
+        if (fsr.isFilterSet) { tmpParams.filterSet = true }
 
         if (tmpParams.filterPropDef) {
-            fsq = propertyService.evalFilterQuery(tmpParams, fsq.query, 'o', fsq.queryParams)
+            Map<String, Object> efq = propertyService.evalFilterQuery(tmpParams, fsr.query, 'o', fsr.queryParams)
+            fsr.query = efq.query
+            fsr.queryParams = efq.queryParams as Map<String, Object>
         }
-        fsq.query = fsq.query.replaceFirst("select o from ", "select o.id from ")
-        Org.executeQuery(fsq.query, fsq.queryParams, tmpParams)
+
+        fsr.query = fsr.query.replaceFirst("select o from ", "select o.id from ")
+        Org.executeQuery(fsr.query, fsr.queryParams, tmpParams)
     }
 
     /**
