@@ -5,11 +5,9 @@ import de.laser.utils.AppUtils
 import de.laser.helper.DatabaseInfo
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
-import de.laser.cache.EhcacheWrapper
 import de.laser.utils.SwissKnife
 import de.laser.remote.FTControl
 import de.laser.auth.Role
-import de.laser.auth.User
 import de.laser.properties.PropertyDefinition
 import de.laser.api.v0.ApiToolkit
 
@@ -742,8 +740,8 @@ class AdminController  {
             target.save()
         }
 
-        Map<String, Object> fsq = filterService.getOrgQuery(params)
-        List<Org> orgList = Org.executeQuery(fsq.query, fsq.queryParams)
+        FilterService.Result fsr = filterService.getOrgQuery(params)
+        List<Org> orgList = Org.executeQuery(fsr.query, fsr.queryParams)
         result.orgList = orgList.drop(result.offset).take(result.max)
         result.orgListTotal = orgList.size()
 

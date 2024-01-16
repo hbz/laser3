@@ -29,8 +29,8 @@ class FilterService {
     GenericOIDService genericOIDService
     PropertyService propertyService
 
-    class FilterServiceResult {
-        FilterServiceResult (String query = null, Map<String, Object>queryParams = [:], boolean isFilterSet = false) {
+    class Result {
+        Result(String query = null, Map<String, Object>queryParams = [:], boolean isFilterSet = false) {
             this.query        = query
             this.queryParams  = queryParams
             this.isFilterSet  = isFilterSet
@@ -39,9 +39,9 @@ class FilterService {
             log.debug('queryParams: ' + queryParams.toMapString())
         }
 
-        String query
-        Map<String, Object> queryParams
-        boolean isFilterSet
+        public String query
+        public Map<String, Object> queryParams
+        public boolean isFilterSet
     }
 
     /**
@@ -49,10 +49,9 @@ class FilterService {
      * @param params the filter parameter map
      * @return the map containing the query and the prepared query parameters
      */
-    Map<String, Object> getOrgQuery(GrailsParameterMap params) {
+    Result getOrgQuery(GrailsParameterMap params) {
         int hashCode = params.hashCode()
 
-        Map<String, Object> result = [:]
         ArrayList<String> query = []
         Map<String, Object> queryParams = [:]
 
@@ -172,17 +171,13 @@ class FilterService {
 
         String defaultOrder = " order by " + (params.sort ?: " LOWER(o.sortname)") + " " + (params.order ?: "asc")
 
-        if (query.size() > 0) {
-            result.query = "from Org o where " + query.join(" and ") + defaultOrder
-        } else {
-            result.query = "from Org o " + defaultOrder
-        }
-        result.queryParams = queryParams
+        String hql = (query.size() > 0 ? "from Org o where " + query.join(" and ") : "from Org o ") + defaultOrder
 
         if (params.hashCode() != hashCode) {
             log.debug 'GrailsParameterMap was modified @ getOrgQuery()'
         }
-        result
+
+        new Result( hql, queryParams )
     }
 
     /**

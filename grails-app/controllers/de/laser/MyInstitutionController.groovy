@@ -839,13 +839,18 @@ class MyInstitutionController  {
 
         GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
         tmpParams.constraint_orgIds = orgIds
-        def fsq  = filterService.getOrgQuery(tmpParams)
+
+        FilterService.Result fsr  = filterService.getOrgQuery(tmpParams)
+        List orgListTotal = []
 
         result.filterSet = params.filterSet ? true : false
         if (params.filterPropDef) {
-            fsq = propertyService.evalFilterQuery(tmpParams, fsq.query, 'o', fsq.queryParams)
+            Map<String, Object> efq = propertyService.evalFilterQuery(tmpParams, fsr.query, 'o', fsr.queryParams)
+            orgListTotal = Org.findAll(efq.query, efq.queryParams)
         }
-        List orgListTotal = Org.findAll(fsq.query, fsq.queryParams)
+        else {
+            orgListTotal = Org.findAll(fsr.query, fsr.queryParams)
+        }
         result.wekbRecords = organisationService.getWekbOrgRecords(params, result)
 
         if (params.isMyX) {
@@ -2937,8 +2942,8 @@ class MyInstitutionController  {
             }
             result.filterSet = params.filterSet ? true : false
 
-            Map<String, Object> fsq = filterService.getOrgQuery(params)
-            List<Org> availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, params)
+            FilterService.Result fsr = filterService.getOrgQuery(params)
+            List<Org> availableOrgs = Org.executeQuery(fsr.query, fsr.queryParams, params)
             Set<Org> currentMembers = Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :current and c.type = :comboType', [current: result.institution, comboType: RefdataValue.getByValueAndCategory(result.comboType, RDConstants.COMBO_TYPE)])
             result.availableOrgs = availableOrgs - currentMembers
 

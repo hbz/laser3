@@ -218,10 +218,10 @@ class OrganisationController  {
 
         result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
-        Map<String, Object> fsq = filterService.getOrgQuery(params)
+        FilterService.Result fsr = filterService.getOrgQuery(params)
         result.filterSet = params.filterSet ? true : false
 
-        List orgListTotal  = Org.findAll(fsq.query, fsq.queryParams)
+        List orgListTotal  = Org.findAll(fsr.query, fsr.queryParams)
         result.orgListTotal = orgListTotal.size()
         result.orgList = orgListTotal.drop((int) result.offset).take((int) result.max)
 
@@ -285,10 +285,10 @@ class OrganisationController  {
         if(!params.orgStatus && !params.filterSet) {
             params.orgStatus = [RDStore.ORG_STATUS_CURRENT.id]
         }
-        Map<String, Object> fsq = filterService.getOrgQuery(params)
+        FilterService.Result fsr = filterService.getOrgQuery(params)
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        List<Org> availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, [sort:params.sort])
+        List<Org> availableOrgs = Org.executeQuery(fsr.query, fsr.queryParams, [sort:params.sort])
         result.consortiaMemberIds = Combo.executeQuery('select cmb.fromOrg.id from Combo cmb where cmb.toOrg = :toOrg and cmb.type = :type',[toOrg: result.institution, type: RDStore.COMBO_TYPE_CONSORTIUM])
 
         if (params.isMyX) {
@@ -375,10 +375,10 @@ class OrganisationController  {
         params.customerType = [Role.findByAuthority('ORG_CONSORTIUM_PRO').id, Role.findByAuthority('ORG_CONSORTIUM_BASIC').id]
         if(!params.sort)
             params.sort = " LOWER(o.sortname)"
-        Map<String, Object> fsq = filterService.getOrgQuery(params)
+        FilterService.Result fsr = filterService.getOrgQuery(params)
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        List<Org> availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, [sort:params.sort])
+        List<Org> availableOrgs = Org.executeQuery(fsr.query, fsr.queryParams, [sort:params.sort])
         // TODO [ticket=2276]
         availableOrgs.removeAll(customerTypeService.getAllOrgsByCustomerType(CustomerTypeService.ORG_SUPPORT))
 
@@ -505,19 +505,12 @@ class OrganisationController  {
         params.orgType      = [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]
         params.sort        = params.sort ?: " LOWER(o.sortname), LOWER(o.name)"
 
-        def fsq            = filterService.getOrgQuery(params)
+        FilterService.Result fsr = filterService.getOrgQuery(params)
+        List orgListTotal = Org.findAll(fsr.query, fsr.queryParams)
         result.filterSet = params.filterSet ? true : false
-
-        if (params.filterPropDef) {
-            List orgIdList = Org.executeQuery("select o.id ${fsq.query}", fsq.queryParams)
-            params.constraint_orgIds = orgIdList
-            fsq = filterService.getOrgQuery(params)
-            fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)
-        }
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        List orgListTotal            = Org.findAll(fsq.query, fsq.queryParams)
         result.currentProviderIdList = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies(contextService.getOrg()).toList()
         result.wekbRecords = organisationService.getWekbOrgRecords(params, result)
         if (params.curatoryGroup || params.providerRole)
