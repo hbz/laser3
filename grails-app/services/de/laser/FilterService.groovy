@@ -1195,9 +1195,9 @@ class FilterService {
             filterSet = true
         }
 
-        if (params.medium && params.medium != "" && listReaderWrapper(params, 'medium')) {
+        if (params.medium) {
             base_qry += " and tipp.medium.id in (:medium) "
-            qry_params.medium = listReaderWrapper(params, 'medium').collect { String key -> Long.parseLong(key) }
+            qry_params.medium = Params.getLongList_forCommaSeparatedString(params, 'medium')  // ?
             filterSet = true
         }
 
