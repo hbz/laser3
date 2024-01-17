@@ -92,9 +92,9 @@ class MyInstitutionControllerService {
 
         SimpleDateFormat sdFormat    = DateUtils.getLocalizedSDF_noTime()
         params.taskStatus = 'not done'
-        def query       = filterService.getTaskQuery(params << [sort: 't.endDate', order: 'asc'], sdFormat)
+        FilterService.Result fsr = filterService.getTaskQuery(params << [sort: 't.endDate', order: 'asc'], sdFormat)
         prf.setBenchmark('tasks')
-        result.tasks    = taskService.getTasksByResponsibles(result.user, result.institution, query)
+        result.tasks = taskService.getTasksByResponsibles(result.user as User, result.institution as Org, [query: fsr.query, queryParams: fsr.queryParams])
         result.tasksCount    = result.tasks.size()
         result.enableMyInstFormFields = true // enable special form fields
 

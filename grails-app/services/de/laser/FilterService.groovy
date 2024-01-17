@@ -143,10 +143,9 @@ class FilterService {
         if (params.isLegallyObliged in ['yes', 'no']) {
             query << "o.legallyObligedBy " + (params.isLegallyObliged == 'yes' ? "is not null" : "is null")
         }
-
-        if (params.legallyObligedBy?.length() > 0) {
+        if (params.legallyObligedBy) {
             query << "o.legallyObligedBy.id in (:legallyObligedBy)"
-            queryParams << [legallyObligedBy: listReaderWrapper(params, 'legallyObligedBy').collect { key -> Long.parseLong(key) }]
+            queryParams << [legallyObligedBy: Params.getLongList(params, 'legallyObligedBy')]
         }
 
         if (params.platform?.length() > 0) {
@@ -369,13 +368,12 @@ class FilterService {
      * Processes the task filter parameters and gets the task query with the prepared filter values
      * @param params the filter query parameter map
      * @param sdFormat the date format to use to parse dates
-     * @return the map containing the query and the prepared query parameters
+     * @return the result containing the query and the prepared query parameters
      */
-    Map<String, Object> getTaskQuery(GrailsParameterMap params, DateFormat sdFormat) {
+    Result getTaskQuery(GrailsParameterMap params, DateFormat sdFormat) {
         int hashCode = params.hashCode()
 
-        Map<String, Object> result = [:]
-        def query = []
+        ArrayList<String> query = []
         Map<String, Object> queryParams = [:]
 
         if (params.taskName) {
@@ -403,18 +401,13 @@ class FilterService {
 
         String defaultOrder = " order by " + (params.sort ?: "t.endDate") + " " + (params.order ?: "desc")
 
-        if (query.size() > 0) {
-            query = " and " + query.join(" and ") + defaultOrder
-        } else {
-            query = defaultOrder
-        }
-        result.query = query
-        result.queryParams = queryParams
+        String hql = ( query.size() > 0 ? " and " + query.join(" and ") : "" ) + defaultOrder
 
         if (params.hashCode() != hashCode) {
             log.debug 'GrailsParameterMap was modified @ getTaskQuery()'
         }
-        result
+
+        new Result( hql, queryParams )
     }
 
     /**
