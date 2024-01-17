@@ -1041,6 +1041,8 @@ class FilterService {
      * @return the map containing the query and the prepared query parameters
      */
     Map<String,Object> getIssueEntitlementQuery(GrailsParameterMap params, Collection<Subscription> subscriptions) {
+        log.debug 'getIssueEntitlementQuery'
+
         int hashCode = params.hashCode()
 
         Map<String, Object> result = [:]
@@ -1086,13 +1088,9 @@ class FilterService {
             base_qry += " and ie.tipp.status.id = :status and ie.status.id != :status "
             qry_params.status = params.long('status')
         }
-        else if(params.status != '' && params.status != null && listReaderWrapper(params, 'status')) {
-            List<Long> status = []
-            listReaderWrapper(params, 'status').each { def statusId ->
-                status << Long.valueOf(statusId)
-            }
+        else if (params.status) {
             base_qry += " and ie.status.id in (:status) "
-            qry_params.status = status
+            qry_params.status = Params.getLongList(params, 'status')
             filterSet = true
         }
         else if (params.notStatus != '' && params.notStatus != null){
@@ -1126,15 +1124,15 @@ class FilterService {
             }
         }
 
-        if (params.ddcs && params.ddcs != "" && params.list('ddcs')) {
+        if (params.ddcs) {
             base_qry += " and exists ( select ddc.id from DeweyDecimalClassification ddc where ddc.tipp = tipp and ddc.ddc.id in (:ddcs) ) "
-            qry_params.ddcs = params.list('ddcs').collect { String key -> Long.parseLong(key) }
+            qry_params.ddcs = Params.getLongList_forCommaSeparatedString(params, 'ddcs') // ?
             filterSet = true
         }
 
-        if (params.languages && params.languages != "" && listReaderWrapper(params, 'languages')) {
+        if (params.languages) {
             base_qry += " and exists ( select lang.id from Language lang where lang.tipp = tipp and lang.language.id in (:languages) ) "
-            qry_params.languages = params.list('languages').collect { String key -> Long.parseLong(key) }
+            qry_params.languages = Params.getLongList_forCommaSeparatedString(params, 'languages')  // ?
             filterSet = true
         }
 
@@ -1262,6 +1260,8 @@ class FilterService {
      * @return the map containing the query and the prepared query parameters
      */
     Map<String,Object> getPermanentTitlesQuery(GrailsParameterMap params, Org owner) {
+        log.debug 'getPermanentTitlesQuery'
+
         int hashCode = params.hashCode()
 
         Map<String, Object> result = [:]
@@ -1300,10 +1300,9 @@ class FilterService {
             base_qry += " and ie.tipp.status.id = :status and ie.status.id != :status "
             qry_params.status = params.long('status')
         }
-        else if (params.list('status').findAll()) {
-            List<Long> status = Params.getLongList(params, 'status')
+        else if (params.status) {
             base_qry += " and ie.status.id in (:status) "
-            qry_params.status = status
+            qry_params.status = Params.getLongList(params, 'status')
             filterSet = true
         }
         else if (params.notStatus != '' && params.notStatus != null){
@@ -1321,15 +1320,15 @@ class FilterService {
             filterSet = true
         }
 
-        if (params.ddcs && params.ddcs != "" && params.list('ddcs')) {
+        if (params.ddcs) {
             base_qry += " and exists ( select ddc.id from DeweyDecimalClassification ddc where ddc.tipp = tipp and ddc.ddc.id in (:ddcs) ) "
-            qry_params.ddcs = Params.getLongList(params, 'ddcs')
+            qry_params.ddcs = Params.getLongList_forCommaSeparatedString(params, 'ddcs') // ?
             filterSet = true
         }
 
-        if (params.languages && params.languages != "" && params.list('languages')) {
+        if (params.languages) {
             base_qry += " and exists ( select lang.id from Language lang where lang.tipp = tipp and lang.language.id in (:languages) ) "
-            qry_params.languages = Params.getLongList(params, 'languages')
+            qry_params.languages = Params.getLongList_forCommaSeparatedString(params, 'languages')  // ?
             filterSet = true
         }
 
@@ -1394,9 +1393,9 @@ class FilterService {
             filterSet = true
         }
 
-        if (params.medium && params.medium != "" && listReaderWrapper(params, 'medium')) {
+        if (params.medium) {
             base_qry += " and tipp.medium.id in (:medium) "
-            qry_params.medium = listReaderWrapper(params, 'medium').collect { String key -> Long.parseLong(key) }
+            qry_params.medium = Params.getLongList_forCommaSeparatedString(params, 'medium')  // ?
             filterSet = true
         }
 
@@ -1424,6 +1423,8 @@ class FilterService {
      * @return the map containing the query and the prepared query parameters
      */
     Map<String,Object> getTippQuery(Map params, List<Package> pkgs) {
+        log.debug 'getTippQuery'
+
         Map<String, Object> result = [:]
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
@@ -1477,14 +1478,13 @@ class FilterService {
             qry_params.issueEntitlementStatus = params.issueEntitlementStatus
         }
 
-        if (params.list('status').findAll()) {
-            List<Long> status = Params.getLongList(params, 'status')
+        if (params.status) {
             if(qry_params.size() > 0){
                 base_qry += " and "
             }
 
             base_qry += " tipp.status.id in (:status) "
-            qry_params.status = status
+            qry_params.status = Params.getLongList(params, 'status')
 
         } else if (params.notStatus != '' && params.notStatus != null){
             if(qry_params.size() > 0){
@@ -1501,21 +1501,21 @@ class FilterService {
             qry_params.current = RDStore.TIPP_STATUS_CURRENT
         }
 
-        if (params.ddcs && params.ddcs != "" && listReaderWrapper(params, 'ddcs')) {
+        if (params.ddcs) {
             if(qry_params.size() > 0){
                 base_qry += " and "
             }
             base_qry += " exists ( select ddc.id from DeweyDecimalClassification ddc where ddc.tipp = tipp and ddc.ddc.id in (:ddcs) ) "
-            qry_params.ddcs = listReaderWrapper(params, 'ddcs').collect { String key -> Long.parseLong(key) }
+            qry_params.ddcs = Params.getLongList_forCommaSeparatedString(params, 'ddcs') // ?
             filterSet = true
         }
 
-        if (params.languages && params.languages != "" && listReaderWrapper(params, 'languages')) {
+        if (params.languages) {
             if(qry_params.size() > 0){
                 base_qry += " and "
             }
             base_qry += " exists ( select lang.id from Language lang where lang.tipp = tipp and lang.language.id in (:languages) ) "
-            qry_params.languages = listReaderWrapper(params, 'languages').collect { String key -> Long.parseLong(key) }
+            qry_params.languages = Params.getLongList_forCommaSeparatedString(params, 'languages') // ?
             filterSet = true
         }
 
@@ -1530,8 +1530,6 @@ class FilterService {
                     base_qry += 'or'
             }
             base_qry += ' ) '
-            /*base_qry += " and lower(tipp.subjectReference) in (select * from value (:subject_references))"
-            qry_params.subject_references = params.list('subject_references').collect { "%"+it.toLowerCase()+"%" }*/
             filterSet = true
         }
         if (params.series_names && params.series_names != "" && listReaderWrapper(params, 'series_names')) {
@@ -1625,12 +1623,12 @@ class FilterService {
             filterSet = true
         }
 
-        if (params.medium && params.medium != "" && listReaderWrapper(params, 'medium')) {
+        if (params.medium) {
             if(qry_params.size() > 0){
                 base_qry += " and "
             }
             base_qry += " tipp.medium.id in (:medium) "
-            qry_params.medium = listReaderWrapper(params, 'medium').collect { String key -> Long.parseLong(key) }
+            qry_params.medium = Params.getLongList_forCommaSeparatedString(params, 'medium') // ?
             filterSet = true
         }
 
