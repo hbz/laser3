@@ -2560,7 +2560,7 @@ class MyInstitutionController  {
             }
 
             if (params.process && result.editable) {
-                User userReplacement = (User) genericOIDService.resolveOID(params.userReplacement)
+                User userReplacement = User.get(params.userReplacement)
 
                 result.delResult = deletionService.deleteUser(result.user as User, userReplacement, false)
             }

@@ -1473,12 +1473,12 @@ class OrganisationController  {
             }
 
             if (params.process && result.editable) {
-                User userReplacement = (User) genericOIDService.resolveOID(params.userReplacement)
+                User userReplacement = User.get(params.userReplacement)
 
-                result.delResult = deletionService.deleteUser(result.user, userReplacement, false)
+                result.delResult = deletionService.deleteUser(result.user as User, userReplacement, false)
             }
             else {
-                result.delResult = deletionService.deleteUser(result.user, null, DeletionService.DRY_RUN)
+                result.delResult = deletionService.deleteUser(result.user as User, null, DeletionService.DRY_RUN)
             }
 
             result.substituteList = User.executeQuery(

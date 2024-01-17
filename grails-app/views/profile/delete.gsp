@@ -39,7 +39,7 @@
                             &nbsp;
                             <g:select id="userReplacement" name="userReplacement" class="ui dropdown selection la-not-clearable"
                                       from="${substituteList}"
-                                      optionKey="${{User.class.name + ':' + it.id}}"
+                                      optionKey="id"
                                       optionValue="${{'(' + it.username + ') ' + it.displayName}}" />
                         </div>
                     </g:if>
