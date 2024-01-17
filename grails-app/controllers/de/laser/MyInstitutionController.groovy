@@ -2560,7 +2560,7 @@ class MyInstitutionController  {
             }
 
             if (params.process && result.editable) {
-                User userReplacement = (User) genericOIDService.resolveOID(params.userReplacement)
+                User userReplacement = User.get(params.userReplacement)
 
                 result.delResult = deletionService.deleteUser(result.user as User, userReplacement, false)
             }
@@ -2882,12 +2882,12 @@ class MyInstitutionController  {
             params.taskStatus = RDStore.TASK_STATUS_OPEN.id as String
         }
         SimpleDateFormat sdFormat = DateUtils.getLocalizedSDF_noTime()
-        Map<String, Object> queryForFilter = filterService.getTaskQuery(params, sdFormat)
+        FilterService.Result fsr = filterService.getTaskQuery(params, sdFormat)
 
         SwissKnife.setPaginationParams(result, params, result.user as User)
 
-        List<Task> taskInstanceList     = taskService.getTasksByResponsibles(result.user as User, result.institution as Org, queryForFilter)
-        List<Task> myTaskInstanceList   = taskService.getTasksByCreator(result.user as User, queryForFilter)
+        List<Task> taskInstanceList     = taskService.getTasksByResponsibles(result.user as User, result.institution as Org, [query: fsr.query, queryParams: fsr.queryParams])
+        List<Task> myTaskInstanceList   = taskService.getTasksByCreator(result.user as User, [query: fsr.query, queryParams: fsr.queryParams])
 
         result.taskCount    = taskInstanceList.size()
         result.myTaskCount  = myTaskInstanceList.size()

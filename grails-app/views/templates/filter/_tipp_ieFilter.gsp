@@ -317,8 +317,7 @@
             <div class="field la-field-right-aligned">
                 <g:link controller="${controllerName}" action="${action}" id="${params.id}" params="[surveyConfigID: params.surveyConfigID, tab: params.tab, tabStat: params.tabStat]"
                    class="ui reset secondary button">${message(code: 'default.button.reset.label')}</g:link>
-                <input type="submit" class="ui primary button"
-                       value="${message(code: 'default.button.filter.label')}"/>
+                <input type="submit" class="ui primary button" value="${message(code: 'default.button.filter.label')}"/>
             </div>
     </g:form>
 </ui:filter>

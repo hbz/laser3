@@ -120,9 +120,9 @@ class ProfileController {
          // TODO : isLastAdminForOrg
 
         if (params.process) {
-            User userReplacement = (User) genericOIDService.resolveOID(params.userReplacement)
+            User userReplacement = User.get(params.userReplacement)
 
-            result.delResult = deletionService.deleteUser(result.user, userReplacement, false)
+            result.delResult = deletionService.deleteUser(result.user as User, userReplacement, false)
 
             if (result.delResult.status == DeletionService.RESULT_SUCCESS) {
                 redirect controller: 'logout', action: 'index'
@@ -130,7 +130,7 @@ class ProfileController {
             }
         }
         else {
-            result.delResult = deletionService.deleteUser(result.user, null, DeletionService.DRY_RUN)
+            result.delResult = deletionService.deleteUser(result.user as User, null, DeletionService.DRY_RUN)
         }
 
         result.substituteList = result.user.formalOrg ? User.executeQuery(
