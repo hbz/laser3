@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5531    19.01.2024  rc-3.3  3.3.5       David   Bug         Nutzer löschen: SystemAnnouncement
+
+5517    19.01.2024  rc-3.3  3.3.5       David   Bug         Filter "Erscheinungsjahr" @ "Meine dauerhaften Titel"
+
 5520    12.01.2024  rc-3.3  3.3.5       David   Bug         Vertrag anlegen als neuer Kundentyp
 
 5505    08.01.2024  rc-3.3  3.3.3       David   Feature     "Alle Konsortialstellen" liefert unvollständige Treffermenge
