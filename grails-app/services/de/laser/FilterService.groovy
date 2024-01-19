@@ -1359,7 +1359,7 @@ class FilterService {
 
         if(params.yearsFirstOnline) {
             base_qry += " and (Year(tipp.dateFirstOnline) in (:yearsFirstOnline)) "
-            qry_params.yearsFirstOnline = params.list('yearsFirstOnline').collect { Integer.parseInt(it) }
+            qry_params.yearsFirstOnline = Params.getLongList_forCommaSeparatedString(params, 'yearsFirstOnline').collect { Integer.parseInt(it.toString()) }
         }
 
         if (params.identifier) {
