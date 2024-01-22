@@ -6,6 +6,9 @@ import de.laser.auth.User
 import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyInfo
+import de.laser.survey.SurveyOrg
+import de.laser.survey.SurveyResult
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -29,6 +32,7 @@ class OrganisationControllerService {
     GokbService gokbService
     LinksGenerationService linksGenerationService
     MessageSource messageSource
+    SubscriptionsQueryService subscriptionsQueryService
     TaskService taskService
     WorkflowService workflowService
 
@@ -147,6 +151,114 @@ class OrganisationControllerService {
                 break
         }
         [result:result, status:STATUS_OK]
+    }
+
+    //--------------------------------------------- info -------------------------------------------------
+
+    /**
+     * Gets the workflows linked to the given organisation
+     * @param controller the controller instance
+     * @param params the request parameter map
+     * @return OK if the retrieval was successful, ERROR otherwise
+     */
+    Map<String,Object> info(OrganisationController controller, GrailsParameterMap params) {
+        Map<String, Object> result = getResultGenericsAndCheckAccess(controller, params)
+
+        Closure listToMap = { List<List> list ->
+            list.groupBy{ it[0] }.sort{ it -> RefdataValue.get(it.key).getI10n('value') }
+        }
+
+        Closure reduceMap = { Map map ->
+            map.collectEntries{ k,v -> [(k):(v.collect{ it[1] })] }
+        }
+
+        // subscriptions
+
+        Map<String, Object> subQueryParams = [org: result.orgInstance, actionName: 'manageMembers', status: 'FETCH_ALL']
+        def (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(subQueryParams)
+        println base_qry
+        println qry_params
+
+        List<List> subStruct = Subscription.executeQuery('select s.status.id, s.id, s.startDate, s.endDate, s.referenceYear ' + base_qry, qry_params)
+        result.subscriptionMap = reduceMap(listToMap(subStruct))
+        println 'subscriptionMap: ' + result.subscriptionMap
+
+        // providers
+
+        String providerQuery = '''select sub.status.id, por.org.id, sub.id, sub.startDate, sub.endDate, sub.referenceYear, sub.name from OrgRole por
+                                    join por.sub sub
+                                    where sub.id in (:subIdList)
+                                    and por.roleType in (:porTypes)
+                                    order by por.org.sortname, por.org.name, sub.name, sub.startDate, sub.endDate asc'''
+
+        Map providerParams = [
+                subIdList: subStruct.collect { it[1] },
+                porTypes : [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
+        ]
+
+        println providerQuery
+        println providerParams
+
+        List<List> providerStruct = Org.executeQuery(providerQuery, providerParams) /*.unique()*/
+        Map providerMap = listToMap(providerStruct)
+        result.providerMap = providerMap.collectEntries{ k,v -> [(k):(v.collect{ [ it[1], it[2] ] })] }
+
+        println 'providerMap: ' + result.providerMap
+
+        // licenses
+
+        Map licenseParams = [org: result.orgInstance, activeInst: contextService.getOrg(), roleTypeC: RDStore.OR_LICENSING_CONSORTIUM]
+        String licenseQuery = ''' from License as l where (
+                                        exists ( select o from l.orgRelations as o where ( o.roleType = :roleTypeC AND o.org = :activeInst ) )
+                                        AND l.instanceOf is not null
+                                        AND exists ( select orgR from OrgRole as orgR where orgR.lic = l and orgR.org = :org )
+                                    ) order by l.sortableReference, l.reference, l.startDate, l.endDate, l.instanceOf asc'''
+
+        List<List> licStruct = License.executeQuery('select l.status.id, l.id, l.startDate, l.endDate ' + licenseQuery, licenseParams)
+        result.licenseMap = reduceMap(listToMap(licStruct))
+        println 'licenseMap: ' + result.licenseMap
+
+        // surveys
+
+//        List<SurveyResult> psr = SurveyResult.findAllByParticipantAndOwner(result.orgInstance as Org, result.institution as Org)
+//        int countFinish = 0
+//        int countNotFinish = 0
+//
+//        List<List> surveyStruct = []
+//
+//        psr.each {sr ->
+//            if (sr.isResultProcessed()) {
+//                countFinish++
+//            } else {
+//                countNotFinish++
+//            }
+//
+//            surveyStruct.add( [sr.surveyConfig.surveyInfo.status.id, sr.id, sr.surveyConfig.id, sr.surveyConfig.surveyInfo.id] )
+//        }
+//
+//        Map surveyMap = listToMap(surveyStruct)
+//
+//        result.surveyMap = surveyMap.collectEntries{ k,v -> [(k):(v.collect{ [ it[1], it[3] ] })] }
+//        println 'surveyMap: ' + result.surveyMap
+//        result.surveyList = psr.surveyConfig.surveyInfo.unique()
+//        result.surveyCounts = [
+//                results: psr.size(),
+//                grouped: psr.groupBy { it.surveyConfig.id }.size(),
+//                finished: countFinish,
+//                notFinished: countNotFinish
+//        ]
+
+        List<SurveyInfo> surveyStruct =  SurveyInfo.executeQuery(
+                'select si.status.id, si.id, so.org, so.finishDate, sc.subscription.id from SurveyOrg so join so.surveyConfig sc join sc.surveyInfo si where so.org = :org order by si.name, si.startDate, si.endDate',
+                [org: result.orgInstance]
+        )
+
+        println surveyStruct
+        Map surveyMap = listToMap(surveyStruct)
+        result.surveyMap = surveyMap.collectEntries{ k,v -> [(k):(v.collect{ [ it[1], it[3], it[4] ] })] }
+        println 'surveyMap: ' + result.surveyMap
+
+        [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
     }
 
     //--------------------------------------------- workflows -------------------------------------------------
