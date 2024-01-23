@@ -40,8 +40,8 @@
                 <div class="label"> ${message(code:'default.provider.label')} (${message(code: 'subscription.plural.current')}) </div>
             </div>
             <div class="statistic">
-                <div class="value"> ?? </div>
-                <div class="label"> ${message(code:'survey.active')} </div>
+                <div class="value"> ${surveyMap.get(false).size()} </div>
+                <div class="label"> Offene Umfragen </div>
             </div>
             <div class="statistic"></div>
         </div>
@@ -181,9 +181,15 @@
                             <thead>
                             <tr>
                                 <th class="eleven wide">${message(code:'default.provider.label')}</th>
-                                <th class="one wide">${message(code:'subscription.referenceYear.label')}</th>
-                                <th class="two wide">${message(code:'subscription.startDate.label')}</th>
-                                <th class="two wide">${message(code:'subscription.endDate.label')}</th>
+                                <th class="one wide">
+                                    <span data-ctype="provider-subsciption" style="display:none;">${message(code:'subscription.referenceYear.label')}</span>
+                                </th>
+                                <th class="two wide">
+                                    <span data-ctype="provider-subsciption" style="display:none;">${message(code:'subscription.startDate.label')}</span>
+                                </th>
+                                <th class="two wide">
+                                    <span data-ctype="provider-subsciption" style="display:none;">${message(code:'subscription.endDate.label')}</span>
+                                </th>
                             </tr>
                             </thead>
                             <tbody>
@@ -234,7 +240,7 @@
                 <div class="ui secondary vertical pointing fluid la-tab-with-js menu">
                     <g:each in="${surveyMap}" var="isSurveyFinished,surveyData">
                         <a href="#" class="item ${isSurveyFinished ? '' : 'active'}" data-tab="survey-${isSurveyFinished}">
-                            ${isSurveyFinished ? 'Abgeschlossen':'Noch offen'} <span class="ui blue circular label">${surveyData.collect{it[0]}.unique().size()}</span>
+                            ${isSurveyFinished ? 'Abgeschlossen':'Offen'} <span class="ui blue circular label">${surveyData.collect{it[0]}.unique().size()}</span>
                         </a>
                     </g:each>
                 </div>
@@ -254,9 +260,21 @@
                             <tr>
                                 <th class="eight wide">${message(code:'survey.label')}</th>
                                 <th class="two wide">${message(code:'surveyInfo.type.label')}</th>
-                                <th class="two wide">Teilnahme</th>
-                                <th class="two wide">Status</th>
-                                <th class="two wide">${message(code:'default.endDate.label')}</th>
+                                <th class="two wide">
+                                    Teilnahme
+                                    <span data-ctype="survey-subsciption" style="display:none;">/</span>
+                                    <span data-ctype="survey-subsciption" style="display:none;">${message(code:'subscription.referenceYear.label')}</span>
+                                </th>
+                                <th class="two wide">
+                                    Status
+                                    <span data-ctype="survey-subsciption" style="display:none;">/</span>
+                                    <span data-ctype="survey-subsciption" style="display:none;">${message(code:'subscription.startDate.label')}</span>
+                                </th>
+                                <th class="two wide">
+                                    ${message(code:'default.endDate.label')}
+                                    <span data-ctype="survey-subsciption" style="display:none;">/</span>
+                                    <span data-ctype="survey-subsciption" style="display:none;">${message(code:'subscription.endDate.label')}</span>
+                                </th>
                             </tr>
                             </thead>
                             <tbody>
@@ -406,12 +424,12 @@
 
         $('#provider-toggle-subscriptions').checkbox({
             onChange: function() {
-                $('tr[data-ctype=provider-subsciption]').toggle()
+                $('table *[data-ctype=provider-subsciption]').toggle()
             }
         })
         $('#survey-toggle-subscriptions').checkbox({
             onChange: function() {
-                $('tr[data-ctype=survey-subsciption]').toggle()
+                $('table *[data-ctype=survey-subsciption]').toggle()
             }
         })
 %{--        $('#survey-toggle-finished').checkbox({--}%
