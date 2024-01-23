@@ -176,8 +176,8 @@ class OrganisationControllerService {
 
         Map<String, Object> subQueryParams = [org: result.orgInstance, actionName: 'manageMembers', status: 'FETCH_ALL']
         def (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(subQueryParams)
-        println base_qry
-        println qry_params
+//        println base_qry
+//        println qry_params
 
         List<List> subStruct = Subscription.executeQuery('select s.status.id, s.id, s.startDate, s.endDate, s.referenceYear ' + base_qry, qry_params)
         result.subscriptionMap = reduceMap(listToMap(subStruct))
@@ -196,8 +196,8 @@ class OrganisationControllerService {
                 porTypes : [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
         ]
 
-        println providerQuery
-        println providerParams
+//        println providerQuery
+//        println providerParams
 
         List<List> providerStruct = Org.executeQuery(providerQuery, providerParams) /*.unique()*/
         Map providerMap = listToMap(providerStruct)
@@ -249,13 +249,12 @@ class OrganisationControllerService {
 //        ]
 
         List<SurveyInfo> surveyStruct =  SurveyInfo.executeQuery(
-                'select si.status.id, si.id, so.org, so.finishDate, sc.subscription.id from SurveyOrg so join so.surveyConfig sc join sc.surveyInfo si where so.org = :org order by si.name, si.startDate, si.endDate',
+                'select so.finishDate != null, si.id, si.status.id, so.org.id, so.finishDate, sc.subscription.id from SurveyOrg so join so.surveyConfig sc join sc.surveyInfo si where so.org = :org order by si.name, si.startDate, si.endDate',
                 [org: result.orgInstance]
         )
 
-        println surveyStruct
-        Map surveyMap = listToMap(surveyStruct)
-        result.surveyMap = surveyMap.collectEntries{ k,v -> [(k):(v.collect{ [ it[1], it[3], it[4] ] })] }
+        Map surveyMap = surveyStruct.groupBy{ it[0] } // listToMap(surveyStruct)
+        result.surveyMap = surveyMap.collectEntries{ k,v -> [(k):(v.collect{ [ it[1], it[4], it[5] ] })] }
         println 'surveyMap: ' + result.surveyMap
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]

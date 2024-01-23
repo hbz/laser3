@@ -46,10 +46,8 @@
             <div class="statistic"></div>
         </div>
 
-
-
         <h3 class="ui right aligned header">
-            ${message(code:'subscription.plural')} &nbsp;&nbsp; <i class="icon circular clipboard" aria-hidden="true"></i>
+            ${message(code:'subscription.plural')} <i class="icon clipboard" aria-hidden="true"></i>
         </h3>
 
         <div class="ui grid">
@@ -71,10 +69,10 @@
                         <table class="ui table very compact">
                             <thead>
                                 <tr>
-                                    <th>${message(code:'subscription.label')}</th>
-                                    <th>${message(code:'subscription.referenceYear.label')}</th>
-                                    <th>${message(code:'subscription.startDate.label')}</th>
-                                    <th>${message(code:'subscription.endDate.label')}</th>
+                                    <th class="eleven wide">${message(code:'subscription.label')}</th>
+                                    <th class="one wide">${message(code:'subscription.referenceYear.label')}</th>
+                                    <th class="two wide">${message(code:'subscription.startDate.label')}</th>
+                                    <th class="two wide">${message(code:'subscription.endDate.label')}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -101,7 +99,7 @@
         </div>
 
         <h3 class="ui right aligned header">
-            ${message(code:'license.plural')} &nbsp;&nbsp; <i class="icon circular balance scale" aria-hidden="true"></i>
+            ${message(code:'license.plural')} <i class="icon balance scale" aria-hidden="true"></i>
         </h3>
 
         <div class="ui grid">
@@ -123,10 +121,10 @@
                         <table class="ui table very compact">
                             <thead>
                             <tr>
-                                <th>${message(code:'license.label')}</th>
-                                <th></th>
-                                <th>${message(code:'license.startDate.label')}</th>
-                                <th>${message(code:'license.endDate.label')}</th>
+                                <th class="eleven wide">${message(code:'license.label')}</th>
+                                <th class="one wide"></th>
+                                <th class="two wide">${message(code:'license.startDate.label')}</th>
+                                <th class="two wide">${message(code:'license.endDate.label')}</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -153,7 +151,7 @@
         </div>
 
         <h3 class="ui right aligned header">
-            ${message(code:'default.provider.label')} &nbsp;&nbsp; <i class="icon circular university" aria-hidden="true"></i>
+            ${message(code:'default.provider.label')} <i class="icon university" aria-hidden="true"></i>
         </h3>
 
         <div class="ui grid">
@@ -166,6 +164,13 @@
                         </a>
                     </g:each>
                 </div>
+
+                <div style="text-align: right">
+                    <span class="ui checkbox">
+                        <label for="provider-toggle-subscriptions">Lizenzen anzeigen</label>
+                        <input type="checkbox" id="provider-toggle-subscriptions">
+                    </span>
+                </div>
             </div>
             <div class="twelve wide stretched column">
                 <g:each in="${providerMap}" var="subStatus,provList">
@@ -175,10 +180,10 @@
                         <table class="ui table very compact">
                             <thead>
                             <tr>
-                                <th>${message(code:'default.provider.label')} / ${message(code:'subscription.label')}</th>
-                                <th>${message(code:'subscription.referenceYear.label')}</th>
-                                <th>${message(code:'subscription.startDate.label')}</th>
-                                <th>${message(code:'subscription.endDate.label')}</th>
+                                <th class="eleven wide">${message(code:'default.provider.label')}</th>
+                                <th class="one wide">${message(code:'subscription.referenceYear.label')}</th>
+                                <th class="two wide">${message(code:'subscription.startDate.label')}</th>
+                                <th class="two wide">${message(code:'subscription.endDate.label')}</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -197,7 +202,7 @@
                                         <g:each in="${provList}" var="provStruct">
                                             <g:if test="${provId == provStruct[0]}">
                                                 <g:set var="sub" value="${Subscription.get(provStruct[1])}" />
-                                                <tr>
+                                                <tr data-ctype="provider-subsciption" style="display:none;">
                                                     <td style="padding-left:2rem;">
                                                         <div class="la-flexbox la-minor-object">
                                                             <i class="icon clipboard la-list-icon"></i>
@@ -221,71 +226,81 @@
         </div>
 
         <h3 class="ui right aligned header">
-            ${message(code:'survey.plural')} &nbsp;&nbsp; <i class="icon circular pie chart" aria-hidden="true"></i>
+            ${message(code:'survey.plural')} <i class="icon pie chart" aria-hidden="true"></i>
         </h3>
 
         <div class="ui grid">
             <div class="four wide column">
                 <div class="ui secondary vertical pointing fluid la-tab-with-js menu">
-                    <g:each in="${surveyMap}" var="surveyStatus,surveyData">
-                        <g:set var="surveyStatusRdv" value="${RefdataValue.get(surveyStatus)}" />
-                        <a href="#" class="item ${surveyStatusRdv == RDStore.SURVEY_IN_EVALUATION? 'active' : ''}" data-tab="survey-${surveyStatusRdv.id}">
-                            ${surveyStatusRdv.getI10n('value')} <span class="ui blue circular label">${surveyData.collect{it[0]}.unique().size()}</span>
+                    <g:each in="${surveyMap}" var="isSurveyFinished,surveyData">
+                        <a href="#" class="item ${isSurveyFinished ? '' : 'active'}" data-tab="survey-${isSurveyFinished}">
+                            ${isSurveyFinished ? 'Abgeschlossen':'Noch offen'} <span class="ui blue circular label">${surveyData.collect{it[0]}.unique().size()}</span>
                         </a>
                     </g:each>
                 </div>
+                <div style="text-align: right">
+                    <span class="ui checkbox">
+                        <label for="survey-toggle-subscriptions">Lizenzen anzeigen</label>
+                        <input type="checkbox" id="survey-toggle-subscriptions">
+                    </span>
+                </div>
             </div>
             <div class="twelve wide stretched column">
-                <g:each in="${surveyMap}" var="surveyStatus,surveyData">
-                    <g:set var="surveyStatusRdv" value="${RefdataValue.get(surveyStatus)}" />
-                    <div class="ui tab right attached segment ${surveyStatusRdv == RDStore.SURVEY_IN_EVALUATION ? 'active' : ''}" data-tab="survey-${surveyStatusRdv.id}">
+                <g:each in="${surveyMap}" var="isSurveyFinished,surveyData">
+                    <div class="ui tab right attached segment ${isSurveyFinished ? '' : 'active'}" data-tab="survey-${isSurveyFinished}">
 
                         <table class="ui table very compact">
                             <thead>
                             <tr>
-                                <th>${message(code:'survey.label')} / ${message(code:'subscription.label')}</th>
-                                <th>${message(code:'surveyInfo.type.label')}</th>
-                                <th>Abgeschickt</th>
-                                <th>${message(code:'default.startDate.label')}</th>
-                                <th>${message(code:'default.endDate.label')}</th>
+                                <th class="eight wide">${message(code:'survey.label')}</th>
+                                <th class="two wide">${message(code:'surveyInfo.type.label')}</th>
+                                <th class="two wide">Teilnahme</th>
+                                <th class="two wide">Status</th>
+                                <th class="two wide">${message(code:'default.endDate.label')}</th>
                             </tr>
                             </thead>
                             <tbody>
-                                <g:each in="${surveyData}" var="surveyStruct">
-                                    <g:set var="surveyInfo" value="${SurveyInfo.get(surveyStruct[0])}" />
-                                    <tr>
-                                        <td>
+                            <g:each in="${surveyData}" var="surveyStruct">
+                                <g:set var="surveyInfo" value="${SurveyInfo.get(surveyStruct[0])}" />
+                                <tr data-ctype="${surveyStruct[1] ? 'survey-finished' : 'survey-not-finished'}">
+                                    <td>
+                                        <div class="la-flexbox la-minor-object">
+                                            <i class="icon pie chart la-list-icon"></i>
+                                            <g:link controller="survey" action="show" id="${surveyInfo.id}">${surveyInfo.name}</g:link>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="ui label survey-${surveyInfo.type.value}">${surveyInfo.type.getI10n('value')}</span>
+                                    </td>
+                                    <td>
+                                        <g:if test="${surveyStruct[1]}">
+                                            <g:formatDate formatName="default.date.format.notime" date="${surveyStruct[1]}"/>
+                                        </g:if>
+                                    </td>
+                                    <td>
+                                        ${surveyInfo.status.getI10n('value')}
+                                    </td>
+                                    <td>
+                                        <g:formatDate formatName="default.date.format.notime" date="${surveyInfo.endDate}"/>
+                                    </td>
+                                </tr>
+
+                                <g:if test="${surveyStruct[2]}">
+                                    <g:set var="sub" value="${Subscription.get(surveyStruct[2])}" />
+                                    <tr data-ctype="survey-subsciption" style="display:none;">
+                                        <td style="padding-left:2rem;">
                                             <div class="la-flexbox la-minor-object">
-                                                <i class="icon pie chart la-list-icon"></i>
-                                                <g:link controller="survey" action="show" id="${surveyInfo.id}">${surveyInfo.name}</g:link>
+                                                <i class="icon clipboard la-list-icon"></i>
+                                                <g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link>
                                             </div>
                                         </td>
-                                        <td> ${surveyInfo.type.getI10n('value')} </td>
-                                        <td>
-                                            <g:if test="${surveyStruct[1]}">
-                                                <g:formatDate formatName="default.date.format.notime" date="${surveyStruct[1]}"/>
-                                            </g:if>
-                                        </td>
-                                        <td> <g:formatDate formatName="default.date.format.notime" date="${surveyInfo.startDate}"/> </td>
-                                        <td> <g:formatDate formatName="default.date.format.notime" date="${surveyInfo.endDate}"/> </td>
+                                        <td></td>
+                                        <td> ${sub.referenceYear} </td>
+                                        <td> <g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/> </td>
+                                        <td> <g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/> </td>
                                     </tr>
-
-                                    <g:if test="${surveyStruct[2]}">
-                                        <g:set var="sub" value="${Subscription.get(surveyStruct[2])}" />
-                                        <tr>
-                                            <td style="padding-left:2rem;">
-                                                <div class="la-flexbox la-minor-object">
-                                                    <i class="icon clipboard la-list-icon"></i>
-                                                    <g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link>
-                                                </div>
-                                            </td>
-                                            <td></td>
-                                            <td> ${sub.referenceYear} </td>
-                                            <td> <g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/> </td>
-                                            <td> <g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/> </td>
-                                        </tr>
-                                    </g:if>
-                                </g:each>
+                                </g:if>
+                            </g:each>
                             </tbody>
                         </table>
                     </div>
@@ -293,7 +308,122 @@
             </div>
         </div>
 
-<laser:script file="${this.getGroovyPageFileName()}">
-</laser:script>
+%{--        <div class="ui grid">--}%
+%{--            <div class="four wide column">--}%
+%{--                <div class="ui secondary vertical pointing fluid la-tab-with-js menu">--}%
+%{--                    <g:each in="${surveyMap}" var="surveyStatus,surveyData">--}%
+%{--                        <g:set var="surveyStatusRdv" value="${RefdataValue.get(surveyStatus)}" />--}%
+%{--                        <a href="#" class="item ${surveyStatusRdv == RDStore.SURVEY_IN_EVALUATION? 'active' : ''}" data-tab="survey-${surveyStatusRdv.id}">--}%
+%{--                            ${surveyStatusRdv.getI10n('value')} <span class="ui blue circular label">${surveyData.collect{it[0]}.unique().size()}</span>--}%
+%{--                        </a>--}%
+%{--                    </g:each>--}%
+%{--                </div>--}%
+%{--                <div style="text-align: right">--}%
+%{--                    <span class="ui checkbox">--}%
+%{--                        <label for="survey-toggle-subscriptions">Lizenzen anzeigen</label>--}%
+%{--                        <input type="checkbox" id="survey-toggle-subscriptions">--}%
+%{--                    </span>--}%
+%{--                </div>--}%
+%{--                <div style="text-align: right">--}%
+%{--                    <span class="ui checkbox">--}%
+%{--                        <label for="survey-toggle-finished">Teilnahme erfolgt</label>--}%
+%{--                        <input type="checkbox" id="survey-toggle-finished">--}%
+%{--                    </span>--}%
+%{--                </div>--}%
+%{--                <div style="text-align: right">--}%
+%{--                    <span class="ui checkbox">--}%
+%{--                        <label for="survey-toggle-not-finished">Teilname offen</label>--}%
+%{--                        <input type="checkbox" id="survey-toggle-not-finished">--}%
+%{--                    </span>--}%
+%{--                </div>--}%
+%{--            </div>--}%
+%{--            <div class="twelve wide stretched column">--}%
+%{--                <g:each in="${surveyMap}" var="surveyStatus,surveyData">--}%
+%{--                    <g:set var="surveyStatusRdv" value="${RefdataValue.get(surveyStatus)}" />--}%
+%{--                    <div class="ui tab right attached segment ${surveyStatusRdv == RDStore.SURVEY_IN_EVALUATION ? 'active' : ''}" data-tab="survey-${surveyStatusRdv.id}">--}%
+
+%{--                        <table class="ui table very compact">--}%
+%{--                            <thead>--}%
+%{--                            <tr>--}%
+%{--                                <th class="eight wide">${message(code:'survey.label')}</th>--}%
+%{--                                <th class="three wide">${message(code:'surveyInfo.type.label')}</th>--}%
+%{--                                <th class="one wide">Teilnahme</th>--}%
+%{--                                <th class="two wide">${message(code:'default.startDate.label')}</th>--}%
+%{--                                <th class="two wide">${message(code:'default.endDate.label')}</th>--}%
+%{--                            </tr>--}%
+%{--                            </thead>--}%
+%{--                            <tbody>--}%
+%{--                                <g:each in="${surveyData}" var="surveyStruct">--}%
+%{--                                    <g:set var="surveyInfo" value="${SurveyInfo.get(surveyStruct[0])}" />--}%
+%{--                                    <tr data-ctype="${surveyStruct[1] ? 'survey-finished' : 'survey-not-finished'}">--}%
+%{--                                        <td>--}%
+%{--                                            <div class="la-flexbox la-minor-object">--}%
+%{--                                                <i class="icon pie chart la-list-icon"></i>--}%
+%{--                                                <g:link controller="survey" action="show" id="${surveyInfo.id}">${surveyInfo.name}</g:link>--}%
+%{--                                            </div>--}%
+%{--                                        </td>--}%
+%{--                                        <td> ${surveyInfo.type.getI10n('value')} </td>--}%
+%{--                                        <td>--}%
+%{--                                            <g:if test="${surveyStruct[1]}">--}%
+%{--                                                <g:formatDate formatName="default.date.format.notime" date="${surveyStruct[1]}"/>--}%
+%{--                                            </g:if>--}%
+%{--                                        </td>--}%
+%{--                                        <td> <g:formatDate formatName="default.date.format.notime" date="${surveyInfo.startDate}"/> </td>--}%
+%{--                                        <td> <g:formatDate formatName="default.date.format.notime" date="${surveyInfo.endDate}"/> </td>--}%
+%{--                                    </tr>--}%
+
+%{--                                    <g:if test="${surveyStruct[2]}">--}%
+%{--                                        <g:set var="sub" value="${Subscription.get(surveyStruct[2])}" />--}%
+%{--                                        <tr data-ctype="survey-subsciption" style="display:none;">--}%
+%{--                                            <td style="padding-left:2rem;">--}%
+%{--                                                <div class="la-flexbox la-minor-object">--}%
+%{--                                                    <i class="icon clipboard la-list-icon"></i>--}%
+%{--                                                    <g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link>--}%
+%{--                                                </div>--}%
+%{--                                            </td>--}%
+%{--                                            <td></td>--}%
+%{--                                            <td> ${sub.referenceYear} </td>--}%
+%{--                                            <td> <g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/> </td>--}%
+%{--                                            <td> <g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/> </td>--}%
+%{--                                        </tr>--}%
+%{--                                    </g:if>--}%
+%{--                                </g:each>--}%
+%{--                            </tbody>--}%
+%{--                        </table>--}%
+%{--                    </div>--}%
+%{--                </g:each>--}%
+%{--            </div>--}%
+%{--        </div>--}%
+
+
+    <style>
+        h3.header > i.icon {
+            vertical-align: baseline !important;
+        }
+    </style>
+
+    <laser:script file="${this.getGroovyPageFileName()}">
+
+        $('#provider-toggle-subscriptions').checkbox({
+            onChange: function() {
+                $('tr[data-ctype=provider-subsciption]').toggle()
+            }
+        })
+        $('#survey-toggle-subscriptions').checkbox({
+            onChange: function() {
+                $('tr[data-ctype=survey-subsciption]').toggle()
+            }
+        })
+%{--        $('#survey-toggle-finished').checkbox({--}%
+%{--            onChange: function() {--}%
+%{--                $('tr[data-ctype=survey-finished]').toggle()--}%
+%{--            }--}%
+%{--        })--}%
+%{--        $('#survey-toggle-not-finished').checkbox({--}%
+%{--            onChange: function() {--}%
+%{--                $('tr[data-ctype=survey-not-finished]').toggle()--}%
+%{--            }--}%
+%{--        })--}%
+    </laser:script>
 
 <laser:htmlEnd />

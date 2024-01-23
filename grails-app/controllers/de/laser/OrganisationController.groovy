@@ -1069,11 +1069,11 @@ class OrganisationController  {
     def info() {
         Map<String,Object> ctrlResult = organisationControllerService.info(this, params)
 
-        Map<String,Object> result = ctrlResult.result
+        Map<String,Object> result = ctrlResult.result as Map<String, Object>
         if (!result) {
             response.sendError(401); return
         }
-        if (!result.orgInstance.isCustomerType_Inst()) {
+        if (! (contextService.getOrg().isCustomerType_Consortium() && result.orgInstance.isCustomerType_Inst())) {
             response.sendError(401); return
         }
         result
