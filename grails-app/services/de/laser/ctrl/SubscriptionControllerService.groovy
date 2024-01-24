@@ -120,36 +120,9 @@ class SubscriptionControllerService {
                 result.institutional_usage_identifier = OrgSetting.get(result.institution, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
             }
             prf.setBenchmark('packages')
-            // ---- pendingChanges : start
+
             result.pendingChangeConfigSettings = RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)
-            /*if (executorWrapperService.hasRunningProcess(result.subscription)) {
-                log.debug("PendingChange processing in progress")
-                result.processingpc = true
-            }
-            else {
-                //pc.msgParams null check is the legacy check; new pending changes should NOT be displayed here but on dashboard and only there!
-                List<PendingChange> pendingChanges = PendingChange.executeQuery(
-                        "select pc from PendingChange as pc where subscription = :sub and ( pc.status is null or pc.status = :status ) and pc.msgParams is not null order by pc.ts desc",
-                        [sub: result.subscription, status: RDStore.PENDING_CHANGE_PENDING]
-                )
-                log.debug("pc result is ${result.pendingChanges}")
-                if (result.subscription.isSlaved && ! pendingChanges.isEmpty()) {
-                    log.debug("Slaved subscription, auto-accept pending changes")
-                    List changesDesc = []
-                    pendingChanges.each { change ->
-                        if (!pendingChangeService.performAccept(change)) {
-                            log.debug("Auto-accepting pending change has failed.")
-                        } else {
-                            changesDesc.add(change.desc)
-                        }
-                    }
-                    //ERMS-1844 Hotfix: Änderungsmitteilungen ausblenden
-                    //result.message = changesDesc
-                } else {
-                    result.pendingChanges = pendingChanges
-                }
-            }*/
-            // ---- pendingChanges : end
+
             prf.setBenchmark('tasks')
             // TODO: experimental asynchronous task
             //def task_tasks = task {
@@ -244,27 +217,7 @@ class SubscriptionControllerService {
                         }
                     } else
                         log.info('institutional usage identifier not available')
-                }/*
-                if(SpringSecurityUtils.ifAnyGranted("ROLE_YODA")) {
-                    result.tokens = []
-                    Org requestee = result.subscription.getSubscriber()
-                    def pw = OrgSetting.get(result.institution, OrgSetting.KEYS.LASERSTAT_SERVER_KEY)
-                    if(pw == OrgSetting.SETTING_NOT_FOUND) {
-                        pw = OrgSetting.add(result.institution, OrgSetting.KEYS.LASERSTAT_SERVER_KEY, org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric(24))
-                    }
-                    SecretKeySpec secret = new SecretKeySpec(pw.getValue().getBytes(), "HmacSHA256")
-                    Mac mac = Mac.getInstance("HmacSHA256")
-                    mac.init(secret)
-                    Set<String> platforms = Platform.executeQuery('select plat.globalUID from IssueEntitlement ie join ie.tipp tipp join tipp.platform plat where ie.subscription = :subscription',[subscription: result.subscription])
-                    platforms.each { String platformGlobalUID ->
-                        String data = "requestor=${result.institution.globalUID}&customer=${requestee.globalUID}&platform=${platformGlobalUID}"
-                        byte[] rawHmac = mac.doFinal(data.getBytes())
-                        result.tokens << rawHmac.encodeHex()
-                        result.requestData = data
-                    }
-                    if(result.tokens.size() > 0)
-                        result.subStats = true //development only
-                }*/
+                }
             }
             //}
             prf.setBenchmark('costs')
@@ -1727,7 +1680,7 @@ class SubscriptionControllerService {
 
                 List<Long> sourceIEs = []
                 if (params.tab == 'allTipps') {
-                    params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                    params.status = [RDStore.TIPP_STATUS_CURRENT.id]
                     params.sort = params.sort ?: 'tipp.sortname'
                     params.order = params.order ?: 'asc'
                     Map<String, Object> query = filterService.getTippQuery(params, baseSub.packages.pkg)
@@ -1774,23 +1727,23 @@ class SubscriptionControllerService {
                         if(params.subTab){
                             if(params.subTab == 'currentIEs'){
                                 params.currentIEs = 'currentIEs'
-                                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                                params.status = [RDStore.TIPP_STATUS_CURRENT.id]
                             }else if(params.subTab == 'plannedIEs'){
                                 params.plannedIEs = 'plannedIEs'
-                                params.status = [RDStore.TIPP_STATUS_EXPECTED.id.toString()]
+                                params.status = [RDStore.TIPP_STATUS_EXPECTED.id]
                             }else if(params.subTab == 'expiredIEs'){
                                 params.expiredIEs = 'expiredIEs'
-                                params.status = [RDStore.TIPP_STATUS_RETIRED.id.toString()]
+                                params.status = [RDStore.TIPP_STATUS_RETIRED.id]
                             }else if(params.subTab == 'deletedIEs'){
                                 params.deletedIEs = 'deletedIEs'
-                                params.status = [RDStore.TIPP_STATUS_DELETED.id.toString()]
+                                params.status = [RDStore.TIPP_STATUS_DELETED.id]
                             }else if(params.subTab == 'allIEs'){
                                 params.allIEs = 'allIEs'
-                                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_EXPECTED.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString(), RDStore.TIPP_STATUS_DELETED.id.toString()]
+                                params.status = [RDStore.TIPP_STATUS_CURRENT.id, RDStore.TIPP_STATUS_EXPECTED.id, RDStore.TIPP_STATUS_RETIRED.id, RDStore.TIPP_STATUS_DELETED.id]
                             }
                         } else{
                                 params.currentIEs = 'currentIEs'
-                                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                                params.status = [RDStore.TIPP_STATUS_CURRENT.id]
                         }
                         result.listOfStatus = Params.getRefdataList(params, 'status')
 
@@ -1851,7 +1804,7 @@ class SubscriptionControllerService {
                     GrailsParameterMap parameterMap = params.clone()
                     Map query = [:]
                     if (subscriptions) {
-                        parameterMap.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                        parameterMap.status = [RDStore.TIPP_STATUS_CURRENT.id]
                         parameterMap.hasPerpetualAccess = RDStore.YN_YES.id.toString()
                         query = filterService.getIssueEntitlementQuery(parameterMap, subscriptions)
                         //List<Long> previousIes = previousSubscription ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
@@ -1939,37 +1892,6 @@ class SubscriptionControllerService {
             } else {
                 log.debug("Subscription has no linked packages yet")
             }
-            /*result.max = params.max ? params.int('max') : result.user.getPageSizeOrDefault()
-            List gokbRecords = []
-            ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true).each { ApiSource api ->
-                gokbRecords << gokbService.getPackagesMap(api, params.q, false).records
-            }
-            result.sort = params.sort ?: 'name'
-            result.order = params.order ?: 'asc'
-            result.records = null
-            if(gokbRecords) {
-                Map filteredMap = [:]
-                gokbRecords.each { apiRes ->
-                    apiRes.each { rec ->
-                        filteredMap[rec.uuid] = rec
-                    }
-                }
-                result.records = filteredMap.values().toList().flatten()
-            }
-            if(result.records) {
-                result.records.sort { x, y ->
-                    if (result.order == 'desc') {
-                        y."${result.sort}".toString().compareToIgnoreCase x."${result.sort}".toString()
-                    } else {
-                        x."${result.sort}".toString().compareToIgnoreCase y."${result.sort}".toString()
-                    }
-                }
-                result.resultsTotal = result.records.size()
-                Integer start = params.offset ? params.int('offset') : 0
-                Integer end = params.offset ? result.max + params.int('offset') : result.max
-                end = (end > result.records.size()) ? result.records.size() : end
-                result.hits = result.records.subList(start, end)
-            }*/
 
             ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
 
@@ -1996,17 +1918,14 @@ class SubscriptionControllerService {
                 result.filterSet = true
                 queryParams.provider = params.provider
             }
-
             if(params.curatoryGroup) {
                 result.filterSet = true
                 queryParams.curatoryGroupExact = params.curatoryGroup
             }
-
             if(params.resourceTyp) {
                 result.filterSet = true
                 queryParams.contentType = params.resourceTyp
             }
-
             if (params.ddc) {
                 result.filterSet = true
                 params.list("ddc").each { String key ->
@@ -2057,7 +1976,6 @@ class SubscriptionControllerService {
                     }
                 }
             }
-
         }
     }
 
@@ -2249,12 +2167,8 @@ class SubscriptionControllerService {
             }
             result.issueEntitlementEnrichment = params.issueEntitlementEnrichment
             SwissKnife.setPaginationParams(result, params, (User) result.user)
-           /* List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where subscription = :sub and ( pc.status is null or pc.status = :status ) order by ts desc",
-                    [sub: result.subscription, status: RDStore.PENDING_CHANGE_PENDING])
-            result.pendingChanges = pendingChanges*/
 
-
-            //params.status = params.status ?: (result.subscription.hasPerpetualAccess ? [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString()] : [RDStore.TIPP_STATUS_CURRENT.id.toString()])
+            //params.status = params.status ?: (result.subscription.hasPerpetualAccess ? [RDStore.TIPP_STATUS_CURRENT.id, RDStore.TIPP_STATUS_RETIRED.id] : [RDStore.TIPP_STATUS_CURRENT.id])
 
             Map ttParams = FilterLogic.resolveTabAndStatusForTitleTabsMenu(params, 'IEs')
             if (ttParams.status) { params.status = ttParams.status }

@@ -1093,17 +1093,17 @@ class FilterService {
             qry_params.current = RDStore.TIPP_STATUS_CURRENT
         }
 
-        if (params.pkgfilter && (params.pkgfilter != '')) {
+        if (params.pkgfilter) {
             base_qry += " and tipp.pkg.id = :pkgId "
-            qry_params.pkgId = Long.parseLong(params.pkgfilter)
+            qry_params.pkgId = params.long('pkgfilter')
             filterSet = true
         }
-        if (params.titleGroup && (params.titleGroup != '') && !params.forCount) {
+        if (params.titleGroup && !params.forCount) {
             if(params.titleGroup == 'notInGroups'){
                 base_qry += " and not exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ie = ie) "
             }else {
                 base_qry += " and exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ieGroup.id = :titleGroup and iegi.ie = ie) "
-                qry_params.titleGroup = Long.parseLong(params.titleGroup)
+                qry_params.titleGroup = params.long('titleGroup')
             }
         }
 
@@ -1423,7 +1423,7 @@ class FilterService {
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
         if(pkgs){
-            qry_parts < " tipp.pkg in (:pkgs) "
+            qry_parts << " tipp.pkg in (:pkgs) "
             qry_params.pkgs = pkgs
         }
 
