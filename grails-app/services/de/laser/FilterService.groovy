@@ -516,16 +516,14 @@ class FilterService {
         }
 
         if (params.validOnYear) {
-            if (params.validOnYear && params.validOnYear != "" && params.list('validOnYear')) {
                 if('all' in params.list('validOnYear')) {
                     params.filterSet = true
                     params.validOnYear = ['all']
                 }else{
                     query += " and Year(surInfo.startDate) in (:validOnYear) "
-                    queryParams << [validOnYear : params.list('validOnYear').collect { Integer.parseInt(it) }]
+                    queryParams << [validOnYear : Params.getLongList(params, 'validOnYear').collect{ Integer.valueOf(it.toString()) }]
                     params.filterSet = true
                 }
-            }
         }
 
         if(params.name) {
@@ -683,16 +681,14 @@ class FilterService {
         }
 
         if (params.validOnYear) {
-            if (params.validOnYear && params.validOnYear != "" && params.list('validOnYear')) {
                 if('all' in params.list('validOnYear')) {
                     params.filterSet = true
                     params.validOnYear = ['all']
                 }else{
                     query += " Year(surInfo.startDate) in (:validOnYear) "
-                    queryParams << [validOnYear : params.list('validOnYear').collect { Integer.parseInt(it) }]
+                    queryParams << [validOnYear : Params.getLongList(params, 'validOnYear').collect{ Integer.valueOf(it.toString()) }]
                     params.filterSet = true
                 }
-            }
         }
 
         if(params.name) {
@@ -744,7 +740,6 @@ class FilterService {
         }
 
         if (params.currentDate) {
-
             params.currentDate = (params.currentDate instanceof Date) ? params.currentDate : sdFormat.parse(params.currentDate)
 
             query << "surInfo.startDate <= :startDate and (surInfo.endDate >= :endDate or surInfo.endDate is null)"
@@ -754,18 +749,15 @@ class FilterService {
 
             query << "surInfo.status = :status"
             queryParams << [status: RDStore.SURVEY_SURVEY_STARTED]
-
         }
 
         if (params.startDate && sdFormat && !params.currentDate) {
-
             params.startDate = (params.startDate instanceof Date) ? params.startDate : sdFormat.parse(params.startDate)
 
             query << "surInfo.startDate >= :startDate"
             queryParams << [startDate : params.startDate]
         }
         if (params.endDate && sdFormat && !params.currentDate) {
-
             params.endDate = params.endDate instanceof Date ? params.endDate : sdFormat.parse(params.endDate)
 
             query << "(surInfo.endDate <= :endDate or surInfo.endDate is null)"
@@ -819,7 +811,6 @@ class FilterService {
             query << "surInfo.owner = :owner"
             queryParams << [owner: params.consortiaOrg]
         }
-
 
         String defaultOrder = " order by " + (params.sort ?: " surInfo.endDate ASC, LOWER(surInfo.name) ") + " " + (params.order ?: "asc")
 
@@ -1102,17 +1093,17 @@ class FilterService {
             qry_params.current = RDStore.TIPP_STATUS_CURRENT
         }
 
-        if (params.pkgfilter && (params.pkgfilter != '')) {
+        if (params.pkgfilter) {
             base_qry += " and tipp.pkg.id = :pkgId "
-            qry_params.pkgId = Long.parseLong(params.pkgfilter)
+            qry_params.pkgId = params.long('pkgfilter')
             filterSet = true
         }
-        if (params.titleGroup && (params.titleGroup != '') && !params.forCount) {
+        if (params.titleGroup && !params.forCount) {
             if(params.titleGroup == 'notInGroups'){
                 base_qry += " and not exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ie = ie) "
             }else {
                 base_qry += " and exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ieGroup.id = :titleGroup and iegi.ie = ie) "
-                qry_params.titleGroup = Long.parseLong(params.titleGroup)
+                qry_params.titleGroup = params.long('titleGroup')
             }
         }
 
@@ -1173,7 +1164,7 @@ class FilterService {
 
         if(params.yearsFirstOnline) {
             base_qry += " and (Year(tipp.dateFirstOnline) in (:yearsFirstOnline)) "
-            qry_params.yearsFirstOnline = listReaderWrapper(params, 'yearsFirstOnline').collect { Integer.parseInt(it) }
+            qry_params.yearsFirstOnline = Params.getLongList_forCommaSeparatedString(params, 'yearsFirstOnline').collect { Integer.valueOf(it.toString()) }
         }
 
         if (params.identifier) {
@@ -1370,7 +1361,7 @@ class FilterService {
         // todo: ERMS-5517 > multiple values @ currentPermanentTitles
         if(params.yearsFirstOnline) {
             base_qry += " and (Year(tipp.dateFirstOnline) in (:yearsFirstOnline)) "
-            qry_params.yearsFirstOnline = params.list('yearsFirstOnline').collect { Integer.parseInt(it) }
+            qry_params.yearsFirstOnline = Params.getLongList_forCommaSeparatedString(params, 'yearsFirstOnline').collect { Integer.valueOf(it.toString()) }
         }
 
         if (params.identifier) {
@@ -1432,7 +1423,7 @@ class FilterService {
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
         if(pkgs){
-            qry_parts < " tipp.pkg in (:pkgs) "
+            qry_parts << " tipp.pkg in (:pkgs) "
             qry_params.pkgs = pkgs
         }
 
@@ -1537,7 +1528,7 @@ class FilterService {
 
         if(params.yearsFirstOnline) {
             qry_parts << " (Year(tipp.dateFirstOnline) in (:yearsFirstOnline)) "
-            qry_params.yearsFirstOnline = listReaderWrapper(params, 'yearsFirstOnline').collect { it instanceof String ? Integer.parseInt(it) : it }
+            qry_params.yearsFirstOnline = Params.getLongList_forCommaSeparatedString(params, 'yearsFirstOnline').collect { Integer.valueOf(it.toString()) }
             filterSet = true
         }
 

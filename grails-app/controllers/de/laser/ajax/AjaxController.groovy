@@ -474,7 +474,7 @@ class AjaxController {
               Subscription baseSub = Subscription.get(params.baseSubID)
 
               if(params.tab == 'allTipps') {
-                  params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                  params.status = [RDStore.TIPP_STATUS_CURRENT.id]
                   Map<String, Object> query = filterService.getTippQuery(params, baseSub.packages.pkg)
                   List<Long> titleIDList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
 
@@ -490,22 +490,22 @@ class AjaxController {
                   if(issueEntitlementGroup) {
                       if(params.subTab){
                           if(params.subTab == 'currentIEs'){
-                              params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                              params.status = [RDStore.TIPP_STATUS_CURRENT.id]
                           }else if(params.subTab == 'plannedIEs'){
-                              params.status = [RDStore.TIPP_STATUS_EXPECTED.id.toString()]
+                              params.status = [RDStore.TIPP_STATUS_EXPECTED.id]
                           }else if(params.subTab == 'expiredIEs'){
-                              params.status = [RDStore.TIPP_STATUS_RETIRED.id.toString()]
+                              params.status = [RDStore.TIPP_STATUS_RETIRED.id]
                           }else if(params.subTab == 'deletedIEs'){
-                              params.status = [RDStore.TIPP_STATUS_DELETED.id.toString()]
+                              params.status = [RDStore.TIPP_STATUS_DELETED.id]
                           }else if(params.subTab == 'allIEs'){
-                              params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_EXPECTED.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString(), RDStore.TIPP_STATUS_DELETED.id.toString()]
+                              params.status = [RDStore.TIPP_STATUS_CURRENT.id, RDStore.TIPP_STATUS_EXPECTED.id, RDStore.TIPP_STATUS_RETIRED.id, RDStore.TIPP_STATUS_DELETED.id]
                           }
                       } else{
                           params.currentIEs = 'currentIEs'
-                          params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                          params.status = [RDStore.TIPP_STATUS_CURRENT.id]
                       }
 
-                      params.titleGroup = issueEntitlementGroup.id.toString()
+                      params.titleGroup = issueEntitlementGroup.id
                       Map query = filterService.getIssueEntitlementQuery(params, subscriberSub)
                       List<Long> ieIDList = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
 

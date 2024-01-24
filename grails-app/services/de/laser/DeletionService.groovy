@@ -12,6 +12,7 @@ import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
+import de.laser.system.SystemAnnouncement
 import de.laser.system.SystemProfiler
 import de.laser.titles.TitleHistoryEvent
 import de.laser.titles.TitleHistoryEventParticipant
@@ -758,6 +759,7 @@ class DeletionService {
         List userRoles          = new ArrayList(user.roles)
         List userSettings       = UserSetting.findAllWhere(user: user)
         List reportingFilter    = ReportingFilter.findAllByOwner(user)
+        List systemAnnouncements  = SystemAnnouncement.findAllByUser(user)
 
         List ddds = DashboardDueDate.findAllByResponsibleUser(user)
 
@@ -774,6 +776,7 @@ class DeletionService {
         result.info << ['DashboardDueDate', ddds]
         result.info << ['Reporting Filter', reportingFilter]
         result.info << ['Aufgaben', tasks, FLAG_SUBSTITUTE]
+        result.info << ['Ankündigungen', systemAnnouncements, FLAG_SUBSTITUTE]
 
         // checking constraints and/or processing
 
@@ -820,6 +823,11 @@ class DeletionService {
                         if (tmp.responsibleUser?.id == user.id) {
                             tmp.responsibleUser = replacement
                         }
+                        tmp.save()
+                    }
+
+                    systemAnnouncements.each { tmp ->
+                        tmp.user = replacement
                         tmp.save()
                     }
 
