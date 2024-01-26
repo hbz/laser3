@@ -1168,6 +1168,7 @@
                     <td></td>
                 </g:else>
             </g:each>
+            <td></td>
         </tr>
         </tfoot>
     </table>
