@@ -142,6 +142,12 @@
             </div>
 
             <div class="field">
+                <label for="mailReplyTo">${message(code: 'mail.sendMail.mailReplyTo')}</label>
+
+                <g:field type="text" name="mailReplyTo" id="mailReplyTo" readonly="true" value="${mailReplyTo}"/>
+            </div>
+
+            <div class="field">
                 <label for="mailSubject">${message(code: 'mail.sendMail.mailSubject')}</label>
 
                 <g:field type="text" name="mailSubject" id="mailSubject" readonly="true" value="${mailSubject}"/>
