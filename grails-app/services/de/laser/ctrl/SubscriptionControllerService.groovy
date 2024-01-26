@@ -3884,7 +3884,8 @@ class SubscriptionControllerService {
             int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.subscription).size()
             result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
-            result.notesCount       = docstoreService.getNotes(result.subscription, result.contextOrg).size()
+            result.notesCount       = docstoreService.getNotesCount(result.subscription, result.contextOrg)
+            result.docsCount       = docstoreService.getDocsCount(result.subscription, result.contextOrg)
             result.checklistCount   = workflowService.getWorkflowCount(result.subscription, result.contextOrg)
 
             if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
