@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.remote.ApiSource; de.laser.AlternativeName" %>
+<%@ page import="de.laser.survey.SurveyInfo; de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.remote.ApiSource; de.laser.AlternativeName" %>
 <laser:serviceInjection/>
 <g:if test="${'surveySubCostItem' in tmplConfigShow}">
     <g:set var="oldCostItem" value="${0.0}"/>
@@ -603,33 +603,19 @@
                     <td class="center aligned">
                         <div class="la-flexbox">
                             <g:if test="${invertDirection}">
-                                <g:set var="participantSurveys"
-                                       value="${SurveyResult.findAllByParticipantAndOwnerAndEndDateGreaterThanEquals(contextService.getOrg(), org, new Date())}"/>
+                                <g:set var="countNotFinish"
+                                       value="${SurveyInfo.executeQuery("select count(*) from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg where surOrg.org = :org and surOrg.finishDate is null and surInfo.status = :status and surInfo.owner = :owner", [org: contextService.getOrg(), owner: org, status: RDStore.SURVEY_SURVEY_STARTED])[0]}"/>
                             </g:if>
                             <g:else>
-                                <g:set var="participantSurveys"
-                                       value="${SurveyResult.findAllByOwnerAndParticipantAndEndDateGreaterThanEquals(contextService.getOrg(), org, new Date())}"/>
+                                <g:set var="countNotFinish"
+                                       value="${SurveyInfo.executeQuery("select count(*) from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg where surOrg.org = :org and surOrg.finishDate is null and surInfo.status = :status and surInfo.owner = :owner", [org: org, owner: contextService.getOrg(), status: RDStore.SURVEY_SURVEY_STARTED])[0]}"/>
                             </g:else>
-                            <g:set var="numberOfSurveys"
-                                   value="${participantSurveys.groupBy { it.surveyConfig.id }.size()}"/>
                             <%
                                 def finishColor = ""
-                                def countFinish = 0
-                                def countNotFinish = 0
-
-                                participantSurveys.each {
-                                    if (it.isResultProcessed()) {
-                                        countFinish++
-                                    } else {
-                                        countNotFinish++
-                                    }
-                                }
-                                if (countFinish > 0 && countNotFinish == 0) {
+                                if (countNotFinish == 0) {
                                     finishColor = "green"
-                                } else if (countFinish > 0 && countNotFinish > 0) {
+                                } else if (countNotFinish > 0) {
                                     finishColor = "yellow"
-                                } else {
-                                    finishColor = "red"
                                 }
                             %>
 
@@ -637,7 +623,7 @@
                                 <g:link controller="myInstitution" action="currentSurveys"
                                         params="[owner: org.id]">
                                     <div class="ui circular ${finishColor} label">
-                                        ${numberOfSurveys}
+                                        ${countNotFinish}
                                     </div>
                                 </g:link>
                             </g:if>
@@ -645,7 +631,7 @@
                                 <g:link controller="myInstitution" action="manageParticipantSurveys"
                                         id="${org.id}">
                                     <div class="ui circular ${finishColor} label">
-                                        ${numberOfSurveys}
+                                        ${countNotFinish}
                                     </div>
                                 </g:link>
                             </g:else>
