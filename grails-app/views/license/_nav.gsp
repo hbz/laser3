@@ -12,7 +12,7 @@
 
     <ui:subNavItem controller="license" action="notes" params="${[id:params.id]}" counts="${notesCount}" message="license.nav.notes" />
     <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="license" action="tasks" params="${[id:params.id]}" counts="${tasksCount}" message="task.plural" />
-    <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="license" action="documents" params="${[id:params.id]}" message="license.nav.docs" />
+    <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="license" action="documents" params="${[id:params.id]}" counts="${docsCount}" message="license.nav.docs" />
 
     <g:if test="${contextService.getOrg().isCustomerType_Pro()}"><!-- TODO: workflows-permissions -->
         <ui:subNavItem controller="license" action="workflows" counts="${checklistCount}" params="${[id:params.id]}" message="workflow.plural"/>
