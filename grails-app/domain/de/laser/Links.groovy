@@ -110,7 +110,10 @@ class Links {
                 determineSource()
             }
         }
-        else null
+        else {
+            log.error("No context! key was ${key}.")
+            null
+        }
     }
 
     /**
