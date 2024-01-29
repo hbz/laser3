@@ -7,6 +7,7 @@ import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.custom.CustomWkhtmltoxService
 import de.laser.exceptions.EntitlementCreationException
+import de.laser.exceptions.FinancialDataException
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
@@ -638,6 +639,20 @@ class SubscriptionController {
                 ctrlResult.result
             }
         }
+    }
+
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+    })
+    def compareSubMemberCostItems() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.compareSubMemberCostItems(this,params)
+        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            response.sendError(401)
+            return
+        }
+
+        ctrlResult.result
     }
 
     /**

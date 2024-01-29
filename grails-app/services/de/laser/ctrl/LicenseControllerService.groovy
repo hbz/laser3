@@ -103,7 +103,8 @@ class LicenseControllerService {
         int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.license).size()
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
-        result.notesCount       = docstoreService.getNotes(result.license, result.contextOrg).size()
+        result.notesCount = docstoreService.getNotesCount(result.license, result.contextOrg)
+        result.docsCount       = docstoreService.getDocsCount(result.license, result.contextOrg)
         result.checklistCount   = workflowService.getWorkflowCount(result.license, result.contextOrg)
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)

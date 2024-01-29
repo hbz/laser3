@@ -1271,6 +1271,82 @@ class SubscriptionControllerService {
         [result:result,status:STATUS_OK]
     }
 
+    Map<String,Object> compareSubMemberCostItems(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+        if(!result)
+            [result:null,status:STATUS_ERROR]
+
+        result.idSuffix = 'bulk'
+
+        result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(result.institution)
+        result.filteredSubChilds = getFilteredSubscribers(params,result.subscription)
+        result.filterSet = params.filterSet ? true : false
+
+        result.selectedCostItemElementID = params.selectedCostItemElement ? params.selectedCostItemElement.toString() : RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id.toString()
+
+        result.selectedCostItemElement = RefdataValue.get(Long.parseLong(result.selectedCostItemElementID))
+
+        if (params.processBulkCostItems) {
+            List<Long> selectedSubs = []
+            params.list("selectedSubs").each { id ->
+                selectedSubs << Long.parseLong(id)
+            }
+            if (selectedSubs && result.selectedCostItemElement) {
+                List<Subscription> subscriptionList = Subscription.findAllByIdInList(selectedSubs)
+                subscriptionList.each { Subscription memberSub ->
+                    if (params.percentOnOldPrice) {
+                        List<CostItem> previousSubCostItems
+                        Subscription previousSub = memberSub._getCalculatedPreviousForSurvey()
+                        if (previousSub) {
+                            previousSubCostItems = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(previousSub, result.institution, result.selectedCostItemElement, RDStore.COST_ITEM_DELETED)
+                        }
+
+                        Double percentage = 1 + params.double('percentOnOldPrice') / 100
+                        CostItem lastYearEquivalent = previousSubCostItems.size() == 1 ? previousSubCostItems[0] : null
+                        if (lastYearEquivalent) {
+
+                            List<CostItem> currentSubCostItems = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(memberSub, result.institution, result.selectedCostItemElement, RDStore.COST_ITEM_DELETED)
+
+                            currentSubCostItems.each { CostItem ci ->
+                                if (ci.sub) {
+                                    ci.costInBillingCurrency = lastYearEquivalent.costInBillingCurrency ? BigDecimal.valueOf(lastYearEquivalent.costInBillingCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInBillingCurrency
+                                    ci.costInLocalCurrency = lastYearEquivalent.costInLocalCurrency ? BigDecimal.valueOf(lastYearEquivalent.costInLocalCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInLocalCurrency
+                                    int taxRate = 0 //fallback
+                                    if (ci.taxKey)
+                                        taxRate = ci.taxKey.taxRate
+                                    ci.costInBillingCurrencyAfterTax = ci.costInBillingCurrency * (1.0 + (0.01 * taxRate))
+                                    ci.costInLocalCurrencyAfterTax = ci.costInLocalCurrency * (1.0 + (0.01 * taxRate))
+                                    ci.save()
+                                }
+                            }
+
+                        }
+                    } else if (params.percentOnCurrentPrice) {
+                        Double percentage = 1 + params.double('percentOnCurrentPrice') / 100
+
+                        List<CostItem> currentSubCostItems = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(memberSub, result.institution, result.selectedCostItemElement, RDStore.COST_ITEM_DELETED)
+
+                        currentSubCostItems.each { CostItem ci ->
+                            if (ci.sub) {
+                                ci.costInBillingCurrency = ci.costInBillingCurrency ? BigDecimal.valueOf(ci.costInBillingCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInBillingCurrency
+                                ci.costInLocalCurrency = ci.costInLocalCurrency ? BigDecimal.valueOf(ci.costInLocalCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInLocalCurrency
+                                int taxRate = 0 //fallback
+                                if (ci.taxKey)
+                                    taxRate = ci.taxKey.taxRate
+                                ci.costInBillingCurrencyAfterTax = ci.costInBillingCurrency * (1.0 + (0.01 * taxRate))
+                                ci.costInLocalCurrencyAfterTax = ci.costInLocalCurrency * (1.0 + (0.01 * taxRate))
+                                ci.save()
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+
+        [result:result,status:STATUS_OK]
+    }
+
     /**
      * Lists institutions and sets default parameters for the member adding form
      * @param controller unused
@@ -3884,7 +3960,8 @@ class SubscriptionControllerService {
             int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.subscription).size()
             result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
-            result.notesCount       = docstoreService.getNotes(result.subscription, result.contextOrg).size()
+            result.notesCount       = docstoreService.getNotesCount(result.subscription, result.contextOrg)
+            result.docsCount       = docstoreService.getDocsCount(result.subscription, result.contextOrg)
             result.checklistCount   = workflowService.getWorkflowCount(result.subscription, result.contextOrg)
 
             if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {

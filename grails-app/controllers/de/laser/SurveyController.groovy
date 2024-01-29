@@ -4774,7 +4774,7 @@ class SurveyController {
                         refValue   : RDStore.YN_YES]).each {
 
             // Keine Kindlizenz in der Nachfolgerlizenz vorhanden
-            if(!(result.parentSuccessortParticipantsList && it.participant.id in result.parentSuccessortParticipantsList.id)){
+            if (!(result.parentSuccessortParticipantsList && it.participant.id in result.parentSuccessortParticipantsList.id)) {
 
                 Subscription oldSubofParticipant = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
                         [parentSub  : result.parentSubscription,
@@ -4782,8 +4782,7 @@ class SurveyController {
                         ])[0]
 
 
-                if(!oldSubofParticipant)
-                {
+                if (!oldSubofParticipant) {
                     oldSubofParticipant = result.parentSubscription
                 }
 
@@ -4791,95 +4790,53 @@ class SurveyController {
                 Date newEndDate = null
 
                 //Umfrage-Merkmal MJL2
-                if (result.multiYearTermTwoSurvey) {
-
-                    SurveyResult participantPropertyTwo = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)
-                    if (participantPropertyTwo && participantPropertyTwo.refValue?.id == RDStore.YN_YES.id) {
-                        use(TimeCategory) {
-                            newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
-                            newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 2.year) : null
-                        }
-                            countNewSubs++
-                            result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
-                    } else {
-                        use(TimeCategory) {
-                            newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
-                            newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 1.year) : null
-                        }
-                        countNewSubs++
-                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
-                    }
-
-                }
+                SurveyResult participantPropertyTwo = result.multiYearTermTwoSurvey ? SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey) : null
                 //Umfrage-Merkmal MJL3
-                else if (result.multiYearTermThreeSurvey) {
-
-                    SurveyResult participantPropertyThree = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)
-                    if (participantPropertyThree && participantPropertyThree.refValue?.id == RDStore.YN_YES.id) {
-                        use(TimeCategory) {
-                            newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
-                            newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 3.year) : null
-                        }
-                        countNewSubs++
-                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
-                    }
-                    else {
-                        use(TimeCategory) {
-                            newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
-                            newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 1.year) : null
-                        }
-                        countNewSubs++
-                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
-                    }
-                }
+                SurveyResult participantPropertyThree = result.multiYearTermThreeSurvey ? SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey) : null
                 //Umfrage-Merkmal MJL4
-                else if (result.multiYearTermFourSurvey) {
-
-                    SurveyResult participantPropertyFour = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermFourSurvey)
-                    if (participantPropertyFour && participantPropertyFour.refValue?.id == RDStore.YN_YES.id) {
-                        use(TimeCategory) {
-                            newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
-                            newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 4.year) : null
-                        }
-                        countNewSubs++
-                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
-                    }
-                    else {
-                        use(TimeCategory) {
-                            newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
-                            newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 1.year) : null
-                        }
-                        countNewSubs++
-                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
-                    }
-                }
+                SurveyResult participantPropertyFour = result.multiYearTermFourSurvey ? SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermFourSurvey) : null
                 //Umfrage-Merkmal MJL5
-                else if (result.multiYearTermFiveSurvey) {
+                SurveyResult participantPropertyFive = result.multiYearTermFiveSurvey ? SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermFiveSurvey) : null
 
-                    SurveyResult participantPropertyFive = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermFiveSurvey)
-                    if (participantPropertyFive && participantPropertyFive.refValue?.id == RDStore.YN_YES.id) {
-                        use(TimeCategory) {
-                            newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
-                            newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 5.year) : null
-                        }
-                        countNewSubs++
-                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
+                if (participantPropertyTwo && participantPropertyTwo.refValue?.id == RDStore.YN_YES.id) {
+                    use(TimeCategory) {
+                        newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
+                        newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 2.year) : null
                     }
-                    else {
-                        use(TimeCategory) {
-                            newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
-                            newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 1.year) : null
-                        }
-                        countNewSubs++
-                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
+                    countNewSubs++
+                    result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
+
+                } else if (participantPropertyThree && participantPropertyThree.refValue?.id == RDStore.YN_YES.id) {
+                    use(TimeCategory) {
+                        newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
+                        newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 3.year) : null
                     }
-                }else {
+                    countNewSubs++
+                    result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
+
+                } else if (participantPropertyFour && participantPropertyFour.refValue?.id == RDStore.YN_YES.id) {
+                    use(TimeCategory) {
+                        newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
+                        newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 4.year) : null
+                    }
+                    countNewSubs++
+                    result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
+
+                } else if (participantPropertyFive && participantPropertyFive.refValue?.id == RDStore.YN_YES.id) {
+                    use(TimeCategory) {
+                        newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
+                        newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 5.year) : null
+                    }
+                    countNewSubs++
+                    result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
+
+                } else {
                     use(TimeCategory) {
                         newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
                         newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 1.year) : null
                     }
                     countNewSubs++
-                    result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
+                    result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
                 }
             }
         }
