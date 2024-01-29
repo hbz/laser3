@@ -49,7 +49,7 @@ class QueryService {
             def manualCancellationDateTo =   (contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD)==RDStore.YN_YES)? _computeInfoDate(contextUser, UserSetting.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD) : null
             getDueSubscriptions(contextOrg, endDateFrom, endDateTo, manualCancellationDateFrom, manualCancellationDateTo).each{
 
-                if ( ! (it._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION]) ) {
+                if ( !(it._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION]) && (!it.isAutomaticRenewAnnually || it._getCalculatedSuccessor().size() == 0)) {
                     dueObjects << it
                 }
             }

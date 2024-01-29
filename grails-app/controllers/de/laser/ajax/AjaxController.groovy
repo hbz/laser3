@@ -475,7 +475,7 @@ class AjaxController {
 
               if(params.tab == 'allTipps') {
                   params.status = [RDStore.TIPP_STATUS_CURRENT.id]
-                  Map<String, Object> query = filterService.getTippQuery(params, baseSub.packages.pkg)
+                  Map<String, Object> query = filterService.getTippQuery(filterParams, baseSub.packages.pkg)
                   List<Long> titleIDList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
 
                   titleIDList.each { Long tippID ->

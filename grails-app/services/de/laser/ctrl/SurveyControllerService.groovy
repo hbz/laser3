@@ -71,7 +71,8 @@ class SurveyControllerService {
         int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.surveyConfig).size()
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
-        result.notesCount = docstoreService.getNotes(result.surveyConfig, result.contextOrg).size()
+        result.notesCount = docstoreService.getNotesCount(result.surveyConfig, result.contextOrg)
+        result.docsCount       = docstoreService.getDocsCount(result.surveyConfig, result.contextOrg)
 
         result.subscription = result.surveyConfig.subscription ?: null
 

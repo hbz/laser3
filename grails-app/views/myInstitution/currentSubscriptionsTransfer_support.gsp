@@ -425,7 +425,7 @@
                                           model="${[newModalId: "modalCreateDocumentOffer" + s.id, ownobj: s, owntp: 'subscription']}"/>
 
                             <%
-                                Set<DocContext> documentSet = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType', [subscription: s, docType: RDStore.DOC_TYPE_OFFER])
+                                Set<DocContext> documentSet = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType and owner.owner = :owner', [subscription: s, docType: RDStore.DOC_TYPE_OFFER, owner: contextOrg])
                                 documentSet = documentSet.sort { it.owner?.title }
                             %>
                             <g:each in="${documentSet}" var="docctx">
@@ -616,7 +616,7 @@
                                           model="${[newModalId: "modalCreateDocumentRenewal" + s.id, ownobj: s, owntp: 'subscription']}"/>
 
                             <%
-                                Set<DocContext> documentSet2 = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType', [subscription: s, docType: RDStore.DOC_TYPE_RENEWAL])
+                                Set<DocContext> documentSet2 = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType and owner.owner = :owner', [subscription: s, docType: RDStore.DOC_TYPE_RENEWAL, owner: contextOrg])
                                 documentSet2 = documentSet2.sort { it.owner?.title }
                             %>
                             <g:each in="${documentSet2}" var="docctx">
