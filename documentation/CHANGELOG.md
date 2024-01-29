@@ -7,21 +7,25 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-5529    26.01.2024  rc-3.3  3.3.3       Moe     Bug         Aktive Umfrage Bubble sind nicht stimmig zu TN
+5547    29.01.2024  rc-3.3  3.3.5       Moe     Bug         Umfrageteilnehmer Zählung nicht korrekt dargestellt
 
-5512    26.01.2024  rc-3.3  3.3.3       Moe     Bug         Teilnehmerkosten vergleichen
+5542    29.01.2024  rc-3.3  3.3.5       Moe     Bug         Titelumfrage: Auswahl alles wählt beim gefilterte Title trotzdem alles
 
-5544    26.01.2024  rc-3.3  3.3.3       Moe     Bug         Mail From nicht mehr über die OrgSettings abgreifen/setzen
+5529    26.01.2024  rc-3.3  3.3.5       Moe     Bug         Aktive Umfrage Bubble sind nicht stimmig zu TN
 
---      26.01.2024  rc-3.3  3.3.3       Moe     Bug         Bugfixes
+5512    26.01.2024  rc-3.3  3.3.5       Moe     Bug         Teilnehmerkosten vergleichen
 
-5541    26.01.2024  rc-3.3  3.3.3       Moe     Bug         Keine Kundennummer anzeigen wenn Plattform nicht Counter fähig ist
+5544    26.01.2024  rc-3.3  3.3.5       Moe     Bug         Mail From nicht mehr über die OrgSettings abgreifen/setzen
 
-5540    26.01.2024  rc-3.3  3.3.3       Moe     Bug          Nav Dokumente Reiter Anzahl Docs
+--      26.01.2024  rc-3.3  3.3.5       Moe     Bug         Bugfixes
 
-5537    24.01.2024  rc-3.3  3.3.3       Moe     Bug         Dokument von Pro-Einrichtung in Titelumfrage sichtbar?!
+5541    26.01.2024  rc-3.3  3.3.5       Moe     Bug         Keine Kundennummer anzeigen wenn Plattform nicht Counter fähig ist
 
-5508    24.01.2024  rc-3.3  3.3.3       Moe     Bug         Erinnerung Enddatum bei automatisch verlängernden und verlängerten Lizenzen unterdrücken
+5540    26.01.2024  rc-3.3  3.3.5       Moe     Bug          Nav Dokumente Reiter Anzahl Docs
+
+5537    24.01.2024  rc-3.3  3.3.5       Moe     Bug         Dokument von Pro-Einrichtung in Titelumfrage sichtbar?!
+
+5508    24.01.2024  rc-3.3  3.3.5       Moe     Bug         Erinnerung Enddatum bei automatisch verlängernden und verlängerten Lizenzen unterdrücken
 
 5531    19.01.2024  rc-3.3  3.3.5       David   Bug         Nutzer löschen: SystemAnnouncement
 
