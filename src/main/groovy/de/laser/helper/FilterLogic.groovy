@@ -1,9 +1,11 @@
 package de.laser.helper
 
+import de.laser.annotations.UnderConstruction
 import de.laser.storage.RDStore
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.util.logging.Slf4j
 
+@UnderConstruction
 @Slf4j
 class FilterLogic {
 

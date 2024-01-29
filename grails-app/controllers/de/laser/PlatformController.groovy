@@ -164,7 +164,7 @@ class PlatformController  {
         // ? ---
 
         if (params.isMyX) {
-            List xFilter = params.list('isMyX')
+            List<String> xFilter = params.list('isMyX')
             Set<String> f1Result = [], f2Result = []
             boolean     f1Set = false, f2Set = false
 

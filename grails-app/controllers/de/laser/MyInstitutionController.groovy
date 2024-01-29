@@ -277,7 +277,7 @@ class MyInstitutionController  {
         //}
 
         if (params.isMyX) {
-            List xFilter = params.list('isMyX')
+            List<String> xFilter = params.list('isMyX')
             Set<Long> f1Result = []
 
             if (xFilter.contains('wekb_exclusive')) {
@@ -853,7 +853,7 @@ class MyInstitutionController  {
         result.wekbRecords = organisationService.getWekbOrgRecords(params, result)
 
         if (params.isMyX) {
-            List xFilter = params.list('isMyX')
+            List<String> xFilter = params.list('isMyX')
             Set<Long> f1Result = []
 
             if (xFilter.contains('wekb_exclusive')) {

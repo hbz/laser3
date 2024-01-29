@@ -292,7 +292,7 @@ class OrganisationController  {
         result.consortiaMemberIds = Combo.executeQuery('select cmb.fromOrg.id from Combo cmb where cmb.toOrg = :toOrg and cmb.type = :type',[toOrg: result.institution, type: RDStore.COMBO_TYPE_CONSORTIUM])
 
         if (params.isMyX) {
-            List xFilter = params.list('isMyX')
+            List<String> xFilter = params.list('isMyX')
             Set<Long> f1Result = []
 
             if (xFilter.contains('ismyx_exclusive')) {
@@ -400,7 +400,7 @@ class OrganisationController  {
         // ? ---
 
         if (params.isMyX) {
-            List xFilter = params.list('isMyX')
+            List<String> xFilter = params.list('isMyX')
             Set<Long> f1Result = []
 
             if (xFilter.contains('ismyx_exclusive')) {
@@ -519,7 +519,7 @@ class OrganisationController  {
             orgListTotal = orgListTotal.findAll { Org org -> org.gokbId in result.wekbRecords.keySet() }
 
         if (params.isMyX) {
-            List xFilter = params.list('isMyX')
+            List<String> xFilter = params.list('isMyX')
             Set<Long> f1Result = [], f2Result = []
             boolean   f1Set = false, f2Set = false
 

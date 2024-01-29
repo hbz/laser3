@@ -25,7 +25,6 @@ class OrganisationControllerService {
     ContextService contextService
     DocstoreService docstoreService
     FormService formService
-    GenericOIDService genericOIDService
     GokbService gokbService
     LinksGenerationService linksGenerationService
     MessageSource messageSource
