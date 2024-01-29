@@ -63,7 +63,7 @@
                             id="${surveyConfig.surveyInfo.id}"
                             params="[surveyConfigID: surveyConfig.id, tab: 'selectedParticipants']">
                         ${message(code: 'surveyParticipants.selectedParticipants')}
-                        <span class="ui floating blue circular label">${selectedSubParticipantsCount}</span></g:link>
+                        <span class="ui floating blue circular label">${selectedParticipantsCount}</span></g:link>
 
 
                     <g:if test="${surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]}">
