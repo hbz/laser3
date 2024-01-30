@@ -638,65 +638,78 @@ class SubscriptionControllerService {
         SortedSet<Date> monthsInRing = new TreeSet<Date>()
         Map<String, Object> dateRangeParams = [:]
         LocalDate startTime, endTime = LocalDate.now(), now = LocalDate.now()
-        if(subscription.startDate && subscription.endDate) {
-            //dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
-            if(!params.containsKey('tabStat') || params.tabStat == 'total') {
-                if(subscription.startDate > new Date()) {
-                    LocalDate lastMonth = LocalDate.now()
-                    lastMonth.minusMonths(1)
-                    dateRangeParams.startDate = Date.from(lastMonth.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+        if(params.containsKey('startDate') && params.containsKey('endDate')) {
+            if(params.containsKey('startDate')) {
+                startTime = LocalDate.parse(params.startDate+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
+                dateRangeParams.startDate = Date.from(startTime.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+            }
+            if(params.containsKey('endDate')) {
+                endTime = LocalDate.parse(params.endDate+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
+                dateRangeParams.endDate = Date.from(endTime.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+            }
+        }
+        else {
+            if(subscription.startDate && subscription.endDate) {
+                //dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
+                if(!params.containsKey('tabStat') || params.tabStat == 'total') {
+                    if(subscription.startDate > new Date()) {
+                        LocalDate lastMonth = LocalDate.now()
+                        lastMonth.minusMonths(1)
+                        dateRangeParams.startDate = Date.from(lastMonth.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+                    }
+                    else dateRangeParams.startDate = subscription.startDate
+                    if(subscription.endDate <= Date.from(now.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                        dateRangeParams.endDate = subscription.endDate
+                    else dateRangeParams.endDate = Date.from(now.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
                 }
-                else dateRangeParams.startDate = subscription.startDate
-                if(subscription.endDate <= Date.from(now.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant()))
-                    dateRangeParams.endDate = subscription.endDate
-                else dateRangeParams.endDate = Date.from(now.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+                else {
+                    LocalDate filterDate = LocalDate.parse(params.tabStat+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
+                    dateRangeParams.startDate = Date.from(filterDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
+                    dateRangeParams.endDate = Date.from(filterDate.withDayOfMonth(filterDate.getMonth().length(filterDate.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+                }
+                startTime = subscription.startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                //is completely meaningless, but causes 500 if not dealt ...
+                if(subscription.endDate < new Date() || subscription.startDate > new Date())
+                    endTime = subscription.endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+            }
+            else if(subscription.startDate) {
+                //dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
+                if(!params.containsKey('tabStat') || params.tabStat == 'total') {
+                    dateRangeParams.startDate = subscription.startDate
+                    dateRangeParams.endDate = new Date()
+                }
+                else {
+                    LocalDate filterDate = LocalDate.parse(params.tabStat+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
+                    dateRangeParams.startDate = Date.from(filterDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
+                    dateRangeParams.endDate = Date.from(filterDate.withDayOfMonth(filterDate.getMonth().length(filterDate.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+                }
+                startTime = subscription.startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                endTime = LocalDate.now()
             }
             else {
-                LocalDate filterDate = LocalDate.parse(params.tabStat+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
-                dateRangeParams.startDate = Date.from(filterDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-                dateRangeParams.endDate = Date.from(filterDate.withDayOfMonth(filterDate.getMonth().length(filterDate.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+                LocalDate lastYear = LocalDate.now().minus(1, ChronoUnit.YEARS)
+                startTime = lastYear.with(TemporalAdjusters.firstDayOfYear())
+                endTime = lastYear.with(TemporalAdjusters.lastDayOfYear())
+                dateRangeParams.startDate = Date.from(startTime.atStartOfDay(ZoneId.systemDefault()).toInstant())
+                dateRangeParams.endDate = Date.from(endTime.atStartOfDay(ZoneId.systemDefault()).toInstant())
             }
-            startTime = subscription.startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-            //is completely meaningless, but causes 500 if not dealt ...
-            if(subscription.endDate < new Date() || subscription.startDate > new Date())
-                endTime = subscription.endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-        }
-        else if(subscription.startDate) {
-            //dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
-            if(!params.containsKey('tabStat') || params.tabStat == 'total') {
-                dateRangeParams.startDate = subscription.startDate
-                dateRangeParams.endDate = new Date()
-            }
+            /*
+            range spans over the whole availability of reports, no preset!
             else {
-                LocalDate filterDate = LocalDate.parse(params.tabStat+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
-                dateRangeParams.startDate = Date.from(filterDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-                dateRangeParams.endDate = Date.from(filterDate.withDayOfMonth(filterDate.getMonth().length(filterDate.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
-            }
-            startTime = subscription.startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-            endTime = LocalDate.now()
+                if(!params.containsKey('tabStat') || params.tabStat == 'total') {
+                    dateRange = ''
+                }
+                else {
+                    dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
+                    LocalDate filterDate = LocalDate.parse(params.tabStat+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
+                    dateRangeParams.startDate = Date.from(filterDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
+                    dateRangeParams.endDate = Date.from(filterDate.withDayOfMonth(filterDate.getMonth().length(filterDate.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+                }
+                startTime = now.with(TemporalAdjusters.firstDayOfYear())
+                endTime = now.with(TemporalAdjusters.lastDayOfYear())
+            }*/
         }
-        else {
-            LocalDate lastYear = LocalDate.now().minus(1, ChronoUnit.YEARS)
-            startTime = lastYear.with(TemporalAdjusters.firstDayOfYear())
-            endTime = lastYear.with(TemporalAdjusters.lastDayOfYear())
-            dateRangeParams.startDate = Date.from(startTime.atStartOfDay(ZoneId.systemDefault()).toInstant())
-            dateRangeParams.endDate = Date.from(endTime.atStartOfDay(ZoneId.systemDefault()).toInstant())
-        }
-        /*
-        range spans over the whole availability of reports, no preset!
-        else {
-            if(!params.containsKey('tabStat') || params.tabStat == 'total') {
-                dateRange = ''
-            }
-            else {
-                dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
-                LocalDate filterDate = LocalDate.parse(params.tabStat+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
-                dateRangeParams.startDate = Date.from(filterDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-                dateRangeParams.endDate = Date.from(filterDate.withDayOfMonth(filterDate.getMonth().length(filterDate.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
-            }
-            startTime = now.with(TemporalAdjusters.firstDayOfYear())
-            endTime = now.with(TemporalAdjusters.lastDayOfYear())
-        }*/
+
         endTime = endTime.with(TemporalAdjusters.lastDayOfMonth())
         if(params.tabStat && params.tabStat != 'total' && params.exportXLS && params.data != 'fetchAll') {
             monthsInRing << DateUtils.getSDF_yyyyMM().parse(params.tabStat)

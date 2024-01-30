@@ -264,6 +264,10 @@
                             <%-- reports filters in COUNTER 5 count only for master reports (tr, pr, dr, ir)! COUNTER 4 has no restriction on filter usage afaik --%>
                         </div>
 
+                        <div class="field">
+                            <div id="selDate" class="ui labeled ticked range slider"></div>
+                        </div>
+
                         <div class="four fields">
                             <div class="field"></div>
 
@@ -307,6 +311,59 @@
             </g:if>
         </g:else>
         <laser:script file="${this.getGroovyPageFileName()}">
+            /*
+                equivalency table:
+                0: 2021-01
+                max: current value +1
+                start: last month
+                end: current month
+            */
+            let step = 1;
+            let monthIndex = 0;
+            let limit = new Date();
+            limit.setHours(0);
+            limit.setMinutes(0);
+            limit.setSeconds(0);
+            limit.setMilliseconds(0);
+            let currDate = new Date(2021, 0, 1, 0, 0, 0, 0);
+            let currMonth = currDate.getMonth()+1;
+            if(currMonth < 10)
+                currMonth = '0'+currMonth;
+            let startDate = currDate.getFullYear()+'-'+currMonth;
+            currMonth = limit.getMonth(); //previous month
+            let endDate = limit.getFullYear()+'-'+currMonth;
+            if(currMonth > 0 && currMonth < 10)
+                currMonth = '0'+currMonth;
+            else if(currMonth === 0)
+                endDate = (limit.getFullYear()-1)+'-12';
+            let months = [];
+            let displayMonths = [];
+            while(currDate.getTime() <= limit.getTime()) {
+                currMonth = currDate.getMonth()+1;
+                if(currMonth < 10)
+                    currMonth = '0'+currMonth;
+                if(currMonth === '01')
+                    displayMonths.push(currDate.getFullYear()+'-'+currMonth);
+                months.push(currDate.getFullYear()+'-'+currMonth);
+                currDate.setMonth(currDate.getMonth()+1);
+                monthIndex++;
+            }
+            $("#selDate").slider({
+                min: 0,
+                max: months.length-1,
+                start: 0,
+                end: months.length-2,
+                step: step,
+                restrictedLabels: displayMonths,
+                showLabelTicks: 'always',
+                interpretLabel: function(value) {
+                    return months[value];
+                },
+                onChange: function(range, start, end) {
+                    startDate = months[start];
+                    endDate = months[end];
+                }
+            });
             $("#reportType").on('change', function() {
                 <g:applyCodec encodeAs="none">
                     let platforms = ${platformsJSON};
@@ -344,6 +401,8 @@
             $("#generateReport").on('click', function() {
                 $('#globalLoadingIndicator').show();
                 let fd = new FormData($('#stats')[0]);
+                fd.append('startDate',startDate);
+                fd.append('endDate',endDate);
                 $.ajax({
                     url: "<g:createLink action="generateReport"/>",
                     data: fd,
