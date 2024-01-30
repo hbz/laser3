@@ -60,6 +60,11 @@
             </g:elseif>
         </g:if>
 
+        <g:if test="${contextService.getUser().isYoda() && contextService.getOrg().isCustomerType_Consortium() && orgInstance.isCustomerType_Inst()}">
+            <div class="divider"></div>
+            <ui:actionsDropdownItem controller="org" action="info" message="menu.institutions.org.info" params="[id: orgInstance.id]" />
+        </g:if>
+
         <g:if test="${actionName == 'show'}">
             <sec:ifAnyGranted roles="ROLE_ADMIN">
                 <div class="divider"></div>
