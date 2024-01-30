@@ -3,12 +3,11 @@ package de.laser.ctrl
 
 import de.laser.*
 import de.laser.auth.User
+import de.laser.finance.CostItem
 import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyInfo
-import de.laser.survey.SurveyOrg
-import de.laser.survey.SurveyResult
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -27,6 +26,7 @@ class OrganisationControllerService {
 
     ContextService contextService
     DocstoreService docstoreService
+    FinanceService financeService
     FormService formService
     GenericOIDService genericOIDService
     GokbService gokbService
@@ -181,7 +181,7 @@ class OrganisationControllerService {
 
         List<List> subStruct = Subscription.executeQuery('select s.status.id, s.id, s.startDate, s.endDate, s.referenceYear ' + base_qry, qry_params)
         result.subscriptionMap = reduceMap(listToMap(subStruct))
-        println 'subscriptionMap: ' + result.subscriptionMap
+//        println 'subscriptionMap: ' + result.subscriptionMap
 
         // providers
 
@@ -189,7 +189,7 @@ class OrganisationControllerService {
                                     join por.sub sub
                                     where sub.id in (:subIdList)
                                     and por.roleType in (:porTypes)
-                                    order by por.org.sortname, por.org.name, sub.name, sub.startDate, sub.endDate asc'''
+                                    order by por.org.sortname, por.org.name, sub.name, sub.startDate, sub.endDate asc '''
 
         Map providerParams = [
                 subIdList: subStruct.collect { it[1] },
@@ -202,8 +202,7 @@ class OrganisationControllerService {
         List<List> providerStruct = Org.executeQuery(providerQuery, providerParams) /*.unique()*/
         Map providerMap = listToMap(providerStruct)
         result.providerMap = providerMap.collectEntries{ k,v -> [(k):(v.collect{ [ it[1], it[2] ] })] }
-
-        println 'providerMap: ' + result.providerMap
+//        println 'providerMap: ' + result.providerMap
 
         // licenses
 
@@ -212,41 +211,13 @@ class OrganisationControllerService {
                                         exists ( select o from l.orgRelations as o where ( o.roleType = :roleTypeC AND o.org = :activeInst ) )
                                         AND l.instanceOf is not null
                                         AND exists ( select orgR from OrgRole as orgR where orgR.lic = l and orgR.org = :org )
-                                    ) order by l.sortableReference, l.reference, l.startDate, l.endDate, l.instanceOf asc'''
+                                    ) order by l.sortableReference, l.reference, l.startDate, l.endDate, l.instanceOf asc '''
 
         List<List> licStruct = License.executeQuery('select l.status.id, l.id, l.startDate, l.endDate ' + licenseQuery, licenseParams)
         result.licenseMap = reduceMap(listToMap(licStruct))
-        println 'licenseMap: ' + result.licenseMap
+//        println 'licenseMap: ' + result.licenseMap
 
         // surveys
-
-//        List<SurveyResult> psr = SurveyResult.findAllByParticipantAndOwner(result.orgInstance as Org, result.institution as Org)
-//        int countFinish = 0
-//        int countNotFinish = 0
-//
-//        List<List> surveyStruct = []
-//
-//        psr.each {sr ->
-//            if (sr.isResultProcessed()) {
-//                countFinish++
-//            } else {
-//                countNotFinish++
-//            }
-//
-//            surveyStruct.add( [sr.surveyConfig.surveyInfo.status.id, sr.id, sr.surveyConfig.id, sr.surveyConfig.surveyInfo.id] )
-//        }
-//
-//        Map surveyMap = listToMap(surveyStruct)
-//
-//        result.surveyMap = surveyMap.collectEntries{ k,v -> [(k):(v.collect{ [ it[1], it[3] ] })] }
-//        println 'surveyMap: ' + result.surveyMap
-//        result.surveyList = psr.surveyConfig.surveyInfo.unique()
-//        result.surveyCounts = [
-//                results: psr.size(),
-//                grouped: psr.groupBy { it.surveyConfig.id }.size(),
-//                finished: countFinish,
-//                notFinished: countNotFinish
-//        ]
 
         List<SurveyInfo> surveyStruct =  SurveyInfo.executeQuery(
                 'select so.finishDate != null, si.id, si.status.id, so.org.id, so.finishDate, sc.subscription.id from SurveyOrg so join so.surveyConfig sc join sc.surveyInfo si where so.org = :org order by si.name, si.startDate, si.endDate',
@@ -255,7 +226,38 @@ class OrganisationControllerService {
 
         Map surveyMap = surveyStruct.groupBy{ it[0] } // listToMap(surveyStruct)
         result.surveyMap = surveyMap.collectEntries{ k,v -> [(k):(v.collect{ [ it[1], it[4], it[5] ] })] }
-        println 'surveyMap: ' + result.surveyMap
+//        println 'surveyMap: ' + result.surveyMap
+
+        // costs
+
+        String costItemQuery = '''select ci from CostItem ci
+                                    left join ci.costItemElementConfiguration ciec
+                                    left join ci.costItemElement cie
+                                    join ci.owner orgC
+                                    join ci.sub sub
+                                    join sub.instanceOf subC
+                                    join subC.orgRelations roleC
+                                    join sub.orgRelations roleMC
+                                    join sub.orgRelations oo
+                                    where orgC = :org and orgC = roleC.org and roleMC.roleType = :consortialType and oo.roleType in (:subscrType)
+                                    and oo.org in (:filterConsMembers) and sub.status = :filterSubStatus
+                                    and ci.surveyOrg = null and ci.costItemStatus != :deleted
+                                    order by oo.org.sortname asc, sub.name, ciec.value desc, cie.value_''' + LocaleUtils.getCurrentLang() + ' desc '
+
+        List<CostItem> consCostItems = CostItem.executeQuery( costItemQuery, [
+                org                 : result.institution,
+                consortialType      : RDStore.OR_SUBSCRIPTION_CONSORTIA,
+                subscrType          : [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN],
+                filterConsMembers   : [result.orgInstance],
+                filterSubStatus     : RDStore.SUBSCRIPTION_CURRENT,
+                deleted             : RDStore.COST_ITEM_DELETED
+            ]
+        )
+        result.costs = [
+            costItems   : consCostItems,
+            sums        : financeService.calculateResults(consCostItems.id)
+        ]
+//        println result.costs
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
     }
