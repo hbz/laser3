@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.helper.Params
 import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
@@ -163,18 +163,7 @@ class SubscriptionsQueryService {
 
         if (params.providers && params.providers != "") {
             base_qry += (" and  exists ( select orgR from OrgRole as orgR where orgR.sub = s and orgR.org.id in (:providers)) ")
-            if (params instanceof GrailsParameterMap) {
-                qry_params.put('providers', (params.list('providers').collect { Long.parseLong(it) }))
-            } else {
-                if (params.providers instanceof List<String>) {
-                    qry_params.put('providers', (params.providers.collect { Long.parseLong(it) }))
-                } else {
-                    if (params.providers instanceof List<Long>) {
-                        qry_params.put('providers', (params.providers))
-                    }
-                }
-            }
-
+            qry_params.put('providers', Params.getLongList(params, 'providers'))
             filterSet = true
         }
 
@@ -231,25 +220,8 @@ class SubscriptionsQueryService {
             }
         }
 
-        def subTypes = []
         if (params.containsKey('subTypes')) {
-            if (params instanceof GrailsParameterMap) {
-                params.list('subTypes').each{
-                    subTypes.add(Long.parseLong(it))
-                }
-            } else { //TODO refactoring this bugfix
-                if (params.subTypes instanceof List<String>) {
-                    params.subTypes.each{
-                        subTypes.add(Long.parseLong(it))
-                    }
-                } else {
-                    if (params.subTypes instanceof List<Long>) {
-                        subTypes = params.subTypes
-                    } else {
-                        subTypes = [params.subTypes instanceof Long ? params.subTypes : Long.parseLong(params.subTypes)]
-                    }
-                }
-            }
+            List<Long> subTypes = Params.getLongList(params, 'subTypes')
             if (subTypes) {
                 base_qry += " and s.type.id in (:subTypes) "
                 qry_params.put('subTypes', subTypes)
@@ -258,8 +230,11 @@ class SubscriptionsQueryService {
         }
 
         if (params.containsKey('subKinds')) {
-            base_qry += " and s.kind.id in (:subKinds) "
-            qry_params.put('subKinds', params.list('subKinds').collect { Long.parseLong(it) })
+            List<Long> subKinds = Params.getLongList(params, 'subKinds')
+            if (subKinds) {
+                base_qry += " and s.kind.id in (:subKinds) "
+                qry_params.put('subKinds', subKinds)
+            }
             filterSet = true
         }
 
@@ -268,7 +243,7 @@ class SubscriptionsQueryService {
             if (params.status != 'FETCH_ALL') {
                 if(params.status instanceof List || params.status instanceof String[]){
                     base_qry += " and (s.status.id in (:status) "
-                    qry_params.put('status', params.status.collect { it instanceof Long ? it : Long.parseLong(it) })
+                    qry_params.put('status', params.status.collect { Long.valueOf(it) })
                     filterSet = true
                 }else {
                     base_qry += " and (s.status.id = :status "
@@ -301,7 +276,6 @@ class SubscriptionsQueryService {
             filterSet = true
         }
 
-
         if (params.form) {
             base_qry += " and s.form.id in (:form) "
             qry_params.put('form', params.list("form").collect { Long.parseLong(it) })
@@ -322,13 +296,13 @@ class SubscriptionsQueryService {
 
         if (params.isPublicForApi) {
             base_qry += " and s.isPublicForApi = :isPublicForApi "
-            qry_params.put('isPublicForApi', (params.isPublicForApi == RDStore.YN_YES.id.toString()) ? true : false)
+            qry_params.put('isPublicForApi', Long.valueOf(params.isPublicForApi) == RDStore.YN_YES.id)
             filterSet = true
         }
 
         if (params.hasPublishComponent) {
             base_qry += " and s.hasPublishComponent = :hasPublishComponent "
-            qry_params.put('hasPublishComponent', (params.hasPublishComponent == RDStore.YN_YES.id.toString()) ? true : false)
+            qry_params.put('hasPublishComponent', Long.valueOf(params.hasPublishComponent) == RDStore.YN_YES.id)
             filterSet = true
         }
 

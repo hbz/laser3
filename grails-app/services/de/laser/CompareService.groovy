@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.helper.Params
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
@@ -122,7 +122,7 @@ class CompareService {
      * @param params a parameter map containing filter settings
      * @return a (filtered) list of licenses
      */
-    List getMyLicenses(Map params) {
+    List getMyLicenses(Map params, boolean onlyIds = false) {
 
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
@@ -157,22 +157,12 @@ class CompareService {
         }
 
         if (params.status) {
-            if (params.status instanceof List) {
-                base_qry += " and l.status.id in (:status) "
-                qry_params.put('status', params.status.collect { it instanceof Long ? it : Long.parseLong(it) })
-
-            } else {
-                base_qry += " and l.status.id = :status "
-                qry_params.put('status', (params.status as Long))
-            }
+            base_qry += " and l.status.id in (:status) "
+            qry_params.put('status', Params.getLongList(params, 'status'))
         }
-
         base_qry += " order by lower(trim(l.reference)) asc"
 
-        List<License> totalLicenses = License.executeQuery("select l " + base_qry, qry_params)
-
-        totalLicenses
-
+        License.executeQuery( (onlyIds ? "select l.id " : "select l ") + base_qry, qry_params)
     }
 
     /**
@@ -180,7 +170,7 @@ class CompareService {
      * @param params a parameter map containing filter settings
      * @return a (filtered) list of subscriptions
      */
-    List getMySubscriptions(Map params) {
+    List getMySubscriptions(Map params, boolean onlyIds = false) {
 
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
@@ -201,44 +191,33 @@ class CompareService {
         }
 
         if (params.status) {
-            if (params.status instanceof List) {
-                base_qry += " and s.status.id in (:status) "
-                qry_params.put('status', params.status.collect { it instanceof Long ? it : Long.parseLong(it) })
-
-            } else {
-                base_qry += " and s.status.id = :status "
-                qry_params.put('status', (params.status as Long))
-            }
+            base_qry += " and s.status.id in (:status) "
+            qry_params.put('status', Params.getLongList(params, 'status'))
         }
-
-
         base_qry += " order by lower(trim(s.name)) asc"
 
-        List<Subscription> totalSubscriptions = Subscription.executeQuery("select s " + base_qry, qry_params)
-
-        totalSubscriptions
-
+        Subscription.executeQuery( (onlyIds ? "select s.id " : "select s ") + base_qry, qry_params)
     }
 
     /**
      * Retrieves a set of issue entitlements for the given subscription (defined in configMap), loading from the given offset
      * the given maximum count of objects
-     * @param grailsParameterMap the parameter map with query parameters
+     * @param params the parameter map with query parameters
      * @param configMap a map containing configuration params to restrict loading
      * @return a list of issue entitlements
      */
-    Map compareEntitlements(GrailsParameterMap grailsParameterMap, Map<String, Object> configMap) {
+    Map compareEntitlements(GrailsParameterMap params, Map<String, Object> configMap) {
         List objects = configMap.objects
         LinkedHashMap result = [ies: [:]]
-        GrailsParameterMap newMap = grailsParameterMap.clone()
-        for (Iterator<Integer> iterator = newMap.iterator(); iterator.hasNext();) {
+        GrailsParameterMap paramsClone = params.clone()
+        for (Iterator<Integer> iterator = paramsClone.iterator(); iterator.hasNext();) {
             if(iterator.next()) {
                 iterator.remove()
             }
         }
         objects.each { object ->
             Map ies = result.ies
-            Map query = filterService.getIssueEntitlementQuery(newMap, object)
+            Map query = filterService.getIssueEntitlementQuery(paramsClone, object)
             String queryString = 'select ie ' + query.query
             Map queryParams = query.queryParams+[max:configMap.max, offset:configMap.offset]
             List objEntitlements = IssueEntitlement.executeQuery(queryString, queryParams)

@@ -257,7 +257,7 @@ div.column.wf-centered {
 
 /* -- new header icons -- */
 
-h1.header.icon > i.dungeon  { background-color:#d12e34; border-color:#d12e34; color:white; }
+h1.header.icon > i.star.of.life { background-color:#d12e34; border-color:#d12e34; color:white; }
 h1.header.icon > i.hdd      { background-color:#b5c334; border-color:#b5c334; color:white; }
 h1.header.icon > i.tools    { background-color:#f3a43b; border-color:#f3a43b; color:white; }
 
@@ -307,4 +307,14 @@ body.survey_copyElementsIntoSurvey nav.tabular .item .content .description
     font-weight: normal;
     line-height: 1.2em;
     margin-top: 0.25em;
+}
+.trumbowyg-editor[contenteditable=true]:empty::before{
+    content: attr(data-placeholder);
+    color: #999;
+}
+
+/* customer type hack @ ui:customerTypeProIcon */
+
+.icon.teal.la-list-icon:before {
+    color: #00b5ad;
 }

@@ -170,7 +170,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     static transients = [
             'isSlavedAsString', 'provider', 'multiYearSubscription',
-            'currentMultiYearSubscription', 'currentMultiYearSubscriptionNew', 'renewalDate',
+            'currentMultiYearSubscriptionNew', 'renewalDate',
             'commaSeperatedPackagesIsilList', 'calculatedPropDefGroups', 'allocationTerm',
             'subscriber', 'providers', 'agencies', 'consortia'
     ] // mark read-only accessor methods
@@ -628,23 +628,9 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @return true if the running time is beyond 366 days spanning thus more than one year, false otherwise
      */
     boolean isMultiYearSubscription() {
-        // TODO Moe - date.minusDays()
-        ///return (this.startDate && this.endDate && (this.endDate.minus(this.startDate) > 366))
-
         LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
         LocalDate startDate = DateUtils.dateToLocalDate(this.startDate)
         return (startDate && endDate && (DAYS.between(startDate, endDate) > 366))
-    }
-
-    @Deprecated
-    boolean isCurrentMultiYearSubscription() {
-        //Date currentDate = new Date()
-        //println(this.endDate.minus(currentDate))
-        //return (this.isMultiYearSubscription() && this.endDate && (this.endDate.minus(currentDate) > 366))
-
-        LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
-        // TODO Moe - date.minusDays()
-        return (this.isMultiYearSubscription() && endDate && (DAYS.between(LocalDate.now(), endDate) > 366))
     }
 
     /**
@@ -652,12 +638,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @return true if we are within the given multi-year range, false otherwise
      */
     boolean isCurrentMultiYearSubscriptionNew() {
-        //Date currentDate = new Date()
-        //println(this.endDate.minus(currentDate))
-        //return (this.isMultiYear && this.endDate && (this.endDate.minus(currentDate) > 366))
-
         LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
-        // TODO Moe - date.minusDays()
         return (this.isMultiYear && endDate && (DAYS.between(LocalDate.now(), endDate) > 366))
     }
 
@@ -666,20 +647,14 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @return true if we are within the given multi-year range, false otherwise
      */
     boolean isCurrentMultiYearSubscriptionToParentSub() {
-        //return (this.isMultiYear && this.endDate && this.instanceOf && (this.endDate.minus(this.instanceOf.startDate) > 366))
-
         LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
-        // TODO Moe - date.minusDays()
         return (this.isMultiYear && endDate && this.instanceOf && DAYS.between(DateUtils.dateToLocalDate(this.instanceOf.startDate), endDate) > 366)
     }
 
     @Deprecated
     boolean islateCommer() {
-        //return (this.endDate && (this.endDate.minus(this.startDate) > 366 && this.endDate.minus(this.startDate) < 728))
-
-        LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
+         LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
         LocalDate startDate = DateUtils.dateToLocalDate(this.startDate)
-        // TODO Moe - date.minusDays()
         return (endDate && (DAYS.between(startDate, endDate) > 366 && DAYS.between(startDate, endDate) < 728))
     }
 
@@ -688,8 +663,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @return true if this subscription is a local subscription and the running time is between 364 and 366 days (to include leap years as well)
      */
     boolean isAllowToAutomaticRenewAnnually() {
-        //return (this.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && this.startDate && this.endDate && (this.endDate.minus(this.startDate) > 363) && (this.endDate.minus(this.startDate) < 367))
-
         LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
         LocalDate startDate = DateUtils.dateToLocalDate(this.startDate)
         //return (this.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && startDate && endDate && (DAYS.between(startDate, endDate) > 363) && (DAYS.between(startDate, endDate) < 367))
@@ -852,17 +825,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     result
   }
 
-    @Deprecated
-  def setInstitution(Org inst) {
-      log.debug("Set institution ${inst}")
-
-      OrgRole or = new OrgRole(org:inst, roleType:RDStore.OR_SUBSCRIBER, sub:this)
-      if (this.orgRelations == null) {
-        this.orgRelations = []
-      }
-     this.orgRelations.add(or)
-  }
-
     /**
      * Retrieves a list ISILs of packages linked to this subscription.
      * Called from issueEntitlement/show and subscription/show, is part of the Nationaler Statistikserver statistics component
@@ -879,27 +841,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
           }
       }
       result.join(',')
-  }
-
-    /**
-     * Checks if there is a platform linked to this subscription which contains a Nationaler Statistikserver supplier ID
-     * Is part of the Nationaler Statistikserver statistics component
-     * @return true if there is a platform with a NatStat supplier ID linked to this subscription, false otherwise
-     */
-  boolean hasPlatformWithUsageSupplierId() {
-      boolean hasUsageSupplier = false
-      packages.each { it ->
-          String hql="select count(distinct sp) from SubscriptionPackage sp "+
-              "join sp.subscription.orgRelations as or "+
-              "join sp.pkg.tipps as tipps "+
-              "where sp.id=:sp_id "
-              "and exists (select 1 from CustomProperties as cp where cp.owner = tipps.platform.id and cp.type.name = 'NatStat Supplier ID')"
-          List queryResult = OrgRole.executeQuery(hql, ['sp_id':it.id])
-          if (queryResult[0] > 0){
-              hasUsageSupplier = true
-          }
-      }
-      return hasUsageSupplier
   }
 
     /**

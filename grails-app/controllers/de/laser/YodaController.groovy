@@ -51,7 +51,6 @@ import javax.servlet.ServletOutputStream
 import java.lang.annotation.Annotation
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
-import java.nio.file.Files
 import java.sql.Timestamp
 import java.time.LocalDate
 import java.util.concurrent.ExecutorService
@@ -639,33 +638,6 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     Map<String, Object> retriggerInheritance() {
         yodaService.retriggerInheritance('holdingSelection') //TODO generalise
-        redirect controller: 'home'
-    }
-
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    @Transactional
-    def remapOriginEditUrl() {
-        List<Identifier> originEditUrls = Identifier.executeQuery("select ident from Identifier ident where lower(ident.ns.ns) = 'originediturl'")
-        originEditUrls.each { originEditUrl ->
-            def obj
-            if(originEditUrl.tipp) {
-                obj = originEditUrl.tipp
-            }
-            else if(originEditUrl.ti) {
-                obj = originEditUrl.ti
-            }
-            else if(originEditUrl.pkg) {
-                obj = originEditUrl.pkg
-            }
-            else if(originEditUrl.org) {
-                obj = originEditUrl.org
-            }
-            if(!obj.originEditUrl) {
-                obj.originEditUrl = new URL(originEditUrl.identifier.value)
-                obj.save()
-            }
-        }
         redirect controller: 'home'
     }
 

@@ -42,7 +42,7 @@
                 </g:if>
                 <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
             </g:elseif>
-            <g:elseif test="${actionName == 'myPublicContacts'}">
+            <g:elseif test="${actionName == 'contacts'}">
                 <div class="divider"></div>
                 <g:if test="${editable}">
                     <a href="#createPersonModal" class="item" onclick="JSPC.app.personCreate('contactPersonForPublic');"><g:message code="person.create_new.contactPerson.label"/></a>

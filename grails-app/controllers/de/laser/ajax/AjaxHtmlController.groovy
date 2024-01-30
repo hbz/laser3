@@ -361,7 +361,7 @@ class AjaxHtmlController {
 
     /**
      * Retrieves a list of provider and agency {@link Org}s for table view
-     * @return the result of {@link de.laser.ControlledListService#getProvidersAgencies(java.util.Map)}
+     * @return the result of {@link de.laser.ControlledListService#getProvidersAgencies(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupProvidersAgencies() {
@@ -537,7 +537,7 @@ class AjaxHtmlController {
         result.addContacts = params.showContacts == "true" ? true : ''
         result.showAddresses = params.showAddresses == "true" ? true : ''
         result.addAddresses = params.showAddresses == "true" ? true : ''
-        result.org = params.org ? Org.get(Long.parseLong(params.org)) : null
+        result.org = params.org ? Org.get(params.long('org')) : null
         result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_OA_CONTACT]
         if(result.contextOrg.isCustomerType_Consortium()){
             result.functions << RDStore.PRS_FUNC_GASCO_CONTACT
@@ -598,7 +598,7 @@ class AjaxHtmlController {
             result.positions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]
 
             if (result.org || (params.org && params.org instanceof String)) {
-                result.org = params.org ? Org.get(Long.parseLong(params.org)) : result.org
+                result.org = params.org ? Org.get(params.long('org')) : result.org
                 List allOrgTypeIds =result.org.getAllOrgTypeIds()
                 if(RDStore.OT_PROVIDER.id in allOrgTypeIds || RDStore.OT_AGENCY.id in allOrgTypeIds){
                     result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FC_DELIVERY_ADDRESS]
@@ -758,7 +758,7 @@ class AjaxHtmlController {
             token:  params.token,
             query:  params.query
         ]
-        result.id = params.id ? params.id != 'null' ? params.id as Long : '' : ''
+        result.id = params.id ? (params.id != 'null' ? params.long('id') : '') : ''
 
         if (params.context == BaseConfig.KEY_MYINST) {
             reportingGlobalService.doChartDetails( result, params ) // manipulates result

@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.helper.Params
 import de.laser.interfaces.CalculatedType
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -195,6 +196,58 @@ class DocstoreService {
         Doc.executeQuery("select dc from DocContext dc, Doc d where " + query, queryParams)
     }
 
+    int getNotesCount(def objInstance, Org docOwner) {
+
+        Map queryParams = [instance: objInstance, del: RDStore.DOC_CTX_STATUS_DELETED, docOwner: docOwner]
+        String query =  "and dc.owner = d and d.contentType = 0 and (dc.status is null or dc.status != :del) " +
+                "and (dc.sharedFrom is not null or (dc.sharedFrom is null and d.owner =: docOwner)) "
+
+        if (objInstance instanceof Subscription) {
+            query = "dc.subscription = :instance " + query
+        }
+        else if (objInstance instanceof License) {
+            query = "dc.license = :instance " + query
+        }
+        else if (objInstance instanceof Org) {
+            query = "dc.org = :instance " + query
+        }
+        else if (objInstance instanceof SurveyConfig) {
+            query = "dc.surveyConfig = :instance " + query
+        }
+        else {
+            return 0
+        }
+
+
+        Doc.executeQuery("select count(*) from DocContext dc, Doc d where " + query, queryParams)[0]
+    }
+
+    int getDocsCount(def objInstance, Org docOwner) {
+
+        Map queryParams = [instance: objInstance, del: RDStore.DOC_CTX_STATUS_DELETED, docOwner: docOwner]
+        String query =  "and dc.owner = d and d.contentType = 3 and (dc.status is null or dc.status != :del) " +
+                "and (dc.sharedFrom is not null or (dc.sharedFrom is null and d.owner =: docOwner)) "
+
+        if (objInstance instanceof Subscription) {
+            query = "dc.subscription = :instance " + query
+        }
+        else if (objInstance instanceof License) {
+            query = "dc.license = :instance " + query
+        }
+        else if (objInstance instanceof Org) {
+            query = "dc.org = :instance " + query
+        }
+        else if (objInstance instanceof SurveyConfig) {
+            query = "dc.surveyConfig = :instance " + query
+        }
+        else {
+            return 0
+        }
+
+
+        Doc.executeQuery("select count(*) from DocContext dc, Doc d where " + query, queryParams)[0]
+    }
+
     /**
      * Performs the given bulk operation (params.bulk_op) on a list of {@link Doc}uments
      * @param params the request parameter map
@@ -208,8 +261,7 @@ class DocstoreService {
 
                 try {
                     RefdataValue dc = params.bulk_docConf ? RefdataValue.get(params.bulk_docConf) : null
-                    List<Long> idList = params.bulk_docIdList.split(',').collect { it as Long }
-
+                    List<Long> idList = Params.getLongList_forCommaSeparatedString(params, 'bulk_docIdList')
                     idList.each { id ->
                         Doc doc = Doc.get(id)
                         if (doc.owner.id == result.contextOrg.id) {

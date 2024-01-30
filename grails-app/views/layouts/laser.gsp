@@ -49,6 +49,9 @@
     <g:layoutHead/>
 
     <g:render template="/layouts/favicon" />
+    <style>
+        main > nav.buttons > .button { display: none; }
+    </style>
 </head>
 
 <body class="${controllerName}_${actionName}">
@@ -65,7 +68,7 @@
 
     <g:set var="visibilityContextOrgMenu" value="la-hide-context-orgMenu" />
 
-        <div id="mainMenue" class="ui fixed inverted menu la-js-verticalNavi" role="menubar">
+        <nav id="mainMenue" class="ui fixed inverted menu la-js-verticalNavi" role="menubar">
             <div class="ui container" role="none">
                 <ui:link addItemAttributes="true" controller="home" aria-label="${message(code:'default.home.label')}" class="header item la-logo-item">
                     <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
@@ -157,7 +160,7 @@
 
             </div><!-- container -->
 
-        </div><!-- main menu -->
+        </nav><!-- main menu -->
 
         %{-- context bar --}%
 
@@ -168,7 +171,7 @@
         %{-- global content container --}%
 
         <div class="pusher">
-            <main id="main" class="ui main container ${visibilityContextOrgMenu} hidden la-js-mainContent" >
+            <main id="mainContent" class="ui main container ${visibilityContextOrgMenu} hidden">
 
                 %{-- system messages --}%
 
@@ -229,8 +232,10 @@
         <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show'}">
             <laser:script file="${this.getGroovyPageFileName()}">
                 <%
-                    boolean isDeckSaverEditMode = contextUser.getSettingsValue(UserSetting.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES).value == 'Yes' &&
-                                                  (editable || contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))
+                    boolean isDeckSaverEditMode = contextUser ? (
+                            contextUser.getSettingsValue(UserSetting.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES).value == 'Yes' &&
+                            (editable || contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))
+                    ) : false
                 %>
                 deckSaver.configs.editMode = ${isDeckSaverEditMode};
                 deckSaver.configs.ajaxUrl = '<g:createLink controller="ajax" action="toggleEditMode"/>';

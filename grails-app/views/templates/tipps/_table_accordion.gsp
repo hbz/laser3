@@ -12,7 +12,7 @@
                     <div class="ui raised segments la-accordion-segments">
 
                         <g:render template="/templates/titles/title_segment_accordion"
-                                  model="[ie: null, tipp: tipp, permanentTitle: PermanentTitle.findByOwnerAndTipp(ptOwner, tipp)]"/>
+                                  model="[ie: null, tipp: tipp, permanentTitle: ptOwner ? PermanentTitle.findByOwnerAndTipp(ptOwner, tipp) : null]"/>
 
                         <g:render template="/templates/titles/title_content_segment_accordion" model="[ie: null, tipp: tipp]"/>
                     </div>

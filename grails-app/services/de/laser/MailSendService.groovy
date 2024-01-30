@@ -56,11 +56,12 @@ class MailSendService {
     Map mailSendConfigBySurvey(SurveyInfo surveyInfo, boolean reminderMail) {
         Map<String, Object> result = [:]
         String ownerFromMail
-        if(OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
-            ownerFromMail = OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY).strValue
+        if(OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
+            ownerFromMail = OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY).strValue
         }
 
-        result.mailFrom = ownerFromMail ?: fromMail
+        result.mailReplyTo = ownerFromMail ?: ''
+        result.mailFrom = fromMail
         result.mailSubject = ""
         result.mailText = ""
 
@@ -85,12 +86,11 @@ class MailSendService {
         Map<String, Object> result = [:]
 
         String ownerFromMail
-        if(OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
-            ownerFromMail = OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY).strValue
+        if(OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
+            ownerFromMail = OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY).strValue
         }
 
-        result.mailFrom = ownerFromMail ?: fromMail
-
+        result.replyTo = ownerFromMail ?: ''
         result.mailFrom = fromMail
         result.mailSubject = ""
         result.mailText = ""
@@ -127,11 +127,11 @@ class MailSendService {
         FlashScope flash = getCurrentFlashScope()
 
         String ownerFromMail
-        if(OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
-            ownerFromMail = OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY).strValue
+        if(OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
+            ownerFromMail = OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY).strValue
         }
 
-        result.mailFrom = ownerFromMail ?: fromMail
+        result.mailFrom = fromMail
         result.mailSubject = parameterMap.mailSubject
 
         result.editable = (surveyInfo && surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED]) ? surveyInfo.isEditable() : false
@@ -277,11 +277,11 @@ class MailSendService {
         FlashScope flash = getCurrentFlashScope()
 
         String ownerFromMail
-        if(OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
-            ownerFromMail = OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY).strValue
+        if(OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
+            ownerFromMail = OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY).strValue
         }
 
-        result.mailFrom = ownerFromMail ?: fromMail
+        result.mailFrom = fromMail
         result.mailSubject = parameterMap.mailSubject
 
         result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
@@ -391,11 +391,11 @@ class MailSendService {
                         }
 
                         String ownerFromMail
-                        if(OrgSetting.get(survey.owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
-                            ownerFromMail = OrgSetting.get(survey.owner, OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY).strValue
+                        if(OrgSetting.get(survey.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
+                            ownerFromMail = OrgSetting.get(survey.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY).strValue
                         }
 
-                        String mailFrom = ownerFromMail ?: fromMail
+                        String mailFrom = fromMail
 
                         if(ownerFromMail){
                             replyToMail = ownerFromMail

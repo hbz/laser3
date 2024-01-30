@@ -30,8 +30,7 @@
     <br/>
 </g:if>
 
-<laser:render template="/templates/identifier"
-              model="${[tipp: tipp]}"/>
+<laser:render template="/templates/identifier" model="${[tipp: tipp]}"/>
 
 <g:if test="${!showCompact}">
     <br/>

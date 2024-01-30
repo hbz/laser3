@@ -10,7 +10,7 @@
         <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>
         <g:each in="${titlesList}" var="tipp">
             <g:set var="ieInNewSub"
-                   value="${surveyService.titleContainedBySubscription(subscriberSub, tipp)}"/>
+                   value="${surveyService.titleContainedBySubscription(subscriberSub, tipp, [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_EXPECTED])}"/>
             <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
                 <g:set var="participantPerpetualAccessToTitle"
                        value="${surveyService.hasParticipantPerpetualAccessToTitle3(subscriber, tipp)}"/>
@@ -305,5 +305,6 @@
 
             </div>
         </div>
+    </div>
 
 </div>

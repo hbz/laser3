@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.remote.ApiSource; de.laser.AlternativeName" %>
+<%@ page import="de.laser.survey.SurveyInfo; de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.remote.ApiSource; de.laser.AlternativeName" %>
 <laser:serviceInjection/>
 <g:if test="${'surveySubCostItem' in tmplConfigShow}">
     <g:set var="oldCostItem" value="${0.0}"/>
@@ -35,14 +35,11 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('lineNumber')}">
                 <th>${message(code: 'sidewide.number')}</th>
             </g:if>
-
             <g:if test="${tmplConfigItem.equalsIgnoreCase('sortname')}">
-                <g:sortableColumn title="${message(code: 'org.sortname.label')}"
-                                  property="lower(o.sortname)" params="${request.getParameterMap()}"/>
+                <g:sortableColumn title="${message(code: 'org.sortname.label')}" property="lower(o.sortname)" params="${request.getParameterMap()}"/>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
-                <g:sortableColumn title="${message(code: 'org.fullName.label')}" property="lower(o.name)"
-                                  params="${request.getParameterMap()}"/>
+                <g:sortableColumn title="${message(code: 'org.fullName.label')}" property="lower(o.name)" params="${request.getParameterMap()}"/>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('altname')}">
                 <th>${message(code: 'org.altname.label')}</th>
@@ -258,6 +255,7 @@
                 <th scope="row" class="la-th-column la-main-object">
                     <div class="la-flexbox">
                         <ui:customerTypeProIcon org="${org}" cssClass="la-list-icon" />
+
                         <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
                             ${fieldValue(bean: org, field: "name")}
                         </g:if>
@@ -313,16 +311,6 @@
                     <g:each in="${PersonRole.findAllByFunctionTypeAndOrg(RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, org)}"
                             var="personRole">
                         <g:if test="${personRole.prs.isPublic || (!personRole.prs.isPublic && personRole.prs.tenant?.id == contextService.getOrg().id)}">
-                                <%--
-                                <g:if test="${! personRole.prs.isPublic}">
-                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
-                                        <i class="address card outline icon"></i>
-                                    </span>
-                                </g:if>
-                                <g:else>
-                                    <i class="address card icon"></i>
-                                </g:else>
-                                --%>
                                 ${personRole.getPrs()?.getFirst_name()} ${personRole.getPrs()?.getLast_name()} <br />
 
                                 <g:each in="${Contact.findAllByPrsAndContentType(
@@ -520,18 +508,6 @@
                                 <g:set var="ol" value="${ol+1}"/>
                             </g:if>
                         </g:if>
-                    <%--
-                    <g:if test="${pl?.functionType?.value && (! pl.prs.isPublic) && pl?.prs?.tenant?.id == contextService.getOrg().id}">
-                        <laser:render template="/templates/cpa/person_details" model="${[
-                                personRole          : pl,
-                                tmplShowDeleteButton: false,
-                                tmplConfigShow      : ['E-Mail', 'Mail', 'Phone'],
-                                controller          : 'organisation',
-                                action              : 'show',
-                                id                  : org.id
-                        ]}"/>
-                    </g:if>
-                    --%>
                     </g:each>
                 </td>
             </g:if>
@@ -539,24 +515,24 @@
                 <td class="center aligned">
                     <div class="la-flexbox">
                         <%
-                        def subStatus
+                        // TODO: ERMS-5518 - false numberOfSubscriptions !?
+                        Long subStatus = params.subStatus ? params.long('subStatus') : null
                         if(actionName == 'currentProviders') {
-                            subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
+                            subStatus = RDStore.SUBSCRIPTION_CURRENT.id
                         }
-                        else subStatus = params.subStatus
 
                         if(params.filterPvd && params.filterPvd != "" && params.list('filterPvd')){
                             (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(
-                                    [org: org, actionName: actionName, status: subStatus ?: null, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null, providers: params.list('filterPvd')]
+                                    [org: org, actionName: actionName, status: subStatus, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null, providers: params.list('filterPvd')]
                             )
                         }else {
                             (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(
-                                    [org: org, actionName: actionName, status: subStatus ?: null, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null]
+                                    [org: org, actionName: actionName, status: subStatus, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null]
                             )
                         }
                         def numberOfSubscriptions = Subscription.executeQuery("select s.id " + base_qry, qry_params).size()
                         /*if(params.subPerpetual == "on") {
-                            (base_qry2, qry_params2) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: subStatus == RDStore.SUBSCRIPTION_CURRENT.id.toString() ? RDStore.SUBSCRIPTION_EXPIRED.id.toString() : null, hasPerpetualAccess: RDStore.YN_YES.id.toString()])
+                            (base_qry2, qry_params2) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: subStatus == RDStore.SUBSCRIPTION_CURRENT.id ? RDStore.SUBSCRIPTION_EXPIRED.id : null, hasPerpetualAccess: RDStore.YN_YES.id])
                             numberOfSubscriptions+=Subscription.executeQuery("select s.id " + base_qry2, qry_params2).size()
                         }*/
                         %>
@@ -570,7 +546,7 @@
                         </g:if>
                         <g:elseif test="${actionName == 'currentConsortia'}">
                             <g:link controller="myInstitution" action="currentSubscriptions"
-                                    params="${[consortia: genericOIDService.getOID(org), status: subStatus ?: null, validOn: params.subValidOn, filterSet: true]}"
+                                    params="${[consortia: genericOIDService.getOID(org), status: subStatus, validOn: params.subValidOn, filterSet: true]}"
                                     title="${message(code: 'org.subscriptions.tooltip', args: [org.name])}">
                                 <div class="ui blue circular label">
                                     ${numberOfSubscriptions}
@@ -579,7 +555,7 @@
                         </g:elseif>
                         <g:elseif test="${actionName == 'currentProviders'}">
                             <g:link controller="myInstitution" action="currentSubscriptions"
-                                    params="${[identifier: org.globalUID, status: [RDStore.SUBSCRIPTION_CURRENT.id.toString()], isSiteReloaded: 'yes']}"
+                                    params="${[identifier: org.globalUID, status: RDStore.SUBSCRIPTION_CURRENT.id, isSiteReloaded: 'yes']}"
                                     title="${message(code: 'org.subscriptions.tooltip', args: [org.name])}">
                                 <div class="ui blue circular label">
                                     ${numberOfSubscriptions}
@@ -627,33 +603,19 @@
                     <td class="center aligned">
                         <div class="la-flexbox">
                             <g:if test="${invertDirection}">
-                                <g:set var="participantSurveys"
-                                       value="${SurveyResult.findAllByParticipantAndOwnerAndEndDateGreaterThanEquals(contextService.getOrg(), org, new Date())}"/>
+                                <g:set var="countNotFinish"
+                                       value="${SurveyInfo.executeQuery("select count(*) from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg where surOrg.org = :org and surOrg.finishDate is null and surInfo.status = :status and surInfo.owner = :owner", [org: contextService.getOrg(), owner: org, status: RDStore.SURVEY_SURVEY_STARTED])[0]}"/>
                             </g:if>
                             <g:else>
-                                <g:set var="participantSurveys"
-                                       value="${SurveyResult.findAllByOwnerAndParticipantAndEndDateGreaterThanEquals(contextService.getOrg(), org, new Date())}"/>
+                                <g:set var="countNotFinish"
+                                       value="${SurveyInfo.executeQuery("select count(*) from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg where surOrg.org = :org and surOrg.finishDate is null and surInfo.status = :status and surInfo.owner = :owner", [org: org, owner: contextService.getOrg(), status: RDStore.SURVEY_SURVEY_STARTED])[0]}"/>
                             </g:else>
-                            <g:set var="numberOfSurveys"
-                                   value="${participantSurveys.groupBy { it.surveyConfig.id }.size()}"/>
                             <%
                                 def finishColor = ""
-                                def countFinish = 0
-                                def countNotFinish = 0
-
-                                participantSurveys.each {
-                                    if (it.isResultProcessed()) {
-                                        countFinish++
-                                    } else {
-                                        countNotFinish++
-                                    }
-                                }
-                                if (countFinish > 0 && countNotFinish == 0) {
+                                if (countNotFinish == 0) {
                                     finishColor = "green"
-                                } else if (countFinish > 0 && countNotFinish > 0) {
+                                } else if (countNotFinish > 0) {
                                     finishColor = "yellow"
-                                } else {
-                                    finishColor = "red"
                                 }
                             %>
 
@@ -661,7 +623,7 @@
                                 <g:link controller="myInstitution" action="currentSurveys"
                                         params="[owner: org.id]">
                                     <div class="ui circular ${finishColor} label">
-                                        ${numberOfSurveys}
+                                        ${countNotFinish}
                                     </div>
                                 </g:link>
                             </g:if>
@@ -669,7 +631,7 @@
                                 <g:link controller="myInstitution" action="manageParticipantSurveys"
                                         id="${org.id}">
                                     <div class="ui circular ${finishColor} label">
-                                        ${numberOfSurveys}
+                                        ${countNotFinish}
                                     </div>
                                 </g:link>
                             </g:else>
@@ -760,20 +722,11 @@
                         <g:if test="${orgSub.isCurrentMultiYearSubscriptionNew()}">
                             <g:message code="surveyOrg.perennialTerm.available"/>
                             <br />
-                            <g:link controller="subscription" action="show"
-                                    id="${orgSub.id}">
-                                ${orgSub.name}
-                            </g:link>
                         </g:if>
-                        <g:else>
-                            <g:link controller="subscription" action="show"
-                                    id="${orgSub.id}">
-                                ${orgSub.name}
-                            </g:link>
-                        </g:else>
+
+                        <g:link controller="subscription" action="show" id="${orgSub.id}">${orgSub.name}</g:link>
 
                         <ui:xEditableAsIcon owner="${orgSub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea" overwriteEditable="${false}"/>
-
                     </g:if>
                 </td>
             </g:if>
@@ -783,26 +736,14 @@
                         <g:if test="${orgSub.isCurrentMultiYearSubscriptionNew()}">
                             <g:message code="surveyOrg.perennialTerm.available"/>
                             <br />
-                            <g:link controller="subscription" action="show"
-                                    id="${orgSub.id}">
-                                <g:formatDate formatName="default.date.format.notime"
-                                              date="${orgSub.startDate}"/><br />
-                                <g:formatDate formatName="default.date.format.notime"
-                                              date="${orgSub.endDate}"/>
-                            </g:link>
                         </g:if>
-                        <g:else>
-                            <g:link controller="subscription" action="show"
-                                    id="${orgSub.id}">
-                                <g:formatDate formatName="default.date.format.notime"
-                                              date="${orgSub.startDate}"/><br />
-                                <g:formatDate formatName="default.date.format.notime"
-                                              date="${orgSub.endDate}"/>
-                            </g:link>
-                        </g:else>
+
+                        <g:link controller="subscription" action="show" id="${orgSub.id}">
+                            <g:formatDate formatName="default.date.format.notime" date="${orgSub.startDate}"/><br />
+                            <g:formatDate formatName="default.date.format.notime" date="${orgSub.endDate}"/>
+                        </g:link>
 
                         <ui:xEditableAsIcon owner="${orgSub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea" overwriteEditable="${false}"/>
-
                     </g:if>
                 </td>
             </g:if>
@@ -812,18 +753,9 @@
                         <g:if test="${orgSub.isCurrentMultiYearSubscriptionNew()}">
                             <g:message code="surveyOrg.perennialTerm.available"/>
                             <br />
-                            <g:link controller="subscription" action="show"
-                                    id="${orgSub.id}">
-                                ${orgSub.status.getI10n('value')}
-                            </g:link>
                         </g:if>
-                        <g:else>
-                            <g:link controller="subscription" action="show"
-                                    id="${orgSub.id}">
-                                ${orgSub.status.getI10n('value')}
-                            </g:link>
-                        </g:else>
 
+                        <g:link controller="subscription" action="show" id="${orgSub.id}">${orgSub.status.getI10n('value')}</g:link>
                     </g:if>
                 </td>
             </g:if>

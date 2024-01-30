@@ -164,13 +164,14 @@
             </g:if>
         </g:if>
         <g:else>
-            <div class="ui segment">
+            <g:if test="${platformInstanceRecords.values().statisticsFormat.contains('COUNTER')}">
                 <ui:tabs>
                     <g:each in="${platformInstanceRecords.values()}" var="platform">
-                        <ui:tabsItem controller="subscription" action="stats" tab="${platform.id.toString()}" params="${params + [tab: platform.id.toString()]}" text="${platform.name}"/>
+                        <ui:tabsItem controller="subscription" action="stats" tab="${platform.id.toString()}"
+                                     params="${params + [tab: platform.id]}" text="${platform.name}"/>
                     </g:each>
                 </ui:tabs>
-                <div class="ui bottom attached tab active" id="customerIdWrapper">
+                <div class="ui bottom attached tab active segment" id="customerIdWrapper">
                     <table class="ui la-js-responsive-table la-table table">
                         <thead>
                         <tr>
@@ -184,24 +185,34 @@
                         </thead>
                         <tbody>
                         <g:each in="${keyPairs}" var="pair" status="rowno">
+                        %{-- TODO: erms-5495 --}%
+                        %{--                <g:set var="overwriteEditable_ci" value="${editable}" />--}%
+                            <%
+                                boolean overwriteEditable_ci = contextService.getUser().isAdmin() ||
+                                        userService.hasFormalAffiliation(contextService.getUser(), pair.owner, 'INST_EDITOR') ||
+                                        userService.hasFormalAffiliation(contextService.getUser(), pair.customer, 'INST_EDITOR')
+                            %>
                             <tr>
                                 <td>${pair.customer.sortname ?: pair.customer.name}</td>
                                 <td>${pair.getProvider()} : ${pair.platform.name}</td>
-                                <td><ui:xEditable owner="${pair}" field="value"/></td>
-                                <td><ui:xEditable owner="${pair}" field="requestorKey"/></td>
-                                <td><ui:xEditable owner="${pair}" field="note"/></td>
+                                <td><ui:xEditable owner="${pair}" field="value"
+                                                  overwriteEditable="${overwriteEditable_ci}"/></td>
+                                <td><ui:xEditable owner="${pair}" field="requestorKey"
+                                                  overwriteEditable="${overwriteEditable_ci}"/></td>
+                                <td><ui:xEditable owner="${pair}" field="note"
+                                                  overwriteEditable="${overwriteEditable_ci}"/></td>
                                 <td>
-                                    <g:if test="${editable}">
+                                    <g:if test="${overwriteEditable_ci}">
                                         <g:link controller="subscription"
-                                                action="deleteCustomerIdentifier"
+                                                action="unsetCustomerIdentifier"
                                                 id="${subscription.id}"
                                                 params="${[deleteCI: pair.id]}"
-                                                class="ui button icon red js-open-confirm-modal"
-                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.customeridentifier", args: ["" + pair.getProvider() + " : " + pair.platform + " " + pair.value])}"
-                                                data-confirm-term-how="delete"
+                                                class="ui button icon red la-modern-button js-open-confirm-modal"
+                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.unset.customeridentifier", args: ["" + pair.getProvider() + " : " + (pair.platform ?: '') + " " + (pair.value ?: '')])}"
+                                                data-confirm-term-how="unset"
                                                 role="button"
                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                            <i class="trash alternate outline icon"></i>
+                                            <i class="eraser icon"></i>
                                         </g:link>
                                     </g:if>
                                 </td>
@@ -210,72 +221,149 @@
                         </tbody>
                     </table>
                 </div>
-            </div>
-            <g:if test="${reportTypes}">
-                <g:if test="${revision == AbstractReport.COUNTER_4}">
-                    <ui:msg icon="ui info icon" class="info" header="${message(code: 'default.usage.counter4reportInfo.header')}" message="default.usage.counter4reportInfo.text" noClose="true"/>
-                </g:if>
-                <g:form action="generateReport" name="stats" class="ui form" method="get">
-                    <g:hiddenField name="id" value="${subscription.id}"/>
-                    <g:hiddenField name="revision" value="${revision}"/>
-                    <div class="five fields" id="filterDropdownWrapper">
-                        <g:if test="${platformInstanceRecords.size() > 1}">
-                            <div class="field">
-                                <label for="platform"><g:message code="platform"/></label>
-                                <ui:select class="ui search selection dropdown" from="${platformInstanceRecords}" name="platform"/>
-                            </div>
-                        </g:if>
-                        <g:elseif test="${platformInstanceRecords.size() == 1}">
-                            <g:hiddenField name="platform" value="${platformInstanceRecords.values()[0].id}"/>
-                        </g:elseif>
-                        <div class="field">
-                            <label for="reportType"><g:message code="default.usage.reportType"/></label>
-                            <select name="reportType" id="reportType" class="ui search selection dropdown">
-                                <option value=""><g:message code="default.select.choose.label"/></option>
-                                <g:each in="${reportTypes}" var="reportType">
-                                    <option <%=(params.reportType == reportType) ? 'selected="selected"' : ''%>
-                                            value="${reportType}">
-                                        <g:message code="default.usage.${reportType}"/>
-                                    </option>
-                                </g:each>
-                                <g:if test="${reportTypes.size() == 0}">
-                                    <option value="<g:message code="default.stats.noReport" />"><g:message code="default.stats.noReport" /></option>
-                                </g:if>
-                            </select>
-                        </div>
-                        <g:if test="${params.reportType}">
-                            <laser:render template="/templates/filter/statsFilter"/>
-                        </g:if>
-                        <%-- reports filters in COUNTER 5 count only for master reports (tr, pr, dr, ir)! COUNTER 4 has no restriction on filter usage afaik --%>
-                    </div>
-                    <div class="four fields">
-                        <div class="field"></div>
-                        <div class="field"></div>
-                        <div class="field la-field-right-aligned">
-                            <%-- deactivated as of ERMS-3996; concept needs to be clarified
-                            <input id="generateCostPerUse" type="button" class="ui secondary button" value="${message(code: 'default.stats.generateCostPerUse')}"/>--%>
-                            <g:link action="stats" id="${subscription.id}" class="ui button secondary">${message(code:'default.button.reset.label')}</g:link>
-                        </div>
-                        <div class="field la-field-right-aligned">
-                            <input id="generateReport" type="button" class="ui primary button" disabled="disabled" value="${message(code: 'default.stats.generateReport')}"/>
-                        </div>
-                    </div>
-                </g:form>
-            </g:if>
-            <g:elseif test="${error}">
-                <ui:msg icon="ui times icon" class="error" noClose="true">
-                    <g:message code="default.stats.error.${error}" args="${errorArgs}"/>
-                    <g:if test="${error == 'noCustomerId'}">
-                        <%-- proxies are coming!!! --%>
-                        <g:if test="${contextOrg.id == subscription.getConsortia()?.id}">
-                            <g:link controller="subscription" action="membersSubscriptionsManagement" id="${subscription.instanceOf.id}" params="[tab: 'customerIdentifiers', isSiteReloaded: false]"><g:message code="org.customerIdentifier"/></g:link>
-                        </g:if>
+
+                <g:if test="${reportTypes}">
+                    <g:if test="${revision == AbstractReport.COUNTER_4}">
+                        <ui:msg icon="ui info icon" class="info"
+                                header="${message(code: 'default.usage.counter4reportInfo.header')}"
+                                message="default.usage.counter4reportInfo.text" noClose="true"/>
                     </g:if>
-                </ui:msg>
-            </g:elseif>
-            <div id="reportWrapper"></div>
+                    <g:form action="generateReport" name="stats" class="ui form" method="get">
+                        <g:hiddenField name="id" value="${subscription.id}"/>
+                        <g:hiddenField name="revision" value="${revision}"/>
+                        <div class="five fields" id="filterDropdownWrapper">
+                            <g:if test="${platformInstanceRecords.size() > 1}">
+                                <div class="field">
+                                    <label for="platform"><g:message code="platform"/></label>
+                                    <ui:select class="ui search selection dropdown" from="${platformInstanceRecords}"
+                                               name="platform"/>
+                                </div>
+                            </g:if>
+                            <g:elseif test="${platformInstanceRecords.size() == 1}">
+                                <g:hiddenField name="platform" value="${platformInstanceRecords.values()[0].id}"/>
+                            </g:elseif>
+                            <div class="field">
+                                <label for="reportType"><g:message code="default.usage.reportType"/></label>
+                                <select name="reportType" id="reportType" class="ui search selection dropdown">
+                                    <option value=""><g:message code="default.select.choose.label"/></option>
+                                    <g:each in="${reportTypes}" var="reportType">
+                                        <option <%=(params.reportType == reportType) ? 'selected="selected"' : ''%>
+                                                value="${reportType}">
+                                            <g:message code="default.usage.${reportType}"/>
+                                        </option>
+                                    </g:each>
+                                    <g:if test="${reportTypes.size() == 0}">
+                                        <option value="<g:message code="default.stats.noReport"/>"><g:message
+                                                code="default.stats.noReport"/></option>
+                                    </g:if>
+                                </select>
+                            </div>
+                            <g:if test="${params.reportType}">
+                                <laser:render template="/templates/filter/statsFilter"/>
+                            </g:if>
+                            <%-- reports filters in COUNTER 5 count only for master reports (tr, pr, dr, ir)! COUNTER 4 has no restriction on filter usage afaik --%>
+                        </div>
+
+                        <div class="field">
+                            <div id="selDate" class="ui labeled ticked range slider"></div>
+                        </div>
+
+                        <div class="four fields">
+                            <div class="field"></div>
+
+                            <div class="field"></div>
+
+                            <div class="field la-field-right-aligned">
+                                <%-- deactivated as of ERMS-3996; concept needs to be clarified
+                                <input id="generateCostPerUse" type="button" class="ui secondary button" value="${message(code: 'default.stats.generateCostPerUse')}"/>--%>
+                                <g:link action="stats" id="${subscription.id}"
+                                        class="ui button secondary">${message(code: 'default.button.reset.label')}</g:link>
+                            </div>
+
+                            <div class="field la-field-right-aligned">
+                                <input id="generateReport" type="button" class="ui primary button" disabled="disabled"
+                                       value="${message(code: 'default.stats.generateReport')}"/>
+                            </div>
+                        </div>
+                    </g:form>
+                </g:if>
+                <g:elseif test="${error}">
+                    <ui:msg icon="ui times icon" class="error" noClose="true">
+                        <g:if test="${error == 'noCustomerId'}">
+                            <g:message code="default.stats.error.${error}.local" args="${errorArgs}"/>
+
+                            <g:if test="${contextOrg.id == subscription.getConsortia()?.id}">
+                                <br/>
+                                Alternativ: <g:link controller="subscription" action="membersSubscriptionsManagement"
+                                                    id="${subscription.instanceOf.id}"
+                                                    params="[tab: 'customerIdentifiers', isSiteReloaded: false]">
+                                <g:message code="subscriptionsManagement.subscriptions.members"/> &rarr; <g:message
+                                        code="org.customerIdentifier"/>
+                            </g:link>
+                            </g:if>
+                        </g:if>
+                        <g:else>
+                            <g:message code="default.stats.error.${error}" args="${errorArgs}"/>
+                        </g:else>
+                    </ui:msg>
+                </g:elseif>
+                <div id="reportWrapper"></div>
+            </g:if>
         </g:else>
         <laser:script file="${this.getGroovyPageFileName()}">
+            /*
+                equivalency table:
+                0: 2021-01
+                max: current value +1
+                start: last month
+                end: current month
+            */
+            let step = 1;
+            let monthIndex = 0;
+            let limit = new Date();
+            limit.setHours(0);
+            limit.setMinutes(0);
+            limit.setSeconds(0);
+            limit.setMilliseconds(0);
+            let currDate = new Date(2021, 0, 1, 0, 0, 0, 0);
+            let currMonth = currDate.getMonth()+1;
+            if(currMonth < 10)
+                currMonth = '0'+currMonth;
+            let startDate = currDate.getFullYear()+'-'+currMonth;
+            currMonth = limit.getMonth(); //previous month
+            let endDate = limit.getFullYear()+'-'+currMonth;
+            if(currMonth > 0 && currMonth < 10)
+                currMonth = '0'+currMonth;
+            else if(currMonth === 0)
+                endDate = (limit.getFullYear()-1)+'-12';
+            let months = [];
+            let displayMonths = [];
+            while(currDate.getTime() <= limit.getTime()) {
+                currMonth = currDate.getMonth()+1;
+                if(currMonth < 10)
+                    currMonth = '0'+currMonth;
+                if(currMonth === '01')
+                    displayMonths.push(currDate.getFullYear()+'-'+currMonth);
+                months.push(currDate.getFullYear()+'-'+currMonth);
+                currDate.setMonth(currDate.getMonth()+1);
+                monthIndex++;
+            }
+            $("#selDate").slider({
+                min: 0,
+                max: months.length-1,
+                start: 0,
+                end: months.length-2,
+                step: step,
+                restrictedLabels: displayMonths,
+                showLabelTicks: 'always',
+                interpretLabel: function(value) {
+                    return months[value];
+                },
+                onChange: function(range, start, end) {
+                    startDate = months[start];
+                    endDate = months[end];
+                }
+            });
             $("#reportType").on('change', function() {
                 <g:applyCodec encodeAs="none">
                     let platforms = ${platformsJSON};
@@ -313,6 +401,8 @@
             $("#generateReport").on('click', function() {
                 $('#globalLoadingIndicator').show();
                 let fd = new FormData($('#stats')[0]);
+                fd.append('startDate',startDate);
+                fd.append('endDate',endDate);
                 $.ajax({
                     url: "<g:createLink action="generateReport"/>",
                     data: fd,

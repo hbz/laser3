@@ -2,6 +2,7 @@ package de.laser.http
 
 import de.laser.utils.AppUtils
 import grails.converters.JSON
+import grails.util.Environment
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 import groovy.xml.XmlSlurper
@@ -90,8 +91,9 @@ class BasicHttpClient {
             this.silentMode = silentMode
             client = HttpClient.create(this.url)
 
-            if (silentMode) {
-                // log.debug 'Using BasicHttpClient(' + url + ') in silentMode'
+            if (Environment.isDevelopmentMode() && silentMode) {
+                this.silentMode = false
+                log.debug 'Using BasicHttpClient(' + url + ') - development mode'
             }
         }
         catch(Exception e) {
@@ -113,8 +115,9 @@ class BasicHttpClient {
             this.silentMode = silentMode
             client = HttpClient.create(this.url, config)
 
-            if (silentMode) {
-                // log.debug 'Using BasicHttpClient(' + url + ', config) in silentMode'
+            if (Environment.isDevelopmentMode() && silentMode) {
+                this.silentMode = false
+                log.debug 'Using BasicHttpClient(' + url + ') - development mode'
             }
         }
         catch(Exception e) {

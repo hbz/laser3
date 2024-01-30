@@ -17,17 +17,6 @@
                 <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
             </ui:exportDropdownItem>
 
-            %{--<ui:exportDropdownItem>
-                <g:link class="item" action="surveyEvaluation" id="${surveyInfo.id}"
-                        params="[surveyConfigID: surveyConfig.id, exportXLSX: true]">${message(code: 'survey.exportSurvey')}</g:link>
-            </ui:exportDropdownItem>
-
-            <g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
-            <ui:exportDropdownItem>
-                <g:link class="item" action="surveyEvaluation" id="${surveyInfo.id}"
-                        params="[surveyConfigID: surveyConfig.id, exportXLSX: true, surveyCostItems: true]">${message(code: 'survey.exportSurveyCostItems')}</g:link>
-            </ui:exportDropdownItem>
-            </g:if>--}%
         </ui:exportDropdown>
     </g:if>
 

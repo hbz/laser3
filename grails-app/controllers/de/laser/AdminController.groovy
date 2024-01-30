@@ -5,11 +5,9 @@ import de.laser.utils.AppUtils
 import de.laser.helper.DatabaseInfo
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
-import de.laser.cache.EhcacheWrapper
 import de.laser.utils.SwissKnife
 import de.laser.remote.FTControl
 import de.laser.auth.Role
-import de.laser.auth.User
 import de.laser.properties.PropertyDefinition
 import de.laser.api.v0.ApiToolkit
 
@@ -327,7 +325,7 @@ class AdminController  {
         String query2en = "select rdv.rdv_value_en from refdata_value rdv, refdata_category rdc where rdv.rdv_owner = rdc.rdc_id and rdc.rdc_description = 'ddc'"
 
         String query3 = "select org_name from org"
-        String query4 = "select ti_title from title_instance"
+        String query4 = "select tipp_name from title_instance_package_platform"
 
         result.examples = [
                 country : [
@@ -349,8 +347,8 @@ class AdminController  {
                         'current_en'  : RefdataValue.executeQuery( "select name from Org order by name", [max: limit] )
                 ],
                 title : [
-                        'de_DE.UTF-8' : sql.rows( query4 + ' order by ti_title COLLATE "de_DE" limit ' + limit ).collect{ it.ti_title },
-                        'en_US.UTF-8' : sql.rows( query4 + ' order by ti_title COLLATE "en_US" limit ' + limit ).collect{ it.ti_title },
+                        'de_DE.UTF-8' : sql.rows( query4 + ' order by tipp_name COLLATE "de_DE" limit ' + limit ).collect{ it.tipp_name },
+                        'en_US.UTF-8' : sql.rows( query4 + ' order by tipp_name COLLATE "en_US" limit ' + limit ).collect{ it.tipp_name },
                         'current_de'  : RefdataValue.executeQuery( "select name from TitleInstancePackagePlatform order by name", [max: limit] ),
                         'current_en'  : RefdataValue.executeQuery( "select name from TitleInstancePackagePlatform order by name", [max: limit] )
                 ]
@@ -360,13 +358,13 @@ class AdminController  {
         result.examples['country'][de_x_icu] = sql.rows(query1de + ' order by rdv.rdv_value_de COLLATE "' + de_x_icu + '" limit ' + limit).collect { it.rdv_value_de }
         result.examples['ddc'    ][de_x_icu] = sql.rows(query2de + ' order by rdv.rdv_value_de COLLATE "' + de_x_icu + '" limit ' + limit).collect { it.rdv_value_de }
         result.examples['org'    ][de_x_icu] = sql.rows(query3 + ' order by org_name COLLATE "' + de_x_icu + '" limit ' + limit).collect { it.org_name }
-        result.examples['title'  ][de_x_icu] = sql.rows(query4 + ' order by ti_title COLLATE "' + de_x_icu + '" limit ' + limit).collect { it.ti_title }
+        result.examples['title'  ][de_x_icu] = sql.rows(query4 + ' order by tipp_name COLLATE "' + de_x_icu + '" limit ' + limit).collect { it.tipp_name }
 
         String en_x_icu = DatabaseInfo.EN_US_U_VA_POSIX_X_ICU
         result.examples['country'][en_x_icu] = sql.rows(query1en + ' order by rdv.rdv_value_en COLLATE "' + en_x_icu + '" limit ' + limit).collect { it.rdv_value_en }
         result.examples['ddc'    ][en_x_icu] = sql.rows(query2en + ' order by rdv.rdv_value_en COLLATE "' + en_x_icu + '" limit ' + limit).collect { it.rdv_value_en }
         result.examples['org'    ][en_x_icu] = sql.rows(query3 + ' order by org_name COLLATE "' + en_x_icu + '" limit ' + limit).collect { it.org_name }
-        result.examples['title'  ][en_x_icu] = sql.rows(query4 + ' order by ti_title COLLATE "' + en_x_icu + '" limit ' + limit).collect { it.ti_title }
+        result.examples['title'  ][en_x_icu] = sql.rows(query4 + ' order by tipp_name COLLATE "' + en_x_icu + '" limit ' + limit).collect { it.tipp_name }
 
         result
     }
@@ -444,6 +442,35 @@ class AdminController  {
 
         result.duplicates = dataConsistencyService.checkDuplicates()
 
+        result
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def identifierValidation() {
+        Map<String, Object> result = [
+                nsList          : IdentifierNamespace.executeQuery('select ns from IdentifierNamespace ns where ns.validationRegex is not null order by ns.ns, ns.nsType'),
+                iMap            : [:],
+                currentLang     : LocaleUtils.getCurrentLang()
+        ]
+
+        result.nsList.each { ns ->
+                List<Identifier> iList = Identifier.executeQuery('select i from Identifier i where i.ns = :ns', [ns: ns])
+                result.iMap[ns.id] = [
+                        count   : iList.size(),
+                        valid   : [],
+                        invalid : []
+                ]
+
+                iList.each { obj ->
+                    def pattern = ~/${ns.validationRegex}/
+                    if (pattern.matcher(obj.value).matches()) {
+                        result.iMap[ns.id].valid << obj
+                    }
+                    else {
+                        result.iMap[ns.id].invalid << obj
+                    }
+                }
+        }
         result
     }
 
@@ -568,7 +595,7 @@ class AdminController  {
             }
         }
 
-        Doc doc = Doc.get(Long.parseLong(params.docID))
+        Doc doc = Doc.get( params.long('docID') )
 
         if (!fileCheck(doc)) {
             result.doc = doc
@@ -611,8 +638,8 @@ class AdminController  {
             }
         }
 
-        Doc docWithoutFile = Doc.get(Long.parseLong(params.sourceDoc))
-        Doc docWithFile = Doc.get(Long.parseLong(params.targetDoc))
+        Doc docWithoutFile = Doc.get( params.long('sourceDoc') )
+        Doc docWithFile = Doc.get( params.long('targetDoc') )
 
         if (!fileCheck(docWithoutFile) && fileCheck(docWithFile)) {
 
@@ -641,9 +668,9 @@ class AdminController  {
         Map<String, Object> result = [:]
         SwissKnife.setPaginationParams(result, params, contextService.getUser())
 
-        if (params.cmd == 'changeApiLevel') {
-            Org target = (Org) genericOIDService.resolveOID(params.target)
+        Org target = params.target ? Org.get(params.long('target')) : null
 
+        if (params.cmd == 'changeApiLevel') {
             if (ApiToolkit.getAllApiLevels().contains(params.apiLevel)) {
                 ApiToolkit.setApiLevel(target, params.apiLevel)
             }
@@ -654,7 +681,6 @@ class AdminController  {
             target.save()
         }
         else if (params.cmd == 'deleteCustomerType') {
-            Org target = (Org) genericOIDService.resolveOID(params.target)
             def oss = OrgSetting.get(target, OrgSetting.KEYS.CUSTOMER_TYPE)
             if (oss != OrgSetting.SETTING_NOT_FOUND) {
                 oss.delete()
@@ -665,7 +691,6 @@ class AdminController  {
             ApiToolkit.removeApiLevel(target)
         }
         else if (params.cmd == 'changeCustomerType') {
-            Org target = (Org) genericOIDService.resolveOID(params.target)
             Role customerType = Role.get(params.customerType)
 
             def osObj = OrgSetting.get(target, OrgSetting.KEYS.CUSTOMER_TYPE)
@@ -691,8 +716,7 @@ class AdminController  {
             }
         }
         else if (params.cmd == 'changeGascoEntry') {
-            Org target = (Org) genericOIDService.resolveOID(params.target)
-            RefdataValue option = (RefdataValue) genericOIDService.resolveOID(params.gascoEntry)
+            RefdataValue option = RefdataValue.get(params.long('gascoEntry'))
 
             if (target && option) {
                 def oss = OrgSetting.get(target, OrgSetting.KEYS.GASCO_ENTRY)
@@ -708,8 +732,6 @@ class AdminController  {
             target.save()
         }
         else if (params.cmd == 'changeLegalInformation') {
-            Org target = (Org) genericOIDService.resolveOID(params.target)
-
             if (target) {
                 target.createdBy = Org.get(params.createdBy)
                 target.legallyObligedBy = Org.get(params.legallyObligedBy)
@@ -718,8 +740,8 @@ class AdminController  {
             target.save()
         }
 
-        Map<String, Object> fsq = filterService.getOrgQuery(params)
-        List<Org> orgList = Org.executeQuery(fsq.query, fsq.queryParams)
+        FilterService.Result fsr = filterService.getOrgQuery(params)
+        List<Org> orgList = Org.executeQuery(fsr.query, fsr.queryParams)
         result.orgList = orgList.drop(result.offset).take(result.max)
         result.orgListTotal = orgList.size()
 
@@ -849,14 +871,14 @@ SELECT * FROM (
      *     <li>replace a property definition by another</li>
      * </ul>
      * @return a list of property definitions with commands
-     * @see de.laser.ajax.AjaxController#addCustomPropertyType()
      */
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def managePropertyDefinitions() {
 
         if (params.cmd){
-            PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.pd)
+            PropertyDefinition pd = PropertyDefinition.get(params.long('pd'))
+
             switch(params.cmd) {
                 case 'toggleMandatory':
                     if(pd) {

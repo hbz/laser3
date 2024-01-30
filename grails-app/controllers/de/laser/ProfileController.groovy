@@ -59,38 +59,29 @@ class ProfileController {
      */
     @Secured(['ROLE_USER'])
     def properties() {
-        Map<String, Object> propDefs = [:]
-
-        Locale locale = LocaleUtils.getCurrentLocale()
-        String i10nAttr = locale.getLanguage() == Locale.GERMAN.getLanguage() ? 'name_de' : 'name_en'
-        List usedPdList = []
-        List usedRdvList = []
-        List refdatas = []
+        Map<String, Object>   propDefs = [:]
+        List<RefdataCategory> refDataCats = []
 
         params.tab = params.tab ?: 'propertyDefinitions'
 
-        if(params.tab == 'propertyDefinitions'){
+        if (params.tab == 'propertyDefinitions') {
+            Locale locale = LocaleUtils.getCurrentLocale()
             String[] custPropDefs = PropertyDefinition.AVAILABLE_CUSTOM_DESCR.sort {a, b ->
                 messageSource.getMessage("propertyDefinition.${a}.label", null, locale) <=> messageSource.getMessage("propertyDefinition.${b}.label", null, locale)
             }
             custPropDefs.each { String it ->
-                List<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: i10nAttr]) // NO private properties!
+                List<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name_' + LocaleUtils.getCurrentLang()]) // NO private properties!
                 propDefs.putAt( it, itResult )
             }
-            usedPdList = propertyService.getUsageDetails()
-        }else{
-            usedRdvList = refdataService.getUsageDetails()
-            i10nAttr = locale.getLanguage() == Locale.GERMAN.getLanguage() ? 'desc_de' : 'desc_en'
-            println(i10nAttr)
-            refdatas = RefdataCategory.executeQuery("from RefdataCategory order by ${i10nAttr}")
+        }
+        else {
+            refDataCats = RefdataCategory.executeQuery('from RefdataCategory order by desc_' + LocaleUtils.getCurrentLang())
         }
 
         render view: 'properties', model: [
-                editable    : false,
+                editable: false,
                 propertyDefinitions: propDefs,
-                rdCategories: refdatas,
-                usedRdvList : usedRdvList,
-                usedPdList  : usedPdList
+                rdCategories: refDataCats
         ]
     }
 
@@ -129,9 +120,9 @@ class ProfileController {
          // TODO : isLastAdminForOrg
 
         if (params.process) {
-            User userReplacement = (User) genericOIDService.resolveOID(params.userReplacement)
+            User userReplacement = User.get(params.userReplacement)
 
-            result.delResult = deletionService.deleteUser(result.user, userReplacement, false)
+            result.delResult = deletionService.deleteUser(result.user as User, userReplacement, false)
 
             if (result.delResult.status == DeletionService.RESULT_SUCCESS) {
                 redirect controller: 'logout', action: 'index'
@@ -139,7 +130,7 @@ class ProfileController {
             }
         }
         else {
-            result.delResult = deletionService.deleteUser(result.user, null, DeletionService.DRY_RUN)
+            result.delResult = deletionService.deleteUser(result.user as User, null, DeletionService.DRY_RUN)
         }
 
         result.substituteList = result.user.formalOrg ? User.executeQuery(

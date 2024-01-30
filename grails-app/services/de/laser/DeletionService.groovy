@@ -12,6 +12,7 @@ import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
+import de.laser.system.SystemAnnouncement
 import de.laser.system.SystemProfiler
 import de.laser.titles.TitleHistoryEvent
 import de.laser.titles.TitleHistoryEventParticipant
@@ -260,6 +261,8 @@ class DeletionService {
 
         List ies = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription = :sub order by ie.id', [sub: sub])
 
+        List ieGroups = IssueEntitlementGroup.executeQuery('select ig.id from IssueEntitlementGroup ig where ig.sub = :sub order by ig.id', [sub: sub])
+
         Org contextOrg = contextService.getOrg()
         List nonDeletedCosts = new ArrayList(sub.costItems.findAll { CostItem ci -> ci.costItemStatus != RDStore.COST_ITEM_DELETED && ci.owner == contextOrg })
         List deletedCosts   = new ArrayList(sub.costItems.findAll { CostItem ci -> ci.costItemStatus == RDStore.COST_ITEM_DELETED || ci.owner != contextOrg })
@@ -289,6 +292,7 @@ class DeletionService {
         result.info << ['Pakete', subPkgs]
         result.info << ['Anstehende Änderungen', pendingChanges]
         result.info << ['IssueEntitlements', ies]
+        result.info << ['Titel-Gruppen', ieGroups]
         //TODO is a temporary solution for ERMS-2535 and is subject of refactoring!
         result.info << ['nicht gelöschte Kosten', nonDeletedCosts, FLAG_BLOCKER]
         result.info << ['gelöschte Kosten', deletedCosts]
@@ -415,6 +419,8 @@ class DeletionService {
                     PriceItem.executeUpdate('delete from PriceItem pi where pi.issueEntitlement in '+ieSubClause, [sub: sub])
                     IssueEntitlementChange.executeUpdate('delete from IssueEntitlementChange iec where iec.subscription = :sub', [sub: sub])
                     IssueEntitlementCoverage.executeUpdate('delete from IssueEntitlementCoverage iec where iec.issueEntitlement in '+ieSubClause, [sub: sub])
+                    IssueEntitlementGroupItem.executeUpdate('delete from IssueEntitlementGroupItem igi where igi.ie in '+ieSubClause, [sub: sub])
+                    IssueEntitlementGroup.executeUpdate('delete from IssueEntitlementGroup ig where ig.sub = :sub', [sub: sub])
                     PermanentTitle.executeUpdate('delete from PermanentTitle pt where pt.subscription = :sub', [sub: sub])
                     IssueEntitlement.executeUpdate('delete from IssueEntitlement ie where ie.subscription = :sub', [sub: sub])
 
@@ -742,13 +748,18 @@ class DeletionService {
      * @return a map returning the information about the user
      */
     Map<String, Object> deleteUser(User user, User replacement, boolean dryRun) {
+        if (!dryRun) {
+            log.debug('deleteUser(' + user.id + ' -> ' + replacement?.id + ') .. called by #' + contextService.getUser().id)
+        }
 
         Map<String, Object> result = [:]
 
         // gathering references
 
-        List userRoles      = new ArrayList(user.roles)
-        List userSettings   = UserSetting.findAllWhere(user: user)
+        List userRoles          = new ArrayList(user.roles)
+        List userSettings       = UserSetting.findAllWhere(user: user)
+        List reportingFilter    = ReportingFilter.findAllByOwner(user)
+        List systemAnnouncements  = SystemAnnouncement.findAllByUser(user)
 
         List ddds = DashboardDueDate.findAllByResponsibleUser(user)
 
@@ -763,7 +774,9 @@ class DeletionService {
         result.info << ['Einstellungen', userSettings]
 
         result.info << ['DashboardDueDate', ddds]
+        result.info << ['Reporting Filter', reportingFilter]
         result.info << ['Aufgaben', tasks, FLAG_SUBSTITUTE]
+        result.info << ['Ankündigungen', systemAnnouncements, FLAG_SUBSTITUTE]
 
         // checking constraints and/or processing
 
@@ -801,6 +814,8 @@ class DeletionService {
 
                     ddds.each { tmp -> tmp.delete() }
 
+                    reportingFilter.each { tmp -> tmp.delete() }
+
                     tasks.each { tmp ->
                         if (tmp.creator.id == user.id) {
                             tmp.creator = replacement
@@ -808,6 +823,11 @@ class DeletionService {
                         if (tmp.responsibleUser?.id == user.id) {
                             tmp.responsibleUser = replacement
                         }
+                        tmp.save()
+                    }
+
+                    systemAnnouncements.each { tmp ->
+                        tmp.user = replacement
                         tmp.save()
                     }
 

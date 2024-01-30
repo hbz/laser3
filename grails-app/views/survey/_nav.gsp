@@ -137,7 +137,7 @@
                            message="task.plural"/>
 
             <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyConfigDocs"
-                           params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
+                           params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${docsCount}"
                            message="surveyConfigDocs.label"/>
         </g:else>
 

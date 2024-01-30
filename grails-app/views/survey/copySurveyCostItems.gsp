@@ -500,7 +500,7 @@
                                 maxFractionDigits="2" type="number"/>%</strong>
 
                             (<g:formatNumber
-                                number="${((sumNewCostItemAfterTax - sumOldCostItem) / sumOldCostItem) * 100}"
+                                number="${((sumNewCostItem - sumOldCostItem) / sumOldCostItem) * 100}"
                                 minFractionDigits="2"
                                 maxFractionDigits="2" type="number"/>%)
                         </g:if>

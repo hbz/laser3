@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfig; de.laser.RefdataCategory; de.laser.survey.SurveyResult; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.helper.Params; de.laser.survey.SurveyConfig; de.laser.RefdataCategory; de.laser.survey.SurveyResult; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem; de.laser.storage.RDConstants" %>
 
 <laser:htmlStart message="currentSurveys.label" serviceInjection="true" />
 
@@ -67,7 +67,7 @@
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SURVEY_STATUS)}"
                             var="status">
-                        <option <%=(params.list('filterStatus').contains(status.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'filterStatus').contains(status.id) ? 'selected="selected"' : ''%>
                                 value="${status.id}" title="${status.getI10n('value')}">
                             ${status.getI10n('value')}
                         </option>
@@ -85,13 +85,12 @@
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${providers.sort { it.name }}" var="provider">
-                        <option <%=(params.list('filterPvd').contains(provider.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'filterPvd').contains(provider.id) ? 'selected="selected"' : ''%>
                         value="${provider.id}" >
                         ${provider.name}
                         </option>
                     </g:each>
                 </select>
-
             </div>
 
             <div class="field">

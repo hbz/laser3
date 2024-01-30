@@ -3,7 +3,7 @@
  * https://github.com/fomantic/Fomantic-UI
  * https://fomantic-ui.com/
  *
- * Copyright 2023 Contributors
+ * Copyright 2024 Contributors
  * Released under the MIT license
  * https://opensource.org/licenses/MIT
  *
@@ -1684,14 +1684,34 @@ i.icon.la-list-icon:before {
 /*********************************** Responsive Behavior *******************/
 
 @media only screen and (max-width: 992px) {
-  .ui.menu.la-contextBar {
+  #contextBar {
     top: 0!important;
   }
 }
 
-@media only screen and (max-width: 1200px) {
-  .ui.menu.la-contextBar .ui.container {
+@media only screen and (max-width: 768px) {
+  #contextBar {
+    position: relative !important;
+    flex-direction: column;
+  }
+
+  #contextBar .la-context-org,
+  #contextBar .la-advanced-view {
+    padding: 10px 0!important;
+  }
+
+  #contextBar .la-context-org {
+    margin: 0!important;
+    border-top: #f4f8f9 2px solid;
+    border-bottom: #f4f8f9 2px solid;
+  }
+
+  #contextBar .ui.container {
     width: 100%;
+  }
+
+  main.ui.container.main {
+    margin-top: 10px!important;
   }
 }
 
@@ -6472,9 +6492,9 @@ i.icon.la-list-icon:before {
 
 /* Toggle (Modifies active state to give affordances) */
 
-.la-contextBar .ui.toggle.buttons .active.button,
-.la-contextBar .ui.buttons .button.toggle.active,
-.la-contextBar .ui.button.toggle.active {
+#contextBar .ui.toggle.buttons .active.button,
+#contextBar .ui.buttons .button.toggle.active,
+#contextBar .ui.button.toggle.active {
   background-color: transparent !important;
   box-shadow: none !important;
   text-shadow: none;
@@ -6685,6 +6705,10 @@ a i.circular.la-gokb:hover {
 
 .la-margin-top-05em {
   margin-top: 0.5em !important;
+}
+
+.la-margin-bottom-1em {
+  margin-bottom: 1em!important;
 }
 
 /*------------------------------------
@@ -28171,7 +28195,6 @@ h1 ~ h2.ui.header {
 
 body[class*="Organisation"] .ui.icon.header .icon.la-object,
 body[class*="organisation"] .ui.icon.header .icon.la-object,
-body[class*="myPublicContacts"] .ui.icon.header .icon.la-object,
 body[class*="myInstitution"] .ui.icon.header .icon.la-object {
   display: inline-block;
   background-color: #00B5AD;
@@ -28180,14 +28203,12 @@ body[class*="myInstitution"] .ui.icon.header .icon.la-object {
 
 body[class*="Organisation"] .ui.icon.header .icon.la-object:before,
 body[class*="organisation"] .ui.icon.header .icon.la-object:before,
-body[class*="myPublicContacts"] .ui.icon.header .icon.la-object:before,
 body[class*="myInstitution"] .ui.icon.header .icon.la-object:before {
   content: "\f19c";
 }
 
 body[class*="Organisation"] .la-objectIsMine,
 body[class*="organisation"] .la-objectIsMine,
-body[class*="myPublicContacts"] .la-objectIsMine,
 body[class*="myInstitution"] .la-objectIsMine {
   box-shadow: 0 0 0 0.1em #00B5AD inset !important;
   color: #00B5AD;
@@ -47133,6 +47154,14 @@ dd {
   border: none;
 }
 
+.ui.segment.la-segmentNotVisable {
+  background: none;
+  border: none;
+  box-shadow: none;
+  margin: 0;
+  padding: 0;
+}
+
 .la-filter-selected {
   background: #d3dae3 !important;
 }
@@ -55540,47 +55569,148 @@ Floated Menu / Item
   width: 0;
 }
 
+/*--------------
+   Context Bar
+---------------*/
+
 @media only screen and (min-width: 320px) and (max-width: 1496px) {
-  .ui.menu.la-contextBar .ui.container {
+  #contextBar .ui.container {
     width: 100%;
   }
 }
 
-.ui.menu.la-contextBar {
+#contextBar {
   top: 50px;
   z-index: 101;
   background-color: #d3dae3;
   box-shadow: none;
+  /* -- todo -- */
 }
 
-.ui.menu.la-contextBar .item {
-  color: #767676;
+#contextBar .item {
   padding: 0;
 }
 
-.ui.menu.la-contextBar .item::before {
+#contextBar #la-js-cb-context-display {
+  color: #767676;
+}
+
+#contextBar .la-advanced-view > .item,
+#contextBar .la-context-org > .item {
+  margin: 0 1em 0 0;
+  border-right: none;
+  color: #767676;
+}
+
+#contextBar .la-advanced-view > .item::before,
+#contextBar .la-context-org > .item::before {
   width: 0;
 }
 
-.ui.menu.la-contextBar .la-context-org {
-  font-size: 0.87em;
+#contextBar .la-cb-context.item + .la-cb-action.item,
+#contextBar .la-cb-info.item + .la-cb-action.item,
+#contextBar .la-cb-context.item + .la-cb-action-ext.item,
+#contextBar .la-cb-info.item + .la-cb-action-ext.item {
+  margin-left: 1em;
 }
 
-.ui.menu.la-contextBar .ui.sub.header.item {
+#contextBar .la-cb-context.item > .label,
+#contextBar .la-cb-info.item > .label {
+  margin: 0;
+  padding: 0.5em 1em;
+  background-color: #e3eaf3;
+  border: 1px solid #e3eaf3;
+}
+
+#contextBar .la-cb-context.item > .label:hover,
+#contextBar .la-cb-info.item > .label:hover {
+  cursor: help;
+}
+
+#contextBar .la-cb-context.item > .label > .icon,
+#contextBar .la-cb-info.item > .label > .icon {
+  margin: 0;
+}
+
+#contextBar .la-cb-action.item .toggle .icon {
+  color: #fff !important;
+}
+
+#contextBar .la-cb-action.item .la-toggle-green-red.active {
+  background-color: #98b500 !important;
+}
+
+#contextBar .la-cb-action.item .la-toggle-green-red.inactive {
+  background-color: #D95F3D !important;
+}
+
+#contextBar .la-cb-action.item > .button,
+#contextBar .la-cb-action-ext.item > .button {
+  height: 40px !important;
+  width: 42px !important;
+  border-radius: 0 !important;
+}
+
+#contextBar .la-cb-action.item .button.purple.active {
+  background-color: #2185d0 !important;
+}
+
+#contextBar .la-cb-action.item .button.purple.active .icon {
+  color: #fff !important;
+}
+
+#contextBar .la-cb-action.item .button.purple.inactive .icon {
+  color: #2185d0 !important;
+}
+
+#contextBar #la-js-cb-context-display,
+#contextBar #la-cb-info-display {
+  font-size: 0.87rem;
+}
+
+#contextBar #la-cb-info-display {
+  font-weight: bold;
+  color: #767676;
+  margin-right: 1em;
+}
+
+#contextBar .la-cb-action.item,
+#contextBar .la-cb-action-ext.item {
+  margin: 0 0 0 1px;
+  border-right: none;
+}
+
+#contextBar .la-cb-action.item > .button {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+#contextBar .la-cb-action.item > .button:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+#contextBar .la-cb-action.item > .button:hover > .icon {
+  color: #000;
+}
+
+#contextBar .la-cb-action.item > .button > .icon {
+  color: #004678;
+}
+
+#contextBar .ui.sub.header.item {
   border-left: none!important;
   border-right: none;
 }
 
-.ui.menu.la-contextBar .ui.sub.header.item:before {
+#contextBar .ui.sub.header.item:before {
   width: 0!important;
 }
 
-.ui.menu.la-contextBar .ui.checkbox label {
+#contextBar .ui.checkbox label {
   font-size: 0.87em;
   color: #004678;
 }
 
-.ui.menu.la-contextBar .ui.slider.checkbox input:checked ~ label {
+#contextBar .ui.slider.checkbox input:checked ~ label {
   font-weight: 700;
 }
 
@@ -55680,10 +55810,6 @@ Floated Menu / Item
 
 #mainMenue {
   z-index: 102;
-}
-
-.la-ctrls .ui.dropdown .menu {
-  z-index: 101;
 }
 
 /*--------------

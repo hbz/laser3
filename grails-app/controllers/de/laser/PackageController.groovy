@@ -10,13 +10,12 @@ import de.laser.annotations.DebugInfo
 import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
-import org.springframework.context.MessageSource
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
@@ -121,9 +120,9 @@ class PackageController {
         if (params.containsKey('curatoryGroupProvider') ^ params.containsKey('curatoryGroupOther')) {
             result.filterSet = true
             if(params.curatoryGroupProvider)
-                queryParams.curatoryGroupType = "provider"
+                queryParams.curatoryGroupType = "Provider"
             else if(params.curatoryGroupOther)
-                queryParams.curatoryGroupType = "other" //setting to this includes also missing ones, this is already implemented in we:kb
+                queryParams.curatoryGroupType = "Other" //setting to this includes also missing ones, this is already implemented in we:kb
         }
 
         Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
@@ -512,38 +511,38 @@ class PackageController {
 
     /**
      * Call to see planned titles of the package
-     * @return {@link #planned_expired_deleted(java.lang.Object, java.lang.Object)}
+     * @return {@link #planned_expired_deleted(java.lang.String)}
      */
     @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
     def planned() {
-        planned_expired_deleted(params, "planned")
+        planned_expired_deleted("planned")
     }
 
     /**
      * Call to see expired titles of the package
-     * @return {@link #planned_expired_deleted(java.lang.Object, java.lang.Object)}
+     * @return {@link #planned_expired_deleted(java.lang.String)}
      */
     @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
     def expired() {
-        planned_expired_deleted(params, "expired")
+        planned_expired_deleted("expired")
     }
 
     /**
      * Call to see deleted titles of the package
-     * @return {@link #planned_expired_deleted(java.lang.Object, java.lang.Object)}
+     * @return {@link #planned_expired_deleted(java.lang.String)}
      */
     @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
     def deleted() {
-        planned_expired_deleted(params, "deleted")
+        planned_expired_deleted("deleted")
     }
 
     /**
@@ -558,7 +557,7 @@ class PackageController {
     @Secured(closure = {
         ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
-    def planned_expired_deleted(params, func) {
+    def planned_expired_deleted(String func) {
         log.debug("planned_expired_deleted ${params}");
         Map<String, Object> result = packageService.getResultGenerics(params)
 
@@ -568,7 +567,6 @@ class PackageController {
             redirect action: 'index'
             return
         }
-        result.packageInstance = packageInstance
 
         result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_CURRENT])[0]
         result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_EXPECTED])[0]
@@ -579,13 +577,13 @@ class PackageController {
         String filename
 
         if (func == "planned") {
-            params.status = RDStore.TIPP_STATUS_EXPECTED.id.toString()
+            params.status = RDStore.TIPP_STATUS_EXPECTED.id
             filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.planned'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
         } else if (func == "expired") {
-            params.status = RDStore.TIPP_STATUS_RETIRED.id.toString()
+            params.status = RDStore.TIPP_STATUS_RETIRED.id
             filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.expired'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
         } else if (func == "deleted") {
-            params.status = RDStore.TIPP_STATUS_DELETED.id.toString()
+            params.status = RDStore.TIPP_STATUS_DELETED.id
             filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.deleted'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
         }
 

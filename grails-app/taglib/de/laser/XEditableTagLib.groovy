@@ -93,17 +93,17 @@ class XEditableTagLib {
                 out << ' data-url="' + data_link + '"'
             }
 
-            out << ' data-emptytext="' + (attrs.emptytext ?: default_empty) + '"'
+            out << ' data-emptytext="' + (attrs.emptytext ?: default_empty) + '" '
 
             if (attrs.type == 'date' && attrs.language) {
-                out << "data-datepicker=\"{ 'language': '${attrs.language}' }\" language=\"${attrs.language}\" "
+                out << " data-datepicker=\"{ 'language': '${attrs.language}' }\" language=\"${attrs.language}\" "
             }
             if (attrs.data_confirm_term_how) {
-                out << 'data-confirm-term-how="' + attrs.data_confirm_term_how + '" '
+                out << ' data-confirm-term-how="' + attrs.data_confirm_term_how + '" '
             }
 
             if(attrs.data_confirm_tokenMsg) {
-                out << 'data-confirm-tokenmsg="' + attrs.data_confirm_tokenMsg + '" '
+                out << ' data-confirm-tokenmsg="' + attrs.data_confirm_tokenMsg + '" '
             }
 
             if (! body) {

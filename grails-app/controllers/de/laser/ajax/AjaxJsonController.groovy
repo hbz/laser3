@@ -20,6 +20,7 @@ import de.laser.SubscriptionDiscountScale
 import de.laser.SubscriptionService
 import de.laser.auth.Role
 import de.laser.finance.PriceItem
+import de.laser.helper.Params
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
@@ -97,7 +98,7 @@ class AjaxJsonController {
 
         queryParams.status = []
         if (params.get('status')){
-            queryParams.status = params.list('status').collect{ Long.parseLong(it) }
+            queryParams.status = Params.getLongList(params, 'status')
         }
         queryParams.showSubscriber = params.showSubscriber == 'true'
         queryParams.showConnectedObjs = params.showConnectedObjs == 'true'
@@ -162,7 +163,7 @@ class AjaxJsonController {
 
         queryParams.status = []
         if (params.get('status')){
-            queryParams.status = params.list('status').collect{ Long.parseLong(it) }
+            queryParams.status = Params.getLongList(params, 'status')
         }
 
         queryParams.showSubscriber = showSubscriber
@@ -196,7 +197,7 @@ class AjaxJsonController {
         boolean showConnectedObjs = params.showConnectedObjs == 'true'
         Map queryParams = [:]
         if (params.get('status')){
-            queryParams.status = params.list('status').collect{ Long.parseLong(it) }
+            queryParams.status = Params.getLongList(params, 'status')
         }
 
         queryParams.showSubscriber = showSubscriber
@@ -237,7 +238,7 @@ class AjaxJsonController {
         boolean showConnectedLics = params.showConnectedLics == 'true'
         Map queryParams = [:]
         if (params.get('status')){
-            queryParams.status = params.list('status').collect{ Long.parseLong(it) }
+            queryParams.status = Params.getLongList(params, 'status')
         }
 
         queryParams.showSubscriber = showSubscriber
@@ -404,7 +405,7 @@ class AjaxJsonController {
         if (params.oid != "undefined") {
             PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(params.oid)
             if (propDef) {
-                List<AbstractPropertyWithCalculatedLastUpdated> values
+                List<AbstractPropertyWithCalculatedLastUpdated> values = []
                 if (propDef.tenant) {
                     switch (propDef.descr) {
                         case PropertyDefinition.SUB_PROP: values = SubscriptionProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.getOrg(),false)
@@ -560,9 +561,9 @@ class AjaxJsonController {
     def getRegions() {
         SortedSet<RefdataValue> result = new TreeSet<RefdataValue>()
         if (params.country) {
-            List<String> countryIds = params.country.split(',')
-            countryIds.each { String c ->
-                switch (RefdataValue.get(Long.parseLong(c)).value) {
+            List<Long> countryIds = Params.getLongList_forCommaSeparatedString(params, 'country')
+            countryIds.each { c ->
+                switch (RefdataValue.get(c).value) {
                     case 'DE':
                         result.addAll( RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE]) )
                         break
@@ -612,7 +613,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of budget codes for dropdown display
-     * @return the result of {@link de.laser.ControlledListService#getBudgetCodes(java.util.Map)}
+     * @return the result of {@link de.laser.ControlledListService#getBudgetCodes(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupBudgetCodes() {
@@ -623,7 +624,7 @@ class AjaxJsonController {
      * Retrieves a list of various elements for dropdown display; was used for the myInstitution/document view to attach documents to all kinds of objects
      * @see de.laser.DocContext
      * @see de.laser.Doc
-     * @return the result of {@link de.laser.ControlledListService#getElements(java.util.Map)}
+     * @return the result of {@link de.laser.ControlledListService#getElements(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupCombined() {
@@ -632,7 +633,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of invoice numbers for dropdown display
-     * @return the result of {@link de.laser.ControlledListService#getInvoiceNumbers(java.util.Map)}
+     * @return the result of {@link de.laser.ControlledListService#getInvoiceNumbers(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupInvoiceNumbers() {
@@ -641,7 +642,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of issue entitlements for dropdown display
-     * @return the result of {@link de.laser.ControlledListService#getIssueEntitlements(java.util.Map)}
+     * @return the result of {@link de.laser.ControlledListService#getIssueEntitlements(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupIssueEntitlements() {
@@ -656,7 +657,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of licenses for dropdown display
-     * @return the result of {@link de.laser.ControlledListService#getLicenses(java.util.Map)}
+     * @return the result of {@link de.laser.ControlledListService#getLicenses(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupLicenses() {
@@ -665,7 +666,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of order numbers for dropdown display
-     * @return the result of {@link de.laser.ControlledListService#getOrderNumbers(java.util.Map)}
+     * @return the result of {@link de.laser.ControlledListService#getOrderNumbers(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupOrderNumbers() {
@@ -674,7 +675,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of provider and agency {@link Org}s for dropdown display
-     * @return the result of {@link de.laser.ControlledListService#getProvidersAgencies(java.util.Map)}
+     * @return the result of {@link de.laser.ControlledListService#getProvidersAgencies(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupProvidersAgencies() {
@@ -683,7 +684,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of {@link Org}s in general for dropdown display
-     * @return the result of {@link de.laser.ControlledListService#getOrgs(java.util.Map)}
+     * @return the result of {@link de.laser.ControlledListService#getOrgs(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupOrgs() {
@@ -720,7 +721,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of cost item references for dropdown display
-     * @return the result of {@link de.laser.ControlledListService#getReferences(java.util.Map)}
+     * @return the result of {@link de.laser.ControlledListService#getReferences(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupReferences() {
@@ -745,7 +746,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of subscriptions for dropdown display
-     * @return the result of {@link de.laser.ControlledListService#getSubscriptions(java.util.Map)}
+     * @return the result of {@link de.laser.ControlledListService#getSubscriptions(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupSubscriptions() {
@@ -772,7 +773,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of subscription packages for dropdown display
-     * @return the result of {@link de.laser.ControlledListService#getSubscriptionPackages(java.util.Map)}
+     * @return the result of {@link de.laser.ControlledListService#getSubscriptionPackages(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupSubscriptionPackages() {
@@ -787,7 +788,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of subscriptions and licenses for dropdown display
-     * @return the composite result of {@link de.laser.ControlledListService#getLicenses(java.util.Map)} and {@link de.laser.ControlledListService#getSubscriptions(java.util.Map)}
+     * @return the composite result of {@link de.laser.ControlledListService#getLicenses(grails.web.servlet.mvc.GrailsParameterMap)} and {@link de.laser.ControlledListService#getSubscriptions(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupSubscriptionsLicenses() {
@@ -800,7 +801,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of current and intended subscriptions for dropdown display
-     * @return the filtered result of {@link de.laser.ControlledListService#getSubscriptions(java.util.Map)}
+     * @return the filtered result of {@link de.laser.ControlledListService#getSubscriptions(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupCurrentAndIndendedSubscriptions() {
@@ -811,7 +812,7 @@ class AjaxJsonController {
 
     /**
      * Retrieves a list of title groups for dropdown display
-     * @return the result of {@link de.laser.ControlledListService#getTitleGroups(java.util.Map)}
+     * @return the result of {@link de.laser.ControlledListService#getTitleGroups(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupTitleGroups() {
@@ -1140,7 +1141,7 @@ class AjaxJsonController {
         Map result = [:]
 
         if (params.orgIdList) {
-            List<Long> orgIds = params.orgIdList.split(',').collect{ Long.parseLong(it) }
+            List<Long> orgIds = Params.getLongList_forCommaSeparatedString(params, 'orgIdList')
             List<Org> orgList = orgIds ? Org.findAllByIdInList(orgIds) : []
 
             String query = "select distinct p from Person as p inner join p.roleLinks pr where pr.org in (:orgs) "
@@ -1164,7 +1165,7 @@ class AjaxJsonController {
             }
 
             if (params.selectedRoleTypIds) {
-                List<Long> selectedRoleTypIds = params.selectedRoleTypIds.split(',').collect { Long.parseLong(it) }
+                List<Long> selectedRoleTypIds = Params.getLongList_forCommaSeparatedString(params, 'selectedRoleTypIds')
                 List<RefdataValue> selectedRoleTypes = selectedRoleTypIds ? RefdataValue.findAllByIdInList(selectedRoleTypIds) : []
 
                 if (selectedRoleTypes) {

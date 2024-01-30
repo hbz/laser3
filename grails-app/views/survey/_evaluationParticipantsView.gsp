@@ -149,7 +149,18 @@
 
 <br/><br/>
 
+    <g:set var="sumListPriceEUR" value="${0}"/>
+    <g:set var="sumListPriceUSD" value="${0}"/>
+    <g:set var="sumListPriceGBP" value="${0}"/>
 
+
+    <g:set var="sumBudgetEUR" value="${0}"/>
+    <g:set var="sumBudgetUSD" value="${0}"/>
+    <g:set var="sumBudgetGBP" value="${0}"/>
+
+    <g:set var="sumDiffEUR" value="${0}"/>
+    <g:set var="sumDiffUSD" value="${0}"/>
+    <g:set var="sumDiffGBP" value="${0}"/>
 
     <table class="ui celled sortable table la-js-responsive-table la-table">
         <thead>
@@ -199,10 +210,14 @@
                     <th>
                         ${message(code: 'tipp.price.plural')}
                     </th>
+                    <th>
+                        Budget
+                    </th>
+                    <th>Diff.</th>
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('uploadTitleListDoc')}">
                     <th>
-                        Upload
+                        Upload <br>
                         ${RDStore.DOC_TYPE_TITLELIST.getI10n('value')}
                     </th>
                 </g:if>
@@ -218,7 +233,7 @@
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('downloadTitleList')}">
                     <th>
-                        Download
+                        Download <br>
                         ${RDStore.DOC_TYPE_TITLELIST.getI10n('value')}
                     </th>
                 </g:if>
@@ -341,6 +356,15 @@
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyTitlesCount')}">
                             <g:set var="subParticipant"
                                 value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
+
+                        <g:set var="diffEUR" value="${0}"/>
+                        <g:set var="diffUSD" value="${0}"/>
+                        <g:set var="diffGBP" value="${0}"/>
+
+                        <g:set var="sumListPriceSelectedIEsEUR" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subParticipant, surveyConfig, RDStore.CURRENCY_EUR)}"/>
+                        <g:set var="sumListPriceSelectedIEsUSD" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subParticipant, surveyConfig, RDStore.CURRENCY_USD)}"/>
+                        <g:set var="sumListPriceSelectedIEsGBP" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subParticipant, surveyConfig, RDStore.CURRENCY_GBP)}"/>
+
                         <td class="center aligned">
                             <g:set var="ieGroup"
                                    value="${IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subParticipant)}"/>
@@ -355,24 +379,73 @@
 
                         </td>
                         <td>
-                            <g:set var="sumListPriceSelectedIEsEUR" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subParticipant, surveyConfig, RDStore.CURRENCY_EUR)}"/>
-                            <g:set var="sumListPriceSelectedIEsUSD" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subParticipant, surveyConfig, RDStore.CURRENCY_USD)}"/>
-                            <g:set var="sumListPriceSelectedIEsGBP" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subParticipant, surveyConfig, RDStore.CURRENCY_GBP)}"/>
-
                             <g:if test="${sumListPriceSelectedIEsEUR > 0}">
                                 <br>
                                 <g:formatNumber
                                         number="${sumListPriceSelectedIEsEUR}" type="currency" currencyCode="EUR"/>
+                                <g:set var="sumListPriceEUR" value="${sumListPriceEUR+sumListPriceSelectedIEsEUR}"/>
+
                             </g:if>
                             <g:if test="${sumListPriceSelectedIEsUSD > 0}">
                                 <br>
                                 <g:formatNumber
                                         number="${sumListPriceSelectedIEsUSD}" type="currency" currencyCode="USD"/>
+                                <g:set var="sumListPriceUSD" value="${sumListPriceUSD+sumListPriceSelectedIEsUSD}"/>
+
                             </g:if>
                             <g:if test="${sumListPriceSelectedIEsGBP > 0}">
                                 <br>
                                 <g:formatNumber
                                         number="${sumListPriceSelectedIEsGBP}" type="currency" currencyCode="GBP"/>
+                                <g:set var="sumListPriceGBP" value="${sumListPriceGBP+sumListPriceSelectedIEsGBP}"/>
+                            </g:if>
+                        </td>
+                        <td>
+                            <g:set var="costItemsBudget" value="${de.laser.finance.CostItem.findAllBySubAndCostItemElementAndCostItemStatusNotEqualAndOwner(subParticipant, RDStore.COST_ITEM_ELEMENT_BUDGET_TITLE_PICK, RDStore.COST_ITEM_DELETED, contextOrg)}"/>
+
+                            <g:each in="${costItemsBudget}"
+                                    var="costItem">
+                                <g:formatNumber number="${costItem.costInBillingCurrency}" type="currency" currencyCode="${costItem.billingCurrency.value}"/>
+
+                                <g:if test="${costItem.billingCurrency == RDStore.CURRENCY_EUR}">
+                                    <g:set var="diffEUR" value="${costItem.costInBillingCurrency - sumListPriceSelectedIEsEUR}"/>
+                                </g:if>
+
+                                <g:if test="${costItem.billingCurrency == RDStore.CURRENCY_USD}">
+                                    <g:set var="diffUSD" value="${costItem.costInBillingCurrency - sumListPriceSelectedIEsUSD}"/>
+                                </g:if>
+
+                                <g:if test="${costItem.billingCurrency == RDStore.CURRENCY_GBP}">
+                                    <g:set var="diffGBP" value="${costItem.costInBillingCurrency - sumListPriceSelectedIEsGBP}"/>
+                                </g:if>
+
+                                <g:set var="sumBudgetEUR" value="${costItem.billingCurrency == RDStore.CURRENCY_EUR ? (sumBudgetEUR+costItem.costInBillingCurrency) : sumBudgetEUR}"/>
+                                <g:set var="sumBudgetUSD" value="${costItem.billingCurrency == RDStore.CURRENCY_USD ? (sumBudgetUSD+costItem.costInBillingCurrency) : sumBudgetUSD}"/>
+                                <g:set var="sumBudgetGBP" value="${costItem.billingCurrency == RDStore.CURRENCY_GBP ? (sumBudgetGBP+costItem.costInBillingCurrency) : sumBudgetGBP}"/>
+
+                            </g:each>
+
+                        </td>
+                        <td>
+                            <g:if test="${diffEUR != 0}">
+                                <br>
+                                <g:formatNumber
+                                        number="${diffEUR}" type="currency" currencyCode="EUR"/>
+                                <g:set var="sumDiffEUR" value="${sumDiffEUR+diffEUR}"/>
+
+                            </g:if>
+                            <g:if test="${diffUSD != 0}">
+                                <br>
+                                <g:formatNumber
+                                        number="${diffUSD}" type="currency" currencyCode="USD"/>
+                                <g:set var="sumDiffUSD" value="${sumDiffUSD+diffUSD}"/>
+
+                            </g:if>
+                            <g:if test="${diffGBP != 0}">
+                                <br>
+                                <g:formatNumber
+                                        number="${diffGBP}" type="currency" currencyCode="GBP"/>
+                                <g:set var="sumDiffGBP" value="${sumDiffGBP+diffGBP}"/>
                             </g:if>
                         </td>
                     </g:if>
@@ -390,7 +463,7 @@
                             </g:if>
 
                             <%
-                                Set<DocContext> documentSet = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType', [subscription: subParticipant, docType: RDStore.DOC_TYPE_TITLELIST])
+                                Set<DocContext> documentSet = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType and owner.owner = :owner', [subscription: subParticipant, docType: RDStore.DOC_TYPE_TITLELIST, owner: contextOrg])
                                 documentSet = documentSet.sort { it.owner?.title }
                             %>
                             <g:each in="${documentSet}" var="docctx">
@@ -495,6 +568,73 @@
 
         </g:each>
         </tbody>
+        <tfoot>
+        <tr>
+            <g:if test="${showCheckbox}">
+                <td>
+                </td>
+            </g:if>
+            <g:each in="${tmplConfigShow}" var="tmplConfigItem">
+                <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyTitlesCount')}">
+                    <td></td>
+                    <td>
+                        <g:if test="${sumListPriceEUR}">
+                            <g:formatNumber
+                                    number="${sumListPriceEUR}" type="currency" currencyCode="EUR"/>
+                            <br>
+                        </g:if>
+                        <g:if test="${sumListPriceUSD}">
+                            <g:formatNumber
+                                    number="${sumListPriceUSD}" type="currency" currencyCode="USD"/>
+                            <br>
+                        </g:if>
+                        <g:if test="${sumListPriceGBP}">
+                            <g:formatNumber
+                                    number="${sumListPriceGBP}" type="currency" currencyCode="GBP"/>
+                            <br>
+                        </g:if>
+                    </td>
+                    <td>
+                        <g:if test="${sumBudgetEUR}">
+                            <g:formatNumber
+                                    number="${sumBudgetEUR}" type="currency" currencyCode="EUR"/>
+                            <br>
+                        </g:if>
+                        <g:if test="${sumBudgetUSD}">
+                            <g:formatNumber
+                                    number="${sumBudgetUSD}" type="currency" currencyCode="USD"/>
+                            <br>
+                        </g:if>
+                        <g:if test="${sumBudgetGBP}">
+                            <g:formatNumber
+                                    number="${sumBudgetGBP}" type="currency" currencyCode="GBP"/>
+                            <br>
+                        </g:if>
+                    </td>
+                    <td>
+                        <g:if test="${sumDiffEUR}">
+                            <g:formatNumber
+                                    number="${sumDiffEUR}" type="currency" currencyCode="EUR"/>
+                            <br>
+                        </g:if>
+                        <g:if test="${sumDiffUSD}">
+                            <g:formatNumber
+                                    number="${sumDiffUSD}" type="currency" currencyCode="USD"/>
+                            <br>
+                        </g:if>
+                        <g:if test="${sumDiffGBP}">
+                            <g:formatNumber
+                                    number="${sumDiffGBP}" type="currency" currencyCode="GBP"/>
+                            <br>
+                        </g:if>
+                    </td>
+                </g:if>
+                <g:else>
+                    <td></td>
+                </g:else>
+            </g:each>
+        </tr>
+        </tfoot>
     </table>
 
     <g:if test="${showOpenParticipantsAgainButtons}">
@@ -541,6 +681,18 @@
         </a>
     </g:if>
 
+    <g:set var="sumListPriceEUR" value="${0}"/>
+    <g:set var="sumListPriceUSD" value="${0}"/>
+    <g:set var="sumListPriceGBP" value="${0}"/>
+
+
+    <g:set var="sumBudgetEUR" value="${0}"/>
+    <g:set var="sumBudgetUSD" value="${0}"/>
+    <g:set var="sumBudgetGBP" value="${0}"/>
+
+    <g:set var="sumDiffEUR" value="${0}"/>
+    <g:set var="sumDiffUSD" value="${0}"/>
+    <g:set var="sumDiffGBP" value="${0}"/>
 
     <table class="ui celled sortable table la-js-responsive-table la-table">
         <thead>
@@ -590,10 +742,14 @@
                     <th>
                         ${message(code: 'tipp.price.plural')}
                     </th>
+                    <th>
+                        Budget
+                    </th>
+                    <th>Diff.</th>
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('uploadTitleListDoc')}">
                     <th>
-                        Upload
+                        Upload <br>
                         ${RDStore.DOC_TYPE_TITLELIST.getI10n('value')}
                     </th>
                 </g:if>
@@ -609,7 +765,7 @@
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('downloadTitleList')}">
                     <th>
-                        Download
+                        Download <br>
                         ${RDStore.DOC_TYPE_TITLELIST.getI10n('value')}
                     </th>
                 </g:if>
@@ -735,6 +891,15 @@
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyTitlesCount')}">
                         <g:set var="subParticipant"
                                value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
+
+                        <g:set var="diffEUR" value="${0}"/>
+                        <g:set var="diffUSD" value="${0}"/>
+                        <g:set var="diffGBP" value="${0}"/>
+
+                        <g:set var="sumListPriceSelectedIEsEUR" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subParticipant, surveyConfig, RDStore.CURRENCY_EUR)}"/>
+                        <g:set var="sumListPriceSelectedIEsUSD" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subParticipant, surveyConfig, RDStore.CURRENCY_USD)}"/>
+                        <g:set var="sumListPriceSelectedIEsGBP" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subParticipant, surveyConfig, RDStore.CURRENCY_GBP)}"/>
+
                         <td class="center aligned">
                             <g:set var="ieGroup"
                                    value="${IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subParticipant)}"/>
@@ -749,24 +914,73 @@
 
                         </td>
                         <td>
-                            <g:set var="sumListPriceSelectedIEsEUR" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subParticipant, surveyConfig, RDStore.CURRENCY_EUR)}"/>
-                            <g:set var="sumListPriceSelectedIEsUSD" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subParticipant, surveyConfig, RDStore.CURRENCY_USD)}"/>
-                            <g:set var="sumListPriceSelectedIEsGBP" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subParticipant, surveyConfig, RDStore.CURRENCY_GBP)}"/>
-
                             <g:if test="${sumListPriceSelectedIEsEUR > 0}">
                                 <br>
                                 <g:formatNumber
                                         number="${sumListPriceSelectedIEsEUR}" type="currency" currencyCode="EUR"/>
+                                <g:set var="sumListPriceEUR" value="${sumListPriceEUR+sumListPriceSelectedIEsEUR}"/>
+
                             </g:if>
                             <g:if test="${sumListPriceSelectedIEsUSD > 0}">
                                 <br>
                                 <g:formatNumber
                                         number="${sumListPriceSelectedIEsUSD}" type="currency" currencyCode="USD"/>
+                                <g:set var="sumListPriceUSD" value="${sumListPriceUSD+sumListPriceSelectedIEsUSD}"/>
+
                             </g:if>
                             <g:if test="${sumListPriceSelectedIEsGBP > 0}">
                                 <br>
                                 <g:formatNumber
                                         number="${sumListPriceSelectedIEsGBP}" type="currency" currencyCode="GBP"/>
+                                <g:set var="sumListPriceGBP" value="${sumListPriceGBP+sumListPriceSelectedIEsGBP}"/>
+                            </g:if>
+                        </td>
+                        <td>
+                            <g:set var="costItemsBudget" value="${de.laser.finance.CostItem.findAllBySubAndCostItemElementAndCostItemStatusNotEqualAndOwner(subParticipant, RDStore.COST_ITEM_ELEMENT_BUDGET_TITLE_PICK, RDStore.COST_ITEM_DELETED, contextOrg)}"/>
+
+                            <g:each in="${costItemsBudget}"
+                                    var="costItem">
+                                <g:formatNumber number="${costItem.costInBillingCurrency}" type="currency" currencyCode="${costItem.billingCurrency.value}"/>
+
+                                <g:if test="${costItem.billingCurrency == RDStore.CURRENCY_EUR}">
+                                    <g:set var="diffEUR" value="${costItem.costInBillingCurrency - sumListPriceSelectedIEsEUR}"/>
+                                </g:if>
+
+                                <g:if test="${costItem.billingCurrency == RDStore.CURRENCY_USD}">
+                                    <g:set var="diffUSD" value="${costItem.costInBillingCurrency - sumListPriceSelectedIEsUSD}"/>
+                                </g:if>
+
+                                <g:if test="${costItem.billingCurrency == RDStore.CURRENCY_GBP}">
+                                    <g:set var="diffGBP" value="${costItem.costInBillingCurrency - sumListPriceSelectedIEsGBP}"/>
+                                </g:if>
+
+                                <g:set var="sumBudgetEUR" value="${costItem.billingCurrency == RDStore.CURRENCY_EUR ? (sumBudgetEUR+costItem.costInBillingCurrency) : sumBudgetEUR}"/>
+                                <g:set var="sumBudgetUSD" value="${costItem.billingCurrency == RDStore.CURRENCY_USD ? (sumBudgetUSD+costItem.costInBillingCurrency) : sumBudgetUSD}"/>
+                                <g:set var="sumBudgetGBP" value="${costItem.billingCurrency == RDStore.CURRENCY_GBP ? (sumBudgetGBP+costItem.costInBillingCurrency) : sumBudgetGBP}"/>
+
+                            </g:each>
+
+                        </td>
+                        <td>
+                            <g:if test="${diffEUR != 0}">
+                                <br>
+                                <g:formatNumber
+                                        number="${diffEUR}" type="currency" currencyCode="EUR"/>
+                                <g:set var="sumDiffEUR" value="${sumDiffEUR+diffEUR}"/>
+
+                            </g:if>
+                            <g:if test="${diffUSD != 0}">
+                                <br>
+                                <g:formatNumber
+                                        number="${diffUSD}" type="currency" currencyCode="USD"/>
+                                <g:set var="sumDiffUSD" value="${sumDiffUSD+diffUSD}"/>
+
+                            </g:if>
+                            <g:if test="${diffGBP != 0}">
+                                <br>
+                                <g:formatNumber
+                                        number="${diffGBP}" type="currency" currencyCode="GBP"/>
+                                <g:set var="sumDiffGBP" value="${sumDiffGBP+diffGBP}"/>
                             </g:if>
                         </td>
                     </g:if>
@@ -784,7 +998,7 @@
                             </g:if>
 
                             <%
-                                Set<DocContext> documentSet2 = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType', [subscription: subParticipant, docType: RDStore.DOC_TYPE_TITLELIST])
+                                Set<DocContext> documentSet2 = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType and owner.owner = :owner', [subscription: subParticipant, docType: RDStore.DOC_TYPE_TITLELIST, owner: contextOrg])
                                 documentSet = documentSet2.sort { it.owner?.title }
                             %>
                             <g:each in="${documentSet2}" var="docctx">
@@ -889,6 +1103,74 @@
 
         </g:each>
         </tbody>
+        <tfoot>
+        <tr>
+            <g:if test="${showCheckbox}">
+                <td>
+                </td>
+            </g:if>
+            <g:each in="${tmplConfigShow}" var="tmplConfigItem">
+                <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyTitlesCount')}">
+                    <td></td>
+                    <td>
+                        <g:if test="${sumListPriceEUR}">
+                            <g:formatNumber
+                                    number="${sumListPriceEUR}" type="currency" currencyCode="EUR"/>
+                            <br>
+                        </g:if>
+                        <g:if test="${sumListPriceUSD}">
+                            <g:formatNumber
+                                    number="${sumListPriceUSD}" type="currency" currencyCode="USD"/>
+                            <br>
+                        </g:if>
+                        <g:if test="${sumListPriceGBP}">
+                            <g:formatNumber
+                                    number="${sumListPriceGBP}" type="currency" currencyCode="GBP"/>
+                            <br>
+                        </g:if>
+                    </td>
+                    <td>
+                        <g:if test="${sumBudgetEUR}">
+                            <g:formatNumber
+                                    number="${sumBudgetEUR}" type="currency" currencyCode="EUR"/>
+                            <br>
+                        </g:if>
+                        <g:if test="${sumBudgetUSD}">
+                            <g:formatNumber
+                                    number="${sumBudgetUSD}" type="currency" currencyCode="USD"/>
+                            <br>
+                        </g:if>
+                        <g:if test="${sumBudgetGBP}">
+                            <g:formatNumber
+                                    number="${sumBudgetGBP}" type="currency" currencyCode="GBP"/>
+                            <br>
+                        </g:if>
+                    </td>
+                    <td>
+                        <g:if test="${sumDiffEUR}">
+                            <g:formatNumber
+                                    number="${sumDiffEUR}" type="currency" currencyCode="EUR"/>
+                            <br>
+                        </g:if>
+                        <g:if test="${sumDiffUSD}">
+                            <g:formatNumber
+                                    number="${sumDiffUSD}" type="currency" currencyCode="USD"/>
+                            <br>
+                        </g:if>
+                        <g:if test="${sumDiffGBP}">
+                            <g:formatNumber
+                                    number="${sumDiffGBP}" type="currency" currencyCode="GBP"/>
+                            <br>
+                        </g:if>
+                    </td>
+                </g:if>
+                <g:else>
+                    <td></td>
+                </g:else>
+            </g:each>
+            <td></td>
+        </tr>
+        </tfoot>
     </table>
 
     <g:if test="${showTransferFields}">

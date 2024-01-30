@@ -127,7 +127,7 @@ class SubscriptionService {
 
         if (! params.status) {
             if (params.isSiteReloaded != "yes") {
-                String[] defaultStatus = [RDStore.SUBSCRIPTION_CURRENT.id.toString()]
+                String[] defaultStatus = [RDStore.SUBSCRIPTION_CURRENT.id]
                 params.status = defaultStatus
                 //params.hasPerpetualAccess = RDStore.YN_YES.id.toString() as you wish, myladies ... as of May 16th, '22, the setting should be reverted
                 result.defaultSet = true
@@ -268,8 +268,9 @@ class SubscriptionService {
 
         SwissKnife.setPaginationParams(result, params, contextUser)
 
-        Map<String,Object> fsq = filterService.getOrgComboQuery(params+[comboType:RDStore.COMBO_TYPE_CONSORTIUM.value,sort:'o.sortname'], contextOrg)
-        result.filterConsortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams)
+        FilterService.Result fsr = filterService.getOrgComboQuery(params+[comboType:RDStore.COMBO_TYPE_CONSORTIUM.value,sort:'o.sortname'], contextOrg)
+        if (fsr.isFilterSet) { params.filterSet = true }
+        result.filterConsortiaMembers = Org.executeQuery(fsr.query, fsr.queryParams)
 
         prf.setBenchmark('filterSubTypes & filterPropList')
 
@@ -282,20 +283,11 @@ class SubscriptionService {
         Set<Year> availableReferenceYears = Subscription.executeQuery('select s.referenceYear from OrgRole oo join oo.sub s where s.referenceYear != null and oo.org = :contextOrg and s.instanceOf != null order by s.referenceYear', [contextOrg: contextOrg])
         result.referenceYears = availableReferenceYears
 
-        /*
-        String query = "select ci, subT, roleT.org from CostItem ci join ci.owner orgK join ci.sub subT join subT.instanceOf subK " +
-                "join subK.orgRelations roleK join subT.orgRelations roleTK join subT.orgRelations roleT " +
-                "where orgK = :org and orgK = roleK.org and roleK.roleType = :rdvCons " +
-                "and orgK = roleTK.org and roleTK.roleType = :rdvCons " +
-                "and roleT.roleType = :rdvSubscr "
-        */
-
         // CostItem ci
 
         prf.setBenchmark('filter query')
 
         String query
-        Long statusId
         Map qarams
         Map<Subscription,Set<License>> linkedLicenses = [:]
 
@@ -392,10 +384,10 @@ class SubscriptionService {
             statusQuery = " and subT.status.id = :status "
             qarams.put('status',RDStore.SUBSCRIPTION_CURRENT.id)
             params.status = RDStore.SUBSCRIPTION_CURRENT.id
-            //params.hasPerpetualAccess = RDStore.YN_YES.id.toString()
+            //params.hasPerpetualAccess = RDStore.YN_YES.id
             result.defaultSet = true
         }
-        if(params.long("status") == RDStore.SUBSCRIPTION_CURRENT.id && params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) {
+        if (params.long("status") == RDStore.SUBSCRIPTION_CURRENT.id && params.long('hasPerpetualAccess') == RDStore.YN_YES.id) {
             statusQuery = " and (subT.status.id = :status or subT.hasPerpetualAccess = true) "
         }
         else if (params.hasPerpetualAccess) {
@@ -410,32 +402,32 @@ class SubscriptionService {
             qarams = psq.queryParams
         }
 
-        if (params.form?.size() > 0) {
+        if (params.form) {
             query += " and subT.form.id = :form "
             qarams.put('form', params.long('form'))
         }
-        if (params.resource?.size() > 0) {
+        if (params.resource) {
             query += " and subT.resource.id = :resource "
             qarams.put('resource', params.long('resource'))
         }
-        if (params.subTypes?.size() > 0) {
+        if (params.subTypes) {
             query += " and subT.type.id in (:subTypes) "
-            qarams.put('subTypes', params.list('subTypes').collect { it -> Long.parseLong(it) })
+            qarams.put('subTypes', Params.getLongList(params, 'subTypes'))
         }
 
-        if (params.subKinds?.size() > 0) {
+        if (params.subKinds) {
             query += " and subT.kind.id in (:subKinds) "
-            qarams.put('subKinds', params.list('subKinds').collect { Long.parseLong(it) })
+            qarams.put('subKinds', Params.getLongList(params, 'subKinds'))
         }
 
         if (params.isPublicForApi) {
             query += " and subT.isPublicForApi = :isPublicForApi "
-            qarams.put('isPublicForApi', (params.isPublicForApi == RDStore.YN_YES.id.toString()))
+            qarams.put('isPublicForApi', (params.long('isPublicForApi') == RDStore.YN_YES.id))
         }
 
         if (params.hasPublishComponent) {
             query += " and subT.hasPublishComponent = :hasPublishComponent "
-            qarams.put('hasPublishComponent', (params.hasPublishComponent == RDStore.YN_YES.id.toString()))
+            qarams.put('hasPublishComponent', (params.long('hasPublishComponent') == RDStore.YN_YES.id))
         }
 
         if (params.subRunTimeMultiYear || params.subRunTime) {
@@ -472,9 +464,9 @@ class SubscriptionService {
         if('withCostItems' in tableConf) {
             prf.setBenchmark('costs init')
 
-            if (params.filterPvd && params.filterPvd != "" && params.list('filterPvd')) {
+            if (params.filterPvd) {
                 query = query + " and exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.sub.id = subT.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and exists (select orgRole from OrgRole orgRole where orgRole.sub = sub and orgRole.org.id in (:filterPvd))) "
-                qarams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextOrg, filterPvd: params.list('filterPvd').collect { Long.parseLong(it) }]
+                qarams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextOrg, filterPvd: Params.getLongList(params, 'filterPvd')]
             }
 
 
@@ -962,13 +954,15 @@ join sub.orgRelations or_sub where
                     stmt.addBatch([pkgId: pkg.id, subId: memberSub.id, parentId: subscription.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
                 }
             }
-            //"insert into permanent_title (pt_version, pt_ie_fk, pt_date_created, pt_subscription_fk, pt_last_updated, pt_tipp_fk, pt_owner_fk) select 0, ie_id, now(), "+subId+", now(), ie_tipp_fk, "+ownerId+" from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :removed and ie_status_rv_fk = tipp_status_rv_fk and ie_subscription_fk = :subId and not exists(select pt_id from permanent_title where pt_subscription_fk = :subId and pt_ie_fk = ie_id and pt_tipp_fk = tipp_id and pt_owner_fk = :ownerId)"
-            // [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id, ownerId: ownerId]
-            sql.withBatch('insert into permanent_title (pt_version, pt_ie_fk, pt_date_created, pt_subscription_fk, pt_last_updated, pt_tipp_fk, pt_owner_fk) select ' +
-                    '0, (select ie_id from issue_entitlement where ie_subscription_fk = :subId and ie_tipp_fk = tipp_id and ie_status_rv_fk = tipp_status_rv_fk), now(), :subId, now(), ie_tipp_fk, (select or_org_fk from org_role where or_sub_fk = :subId and or_roletype_fk = :subscrRole) from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id ' +
-                    'where tipp_pkg_fk = :pkgId and ie_subscription_fk = :parentId and ie_status_rv_fk != :removed and not exists(select pt_id from permanent_title where pt_tipp_fk = tipp_id and pt_owner_fk = (select or_org_fk from org_role where or_sub_fk = :subId and or_roletype_fk = :subscrRole))') { BatchingPreparedStatementWrapper stmt ->
-                memberSubs.each { Subscription memberSub ->
-                    stmt.addBatch([subId: memberSub.id, parentId: subscription.id, pkgId: pkg.id, removed: RDStore.TIPP_STATUS_REMOVED.id, subscrRole: RDStore.OR_SUBSCRIBER_CONS.id])
+            if(subscription.hasPerpetualAccess) {
+                //"insert into permanent_title (pt_version, pt_ie_fk, pt_date_created, pt_subscription_fk, pt_last_updated, pt_tipp_fk, pt_owner_fk) select 0, ie_id, now(), "+subId+", now(), ie_tipp_fk, "+ownerId+" from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :removed and ie_status_rv_fk = tipp_status_rv_fk and ie_subscription_fk = :subId and not exists(select pt_id from permanent_title where pt_subscription_fk = :subId and pt_ie_fk = ie_id and pt_tipp_fk = tipp_id and pt_owner_fk = :ownerId)"
+                // [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id, ownerId: ownerId]
+                sql.withBatch('insert into permanent_title (pt_version, pt_ie_fk, pt_date_created, pt_subscription_fk, pt_last_updated, pt_tipp_fk, pt_owner_fk) select ' +
+                        '0, (select ie_id from issue_entitlement where ie_subscription_fk = :subId and ie_tipp_fk = tipp_id and ie_status_rv_fk = tipp_status_rv_fk), now(), :subId, now(), ie_tipp_fk, (select or_org_fk from org_role where or_sub_fk = :subId and or_roletype_fk = :subscrRole) from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id ' +
+                        'where tipp_pkg_fk = :pkgId and ie_subscription_fk = :parentId and ie_status_rv_fk != :removed and not exists(select pt_id from permanent_title where pt_tipp_fk = tipp_id and pt_owner_fk = (select or_org_fk from org_role where or_sub_fk = :subId and or_roletype_fk = :subscrRole))') { BatchingPreparedStatementWrapper stmt ->
+                    memberSubs.each { Subscription memberSub ->
+                        stmt.addBatch([subId: memberSub.id, parentId: subscription.id, pkgId: pkg.id, removed: RDStore.TIPP_STATUS_REMOVED.id, subscrRole: RDStore.OR_SUBSCRIBER_CONS.id])
+                    }
                 }
             }
             sql.withBatch('insert into issue_entitlement_coverage (ic_version, ic_ie_fk, ic_date_created, ic_last_updated, ic_start_date, ic_start_volume, ic_start_issue, ic_end_date, ic_end_volume, ic_end_issue, ic_coverage_depth, ic_coverage_note, ic_embargo) select ' +
@@ -1583,10 +1577,11 @@ join sub.orgRelations or_sub where
      * @param id the customer number ID to unser
      * @return true if the unsetting was successful, false otherwise
      */
-    boolean deleteCustomerIdentifier(Long id) {
+    boolean unsetCustomerIdentifier(Long id) {
         CustomerIdentifier ci = CustomerIdentifier.get(id)
         ci.value = null
         ci.requestorKey = null
+        // ci.note = null
         ci.save()
     }
 
@@ -2413,6 +2408,7 @@ join sub.orgRelations or_sub where
         Integer countRows = 0
         Integer count = 0
         Integer countSelectTipps = 0
+        Integer countNotSelectTipps = 0
         Org contextOrg = contextService.getOrg()
         Set selectedTipps = [], truncatedRows = []
 
@@ -2502,7 +2498,7 @@ join sub.orgRelations or_sub where
                         if (pickCol >= 0 && cols[pickCol] != null && !cols[pickCol].trim().isEmpty()) {
                             String cellEntry = cols[pickCol].trim()
                             if (cellEntry.toLowerCase() == RDStore.YN_YES.value_de.toLowerCase() || cellEntry.toLowerCase() == RDStore.YN_YES.value_en.toLowerCase()) {
-                                IssueEntitlement ieInNewSub = surveyService.titleContainedBySubscription(newSub, match)
+                                IssueEntitlement ieInNewSub = surveyService.titleContainedBySubscription(newSub, match, [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_EXPECTED])
                                 boolean allowedToSelect = false
                                 if (surveyConfig.pickAndChoosePerpetualAccess) {
                                     boolean participantPerpetualAccessToTitle = surveyService.hasParticipantPerpetualAccessToTitle3(newSub.getSubscriber(), match)
@@ -2515,6 +2511,9 @@ join sub.orgRelations or_sub where
                                     selectedTipps << match.gokbId
                                     countSelectTipps++
                                 }
+                                if (!allowedToSelect) {
+                                    countNotSelectTipps++
+                                }
                             }
                         }
                     }
@@ -2525,7 +2524,7 @@ join sub.orgRelations or_sub where
             }
         }
 
-        return [processRows: countRows, processCount: count, selectedTipps: selectedTipps, countSelectTipps: countSelectTipps]
+        return [processRows: countRows, processCount: count, selectedTipps: selectedTipps, countSelectTipps: countSelectTipps, countNotSelectTipps: countNotSelectTipps]
     }
 
     @Deprecated
@@ -2684,7 +2683,7 @@ join sub.orgRelations or_sub where
                     //property.save(flush:true)
                     if(!prop.save(failOnError: true))
                     {
-                        println(prop.error)
+                        log.error("Error Property save: " +prop.error)
                     }
                 } else if(field == "dateValue") {
                     SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()

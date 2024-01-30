@@ -2,10 +2,10 @@ package de.laser
 
 import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
+import de.laser.annotations.UnstableFeature
 import de.laser.cache.EhcacheWrapper
 import de.laser.ctrl.OrganisationControllerService
 import de.laser.ctrl.UserControllerService
-import de.laser.custom.CustomWkhtmltoxService
 import de.laser.properties.OrgProperty
 import de.laser.auth.Role
 import de.laser.auth.User
@@ -15,6 +15,7 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -22,7 +23,6 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
-import org.grails.plugins.wkhtmltopdf.WkhtmltoxService
 import org.springframework.validation.FieldError
 
 import javax.servlet.ServletOutputStream
@@ -59,7 +59,6 @@ class OrganisationController  {
     UserControllerService userControllerService
     UserService userService
     WorkflowService workflowService
-    CustomWkhtmltoxService wkhtmltoxService
 
     //-----
 
@@ -103,19 +102,31 @@ class OrganisationController  {
     def settings() {
         Map<String,Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
-        if(!params.containsKey("tab"))
-            params.tab = "oamonitor"
+        if (! result) {
+            redirect controller: 'organisation', action: 'show', id: params.id
+            return
+        }
+        if (! params.containsKey('tab')) {
+            params.tab = result.orgInstance.isCustomerType_Pro() ? 'oamonitor' : 'natstat'
+        }
+
+        // TODO: erms-5467
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(result.orgInstance, result.institution)
         result.isComboRelated = isComboRelated
         result.contextOrg = result.institution //for the properties template
 
-        Boolean hasAccess = (result.inContextOrg && userService.hasFormalAffiliation(result.user, result.orgInstance, 'INST_ADM')) ||
+        List<Long> orgInstanceTypeIds = result.orgInstance.getAllOrgTypeIds()
+        boolean isProviderOrAgency = (RDStore.OT_PROVIDER.id in orgInstanceTypeIds) || (RDStore.OT_AGENCY.id in orgInstanceTypeIds)
+
+        Boolean hasAccess = ! isProviderOrAgency && (
+                (result.inContextOrg && userService.hasFormalAffiliation(result.user, result.orgInstance, 'INST_ADM')) ||
                 (isComboRelated && userService.hasFormalAffiliation(result.user, result.institution, 'INST_ADM')) ||
                 SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        )
 
         // forbidden access
         if (! hasAccess) {
-            redirect controller: 'organisation', action: 'show', id: org.id
+            redirect controller: 'organisation', action: 'show', id: result.orgInstance.id
             return
         }
 
@@ -146,7 +157,7 @@ class OrganisationController  {
                 OrgSetting.KEYS.NATSTAT_SERVER_ACCESS
         ]
         List<OrgSetting.KEYS> mailSet = [
-                OrgSetting.KEYS.MAIL_FROM_FOR_SURVEY,
+                OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY,
                 OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT
         ]
 
@@ -208,10 +219,10 @@ class OrganisationController  {
 
         result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
-        Map<String, Object> fsq = filterService.getOrgQuery(params)
+        FilterService.Result fsr = filterService.getOrgQuery(params)
         result.filterSet = params.filterSet ? true : false
 
-        List orgListTotal  = Org.findAll(fsq.query, fsq.queryParams)
+        List<Org> orgListTotal  = Org.findAll(fsr.query, fsr.queryParams)
         result.orgListTotal = orgListTotal.size()
         result.orgList = orgListTotal.drop((int) result.offset).take((int) result.max)
 
@@ -268,21 +279,21 @@ class OrganisationController  {
     })
     def listInstitution() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
-        params.orgType   = RDStore.OT_INSTITUTION.id.toString()
-        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
+        params.orgType   = RDStore.OT_INSTITUTION.id
+        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id
         if(!params.sort)
             params.sort = " LOWER(o.sortname)"
         if(!params.orgStatus && !params.filterSet) {
             params.orgStatus = [RDStore.ORG_STATUS_CURRENT.id]
         }
-        Map<String, Object> fsq = filterService.getOrgQuery(params)
+        FilterService.Result fsr = filterService.getOrgQuery(params)
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        List<Org> availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, [sort:params.sort])
+        List<Org> availableOrgs = Org.executeQuery(fsr.query, fsr.queryParams, [sort:params.sort])
         result.consortiaMemberIds = Combo.executeQuery('select cmb.fromOrg.id from Combo cmb where cmb.toOrg = :toOrg and cmb.type = :type',[toOrg: result.institution, type: RDStore.COMBO_TYPE_CONSORTIUM])
 
         if (params.isMyX) {
-            List xFilter = params.list('isMyX')
+            List<String> xFilter = params.list('isMyX')
             Set<Long> f1Result = []
 
             if (xFilter.contains('ismyx_exclusive')) {
@@ -338,22 +349,8 @@ class OrganisationController  {
                     return
                 case 'pdf':
                     Map<String, Object> pdfOutput = exportClickMeService.exportOrgs(availableOrgs, selectedFields, 'institution', ExportClickMeService.FORMAT.PDF, contactSwitch)
-                    Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.mainHeader.size()*15, height: 35]
-                    if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
-                    else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
-                    else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
-                    else if (pageStruct.width > 85)    { pageStruct.pageSize = 'A3' }
-                    pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
-                    byte[] pdf = wkhtmltoxService.makePdf(
-                            view: '/templates/export/_individuallyExportPdf',
-                            model: pdfOutput,
-                            pageSize: pageStruct.pageSize,
-                            orientation: pageStruct.orientation,
-                            marginLeft: 10,
-                            marginRight: 10,
-                            marginTop: 15,
-                            marginBottom: 15
-                    )
+
+                    byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
                     response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
                     response.setContentType('application/pdf')
                     response.outputStream.withStream { it << pdf }
@@ -376,17 +373,16 @@ class OrganisationController  {
     })
     Map listConsortia() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
-        params.customerType   = Role.findByAuthority('ORG_CONSORTIUM_PRO').id.toString()
+        params.customerType = [Role.findByAuthority('ORG_CONSORTIUM_PRO').id, Role.findByAuthority('ORG_CONSORTIUM_BASIC').id]
         if(!params.sort)
             params.sort = " LOWER(o.sortname)"
-        Map<String, Object> fsq = filterService.getOrgQuery(params)
+        FilterService.Result fsr = filterService.getOrgQuery(params)
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        List<Org> availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, [sort:params.sort])
+        List<Org> availableOrgs = Org.executeQuery(fsr.query, fsr.queryParams, [sort:params.sort])
         // TODO [ticket=2276]
         availableOrgs.removeAll(customerTypeService.getAllOrgsByCustomerType(CustomerTypeService.ORG_SUPPORT))
 
-        String header = message(code: 'menu.public.all_cons')
         String exportHeader = message(code: 'export.all.consortia')
         SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
         // Write the output to a file
@@ -396,14 +392,16 @@ class OrganisationController  {
         GrailsParameterMap queryParams = params.clone() as GrailsParameterMap
         queryParams.clear()
         queryParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
-        queryParams.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
+        queryParams.subStatus = RDStore.SUBSCRIPTION_CURRENT.id
         queryParams.invertDirection = true
-        Map<String, Object> currentConsortiaQMap = filterService.getOrgComboQuery(queryParams, result.contextOrg as Org)
-        result.consortiaIds = Org.executeQuery(currentConsortiaQMap.query, currentConsortiaQMap.queryParams).collect{ it.id }
+        FilterService.Result currentConsortiaFsr = filterService.getOrgComboQuery(queryParams, result.contextOrg as Org)
+        if (currentConsortiaFsr.isFilterSet) { queryParams.filterSet = true }
+
+        result.consortiaIds = Org.executeQuery(currentConsortiaFsr.query, currentConsortiaFsr.queryParams).collect{ it.id }
         // ? ---
 
         if (params.isMyX) {
-            List xFilter = params.list('isMyX')
+            List<String> xFilter = params.list('isMyX')
             Set<Long> f1Result = []
 
             if (xFilter.contains('ismyx_exclusive')) {
@@ -450,22 +448,8 @@ class OrganisationController  {
                     return
                 case 'pdf':
                     Map<String, Object> pdfOutput = exportClickMeService.exportOrgs(availableOrgs, selectedFields, 'consortium', ExportClickMeService.FORMAT.PDF, contactSwitch)
-                    Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.mainHeader.size()*15, height: 35]
-                    if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
-                    else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
-                    else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
-                    else if (pageStruct.width > 85)    { pageStruct.pageSize = 'A3' }
-                    pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
-                    byte[] pdf = wkhtmltoxService.makePdf(
-                            view: '/templates/export/_individuallyExportPdf',
-                            model: pdfOutput,
-                            pageSize: pageStruct.pageSize,
-                            orientation: pageStruct.orientation,
-                            marginLeft: 10,
-                            marginRight: 10,
-                            marginTop: 15,
-                            marginBottom: 15
-                    )
+
+                    byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
                     response.setHeader('Content-disposition', 'attachment; filename="'+ file +'.pdf"')
                     response.setContentType('application/pdf')
                     response.outputStream.withStream { it << pdf }
@@ -520,30 +504,23 @@ class OrganisationController  {
         }
         */
 
-        params.orgSector    = RDStore.O_SECTOR_PUBLISHER.id.toString()
+        params.orgSector    = RDStore.O_SECTOR_PUBLISHER.id
         params.orgType      = [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]
         params.sort        = params.sort ?: " LOWER(o.sortname), LOWER(o.name)"
 
-        def fsq            = filterService.getOrgQuery(params)
+        FilterService.Result fsr = filterService.getOrgQuery(params)
+        List<Org> orgListTotal = Org.findAll(fsr.query, fsr.queryParams)
         result.filterSet = params.filterSet ? true : false
-
-        if (params.filterPropDef) {
-            List orgIdList = Org.executeQuery("select o.id ${fsq.query}", fsq.queryParams)
-            params.constraint_orgIds = orgIdList
-            fsq = filterService.getOrgQuery(params)
-            fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)
-        }
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        List orgListTotal            = Org.findAll(fsq.query, fsq.queryParams)
         result.currentProviderIdList = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies(contextService.getOrg()).toList()
         result.wekbRecords = organisationService.getWekbOrgRecords(params, result)
         if (params.curatoryGroup || params.providerRole)
             orgListTotal = orgListTotal.findAll { Org org -> org.gokbId in result.wekbRecords.keySet() }
 
         if (params.isMyX) {
-            List xFilter = params.list('isMyX')
+            List<String> xFilter = params.list('isMyX')
             Set<Long> f1Result = [], f2Result = []
             boolean   f1Set = false, f2Set = false
 
@@ -609,26 +586,34 @@ class OrganisationController  {
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
             contactSwitch.addAll(params.list("contactSwitch"))
             contactSwitch.addAll(params.list("addressSwitch"))
-        }
-        if(params.fileformat == 'xlsx') {
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(orgListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.XLS, contactSwitch)
+            switch(params.fileformat) {
+                case 'xlsx':
+                    SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(orgListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.XLS, contactSwitch)
+                    response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                    response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    wb.write(response.outputStream)
+                    response.outputStream.flush()
+                    response.outputStream.close()
+                    wb.dispose()
+                    return
+                case 'csv':
+                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+                    response.contentType = "text/csv"
+                    ServletOutputStream out = response.outputStream
+                    out.withWriter { writer ->
+                        writer.write((String) exportClickMeService.exportOrgs(orgListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.CSV, contactSwitch))
+                    }
+                    out.close()
+                    return
+                case 'pdf':
+                    Map<String, Object> pdfOutput = exportClickMeService.exportOrgs(orgListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.PDF, contactSwitch)
 
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
-            return //IntelliJ cannot know that the return prevents an obsolete redirect
-        }
-        else if(params.fileformat == 'csv') {
-            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
-            response.contentType = "text/csv"
-            ServletOutputStream out = response.outputStream
-            out.withWriter { writer ->
-                writer.write((String) exportClickMeService.exportOrgs(orgListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.CSV, contactSwitch))
+                    byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
+                    response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
+                    response.setContentType('application/pdf')
+                    response.outputStream.withStream { it << pdf }
+                    return
             }
-            out.close()
         }
         else {
             result
@@ -1051,6 +1036,23 @@ class OrganisationController  {
         result
     }
 
+    @Secured(['ROLE_YODA'])
+    @UnstableFeature
+    @Check404(domain=Org)
+    def info() {
+        Map<String,Object> ctrlResult = organisationControllerService.info(this, params)
+
+        Map<String,Object> result = ctrlResult.result as Map<String, Object>
+        if (!result) {
+            response.sendError(401); return
+        }
+        if (! (contextService.getOrg().isCustomerType_Consortium() && result.orgInstance.isCustomerType_Inst())) {
+            response.sendError(401); return
+        }
+        result
+    }
+
+
     /**
      * Shows the details of the organisation to display
      * @return the details view of the given orgainsation
@@ -1201,6 +1203,8 @@ class OrganisationController  {
         result.hasAccessToCustomeridentifier = ((inContextOrg && userService.hasFormalAffiliation(result.user, result.institution, 'INST_USER')) ||
                 (isComboRelated && userService.hasFormalAffiliation(result.user, result.institution, 'INST_USER')) ||
                 SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) && OrgSetting.get(result.orgInstance, OrgSetting.KEYS.CUSTOMER_TYPE) != OrgSetting.SETTING_NOT_FOUND
+
+        // TODO: erms-5495
 
         if (result.hasAccessToCustomeridentifier) {
 
@@ -1495,12 +1499,12 @@ class OrganisationController  {
             }
 
             if (params.process && result.editable) {
-                User userReplacement = (User) genericOIDService.resolveOID(params.userReplacement)
+                User userReplacement = User.get(params.userReplacement)
 
-                result.delResult = deletionService.deleteUser(result.user, userReplacement, false)
+                result.delResult = deletionService.deleteUser(result.user as User, userReplacement, false)
             }
             else {
-                result.delResult = deletionService.deleteUser(result.user, null, DeletionService.DRY_RUN)
+                result.delResult = deletionService.deleteUser(result.user as User, null, DeletionService.DRY_RUN)
             }
 
             result.substituteList = User.executeQuery(
@@ -2073,7 +2077,7 @@ class OrganisationController  {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     @Check404(domain=Org)
-    def myPublicContacts() {
+    def contacts() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
@@ -2081,8 +2085,7 @@ class OrganisationController  {
         result.rdvAllPersonFunctions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN]
         result.rdvAllPersonPositions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]
 
-        if(result.institution.isCustomerType_Consortium() && result.orgInstance)
-        {
+        if ((result.institution.isCustomerType_Consortium() || result.institution.isCustomerType_Support() )&& result.orgInstance) {
             params.org = result.orgInstance
             result.rdvAllPersonFunctions << RDStore.PRS_FUNC_GASCO_CONTACT
         }else{
@@ -2102,7 +2105,7 @@ class OrganisationController  {
         if(params.sort.contains('p.'))
             adrParams.remove('sort')
 
-        List visiblePersons = addressbookService.getVisiblePersons("myPublicContacts", params)
+        List visiblePersons = addressbookService.getVisiblePersons("contacts", params)
         result.num_visiblePersons = visiblePersons.size()
         result.visiblePersons = visiblePersons.drop(result.offset).take(result.max)
 
@@ -2127,7 +2130,7 @@ class OrganisationController  {
 
         params.tab = params.tab ?: 'contacts'
 
-        result.addresses = addressbookService.getVisibleAddresses("myPublicContacts", adrParams)
+        result.addresses = addressbookService.getVisibleAddresses("contacts", adrParams)
 
         result
     }
@@ -2163,7 +2166,7 @@ class OrganisationController  {
             case [ 'addOrgType', 'deleteOrgType' ]:
                 isEditable = userService.hasFormalAffiliation_or_ROLEADMIN(user, Org.get(params.org), 'INST_ADM')
                 break
-            case 'myPublicContacts':
+            case 'contacts':
                 if (inContextOrg) {
                     isEditable = userHasEditableRights
                 }else{
@@ -2196,19 +2199,12 @@ class OrganisationController  {
                             }
                             break
                     }
-
-                    // todo: ERMS-5456
-                    // todo: READ ONLY here
-                    // todo: handle ROLE_ADMIN/ROLE_YODA
-                    if (contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT  && params.action in ['readerNumber', 'accessPoints']) {
-                        isEditable = false
-                    }
                 }
                 break
             default:
                 isEditable = userService.hasFormalAffiliation_or_ROLEADMIN(user, org,'INST_EDITOR')
         }
-        // todo: println '>>> isEditable: ' + isEditable + ' >>> ' + params.action
+        // println '>>> isEditable: ' + isEditable + ' >>> ' + params.action
         isEditable
     }
 }

@@ -53,7 +53,7 @@ class SurveyControllerService {
         result.user = contextService.getUser()
 
         result.surveyInfo = SurveyInfo.get(params.id)
-        result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(Long.parseLong(params.surveyConfigID.toString())) : result.surveyInfo.surveyConfigs[0]
+        result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.long('surveyConfigID')) : result.surveyInfo.surveyConfigs[0]
         result.surveyWithManyConfigs = (result.surveyInfo.surveyConfigs?.size() > 1)
 
         result.editable = result.surveyInfo.isEditable() ?: false
@@ -71,7 +71,8 @@ class SurveyControllerService {
         int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.surveyConfig).size()
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
-        result.notesCount = docstoreService.getNotes(result.surveyConfig, result.contextOrg).size()
+        result.notesCount = docstoreService.getNotesCount(result.surveyConfig, result.contextOrg)
+        result.docsCount       = docstoreService.getDocsCount(result.surveyConfig, result.contextOrg)
 
         result.subscription = result.surveyConfig.subscription ?: null
 
@@ -183,7 +184,7 @@ class SurveyControllerService {
                     orgsWithMultiYearTermOrgsID << sub.getSubscriber().id
 
                 } else {
-                    println(sub)
+                    //println(sub)
                         currentParticipantIDs << sub.getSubscriber().id
                 }
             }

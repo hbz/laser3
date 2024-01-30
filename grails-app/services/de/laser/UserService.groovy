@@ -5,10 +5,12 @@ import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserRole
 import de.laser.storage.RDStore
+import de.laser.utils.DatabaseUtils
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.mvc.FlashScope
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 import org.springframework.validation.FieldError
 
@@ -68,8 +70,8 @@ class UserService {
         }
 
         if (params.name && params.name != '' ) {
-            whereQuery.add( '(genfunc_filter_matcher(u.username, :name) = true or genfunc_filter_matcher(u.display, :name) = true)' )
-            queryParams.put('name', "%${params.name.toLowerCase()}%")
+            whereQuery.add('(genfunc_filter_matcher(u.username, :name) = true or genfunc_filter_matcher(u.display, :name) = true)')
+            queryParams.put('name', params.name)
         }
         String query = baseQuery.join(', ') + (whereQuery ? ' where ' + whereQuery.join(' and ') : '') + ' order by u.username'
         User.executeQuery(query, queryParams /*,params */)
@@ -81,7 +83,7 @@ class UserService {
      * @param flash the message container
      * @return the new user object or the error messages (null) in case of failure
      */
-    User addNewUser(Map params, FlashScope flash) {
+    User addNewUser(GrailsParameterMap params, FlashScope flash) {
         Locale locale = LocaleUtils.getCurrentLocale()
         User user = new User(params)
         user.enabled = true
@@ -119,7 +121,7 @@ class UserService {
                         log.debug("set legallyObligedBy for ${formalOrg} -> ${contextService.getOrg()}")
                     }
                 }
-                user.getSetting(UserSetting.KEYS.DASHBOARD_TAB, RDStore.US_DASHBOARD_TAB_DUE_DATES)
+                user.getSetting(UserSetting.KEYS.DASHBOARD_TAB, RDStore.US_DASHBOARD_TAB_SURVEYS)
             }
         }
         user

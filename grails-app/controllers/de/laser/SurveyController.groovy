@@ -25,6 +25,7 @@ import de.laser.survey.SurveyResult
 import de.laser.survey.SurveyUrl
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -123,7 +124,7 @@ class SurveyController {
 
         params.max = result.max
         params.offset = result.offset
-        //params.filterStatus = params.filterStatus ?: ((params.size() > 4) ? "" : [RDStore.SURVEY_SURVEY_STARTED.id.toString(), RDStore.SURVEY_READY.id.toString(), RDStore.SURVEY_IN_PROCESSING.id.toString()])
+        //params.filterStatus = params.filterStatus ?: ((params.size() > 4) ? "" : [RDStore.SURVEY_SURVEY_STARTED.id, RDStore.SURVEY_READY.id, RDStore.SURVEY_IN_PROCESSING.id])
         prf.setBenchmark("before properties")
 
         result.propList = PropertyDefinition.executeQuery( "select surpro.surveyProperty from SurveyConfigProperties as surpro join surpro.surveyConfig surConfig join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg order by surpro.surveyProperty.name_de asc", [contextOrg: result.institution]).groupBy {it}.collect {it.key}
@@ -517,7 +518,7 @@ class SurveyController {
         result.user = contextService.getUser()
         result.editable = true
 
-        result.subscription = Subscription.get(Long.parseLong(params.sub))
+        result.subscription = Subscription.get( params.long('sub') )
         if (!result.subscription) {
             redirect action: 'createSubscriptionSurvey'
             return
@@ -542,7 +543,7 @@ class SurveyController {
         result.user = contextService.getUser()
         result.editable = true
 
-        result.subscription = Subscription.get(Long.parseLong(params.sub))
+        result.subscription = Subscription.get( params.long('sub') )
         result.pickAndChoose = true
         if (!result.subscription) {
             redirect action: 'createIssueEntitlementsSurvey'
@@ -579,7 +580,7 @@ class SurveyController {
             }
         }
 
-        Subscription subscription = Subscription.get(Long.parseLong(params.sub))
+        Subscription subscription = Subscription.get( params.long('sub') )
         boolean subSurveyUseForTransfer = (SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(subscription, true)) ? false : (params.subSurveyUseForTransfer ? true : false)
         SurveyInfo surveyInfo
         SurveyInfo.withTransaction { TransactionStatus ts ->
@@ -627,6 +628,18 @@ class SurveyController {
                     /*if (configProperty.save() && configProperty2.save()) {
                         surveyService.addSubMembers(surveyConfig)
                     }*/
+
+                    if (configProperty.save()) {
+                        surveyService.addSubMembers(surveyConfig)
+                    }
+                }
+
+                //Alle Title-Umfragen Teilnahme-Merkmale hinzufügen
+                if (surveyConfig.pickAndChoose) {
+                    SurveyConfigProperties configProperty = new SurveyConfigProperties(
+                            surveyProperty: PropertyStore.SURVEY_PROPERTY_PARTICIPATION,
+                            surveyConfig: surveyConfig,
+                            mandatoryProperty: true)
 
                     if (configProperty.save()) {
                         surveyService.addSubMembers(surveyConfig)
@@ -696,7 +709,7 @@ class SurveyController {
                 redirect(action: 'addSubtoIssueEntitlementsSurvey', params: params)
                 return
             }
-            Subscription subscription = Subscription.get(Long.parseLong(params.sub))
+            Subscription subscription = Subscription.get( params.long('sub') )
             if (subscription && !SurveyConfig.findAllBySubscriptionAndSurveyInfo(subscription, surveyInfo)) {
                 SurveyConfig surveyConfig = new SurveyConfig(
                         subscription: subscription,
@@ -859,7 +872,8 @@ class SurveyController {
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         if(result.subscription.packages) {
-            params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+            // TODO: erms-5519 - fixed status here
+            params.status = [RDStore.TIPP_STATUS_CURRENT.id]
             Map<String, Object> query = filterService.getTippQuery(params, result.subscription.packages.pkg)
             result.filterSet = query.filterSet
             List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
@@ -915,10 +929,12 @@ class SurveyController {
         }
 
         // new: filter preset
-        params.orgType = RDStore.OT_INSTITUTION.id.toString()
-        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
+        params.orgType = RDStore.OT_INSTITUTION.id
+        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id
 
-        params.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id.toString())
+        if(params.tab == 'selectedParticipants') {
+            params.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id)
+        }
 
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
@@ -927,24 +943,29 @@ class SurveyController {
 
         GrailsParameterMap cloneParams = params.clone()
         cloneParams.removeAll {it.value != ''}
-        cloneParams.orgType = RDStore.OT_INSTITUTION.id.toString()
-        cloneParams.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
-        cloneParams.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id.toString())
+        cloneParams.orgType = RDStore.OT_INSTITUTION.id
+        cloneParams.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id
+        cloneParams.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id)
         cloneParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         cloneParams.sub = result.subscription
 
-        Map<String,Object> countFsq = filterService.getOrgComboQuery(cloneParams, result.institution)
+        FilterService.Result countFsr = filterService.getOrgComboQuery(cloneParams, result.institution as Org)
+        if (countFsr.isFilterSet) { cloneParams.filterSet = true }
 
-        result.consortiaMembersCount = Org.executeQuery("select o.id " + countFsq.query.minus("select o "), countFsq.queryParams).size()
+        result.consortiaMembersCount = Org.executeQuery("select o.id " + countFsr.query.minus("select o "), countFsr.queryParams).size()
 
-        Map<String,Object> fsq = filterService.getOrgComboQuery(params, result.institution)
-        String tmpQuery = "select o.id " + fsq.query.minus("select o ")
-        List consortiaMemberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
+        FilterService.Result fsr = filterService.getOrgComboQuery(params, result.institution as Org)
+        if (fsr.isFilterSet) { params.filterSet = true }
+
+        String tmpQuery = "select o.id " + fsr.query.minus("select o ")
+        List consortiaMemberIds = Org.executeQuery(tmpQuery, fsr.queryParams)
 
         if (params.filterPropDef && consortiaMemberIds) {
-            fsq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname", 'o', [oids: consortiaMemberIds])
+            Map<String, Object> efq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname", 'o', [oids: consortiaMemberIds])
+            fsr.query = efq.query
+            fsr.queryParams = efq.queryParams as Map<String, Object>
         }
-        result.consortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams, params)
+        result.consortiaMembers = Org.executeQuery(fsr.query, fsr.queryParams, params)
 
         if(result.surveyConfig.pickAndChoose){
 
@@ -959,10 +980,10 @@ class SurveyController {
         result.selectedParticipantsCount = surveyOrgs.orgsWithoutSubIDs ? surveyOrgs.orgsWithoutSubIDs.size() : 0
         result.selectedSubParticipantsCount = surveyOrgs.orgsWithSubIDs? surveyOrgs.orgsWithSubIDs.size() : 0
 
-        result.selectedParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsq.query, fsq.queryParams, params)
-        result.selectedSubParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsq.query, fsq.queryParams, params)
+        result.selectedParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsr.query, fsr.queryParams, params)
+        result.selectedSubParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsr.query, fsr.queryParams, params)
 
-        params.tab = params.tab ?: (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY ? 'selectedParticipants' : 'selectedSubParticipants')
+        params.tab = params.tab ?: (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY ? 'selectedParticipants' : ((result.selectedSubParticipantsCount == 0) ? 'selectedParticipants' : 'selectedSubParticipants'))
 
         result
 
@@ -997,18 +1018,22 @@ class SurveyController {
         params.tab = params.tab ?: 'selectedSubParticipants'
 
         // new: filter preset
-        params.orgType = RDStore.OT_INSTITUTION.id.toString()
-        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
+        params.orgType = RDStore.OT_INSTITUTION.id
+        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id
 
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
         params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
-        Map<String,Object> fsq = filterService.getOrgComboQuery(params, result.institution)
-        String tmpQuery = "select o.id " + fsq.query.minus("select o ")
-        List consortiaMemberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
+        FilterService.Result fsr = filterService.getOrgComboQuery(params, result.institution)
+        if (fsr.isFilterSet) { params.filterSet = true }
+
+        String tmpQuery = "select o.id " + fsr.query.minus("select o ")
+        List consortiaMemberIds = Org.executeQuery(tmpQuery, fsr.queryParams)
 
         if (params.filterPropDef && consortiaMemberIds) {
-            fsq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname", 'o', [oids: consortiaMemberIds])
+            Map<String, Object> efq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname", 'o', [oids: consortiaMemberIds])
+            fsr.query = efq.query
+            fsr.queryParams = efq.queryParams as Map<String, Object>
         }
 
         result.editable = (result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
@@ -1024,8 +1049,8 @@ class SurveyController {
 
         Map<String,Object> surveyOrgs = result.surveyConfig?.getSurveyOrgsIDs()
 
-        result.selectedParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsq.query, fsq.queryParams, params)
-        result.selectedSubParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsq.query, fsq.queryParams, params)
+        result.selectedParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsr.query, fsr.queryParams, params)
+        result.selectedSubParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsr.query, fsr.queryParams, params)
 
         result.selectedCostItemElement = params.selectedCostItemElement ? params.selectedCostItemElement.toString() : RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id.toString()
 
@@ -1110,7 +1135,7 @@ class SurveyController {
 
             RefdataValue cost_item_status = (params.newCostItemStatus && params.newCostItemStatus != RDStore.GENERIC_NULL_VALUE.id.toString()) ? (RefdataValue.get(params.long('newCostItemStatus'))) : null
             RefdataValue cost_item_element = params.newCostItemElement ? (RefdataValue.get(params.long('newCostItemElement'))) : null
-            RefdataValue cost_item_element_configuration = (params.ciec && params.ciec != 'null') ? RefdataValue.get(Long.parseLong(params.ciec)) : null
+            RefdataValue cost_item_element_configuration = (params.ciec && params.ciec != 'null') ? RefdataValue.get(params.long('ciec')) : null
 
             String costDescription = params.newDescription ? params.newDescription.trim() : null
             String costTitle = params.newCostTitle ? params.newCostTitle.trim() : null
@@ -1167,6 +1192,37 @@ class SurveyController {
                             Subscription orgSub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(surveyCostItem.surveyOrg.org)
                             CostItem costItem = CostItem.findBySubAndOwnerAndCostItemStatusNotEqualAndCostItemElement(orgSub, surveyCostItem.owner, RDStore.COST_ITEM_DELETED, RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE)
                             surveyCostItem.costInBillingCurrency = costItem ? (costItem.costInBillingCurrency * (1 + (percentOnOldPrice / 100))).round(2) : surveyCostItem.costInBillingCurrency
+
+                            int taxRate = 0 //fallback
+                            if(surveyCostItem.taxKey)
+                                taxRate = surveyCostItem.taxKey.taxRate
+
+                            surveyCostItem.costInBillingCurrencyAfterTax = surveyCostItem.costInBillingCurrency ? surveyCostItem.costInBillingCurrency * (1.0 + (0.01 * taxRate)) : surveyCostItem.costInBillingCurrency
+
+                            if (surveyCostItem.billingSumRounding) {
+                                surveyCostItem.costInBillingCurrency = surveyCostItem.costInBillingCurrency ? Math.round(surveyCostItem.costInBillingCurrency) : surveyCostItem.costInBillingCurrency
+                            }
+                            if (surveyCostItem.finalCostRounding) {
+                                surveyCostItem.costInBillingCurrencyAfterTax = surveyCostItem.costInBillingCurrencyAfterTax ? Math.round(surveyCostItem.costInBillingCurrencyAfterTax) : surveyCostItem.costInBillingCurrencyAfterTax
+                            }
+
+                        }
+                        else if (params.percentOnSurveyPrice) {
+                            Double percentOnSurveyPrice = params.double('percentOnSurveyPrice', 0.00)
+                            surveyCostItem.costInBillingCurrency = percentOnSurveyPrice ? (surveyCostItem.costInBillingCurrency * (1 + (percentOnSurveyPrice / 100))).round(2) : surveyCostItem.costInBillingCurrency
+
+                            int taxRate = 0 //fallback
+                            if(surveyCostItem.taxKey)
+                                taxRate = surveyCostItem.taxKey.taxRate
+
+                            surveyCostItem.costInBillingCurrencyAfterTax = surveyCostItem.costInBillingCurrency ? surveyCostItem.costInBillingCurrency * (1.0 + (0.01 * taxRate)) : surveyCostItem.costInBillingCurrencyAfterTax
+
+                            if (surveyCostItem.billingSumRounding) {
+                                surveyCostItem.costInBillingCurrency = surveyCostItem.costInBillingCurrency ? Math.round(surveyCostItem.costInBillingCurrency) : surveyCostItem.costInBillingCurrency
+                            }
+                            if (surveyCostItem.finalCostRounding) {
+                                surveyCostItem.costInBillingCurrencyAfterTax = surveyCostItem.costInBillingCurrencyAfterTax ? Math.round(surveyCostItem.costInBillingCurrencyAfterTax) : surveyCostItem.costInBillingCurrencyAfterTax
+                            }
                         }
                         else {
                             surveyCostItem.costInBillingCurrency = cost_billing_currency ?: surveyCostItem.costInBillingCurrency
@@ -1188,7 +1244,7 @@ class SurveyController {
                         //surveyCostItem.costInLocalCurrency = cost_local_currency ?: surveyCostItem.costInLocalCurrency
                         surveyCostItem.billingSumRounding = billingSumRounding != surveyCostItem.billingSumRounding ? billingSumRounding : surveyCostItem.billingSumRounding
                         if(surveyCostItem.billingSumRounding)
-                            surveyCostItem.costInBillingCurrency = Math.round(surveyCostItem.costInBillingCurrency)
+                            surveyCostItem.costInBillingCurrency = surveyCostItem.costInBillingCurrency ? Math.round(surveyCostItem.costInBillingCurrency) : surveyCostItem.costInBillingCurrency
                         surveyCostItem.finalCostRounding = finalCostRounding != surveyCostItem.finalCostRounding ? finalCostRounding : surveyCostItem.finalCostRounding
 
                         //println( params.newFinalCostRounding)
@@ -1202,7 +1258,14 @@ class SurveyController {
 
         }
 
-        redirect(url: request.getHeader('referer'))
+        params.remove('selectedOrgs')
+        params.removeAll {it.key.toString().contains('new')}
+        params.remove('deleteCostItems')
+        params.remove('percentOnOldPrice')
+        params.remove('percentOnSurveyPrice')
+        params.remove('ciec')
+
+        redirect(action: 'surveyCostItems', id: result.surveyInfo.id, params: params)
     }
 
     /**
@@ -2232,9 +2295,6 @@ class SurveyController {
         result.institution = result.participant
         result.ownerView = (result.contextOrg.id == result.surveyInfo.owner.id)
 
-        String pageSize = 'A4'
-        String orientation = 'Portrait'
-
         SimpleDateFormat sdf = DateUtils.getSDF_forFilename()
         String filename
 
@@ -2245,18 +2305,7 @@ class SurveyController {
             filename = sdf.format(new Date()) + '_reporting'
         }
 
-        def pdf = wkhtmltoxService.makePdf(
-                view: '/survey/export/pdf/participantResult',
-                model: result,
-                // header: '',
-                // footer: '',
-                pageSize: pageSize,
-                orientation: orientation,
-                marginLeft: 10,
-                marginTop: 15,
-                marginBottom: 15,
-                marginRight: 10
-        )
+        byte[] pdf = PdfUtils.getPdf(result, PdfUtils.PORTRAIT_FIXED_A4, '/survey/export/pdf/participantResult')
 
         response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.pdf"')
         response.setContentType('application/pdf')
@@ -2315,10 +2364,10 @@ class SurveyController {
         if (result.surveyInfo && result.editable) {
 
             if (params.selectedProperty) {
-                PropertyDefinition property = PropertyDefinition.get(Long.parseLong(params.selectedProperty))
+                PropertyDefinition property = PropertyDefinition.get(params.long('selectedProperty'))
                 //Config is Sub
                 if (params.surveyConfigID) {
-                    SurveyConfig surveyConfig = SurveyConfig.get(Long.parseLong(params.surveyConfigID))
+                    SurveyConfig surveyConfig = SurveyConfig.get(params.long('surveyConfigID'))
 
                     if (surveyService.addSurPropToSurvey(surveyConfig, property)) {
 
@@ -2394,7 +2443,7 @@ class SurveyController {
         if ((!surveyProperty) && params.pd_name && params.pd_type) {
             RefdataCategory rdc
             if (params.refdatacategory) {
-                rdc = RefdataCategory.findById(Long.parseLong(params.refdatacategory))
+                rdc = RefdataCategory.findById(params.long('refdatacategory'))
             }
 
             Map<String, Object> map = [
@@ -2877,7 +2926,7 @@ class SurveyController {
         }
 
         result.orgConfigurations = orgConfigurations as JSON
-        //result.selectedCostItemElement = params.selectedCostItemElement ?: RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id.toString()
+        //result.selectedCostItemElement = params.selectedCostItemElement ?: RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
 
         result.participant = Org.get(params.participant)
         result.surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, result.participant)
@@ -2917,14 +2966,14 @@ class SurveyController {
         }
 
         result.orgConfigurations = orgConfigurations as JSON
-        //result.selectedCostItemElement = params.selectedCostItemElement ?: RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id.toString()
+        //result.selectedCostItemElement = params.selectedCostItemElement ?: RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
 
         result.setting = 'bulkForAll'
 
         result.surveyOrgList = []
 
         if (params.get('orgsIDs')) {
-            List idList = (params.get('orgsIDs')?.split(',').collect { Long.valueOf(it.trim()) }).toList()
+            List<Long> idList = Params.getLongList_forCommaSeparatedString(params, 'orgsIDs')
             List<Org> orgList = Org.findAllByIdInList(idList)
             result.surveyOrgList = orgList.isEmpty() ? [] : SurveyOrg.findAllByOrgInListAndSurveyConfig(orgList, result.surveyConfig)
         }
@@ -3301,7 +3350,7 @@ class SurveyController {
             result.sourceLicenses = License.executeQuery(sourceLicensesQuery, [sub: result.surveyConfig.subscription, linkType: RDStore.LINKTYPE_LICENSE])
         }
         
-        result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList(params.list('targetSubs').collect { it -> Long.parseLong(it) }): null
+        result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList( Params.getLongList(params, 'targetSubs') ): null
 
         result
 
@@ -3358,7 +3407,7 @@ class SurveyController {
 
         if (baseSurveyInfo && baseSurveyConfig) {
 
-            result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList(params.list('targetSubs').collect { it -> Long.parseLong(it) }): null
+            result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList( Params.getLongList(params, 'targetSubs') ): null
 
             List newSurveyIds = []
 
@@ -3463,15 +3512,15 @@ class SurveyController {
                                  sub_referenceYear: newReferenceYear,
                                  sub_name         : subscription.name,
                                  sub_id           : subscription.id,
-                                 sub_status       : RDStore.SUBSCRIPTION_INTENDED.id.toString(),
-                                 sub_type         : subscription.type?.id?.toString(),
-                                 sub_form         : subscription.form?.id?.toString(),
-                                 sub_resource     : subscription.resource?.id?.toString(),
-                                 sub_kind         : subscription.kind?.id?.toString(),
-                                 sub_isPublicForApi : subscription.isPublicForApi ? RDStore.YN_YES.id.toString() : RDStore.YN_NO.id.toString(),
-                                 sub_hasPerpetualAccess : subscription.hasPerpetualAccess ? RDStore.YN_YES.id.toString() : RDStore.YN_NO.id.toString(),
-                                 sub_hasPublishComponent : subscription.hasPublishComponent ? RDStore.YN_YES.id.toString() : RDStore.YN_NO.id.toString(),
-                                 sub_holdingSelection : subscription.holdingSelection?.id?.toString()
+                                 sub_status       : RDStore.SUBSCRIPTION_INTENDED.id,
+                                 sub_type         : subscription.type?.id,
+                                 sub_form         : subscription.form?.id,
+                                 sub_resource     : subscription.resource?.id,
+                                 sub_kind         : subscription.kind?.id,
+                                 sub_isPublicForApi : subscription.isPublicForApi ? RDStore.YN_YES.id : RDStore.YN_NO.id,
+                                 sub_hasPerpetualAccess : subscription.hasPerpetualAccess ? RDStore.YN_YES.id : RDStore.YN_NO.id,
+                                 sub_hasPublishComponent : subscription.hasPublishComponent ? RDStore.YN_YES.id : RDStore.YN_NO.id,
+                                 sub_holdingSelection : subscription.holdingSelection?.id
 
         ]
 
@@ -3607,16 +3656,38 @@ class SurveyController {
         if (!result.editable) {
             response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
-        //result.putAll(financeControllerService.setEditVars(result.institution))
 
-        /*   def surveyInfo = SurveyInfo.findByIdAndOwner(params.id, result.institution) ?: null
+        SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
+        String datetoday = sdf.format(new Date())
+        String filename = "${datetoday}_" + g.message(code: "survey.exportSurveyCostItems")
 
-           def surveyConfig = SurveyConfig.findByIdAndSurveyInfo(params.surveyConfigID, surveyInfo)*/
+        if(params.fileformat == 'xlsx') {
+            if (params.filename) {
+                filename =params.filename
+            }
 
-        if (params.exportXLSX) {
-            SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
-            String datetoday = sdf.format(new Date())
-            String filename = "${datetoday}_" + g.message(code: "survey.exportSurveyCostItems")
+            result.costItems = CostItem.findAllBySurveyOrgInListAndCostItemStatusNotEqual(SurveyOrg.findAllBySurveyConfig(result.surveyConfig), RDStore.COST_ITEM_DELETED).sort {it.surveyOrg.org.sortname}
+
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            Map<String, Object> selectedFields = [:]
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+            Set<String> contactSwitch = []
+            contactSwitch.addAll(params.list("contactSwitch"))
+            contactSwitch.addAll(params.list("addressSwitch"))
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSurveyCostItems(result.costItems, selectedFields, ExportClickMeService.FORMAT.XLS, contactSwitch)
+
+            response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }else {
+            redirect(uri: request.getHeader('referer'))
+        }
+
+/*        if (params.exportXLSX) {
             //if(wb instanceof XSSFWorkbook) file += "x";
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -3628,7 +3699,7 @@ class SurveyController {
             return
         } else {
             redirect(uri: request.getHeader('referer'))
-        }
+        }*/
 
     }
 
@@ -3646,7 +3717,7 @@ class SurveyController {
         result.orgList = []
 
         if (params.get('orgListIDs')) {
-            List idList = (params.get('orgListIDs').split(',').collect { Long.valueOf(it.trim()) }).toList()
+            List<Long> idList = Params.getLongList_forCommaSeparatedString(params, 'orgListIDs')
             result.orgList = idList.isEmpty() ? [] : Org.findAllByIdInList(idList)
         }
 
@@ -3712,7 +3783,10 @@ class SurveyController {
             NumberFormat format = NumberFormat.getInstance(LocaleUtils.getCurrentLocale())
             boolean billingSumRounding = params.newBillingSumRounding ? true : false, finalCostRounding = params.newFinalCostRounding ? true : false
             Double cost_billing_currency = params.newCostInBillingCurrency ? format.parse(params.newCostInBillingCurrency).doubleValue() : 0.00
-            //def cost_currency_rate = params.newCostCurrencyRate ? params.double('newCostCurrencyRate', 1.00) : 1.00
+            //Double cost_currency_rate = 1.0
+            //if(billing_currency != RDStore.CURRENCY_EUR) {
+            //    cost_currency_rate = params.newCostCurrencyRate ? params.double('newCostCurrencyRate', 1.00) : 0.00
+            //}
             //def cost_local_currency = params.newCostInLocalCurrency ? format.parse(params.newCostInLocalCurrency).doubleValue() : 0.00
 
             Double cost_billing_currency_after_tax = params.newCostInBillingCurrencyAfterTax ? format.parse(params.newCostInBillingCurrencyAfterTax).doubleValue() : cost_billing_currency
@@ -3720,6 +3794,7 @@ class SurveyController {
                 cost_billing_currency = Math.round(cost_billing_currency)
             if(finalCostRounding)
                 cost_billing_currency_after_tax = Math.round(cost_billing_currency_after_tax)
+            //Double cost_local_currency = cost_billing_currency * cost_currency_rate
             //def cost_local_currency_after_tax = params.newCostInLocalCurrencyAfterTax ? format.parse(params.newCostInLocalCurrencyAfterTax).doubleValue() : cost_local_currency
             //moved to TAX_TYPES
             //def new_tax_rate                      = params.newTaxRate ? params.int( 'newTaxRate' ) : 0
@@ -3751,7 +3826,7 @@ class SurveyController {
                         break
                 }
             }
-            RefdataValue cost_item_element_configuration = (params.ciec && params.ciec != 'null') ? RefdataValue.get(Long.parseLong(params.ciec)) : null
+            RefdataValue cost_item_element_configuration = (params.ciec && params.ciec != 'null') ? RefdataValue.get(params.long('ciec')) : null
 
             boolean cost_item_isVisibleForSubscriber = false
             // (params.newIsVisibleForSubscriber ? (RefdataValue.get(params.newIsVisibleForSubscriber).value == 'Yes') : false)
@@ -3819,7 +3894,7 @@ class SurveyController {
                         newCostItem.billingSumRounding = billingSumRounding
                         newCostItem.finalCostRounding = finalCostRounding
                         newCostItem.costInBillingCurrencyAfterTax = cost_billing_currency_after_tax as Double
-                        //newCostItem.costInLocalCurrencyAfterTax = cost_local_currency_after_tax as Double
+                        //newCostItem.costInLocalCurrencyAfterTax = cost_local_currency_after_tax as Double calculated on the fly
                         //newCostItem.currencyRate = cost_currency_rate as Double
                         //newCostItem.taxRate = new_tax_rate as Integer -> to taxKey
                         newCostItem.taxKey = tax_key
@@ -4164,10 +4239,32 @@ class SurveyController {
                     copyCostItem.surveyOrg = null
                     copyCostItem.isVisibleForSubscriber = params.isVisibleForSubscriber ? true : false
                     copyCostItem.sub = participantSub
-                    if(costItem.billingCurrency == RDStore.CURRENCY_EUR){
+
+                    int taxRate = 0 //fallback
+                    if(copyCostItem.taxKey)
+                        taxRate = copyCostItem.taxKey.taxRate
+
+                    if(copyCostItem.billingCurrency == RDStore.CURRENCY_EUR){
                         copyCostItem.currencyRate = 1.0
-                        copyCostItem.costInLocalCurrency = costItem.costInBillingCurrency
+                        copyCostItem.costInLocalCurrency = copyCostItem.costInBillingCurrency
+                        copyCostItem.costInLocalCurrencyAfterTax = copyCostItem.costInLocalCurrency ? copyCostItem.costInLocalCurrency * (1.0 + (0.01 * taxRate)) : null
+                        copyCostItem.costInBillingCurrencyAfterTax = copyCostItem.costInBillingCurrency ? copyCostItem.costInBillingCurrency * (1.0 + (0.01 * taxRate)) : null
+                    }else {
+                        copyCostItem.currencyRate = 0.00
+                        copyCostItem.costInLocalCurrency = null
+                        copyCostItem.costInLocalCurrencyAfterTax = null
+                        copyCostItem.costInBillingCurrencyAfterTax = copyCostItem.costInBillingCurrency ? copyCostItem.costInBillingCurrency * (1.0 + (0.01 * taxRate)) : null
                     }
+
+                    if (copyCostItem.billingSumRounding) {
+                        copyCostItem.costInBillingCurrency = copyCostItem.costInBillingCurrency ? Math.round(copyCostItem.costInBillingCurrency) : null
+                        copyCostItem.costInLocalCurrency = copyCostItem.costInLocalCurrency ? Math.round(copyCostItem.costInLocalCurrency) : null
+                    }
+                    if (copyCostItem.finalCostRounding) {
+                        copyCostItem.costInBillingCurrencyAfterTax = copyCostItem.costInBillingCurrencyAfterTax ? Math.round(copyCostItem.costInBillingCurrencyAfterTax) : null
+                        copyCostItem.costInLocalCurrencyAfterTax = copyCostItem.costInLocalCurrencyAfterTax ? Math.round(copyCostItem.costInLocalCurrencyAfterTax) : null
+                    }
+
                     Org org = participantSub.getSubscriber()
                     SurveyResult surveyResult = org ? SurveyResult.findBySurveyConfigAndParticipantAndTypeAndStringValueIsNotNull(result.surveyConfig, org, PropertyStore.SURVEY_PROPERTY_ORDER_NUMBER) : null
 
@@ -4280,9 +4377,30 @@ class SurveyController {
                     copyCostItem.surveyOrg = null
                     copyCostItem.isVisibleForSubscriber = params.isVisibleForSubscriber ? true : false
                     copyCostItem.sub = participantSub
-                    if(costItem.billingCurrency == RDStore.CURRENCY_EUR){
+
+                    int taxRate = 0 //fallback
+                    if(copyCostItem.taxKey)
+                        taxRate = copyCostItem.taxKey.taxRate
+
+                    if(copyCostItem.billingCurrency == RDStore.CURRENCY_EUR){
                         copyCostItem.currencyRate = 1.0
-                        copyCostItem.costInLocalCurrency = costItem.costInBillingCurrency
+                        copyCostItem.costInLocalCurrency = copyCostItem.costInBillingCurrency
+                        copyCostItem.costInLocalCurrencyAfterTax = copyCostItem.costInLocalCurrency ? copyCostItem.costInLocalCurrency * (1.0 + (0.01 * taxRate)) : null
+                        copyCostItem.costInBillingCurrencyAfterTax = copyCostItem.costInBillingCurrency ? copyCostItem.costInBillingCurrency * (1.0 + (0.01 * taxRate)) : null
+                    }else {
+                        copyCostItem.currencyRate = 0.00
+                        copyCostItem.costInLocalCurrency = null
+                        copyCostItem.costInLocalCurrencyAfterTax = null
+                        copyCostItem.costInBillingCurrencyAfterTax = copyCostItem.costInBillingCurrency ? copyCostItem.costInBillingCurrency * (1.0 + (0.01 * taxRate)) : null
+                    }
+
+                    if (copyCostItem.billingSumRounding) {
+                        copyCostItem.costInBillingCurrency = copyCostItem.costInBillingCurrency ? Math.round(copyCostItem.costInBillingCurrency) : null
+                        copyCostItem.costInLocalCurrency = copyCostItem.costInLocalCurrency ? Math.round(copyCostItem.costInLocalCurrency) : null
+                    }
+                    if (copyCostItem.finalCostRounding) {
+                        copyCostItem.costInBillingCurrencyAfterTax = copyCostItem.costInBillingCurrencyAfterTax ? Math.round(copyCostItem.costInBillingCurrencyAfterTax) : null
+                        copyCostItem.costInLocalCurrencyAfterTax = copyCostItem.costInLocalCurrencyAfterTax ? Math.round(copyCostItem.costInLocalCurrencyAfterTax) : null
                     }
 
                     if(copyCostItem.save()) {
@@ -4386,19 +4504,19 @@ class SurveyController {
                 }
                 if(params.tab == 'customProperties') {
                     newMap.newCustomProperty = (sub) ? sub.propertySet.find {
-                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty)) && it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
+                        it.type.id == Long.valueOf(result.selectedProperty) && it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
                     } : null
                     newMap.oldCustomProperty = (newMap.oldSub) ? newMap.oldSub.propertySet.find {
-                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty)) && it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
+                        it.type.id == Long.valueOf(result.selectedProperty) && it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
                     } : null
                 }
 
                 if(params.tab == 'privateProperties') {
                     newMap.newPrivateProperty = (sub) ? sub.propertySet.find {
-                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty)) && it.type.tenant?.id == result.contextOrg.id
+                        it.type.id == Long.valueOf(result.selectedProperty) && it.type.tenant?.id == result.contextOrg.id
                     } : null
                     newMap.oldPrivateProperty = (newMap.oldSub) ? newMap.oldSub.propertySet.find {
-                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty)) && it.type.tenant?.id == result.contextOrg.id
+                        it.type.id == Long.valueOf(result.selectedProperty) && it.type.tenant?.id == result.contextOrg.id
                     } : null
                 }
 
@@ -4448,7 +4566,7 @@ class SurveyController {
             if (params.tab == 'surveyProperties') {
                 result.selectedProperty = params.selectedProperty ?: null
 
-                surveyProperty = params.copyProperty ? PropertyDefinition.get(Long.parseLong(params.copyProperty)) : null
+                surveyProperty = params.copyProperty ? PropertyDefinition.get(params.long('copyProperty')) : null
 
                 propDef = surveyProperty ? PropertyDefinition.getByNameAndDescr(surveyProperty.name, PropertyDefinition.SUB_PROP) : null
                 if (!propDef && surveyProperty) {
@@ -4470,7 +4588,7 @@ class SurveyController {
 
             } else {
                 result.selectedProperty = params.selectedProperty ?: null
-                propDef = params.selectedProperty ? PropertyDefinition.get(Long.parseLong(params.selectedProperty)) : null
+                propDef = params.selectedProperty ? PropertyDefinition.get(params.long('selectedProperty')) : null
             }
 
             Integer countSuccessfulCopy = 0
@@ -4653,7 +4771,7 @@ class SurveyController {
                         refValue   : RDStore.YN_YES]).each {
 
             // Keine Kindlizenz in der Nachfolgerlizenz vorhanden
-            if(!(result.parentSuccessortParticipantsList && it.participant.id in result.parentSuccessortParticipantsList.id)){
+            if (!(result.parentSuccessortParticipantsList && it.participant.id in result.parentSuccessortParticipantsList.id)) {
 
                 Subscription oldSubofParticipant = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
                         [parentSub  : result.parentSubscription,
@@ -4661,8 +4779,7 @@ class SurveyController {
                         ])[0]
 
 
-                if(!oldSubofParticipant)
-                {
+                if (!oldSubofParticipant) {
                     oldSubofParticipant = result.parentSubscription
                 }
 
@@ -4670,95 +4787,53 @@ class SurveyController {
                 Date newEndDate = null
 
                 //Umfrage-Merkmal MJL2
-                if (result.multiYearTermTwoSurvey) {
-
-                    SurveyResult participantPropertyTwo = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)
-                    if (participantPropertyTwo && participantPropertyTwo.refValue?.id == RDStore.YN_YES.id) {
-                        use(TimeCategory) {
-                            newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
-                            newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 2.year) : null
-                        }
-                            countNewSubs++
-                            result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
-                    } else {
-                        use(TimeCategory) {
-                            newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
-                            newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 1.year) : null
-                        }
-                        countNewSubs++
-                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
-                    }
-
-                }
+                SurveyResult participantPropertyTwo = result.multiYearTermTwoSurvey ? SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey) : null
                 //Umfrage-Merkmal MJL3
-                else if (result.multiYearTermThreeSurvey) {
-
-                    SurveyResult participantPropertyThree = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)
-                    if (participantPropertyThree && participantPropertyThree.refValue?.id == RDStore.YN_YES.id) {
-                        use(TimeCategory) {
-                            newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
-                            newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 3.year) : null
-                        }
-                        countNewSubs++
-                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
-                    }
-                    else {
-                        use(TimeCategory) {
-                            newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
-                            newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 1.year) : null
-                        }
-                        countNewSubs++
-                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
-                    }
-                }
+                SurveyResult participantPropertyThree = result.multiYearTermThreeSurvey ? SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey) : null
                 //Umfrage-Merkmal MJL4
-                else if (result.multiYearTermFourSurvey) {
-
-                    SurveyResult participantPropertyFour = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermFourSurvey)
-                    if (participantPropertyFour && participantPropertyFour.refValue?.id == RDStore.YN_YES.id) {
-                        use(TimeCategory) {
-                            newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
-                            newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 4.year) : null
-                        }
-                        countNewSubs++
-                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
-                    }
-                    else {
-                        use(TimeCategory) {
-                            newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
-                            newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 1.year) : null
-                        }
-                        countNewSubs++
-                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
-                    }
-                }
+                SurveyResult participantPropertyFour = result.multiYearTermFourSurvey ? SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermFourSurvey) : null
                 //Umfrage-Merkmal MJL5
-                else if (result.multiYearTermFiveSurvey) {
+                SurveyResult participantPropertyFive = result.multiYearTermFiveSurvey ? SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermFiveSurvey) : null
 
-                    SurveyResult participantPropertyFive = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermFiveSurvey)
-                    if (participantPropertyFive && participantPropertyFive.refValue?.id == RDStore.YN_YES.id) {
-                        use(TimeCategory) {
-                            newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
-                            newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 5.year) : null
-                        }
-                        countNewSubs++
-                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
+                if (participantPropertyTwo && participantPropertyTwo.refValue?.id == RDStore.YN_YES.id) {
+                    use(TimeCategory) {
+                        newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
+                        newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 2.year) : null
                     }
-                    else {
-                        use(TimeCategory) {
-                            newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
-                            newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 1.year) : null
-                        }
-                        countNewSubs++
-                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
+                    countNewSubs++
+                    result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
+
+                } else if (participantPropertyThree && participantPropertyThree.refValue?.id == RDStore.YN_YES.id) {
+                    use(TimeCategory) {
+                        newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
+                        newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 3.year) : null
                     }
-                }else {
+                    countNewSubs++
+                    result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
+
+                } else if (participantPropertyFour && participantPropertyFour.refValue?.id == RDStore.YN_YES.id) {
+                    use(TimeCategory) {
+                        newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
+                        newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 4.year) : null
+                    }
+                    countNewSubs++
+                    result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
+
+                } else if (participantPropertyFive && participantPropertyFive.refValue?.id == RDStore.YN_YES.id) {
+                    use(TimeCategory) {
+                        newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
+                        newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 5.year) : null
+                    }
+                    countNewSubs++
+                    result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
+
+                } else {
                     use(TimeCategory) {
                         newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
                         newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 1.year) : null
                     }
                     countNewSubs++
-                    result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
+                    result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
                 }
             }
         }
@@ -5055,7 +5130,7 @@ class SurveyController {
                         //property.save(flush:true)
                         if(!property.save(failOnError: true))
                         {
-                            println(property.error)
+                            log.error("Error Property save: " +property.error)
                         }
                     } else if(field == "dateValue") {
                         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -5380,7 +5455,7 @@ class SurveyController {
 
         if(params.deleteSurveyUrl){
             SurveyConfig.withTransaction { TransactionStatus ts ->
-                SurveyUrl surveyUrl = SurveyUrl.get(Long.parseLong(params.deleteSurveyUrl))
+                SurveyUrl surveyUrl = SurveyUrl.get(params.long('deleteSurveyUrl'))
                 surveyUrl.delete()
             }
         }else {

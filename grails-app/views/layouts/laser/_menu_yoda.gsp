@@ -30,7 +30,7 @@
 
         <div class="item" role="menuitem" aria-haspopup="true">
             <div class="title">
-                <i class="tachometer alternate icon"></i> Profiler <i class="dropdown icon"></i>
+                <i class="memory icon"></i> Profiler <i class="dropdown icon"></i>
             </div>
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="yoda" action="profilerLoadtime">${message(code:'menu.yoda.profilerLoadtime')}</ui:link>
@@ -161,6 +161,7 @@
                 <div class="divider"></div>
 
                 <ui:link addItemAttributes="true" controller="admin" action="dataConsistency">${message(code: "menu.admin.dataConsistency")}</ui:link>
+                <ui:link addItemAttributes="true" controller="admin" action="identifierValidation">${message(code: "menu.admin.identifierValidation")}</ui:link>
                 <ui:link addItemAttributes="true" controller="admin" action="fileConsistency">${message(code: "menu.admin.fileConsistency")}</ui:link>
                 <ui:link addItemAttributes="true" controller="admin" action="manageDeletedObjects">${message(code: "menu.admin.deletedObjects")}</ui:link>
             </div>

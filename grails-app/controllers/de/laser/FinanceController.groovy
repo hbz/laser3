@@ -2,7 +2,6 @@ package de.laser
 
 
 import de.laser.ctrl.FinanceControllerService
-import de.laser.ctrl.SubscriptionControllerService
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemElementConfiguration
@@ -133,6 +132,8 @@ class FinanceController  {
             return
         }
     }
+
+
 
     /**
      * Exports the given financial data. Beware that multi-tab view is only possible in Excel; bare text exports

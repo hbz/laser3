@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.IssueEntitlement;de.laser.Platform; de.laser.remote.ApiSource; de.laser.PermanentTitle; de.laser.Subscription" %>
+<%@ page import="de.laser.helper.Params; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.IssueEntitlement;de.laser.Platform; de.laser.remote.ApiSource; de.laser.PermanentTitle; de.laser.Subscription" %>
 <laser:htmlStart message="myinst.currentTitles.label"/>
 
 <ui:breadcrumbs>
@@ -175,7 +175,7 @@
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${availableStatus}" var="status">
-                        <option <%=(params.list('status')?.contains(status.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'status').contains(status.id) ? 'selected="selected"' : ''%>
                                 value="${status.id}">
                             ${status.getI10n('value')}
                         </option>
@@ -242,18 +242,21 @@
 <% params.remove('tab') %>
 
 <div class="ui bottom attached tab active segment">
-
-    <div class="ui form">
-        <div class="three wide fields">
-            <div class="field">
-                <laser:render template="/templates/titles/sorting_dropdown" model="${[sd_type: 1, sd_journalsOnly: journalsOnly, sd_sort: params.sort, sd_order: params.order]}" />
+    <g:if test="${titles}">
+        <div class="ui form">
+            <div class="two wide fields">
+                <div class="field">
+                    <laser:render template="/templates/titles/sorting_dropdown" model="${[sd_type: 1, sd_journalsOnly: journalsOnly, sd_sort: params.sort, sd_order: params.order]}" />
+                </div>
+                <div class="field la-field-noLabel">
+                    <button class="ui button la-js-closeAll-showMore right floated ">${message(code: "accordion.button.closeAll")}</button>
+                </div>
             </div>
         </div>
-    </div>
+    </g:if>
 
-    <div>
-        <div>
-            <g:if test="${titles}">
+
+    <g:if test="${titles}">
                 <g:set var="counter" value="${offset + 1}"/>
 
                     <g:if test="${titles}">
@@ -399,20 +402,19 @@
                             </div><%-- .accordions --%>
                         </div><%-- .content --%>
                     </div><%-- .card --%>
+                    <div class="ui clearing segment la-segmentNotVisable">
+                            <button class="ui button la-js-closeAll-showMore right floated">${message(code: "accordion.button.closeAll")}</button>
+                    </div>
                 </g:if>
-            </g:if>
-            <g:else>
-                <g:if test="${filterSet}">
-                    <br/><strong><g:message code="filter.result.empty.object"
-                                            args="${[message(code: "title.plural")]}"/></strong>
-                </g:if>
-                <g:else>
-                    <br/><strong><g:message code="result.empty.object"
-                                            args="${[message(code: "title.plural")]}"/></strong>
-                </g:else>
-            </g:else>
-        </div>
-    </div>
+    </g:if>
+    <g:else>
+        <g:if test="${filterSet}">
+            <br/><strong><g:message code="filter.result.empty.object" args="${[message(code: "title.plural")]}"/></strong>
+        </g:if>
+        <g:else>
+            <br/><strong><g:message code="result.empty.object" args="${[message(code: "title.plural")]}"/></strong>
+        </g:else>
+    </g:else>
 
 </div>
 <g:if test="${titles}">

@@ -143,6 +143,7 @@
                                 <td>${ci.requestorKey}</td>
                                 <td>${ci.note}</td>
                                 <td>
+                                    %{-- TODO: erms-5495 --}%
                                     <%  boolean editable_this_ci = (ci.customer.id == institution.id || isComboRelated) %>
                                     <g:if test="${editable_customeridentifier && editable_this_ci}">
                                         <button class="ui icon button blue la-modern-button" onclick="JSPC.app.IdContoller.editCustomerIdentifier(${ci.id});"
@@ -152,7 +153,7 @@
                                         <g:link controller="organisation"
                                                 action="deleteCustomerIdentifier"
                                                 id="${orgInstance.id}"
-                                                params="${[deleteCI:genericOIDService.getOID(ci)]}"
+                                                params="${[deleteCI:ci.id]}"
                                                 class="ui button icon red la-modern-button js-open-confirm-modal"
                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.customeridentifier", args: [""+ci.getProvider()+" : "+ci.platform+" "+ci.value])}"
                                                 data-confirm-term-how="delete"

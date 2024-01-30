@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.helper.Params; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
 <ui:filter>
     <g:form action="${actionName}" controller="${controllerName}" params="${params}" method="get" class="ui small form clearing">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
@@ -19,9 +19,8 @@
                 </div>
             </div>
             <div class="field">
-                <label>${message(code: 'package.status.label')}</label>
-                <select name="status" id="status" multiple=""
-                        class="ui search selection dropdown">
+                <label for="status">${message(code: 'package.status.label')}</label>
+                <select name="status" id="status" multiple="" class="ui search selection dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
                     <g:set var="excludes" value="${[RDStore.PACKAGE_STATUS_REMOVED]}"/>
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.PACKAGE_STATUS)-excludes}" var="status">
@@ -36,9 +35,7 @@
 
         <div class="three fields">
             <div class="field">
-                <label for="provider">${message(code: 'default.provider.label')}
-                </label>
-
+                <label for="provider">${message(code: 'default.provider.label')}</label>
                 <div class="ui input">
                     <input type="text" id="provider" name="provider"
                            placeholder="${message(code: 'default.search.ph')}"
@@ -48,13 +45,10 @@
 
             <div class="field">
                 <label for="ddc">${message(code: 'package.ddc.label')}</label>
-
-                <select name="ddc" id="ddc" multiple=""
-                        class="ui search selection dropdown">
+                <select name="ddc" id="ddc" multiple="" class="ui search selection dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
-
                     <g:each in="${ddcs}" var="ddc">
-                        <option <%=(params.list('ddc')?.contains(ddc.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'ddc').contains(ddc.id) ? 'selected="selected"' : ''%>
                                 value="${ddc.id}">
                             ${ddc.value} - ${ddc.getI10n("value")}
                         </option>
@@ -65,7 +59,6 @@
             <g:if test="${curatoryGroups}">
                 <div class="field">
                     <label for="curatoryGroup">${message(code: 'package.curatoryGroup.label')}</label>
-
                     <g:select class="ui fluid search select dropdown" name="curatoryGroup"
                               from="${curatoryGroups.sort{it.name.toLowerCase()}}"
                               optionKey="name"
@@ -97,8 +90,7 @@
                 </div>
             </div>
             <div class="field la-field-right-aligned">
-                <a href="${request.forwardURI}"
-                   class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
+                <a href="${request.forwardURI}" class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
                 <button type="submit" name="search" value="yes"
                         class="ui primary button">${message(code: 'default.button.filter.label')}</button>
             </div>

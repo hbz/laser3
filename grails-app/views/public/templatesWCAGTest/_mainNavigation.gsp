@@ -1,5 +1,5 @@
     <nav aria-label="Hauptmenü für WCAG-Testseite">
-        <div id="mainMenueTest" class="ui inverted stackable menu menubar-navigation" role="menubar"  tabindex="0">
+        <nav id="mainMenueTest" class="ui inverted stackable menu menubar-navigation" role="menubar" tabindex="0">
             <div class="ui container" role="none">
                 <a href="#" aria-label="Start" class="header item la-logo-item">
                     <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
@@ -58,7 +58,7 @@
                        data-content="Erweiterte Suche">
                         <i class="large icons">
                             <i class="search icon"></i>
-                            <i class="top right grey corner plus icon "></i>
+                            <i class="top right grey corner plus icon"></i>
                         </i>
                     </a>
                     <div class="ui dropdown item la-noBorder" role="menuitem" aria-haspopup="true">
@@ -86,5 +86,5 @@
                     </div>
                 </div>
             </div><!-- container -->
-        </div><!-- main menu -->
+        </nav><!-- main menu -->
     </nav>

@@ -1,8 +1,9 @@
-<%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.base.AbstractReport" %>
+<%@ page import="de.laser.helper.Params; de.laser.TitleInstancePackagePlatform; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.base.AbstractReport" %>
 <laser:serviceInjection />
 <g:set var="action" value="${action ?: actionName}"/>
 
-<g:set var="availableStatus" value="${RefdataCategory.getAllRefdataValues(RDConstants.TIPP_STATUS)-RDStore.TIPP_STATUS_REMOVED}"/>
+<g:set var="availableStatus" value="${RefdataCategory.getAllRefdataValues(RDConstants.TIPP_STATUS)-RDStore.TIPP_STATUS_REMOVED}" />
+<g:set var="disableFilter" value="${(allTippsCounts && allTippsCounts > 100000) || (allTippCounts && allTippCounts > 100000)}" />
 
 <g:if test="${action == 'currentPermanentTitles'}">
     <g:set var="availableStatus" value="${availableStatus-RDStore.TIPP_STATUS_EXPECTED}"/>
@@ -44,7 +45,7 @@
                     <select class="ui dropdown" name="pkgfilter" id="pkgfilter">
                         <option value="">${message(code: 'default.all')}</option>
                         <g:each in="${subscription.packages}" var="sp">
-                            <option value="${sp.pkg.id}" ${sp.pkg.id.toString() == params.pkgfilter ? 'selected=true' : ''}>${sp.pkg.name}</option>
+                            <option value="${sp.pkg.id}" ${sp.pkg.id == params.long('pkgfilter') ? 'selected=true' : ''}>${sp.pkg.name}</option>
                         </g:each>
                     </select>
                 </div>
@@ -58,15 +59,13 @@
             </g:if>
             <g:if test="${!showStatsFilter && !(action in ['renewEntitlementsWithSurvey', 'current', 'planned', 'expired', 'deleted'])}">
                 <div class="field">
-                    <label for="status">
-                        ${message(code: 'default.status.label')}
-                    </label>
+                    <label for="status">${message(code: 'default.status.label')}</label>
                     <select name="status" id="status" multiple=""
                             class="ui search selection dropdown">
                         <option value="">${message(code: 'default.select.choose.label')}</option>
 
                         <g:each in="${availableStatus}" var="status">
-                            <option <%=(params.list('status')?.contains(status.id.toString())) ? 'selected="selected"' : ''%>
+                            <option <%=Params.getLongList(params, 'status').contains(status.id) ? 'selected="selected"' : ''%>
                                     value="${status.id}">
                                 ${status.getI10n('value')}
                             </option>
@@ -81,23 +80,11 @@
                     <div class="default text"><g:message code="default.select.choose.label"/></div>
                     <i class="dropdown icon"></i>
                 </div>
-                <%--
-                <select name="coverageDepth" id="coverageDepth" multiple=""
-                        class="ui search selection dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
-                    <g:each in="${coverageDepths}" var="coverageDepth">
-                        <option <%=(params.list('coverageDepth')?.contains(coverageDepth.value)) ? 'selected="selected"' : ''%>
-                                value="${coverageDepth}">
-                            ${coverageDepth.getI10n("value")}
-                        </option>
-                    </g:each>
-                </select>
-                --%>
             </div>
         </div>
 
         <div class="four fields">
-            <div class="field">
+            <div class="field ${disableFilter ? 'disabled' : ''}">
                 <label for="series_names">${message(code: 'titleInstance.seriesName.label')}</label>
                 <div class="ui search selection fluid multiple dropdown" id="series_names">
                     <input type="hidden" name="series_names"/>
@@ -119,7 +106,7 @@
                 --%>
             </div>
 
-            <div class="field">
+            <div class="field ${disableFilter ? 'disabled' : ''}">
                 <label for="subject_references">${message(code: 'titleInstance.subjectReference.label')}</label>
                 <div class="ui search selection fluid multiple dropdown" id="subject_references">
                     <input type="hidden" name="subject_references"/>
@@ -146,17 +133,6 @@
                     <div class="default text"><g:message code="default.select.choose.label"/></div>
                     <i class="dropdown icon"></i>
                 </div>
-                <%--<select name="ddcs" id="ddc" multiple=""
-                        class="ui search selection dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
-
-                    <g:each in="${ddcs}" var="ddc">
-                        <option <%=(params.list('ddcs')?.contains(ddc.id.toString())) ? 'selected="selected"' : ''%>
-                                value="${ddc.id}">
-                            ${ddc.value} - ${ddc.getI10n("value")}
-                        </option>
-                    </g:each>
-                </select>--%>
             </div>
 
             <div class="field">
@@ -166,17 +142,6 @@
                     <div class="default text"><g:message code="default.select.choose.label"/></div>
                     <i class="dropdown icon"></i>
                 </div>
-                <%--<select name="languages" id="language" multiple=""
-                        class="ui search selection dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
-
-                    <g:each in="${languages}" var="language">
-                        <option <%=(params.list('languages')?.contains(language.id.toString())) ? 'selected="selected"' : ''%>
-                                value="${language.id}">
-                            ${language.getI10n("value")}
-                        </option>
-                    </g:each>
-                </select>--%>
             </div>
         </div>
 
@@ -188,17 +153,6 @@
                     <div class="default text"><g:message code="default.select.choose.label"/></div>
                     <i class="dropdown icon"></i>
                 </div>
-                <%--<select name="yearsFirstOnline" id="yearsFirstOnline" multiple=""
-                        class="ui search selection dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
-                    <g:each in="${yearsFirstOnline}"
-                            var="yearFirstOnline">
-                        <option <%=(params.list('yearsFirstOnline')?.contains(yearFirstOnline.toString())) ? 'selected="selected"' : ''%>
-                                value="${yearFirstOnline}">
-                            ${yearFirstOnline}
-                        </option>
-                    </g:each>
-                </select>--%>
             </div>
 
             <div class="field">
@@ -208,15 +162,6 @@
                     <div class="default text"><g:message code="default.select.choose.label"/></div>
                     <i class="dropdown icon"></i>
                 </div>
-                <%--<select name="medium" id="medium" multiple="" class="ui search selection dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
-                    <g:each in="${mediumTypes}" var="mediumType">
-                        <option <%=(params.list('medium')?.contains(mediumType.id.toString())) ? 'selected="selected"' : ''%>
-                                value="${mediumType.id}">
-                            ${mediumType.getI10n("value")}
-                        </option>
-                    </g:each>
-                </select>--%>
             </div>
 
             <div class="field">
@@ -231,17 +176,6 @@
                     <div class="default text"><g:message code="default.select.choose.label"/></div>
                     <i class="dropdown icon"></i>
                 </div>
-                <%--<select name="title_types" id="title_types" multiple=""
-                        class="ui search selection dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
-                    <g:each in="${titleTypes}"
-                            var="titleType">
-                        <option <%=(params.list('title_types')?.contains(titleType)) ? 'selected="selected"' : ''%>
-                                value="${titleType}">
-                            ${titleType.capitalize()}
-                        </option>
-                    </g:each>
-                </select>--%>
             </div>
 
             <div class="field">
@@ -251,21 +185,8 @@
                     <div class="default text"><g:message code="default.select.choose.label"/></div>
                     <i class="dropdown icon"></i>
                 </div>
-                <%--<select name="publishers" id="publishers" multiple=""
-                        class="ui search selection dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
-                    <g:each in="${publishers}"
-                            var="publisher">
-                        <option <%=(params.list('publishers')?.contains(publisher)) ? 'selected="selected"' : ''%>
-                                value="${publisher}">
-                            ${publisher}
-                        </option>
-                    </g:each>
-                </select>--%>
             </div>
-
         </div>
-
 
         <div class="three fields">
             <g:if test="${controllerName == 'subscription' && !showStatsFilter && !notShow}">
@@ -396,8 +317,7 @@
             <div class="field la-field-right-aligned">
                 <g:link controller="${controllerName}" action="${action}" id="${params.id}" params="[surveyConfigID: params.surveyConfigID, tab: params.tab, tabStat: params.tabStat]"
                    class="ui reset secondary button">${message(code: 'default.button.reset.label')}</g:link>
-                <input type="submit" class="ui primary button"
-                       value="${message(code: 'default.button.filter.label')}"/>
+                <input type="submit" class="ui primary button" value="${message(code: 'default.button.filter.label')}"/>
             </div>
     </g:form>
 </ui:filter>
@@ -428,108 +348,53 @@
     JSPC.app.ajaxDropdown = function(selector, url, valuesRaw) {
         let values = [];
         let valuesString = valuesRaw.replace(/&amp;quot;/g, '&quot;');
-        if(valuesString.includes(',')) {
+        if (valuesString.includes(',')) {
             values = valuesString.split(',');
         }
         else if(valuesString.length > 0) {
             values.push(valuesString);
         }
-        selector.dropdown({
+
+        <g:if test="${controllerName == 'package' || fillDropdownsWithPackage}">
+            let by = 'pkg';
+            let obj = '${genericOIDService.getOID(packageInstance)}';
+        </g:if>
+        <g:elseif test="${controllerName == 'subscription'}">
+            let by = 'sub';
+            let obj = '${genericOIDService.getOID(subscription)}';
+        </g:elseif>
+        <g:elseif test="${controllerName == 'title' || action == 'currentPermanentTitles'}">
+            let by = 'status';
+            let obj;
+        </g:elseif>
+        <g:else>
+            let by;
+            let obj;
+        </g:else>
+
+        selector.dropdown('destroy').dropdown({
             apiSettings: {
-                url: url,
+                url: url + '&by=' + by + '&obj=' + obj + '&forTitles=${action}&query={query}',
                 cache: false
             },
             clearable: true,
+            throttle: 500,
             minCharacters: 0
         });
-        if(values.length > 0) {
+        if (values.length > 0) {
             selector.dropdown('queryRemote', '', () => {
                 selector.dropdown('set selected', values);
             });
         }
     }
 
-    let by;
-    let obj;
-    let forTitles = '${action}';
-    <g:if test="${controllerName == 'package' || fillDropdownsWithPackage}">
-        by = 'pkg';
-        obj = '${genericOIDService.getOID(packageInstance)}';
-        <%--
-        <g:set var="seriesNames"
-               value="${packageInstance ? controlledListService.getAllPossibleSeriesByPackage(packageInstance,action) : []}"/>
-        <g:set var="subjects"
-               value="${packageInstance ? controlledListService.getAllPossibleSubjectsByPackage(packageInstance,action) : []}"/>
-        <g:set var="ddcs"
-               value="${packageInstance ? controlledListService.getAllPossibleDdcsByPackage(packageInstance,action) : []}"/>
-        <g:set var="languages"
-               value="${packageInstance ? controlledListService.getAllPossibleLanguagesByPackage(packageInstance,action) : []}"/>
-        <g:set var="yearsFirstOnline"
-               value="${packageInstance ? controlledListService.getAllPossibleDateFirstOnlineYearByPackage(packageInstance,action) : []}"/>
-        <g:set var="publishers"
-               value="${packageInstance ? controlledListService.getAllPossiblePublisherByPackage(packageInstance,action) : []}"/>
-        <g:set var="titleTypes"
-               value="${packageInstance ? controlledListService.getAllPossibleTitleTypesByPackage(packageInstance,action) : []}"/>
-        <g:set var="mediumTypes"
-               value="${packageInstance ? controlledListService.getAllPossibleMediumTypesByPackage(packageInstance,action) : []}"/>
-        <g:set var="coverageDepths"
-               value="${packageInstance ? controlledListService.getAllPossibleCoverageDepthsByPackage(packageInstance,action) : []}"/>
-        --%>
-    </g:if>
-    <g:elseif test="${controllerName == 'subscription'}">
-        by = 'sub';
-        obj = '${genericOIDService.getOID(subscription)}';
-        <%--
-        <g:set var="seriesNames"
-               value="${subscription ? controlledListService.getAllPossibleSeriesBySub(subscription) : []}"/>
-        <g:set var="subjects"
-               value="${subscription ? controlledListService.getAllPossibleSubjectsBySub(subscription) : []}"/>
-        <g:set var="ddcs"
-               value="${subscription ? controlledListService.getAllPossibleDdcsBySub(subscription) : []}"/>
-        <g:set var="languages"
-               value="${subscription ? controlledListService.getAllPossibleLanguagesBySub(subscription) : []}"/>
-        <g:set var="yearsFirstOnline"
-               value="${subscription ? controlledListService.getAllPossibleDateFirstOnlineYearBySub(subscription) : []}"/>
-        <g:set var="publishers"
-               value="${subscription ? controlledListService.getAllPossiblePublisherBySub(subscription) : []}"/>
-        <g:set var="titleTypes"
-               value="${subscription ? controlledListService.getAllPossibleTitleTypesBySub(subscription) : []}"/>
-        <g:set var="mediumTypes"
-               value="${subscription ? controlledListService.getAllPossibleMediumTypesBySub(subscription) : []}"/>
-        <g:set var="coverageDepths"
-               value="${subscription ? controlledListService.getAllPossibleCoverageDepthsBySub(subscription) : []}"/>
-        --%>
-    </g:elseif>
-    <g:elseif test="${controllerName == 'title' || action == 'currentPermanentTitles'}">
-        by = 'status';
-        <%--
-        <g:set var="seriesNames"
-               value="${params.status ? controlledListService.getAllPossibleSeriesByStatus(params) : []}"/>
-        <g:set var="subjects"
-               value="${params.status ? controlledListService.getAllPossibleSubjectsByStatus(params) : []}"/>
-        <g:set var="ddcs"
-               value="${params.status ? controlledListService.getAllPossibleDdcsByStatus(params) : []}"/>
-        <g:set var="languages"
-               value="${params.status ? controlledListService.getAllPossibleLanguagesByStatus(params) : []}"/>
-        <g:set var="yearsFirstOnline"
-               value="${params.status ? controlledListService.getAllPossibleDateFirstOnlineYearByStatus(params) : []}"/>
-        <g:set var="publishers"
-               value="${params.status ? controlledListService.getAllPossiblePublisherByStatus(params) : []}"/>
-        <g:set var="titleTypes"
-               value="${params.status ? controlledListService.getAllPossibleTitleTypesByStatus(params) : []}"/>
-        <g:set var="mediumTypes"
-               value="${params.status ? controlledListService.getAllPossibleMediumTypesByStatus(params) : []}"/>
-        <g:set var="coverageDepths"
-               value="${params.status ? controlledListService.getAllPossibleCoverageDepthsByStatus(params) : []}"/>
-        --%>
-    </g:elseif>
-    JSPC.app.ajaxDropdown($('#series_names'), '<g:createLink controller="ajaxJson" action="getAllPossibleSeries" params="${params}"/>&by='+by+'&obj='+obj+'&forTitles='+forTitles+'&query={query}', '${params.series_names}');
-    JSPC.app.ajaxDropdown($('#subject_references'), '<g:createLink controller="ajaxJson" action="getAllPossibleSubjects" params="${params}"/>&by='+by+'&obj='+obj+'&forTitles='+forTitles+'&query={query}', '${params.subject_references}');
-    JSPC.app.ajaxDropdown($('#ddcs'), '<g:createLink controller="ajaxJson" action="getAllPossibleDdcs" params="${params}"/>&by='+by+'&obj='+obj+'&forTitles='+forTitles+'&query={query}', '${params.ddcs}');
-    JSPC.app.ajaxDropdown($('#languages'), '<g:createLink controller="ajaxJson" action="getAllPossibleLanguages" params="${params}"/>&by='+by+'&obj='+obj+'&forTitles='+forTitles+'&query={query}', '${params.languages}');
-    JSPC.app.ajaxDropdown($('#yearsFirstOnline'), '<g:createLink controller="ajaxJson" action="getAllPossibleDateFirstOnlineYears" params="${params}"/>&by='+by+'&obj='+obj+'&forTitles='+forTitles+'&query={query}', '${params.yearsFirstOnline}');
-    JSPC.app.ajaxDropdown($('#medium'), '<g:createLink controller="ajaxJson" action="getAllPossibleMediumTypes" params="${params}"/>&by='+by+'&obj='+obj+'&forTitles='+forTitles+'&query={query}', '${params.medium}');
-    JSPC.app.ajaxDropdown($('#title_types'), '<g:createLink controller="ajaxJson" action="getAllPossibleTitleTypes" params="${params}"/>&by='+by+'&obj='+obj+'&forTitles='+forTitles+'&query={query}', '${params.title_types}');
-    JSPC.app.ajaxDropdown($('#publishers'), '<g:createLink controller="ajaxJson" action="getAllPossiblePublishers" params="${params}"/>&by='+by+'&obj='+obj+'&forTitles='+forTitles+'&query={query}', '${params.publishers}');
-    JSPC.app.ajaxDropdown($('#coverageDepth'), '<g:createLink controller="ajaxJson" action="getAllPossibleCoverageDepths" params="${params}"/>&by='+by+'&obj='+obj+'&forTitles='+forTitles+'&query={query}', '${params.coverageDepth}');
+    JSPC.app.ajaxDropdown($('#series_names'),       '<g:createLink controller="ajaxJson" action="getAllPossibleSeries" params="${params}"/>', '${params.series_names}');
+    JSPC.app.ajaxDropdown($('#subject_references'), '<g:createLink controller="ajaxJson" action="getAllPossibleSubjects" params="${params}"/>', '${params.subject_references}');
+    JSPC.app.ajaxDropdown($('#ddcs'),               '<g:createLink controller="ajaxJson" action="getAllPossibleDdcs" params="${params}"/>', '${params.ddcs}');
+    JSPC.app.ajaxDropdown($('#languages'),          '<g:createLink controller="ajaxJson" action="getAllPossibleLanguages" params="${params}"/>', '${params.languages}');
+    JSPC.app.ajaxDropdown($('#yearsFirstOnline'),   '<g:createLink controller="ajaxJson" action="getAllPossibleDateFirstOnlineYears" params="${params}"/>', '${params.yearsFirstOnline}');
+    JSPC.app.ajaxDropdown($('#medium'),             '<g:createLink controller="ajaxJson" action="getAllPossibleMediumTypes" params="${params}"/>', '${params.medium}');
+    JSPC.app.ajaxDropdown($('#title_types'),        '<g:createLink controller="ajaxJson" action="getAllPossibleTitleTypes" params="${params}"/>', '${params.title_types}');
+    JSPC.app.ajaxDropdown($('#publishers'),         '<g:createLink controller="ajaxJson" action="getAllPossiblePublishers" params="${params}"/>', '${params.publishers}');
+    JSPC.app.ajaxDropdown($('#coverageDepth'),      '<g:createLink controller="ajaxJson" action="getAllPossibleCoverageDepths" params="${params}"/>', '${params.coverageDepth}');
 </laser:script>

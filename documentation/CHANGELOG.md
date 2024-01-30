@@ -7,25 +7,129 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-5456    29.11.2023  rc-3.3  3.3.2       David   Feature     Kundentyp Interne Verwaltung: Fehlende Reiter im Einrichtungsprofil
+5501    30.01.2024  dev     3.4         Andreas Feature     Schieberegler zur Auswahl des Zeitraumes für Reports implementiert
 
---      29.11.2023  rc-3.3  3.3.2       Andreas Bug         neue Titelgruppe wurde nicht übergeben => NPE
+5529    26.01.2024  rc-3.3  3.3.3       Moe     Bug         Aktive Umfrage Bubble sind nicht stimmig zu TN
 
---      28.11.2023  rc-3.3  3.3.2       Andreas Bug         Rückverweis bei manuellem Titelentknüpfen eingebaut
+5512    26.01.2024  rc-3.3  3.3.3       Moe     Bug         Teilnehmerkosten vergleichen
 
---      28.11.2023  rc-3.3  3.3.2       Andreas Bug         Verlag-Dropdown lud nicht
+5544    26.01.2024  rc-3.3  3.3.3       Moe     Bug         Mail From nicht mehr über die OrgSettings abgreifen/setzen
 
-5454    28.11.2023  rc-3.3  3.3.2       David   Bug         Profil: CC-Mails gehen raus, auch wenn Haken noch gesetzt ist?
+--      26.01.2024  rc-3.3  3.3.3       Moe     Bug         Bugfixes
 
---      28.11.2023  rc-3.3  3.3.2       Andreas Bug         Plattformdaten wurden falsch abgefragt
+5541    26.01.2024  rc-3.3  3.3.3       Moe     Bug         Keine Kundennummer anzeigen wenn Plattform nicht Counter fähig ist
 
-5451    24.11.2023  rc-3.3  3.3.1       Andreas Bug         diverse Bugs im Zusammenhang mit Kosten
+5540    26.01.2024  rc-3.3  3.3.3       Moe     Bug          Nav Dokumente Reiter Anzahl Docs
 
-5450    24.11.2023  rc-3.3  3.3.1       Moe     Bug         Mails werden nicht versendet: sendSurveyEmail()
+5537    24.01.2024  rc-3.3  3.3.3       Moe     Bug         Dokument von Pro-Einrichtung in Titelumfrage sichtbar?!
 
---      24.11.2023  rc-3.3  3.3.1       Andreas Bug         leere Zeilenenden wurden abgetrennt
+5508    24.01.2024  rc-3.3  3.3.3       Moe     Bug         Erinnerung Enddatum bei automatisch verlängernden und verlängerten Lizenzen unterdrücken
 
---      24.11.2023  rc-3.3  3.3.1       Andreas Bug         Namensraumprüfung musste zugunsten des Syncs entfernt werden
+5531    19.01.2024  rc-3.3  3.3.5       David   Bug         Nutzer löschen: SystemAnnouncement
+
+5517    19.01.2024  rc-3.3  3.3.5       David   Bug         Filter "Erscheinungsjahr" @ "Meine dauerhaften Titel"
+
+5521    12.01.2024  dev     3.4         David   Feature     Refactoring: PDF-Export
+
+5520    12.01.2024  rc-3.3  3.3.5       David   Bug         Vertrag anlegen als neuer Kundentyp
+
+5512    09.01.2024  rc-3.3  3.3.3       Moe     Bug         Teilnehmerkosten vergleichen
+
+5488    09.01.2024  rc-3.3  3.3.3       Moe     Bug         Kostenausschütung rundet Preise ohne dies zu wollen
+
+5506    09.01.2024  rc-3.3  3.3.3       Moe     Bug         Kostenasuschüttung: Wert in EUR und Endpreis in EUR nicht korrekt
+
+5510    09.01.2024  rc-3.3  3.3.3       Moe     Bug         Kosten anlegen: Standartwerte
+
+5509    09.01.2024  rc-3.3  3.3.3       Moe     Bug         Umfrage-Kosten: Fehlende Angaben
+
+5505    08.01.2024  rc-3.3  3.3.3       David   Feature     "Alle Konsortialstellen" liefert unvollständige Treffermenge
+
+5498    05.01.2024  rc-3.3  3.3.3       David   Bug         /survey/surveyTitles: Fehler wenn man auf andere Seiten klickt
+
+5492    05.01.2024  rc-3.3  3.3.3       Moe     Bug         Mein Lizenz-Monitor Filter
+
+5487    05.01.2024  rc-3.3  3.3.3       Moe     Bug         Umfrageteilnehmer Reiter
+
+5486    05.01.2024  rc-3.3  3.3.3       Moe     Bug         Titelumfrage: Teilnahme-Merkmal rein
+
+5499    05.01.2024  rc-3.3  3.3.3       Moe     Bug         fehlende Info der Mail von Fällige Termine
+
+5457    04.01.2024  rc-3.3  3.3.3       David   Bug         Eintragung Schlüsselpaar im Statistikreiter
+
+--      04.01.2024  rc-3.3  3.3.3       Moe     Bug         Bugfix Umfrage
+
+5497    04.01.2024  rc-3.3  3.3.3       Moe     Bug         Neue User Dashboard Reiter auf Umfrage umstellen
+
+5496    04.01.2024  rc-3.3  3.3.3       Moe     Bug         Umfrage fallen weg
+
+5489    03.01.2024  rc-3.3  3.3.3       David   Bug         Alle Pakete: Filter Kuratorengruppentyp liefert keine Ergebnisse
+
+5490    02.01.2024  rc-3.3  3.3.3       David   Bug         404 Übersicht Referenzwerte
+
+5485    13.12.2023  rc-3.3  3.3.3       David   Bug         Alle Einrichtungen > Filter: Status geht verloren
+
+5483    13.12.2023  rc-3.3  3.3.3       David   Bug         Meine Verträge - Filterfelder
+
+5482    13.12.2023  rc-3.3  3.3.3       David   Bug         Adressbuch - Filterfelder
+
+5481    13.12.2023  rc-3.3  3.3.3       David   Bug         Lizenzen/Verträge vergleichen - Filterstatus
+
+5476    11.12.2023  rc-3.3  3.3.2       Moe     Bug         Umfrage Kosten: Bei Ausschüttung wird der Filter gelöscht
+
+5475    11.12.2023  rc-3.3  3.3.2       Moe     Bug         Titelumfrage: Titel werden nicht ausgewählt
+
+5470    11.12.2023  rc-3.3  3.3.2       Moe     Bug         Kostentemplate: Falsche Sortierung der ausgegebenen UUIDs
+
+5469    08.12.2023  rc-3.3  3.3.2       Moe     Feature     Umfrage-Kosten Click-Me Export bauen
+
+5455    08.12.2023  rc-3.3  3.3.2       Moe     Feature     Titelumfrage: Budget und Differenz zu Auswahlsumme als zusätzliche Spalten
+
+--      08.12.2023  rc-3.3  3.3.2       Moe     Bug         500er bei Alle auswählen in Kostenausschüttung
+
+5473    08.12.2023  rc-3.3  3.3.2       Moe     Feature    Kostenausschütung erweitern mit Prozent auf aktuellen Preis und neuen Umfrage Preis
+
+5453    08.12.2023  rc-3.3  3.3.2       Moe     Bug         Titelumfrage: Titel löschen soll nicht abhängig von den Status-Reiter sein
+
+5472    08.12.2023  rc-3.3  3.3.2       Moe     Bug         Dauerhafte Titel werden gesetzt wenn man Teilnehmer hinzufügt bei einer Lizenz
+
+--      07.12.2023  rc-3.3  3.3.2       Moe     Bug         Kosten öffnen/bearbeiten/kopieren nicht möglich bei verknüpften Kosten mit Titel
+
+5464    06.12.2023  rc-3.3  3.3.2       Moe     Bug         Titelgruppe verhindert das Löschen einer Lizenz
+
+5467    05.12.2023  rc-3.3  3.3.2       David   Bug         Standardreiter Datenweitergabe für LAS:eR-Basic
+
+5463    01.12.2023  rc-3.3  3.3.2       Andreas Bug         Auftragsnummer wurde nicht beim Kostenimport verarbeitet
+
+5462    01.12.2023  rc-3.3  3.3.2       Andreas Bug         Filter der Verkaufsebene verarbeitete Identifier nicht
+
+5461    01.12.2023  rc-3.3  3.3.2       Andreas Bug         fehlende Angaben bei Umfragekosten ergänzt
+
+5458    01.12.2023  rc-3.3  3.3.2       Andreas Bug         Abschicken leerer Umfragen verhindert
+
+--      01.12.2023  rc-3.3  3.3.2       Andreas Bug         Berechnung der Listenpreise überbrückt
+
+--      30.11.2023  rc-3.3  3.3.2       Andreas Bug         Bezeichner im Menüpunkt getauscht
+
+5456    29.11.2023  rc-3.3  3.3.1       David   Feature     Kundentyp Interne Verwaltung: Fehlende Reiter im Einrichtungsprofil
+
+--      29.11.2023  rc-3.3  3.3.1       Andreas Bug         neue Titelgruppe wurde nicht übergeben => NPE
+
+--      28.11.2023  rc-3.3  3.3.1       Andreas Bug         Rückverweis bei manuellem Titelentknüpfen eingebaut
+
+--      28.11.2023  rc-3.3  3.3.1       Andreas Bug         Verlag-Dropdown lud nicht
+
+5454    28.11.2023  rc-3.3  3.3.1       David   Bug         Profil: CC-Mails gehen raus, auch wenn Haken noch gesetzt ist?
+
+--      28.11.2023  rc-3.3  3.3.1       Andreas Bug         Plattformdaten wurden falsch abgefragt
+
+5451    24.11.2023  rc-3.3  3.3         Andreas Bug         diverse Bugs im Zusammenhang mit Kosten
+
+5450    24.11.2023  rc-3.3  3.3         Moe     Bug         Mails werden nicht versendet: sendSurveyEmail()
+
+--      24.11.2023  rc-3.3  3.3         Andreas Bug         leere Zeilenenden wurden abgetrennt
+
+--      24.11.2023  rc-3.3  3.3         Andreas Bug         Namensraumprüfung musste zugunsten des Syncs entfernt werden
 
 #### day of release 3.3
 

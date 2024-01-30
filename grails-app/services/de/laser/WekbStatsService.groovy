@@ -48,6 +48,21 @@ class WekbStatsService {
         }
         Map result = ttl1800.get('wekbNews') as Map
 
+        ['org', 'platform', 'package'].each { type ->
+            ['all', 'created', 'deleted'].each { lst -> // ensure lists
+                if (! result[type][lst] && result[type][lst] != []) {
+                    result[type][lst] = []
+                    log.debug('wekbNews: missing ' + type + '.' + lst + ' > set default to []')
+                }
+            }
+            ['count', 'countInLaser', 'countUpdated'].each { cnt -> // ensure counts
+                if (! result[type][cnt] && result[type][cnt] != 0) {
+                    result[type][cnt] = 0
+                    log.debug('wekbNews: missing ' + type + '.' + cnt + ' > set default to 0')
+                }
+            }
+        }
+
         List<String> orgList    = result.org.all.collect{ it.id }
         List<String> pkgList    = result.package.all.collect{ it.id }
         List<String> pltList    = result.platform.all.collect{ it.id }
@@ -62,16 +77,28 @@ class WekbStatsService {
         result.package.marker   = markerService.getObjectsByClassAndType(Package.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(pkgList)
         result.platform.marker  = markerService.getObjectsByClassAndType(Platform.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(pltList)
 
-        result.counts = [
-                all:        result.org.count            + result.platform.count            + result.package.count,
-                inLaser:    result.org.countInLaser     + result.platform.countInLaser     + result.package.countInLaser,
-                my:         result.org.my.size()        + result.platform.my.size()        + result.package.my.size(),
-                marker:     result.org.marker.size()    + result.platform.marker.size()    + result.package.marker.size(),
-                created:    result.org.created.size()   + result.platform.created.size()   + result.package.created.size(),
-                updated:    result.org.countUpdated     + result.platform.countUpdated     + result.package.countUpdated,
-                deleted:    result.org.deleted.size()   + result.platform.deleted.size()   + result.package.deleted.size()
-        ]
+        try {
+            result.counts.all       = result.org.count          + result.platform.count             + result.package.count
+            result.counts.inLaser   = result.org.countInLaser   + result.platform.countInLaser      + result.package.countInLaser
+            result.counts.my        = result.org.my.size()      + result.platform.my.size()         + result.package.my.size()
+            result.counts.marker    = result.org.marker.size()  + result.platform.marker.size()     + result.package.marker.size()
+            result.counts.created   = result.org.created.size() + result.platform.created.size()    + result.package.created.size()
+            result.counts.updated   = result.org.countUpdated   + result.platform.countUpdated      + result.package.countUpdated
+            result.counts.deleted   = result.org.deleted.size() + result.platform.deleted.size()    + result.package.deleted.size()
+        }
+        catch (Exception e) {
+            log.error 'failed getCurrentChanges() -> ' + e.getMessage()
 
+            // debug
+            println " count             ${result.org.count} - ${result.platform.count} - ${result.package.count}"
+            println " countInLaser      ${result.org.countInLaser} - ${result.platform.countInLaser} - ${result.package.countInLaser}"
+            println " countUpdated      ${result.org.countUpdated} - ${result.platform.countUpdated} - ${result.package.countUpdated}"
+            println " my.size()         ${result.org.my?.size()} - ${result.platform.my?.size()} - ${result.package.my?.size()}"
+            println " marker.size()     ${result.org.marker?.size()} - ${result.platform.marker?.size()} - ${result.package.marker?.size()}"
+            println " created.size()    ${result.org.created?.size()} - ${result.platform.created?.size()} - ${result.package.created?.size()}"
+            println " deleted.size()    ${result.org.deleted?.size()} - ${result.platform.deleted?.size()} - ${result.package.deleted?.size()}"
+            return [:]
+        }
         result
     }
 
@@ -121,9 +148,9 @@ class WekbStatsService {
         result = [
                 query       : [ days: days, changedSince: DateUtils.getLocalizedSDF_noTime().format(frame), call: DateUtils.getLocalizedSDF_noZ().format(new Date()) ],
                 counts      : [ : ],
-                org         : [ count: 0, countInLaser: 0, countUpdated: 0, created: [], /*updated: [],*/ deleted: [], all: [] ],
-                platform    : [ count: 0, countInLaser: 0, countUpdated: 0, created: [], /*updated: [],*/ deleted: [], all: [] ],
-                package     : [ count: 0, countInLaser: 0, countUpdated: 0, created: [], /*updated: [],*/ deleted: [], all: [] ]
+                org         : [ count: 0, countInLaser: 0, countUpdated: 0, created: [], deleted: [], all: [] ],
+                platform    : [ count: 0, countInLaser: 0, countUpdated: 0, created: [], deleted: [], all: [] ],
+                package     : [ count: 0, countInLaser: 0, countUpdated: 0, created: [], deleted: [], all: [] ]
         ]
 
         Closure process = { Map map, String key ->
@@ -149,26 +176,28 @@ class WekbStatsService {
                     it.remove('sortname')
                     it.remove('status')
 
-                    if (key == 'org')       {
+                    if (key == 'org') {
                         Org o = Org.findByGokbId(it.uuid)
                         it.id = o?.id
                         it.globalUID = o?.globalUID
                     }
-                    if (key == 'platform')  {
+                    else if (key == 'platform') {
                         Platform p = Platform.findByGokbId(it.uuid)
                         it.id = p?.id
                         it.globalUID = p?.globalUID
                     }
-                    if (key == 'package')   {
+                    else if (key == 'package') {
                         Package p = Package.findByGokbId(it.uuid)
                         it.id = p?.id
                         it.globalUID = p?.globalUID
                     }
 
                     if (it.globalUID) { result[key].countInLaser++ }
+
                     result[key].all << it
                 }
-                result[key].count = result[key].created.size() + result[key].countUpdated + /*result[key].updated.size() +*/ result[key].deleted.size()
+
+                result[key].count = result[key].deleted.size() + result[key].created.size() + result[key].countUpdated
             }
         }
 

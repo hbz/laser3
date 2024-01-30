@@ -203,27 +203,32 @@
     <div class="ui grid">
         <div class="row">
             <div class="eight wide column">
-                <h3 class="ui icon header la-clear-before la-noMargin-top"><span
-                        class="ui circular  label">${num_ies_rows}</span> <g:message code="title.filter.result"/></h3>
+                <h3 class="ui icon header la-clear-before la-noMargin-top">
+                    <span class="ui circular label">${num_ies_rows}</span> <g:message code="title.filter.result"/>
+                </h3>
             </div>
 
-
             <div class="eight wide column">
-                <div class="field la-field-right-aligned">
-                    <div class="ui right floated button la-js-editButton la-la-clearfix>"><g:message code="default.button.edit.label"/></div>
-                </div>
+                <g:if test="${entitlements}">
+                    <div class="field la-field-right-aligned">
+                        <div class="ui right floated button la-js-editButton la-la-clearfix>"><g:message code="default.button.edit.label"/></div>
+                    </div>
+                </g:if>
             </div>
         </div><!--.row-->
     </div><!--.grid-->
-
-<div class="ui form">
-    <div class="three wide fields">
-        <div class="field">
-            <laser:render template="/templates/titles/sorting_dropdown" model="${[sd_type: 1, sd_journalsOnly: journalsOnly, sd_sort: params.sort, sd_order: params.order]}" />
+    <g:if test="${entitlements}">
+        <div class="ui form">
+            <div class="two wide fields">
+                <div class="field">
+                    <laser:render template="/templates/titles/sorting_dropdown" model="${[sd_type: 1, sd_journalsOnly: journalsOnly, sd_sort: params.sort, sd_order: params.order]}" />
+                </div>
+                <div class="field la-field-noLabel">
+                    <button class="ui button la-js-closeAll-showMore right floated">${message(code: "accordion.button.closeAll")}</button>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
-
+    </g:if>
 <div class="ui grid">
     <div class="row">
         <div class="column">
@@ -684,6 +689,11 @@
         </div><%-- .column --%>
     </div><%--.row --%>
 </div><%--.grid --%>
+<g:if test="${entitlements}">
+    <div class="ui clearing segment la-segmentNotVisable">
+        <button class="ui button la-js-closeAll-showMore right floated">${message(code: "accordion.button.closeAll")}</button>
+    </div>
+</g:if>
 </div>
 
 %{--<g:if test="${subscription.ieGroups.size() > 0}">
@@ -744,12 +754,7 @@
       }
     </g:if>
 
-    $('.la-books.icon').popup({
-        delay: {
-            show: 150, hide: 0
-        }
-      });
-    $('.la-notebook.icon').popup({
+    $('.la-books.icon, .la-notebook.icon').popup({
         delay: {
             show: 150, hide: 0
         }
@@ -795,7 +800,8 @@
     });
     <g:if test="${params.asAt && params.asAt.length() > 0}">$(function() { document.body.style.background = "#fcf8e3"; });</g:if>
 
-    $("[data-ajaxTippId]").accordion().on('click', function(e) {
+
+    $("[data-ajaxTippId]").on('click', function(e) {
             var tippID = $(this).attr('data-ajaxTippId');
             var ieID = $(this).attr('data-ajaxIeId');
 

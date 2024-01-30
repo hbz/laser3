@@ -50,6 +50,7 @@ class RDStore {
     public final static RefdataValue COST_ITEM_DELETED  = getRefdataValue('Deleted', RDConstants.COST_ITEM_STATUS)
 
     public final static RefdataValue COST_ITEM_ELEMENT_CONSORTIAL_PRICE = getRefdataValue('price: consortial price', RDConstants.COST_ITEM_ELEMENT)
+    public final static RefdataValue COST_ITEM_ELEMENT_BUDGET_TITLE_PICK = getRefdataValue('budget: title pick and choose', RDConstants.COST_ITEM_ELEMENT)
 
     public final static RefdataValue CUSTOMER_IDENTIFIER_TYPE_DEFAULT = getRefdataValue('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE)
 
@@ -276,6 +277,7 @@ class RDStore {
     public final static RefdataValue TIPP_STATUS_DELETED            = getRefdataValue('Deleted',  RDConstants.TIPP_STATUS)
 
     public final static RefdataValue US_DASHBOARD_TAB_DUE_DATES = getRefdataValue('Due Dates', RDConstants.USER_SETTING_DASHBOARD_TAB)
+    public final static RefdataValue US_DASHBOARD_TAB_SURVEYS = getRefdataValue('Surveys', RDConstants.USER_SETTING_DASHBOARD_TAB)
 
     //public final static RefdataValue WF_CONDITION_STATUS_OPEN    = getRefdataValue('open', RDConstants.WF_CONDITION_STATUS)
     //public final static RefdataValue WF_CONDITION_STATUS_DONE    = getRefdataValue('done', RDConstants.WF_CONDITION_STATUS)

@@ -5,7 +5,6 @@ import de.laser.*
 import de.laser.auth.User
 import de.laser.base.AbstractReport
 import de.laser.cache.EhcacheWrapper
-import de.laser.cache.SessionCacheWrapper
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.finance.CostItem
@@ -39,7 +38,6 @@ import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.time.TimeCategory
 import groovy.xml.slurpersupport.GPathResult
-import org.apache.commons.lang3.StringEscapeUtils
 import org.apache.commons.lang3.RandomStringUtils
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -122,36 +120,9 @@ class SubscriptionControllerService {
                 result.institutional_usage_identifier = OrgSetting.get(result.institution, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
             }
             prf.setBenchmark('packages')
-            // ---- pendingChanges : start
+
             result.pendingChangeConfigSettings = RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)
-            /*if (executorWrapperService.hasRunningProcess(result.subscription)) {
-                log.debug("PendingChange processing in progress")
-                result.processingpc = true
-            }
-            else {
-                //pc.msgParams null check is the legacy check; new pending changes should NOT be displayed here but on dashboard and only there!
-                List<PendingChange> pendingChanges = PendingChange.executeQuery(
-                        "select pc from PendingChange as pc where subscription = :sub and ( pc.status is null or pc.status = :status ) and pc.msgParams is not null order by pc.ts desc",
-                        [sub: result.subscription, status: RDStore.PENDING_CHANGE_PENDING]
-                )
-                log.debug("pc result is ${result.pendingChanges}")
-                if (result.subscription.isSlaved && ! pendingChanges.isEmpty()) {
-                    log.debug("Slaved subscription, auto-accept pending changes")
-                    List changesDesc = []
-                    pendingChanges.each { change ->
-                        if (!pendingChangeService.performAccept(change)) {
-                            log.debug("Auto-accepting pending change has failed.")
-                        } else {
-                            changesDesc.add(change.desc)
-                        }
-                    }
-                    //ERMS-1844 Hotfix: Änderungsmitteilungen ausblenden
-                    //result.message = changesDesc
-                } else {
-                    result.pendingChanges = pendingChanges
-                }
-            }*/
-            // ---- pendingChanges : end
+
             prf.setBenchmark('tasks')
             // TODO: experimental asynchronous task
             //def task_tasks = task {
@@ -246,27 +217,7 @@ class SubscriptionControllerService {
                         }
                     } else
                         log.info('institutional usage identifier not available')
-                }/*
-                if(SpringSecurityUtils.ifAnyGranted("ROLE_YODA")) {
-                    result.tokens = []
-                    Org requestee = result.subscription.getSubscriber()
-                    def pw = OrgSetting.get(result.institution, OrgSetting.KEYS.LASERSTAT_SERVER_KEY)
-                    if(pw == OrgSetting.SETTING_NOT_FOUND) {
-                        pw = OrgSetting.add(result.institution, OrgSetting.KEYS.LASERSTAT_SERVER_KEY, org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric(24))
-                    }
-                    SecretKeySpec secret = new SecretKeySpec(pw.getValue().getBytes(), "HmacSHA256")
-                    Mac mac = Mac.getInstance("HmacSHA256")
-                    mac.init(secret)
-                    Set<String> platforms = Platform.executeQuery('select plat.globalUID from IssueEntitlement ie join ie.tipp tipp join tipp.platform plat where ie.subscription = :subscription',[subscription: result.subscription])
-                    platforms.each { String platformGlobalUID ->
-                        String data = "requestor=${result.institution.globalUID}&customer=${requestee.globalUID}&platform=${platformGlobalUID}"
-                        byte[] rawHmac = mac.doFinal(data.getBytes())
-                        result.tokens << rawHmac.encodeHex()
-                        result.requestData = data
-                    }
-                    if(result.tokens.size() > 0)
-                        result.subStats = true //development only
-                }*/
+                }
             }
             //}
             prf.setBenchmark('costs')
@@ -687,65 +638,78 @@ class SubscriptionControllerService {
         SortedSet<Date> monthsInRing = new TreeSet<Date>()
         Map<String, Object> dateRangeParams = [:]
         LocalDate startTime, endTime = LocalDate.now(), now = LocalDate.now()
-        if(subscription.startDate && subscription.endDate) {
-            //dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
-            if(!params.containsKey('tabStat') || params.tabStat == 'total') {
-                if(subscription.startDate > new Date()) {
-                    LocalDate lastMonth = LocalDate.now()
-                    lastMonth.minusMonths(1)
-                    dateRangeParams.startDate = Date.from(lastMonth.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+        if(params.containsKey('startDate') && params.containsKey('endDate')) {
+            if(params.containsKey('startDate')) {
+                startTime = LocalDate.parse(params.startDate+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
+                dateRangeParams.startDate = Date.from(startTime.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+            }
+            if(params.containsKey('endDate')) {
+                endTime = LocalDate.parse(params.endDate+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
+                dateRangeParams.endDate = Date.from(endTime.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+            }
+        }
+        else {
+            if(subscription.startDate && subscription.endDate) {
+                //dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
+                if(!params.containsKey('tabStat') || params.tabStat == 'total') {
+                    if(subscription.startDate > new Date()) {
+                        LocalDate lastMonth = LocalDate.now()
+                        lastMonth.minusMonths(1)
+                        dateRangeParams.startDate = Date.from(lastMonth.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+                    }
+                    else dateRangeParams.startDate = subscription.startDate
+                    if(subscription.endDate <= Date.from(now.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                        dateRangeParams.endDate = subscription.endDate
+                    else dateRangeParams.endDate = Date.from(now.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
                 }
-                else dateRangeParams.startDate = subscription.startDate
-                if(subscription.endDate <= Date.from(now.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant()))
-                    dateRangeParams.endDate = subscription.endDate
-                else dateRangeParams.endDate = Date.from(now.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+                else {
+                    LocalDate filterDate = LocalDate.parse(params.tabStat+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
+                    dateRangeParams.startDate = Date.from(filterDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
+                    dateRangeParams.endDate = Date.from(filterDate.withDayOfMonth(filterDate.getMonth().length(filterDate.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+                }
+                startTime = subscription.startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                //is completely meaningless, but causes 500 if not dealt ...
+                if(subscription.endDate < new Date() || subscription.startDate > new Date())
+                    endTime = subscription.endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+            }
+            else if(subscription.startDate) {
+                //dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
+                if(!params.containsKey('tabStat') || params.tabStat == 'total') {
+                    dateRangeParams.startDate = subscription.startDate
+                    dateRangeParams.endDate = new Date()
+                }
+                else {
+                    LocalDate filterDate = LocalDate.parse(params.tabStat+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
+                    dateRangeParams.startDate = Date.from(filterDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
+                    dateRangeParams.endDate = Date.from(filterDate.withDayOfMonth(filterDate.getMonth().length(filterDate.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+                }
+                startTime = subscription.startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                endTime = LocalDate.now()
             }
             else {
-                LocalDate filterDate = LocalDate.parse(params.tabStat+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
-                dateRangeParams.startDate = Date.from(filterDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-                dateRangeParams.endDate = Date.from(filterDate.withDayOfMonth(filterDate.getMonth().length(filterDate.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+                LocalDate lastYear = LocalDate.now().minus(1, ChronoUnit.YEARS)
+                startTime = lastYear.with(TemporalAdjusters.firstDayOfYear())
+                endTime = lastYear.with(TemporalAdjusters.lastDayOfYear())
+                dateRangeParams.startDate = Date.from(startTime.atStartOfDay(ZoneId.systemDefault()).toInstant())
+                dateRangeParams.endDate = Date.from(endTime.atStartOfDay(ZoneId.systemDefault()).toInstant())
             }
-            startTime = subscription.startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-            //is completely meaningless, but causes 500 if not dealt ...
-            if(subscription.endDate < new Date() || subscription.startDate > new Date())
-                endTime = subscription.endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-        }
-        else if(subscription.startDate) {
-            //dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
-            if(!params.containsKey('tabStat') || params.tabStat == 'total') {
-                dateRangeParams.startDate = subscription.startDate
-                dateRangeParams.endDate = new Date()
-            }
+            /*
+            range spans over the whole availability of reports, no preset!
             else {
-                LocalDate filterDate = LocalDate.parse(params.tabStat+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
-                dateRangeParams.startDate = Date.from(filterDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-                dateRangeParams.endDate = Date.from(filterDate.withDayOfMonth(filterDate.getMonth().length(filterDate.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
-            }
-            startTime = subscription.startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-            endTime = LocalDate.now()
+                if(!params.containsKey('tabStat') || params.tabStat == 'total') {
+                    dateRange = ''
+                }
+                else {
+                    dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
+                    LocalDate filterDate = LocalDate.parse(params.tabStat+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
+                    dateRangeParams.startDate = Date.from(filterDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
+                    dateRangeParams.endDate = Date.from(filterDate.withDayOfMonth(filterDate.getMonth().length(filterDate.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+                }
+                startTime = now.with(TemporalAdjusters.firstDayOfYear())
+                endTime = now.with(TemporalAdjusters.lastDayOfYear())
+            }*/
         }
-        else {
-            LocalDate lastYear = LocalDate.now().minus(1, ChronoUnit.YEARS)
-            startTime = lastYear.with(TemporalAdjusters.firstDayOfYear())
-            endTime = lastYear.with(TemporalAdjusters.lastDayOfYear())
-            dateRangeParams.startDate = Date.from(startTime.atStartOfDay(ZoneId.systemDefault()).toInstant())
-            dateRangeParams.endDate = Date.from(endTime.atStartOfDay(ZoneId.systemDefault()).toInstant())
-        }
-        /*
-        range spans over the whole availability of reports, no preset!
-        else {
-            if(!params.containsKey('tabStat') || params.tabStat == 'total') {
-                dateRange = ''
-            }
-            else {
-                dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
-                LocalDate filterDate = LocalDate.parse(params.tabStat+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
-                dateRangeParams.startDate = Date.from(filterDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-                dateRangeParams.endDate = Date.from(filterDate.withDayOfMonth(filterDate.getMonth().length(filterDate.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
-            }
-            startTime = now.with(TemporalAdjusters.firstDayOfYear())
-            endTime = now.with(TemporalAdjusters.lastDayOfYear())
-        }*/
+
         endTime = endTime.with(TemporalAdjusters.lastDayOfMonth())
         if(params.tabStat && params.tabStat != 'total' && params.exportXLS && params.data != 'fetchAll') {
             monthsInRing << DateUtils.getSDF_yyyyMM().parse(params.tabStat)
@@ -801,17 +765,11 @@ class SubscriptionControllerService {
             }
             if(params.ddcs && params.list("ddcs").size() > 0) {
                 query += " and exists (select ddc.id from title.ddcs ddc where ddc.ddc.id in (:ddcs)) "
-                queryParams.ddcs = []
-                params.list("ddcs").each { String ddc ->
-                    queryParams.ddcs << Long.parseLong(ddc)
-                }
+                queryParams.ddcs = Params.getLongList(params, 'ddcs')
             }
             if(params.languages && params.list("languages").size() > 0) {
                 query += " and exists (select lang.id from title.languages lang where lang.language.id in (:languages)) "
-                queryParams.languages = []
-                params.list("languages").each { String lang ->
-                    queryParams.languages << Long.parseLong(lang)
-                }
+                queryParams.languages = Params.getLongList(params, 'languages')
             }
 
             if (params.filter) {
@@ -823,7 +781,7 @@ class SubscriptionControllerService {
 
             if (params.pkgfilter && (params.pkgfilter != '')) {
                 query += " and title.pkg.id = :pkgId "
-                queryParams.pkgId = Long.parseLong(params.pkgfilter)
+                queryParams.pkgId = params.long('pkgfilter')
             }
 
             if(params.summaryOfContent) {
@@ -1076,8 +1034,10 @@ class SubscriptionControllerService {
             result.defaultEndYear = sdf.format(cal.getTime())
             if(contextService.getOrg().isCustomerType_Consortium()) {
                 params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
-                Map<String,Object> fsq = filterService.getOrgComboQuery(params, result.institution)
-                result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
+                FilterService.Result fsr = filterService.getOrgComboQuery(params, result.institution as Org)
+                if (fsr.isFilterSet) { params.filterSet = true }
+
+                result.members = Org.executeQuery(fsr.query, fsr.queryParams, params)
             }
             [result:result,status:STATUS_OK]
         }
@@ -1279,6 +1239,82 @@ class SubscriptionControllerService {
         [result:result,status:STATUS_OK]
     }
 
+    Map<String,Object> compareSubMemberCostItems(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+        if(!result)
+            [result:null,status:STATUS_ERROR]
+
+        result.idSuffix = 'bulk'
+
+        result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(result.institution)
+        result.filteredSubChilds = getFilteredSubscribers(params,result.subscription)
+        result.filterSet = params.filterSet ? true : false
+
+        result.selectedCostItemElementID = params.selectedCostItemElement ? params.selectedCostItemElement.toString() : RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id.toString()
+
+        result.selectedCostItemElement = RefdataValue.get(Long.parseLong(result.selectedCostItemElementID))
+
+        if (params.processBulkCostItems) {
+            List<Long> selectedSubs = []
+            params.list("selectedSubs").each { id ->
+                selectedSubs << Long.parseLong(id)
+            }
+            if (selectedSubs && result.selectedCostItemElement) {
+                List<Subscription> subscriptionList = Subscription.findAllByIdInList(selectedSubs)
+                subscriptionList.each { Subscription memberSub ->
+                    if (params.percentOnOldPrice) {
+                        List<CostItem> previousSubCostItems
+                        Subscription previousSub = memberSub._getCalculatedPreviousForSurvey()
+                        if (previousSub) {
+                            previousSubCostItems = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(previousSub, result.institution, result.selectedCostItemElement, RDStore.COST_ITEM_DELETED)
+                        }
+
+                        Double percentage = 1 + params.double('percentOnOldPrice') / 100
+                        CostItem lastYearEquivalent = previousSubCostItems.size() == 1 ? previousSubCostItems[0] : null
+                        if (lastYearEquivalent) {
+
+                            List<CostItem> currentSubCostItems = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(memberSub, result.institution, result.selectedCostItemElement, RDStore.COST_ITEM_DELETED)
+
+                            currentSubCostItems.each { CostItem ci ->
+                                if (ci.sub) {
+                                    ci.costInBillingCurrency = lastYearEquivalent.costInBillingCurrency ? BigDecimal.valueOf(lastYearEquivalent.costInBillingCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInBillingCurrency
+                                    ci.costInLocalCurrency = lastYearEquivalent.costInLocalCurrency ? BigDecimal.valueOf(lastYearEquivalent.costInLocalCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInLocalCurrency
+                                    int taxRate = 0 //fallback
+                                    if (ci.taxKey)
+                                        taxRate = ci.taxKey.taxRate
+                                    ci.costInBillingCurrencyAfterTax = ci.costInBillingCurrency * (1.0 + (0.01 * taxRate))
+                                    ci.costInLocalCurrencyAfterTax = ci.costInLocalCurrency * (1.0 + (0.01 * taxRate))
+                                    ci.save()
+                                }
+                            }
+
+                        }
+                    } else if (params.percentOnCurrentPrice) {
+                        Double percentage = 1 + params.double('percentOnCurrentPrice') / 100
+
+                        List<CostItem> currentSubCostItems = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(memberSub, result.institution, result.selectedCostItemElement, RDStore.COST_ITEM_DELETED)
+
+                        currentSubCostItems.each { CostItem ci ->
+                            if (ci.sub) {
+                                ci.costInBillingCurrency = ci.costInBillingCurrency ? BigDecimal.valueOf(ci.costInBillingCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInBillingCurrency
+                                ci.costInLocalCurrency = ci.costInLocalCurrency ? BigDecimal.valueOf(ci.costInLocalCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInLocalCurrency
+                                int taxRate = 0 //fallback
+                                if (ci.taxKey)
+                                    taxRate = ci.taxKey.taxRate
+                                ci.costInBillingCurrencyAfterTax = ci.costInBillingCurrency * (1.0 + (0.01 * taxRate))
+                                ci.costInLocalCurrencyAfterTax = ci.costInLocalCurrency * (1.0 + (0.01 * taxRate))
+                                ci.save()
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+
+        [result:result,status:STATUS_OK]
+    }
+
     /**
      * Lists institutions and sets default parameters for the member adding form
      * @param controller unused
@@ -1296,8 +1332,10 @@ class SubscriptionControllerService {
             result.superOrgType = [messageSource.getMessage('consortium.superOrgType',null,locale)]
             result.memberType = [messageSource.getMessage('consortium.subscriber',null,locale)]
             result.propList= PropertyDefinition.findAllPublicAndPrivateOrgProp(result.institution)
-            Map<String,Object> fsq = filterService.getOrgComboQuery(params, result.institution)
-            result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
+            FilterService.Result fsr = filterService.getOrgComboQuery(params, result.institution as Org)
+            if (fsr.isFilterSet) { params.filterSet = true }
+
+            result.members = Org.executeQuery(fsr.query, fsr.queryParams, params)
             result.members_disabled = Subscription.executeQuery("select oo.org.id from OrgRole oo join oo.sub s where s.instanceOf = :io",[io: result.subscription])
             result.validPackages = result.subscription.packages?.sort { it.pkg.name }
             result.memberLicenses = License.executeQuery("select l from License l where l.instanceOf in (select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType)",[subscription:result.subscription, linkType:RDStore.LINKTYPE_LICENSE])
@@ -1512,8 +1550,8 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            Subscription memberSub = Subscription.get(Long.parseLong(params.memberSubID))
-            Org org = Org.get(Long.parseLong(params.memberOrg))
+            Subscription memberSub = Subscription.get(params.long('memberSubID'))
+            Org org = Org.get(params.long('memberOrg'))
             Subscription prevMemberSub = (result.navPrevSubscription.size() > 0) ? result.navPrevSubscription[0].getDerivedSubscriptionBySubscribers(org) : null
             Subscription nextMemberSub = (result.navNextSubscription.size() > 0) ? result.navNextSubscription[0].getDerivedSubscriptionBySubscribers(org) : null
             try {
@@ -1731,13 +1769,27 @@ class SubscriptionControllerService {
 
                 List<Long> sourceIEs = []
                 if (params.tab == 'allTipps') {
-                    params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                    params.status = [RDStore.TIPP_STATUS_CURRENT.id]
                     params.sort = params.sort ?: 'tipp.sortname'
                     params.order = params.order ?: 'asc'
                     Map<String, Object> query = filterService.getTippQuery(params, baseSub.packages.pkg)
                     result.filterSet = query.filterSet
                     List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
 
+                    //sql bridge
+                    Sql sql = GlobalService.obtainSqlConnection()
+                    String mainQry = "select pi_tipp_fk, pi_list_price, row_number() over (partition by pi_tipp_fk order by pi_date_created desc) as rn, count(*) over (partition by pi_tipp_fk) as cn from price_item where pi_list_price is not null and pi_list_currency_rv_fk = :currency and pi_tipp_fk = any(:tippIDs)"
+                    result.tippsListPriceSumEUR = sql.rows('select sum(pi.pi_list_price) as list_price_eur from (' +
+                            mainQry +
+                            ') as pi where pi.rn = 1', [currency: RDStore.CURRENCY_EUR.id, tippIDs: sql.getDataSource().getConnection().createArrayOf('bigint', titlesList as Object[])])[0]['list_price_eur']
+                    result.tippsListPriceSumUSD = sql.rows('select sum(pi.pi_list_price) as list_price_usd from (' +
+                            mainQry +
+                            ') as pi where pi.rn = 1', [currency: RDStore.CURRENCY_USD.id, tippIDs: sql.getDataSource().getConnection().createArrayOf('bigint', titlesList as Object[])])[0]['list_price_usd']
+                    result.tippsListPriceSumGBP = sql.rows('select sum(pi.pi_list_price) as list_price_gbp from (' +
+                            mainQry +
+                            ') as pi where pi.rn = 1', [currency: RDStore.CURRENCY_GBP.id, tippIDs: sql.getDataSource().getConnection().createArrayOf('bigint', titlesList as Object[])])[0]['list_price_gbp']
+                    sql.close()
+                    /*
                     result.tippsListPriceSumEUR = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
                             'where p.listPrice is not null and p.listCurrency = :currency and tipp.status.id = :tiStatus and tipp.id in (' + query.query + ' )', [currency: RDStore.CURRENCY_EUR, tiStatus: RDStore.TIPP_STATUS_CURRENT.id] + query.queryParams)[0] ?: 0
 
@@ -1746,6 +1798,7 @@ class SubscriptionControllerService {
 
                     result.tippsListPriceSumGBP = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
                             'where p.listPrice is not null and p.listCurrency = :currency and tipp.status.id = :tiStatus and tipp.id in (' + query.query + ' )', [currency: RDStore.CURRENCY_GBP, tiStatus: RDStore.TIPP_STATUS_CURRENT.id] + query.queryParams)[0] ?: 0
+                    */
 
                     result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: params.sort, order: params.order]) : []
                     result.num_rows = titlesList.size()
@@ -1759,27 +1812,29 @@ class SubscriptionControllerService {
                         params.sort = params.sort ?: 'tipp.sortname'
                         params.order = params.order ?: 'asc'
 
+                        // params.currentIEs = 'currentIEs' for subTabs with UITagLib tabsItem
                         if(params.subTab){
                             if(params.subTab == 'currentIEs'){
                                 params.currentIEs = 'currentIEs'
-                                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                                params.status = [RDStore.TIPP_STATUS_CURRENT.id]
                             }else if(params.subTab == 'plannedIEs'){
                                 params.plannedIEs = 'plannedIEs'
-                                params.status = [RDStore.TIPP_STATUS_EXPECTED.id.toString()]
+                                params.status = [RDStore.TIPP_STATUS_EXPECTED.id]
                             }else if(params.subTab == 'expiredIEs'){
                                 params.expiredIEs = 'expiredIEs'
-                                params.status = [RDStore.TIPP_STATUS_RETIRED.id.toString()]
+                                params.status = [RDStore.TIPP_STATUS_RETIRED.id]
                             }else if(params.subTab == 'deletedIEs'){
                                 params.deletedIEs = 'deletedIEs'
-                                params.status = [RDStore.TIPP_STATUS_DELETED.id.toString()]
+                                params.status = [RDStore.TIPP_STATUS_DELETED.id]
                             }else if(params.subTab == 'allIEs'){
                                 params.allIEs = 'allIEs'
-                                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_EXPECTED.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString(), RDStore.TIPP_STATUS_DELETED.id.toString()]
+                                params.status = [RDStore.TIPP_STATUS_CURRENT.id, RDStore.TIPP_STATUS_EXPECTED.id, RDStore.TIPP_STATUS_RETIRED.id, RDStore.TIPP_STATUS_DELETED.id]
                             }
                         } else{
                                 params.currentIEs = 'currentIEs'
-                                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                                params.status = [RDStore.TIPP_STATUS_CURRENT.id]
                         }
+                        result.listOfStatus = Params.getRefdataList(params, 'status')
 
                         params.titleGroup = result.titleGroupID
                         Map query = filterService.getIssueEntitlementQuery(params, subscriberSub)
@@ -1787,7 +1842,20 @@ class SubscriptionControllerService {
 
                         result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs, [sort: params.sort, order: params.order, offset: result.offset, max: result.max]) : []
                         result.num_rows = sourceIEs ? IssueEntitlement.countByIdInList(sourceIEs) : 0
-
+                        //sql bridge
+                        Sql sql = GlobalService.obtainSqlConnection()
+                        String mainQry = "select pi_tipp_fk, pi_list_price, row_number() over (partition by pi_tipp_fk order by pi_date_created desc) as rn, count(*) over (partition by pi_tipp_fk) as cn from price_item where pi_list_price is not null and pi_list_currency_rv_fk = :currency and pi_tipp_fk in (select ie_tipp_fk from issue_entitlement where ie_id = any(:ieIDs))"
+                        result.iesTotalListPriceSumEUR = sql.rows('select sum(pi.pi_list_price) as list_price_eur from (' +
+                                mainQry +
+                                ') as pi where pi.rn = 1', [currency: RDStore.CURRENCY_EUR.id, ieIDs: sql.getDataSource().getConnection().createArrayOf('bigint', sourceIEs as Object[])])[0]['list_price_eur']
+                        result.iesTotalListPriceSumUSD = sql.rows('select sum(pi.pi_list_price) as list_price_usd from (' +
+                                mainQry +
+                                ') as pi where pi.rn = 1', [currency: RDStore.CURRENCY_USD.id, ieIDs: sql.getDataSource().getConnection().createArrayOf('bigint', sourceIEs as Object[])])[0]['list_price_usd']
+                        result.iesTotalListPriceSumGBP = sql.rows('select sum(pi.pi_list_price) as list_price_gbp from (' +
+                                mainQry +
+                                ') as pi where pi.rn = 1', [currency: RDStore.CURRENCY_GBP.id, ieIDs: sql.getDataSource().getConnection().createArrayOf('bigint', sourceIEs as Object[])])[0]['list_price_gbp']
+                        sql.close()
+                        /*
                         result.iesTotalListPriceSumEUR = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
                                 'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_EUR, ieIDs: sourceIEs])[0] ?: 0
 
@@ -1796,6 +1864,7 @@ class SubscriptionControllerService {
 
                         result.iesTotalListPriceSumGBP = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
                                 'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_GBP, ieIDs: sourceIEs])[0] ?: 0
+                        */
 
                         List counts = IssueEntitlement.executeQuery('select new map(count(*) as count, status as status) from IssueEntitlement as ie where ie.subscription = :sub and ie.status != :ieStatus and exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ieGroup.id = :titleGroup and iegi.ie = ie) group by status', [titleGroup: Long.parseLong(result.titleGroupID), sub: subscriberSub, ieStatus: RDStore.TIPP_STATUS_REMOVED])
                         result.allIECounts = 0
@@ -1824,7 +1893,7 @@ class SubscriptionControllerService {
                     GrailsParameterMap parameterMap = params.clone()
                     Map query = [:]
                     if (subscriptions) {
-                        parameterMap.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                        parameterMap.status = [RDStore.TIPP_STATUS_CURRENT.id]
                         parameterMap.hasPerpetualAccess = RDStore.YN_YES.id.toString()
                         query = filterService.getIssueEntitlementQuery(parameterMap, subscriptions)
                         //List<Long> previousIes = previousSubscription ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
@@ -1833,6 +1902,20 @@ class SubscriptionControllerService {
                     result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs, [sort: params.sort, order: params.order, offset: result.offset, max: result.max]) : []
                     result.num_rows = sourceIEs ? IssueEntitlement.countByIdInList(sourceIEs) : 0
 
+                    //sql bridge
+                    Sql sql = GlobalService.obtainSqlConnection()
+                    String mainQry = "select pi_tipp_fk, pi_list_price, row_number() over (partition by pi_tipp_fk order by pi_date_created desc) as rn, count(*) over (partition by pi_tipp_fk) as cn from price_item where pi_list_price is not null and pi_list_currency_rv_fk = :currency and pi_tipp_fk in (select ie_tipp_fk from issue_entitlement where ie_id = any(:ieIDs))"
+                    result.iesTotalListPriceSumEUR = sql.rows('select sum(pi.pi_list_price) as list_price_eur from (' +
+                            mainQry +
+                            ') as pi where pi.rn = 1', [currency: RDStore.CURRENCY_EUR.id, ieIDs: sql.getDataSource().getConnection().createArrayOf('bigint', sourceIEs as Object[])])[0]['list_price_eur']
+                    result.iesTotalListPriceSumUSD = sql.rows('select sum(pi.pi_list_price) as list_price_usd from (' +
+                            mainQry +
+                            ') as pi where pi.rn = 1', [currency: RDStore.CURRENCY_USD.id, ieIDs: sql.getDataSource().getConnection().createArrayOf('bigint', sourceIEs as Object[])])[0]['list_price_usd']
+                    result.iesTotalListPriceSumGBP = sql.rows('select sum(pi.pi_list_price) as list_price_gbp from (' +
+                            mainQry +
+                            ') as pi where pi.rn = 1', [currency: RDStore.CURRENCY_GBP.id, ieIDs: sql.getDataSource().getConnection().createArrayOf('bigint', sourceIEs as Object[])])[0]['list_price_gbp']
+                    sql.close()
+                    /*
                     result.iesTotalListPriceSumEUR = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
                             'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_EUR, ieIDs: sourceIEs])[0] ?: 0
 
@@ -1841,6 +1924,7 @@ class SubscriptionControllerService {
 
                     result.iesTotalListPriceSumGBP = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
                             'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_GBP, ieIDs: sourceIEs])[0] ?: 0
+                    */
                 }
 
                 result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(subscriberSub, false)
@@ -1897,37 +1981,6 @@ class SubscriptionControllerService {
             } else {
                 log.debug("Subscription has no linked packages yet")
             }
-            /*result.max = params.max ? params.int('max') : result.user.getPageSizeOrDefault()
-            List gokbRecords = []
-            ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true).each { ApiSource api ->
-                gokbRecords << gokbService.getPackagesMap(api, params.q, false).records
-            }
-            result.sort = params.sort ?: 'name'
-            result.order = params.order ?: 'asc'
-            result.records = null
-            if(gokbRecords) {
-                Map filteredMap = [:]
-                gokbRecords.each { apiRes ->
-                    apiRes.each { rec ->
-                        filteredMap[rec.uuid] = rec
-                    }
-                }
-                result.records = filteredMap.values().toList().flatten()
-            }
-            if(result.records) {
-                result.records.sort { x, y ->
-                    if (result.order == 'desc') {
-                        y."${result.sort}".toString().compareToIgnoreCase x."${result.sort}".toString()
-                    } else {
-                        x."${result.sort}".toString().compareToIgnoreCase y."${result.sort}".toString()
-                    }
-                }
-                result.resultsTotal = result.records.size()
-                Integer start = params.offset ? params.int('offset') : 0
-                Integer end = params.offset ? result.max + params.int('offset') : result.max
-                end = (end > result.records.size()) ? result.records.size() : end
-                result.hits = result.records.subList(start, end)
-            }*/
 
             ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
 
@@ -1954,17 +2007,14 @@ class SubscriptionControllerService {
                 result.filterSet = true
                 queryParams.provider = params.provider
             }
-
             if(params.curatoryGroup) {
                 result.filterSet = true
                 queryParams.curatoryGroupExact = params.curatoryGroup
             }
-
             if(params.resourceTyp) {
                 result.filterSet = true
                 queryParams.contentType = params.resourceTyp
             }
-
             if (params.ddc) {
                 result.filterSet = true
                 params.list("ddc").each { String key ->
@@ -2015,7 +2065,6 @@ class SubscriptionControllerService {
                     }
                 }
             }
-
         }
     }
 
@@ -2207,14 +2256,10 @@ class SubscriptionControllerService {
             }
             result.issueEntitlementEnrichment = params.issueEntitlementEnrichment
             SwissKnife.setPaginationParams(result, params, (User) result.user)
-           /* List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where subscription = :sub and ( pc.status is null or pc.status = :status ) order by ts desc",
-                    [sub: result.subscription, status: RDStore.PENDING_CHANGE_PENDING])
-            result.pendingChanges = pendingChanges*/
 
+            //params.status = params.status ?: (result.subscription.hasPerpetualAccess ? [RDStore.TIPP_STATUS_CURRENT.id, RDStore.TIPP_STATUS_RETIRED.id] : [RDStore.TIPP_STATUS_CURRENT.id])
 
-            //params.status = params.status ?: (result.subscription.hasPerpetualAccess ? [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString()] : [RDStore.TIPP_STATUS_CURRENT.id.toString()])
-
-            Map ttParams = filterService.resolveParamsForTopAttachedTitleTabs(params, 'IEs')
+            Map ttParams = FilterLogic.resolveTabAndStatusForTitleTabsMenu(params, 'IEs')
             if (ttParams.status) { params.status = ttParams.status }
             if (ttParams.tab)    { params.tab = ttParams.tab }
 
@@ -2232,9 +2277,9 @@ class SubscriptionControllerService {
             }
 
             if(result.subscription.ieGroups.size() > 0) {
-                Map configMap = params.clone()
-                configMap.forCount = true
-                Map query2 = filterService.getIssueEntitlementQuery(configMap, result.subscription)
+                GrailsParameterMap paramsClone = params.clone()
+                paramsClone.forCount = true
+                Map query2 = filterService.getIssueEntitlementQuery(paramsClone, result.subscription)
                 result.num_ies = IssueEntitlement.executeQuery("select count(*) " + query2.query, query2.queryParams)[0]
             }
             result.num_ies_rows = entitlements.size()
@@ -2671,7 +2716,7 @@ class SubscriptionControllerService {
                             }
 
                             if (params.issueEntitlementGroupID && params.issueEntitlementGroupID != '') {
-                                issueEntitlementGroup = IssueEntitlementGroup.findById(Long.parseLong(params.issueEntitlementGroupID))
+                                issueEntitlementGroup = IssueEntitlementGroup.findById(params.long('issueEntitlementGroupID'))
                             }
 
                             if (issueEntitlementGroup) {
@@ -2871,7 +2916,7 @@ class SubscriptionControllerService {
             if(params.chkall == 'on') {
                 Map<String, Object> cfgMap = [:]
                 cfgMap.putAll(params)
-                Map<String, Object> query = filterService.getIssueEntitlementQuery(cfgMap, result.subscription)
+                Map<String, Object> query = filterService.getIssueEntitlementQuery(params.clone() as GrailsParameterMap, result.subscription)
                 //if(params.bulkOperation == "edit") {
                     if(GlobalService.isset(params, 'bulk_local_price') && GlobalService.isset(params, 'bulk_local_currency')) {
                         NumberFormat format = NumberFormat.getInstance( LocaleUtils.getCurrentLocale() )
@@ -3251,7 +3296,7 @@ class SubscriptionControllerService {
                         break
                     case 'removeDiscountScale':
                         if(params.discountScaleId){
-                            SubscriptionDiscountScale sbs = SubscriptionDiscountScale.findById(Long.parseLong(params.discountScaleId))
+                            SubscriptionDiscountScale sbs = SubscriptionDiscountScale.findById(params.long('discountScaleId'))
                             if(sbs) {
                                 sbs.delete()
                             }
@@ -3281,9 +3326,9 @@ class SubscriptionControllerService {
             if (result.editable) {
 
                 if(params.processCopyButton == 'yes') {
-                    result.copyDiscountScales = params.copyDiscountScale ? SubscriptionDiscountScale.findAllByIdInList(params.list('copyDiscountScale').collect { it -> Long.parseLong(it) }) : null
+                    result.copyDiscountScales = params.copyDiscountScale ? SubscriptionDiscountScale.findAllByIdInList(Params.getLongList(params, 'copyDiscountScale')) : null
                     if (result.copyDiscountScales) {
-                        result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList(params.list('targetSubs').collect { it -> Long.parseLong(it) }) : null
+                        result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList(Params.getLongList(params, 'targetSubs')) : null
 
                         if (result.targetSubs) {
                             result.targetSubs.each { Subscription sub ->
@@ -3702,12 +3747,17 @@ class SubscriptionControllerService {
             if(params.order)
                 sort += params.order
         }
-        Map<String,Object> fsq = filterService.getOrgComboQuery(orgParams, result.institution)
+        FilterService.Result fsr = filterService.getOrgComboQuery(orgParams, result.institution as Org)
+        if (fsr.isFilterSet) { orgParams.filterSet = true }
+
         if (params.filterPropDef) {
-            fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)
+            Map<String, Object> efq = propertyService.evalFilterQuery(params, fsr.query, 'o', fsr.queryParams)
+            fsr.query = efq.query
+            fsr.queryParams = efq.queryParams as Map<String, Object>
         }
-        fsq.query = fsq.query.replaceFirst("select o from ", "select o.id from ")
-        List<Long> filteredOrgIds = Org.executeQuery(fsq.query, fsq.queryParams, orgParams+[id:parentSub.id])
+        fsr.query = fsr.query.replaceFirst("select o from ", "select o.id from ")
+        List<Long> filteredOrgIds = Org.executeQuery(fsr.query, fsr.queryParams, orgParams+[id:parentSub.id])
+
         Set rows = Subscription.executeQuery("select sub,o from OrgRole oo join oo.sub sub join oo.org o where sub.instanceOf = :parent"+sort,[parent:parentSub])
         List<Map> filteredSubChilds = []
         rows.each { row ->
@@ -3846,7 +3896,8 @@ class SubscriptionControllerService {
             int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.subscription).size()
             result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
-            result.notesCount       = docstoreService.getNotes(result.subscription, result.contextOrg).size()
+            result.notesCount       = docstoreService.getNotesCount(result.subscription, result.contextOrg)
+            result.docsCount       = docstoreService.getDocsCount(result.subscription, result.contextOrg)
             result.checklistCount   = workflowService.getWorkflowCount(result.subscription, result.contextOrg)
 
             if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {

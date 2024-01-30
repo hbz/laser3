@@ -5,8 +5,8 @@ import de.laser.annotations.DebugInfo
 import de.laser.auth.User
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
-import de.laser.custom.CustomWkhtmltoxService
 import de.laser.exceptions.EntitlementCreationException
+import de.laser.exceptions.FinancialDataException
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
@@ -15,6 +15,7 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.utils.DateUtils
+import de.laser.utils.PdfUtils
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.sql.Sql
@@ -40,7 +41,6 @@ class SubscriptionController {
     ContextService contextService
     CopyElementsService copyElementsService
     CustomerTypeService customerTypeService
-    CustomWkhtmltoxService wkhtmltoxService
     DeletionService deletionService
     DocstoreService docstoreService
     EscapeService escapeService
@@ -97,22 +97,11 @@ class SubscriptionController {
                 ctrlResult.result.tasks = taskService.getTasksForExport((User) ctrlResult.result.user, (Org) ctrlResult.result.institution, (Subscription) ctrlResult.result.subscription)
                 ctrlResult.result.documents = docstoreService.getDocumentsForExport((Org) ctrlResult.result.institution, (Subscription) ctrlResult.result.subscription)
                 ctrlResult.result.notes = docstoreService.getNotesForExport((Org) ctrlResult.result.institution, (Subscription) ctrlResult.result.subscription)
-                Map<String, Object> pageStruct = [
-                        width       : 85,
-                        height      : 35,
-                        pageSize    : 'A4',
-                        orientation : 'Portrait'
-                ]
-                ctrlResult.result.struct = [pageStruct.width, pageStruct.height, pageStruct.pageSize + ' ' + pageStruct.orientation]
-                byte[] pdf = wkhtmltoxService.makePdf(
-                        view: customerTypeService.getCustomerTypeDependingView('/subscription/subscriptionPdf'),
-                        model: ctrlResult.result,
-                        pageSize: pageStruct.pageSize,
-                        orientation: pageStruct.orientation,
-                        marginLeft: 10,
-                        marginRight: 10,
-                        marginTop: 15,
-                        marginBottom: 15
+
+                byte[] pdf = PdfUtils.getPdf(
+                        ctrlResult.result as Map<String, Object>,
+                        PdfUtils.PORTRAIT_FIXED_A4,
+                        customerTypeService.getCustomerTypeDependingView('/subscription/subscriptionPdf')
                 )
                 response.setHeader('Content-disposition', 'attachment; filename="'+ escapeService.escapeString(ctrlResult.result.subscription.dropdownNamingConvention()) +'.pdf"')
                 response.setContentType('application/pdf')
@@ -603,22 +592,8 @@ class SubscriptionController {
                         return
                     case 'pdf':
                         Map<String, Object> pdfOutput = exportClickMeService.exportSubscriptionMembers(ctrlResult.result.filteredSubChilds, selectedFields, ctrlResult.result.subscription, ctrlResult.result.institution, contactSwitch, ExportClickMeService.FORMAT.PDF)
-                        Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.mainHeader.size()*15, height: 35]
-                        if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
-                        else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
-                        else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
-                        else if (pageStruct.width > 85)    { pageStruct.pageSize = 'A3' }
-                        pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
-                        byte[] pdf = wkhtmltoxService.makePdf(
-                                view: '/templates/export/_individuallyExportPdf',
-                                model: pdfOutput,
-                                pageSize: pageStruct.pageSize,
-                                orientation: pageStruct.orientation,
-                                marginLeft: 10,
-                                marginRight: 10,
-                                marginTop: 15,
-                                marginBottom: 15
-                        )
+
+                        byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
                         response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
                         response.setContentType('application/pdf')
                         response.outputStream.withStream { it << pdf }
@@ -638,6 +613,20 @@ class SubscriptionController {
                 ctrlResult.result
             }
         }
+    }
+
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+    })
+    def compareSubMemberCostItems() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.compareSubMemberCostItems(this,params)
+        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            response.sendError(401)
+            return
+        }
+
+        ctrlResult.result
     }
 
     /**
@@ -752,12 +741,12 @@ class SubscriptionController {
      * Call to unset the given customer identifier
      * @return redirects to the referer
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
-    def deleteCustomerIdentifier() {
-        subscriptionService.deleteCustomerIdentifier(params.long("deleteCI"))
+    def unsetCustomerIdentifier() {
+        subscriptionService.unsetCustomerIdentifier(params.long("deleteCI"))
         redirect(url: request.getHeader("referer"))
     }
 
@@ -1346,7 +1335,7 @@ class SubscriptionController {
 
         if(result.editable){
 
-            IssueEntitlement issueEntitlement = IssueEntitlement.findById(Long.parseLong(params.singleTitle))
+            IssueEntitlement issueEntitlement = IssueEntitlement.findById(params.long('singleTitle'))
             IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
             if(issueEntitlement && issueEntitlementGroup) {
                 IssueEntitlementGroupItem issueEntitlementGroupItem = IssueEntitlementGroupItem.findByIeGroupAndIe(issueEntitlementGroup, issueEntitlement)
@@ -1742,17 +1731,18 @@ class SubscriptionController {
 
             if(params.tab == 'currentPerpetualAccessIEs') {
                 Set<Subscription> subscriptions = []
-                Set<Long> packageIds = []
+                Set<Long> packageIds = [], subscribers = []
                 if(ctrlResult.result.surveyConfig.pickAndChoosePerpetualAccess) {
                     subscriptions = linksGenerationService.getSuccessionChain(ctrlResult.result.subscriberSub, 'sourceSubscription')
-                    subscriptions.each {
-                        packageIds.addAll(it.packages?.pkg?.id)
+                    subscriptions.each { Subscription s ->
+                        packageIds.addAll(s.packages?.pkg?.id)
+                        subscribers.add(s.getSubscriber().id)
                     }
-                    subscriptions << ctrlResult.result.subscriberSub
-                    packageIds.addAll(ctrlResult.result.subscriberSub.packages?.pkg?.id)
+                    //in SubscriptionControllerService, these equivalent assignments are commented out as of June 2nd, 2023 - I make coherency to the more recent state TODO @moe!
+                    //subscriptions << ctrlResult.result.subscriberSub
+                    //packageIds.addAll(ctrlResult.result.subscriberSub.packages?.pkg?.id)
                 }
-
-                queryMap = [subscriptions: subscriptions, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: packageIds, hasPerpetualAccess: RDStore.YN_YES.id.toString()]
+                queryMap = [subscriptions: subscriptions, ieStatus: RDStore.TIPP_STATUS_CURRENT, subscribers: subscribers, hasPerpetualAccess: RDStore.YN_YES.id.toString()]
             
                 filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentTitles') + '_' + ctrlResult.result.subscriberSub.dropdownNamingConvention())
             }
@@ -1960,7 +1950,7 @@ class SubscriptionController {
                                  sub_referenceYear: newReferenceYear ?: null,
                                  sub_name         : subscription.name,
                                  sub_id           : subscription.id,
-                                 sub_status       : RDStore.SUBSCRIPTION_INTENDED.id.toString()]
+                                 sub_status       : RDStore.SUBSCRIPTION_INTENDED.id]
         result
     }
 

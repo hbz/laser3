@@ -76,7 +76,7 @@ class SubscriptionQuery extends BaseQuery {
             )
             result.dataDetails.each { dd ->
                 if (dd.id) {
-                    dd.id = Long.parseLong(dd.id.toString()) // year -> long
+                    dd.id = Long.valueOf(dd.id.toString()) // year -> long
                 }
             }
         }

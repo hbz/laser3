@@ -12,10 +12,11 @@
         <g:set var="entityName" value="${message(code: 'org.label')}"/>
     </g:else>
 
-<laser:htmlStart message="${isProviderOrAgency ? 'menu.institutions.provider_info' : 'menu.institutions.org_info'}" serviceInjection="true" />
+<laser:htmlStart message="${isProviderOrAgency ? 'menu.institutions.provider.show' : 'menu.institutions.org.show'}" serviceInjection="true" />
 
 <laser:render template="breadcrumb"
           model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView, consortialView: consortialView]}"/>
+
 <ui:controlButtons>
     <laser:render template="${customerTypeService.getActionsTemplatePath()}" model="${[org: orgInstance, user: user]}"/>
 </ui:controlButtons>
@@ -505,11 +506,11 @@
             <div class="ui card">
                 <div class="content">
                     <g:if test="${orgInstance.isCustomerType_Inst()}">
-                        <h2 class="ui header"><g:message code="org.contactpersons.and.addresses.label"/></h2>
+                        <h2 class="ui header"><g:message code="org.publicContacts.label"/></h2>
                     </g:if>
 
                         <g:if test="${(orgInstance.id == institution.id && user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR'))}">
-                            <g:link action="myPublicContacts" controller="organisation" params="[id: orgInstance.id, tab: 'contacts']"
+                            <g:link action="contacts" controller="organisation" params="[id: orgInstance.id, tab: 'contacts']"
                                     class="ui button">${message('code': 'org.edit.contactsAndAddresses')}</g:link>
                         </g:if>
                 </div>
@@ -966,7 +967,7 @@
 
                             <%--
                             <g:if test="${(orgInstance.id == institution.id && user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR'))}">
-                                <g:link action="myPublicContacts" controller="organisation" params="[id: orgInstance.id, tab: 'contacts']"
+                                <g:link action="contacts" controller="organisation" params="[id: orgInstance.id, tab: 'contacts']"
                                         class="ui button">${message('code': 'org.edit.contactsAndAddresses')}</g:link>
                             </g:if>
                             --%>

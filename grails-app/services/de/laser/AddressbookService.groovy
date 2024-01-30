@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.auth.User
+import de.laser.helper.Params
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
 
@@ -13,7 +14,6 @@ import grails.gorm.transactions.Transactional
 @Transactional
 class AddressbookService {
 
-    AccessService accessService
     ContextService contextService
     FilterService filterService
     PropertyService propertyService
@@ -73,7 +73,7 @@ class AddressbookService {
      * Retrieves for the given page the visible persons. If it is for the address book page
      * (coming from {@link MyInstitutionController#addressbook()} or {@link OrganisationController#addressbook}),
      * then the list is restricted to the private contacts of the context institution. Otherwise, if an address book
-     * page of a foreign institution has been called (coming then from {@link OrganisationController#myPublicContacts()}),
+     * page of a foreign institution has been called (coming then from {@link OrganisationController#contacts()}),
      * all public contacts are being returned, whoever is tenant of the given contact. The result may be filtered by
      * the given parameter map
      * @param fromSite the page for which the list is being returned
@@ -91,7 +91,7 @@ class AddressbookService {
                 qParts << 'p.tenant = :tenant'
                 qParams.tenant = contextService.getOrg()
                 break
-            case "myPublicContacts":
+            case "contacts":
                 qParams.public = true
                 break
         }
@@ -113,12 +113,12 @@ class AddressbookService {
             List<String> posParts = []
             if (params.function){
                 posParts << "pr.functionType.id in (:selectedFunctions) "
-                qParams << [selectedFunctions: filterService.listReaderWrapper(params, 'function').collect{ it -> it instanceof String ? Long.parseLong(it) : it }]
+                qParams << [selectedFunctions: Params.getLongList(params, 'function')]
             }
 
             if (params.position){
                 posParts << "pr.positionType.id in (:selectedPositions) "
-                qParams << [selectedPositions: filterService.listReaderWrapper(params, 'position').collect{ it -> it instanceof String ? Long.parseLong(it) : it }]
+                qParams << [selectedPositions: Params.getLongList(params, 'position')]
             }
             qParts << '('+posParts.join(' OR ')+')'
         }
@@ -159,7 +159,7 @@ class AddressbookService {
      * Retrieves for the given page the visible addresses; is an adapted copy of {@link #getVisiblePersons(java.lang.String, java.util.Map)}. If it is for the address book page
      * (coming from {@link MyInstitutionController#addressbook()} or {@link OrganisationController#addressbook}),
      * then the list is restricted to the private addresses of the context institution. Otherwise, if an address book
-     * page of a foreign institution has been called (coming then from {@link OrganisationController#myPublicContacts()}),
+     * page of a foreign institution has been called (coming then from {@link OrganisationController#contacts()}),
      * all public addresses are being returned, whoever is tenant of the given address record. The result may be filtered by
      * the given parameter map
      * @param fromSite the page for which the list is being returned
@@ -181,7 +181,7 @@ class AddressbookService {
                 qParts << 'a.tenant = :tenant'
                 qParams.tenant = contextService.getOrg()
                 break
-            case "myPublicContacts":
+            case "contacts":
                 qParts << 'a.tenant is null'
                 break
         }
@@ -203,7 +203,7 @@ class AddressbookService {
 
         if (params.type) {
             qParts << "(exists (select at from a.type as at where at.id in (:selectedTypes))) "
-            qParams << [selectedTypes: filterService.listReaderWrapper(params, 'type').collect{ it -> it instanceof String ? Long.parseLong(it) : it }]
+            qParams << [selectedTypes: Params.getLongList(params, 'type')]
         }
 
         if (params.showOnlyContactPersonForInstitution || params.exportOnlyContactPersonForInstitution){

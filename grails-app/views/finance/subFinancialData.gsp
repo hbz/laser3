@@ -10,8 +10,8 @@
         </ui:debugInfo>
         <ui:breadcrumbs>
             <%--<ui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}" />--%>
-            <ui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label')}" />
-            <ui:crumb class="active"  message="${subscription.name}" />
+            <ui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label" />
+            <ui:crumb class="active" text="${subscription.name}" />
         </ui:breadcrumbs>
         <ui:controlButtons>
             <ui:exportDropdown>
@@ -63,6 +63,7 @@
                     <g:if test="${customerTypeService.isConsortium( institution.getCustomerType() ) && !subscription.instanceOf}">
                         <ui:actionsDropdownItem data-ui="modal" id="generateFinanceImportWorksheet" href="#financeImportTemplate" message="myinst.financeImport.subscription.template"/>
                         <ui:actionsDropdownItem controller="myInstitution" action="financeImport" params="${[id:subscription.id]}" message="menu.institutions.financeImport" />
+                        <ui:actionsDropdownItem controller="subscription" action="compareSubMemberCostItems" params="${[id:subscription.id]}" message="subscription.details.compareSubMemberCostItems.label" />
                     </g:if>
                 </ui:actionsDropdown>
             </g:if>

@@ -666,11 +666,31 @@ i.icon.la-list-icon{
 }
 
 /*********************************** Responsive Behavior *******************/
-// Light Grey Sub Menu
+// Light Grey Context Menu
 @media only screen and (max-width: @computerBreakpoint) {
-    .ui.menu.la-contextBar {
-        position: absolute !important;
+    #contextBar {
         top:0!important;
+    }
+}
+@media only screen and (max-width: @tabletBreakpoint) {
+    #contextBar {
+        position: relative !important;
+        flex-direction: column;
+        .la-context-org,
+        .la-advanced-view {
+            padding: 10px 0!important;
+        }
+        .la-context-org {
+            margin: 0!important;
+            border-top: @white 1px solid;
+            border-bottom: @white 1px solid;
+        }
+        .ui.container {
+            width: 100%;
+        }
+    }
+    main.ui.container.main {
+        margin-top: 10px!important;
     }
 }
 @media only screen and (max-width: @tabletBreakpoint  ) {

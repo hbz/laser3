@@ -3,7 +3,7 @@ package de.laser
 import de.laser.annotations.Check404
 import de.laser.auth.User
 import de.laser.ctrl.LicenseControllerService
-import de.laser.custom.CustomWkhtmltoxService
+import de.laser.helper.Params
 import de.laser.utils.LocaleUtils
 import de.laser.storage.RDConstants
 import de.laser.properties.LicenseProperty
@@ -15,6 +15,7 @@ import de.laser.helper.Profiler
 import de.laser.storage.RDStore
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinitionGroup
+import de.laser.utils.PdfUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -33,11 +34,9 @@ class LicenseController {
     ContextService contextService
     CopyElementsService copyElementsService
     CustomerTypeService customerTypeService
-    CustomWkhtmltoxService wkhtmltoxService
     DeletionService deletionService
     DocstoreService docstoreService
     EscapeService escapeService
-    ExecutorWrapperService executorWrapperService
     FilterService filterService
     FormService formService
     GenericOIDService genericOIDService
@@ -165,22 +164,10 @@ class LicenseController {
             result.documents = docstoreService.getDocumentsForExport((Org) result.institution, (License) result.license)
             result.notes = docstoreService.getNotesForExport((Org) result.institution, (License) result.license)
 
-            Map<String, Object> pageStruct = [
-                    width       : 85,
-                    height      : 35,
-                    pageSize    : 'A4',
-                    orientation : 'Portrait'
-            ]
-            result.struct = [pageStruct.width, pageStruct.height, pageStruct.pageSize + ' ' + pageStruct.orientation]
-            byte[] pdf = wkhtmltoxService.makePdf(
-                    view: customerTypeService.getCustomerTypeDependingView('/license/licensePdf'),
-                    model: result,
-                    pageSize: pageStruct.pageSize,
-                    orientation: pageStruct.orientation,
-                    marginLeft: 10,
-                    marginRight: 10,
-                    marginTop: 15,
-                    marginBottom: 15
+            byte[] pdf = PdfUtils.getPdf(
+                    result,
+                    PdfUtils.PORTRAIT_FIXED_A4,
+                    customerTypeService.getCustomerTypeDependingView('/license/licensePdf')
             )
             response.setHeader('Content-disposition', 'attachment; filename="'+ escapeService.escapeString(result.license.dropdownNamingConvention()) +'.pdf"')
             response.setContentType('application/pdf')
@@ -317,7 +304,7 @@ class LicenseController {
             }
             else {
                 try {
-                    subscriptionService.setOrgLicRole(Subscription.get(Long.parseLong(params.subscription)),newLicense,unlink)
+                    subscriptionService.setOrgLicRole(Subscription.get(params.long('subscription')), newLicense, unlink)
                 }
                 catch (NumberFormatException e) {
                     log.error("Invalid identifier supplied!")
@@ -362,19 +349,23 @@ class LicenseController {
         result.subscriptions = []
         result.putAll(_setSubscriptionFilterData())
         result.subscriptionsForFilter = []
-        if(params.status != 'FETCH_ALL') {
-            result.subscriptionsForFilter.addAll(Subscription.executeQuery("select l.destinationSubscription from Links l join l.destinationSubscription s where s.status.id = :status and l.sourceLicense = :lic and l.linkType = :linkType" , [status:params.status as Long, lic:result.license, linkType:RDStore.LINKTYPE_LICENSE] ))
+
+        if(params.status) {
+            result.subscriptionsForFilter.addAll(
+                    Subscription.executeQuery("select l.destinationSubscription from Links l join l.destinationSubscription s where s.status.id = :status and l.sourceLicense = :lic and l.linkType = :linkType",
+                    [status:params.long('status'), lic:result.license, linkType:RDStore.LINKTYPE_LICENSE]
+            ))
         }
-        else if(params.status == 'FETCH_ALL') {
+        else {
             result.subscriptionsForFilter.addAll(Subscription.executeQuery("select l.destinationSubscription from Links l where l.sourceLicense = :lic and l.linkType = :linkType" , [lic:result.license, linkType:RDStore.LINKTYPE_LICENSE] ))
         }
         if(result.license._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.license.getLicensingConsortium().id == result.institution.id) {
             Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
             Map<String,Object> queryParams = [lic:result.license, subscriberRoleTypes:subscriberRoleTypes, linkType:RDStore.LINKTYPE_LICENSE]
             String whereClause = ""
-            if(params.status != 'FETCH_ALL') {
+            if (params.status) {
                 whereClause += " and s.status.id = :status"
-                queryParams.status = params.status as Long
+                queryParams.status = params.long('status')
             }
             if(result.validOn) {
                 whereClause += " and ( ( s.startDate is null or s.startDate >= :validOn ) and ( s.endDate is null or s.endDate <= :validOn ) )"
@@ -457,6 +448,7 @@ class LicenseController {
             response.sendError(401); return
         }
         result.putAll(_setSubscriptionFilterData())
+
         Set<License> validMemberLicenses = License.findAllByInstanceOf(result.license)
         Set<Map<String,Object>> filteredMemberLicenses = []
         validMemberLicenses.each { License memberLicense ->
@@ -469,8 +461,9 @@ class LicenseController {
                 subQueryParams.validOn = result.dateRestriction
             }
             Set<Subscription> subscriptions = Subscription.executeQuery("select l.destinationSubscription from Links l join l.destinationSubscription s where l.sourceLicense = :lic and l.linkType = :linkType"+dateFilter,subQueryParams)
-            if(params.status != 'FETCH_ALL') {
-                subscriptions.removeAll { Subscription s -> s.status.id != params.status as Long }
+
+            if (params.status) {
+                subscriptions.removeAll { Subscription s -> s.status.id != params.long('status') }
             }
             if (params.subRunTimeMultiYear || params.subRunTime) {
                 if (params.subRunTimeMultiYear && !params.subRunTime) {
@@ -480,18 +473,21 @@ class LicenseController {
                 }
             }
             if(params.subscription) {
-                List<String> subFilter = params.list("subscription")
-                subscriptions.removeAll { Subscription s -> !subFilter.contains(s.id.toString()) }
+                List<Long> subFilter = Params.getLongList(params, 'subscription')
+                subscriptions.removeAll { Subscription s -> !subFilter.contains(s.id) }
             }
             filteredMemberLicenses << [license:memberLicense,subs:subscriptions.size()]
             //}
             //}
         }
-        String subQuery = "select l.destinationSubscription from Links l join l.destinationSubscription s where l.sourceLicense in (:licenses) and l.linkType = :linkType"
-        if(params.status == "FETCH_ALL" && validMemberLicenses)
-            result.subscriptionsForFilter = Subscription.executeQuery(subQuery,[linkType:RDStore.LINKTYPE_LICENSE,licenses:validMemberLicenses])
-        else if(validMemberLicenses) {
-            result.subscriptionsForFilter = Subscription.executeQuery(subQuery+" and s.status = :status",[linkType:RDStore.LINKTYPE_LICENSE, licenses:validMemberLicenses, status:RefdataValue.get(params.status as Long)])
+
+        if(validMemberLicenses) {
+            String subQuery = "select l.destinationSubscription from Links l join l.destinationSubscription s where l.sourceLicense in (:licenses) and l.linkType = :linkType "
+            if (params.status) {
+                result.subscriptionsForFilter = Subscription.executeQuery(subQuery + "and s.status = :status", [linkType:RDStore.LINKTYPE_LICENSE, licenses:validMemberLicenses, status:RefdataValue.get(params.long('status'))])
+            } else {
+                result.subscriptionsForFilter = Subscription.executeQuery(subQuery, [linkType:RDStore.LINKTYPE_LICENSE, licenses:validMemberLicenses])
+            }
         }
         result.validMemberLicenses = filteredMemberLicenses
         result
@@ -535,9 +531,6 @@ class LicenseController {
                 params.status = RDStore.SUBSCRIPTION_CURRENT.id
                 result.defaultSet = true
             }
-            else {
-                params.status = 'FETCH_ALL'
-            }
         }
         result
     }
@@ -553,13 +546,18 @@ class LicenseController {
         tmpParams.remove("offset")
         if (contextService.getOrg().isCustomerType_Consortium())
             tmpParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
-        Map<String,Object> fsq = filterService.getOrgComboQuery(tmpParams, result.institution)
+
+        FilterService.Result fsr = filterService.getOrgComboQuery(tmpParams, result.institution as Org)
+        if (fsr.isFilterSet) { tmpParams.filterSet = true }
 
         if (tmpParams.filterPropDef) {
-            fsq = propertyService.evalFilterQuery(tmpParams, fsq.query, 'o', fsq.queryParams)
+            Map<String, Object> efq = propertyService.evalFilterQuery(tmpParams, fsr.query, 'o', fsr.queryParams)
+            fsr.query = efq.query
+            fsr.queryParams = efq.queryParams as Map<String, Object>
         }
-        fsq.query = fsq.query.replaceFirst("select o from ", "select o.id from ")
-        Org.executeQuery(fsq.query, fsq.queryParams, tmpParams)
+
+        fsr.query = fsr.query.replaceFirst("select o from ", "select o.id from ")
+        Org.executeQuery(fsr.query, fsr.queryParams, tmpParams)
     }
 
     /**

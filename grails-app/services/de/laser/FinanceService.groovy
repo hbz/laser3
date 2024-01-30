@@ -18,6 +18,7 @@ import org.springframework.context.MessageSource
 import org.springframework.validation.ObjectError
 import org.springframework.web.multipart.MultipartFile
 
+import java.math.RoundingMode
 import java.text.NumberFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -32,7 +33,6 @@ import java.util.regex.Pattern
 @Transactional
 class FinanceService {
 
-    AccessService accessService
     ContextService contextService
     DeletionService deletionService
     EscapeService escapeService
@@ -66,7 +66,7 @@ class FinanceService {
                 if (params.selectedSubs) {
                     subsToDo.clear()
                     if (params.selectedSubs instanceof String)
-                        subsToDo << Subscription.get(Long.parseLong(params.selectedSubs))
+                        subsToDo << Subscription.get(params.long('selectedSubs'))
                     else if (params.selectedSubs instanceof String[]) {
                         params.selectedSubs.each { selectedSubs ->
                             subsToDo <<  Subscription.get(Long.parseLong(selectedSubs))
@@ -122,7 +122,7 @@ class FinanceService {
             subsToDo.each { Subscription sub ->
                 List<CostItem> copiedCostItems = []
                 if(params.costItemId && params.mode != 'copy') {
-                    newCostItem = CostItem.get(Long.parseLong(params.costItemId))
+                    newCostItem = CostItem.get(params.long('costItemId'))
                     //get copied cost items
                     copiedCostItems = CostItem.findAllByCopyBaseAndCostItemStatusNotEqualAndOwnerNotEqualAndSubIsNotNull(newCostItem, RDStore.COST_ITEM_DELETED, result.institution)
                     if(params.newOrderNumber == null || params.newOrderNumber.length() < 1) {
@@ -139,7 +139,7 @@ class FinanceService {
                 else {
                     newCostItem = new CostItem()
                     if(params.mode == 'copy' && sub?._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && sub?.getSubscriber() == result.institution)
-                        newCostItem.copyBase = CostItem.get(Long.parseLong(params.costItemId))
+                        newCostItem.copyBase = CostItem.get(params.long('costItemId'))
                 }
                 newCostItem.owner = (Org) result.institution
                 newCostItem.sub = sub
@@ -240,9 +240,24 @@ class FinanceService {
         Boolean billingSumRounding = params.newBillingSumRounding == 'on'
         Boolean finalCostRounding = params.newFinalCostRounding == 'on'
         if(params.containsKey('costItemListToggler')) {
-            if(result.subscription)
-                selectedCostItems = getCostItemsForSubscription(params, result).get(params.view).ids
-            else selectedCostItems = getCostItems(params, result).get(params.view).ids
+            if(result.subscription) {
+                Map costItems = getCostItemsForSubscription(params, result)
+                if (costItems.own) {
+                    selectedCostItems = costItems.own.ids
+                }
+                if (costItems.cons) {
+                    selectedCostItems = costItems.cons.ids
+                }
+                if(costItems.coll) {
+                    selectedCostItems = costItems.coll.ids
+                }
+                if (costItems.subscr) {
+                    selectedCostItems = costItems.subscr.ids
+                }
+            }
+            else {
+                selectedCostItems = getCostItems(params, result).get(params.view).ids
+            }
         }
         else {
             params.list("selectedCostItems").each { id ->
@@ -266,12 +281,28 @@ class FinanceService {
                         if(lastYearEquivalent) {
                             ci.billingSumRounding = billingSumRounding != ci.billingSumRounding ? billingSumRounding : ci.billingSumRounding
                             ci.finalCostRounding = finalCostRounding != ci.finalCostRounding ? finalCostRounding : ci.finalCostRounding
-                            ci.costInBillingCurrency = Math.floor(Math.abs(lastYearEquivalent.costInBillingCurrency * percentage))
-                            ci.costInLocalCurrency = Math.floor(Math.abs(lastYearEquivalent.costInLocalCurrency * percentage))
+
+                            ci.costInBillingCurrency = lastYearEquivalent.costInBillingCurrency ? BigDecimal.valueOf(lastYearEquivalent.costInBillingCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInBillingCurrency
+                            ci.costInLocalCurrency = lastYearEquivalent.costInLocalCurrency ? BigDecimal.valueOf(lastYearEquivalent.costInLocalCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInLocalCurrency
+
+
+                            int taxRate = 0 //fallback
+                            if(ci.taxKey)
+                                taxRate = ci.taxKey.taxRate
+
+                            ci.costInBillingCurrencyAfterTax = ci.costInBillingCurrency * (1.0 + (0.01 * taxRate))
+                            ci.costInLocalCurrencyAfterTax = ci.costInLocalCurrency * (1.0 + (0.01 * taxRate))
+
                             if (ci.billingSumRounding) {
                                 ci.costInBillingCurrency = Math.round(ci.costInBillingCurrency)
                                 ci.costInLocalCurrency = Math.round(ci.costInLocalCurrency)
                             }
+
+                            if (ci.finalCostRounding) {
+                                ci.costInBillingCurrencyAfterTax = Math.round(ci.costInBillingCurrencyAfterTax)
+                                ci.costInLocalCurrencyAfterTax = Math.round(ci.costInLocalCurrencyAfterTax)
+                            }
+
                             ci.save()
                         }
                         else {
@@ -281,6 +312,41 @@ class FinanceService {
                 }
                 if(memberFailures)
                     result.failures = memberFailures
+            }
+            else if(params.percentOnCurrentPrice) {
+                Double percentage = 1 + params.double('percentOnCurrentPrice') / 100
+                CostItem.findAllByIdInList(selectedCostItems).each { CostItem ci ->
+                    if(ci.sub) {
+                            ci.billingSumRounding = billingSumRounding != ci.billingSumRounding ? billingSumRounding : ci.billingSumRounding
+                            ci.finalCostRounding = finalCostRounding != ci.finalCostRounding ? finalCostRounding : ci.finalCostRounding
+                            ci.costInBillingCurrency = ci.costInBillingCurrency ? BigDecimal.valueOf(ci.costInBillingCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInBillingCurrency
+                            ci.costInLocalCurrency = ci.costInLocalCurrency ? BigDecimal.valueOf(ci.costInLocalCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInLocalCurrency
+                            if (ci.billingSumRounding) {
+                                ci.costInBillingCurrency = Math.round(ci.costInBillingCurrency)
+                                ci.costInLocalCurrency = Math.round(ci.costInLocalCurrency)
+                            }
+
+                            int taxRate = 0 //fallback
+                            if(ci.taxKey)
+                                taxRate = ci.taxKey.taxRate
+
+                            ci.costInBillingCurrencyAfterTax = ci.costInBillingCurrency * (1.0 + (0.01 * taxRate))
+                            ci.costInLocalCurrencyAfterTax = ci.costInLocalCurrency * (1.0 + (0.01 * taxRate))
+
+                            if (ci.billingSumRounding) {
+                                ci.costInBillingCurrency = Math.round(ci.costInBillingCurrency)
+                                ci.costInLocalCurrency = Math.round(ci.costInLocalCurrency)
+                            }
+
+                            if (ci.finalCostRounding) {
+                                ci.costInBillingCurrencyAfterTax = Math.round(ci.costInBillingCurrencyAfterTax)
+                                ci.costInLocalCurrencyAfterTax = Math.round(ci.costInLocalCurrencyAfterTax)
+                            }
+
+
+                            ci.save()
+                    }
+                }
             }
             else {
                 Map<String, Object> configMap = setupConfigMap(params, result.institution)
@@ -299,29 +365,24 @@ class FinanceService {
                             taxRate = costItem.taxKey.taxRate
                         costItem.billingSumRounding = billingSumRounding != costItem.billingSumRounding ? billingSumRounding : costItem.billingSumRounding
                         costItem.finalCostRounding = finalCostRounding != costItem.finalCostRounding ? finalCostRounding : costItem.finalCostRounding
+
                         if(configMap.currencyRate) {
                             costItem.currencyRate = configMap.currencyRate
-                            if(!configMap.containsKey('costLocalCurrency')) {
-                                costItem.costInLocalCurrency = configMap.currencyRate * costItem.costInBillingCurrency
-                                costItem.costInLocalCurrencyAfterTax = costItem.costInLocalCurrency * (1.0 + (0.01 * taxRate))
-                            }
+                            costItem.costInLocalCurrency = configMap.currencyRate * costItem.costInBillingCurrency
+                            costItem.costInLocalCurrencyAfterTax = costItem.costInLocalCurrency * (1.0 + (0.01 * taxRate))
                         }
                         if(configMap.costBillingCurrency) {
                             costItem.costInBillingCurrency = configMap.costBillingCurrency
                             costItem.costInBillingCurrencyAfterTax = configMap.costBillingCurrency * (1.0 + (0.01 * taxRate))
-                            if(!configMap.containsKey('costLocalCurrency')) {
-                                costItem.costInLocalCurrency = costItem.currencyRate * configMap.costBillingCurrency
-                                costItem.costInLocalCurrencyAfterTax = costItem.costInLocalCurrency * (1.0 + (0.01 * taxRate))
-                            }
+                            costItem.costInLocalCurrency = costItem.currencyRate * configMap.costBillingCurrency
+                            costItem.costInLocalCurrencyAfterTax = costItem.costInLocalCurrency * (1.0 + (0.01 * taxRate))
                         }
                         costItem.billingCurrency = configMap.billingCurrency ?: costItem.billingCurrency
                         if(configMap.costLocalCurrency) {
                             costItem.costInLocalCurrency = configMap.costLocalCurrency
                             costItem.costInLocalCurrencyAfterTax = costItem.costInLocalCurrency * (1.0 + (0.01 * taxRate))
-                            if(!configMap.containsKey('costBillingCurrency')) {
-                                costItem.costInBillingCurrency = configMap.costLocalCurrency / costItem.currencyRate
-                                costItem.costInBillingCurrencyAfterTax = configMap.costBillingCurrency * (1.0 + (0.01 * taxRate))
-                            }
+                            costItem.costInBillingCurrency = configMap.costLocalCurrency / costItem.currencyRate
+                            costItem.costInBillingCurrencyAfterTax = configMap.costBillingCurrency * (1.0 + (0.01 * taxRate))
                         }
                         if (costItem.billingSumRounding) {
                             costItem.costInBillingCurrency = Math.round(costItem.costInBillingCurrency)
@@ -456,7 +517,7 @@ class FinanceService {
         RefdataValue costItemElement = params.newCostItemElement ? (RefdataValue.get(params.long('newCostItemElement'))): null    //admin fee, platform, etc
         RefdataValue elementSign
         try {
-            elementSign = RefdataValue.get(Long.parseLong(params.ciec))
+            elementSign = RefdataValue.get(params.long('ciec'))
         }
         catch (Exception ignored) {
             elementSign = null
@@ -474,15 +535,15 @@ class FinanceService {
         }
         NumberFormat format = NumberFormat.getInstance( userInputLocale )
         //row 1
-        Double costBillingCurrency = params.newCostInBillingCurrency ? format.parse(params.newCostInBillingCurrency).doubleValue() : 0.0 //0.00
+        Double costBillingCurrency = params.newCostInBillingCurrency ? format.parse(params.newCostInBillingCurrency).doubleValue() : null //0.00
         RefdataValue billingCurrency = RefdataValue.get(params.long('newCostCurrency')) //billingCurrency should be not null
         //value is transient
         Double costBillingCurrencyAfterTax = params.newCostInBillingCurrencyAfterTax ? format.parse(params.newCostInBillingCurrencyAfterTax).doubleValue() : costBillingCurrency
         //row 2
-        Double currencyRate = params.newCostCurrencyRate ? format.parse(params.newCostCurrencyRate) : 1.0 //1.00
+        Double currencyRate = params.newCostCurrencyRate ? format.parse(params.newCostCurrencyRate) : 0.0 //1.00
         CostItem.TAX_TYPES taxKey = setTaxKey(params.newTaxRate)
         //row 3
-        Double costLocalCurrency = params.newCostInLocalCurrency ? format.parse(params.newCostInLocalCurrency).doubleValue() : 0.0 //0.00
+        Double costLocalCurrency = params.newCostInLocalCurrency ? format.parse(params.newCostInLocalCurrency).doubleValue() : null //0.00
         //value is transient
         Double costLocalCurrencyAfterTax = params.newCostInLocalCurrencyAfterTax ? format.parse(params.newCostInLocalCurrencyAfterTax).doubleValue() : costLocalCurrency
         //block footer
@@ -831,7 +892,7 @@ class FinanceService {
             //we have to distinct between not existent and present but zero length
             if(params.filterSubStatus) {
                 subFilterQuery += " and sub.status = :filterSubStatus "
-                queryParams.filterSubStatus = RefdataValue.get(Long.parseLong(params.filterSubStatus))
+                queryParams.filterSubStatus = RefdataValue.get(params.long('filterSubStatus'))
             }
             //!params.filterSubStatus is insufficient because it checks also the presence of a value - but the absence of a value is a valid setting (= all status except deleted; that is captured by the genericExcludes field)
             else if(!params.subscription && !params.sub && !params.id && !params.containsKey('filterSubStatus')) {
@@ -1273,12 +1334,10 @@ class FinanceService {
             }
             //order(nullable: true, blank: false) -> to order number
             if(colMap.orderNumber != null) {
-                String orderNumber = cols[colMap.orderNumber]
+                String orderNumber = cols[colMap.orderNumber].trim()
                 if(orderNumber) {
-                    List<Order> orderMatches = Order.findAllByOrderNumberAndOwner(orderNumber,contextOrg)
-                    if(orderMatches.size() > 1)
-                        mappingErrorBag.multipleOrderError = orderNumber
-                    else if(orderMatches.size() == 1)
+                    List<Order> orderMatches = Order.findAllByOrderNumberAndOwner(orderNumber,contextOrg,[sort: 'dateCreated', order: 'desc'])
+                    if(orderMatches.size() > 0)
                         costItem.order = orderMatches[0]
                     else if(!orderMatches) {
                         Order order = new Order(orderNumber: orderNumber, owner: contextOrg)
@@ -1291,12 +1350,10 @@ class FinanceService {
             }
             //invoice(nullable: true, blank: false) -> to invoice number
             if(colMap.invoiceNumber != null) {
-                String invoiceNumber = cols[colMap.invoiceNumber]
+                String invoiceNumber = cols[colMap.invoiceNumber].trim()
                 if(invoiceNumber) {
-                    List<Invoice> invoiceMatches = Invoice.findAllByInvoiceNumberAndOwner(invoiceNumber,contextOrg)
-                    if(invoiceMatches.size() > 1)
-                        mappingErrorBag.multipleInvoiceError = invoiceNumber
-                    else if(invoiceMatches.size() == 1)
+                    List<Invoice> invoiceMatches = Invoice.findAllByInvoiceNumberAndOwner(invoiceNumber,contextOrg,[sort: 'dateCreated', order: 'desc'])
+                    if(invoiceMatches.size() > 0)
                         costItem.invoice = invoiceMatches[0]
                     else if(!invoiceMatches) {
                         Invoice invoice = new Invoice(invoiceNumber: invoiceNumber, owner: contextOrg)
@@ -1383,7 +1440,6 @@ class FinanceService {
                 else if(!costItem.costInLocalCurrency && costItem.currencyRate) {
                     costItem.costInLocalCurrency = costItem.costInBillingCurrency * costItem.currencyRate
                     mappingErrorBag.keySet().removeAll(['valueMissing','valueInvalid'])
-                    mappingErrorBag.valueCalculated = true
                 }
             }
             if(costItem.costInLocalCurrency) {
@@ -1402,7 +1458,6 @@ class FinanceService {
                 if(!costItem.costInLocalCurrency && costItem.costInBillingCurrency) {
                     costItem.costInLocalCurrency = costItem.costInBillingCurrency * costItem.currencyRate
                     mappingErrorBag.keySet().removeAll(['valueMissing','valueInvalid'])
-                    mappingErrorBag.valueCalculated = true
                 }
                 else if(!costItem.costInBillingCurrency && costItem.costInLocalCurrency) {
                     costItem.costInBillingCurrency = costItem.costInLocalCurrency * costItem.currencyRate
@@ -1441,7 +1496,6 @@ class FinanceService {
                         default: RefdataValue taxType = RefdataValue.getByValueAndCategory(taxTypeKey, RDConstants.TAX_TYPE)
                             if(!taxType)
                                 taxType = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.TAX_TYPE, taxTypeKey)
-                            //reverse charge must not be displayed here according to Micha, December 3rd, '20!
                             switch(taxType) {
                                 case RDStore.TAX_TYPE_NOT_TAXABLE: taxKey = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
                                     break
@@ -1452,6 +1506,8 @@ class FinanceService {
                                 case RDStore.TAX_TYPE_TAX_CONTAINED_19: taxKey = CostItem.TAX_TYPES.TAX_CONTAINED_19
                                     break
                                 case RDStore.TAX_TYPE_TAX_CONTAINED_7: taxKey = CostItem.TAX_TYPES.TAX_CONTAINED_7
+                                    break
+                                case RDStore.TAX_TYPE_REVERSE_CHARGE: taxKey = CostItem.TAX_TYPES.TAX_REVERSE_CHARGE
                                     break
                                 default: mappingErrorBag.invalidTaxType = "${cols[colMap.taxType]} / ${cols[colMap.taxRate]}"
                                     break
@@ -1601,7 +1657,7 @@ class FinanceService {
                 costItem.datePaid = ci.datePaid ? sdf.parse(ci.datePaid) : null
                 costItem.startDate = ci.startDate ? sdf.parse(ci.startDate) : null
                 costItem.endDate = ci.endDate ? sdf.parse(ci.endDate) : null
-                costItem.isVisibleForSubscriber = params["visibleForSubscriber${c}"] == 'true' ?: false
+                costItem.isVisibleForSubscriber = params["visibleForSubscriber${c}"] == 'on' ?: false
                 if(!costItem.save()) {
                     result.errors << costItem.errors
                 }
