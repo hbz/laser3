@@ -7,11 +7,37 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5529    26.01.2024  rc-3.3  3.3.3       Moe     Bug         Aktive Umfrage Bubble sind nicht stimmig zu TN
+
+5512    26.01.2024  rc-3.3  3.3.3       Moe     Bug         Teilnehmerkosten vergleichen
+
+5544    26.01.2024  rc-3.3  3.3.3       Moe     Bug         Mail From nicht mehr über die OrgSettings abgreifen/setzen
+
+--      26.01.2024  rc-3.3  3.3.3       Moe     Bug         Bugfixes
+
+5541    26.01.2024  rc-3.3  3.3.3       Moe     Bug         Keine Kundennummer anzeigen wenn Plattform nicht Counter fähig ist
+
+5540    26.01.2024  rc-3.3  3.3.3       Moe     Bug          Nav Dokumente Reiter Anzahl Docs
+
+5537    24.01.2024  rc-3.3  3.3.3       Moe     Bug         Dokument von Pro-Einrichtung in Titelumfrage sichtbar?!
+
+5508    24.01.2024  rc-3.3  3.3.3       Moe     Bug         Erinnerung Enddatum bei automatisch verlängernden und verlängerten Lizenzen unterdrücken
+
 5531    19.01.2024  rc-3.3  3.3.5       David   Bug         Nutzer löschen: SystemAnnouncement
 
 5517    19.01.2024  rc-3.3  3.3.5       David   Bug         Filter "Erscheinungsjahr" @ "Meine dauerhaften Titel"
 
 5520    12.01.2024  rc-3.3  3.3.5       David   Bug         Vertrag anlegen als neuer Kundentyp
+
+5512    09.01.2024  rc-3.3  3.3.3       Moe     Bug         Teilnehmerkosten vergleichen
+
+5488    09.01.2024  rc-3.3  3.3.3       Moe     Bug         Kostenausschütung rundet Preise ohne dies zu wollen
+
+5506    09.01.2024  rc-3.3  3.3.3       Moe     Bug         Kostenasuschüttung: Wert in EUR und Endpreis in EUR nicht korrekt
+
+5510    09.01.2024  rc-3.3  3.3.3       Moe     Bug         Kosten anlegen: Standartwerte
+
+5509    09.01.2024  rc-3.3  3.3.3       Moe     Bug         Umfrage-Kosten: Fehlende Angaben
 
 5505    08.01.2024  rc-3.3  3.3.3       David   Feature     "Alle Konsortialstellen" liefert unvollständige Treffermenge
 

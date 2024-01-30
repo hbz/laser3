@@ -181,11 +181,11 @@ class SurveyTagLib {
                 if (surveyOwnerView) {
                     out << '<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right" data-variation="tiny"'
                     out << ' data-content="' + message(code: "surveyResult.noFinish.info.consortia") + '">'
-                    out <<   ' <i class="circle red icon"></i></span>'
+                    out <<   ' <i class="x red icon"></i></span>'
                 } else {
                     out << '<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right" data-variation="tiny"'
                     out << ' data-content="' + message(code: "surveyResult.noFinish.info") + '">'
-                    out <<   ' <i class="circle red icon"></i></span>'
+                    out <<   ' <i class="x red icon"></i></span>'
                 }
             }
     }

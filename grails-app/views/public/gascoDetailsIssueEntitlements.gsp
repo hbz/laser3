@@ -2,19 +2,14 @@
 
 <laser:htmlStart message="menu.public.gasco_monitor" />
 
-    <ui:h1HeaderWithIcon text="${message(code: 'menu.public.gasco_monitor')}: ${subscription}" type="gasco">
-        <g:if test="${issueEntitlementsCount}">
-            &nbsp;&nbsp;
-            (${issueEntitlements?.size()} von ${issueEntitlementsCount})
-        </g:if>
-    </ui:h1HeaderWithIcon>
+    <ui:h1HeaderWithIcon text="${message(code: 'menu.public.gasco_monitor')}: ${subscription}" type="gasco" total="${issueEntitlementsCount}"/>
 
     <ui:filter simple="true">
         <form class="ui form">
             <div class="fields">
 
                 <div class="field">
-                    <label for="q">Suche nach Name</label>
+                    <label for="q">Suche nach Titel</label>
                     <input type="text" id="q" name="q" placeholder="${message(code:'default.search.ph')}" value="${params.q}" />
                 </div>
 
@@ -51,5 +46,10 @@
             </div>
         </div>
     </div>
+
+<g:if test="${issueEntitlements}">
+    <ui:paginate action="gascoDetailsIssueEntitlements" controller="public" params="${params}"
+                 max="${max}" total="${issueEntitlementsCount}"/>
+</g:if>
 
 <laser:htmlEnd />

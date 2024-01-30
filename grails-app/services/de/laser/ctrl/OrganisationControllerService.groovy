@@ -394,7 +394,7 @@ class OrganisationControllerService {
         int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.orgInstance).size()
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
-        result.notesCount       = docstoreService.getNotes(result.orgInstance, result.contextOrg).size()
+        result.notesCount       = docstoreService.getNotesCount(result.orgInstance, result.contextOrg)
         result.checklistCount   = workflowService.getWorkflowCount(result.orgInstance, result.contextOrg)
 
         result.links = linksGenerationService.getOrgLinks(result.orgInstance)
