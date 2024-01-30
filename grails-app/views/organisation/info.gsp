@@ -50,10 +50,11 @@
 
     <br />
     <br />
+
 <style>
 
     .statistics > .stats-toggle.active {
-        background-color: rgba(0,0,0, 0.05);
+        background-color: rgba(0,0,0, 0.045);
     }
     .statistics > .stats-toggle.active > span {
         color: #1b1c1d !important;
@@ -86,9 +87,7 @@
 %{--            ${message(code:'subscription.plural')} <i class="icon clipboard" aria-hidden="true"></i>--}%
 %{--        </h3>--}%
 
-        <div class="ui grid">
-            <div class="four wide column">
-                <div class="ui secondary vertical pointing fluid la-tab-with-js menu">
+                <div class="ui secondary la-tab-with-js menu">
                     <g:each in="${subscriptionMap}" var="subStatus,subList">
                         <g:set var="subStatusRdv" value="${RefdataValue.get(subStatus)}" />
                         <a href="#" class="item ${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="sub-${subStatusRdv.id}">
@@ -96,8 +95,7 @@
                         </a>
                     </g:each>
                 </div>
-            </div>
-            <div class="twelve wide stretched column">
+
                 <g:each in="${subscriptionMap}" var="subStatus,subList">
                     <g:set var="subStatusRdv" value="${RefdataValue.get(subStatus)}" />
                     <div class="ui tab right attached segment ${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="sub-${subStatusRdv.id}">
@@ -131,8 +129,6 @@
 
                     </div>
                 </g:each>
-            </div>
-        </div>
     </div>
 
     <div id="stat_licenses" class="stats-content">
@@ -140,9 +136,7 @@
 %{--            ${message(code:'license.plural')} <i class="icon balance scale" aria-hidden="true"></i>--}%
 %{--        </h3>--}%
 
-        <div class="ui grid">
-            <div class="four wide column">
-                <div class="ui secondary vertical pointing fluid la-tab-with-js menu">
+                <div class="ui secondary la-tab-with-js menu">
                     <g:each in="${licenseMap}" var="subStatus,licList">
                         <g:set var="subStatusRdv" value="${RefdataValue.get(subStatus)}" />
                         <a href="#" class="item ${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="lic-${subStatusRdv.id}">
@@ -150,8 +144,7 @@
                         </a>
                     </g:each>
                 </div>
-            </div>
-            <div class="twelve wide stretched column">
+
                 <g:each in="${licenseMap}" var="subStatus,licList">
                     <g:set var="subStatusRdv" value="${RefdataValue.get(subStatus)}" />
                     <div class="ui tab right attached segment ${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="lic-${subStatusRdv.id}">
@@ -185,8 +178,6 @@
 
                     </div>
                 </g:each>
-            </div>
-        </div>
     </div>
 
     <div id="stat_providers" class="stats-content">
@@ -194,9 +185,7 @@
 %{--            ${message(code:'default.provider.label')} <i class="icon university" aria-hidden="true"></i>--}%
 %{--        </h3>--}%
 
-        <div class="ui grid">
-            <div class="four wide column">
-                <div class="ui secondary vertical pointing fluid la-tab-with-js menu">
+                <div class="ui secondary la-tab-with-js menu">
                     <g:each in="${providerMap}" var="subStatus,provList">
                         <g:set var="subStatusRdv" value="${RefdataValue.get(subStatus)}" />
                         <a href="#" class="item ${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="prov-${subStatusRdv.id}">
@@ -205,14 +194,15 @@
                     </g:each>
                 </div>
 
-                <div style="text-align: right">
+                <div>
                     <span class="ui checkbox">
                         <label for="provider-toggle-subscriptions">Lizenzen anzeigen</label>
                         <input type="checkbox" id="provider-toggle-subscriptions">
                     </span>
                 </div>
-            </div>
-            <div class="twelve wide stretched column">
+
+                <br />
+
                 <g:each in="${providerMap}" var="subStatus,provList">
                     <g:set var="subStatusRdv" value="${RefdataValue.get(subStatus)}" />
                     <div class="ui tab right attached segment ${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="prov-${subStatusRdv.id}">
@@ -268,8 +258,6 @@
 
                     </div>
                 </g:each>
-            </div>
-        </div>
     </div>
 
     <div id="stat_surveys" class="stats-content">
@@ -277,41 +265,46 @@
 %{--            ${message(code:'survey.plural')} <i class="icon pie chart" aria-hidden="true"></i>--}%
 %{--        </h3>--}%
 
-        <div class="ui grid">
-            <div class="four wide column">
-                <div class="ui secondary vertical pointing fluid la-tab-with-js menu">
+                <div class="ui secondary la-tab-with-js menu">
                     <g:each in="${surveyMap}" var="isSurveyFinished,surveyData">
                         <a href="#" class="item ${isSurveyFinished ? '' : 'active'}" data-tab="survey-${isSurveyFinished}">
                             ${isSurveyFinished ? 'Abgeschlossen':'Offen'} <span class="ui blue circular label">${surveyData.collect{it[0]}.unique().size()}</span>
                         </a>
                     </g:each>
                 </div>
-                <div style="text-align: right">
+                <div>
                     <span class="ui checkbox">
                         <label for="survey-toggle-subscriptions">Lizenzen anzeigen</label>
                         <input type="checkbox" id="survey-toggle-subscriptions">
                     </span>
                 </div>
-            </div>
-            <div class="twelve wide stretched column">
+
+                <br />
+
                 <g:each in="${surveyMap}" var="isSurveyFinished,surveyData">
                     <div class="ui tab right attached segment ${isSurveyFinished ? '' : 'active'}" data-tab="survey-${isSurveyFinished}">
 
                         <table class="ui table very compact">
                             <thead>
                             <tr>
-                                <th class="eight wide">${message(code:'survey.label')}</th>
+                                <th class="seven wide">${message(code:'survey.label')}</th>
+                                <th class="one wide"></th>
+                                <th class="one wide"></th>
+                                <th class="one wide"></th>
+                                <th class="one wide">Teilnahme</th>
                                 <th class="two wide">${message(code:'surveyInfo.type.label')}</th>
-                                <th class="two wide">Teilnahme</th>
+                                <th class="one wide">${message(code:'default.endDate.label')}</th>
                                 <th class="two wide">Status</th>
-                                <th class="two wide">${message(code:'default.endDate.label')}</th>
                             </tr>
                             <tr data-ctype="survey-subsciption" style="display:none;">
-                                <th class="eight wide">${message(code:'subscription.label')}</th>
+                                <th class="seven wide">${message(code:'subscription.label')}</th>
+                                <th class="one wide">${message(code:'subscription.referenceYear.label')}</th>
+                                <th class="one wide">${message(code:'subscription.startDate.label')}</th>
+                                <th class="one wide">${message(code:'subscription.endDate.label')}</th>
+                                <th class="one wide"></th>
                                 <th class="two wide"></th>
-                                <th class="two wide">${message(code:'subscription.referenceYear.label')}</th>
-                                <th class="two wide">${message(code:'subscription.startDate.label')}</th>
-                                <th class="two wide">${message(code:'subscription.endDate.label')}</th>
+                                <th class="one wide"></th>
+                                <th class="two wide"></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -324,19 +317,22 @@
                                             <g:link controller="survey" action="show" id="${surveyInfo.id}">${surveyInfo.name}</g:link>
                                         </div>
                                     </td>
-                                    <td>
-                                        <span class="ui label survey-${surveyInfo.type.value}">${surveyInfo.type.getI10n('value')}</span>
-                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
                                     <td>
                                         <g:if test="${surveyStruct[1]}">
                                             <g:formatDate formatName="default.date.format.notime" date="${surveyStruct[1]}"/>
                                         </g:if>
                                     </td>
                                     <td>
-                                        ${surveyInfo.status.getI10n('value')}
+                                        <span class="ui label survey-${surveyInfo.type.value}">${surveyInfo.type.getI10n('value')}</span>
                                     </td>
                                     <td>
                                         <g:formatDate formatName="default.date.format.notime" date="${surveyInfo.endDate}"/>
+                                    </td>
+                                    <td>
+                                        ${surveyInfo.status.getI10n('value')}
                                     </td>
                                 </tr>
 
@@ -349,10 +345,13 @@
                                                 <g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link>
                                             </div>
                                         </td>
-                                        <td></td>
                                         <td> ${sub.referenceYear} </td>
                                         <td> <g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/> </td>
                                         <td> <g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/> </td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
                                     </tr>
                                 </g:if>
                             </g:each>
@@ -360,8 +359,6 @@
                         </table>
                     </div>
                 </g:each>
-            </div>
-        </div>
     </div>
 
     <div id="stat_costs" class="stats-content">
@@ -431,16 +428,16 @@
                                 </td>
                                 <td>
                                     <g:if test="${ci.sub}">
-                                        <g:if test="${ci.sub.instanceOf}">
-                                            <g:link controller="subscription" action="show" id="${ci.sub.instanceOf.id}">${ci.sub.instanceOf.name}</g:link>
-                                            <br />
-                                            (${formatDate(date:ci.sub.instanceOf.startDate, format:message(code: 'default.date.format.notime'))} - ${formatDate(date: ci.sub.instanceOf.endDate, format: message(code: 'default.date.format.notime'))})
-                                        </g:if>
-                                        <g:else>
+%{--                                        <g:if test="${ci.sub.instanceOf}">--}%
+%{--                                            <g:link controller="subscription" action="show" id="${ci.sub.instanceOf.id}">${ci.sub.instanceOf.name}</g:link>--}%
+%{--                                            <br />--}%
+%{--                                            (${formatDate(date:ci.sub.instanceOf.startDate, format:message(code: 'default.date.format.notime'))} - ${formatDate(date: ci.sub.instanceOf.endDate, format: message(code: 'default.date.format.notime'))})--}%
+%{--                                        </g:if>--}%
+%{--                                        <g:else>--}%
                                             <g:link controller="subscription" action="show" id="${ci.sub.id}">${ci.sub.name}</g:link>
                                             <br />
                                             (${formatDate(date:ci.sub.startDate, format:message(code: 'default.date.format.notime'))} - ${formatDate(date: ci.sub.endDate, format: message(code: 'default.date.format.notime'))})
-                                        </g:else>
+%{--                                        </g:else>--}%
                                     </g:if>
                                     <g:else>
                                         ${message(code:'financials.clear')}
