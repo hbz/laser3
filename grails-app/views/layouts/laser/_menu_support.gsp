@@ -47,7 +47,7 @@
     <div class="menu" role="menu">
         <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="dashboard" message="menu.institutions.dash" />
 
-        <ui:link addItemAttributes="true" controller="organisation" action="show" params="[id: contextOrg?.id]">${message(code:'menu.institutions.org_info')}</ui:link>
+        <ui:link addItemAttributes="true" controller="organisation" action="show" params="[id: contextOrg?.id]">${message(code:'menu.institutions.org.show')}</ui:link>
 
         <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="addressbook" message="menu.institutions.addressbook" />
         <div class="divider"></div>

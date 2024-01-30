@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
+import de.laser.annotations.UnstableFeature
 import de.laser.cache.EhcacheWrapper
 import de.laser.ctrl.OrganisationControllerService
 import de.laser.ctrl.UserControllerService
@@ -22,7 +23,6 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
-import org.grails.plugins.wkhtmltopdf.WkhtmltoxService
 import org.springframework.validation.FieldError
 
 import javax.servlet.ServletOutputStream
@@ -1084,6 +1084,23 @@ class OrganisationController  {
 
         result
     }
+
+    @Secured(['ROLE_YODA'])
+    @UnstableFeature
+    @Check404(domain=Org)
+    def info() {
+        Map<String,Object> ctrlResult = organisationControllerService.info(this, params)
+
+        Map<String,Object> result = ctrlResult.result as Map<String, Object>
+        if (!result) {
+            response.sendError(401); return
+        }
+        if (! (contextService.getOrg().isCustomerType_Consortium() && result.orgInstance.isCustomerType_Inst())) {
+            response.sendError(401); return
+        }
+        result
+    }
+
 
     /**
      * Shows the details of the organisation to display
