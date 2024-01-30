@@ -9,21 +9,27 @@
 
 --      30.01.2024  rc-3.3  3.3.5       Andreas Bug         falsche Summierung bei Platform und Database Reports
 
-5529    26.01.2024  rc-3.3  3.3.3       Moe     Bug         Aktive Umfrage Bubble sind nicht stimmig zu TN
+5548    29.01.2024  rc-3.3  3.3.5       Moe     Bug          Shortcut zur zugehörigen Lizenz in Umfrage
 
-5512    26.01.2024  rc-3.3  3.3.3       Moe     Bug         Teilnehmerkosten vergleichen
+5547    29.01.2024  rc-3.3  3.3.5       Moe     Bug         Umfrageteilnehmer Zählung nicht korrekt dargestellt
 
-5544    26.01.2024  rc-3.3  3.3.3       Moe     Bug         Mail From nicht mehr über die OrgSettings abgreifen/setzen
+5542    29.01.2024  rc-3.3  3.3.5       Moe     Bug         Titelumfrage: Auswahl alles wählt beim gefilterte Title trotzdem alles
 
---      26.01.2024  rc-3.3  3.3.3       Moe     Bug         Bugfixes
+5529    26.01.2024  rc-3.3  3.3.5       Moe     Bug         Aktive Umfrage Bubble sind nicht stimmig zu TN
 
-5541    26.01.2024  rc-3.3  3.3.3       Moe     Bug         Keine Kundennummer anzeigen wenn Plattform nicht Counter fähig ist
+5512    26.01.2024  rc-3.3  3.3.5       Moe     Bug         Teilnehmerkosten vergleichen
 
-5540    26.01.2024  rc-3.3  3.3.3       Moe     Bug          Nav Dokumente Reiter Anzahl Docs
+5544    26.01.2024  rc-3.3  3.3.5       Moe     Bug         Mail From nicht mehr über die OrgSettings abgreifen/setzen
 
-5537    24.01.2024  rc-3.3  3.3.3       Moe     Bug         Dokument von Pro-Einrichtung in Titelumfrage sichtbar?!
+--      26.01.2024  rc-3.3  3.3.5       Moe     Bug         Bugfixes
 
-5508    24.01.2024  rc-3.3  3.3.3       Moe     Bug         Erinnerung Enddatum bei automatisch verlängernden und verlängerten Lizenzen unterdrücken
+5541    26.01.2024  rc-3.3  3.3.5       Moe     Bug         Keine Kundennummer anzeigen wenn Plattform nicht Counter fähig ist
+
+5540    26.01.2024  rc-3.3  3.3.5       Moe     Bug          Nav Dokumente Reiter Anzahl Docs
+
+5537    24.01.2024  rc-3.3  3.3.5       Moe     Bug         Dokument von Pro-Einrichtung in Titelumfrage sichtbar?!
+
+5508    24.01.2024  rc-3.3  3.3.5       Moe     Bug         Erinnerung Enddatum bei automatisch verlängernden und verlängerten Lizenzen unterdrücken
 
 5531    19.01.2024  rc-3.3  3.3.5       David   Bug         Nutzer löschen: SystemAnnouncement
 
