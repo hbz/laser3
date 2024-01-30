@@ -154,13 +154,7 @@ class OrganisationControllerService {
     }
 
     //--------------------------------------------- info -------------------------------------------------
-
-    /**
-     * Gets the workflows linked to the given organisation
-     * @param controller the controller instance
-     * @param params the request parameter map
-     * @return OK if the retrieval was successful, ERROR otherwise
-     */
+    
     Map<String,Object> info(OrganisationController controller, GrailsParameterMap params) {
         Map<String, Object> result = getResultGenericsAndCheckAccess(controller, params)
 
