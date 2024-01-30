@@ -128,13 +128,10 @@
         <g:else>
             <g:each in="${data.costItems}" var="ci" status="jj">
                 <%
-                    def elementSign = 'notSet'
-                    String icon = ''
-                    String dataTooltip = ""
-                    if(ci.costItemElementConfiguration) {
-                        elementSign = ci.costItemElementConfiguration
-                    }
-                    switch(elementSign) {
+                    String icon = '<i class="question circle icon"></i>'
+                    String dataTooltip = message(code:'financials.costItemConfiguration.notSet')
+
+                    switch (ci.costItemElementConfiguration) {
                         case RDStore.CIEC_POSITIVE:
                             dataTooltip = message(code:'financials.costItemConfiguration.positive')
                             icon = '<i class="plus green circle icon"></i>'
@@ -146,10 +143,6 @@
                         case RDStore.CIEC_NEUTRAL:
                             dataTooltip = message(code:'financials.costItemConfiguration.neutral')
                             icon = '<i class="circle yellow icon"></i>'
-                            break
-                        default:
-                            dataTooltip = message(code:'financials.costItemConfiguration.notSet')
-                            icon = '<i class="question circle icon"></i>'
                             break
                     }
                 %>
@@ -351,7 +344,7 @@
         </g:if>
         <g:elseif test="${data.count > 0 && !data.sums.billingSums}">
             <tr>
-                <th class="control-label" colspan="${wideColspan2}">
+                <td class="control-label" colspan="${wideColspan2}">
                     ${message(code:'financials.noCostsConsidered')}
                 </td>
             </tr>

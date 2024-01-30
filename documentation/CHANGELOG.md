@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      30.01.2024  rc-3.3  3.3.5       Andreas Bug         falsche Summierung bei Platform und Database Reports
+
 5547    29.01.2024  rc-3.3  3.3.5       Moe     Bug         Umfrageteilnehmer Zählung nicht korrekt dargestellt
 
 5542    29.01.2024  rc-3.3  3.3.5       Moe     Bug         Titelumfrage: Auswahl alles wählt beim gefilterte Title trotzdem alles

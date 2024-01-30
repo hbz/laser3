@@ -1,7 +1,7 @@
 package de.laser.reporting.report.myInstitution
 
 import de.laser.*
-import de.laser.annotations.UnderDevelopment
+import de.laser.annotations.UnstableFeature
 import de.laser.storage.BeanStore
 import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
@@ -13,7 +13,7 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.util.logging.Slf4j
 
 // not ready for use
-@UnderDevelopment
+@UnstableFeature
 @Slf4j
 class IssueEntitlementFilter extends BaseFilter {
 
