@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      30.01.2024  rc-3.3  3.3.5       Andreas Bug         falsche Summierung bei Platform und Database Reports
+
 5529    26.01.2024  rc-3.3  3.3.3       Moe     Bug         Aktive Umfrage Bubble sind nicht stimmig zu TN
 
 5512    26.01.2024  rc-3.3  3.3.3       Moe     Bug         Teilnehmerkosten vergleichen
