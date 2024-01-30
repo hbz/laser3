@@ -12,7 +12,7 @@
 
     <ui:subNavItem controller="license" action="notes" params="${[id:params.id]}" counts="${notesCount}" message="license.nav.notes" />
     <ui:subNavItem controller="license" action="tasks" params="${[id:params.id]}" counts="${tasksCount}" message="task.plural" />
-    <ui:subNavItem controller="license" action="documents" params="${[id:params.id]}" message="license.nav.docs" />
+    <ui:subNavItem controller="license" action="documents" params="${[id:params.id]}" counts="${docsCount}" message="license.nav.docs" />
 
     <ui:subNavItem controller="license" action="workflows" counts="${checklistCount}" params="${[id:params.id]}" message="workflow.plural"/>
 </ui:subNav>
