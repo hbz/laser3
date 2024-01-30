@@ -127,7 +127,7 @@ class SubscriptionService {
 
         if (! params.status) {
             if (params.isSiteReloaded != "yes") {
-                String[] defaultStatus = [RDStore.SUBSCRIPTION_CURRENT.id.toString()]
+                String[] defaultStatus = [RDStore.SUBSCRIPTION_CURRENT.id]
                 params.status = defaultStatus
                 //params.hasPerpetualAccess = RDStore.YN_YES.id.toString() as you wish, myladies ... as of May 16th, '22, the setting should be reverted
                 result.defaultSet = true

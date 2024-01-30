@@ -59,7 +59,7 @@
                         <div class="item">
                             <i class="university icon la-list-icon"></i>
                             <div class="content">
-                                <g:link controller="org" action="show" id="${institution.id}">${message(code: 'menu.institutions.org_info')}</g:link>
+                                <g:link controller="org" action="show" id="${institution.id}">${message(code: 'menu.institutions.org.show')}</g:link>
                             </div>
                         </div>
                         <div class="item">

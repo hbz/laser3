@@ -1,7 +1,7 @@
 package de.laser.jobs
 
 import de.laser.WekbStatsService
-import de.laser.annotations.UnderConstruction
+import de.laser.annotations.UnstableFeature
 import de.laser.config.ConfigMapper
 import de.laser.system.SystemActivityProfiler
 import de.laser.base.AbstractJob
@@ -43,7 +43,7 @@ class HeartbeatJob extends AbstractJob {
         jobIsRunning
     }
 
-    @UnderConstruction
+    @UnstableFeature
     def execute() {
         if (! start(null, true)) { // suppress logging to shrink file
             return false
