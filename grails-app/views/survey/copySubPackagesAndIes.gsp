@@ -28,7 +28,7 @@
 
 <br/>
 
-<g:if test="${!(surveyInfo.status in [RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED])}">
+<g:if test="${surveyConfig.subSurveyUseForTransfer && !(surveyInfo.status in [RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED])}">
     <div class="ui segment">
         <strong>${message(code: 'renewalEvaluation.notInEvaliation')}</strong>
     </div>
