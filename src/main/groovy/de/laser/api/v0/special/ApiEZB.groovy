@@ -268,7 +268,7 @@ class ApiEZB {
             }
             catch (NativeSqlException e) {
                 log.error(e.getMessage())
-                return Constants.HTTP_TOO_MANY_REQUESTS
+                return Constants.HTTP_SERVICE_UNAVAILABLE
             }
             log.debug("End generateTitleExportKBARTSQL")
             //ApiToolkit.cleanUp(result, true, true)

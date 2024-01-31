@@ -338,7 +338,7 @@ class ApiManager {
                     }
                     catch (NativeSqlException e) {
                         log.error(e.getMessage())
-                        result = Constants.HTTP_TOO_MANY_REQUESTS
+                        result = Constants.HTTP_SERVICE_UNAVAILABLE
                     }
                 }
                 else if(tmp.obj instanceof DeletedObject) {
@@ -410,11 +410,11 @@ class ApiManager {
                                                     "status": HttpStatus.INTERNAL_SERVER_ERROR.value()]))
                     response.status = HttpStatus.INTERNAL_SERVER_ERROR.value()
                     break
-                case Constants.HTTP_TOO_MANY_REQUESTS:
+                case Constants.HTTP_SERVICE_UNAVAILABLE:
                     response.json = new JSON( trimJson(["message": "too many connections",
                                                     "debug": result['debug'],
-                                                    "status": HttpStatus.TOO_MANY_REQUESTS.value()]))
-                    response.status = HttpStatus.TOO_MANY_REQUESTS.value()
+                                                    "status": HttpStatus.SERVICE_UNAVAILABLE.value()]))
+                    response.status = HttpStatus.SERVICE_UNAVAILABLE.value()
                     break
             }
         }
@@ -453,11 +453,11 @@ class ApiManager {
                                             "status": HttpStatus.BAD_REQUEST.value()]))
             response.status = HttpStatus.BAD_REQUEST.value()
         }
-        else if (Constants.HTTP_TOO_MANY_REQUESTS == result) {
+        else if (Constants.HTTP_SERVICE_UNAVAILABLE == result) {
             response.json = new JSON( trimJson(["message": "too many connections open",
                                             "obj": obj, "q": query, "context": context,
-                                            "status": HttpStatus.TOO_MANY_REQUESTS.value()]))
-            response.status = HttpStatus.TOO_MANY_REQUESTS.value()
+                                            "status": HttpStatus.SERVICE_UNAVAILABLE.value()]))
+            response.status = HttpStatus.SERVICE_UNAVAILABLE.value()
         }
         else if (Constants.HTTP_PRECONDITION_FAILED == result) {
             response.json = new JSON( trimJson(["message": "precondition failed; multiple matches",

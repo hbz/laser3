@@ -236,7 +236,7 @@ class ApiController {
                         break
                     case Constants.HTTP_INTERNAL_SERVER_ERROR: HttpStatus.INTERNAL_SERVER_ERROR.value()
                         break
-                    case Constants.HTTP_TOO_MANY_REQUESTS: HttpStatus.TOO_MANY_REQUESTS.value()
+                    case Constants.HTTP_SERVICE_UNAVAILABLE: HttpStatus.SERVICE_UNAVAILABLE.value()
                         break
                 }
             }
