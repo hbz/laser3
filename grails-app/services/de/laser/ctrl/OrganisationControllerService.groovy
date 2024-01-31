@@ -201,6 +201,31 @@ class OrganisationControllerService {
         List<List> providerStruct = Org.executeQuery(providerQuery, providerParams) /*.unique()*/
         Map providerMap = listToMap(providerStruct)
         result.providerMap = providerMap.collectEntries{ k,v -> [(k):(v.collect{ [ it[1], it[2] ] })] }
+
+//        result.providerMap.each{subStatus, list ->
+//            list.each{struct ->
+//                Subscription sub = Subscription.get(struct[1])
+//                List<CostItem> subCostItems = CostItem.executeQuery(
+//                        ''' select ci from CostItem as ci right join ci.sub sub join sub.orgRelations oo
+//                        where ci.owner = :owner
+//                        and sub = :sub
+//                        and oo.roleType = :roleType
+//                        and ci.surveyOrg = null
+//                        and ci.costItemStatus != :deleted
+//                        order by ci.costTitle asc ''',
+//                        [
+//                                owner               : result.institution,
+//                                sub                 : sub,
+//                                roleType            : RDStore.OR_SUBSCRIPTION_CONSORTIA,
+//                                deleted             : RDStore.COST_ITEM_DELETED
+//                        ]
+//                )
+//                struct << [
+//                        costItems   : subCostItems,
+//                        sums        : financeService.calculateResults(subCostItems.id)
+//                ]
+//            }
+//        }
 //        println 'providerMap: ' + result.providerMap
 
         // licenses
