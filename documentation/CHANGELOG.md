@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5552    31.01.2024  rc-3.3  3.3.5       Andreas Bug         Identifikator-Validierungen mit Fallbacks versehen
+
 --      31.01.2024  rc-3.3  3.3.5       Andreas Bug         Routine zur Abwehr zu vieler offener Datenbankverbindungen implementiert
 
 --      30.01.2024  rc-3.3  3.3.5       Andreas Bug         falsche Summierung bei Platform und Database Reports
