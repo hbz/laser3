@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5501    30.01.2024  dev     3.4         Andreas Feature     Schieberegler zur Auswahl des Zeitraumes für Reports implementiert
+
 --      30.01.2024  rc-3.3  3.3.5       Andreas Bug         falsche Summierung bei Platform und Database Reports
 
 5548    29.01.2024  rc-3.3  3.3.5       Moe     Bug          Shortcut zur zugehörigen Lizenz in Umfrage
