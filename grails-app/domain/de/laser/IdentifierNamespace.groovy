@@ -53,6 +53,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
     public static final String EISSN      = 'eissn'
     public static final String EISBN      = 'eisbn'
     public static final String ISBN       = 'isbn'
+    public static final String TITLE_ID   = 'title_id'
 
     //package identifier namespaces
     public static final String PKG_ID        = 'Anbieter_Produkt_ID'

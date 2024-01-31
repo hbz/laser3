@@ -33,6 +33,7 @@ import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
+import groovy.json.JsonSlurper
 import groovy.sql.BatchingStatementWrapper
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
@@ -348,7 +349,7 @@ class SubscriptionControllerService {
                 Map<String, Map<String, TitleInstancePackagePlatform>> titles = [:] //structure: namespace -> value -> tipp
                 //Set<TitleInstancePackagePlatform> titlesSorted = [] //fallback structure to preserve sorting
                 if(params.reportType in Counter4Report.COUNTER_4_TITLE_REPORTS || params.reportType in Counter5Report.COUNTER_5_TITLE_REPORTS) {
-                    fetchTitles(params, refSub, namespaces, 'ids').each { Map titleMap ->
+                    fetchTitles(params, refSub, namespaces).each { Map titleMap ->
                         //titlesSorted << titleMap.tipp
                         Map<String, TitleInstancePackagePlatform> innerMap = titles.get(titleMap.namespace)
                         if(!innerMap)
@@ -726,23 +727,50 @@ class SubscriptionControllerService {
     }
 
     /**
-     * Assembles a set of titles currently contained in the given subscriptions' holding. Either the full objects are
-     * being queried or a map of identifiers for identifier matching without needing further queries or loops
-     * @param params the filter parameter map
+     * Assembles a set of titles currently contained in the given subscriptions' holding.
+     * A map of identifiers is being returned for identifier matching without needing further queries or loops
      * @param refSub the {@link Subscription} whose entitlements should be queried; if none existent, the underlying package's are being queried
-     * @param namespaces the {@link IdentifierNamespace}s
-     * @param fetchWhat
      * @return
      */
-    Set fetchTitles(GrailsParameterMap params, Subscription refSub, Set<IdentifierNamespace> namespaces, String fetchWhat) {
-        Set result = []
-        String query
-        Map<String, Object> queryParams = [refSub: refSub, current: RDStore.TIPP_STATUS_CURRENT]//current for now
-        if(fetchWhat == 'fullObjects') {
-            query = "select tipp from TitleInstancePackagePlatform tipp where tipp.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription = :refSub) and tipp.status = :current "
-            if(subscriptionService.countCurrentIssueEntitlements(refSub) > 0)
-                query = "select tipp from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :refSubs and ie.status = :current "
+    Map<String, Object> fetchTitles(Subscription refSub) {
+        Map<String, Object> result = [:]
+        /*
+        desired:
+        {
+            printIdentifiers: {
+                value: tipp
+                value: tipp
+            },
+            printIdentifiers: {
+                value: tipp
+                value: tipp
+            },
+            dois: {
+                value: tipp
+                value: tipp
+            },
+            proprietaryIdentifiers: {
+                value: tipp
+                value: tipp
+            }
         }
+         */
+        String query = "select * from " +
+                "(select json_agg(json_build_object(id_value, id_tipp_fk)) as print_identifier from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on id_tipp_fk = ie_tipp_fk where ie_subscription_fk = :refSub and ie_status_rv_fk = :current and idns_ns = any(:printIdentifiers)) as print," +
+                "(select json_agg(json_build_object(id_value, id_tipp_fk)) as online_identifier from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on id_tipp_fk = ie_tipp_fk where ie_subscription_fk = :refSub and ie_status_rv_fk = :current and idns_ns = any(:onlineIdentifiers)) as online," +
+                "(select json_agg(json_build_object(id_value, id_tipp_fk)) as doi from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on id_tipp_fk = ie_tipp_fk where ie_subscription_fk = :refSub and ie_status_rv_fk = :current and idns_ns = :doi) as doi," +
+                "(select json_agg(json_build_object(id_value, id_tipp_fk)) as proprietary_identifier from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on id_tipp_fk = ie_tipp_fk where ie_subscription_fk = :refSub and ie_status_rv_fk = :current and idns_ns = :proprietary) as proprietary"
+        Sql sql = GlobalService.obtainSqlConnection()
+        Object[] printIdentifiers = [IdentifierNamespace.ISBN, IdentifierNamespace.ISSN], onlineIdentifiers = [IdentifierNamespace.EISBN, IdentifierNamespace.EISSN]
+        Map<String, Object> queryParams = [refSub: refSub.id, current: RDStore.TIPP_STATUS_CURRENT.id, printIdentifiers: sql.getDataSource().getConnection().createArrayOf('varchar', printIdentifiers), onlineIdentifiers: sql.getDataSource().getConnection().createArrayOf('varchar', onlineIdentifiers), doi: IdentifierNamespace.DOI, proprietary: IdentifierNamespace.TITLE_ID] //current for now
+        JsonSlurper slurper = new JsonSlurper()
+        List<GroovyRowResult> rows = sql.rows(query, queryParams)
+        result.put('printIdentifiers', slurper.parseText(rows[0]['print_identifier'].toString()))
+        result.put('onlineIdentifiers', slurper.parseText(rows[0]['online_identifier'].toString()))
+        result.put('doi', slurper.parseText(rows[0]['doi'].toString()))
+        result.put('proprietaryIdentifiers', slurper.parseText(rows[0]['proprietary_identifier'].toString()))
+        result
+        /*
         else if(fetchWhat == 'ids') {
             String tippQry = "(select tipp from TitleInstancePackagePlatform tipp where tipp.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription = :refSub) and tipp.status = :current)"
             if(subscriptionService.countCurrentIssueEntitlements(refSub) > 0)
@@ -822,6 +850,7 @@ class SubscriptionControllerService {
         result.addAll(TitleInstancePackagePlatform.executeQuery(query, queryParams))
 
         result
+        */
     }
 
     /**

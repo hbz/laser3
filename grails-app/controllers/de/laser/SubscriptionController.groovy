@@ -1615,10 +1615,10 @@ class SubscriptionController {
                 if (!folder.exists()) {
                     folder.mkdir()
                 }
-                File f = new File(dir+'/'+token)
+                //File f = new File(dir+'/'+token)
                 Map<String, String> fileResult = [token: token]
-                if(!f.exists()) {
-                    List monthsInRing = []
+                //if(!f.exists()) {
+                    SortedSet<Date> monthsInRing = new TreeSet<Date>()
                     Calendar startTime = GregorianCalendar.getInstance(), endTime = GregorianCalendar.getInstance()
                     if (ctrlResult.result.subscriberSub.startDate && ctrlResult.result.subscriberSub.endDate) {
                         startTime.setTime(ctrlResult.result.subscriberSub.startDate)
@@ -1662,9 +1662,8 @@ class SubscriptionController {
                     //queryMap.sub = ctrlResult.result.subscription
                     queryMap.status = RDStore.TIPP_STATUS_CURRENT.id
                     queryMap.pkgIds = ctrlResult.result.parentSubscription.packages?.pkg?.id
-                    Map<String, List> export = exportService.generateTitleExportCustom(queryMap, TitleInstancePackagePlatform.class.name, monthsInRing.sort { Date monthA, Date monthB -> monthA <=> monthB }, ctrlResult.result.subscriber, true)
-                    export.titles << message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs.export')
-                    export.titles << "Pick"
+                    //Map<String, List> export = exportService.generateTitleExportCustom(queryMap, TitleInstancePackagePlatform.class.name, monthsInRing.sort { Date monthA, Date monthB -> monthA <=> monthB }, ctrlResult.result.subscriber, true)
+                    Map<String, List> export = exportService.generateRenewalExport(queryMap, monthsInRing, ctrlResult.result.subscriber)
 
                     String refYes = RDStore.YN_YES.getI10n('value')
                     String refNo = RDStore.YN_NO.getI10n('value')
@@ -1688,11 +1687,13 @@ class SubscriptionController {
                     wb.dispose()
                     render template: '/templates/usageReport', model: fileResult
                     return
+                /*
                 }
                 else {
                     render template: '/templates/usageReport', model: fileResult
                     return
                 }
+                */
             }
             else {
                 flash.error = message(code: 'default.stats.error.noReportSelected')
