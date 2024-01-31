@@ -33,6 +33,7 @@ import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
+import groovy.json.JsonSlurper
 import groovy.sql.BatchingStatementWrapper
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
@@ -732,25 +733,43 @@ class SubscriptionControllerService {
      * @return
      */
     Map<String, Object> fetchTitles(Subscription refSub) {
-        Set result = []
-        String query = "select tipp_id, json_agg(" +
-                "            json_build_object(" +
-                "                'print_identifier', (select distinct(id_value) from identifier where id_tipp_fk = tipp_id and id_ns_fk = any(:printIdentifiers) limit 1)," +
-                "                'online_identifier', (select distinct(id_value) from identifier where id_tipp_fk = tipp_id and id_ns_fk = any(:onlineIdentifiers) limit 1)," +
-                "                'doi', (select distinct(id_value) from identifier where id_tipp_fk = tipp_id and id_ns_fk = :doi)," +
-                "                'proprietary_identifier', (select distinct(id_value) from identifier where id_tipp_fk = tipp_id and id_ns_fk = :proprietary)" +
-                "            )" +
-                "        )" +
-                "        from title_instance_package_platform join subscription_package on tipp_pkg_fk = sp_spk_fk where sp_sub_fk = :refSub and tipp_status_rv_fk = :current group by tipp_id"
+        Map<String, Object> result = [:]
+        /*
+        desired:
+        {
+            printIdentifiers: {
+                value: tipp
+                value: tipp
+            },
+            printIdentifiers: {
+                value: tipp
+                value: tipp
+            },
+            dois: {
+                value: tipp
+                value: tipp
+            },
+            proprietaryIdentifiers: {
+                value: tipp
+                value: tipp
+            }
+        }
+         */
+        String query = "select * from " +
+                "(select json_agg(json_build_object(id_value, id_tipp_fk)) as print_identifier from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on id_tipp_fk = ie_tipp_fk where ie_subscription_fk = :refSub and ie_status_rv_fk = :current and idns_ns = any(:printIdentifiers)) as print," +
+                "(select json_agg(json_build_object(id_value, id_tipp_fk)) as online_identifier from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on id_tipp_fk = ie_tipp_fk where ie_subscription_fk = :refSub and ie_status_rv_fk = :current and idns_ns = any(:onlineIdentifiers)) as online," +
+                "(select json_agg(json_build_object(id_value, id_tipp_fk)) as doi from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on id_tipp_fk = ie_tipp_fk where ie_subscription_fk = :refSub and ie_status_rv_fk = :current and idns_ns = :doi) as doi," +
+                "(select json_agg(json_build_object(id_value, id_tipp_fk)) as proprietary_identifier from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on id_tipp_fk = ie_tipp_fk where ie_subscription_fk = :refSub and ie_status_rv_fk = :current and idns_ns = :proprietary) as proprietary"
         Sql sql = GlobalService.obtainSqlConnection()
         Object[] printIdentifiers = [IdentifierNamespace.ISBN, IdentifierNamespace.ISSN], onlineIdentifiers = [IdentifierNamespace.EISBN, IdentifierNamespace.EISSN]
         Map<String, Object> queryParams = [refSub: refSub.id, current: RDStore.TIPP_STATUS_CURRENT.id, printIdentifiers: sql.getDataSource().getConnection().createArrayOf('varchar', printIdentifiers), onlineIdentifiers: sql.getDataSource().getConnection().createArrayOf('varchar', onlineIdentifiers), doi: IdentifierNamespace.DOI, proprietary: IdentifierNamespace.TITLE_ID] //current for now
-        result.addAll(sql.rows(query, queryParams))
+        JsonSlurper slurper = new JsonSlurper()
+        List<GroovyRowResult> rows = sql.rows(query, queryParams)
+        result.put('printIdentifiers', slurper.parseText(rows[0]['print_identifier'].toString()))
+        result.put('onlineIdentifiers', slurper.parseText(rows[0]['online_identifier'].toString()))
+        result.put('doi', slurper.parseText(rows[0]['doi'].toString()))
+        result.put('proprietaryIdentifiers', slurper.parseText(rows[0]['proprietary_identifier'].toString()))
         result
-        /*
-        to be migrated using native SQL:
-
-                */
         /*
         else if(fetchWhat == 'ids') {
             String tippQry = "(select tipp from TitleInstancePackagePlatform tipp where tipp.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription = :refSub) and tipp.status = :current)"
