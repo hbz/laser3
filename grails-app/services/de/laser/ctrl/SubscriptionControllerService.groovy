@@ -3805,7 +3805,9 @@ class SubscriptionControllerService {
      * @return a map of structure [sub: subscription, orgs: subscriber] containing the query results
      */
     List<Map> getFilteredSubscribers(GrailsParameterMap params, Subscription parentSub) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+        Map<String, Object> result = [:]
+
+        result.institution = parentSub.subscriber
         params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         GrailsParameterMap orgParams = params.clone()
         orgParams.remove("sort")
