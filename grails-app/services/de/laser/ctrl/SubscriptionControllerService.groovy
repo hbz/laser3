@@ -1286,6 +1286,8 @@ class SubscriptionControllerService {
 
         result.selectedCostItemElement = RefdataValue.get(Long.parseLong(result.selectedCostItemElementID))
 
+        result.showBulkCostItems = params.showBulkCostItems ? params.showBulkCostItems : null
+
         if (params.processBulkCostItems) {
             List<Long> selectedSubs = []
             params.list("selectedSubs").each { id ->
