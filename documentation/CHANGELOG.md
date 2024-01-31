@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      31.01.2024  rc-3.3  3.3.5       Andreas Bug         Überflüssige Ladeanweisungen aus der Vertragssicht entfernt
+
 5552    31.01.2024  rc-3.3  3.3.5       Andreas Bug         Identifikator-Validierungen mit Fallbacks versehen
 
 --      31.01.2024  rc-3.3  3.3.5       Andreas Bug         Routine zur Abwehr zu vieler offener Datenbankverbindungen implementiert
