@@ -35,7 +35,7 @@
                 <span class="label"> ${message(code: 'license.plural.current')} </span>
             </div>
             <div class="statistic stats-toggle" data-target="stat_providers">
-                <span class="value"> ${providerMap.get(RDStore.SUBSCRIPTION_CURRENT.id).collect{it.value[0]}.unique().size()} </span>
+                <span class="value"> ${providerMap.get(RDStore.SUBSCRIPTION_CURRENT.id).collect{it[0]}.unique().size()} </span>
                 <span class="label"> ${message(code:'default.provider.label')} (${message(code: 'subscription.plural.current')}) </span>
             </div>
             <div class="statistic stats-toggle" data-target="stat_surveys">
@@ -191,7 +191,7 @@
                     <g:each in="${providerMap}" var="subStatus,provList">
                         <g:set var="subStatusRdv" value="${RefdataValue.get(subStatus)}" />
                         <a href="#" class="item ${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="prov-${subStatusRdv.id}">
-                            ${subStatusRdv.getI10n('value')} <span class="ui blue circular label">${provList.collect{it.value[0]}.unique().size()}</span>
+                            ${subStatusRdv.getI10n('value')} <span class="ui blue circular label">${provList.collect{it[0]}.unique().size()}</span>
                         </a>
                     </g:each>
                 </div>
@@ -212,14 +212,16 @@
                         <table class="ui table very compact">
                             <thead>
                             <tr>
-                                <th class="nine wide">${message(code:'default.provider.label')}</th>
+                                <th class="eight wide">${message(code:'default.provider.label')}</th>
+                                <th class="one wide">${message(code:'subscription.plural')}</th>
                                 <th class="one wide"></th>
                                 <th class="two wide"></th>
                                 <th class="two wide"></th>
                                 <th class="two wide"></th>
                             </tr>
                             <tr data-ctype="provider-subsciption" style="display:none;">
-                                <th class="nine wide">${message(code:'subscription.label')}</th>
+                                <th class="eight wide">${message(code:'subscription.label')}</th>
+                                <th class="one wide"></th>
                                 <th class="one wide">${message(code:'subscription.referenceYear.label.shy')}</th>
                                 <th class="two wide">${message(code:'subscription.isMultiYear.label.shy')}</th>
                                 <th class="two wide">${message(code:'subscription.startDate.label')}</th>
@@ -227,7 +229,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                                <g:each in="${provList.collect{it.value[0]}.unique()}" var="provId">
+                                <g:each in="${provList.collect{it[0]}.unique()}" var="provId">
                                     <g:set var="prov" value="${Org.get(provId)}" />
                                     <tr>
                                         <td>
@@ -236,6 +238,7 @@
                                                 <g:link controller="org" action="show" id="${prov.id}" target="_blank">${prov.name}</g:link>
                                             </div>
                                         </td>
+                                        <td>${provList.findAll{it[0] == provId}.size()}</td>
                                         <td></td>
                                         <td></td>
                                         <td></td>
@@ -250,6 +253,7 @@
                                                             <g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link>
                                                         </div>
                                                     </td>
+                                                    <td></td>
                                                     <td> ${sub.referenceYear} </td>
                                                     <td> ${sub.isMultiYear ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")} </td>
                                                     <td> <g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/> </td>
