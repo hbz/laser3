@@ -11,6 +11,7 @@ class Constants {
     public static final String HTTP_NOT_ACCEPTABLE         = "NOT_ACCEPTABLE" // 406
     public static final String HTTP_CONFLICT               = "CONFLICT" // 409
     public static final String HTTP_PRECONDITION_FAILED    = "PRECONDITION_FAILED" // 412
+    public static final String HTTP_TOO_MANY_REQUESTS      = "TOO_MANY_REQUESTS" // 429
     public static final String HTTP_INTERNAL_SERVER_ERROR  = "INTERNAL_SERVER_ERROR" // 500
     public static final String HTTP_NOT_IMPLEMENTED        = "NOT_IMPLEMENTED" // 501
 

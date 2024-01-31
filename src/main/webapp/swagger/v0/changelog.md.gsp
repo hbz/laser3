@@ -2,6 +2,10 @@
 
 Source: ${de.laser.config.ConfigMapper.getGrailsServerURL()} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 2.8
+
+- error handling for too many connections
+
 #### 2.7
 
 - internal refactoring
