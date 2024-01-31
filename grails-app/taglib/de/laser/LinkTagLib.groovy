@@ -9,9 +9,12 @@ class LinkTagLib {
     static namespace = 'ui'
 
     def linkWithIcon = { attrs, body ->
+
+        String icon = attrs.icon ?: 'external alternate'
+
         out << '<span class="la-popup-tooltip la-delay" data-position="top right" data-content="' + message(code: 'tooltip.callUrl') + '" style="bottom:-3px">&nbsp;'
         out << '<a href="' + attrs.href + '" target="_blank" aria-label="' + attrs.href + '" class="la-js-dont-hide-button">'
-        out << '<i class="icon external alternate" aria-hidden="true"></i>'
+        out << '<i class="icon ' + icon + '" aria-hidden="true"></i>'
         out << '</a>'
         out << '</span>'
     }

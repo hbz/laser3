@@ -1362,30 +1362,32 @@ class ExportService {
 								for(Map instance: performance.Instance) {
 									int periodTotal, reportCount = instance.Count as int
 									Map<String, Object> metricRow = data.containsKey(instance.Metric_Type) ? data.get(instance.Metric_Type) : [:]
-									Map<String, Object> dataTypeRow = metricRow.get(reportItem.Data_Type)
+									Map<String, Object> platformRow = metricRow.containsKey(reportItem.Platform) ? metricRow.get(reportItem.Platform) : [:]
+									Map<String, Object> dataTypeRow = platformRow.get(reportItem.Data_Type)
 									if(!dataTypeRow) {
-										dataTypeRow = ['Data_Type': reportItem.Data_Type]
+										dataTypeRow = ['Data_Type': reportItem.Data_Type, 'Platform': reportItem.Platform, 'Metric_Type': instance.Metric_Type]
 										periodTotal = 0
 									}
 									else periodTotal = dataTypeRow.get('Reporting_Period_Total') as int
-									dataTypeRow.put('Platform', reportItem.Platform)
-									dataTypeRow.put('Metric_Type', instance.Metric_Type)
 									dataTypeRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportFrom), reportCount)
 									periodTotal += reportCount
 									dataTypeRow.put('Reporting_Period_Total', periodTotal)
-									metricRow.put(reportItem.Data_Type, dataTypeRow)
+									platformRow.put(reportItem.Data_Type, dataTypeRow)
+									metricRow.put(reportItem.Platform, platformRow)
 									data.put(instance.Metric_Type, metricRow)
 								}
 							}
 							int i = 0
 							for (Map.Entry<String, Object> metricRow: data) {
-								for (Map.Entry<String, Object> dataTypeRow: metricRow.getValue()) {
-									row = sheet.createRow(i + rowno)
-									for (int c = 0; c < columnHeaders.size(); c++) {
-										cell = row.createCell(c)
-										cell.setCellValue(dataTypeRow.getValue().get(columnHeaders[c]) ?: "")
+								for (Map.Entry<String, Object> platformRow: metricRow.getValue()) {
+									for (Map.Entry<String, Object> dataTypeRow : platformRow.getValue()) {
+										row = sheet.createRow(i + rowno)
+										for (int c = 0; c < columnHeaders.size(); c++) {
+											cell = row.createCell(c)
+											cell.setCellValue(dataTypeRow.getValue().get(columnHeaders[c]) ?: "")
+										}
+										i++
 									}
-									i++
 								}
 							}
 						}
@@ -1421,14 +1423,16 @@ class ExportService {
 						data = prepareDataWithDatabases(requestResponse, reportType)
 						int i = 0
 						for(Map.Entry<String, Object> databaseRow: data) {
-							for(Map.Entry<String, Object> metricRow: databaseRow.getValue()) {
-								for(Map.Entry<String, Object> dataTypeRow: metricRow.getValue()) {
-									row = sheet.createRow(i + rowno)
-									for(int c = 0;c < columnHeaders.size(); c++) {
-										cell = row.createCell(c)
-										cell.setCellValue(dataTypeRow.getValue().get(columnHeaders[c]) ?: "")
+							for(Map.Entry<String, Object> platformRow: databaseRow.getValue()) {
+								for(Map.Entry<String, Object> metricRow: platformRow.getValue()) {
+									for(Map.Entry<String, Object> dataTypeRow: metricRow.getValue()) {
+										row = sheet.createRow(i + rowno)
+										for(int c = 0;c < columnHeaders.size(); c++) {
+											cell = row.createCell(c)
+											cell.setCellValue(dataTypeRow.getValue().get(columnHeaders[c]) ?: "")
+										}
+										i++
 									}
-									i++
 								}
 							}
 						}
@@ -1438,13 +1442,15 @@ class ExportService {
 						data = prepareDataWithDatabases(requestResponse, reportType)
 						int i = 0
 						for(Map.Entry<String, Object> databaseRow: data) {
-							for(Map.Entry<String, Object> metricRow: databaseRow.getValue()) {
-								row = sheet.createRow(i + rowno)
-								for(int c = 0;c < columnHeaders.size(); c++) {
-									cell = row.createCell(c)
-									cell.setCellValue(metricRow.getValue().get(columnHeaders[c]) ?: "")
+							for(Map.Entry<String, Object> platformRow: databaseRow.getValue()) {
+								for(Map.Entry<String, Object> metricRow: platformRow.getValue()) {
+									row = sheet.createRow(i + rowno)
+									for(int c = 0;c < columnHeaders.size(); c++) {
+										cell = row.createCell(c)
+										cell.setCellValue(metricRow.getValue().get(columnHeaders[c]) ?: "")
+									}
+									i++
 								}
-								i++
 							}
 						}
 						/*Counter5Report.withNewSession {
@@ -1935,6 +1941,7 @@ class ExportService {
 		//take https://laser-dev.hbz-nrw.de/subscription/membersSubscriptionsManagement/59727?tab=customerIdentifiers&isSiteReloaded=false as base for customer identifiers!
 		if(reportType in Counter5Report.COUNTER_5_REPORTS) {
 			for(def reportItem: requestResponse.items) {
+				String propID = reportItem.Item_ID.find { Map itemId -> itemId.Type == 'Proprietary' }?.Value
 				for(Map performance: reportItem.Performance) {
 					Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
 					for(Map instance: performance.Instance) {
@@ -1943,35 +1950,43 @@ class ExportService {
 							Map<String, Object> databaseRow = databaseRows.get(reportItem.Database) as Map<String, Object>
 							if(!databaseRow)
 								databaseRow = [:]
-							Map<String, Object> metricRow = databaseRow.get(instance.Metric_Type) as Map<String, Object>
+							Map<String, Object> platformRow = databaseRow.get(reportItem.Platform) as Map<String, Object>
+							if(!platformRow)
+								platformRow = [:]
+							Map<String, Object> metricRow = platformRow.get(instance.Metric_Type) as Map<String, Object>
 							if(!metricRow) {
 								metricRow = [:]
 							}
 							Map<String, Object> dataTypeRow = metricRow.get(reportItem.Data_Type) as Map<String, Object>
 							if(!dataTypeRow) {
-								dataTypeRow = ['Database': reportItem.Database, 'Publisher': reportItem.Publisher, 'Platform': reportItem.Platform, 'Data_Type': instance.Data_Type, 'Metric_Type': instance.Metric_Type]
+								dataTypeRow = ['Database': reportItem.Database, 'Publisher': reportItem.Publisher, 'Platform': reportItem.Platform, 'Data_Type': reportItem.Data_Type, 'Metric_Type': instance.Metric_Type, 'Proprietary_ID': propID]
 							}
 							else periodTotal = dataTypeRow.get('Reporting_Period_Total')
 							periodTotal += reportCount
 							dataTypeRow.put('Reporting_Period_Total', periodTotal)
 							dataTypeRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportFrom), reportCount)
 							metricRow.put(reportItem.Data_Type, dataTypeRow)
-							databaseRow.put(instance.Metric_Type, metricRow)
+							platformRow.put(instance.Metric_Type, metricRow)
+							databaseRow.put(reportItem.Platform, platformRow)
 							databaseRows.put(reportItem.Database, databaseRow)
 						}
 						else {
 							Map<String, Object> databaseRow = databaseRows.get(reportItem.Database) as Map<String, Object>
 							if(!databaseRow)
 								databaseRow = [:]
-							Map<String, Object> metricRow = databaseRow.get(instance.Metric_Type) as Map<String, Object>
+							Map<String, Object> platformRow = databaseRow.get(reportItem.Platform) as Map<String, Object>
+							if(!platformRow)
+								platformRow = [:]
+							Map<String, Object> metricRow = platformRow.get(instance.Metric_Type) as Map<String, Object>
 							if(!metricRow) {
-								metricRow = ['Database': reportItem.Database, 'Publisher': reportItem.Publisher, 'Platform': reportItem.Platform, 'Metric_Type': instance.Metric_Type]
+								metricRow = ['Database': reportItem.Database, 'Publisher': reportItem.Publisher, 'Platform': reportItem.Platform, 'Metric_Type': instance.Metric_Type, 'Proprietary_ID': propID]
 							}
 							else periodTotal = metricRow.get('Reporting_Period_Total')
 							periodTotal += reportCount
 							metricRow.put('Reporting_Period_Total', periodTotal)
 							metricRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportFrom), reportCount)
-							databaseRow.put(instance.Metric_Type, metricRow)
+							platformRow.put(instance.Metric_Type, metricRow)
+							databaseRow.put(reportItem.Platform, platformRow)
 							databaseRows.put(reportItem.Database, databaseRow)
 						}
 					}
