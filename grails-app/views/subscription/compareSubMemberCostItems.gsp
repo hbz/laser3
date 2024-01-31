@@ -5,11 +5,15 @@
 
 <ui:breadcrumbs>
     <ui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label"/>
-    <ui:crumb controller="subscription" action="subfinance" message="subscription.details.financials.label"/>
+    <ui:crumb controller="subscription" action="show" id="${params.id}" text="${subscription}"/>
+    <ui:crumb controller="subscription" action="subfinance" id="${params.id}" message="subscription.details.financials.label"/>
     <ui:crumb class="active" message="subscription.details.compareSubMemberCostItems.label"/>
 
 </ui:breadcrumbs>
 
+<ui:controlButtons>
+    <laser:render template="${customerTypeService.getActionsTemplatePath()}"/>
+</ui:controlButtons>
 
 <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" type="subscription"
                      visibleOrgRelations="${visibleOrgRelations}">
