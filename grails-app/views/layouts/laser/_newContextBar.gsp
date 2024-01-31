@@ -70,7 +70,8 @@
 
             %{-- subscription transfer  --}%
 
-            <g:if test="${controllerName=='subscription' && (editable && contextService.getOrg().isCustomerType_Consortium())}">
+            <g:if test="${controllerName=='subscription' && (!actionName.startsWith('copy') && actionName != 'renewEntitlementsWithSurvey' && actionName != 'renewSubscription' && actionName != 'emptySubscription')
+            && (editable && contextService.getOrg().isCustomerType_Consortium())}">
                 <g:if test="${subscription && subscription._getCalculatedType() in [Subscription.TYPE_CONSORTIAL]}">
                     <div class="item la-cb-action">
                         <button class="ui icon button la-toggle-ui la-popup-tooltip la-delay" id="subscriptionTransfer-toggle"

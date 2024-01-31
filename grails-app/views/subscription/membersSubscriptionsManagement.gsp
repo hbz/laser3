@@ -7,6 +7,10 @@
     <ui:crumb class="active" text="${message(code: 'subscriptionsManagement.subscriptions.members')}"/>
 </ui:breadcrumbs>
 
+<ui:controlButtons>
+    <laser:render template="actions"/>
+</ui:controlButtons>
+
 <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" text="${subscription.name}" />
 
 <ui:anualRings object="${subscription}" controller="subscription" action="${actionName}"
