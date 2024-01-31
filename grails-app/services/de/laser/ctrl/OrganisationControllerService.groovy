@@ -7,12 +7,16 @@ import de.laser.finance.CostItem
 import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.survey.SurveyInfo
+import de.laser.survey.SurveyResult
+import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.grails.web.util.WebUtils
 import org.springframework.context.MessageSource
+
+import java.text.SimpleDateFormat
 
 /**
  * This service is a mirror of the {@link OrganisationController}, containing those controller methods
@@ -26,6 +30,7 @@ class OrganisationControllerService {
 
     ContextService contextService
     DocstoreService docstoreService
+    FilterService filterService
     FinanceService financeService
     FormService formService
     GokbService gokbService
@@ -212,14 +217,32 @@ class OrganisationControllerService {
 
         // surveys
 
-        List<SurveyInfo> surveyStruct =  SurveyInfo.executeQuery(
-                'select so.finishDate != null, si.id, si.status.id, so.org.id, so.finishDate, sc.subscription.id from SurveyOrg so join so.surveyConfig sc join sc.surveyInfo si where so.org = :org order by si.name, si.startDate, si.endDate',
-                [org: result.orgInstance]
-        )
+//        List<SurveyInfo> surveyStruct =  SurveyInfo.executeQuery(
+//                '''select so.finishDate != null, si.id, si.status.id, so.org.id, so.finishDate, sc.subscription.id
+//                        from SurveyOrg so
+//                        join so.surveyConfig sc
+//                        join sc.surveyInfo si
+//                        where so.org = :org and si.owner = :owner
+//                        order by si.name, si.startDate, si.endDate ''',
+//                [org: result.orgInstance, owner: result.institution]
+//        )
+//
+//        Map surveyMap = surveyStruct.groupBy{ it[0] } // listToMap(surveyStruct)
+//        result.surveyMap = surveyMap.collectEntries{ k,v -> [(k):(v.collect{ [ it[1], it[4], it[5] ] })] }
+////        println 'surveyMap: ' + result.surveyMap
 
-        Map surveyMap = surveyStruct.groupBy{ it[0] } // listToMap(surveyStruct)
-        result.surveyMap = surveyMap.collectEntries{ k,v -> [(k):(v.collect{ [ it[1], it[4], it[5] ] })] }
-//        println 'surveyMap: ' + result.surveyMap
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+        GrailsParameterMap surveyParams = new GrailsParameterMap(WebUtils.retrieveGrailsWebRequest().getCurrentRequest())
+        surveyParams.owner = result.institution
+
+        result.surveyMap2 = [:]
+
+        ['open', 'finish', 'termination',  'notFinish'].each{
+            surveyParams.tab = it
+            Map<String, Object> fsq = filterService.getParticipantSurveyQuery_New(surveyParams, sdf, result.orgInstance as Org)
+            result.surveyMap2[it] = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
+        }
+//        println result.surveyMap2
 
         // costs
 

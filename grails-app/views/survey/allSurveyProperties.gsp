@@ -12,10 +12,8 @@
     <ui:crumb message="myinst.currentSubscriptions.label" class="active"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon type="Survey">
-    <ui:xEditable owner="${surveyInfo}" field="name"/>
-    <uiSurvey:status object="${surveyInfo}"/>
-</ui:h1HeaderWithIcon>
+<ui:h1HeaderWithIcon text="${surveyInfo.name}" type="Survey"/>
+<uiSurvey:status object="${surveyInfo}"/>
 
 <laser:render template="nav"/>
 
