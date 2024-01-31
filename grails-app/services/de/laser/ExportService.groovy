@@ -775,21 +775,17 @@ class ExportService {
 		SXSSFSheet sheet
         Set<String> metricTypes = params.list('metricType')
 		String reportType = params.reportType
+		/*
+		continue here:
+		use two maps:
+		a) tipp_id -> tipp_name
+		b) id_ns -> id_value -> tipp_id
+		 */
 		Map<String, Map<String, TitleInstancePackagePlatform>> titles = [:] //structure: namespace -> value -> tipp
 		Set<TitleInstancePackagePlatform> titlesSorted = [] //fallback structure to preserve sorting
 		prf.setBenchmark('prepare title identifier map')
         if(reportType in Counter4Report.COUNTER_4_TITLE_REPORTS || reportType in Counter5Report.COUNTER_5_TITLE_REPORTS) {
-			subscriptionControllerService.fetchTitles(params, refSub, namespaces, 'ids').each { Map titleMap ->
-				//debug only! DO NOT COMMIT!
-				//if(titleMap.tipp.id == 862496) {
-				titlesSorted << titleMap.tipp
-				Map<String, TitleInstancePackagePlatform> innerMap = titles.get(titleMap.namespace)
-				if(!innerMap)
-					innerMap = [:]
-				innerMap.put(titleMap.value, titleMap.tipp)
-				titles.put(titleMap.namespace, innerMap)
-				//}
-			}
+			titles = subscriptionControllerService.fetchTitles(refSub)
         }
 		//reportTypes.each { String reportType ->
 		Set<String> columnHeaders = []

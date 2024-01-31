@@ -348,7 +348,7 @@ class SubscriptionControllerService {
                 Map<String, Map<String, TitleInstancePackagePlatform>> titles = [:] //structure: namespace -> value -> tipp
                 //Set<TitleInstancePackagePlatform> titlesSorted = [] //fallback structure to preserve sorting
                 if(params.reportType in Counter4Report.COUNTER_4_TITLE_REPORTS || params.reportType in Counter5Report.COUNTER_5_TITLE_REPORTS) {
-                    fetchTitles(params, refSub, namespaces, 'ids').each { Map titleMap ->
+                    fetchTitles(params, refSub, namespaces).each { Map titleMap ->
                         //titlesSorted << titleMap.tipp
                         Map<String, TitleInstancePackagePlatform> innerMap = titles.get(titleMap.namespace)
                         if(!innerMap)
@@ -726,23 +726,32 @@ class SubscriptionControllerService {
     }
 
     /**
-     * Assembles a set of titles currently contained in the given subscriptions' holding. Either the full objects are
-     * being queried or a map of identifiers for identifier matching without needing further queries or loops
-     * @param params the filter parameter map
+     * Assembles a set of titles currently contained in the given subscriptions' holding.
+     * A map of identifiers is being returned for identifier matching without needing further queries or loops
      * @param refSub the {@link Subscription} whose entitlements should be queried; if none existent, the underlying package's are being queried
-     * @param namespaces the {@link IdentifierNamespace}s
-     * @param fetchWhat
      * @return
      */
-    Set fetchTitles(GrailsParameterMap params, Subscription refSub, Set<IdentifierNamespace> namespaces, String fetchWhat) {
+    Map<String, Object> fetchTitles(Subscription refSub) {
         Set result = []
-        String query
-        Map<String, Object> queryParams = [refSub: refSub, current: RDStore.TIPP_STATUS_CURRENT]//current for now
-        if(fetchWhat == 'fullObjects') {
-            query = "select tipp from TitleInstancePackagePlatform tipp where tipp.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription = :refSub) and tipp.status = :current "
-            if(subscriptionService.countCurrentIssueEntitlements(refSub) > 0)
-                query = "select tipp from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :refSubs and ie.status = :current "
-        }
+        String query = "select tipp_id, json_agg(" +
+                "            json_build_object(" +
+                "                'print_identifier', (select distinct(id_value) from identifier where id_tipp_fk = tipp_id and id_ns_fk = any(:printIdentifiers) limit 1)," +
+                "                'online_identifier', (select distinct(id_value) from identifier where id_tipp_fk = tipp_id and id_ns_fk = any(:onlineIdentifiers) limit 1)," +
+                "                'doi', (select distinct(id_value) from identifier where id_tipp_fk = tipp_id and id_ns_fk = :doi)," +
+                "                'proprietary_identifier', (select distinct(id_value) from identifier where id_tipp_fk = tipp_id and id_ns_fk = :proprietary)" +
+                "            )" +
+                "        )" +
+                "        from title_instance_package_platform join subscription_package on tipp_pkg_fk = sp_spk_fk where sp_sub_fk = :refSub and tipp_status_rv_fk = :current group by tipp_id"
+        Sql sql = GlobalService.obtainSqlConnection()
+        Object[] printIdentifiers = [IdentifierNamespace.ISBN, IdentifierNamespace.ISSN], onlineIdentifiers = [IdentifierNamespace.EISBN, IdentifierNamespace.EISSN]
+        Map<String, Object> queryParams = [refSub: refSub.id, current: RDStore.TIPP_STATUS_CURRENT.id, printIdentifiers: sql.getDataSource().getConnection().createArrayOf('varchar', printIdentifiers), onlineIdentifiers: sql.getDataSource().getConnection().createArrayOf('varchar', onlineIdentifiers), doi: IdentifierNamespace.DOI, proprietary: IdentifierNamespace.TITLE_ID] //current for now
+        result.addAll(sql.rows(query, queryParams))
+        result
+        /*
+        to be migrated using native SQL:
+
+                */
+        /*
         else if(fetchWhat == 'ids') {
             String tippQry = "(select tipp from TitleInstancePackagePlatform tipp where tipp.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription = :refSub) and tipp.status = :current)"
             if(subscriptionService.countCurrentIssueEntitlements(refSub) > 0)
@@ -822,6 +831,7 @@ class SubscriptionControllerService {
         result.addAll(TitleInstancePackagePlatform.executeQuery(query, queryParams))
 
         result
+        */
     }
 
     /**
