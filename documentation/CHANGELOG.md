@@ -7,9 +7,11 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      31.01.2024  rc-3.3  3.3.5       Andreas Bug         Routine zur Abwehr zu vieler offener Datenbankverbindungen implementiert
+
 --      30.01.2024  rc-3.3  3.3.5       Andreas Bug         falsche Summierung bei Platform und Database Reports
 
-5548    29.01.2024  rc-3.3  3.3.5       Moe     Bug          Shortcut zur zugehörigen Lizenz in Umfrage
+5548    29.01.2024  rc-3.3  3.3.5       Moe     Bug         Shortcut zur zugehörigen Lizenz in Umfrage
 
 5547    29.01.2024  rc-3.3  3.3.5       Moe     Bug         Umfrageteilnehmer Zählung nicht korrekt dargestellt
 
@@ -25,7 +27,7 @@
 
 5541    26.01.2024  rc-3.3  3.3.5       Moe     Bug         Keine Kundennummer anzeigen wenn Plattform nicht Counter fähig ist
 
-5540    26.01.2024  rc-3.3  3.3.5       Moe     Bug          Nav Dokumente Reiter Anzahl Docs
+5540    26.01.2024  rc-3.3  3.3.5       Moe     Bug         Nav Dokumente Reiter Anzahl Docs
 
 5537    24.01.2024  rc-3.3  3.3.5       Moe     Bug         Dokument von Pro-Einrichtung in Titelumfrage sichtbar?!
 
