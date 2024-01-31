@@ -187,7 +187,7 @@
                 </g:if>
             </g:if>
             <g:elseif test="${controllerName == 'license' && license}">
-                <g:set var="linkifyMap" value="${linksGenerationService.getSourcesAndDestinations(license, contextUser, RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE))}" />
+                <g:set var="linkifyMap" value="${linksGenerationService.getSourcesAndDestinations(license, contextUser, RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE)-RDStore.LINKTYPE_LICENSE)}" />
 
                 <g:if test="${linkifyMap}">
                     <div class="item la-cb-action-ext">
