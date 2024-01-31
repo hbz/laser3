@@ -4,7 +4,7 @@ Source: ${de.laser.config.ConfigMapper.getGrailsServerURL()} - Version: ${de.las
 
 #### 2.8
 
-- error handling for too many connections
+- new error code `503` introduced when too many database connections are open
 
 #### 2.7
 
