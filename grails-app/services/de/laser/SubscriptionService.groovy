@@ -2427,13 +2427,17 @@ join sub.orgRelations or_sub where
      * @param subscription the subscription whose holding should be accessed
      * @return a map containing the process result
      */
-    Map tippSelectForSurvey(InputStream stream, Subscription subscription, SurveyConfig surveyConfig, Subscription newSub) {
+    Map tippSelectForSurvey(MultipartFile kbartFile, Subscription subscription, SurveyConfig surveyConfig, Subscription newSub) {
+        InputStream stream = kbartFile.getInputStream()
+
         Integer countRows = 0
         Integer count = 0
         Integer countSelectTipps = 0
         Integer countNotSelectTipps = 0
         Org contextOrg = contextService.getOrg()
         Set selectedTipps = [], truncatedRows = []
+        List wrongTitles = []
+        List titleRow = []
 
         int zdbCol = -1, onlineIdentifierCol = -1, printIdentifierCol = -1, titleUrlCol = -1, titleIdCol = -1, doiCol = -1, pickCol = -1
         Set<Package> subPkgs = SubscriptionPackage.executeQuery('select sp.pkg from SubscriptionPackage sp where sp.subscription = :subscription', [subscription: subscription])
@@ -2449,7 +2453,7 @@ join sub.orgRelations or_sub where
 
             ArrayList<String> rows = stream.text.split('\n')
             //read off first line of KBART file
-            List titleRow = rows.remove(0).split('\t')
+            titleRow = rows.remove(0).split('\t')
             titleRow.eachWithIndex { headerCol, int c ->
                 switch (headerCol.toLowerCase().trim()) {
                     case "zdb_id": zdbCol = c
@@ -2534,11 +2538,15 @@ join sub.orgRelations or_sub where
                                     selectedTipps << match.gokbId
                                     countSelectTipps++
                                 }
-                                if (!allowedToSelect) {
+                                else if (!allowedToSelect) {
                                     countNotSelectTipps++
+                                } else if(!ieInNewSub){
+                                    wrongTitles << cols
                                 }
                             }
                         }
+                    }else{
+                        wrongTitles << cols
                     }
                 }
                 else {
@@ -2547,7 +2555,7 @@ join sub.orgRelations or_sub where
             }
         }
 
-        return [processRows: countRows, processCount: count, selectedTipps: selectedTipps, countSelectTipps: countSelectTipps, countNotSelectTipps: countNotSelectTipps]
+        return [titleRow: titleRow, processRows: countRows, processCount: count, selectedTipps: selectedTipps, countSelectTipps: countSelectTipps, countNotSelectTipps: countNotSelectTipps, wrongTitles: wrongTitles, truncatedRows: truncatedRows.join(', ')]
     }
 
     @Deprecated

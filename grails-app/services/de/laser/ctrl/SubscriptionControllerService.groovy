@@ -1736,53 +1736,6 @@ class SubscriptionControllerService {
                         checkedCache = ["checked": [:]]
                     }
 
-                    if (params.kbartPreselect) {
-                        //checkedCache.put('checked', [:])
-
-                        MultipartFile kbartFile = params.kbartPreselect
-                        InputStream stream = kbartFile.getInputStream()
-                        result.selectProcess = subscriptionService.tippSelectForSurvey(stream, baseSub, result.surveyConfig, subscriberSub)
-
-                        if (result.selectProcess.selectedTipps) {
-
-                            Integer countTippsToAdd = 0
-                            result.selectProcess.selectedTipps.each { String tippKey ->
-                                TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(tippKey)
-                                if (tipp) {
-                                    try {
-                                        if (!issueEntitlementGroup) {
-                                            issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: result.surveyConfig.issueEntitlementGroupName)
-                                            if (!issueEntitlementGroup.save())
-                                                log.error(issueEntitlementGroup.getErrors().getAllErrors().toListString())
-                                            else {
-                                                result.titleGroupID = issueEntitlementGroup.id.toString()
-                                                result.titleGroup = issueEntitlementGroup
-                                            }
-                                        }
-
-                                        if (issueEntitlementGroup && subscriptionService.addEntitlement(subscriberSub, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
-                                            log.debug("Added tipp ${tipp.gokbId} to sub ${subscriberSub.id}")
-                                            ++countTippsToAdd
-                                        }
-                                    }
-                                    catch (EntitlementCreationException e) {
-                                        log.debug("Error: Adding tipp ${tipp} to sub ${subscriberSub.id}: " + e.getMessage())
-                                        result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps', null, LocaleUtils.getCurrentLocale())
-                                    }
-
-                                }
-                            }
-                            if (countTippsToAdd > 0) {
-                                Object[] args = [countTippsToAdd]
-                                result.message = messageSource.getMessage('renewEntitlementsWithSurvey.tippsToAdd', args, LocaleUtils.getCurrentLocale())
-                            }
-                        }
-
-                        params.remove("kbartPreselect")
-                        params.tab = 'selectedIEs'
-                        result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(subscriberSub, result.surveyConfig)
-                    }
-
                     result.checkedCache = checkedCache.get('checked')
                     result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
 
