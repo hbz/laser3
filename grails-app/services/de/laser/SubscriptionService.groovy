@@ -1320,6 +1320,11 @@ join sub.orgRelations or_sub where
     }
 
     Map<String, Object> selectEntitlementsWithKBART(MultipartFile kbartFile, Subscription subscription) {
+        Integer countRows = 0
+        Integer count = 0
+        Integer countSelectTipps = 0
+        Integer countNotSelectTipps = 0
+
         InputStream stream = kbartFile.getInputStream()
         ArrayList<String> rows = stream.text.split('\n')
         int zdbCol = -1, onlineIdentifierCol = -1, printIdentifierCol = -1, titleUrlCol = -1, titleIdCol = -1, doiCol = -1
@@ -1352,6 +1357,7 @@ join sub.orgRelations or_sub where
         }
         Set<String> selectedTitles = []
         rows.eachWithIndex{ String row, int i ->
+            countRows++
             log.debug("now processing record ${i}")
             ArrayList<String> cols = row.split('\t', -1)
             if(cols.size() == titleRow.size()) {
@@ -1386,19 +1392,28 @@ join sub.orgRelations or_sub where
                         match = matchList[0] as TitleInstancePackagePlatform
                 }
                 if(match) {
+                    count++
                     IssueEntitlement ieMatch = IssueEntitlement.findBySubscriptionAndTippAndStatusNotEqual(subscription, match, RDStore.TIPP_STATUS_REMOVED)
-                    if(ieMatch)
+                    if(ieMatch) {
                         wrongTitles << cols
-                    else selectedTitles << match.gokbId
+                        countNotSelectTipps++
+                    }
+                    else {
+                        selectedTitles << match.gokbId
+                        countSelectTipps++
+                    }
                 }
                 else
+                {
                     wrongTitles << cols
+                    countNotSelectTipps++
+                }
             }
             else {
                 truncatedRows << i
             }
         }
-        [titleRow: titleRow, wrongTitles: wrongTitles, truncatedRows: truncatedRows.join(', '), selectedTitles: selectedTitles]
+        [titleRow: titleRow, wrongTitles: wrongTitles, truncatedRows: truncatedRows.join(', '), selectedTitles: selectedTitles, processRows: countRows, processCount: count, countSelectTipps: countSelectTipps, countNotSelectTipps: countNotSelectTipps]
     }
 
     /**
