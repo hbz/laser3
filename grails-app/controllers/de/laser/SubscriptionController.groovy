@@ -309,7 +309,8 @@ class SubscriptionController {
         }
         else {
             Subscription sub = Subscription.get(params.id)
-            String token = "report_${params.reportType}_${params.platform}_${sub.getSubscriber().id}_${sub.id}"
+            String dateHash = "${params.startDate}${params.endDate}".encodeAsMD5()
+            String token = "report_${params.reportType}_${params.platform}_${dateHash}_${sub.getSubscriber().id}_${sub.id}"
             if(params.metricType) {
                 token += '_'+params.list('metricType').join('_')
             }

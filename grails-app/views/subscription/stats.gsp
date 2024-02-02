@@ -331,9 +331,11 @@
                 currMonth = '0'+currMonth;
             let startDate = currDate.getFullYear()+'-'+currMonth;
             currMonth = limit.getMonth(); //previous month
-            let endDate = limit.getFullYear()+'-'+currMonth;
-            if(currMonth > 0 && currMonth < 10)
+            let endDate;
+            if(currMonth > 0 && currMonth < 10) {
                 currMonth = '0'+currMonth;
+                endDate = limit.getFullYear()+'-'+currMonth;
+            }
             else if(currMonth === 0)
                 endDate = (limit.getFullYear()-1)+'-12';
             let months = [];
