@@ -1912,7 +1912,7 @@ class SubscriptionControllerService {
                     */
                 }
 
-                result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(subscriberSub, false)
+                result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(subscriberSub)
 
 /*            if (result.surveyConfig.pickAndChoosePerpetualAccess) {
                 result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)

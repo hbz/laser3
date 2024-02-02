@@ -30,6 +30,9 @@
 <g:elseif test="${params.tab == 'linkPackages' && !contextService.getOrg().isCustomerType_Support()}">
     <laser:render template="/templates/management/linkPackages"/>
 </g:elseif>
+<g:elseif test="${params.tab == 'permanentTitles' && !contextService.getOrg().isCustomerType_Support()}">
+    <laser:render template="/templates/management/permanentTitles"/>
+</g:elseif>
 <g:elseif test="${params.tab == 'properties'}">
     <laser:render template="/templates/management/properties"/>
 </g:elseif>
