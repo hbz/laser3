@@ -43,7 +43,7 @@
 <g:if test="${enrichmentProcess}">
     <ui:msg class="positive" header="${message(code: 'subscription.details.issueEntitlementEnrichment.label')}">
         <g:message code="subscription.details.issueEntitlementEnrichment.enrichmentProcess"
-                   args="[enrichmentProcess.processCount, enrichmentProcess.countIes, enrichmentProcess.processCountChangesCoverageDates, enrichmentProcess.processCountChangesPrice]"/>
+                   args="[enrichmentProcess.countIes, enrichmentProcess.processCount, enrichmentProcess.processCountChangesCoverageDates, enrichmentProcess.processCountChangesPrice]"/>
     </ui:msg>
 
     <g:if test="${truncatedRows}">

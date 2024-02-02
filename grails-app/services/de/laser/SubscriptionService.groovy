@@ -2346,7 +2346,7 @@ join sub.orgRelations or_sub where
                     if (ieMatch) {
                         IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage()
                         count++
-                        log.debug('count'+count)
+
                         PriceItem priceItem = ieMatch.priceItems ? ieMatch.priceItems[0] : new PriceItem(issueEntitlement: ieMatch)
 
                         colMap.each { String colName, int colNo ->
@@ -2438,9 +2438,9 @@ join sub.orgRelations or_sub where
             }
         }
 
-        println(count)
+/*        println(count)
         println(countChangesCoverageDates)
-        println(countChangesPrice)
+        println(countChangesPrice)*/
 
         return [countIes: countIes, processCount: count, processCountChangesCoverageDates: countChangesCoverageDates, processCountChangesPrice: countChangesPrice, wrongTitles: wrongTitles, truncatedRows: truncatedRows.join(', ')]
     }

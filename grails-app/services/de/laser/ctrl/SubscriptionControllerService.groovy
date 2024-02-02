@@ -2294,7 +2294,7 @@ class SubscriptionControllerService {
             if(params.kbartPreselect) {
                 String filename = params.kbartPreselect.originalFilename
 
-                int countQueryIes = IssueEntitlement.executeQuery("select count(*) " + query.query, query.queryParams)[0]
+                int countQueryIes = entitlements.size()
 
                 MultipartFile kbartFile = params.kbartPreselect
                 InputStream stream = kbartFile.getInputStream()
