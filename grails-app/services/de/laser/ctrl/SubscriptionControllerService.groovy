@@ -761,14 +761,23 @@ class SubscriptionControllerService {
                 "(select json_agg(json_build_object(id_value, id_tipp_fk)) as doi from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on id_tipp_fk = ie_tipp_fk where ie_subscription_fk = :refSub and ie_status_rv_fk = :current and idns_ns = :doi) as doi," +
                 "(select json_agg(json_build_object(id_value, id_tipp_fk)) as proprietary_identifier from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on id_tipp_fk = ie_tipp_fk where ie_subscription_fk = :refSub and ie_status_rv_fk = :current and idns_ns = :proprietary) as proprietary"
         Sql sql = GlobalService.obtainSqlConnection()
-        Object[] printIdentifiers = [IdentifierNamespace.ISBN, IdentifierNamespace.ISSN], onlineIdentifiers = [IdentifierNamespace.EISBN, IdentifierNamespace.EISSN]
-        Map<String, Object> queryParams = [refSub: refSub.id, current: RDStore.TIPP_STATUS_CURRENT.id, printIdentifiers: sql.getDataSource().getConnection().createArrayOf('varchar', printIdentifiers), onlineIdentifiers: sql.getDataSource().getConnection().createArrayOf('varchar', onlineIdentifiers), doi: IdentifierNamespace.DOI, proprietary: IdentifierNamespace.TITLE_ID] //current for now
+        Object[] printIdentifierNamespaces = [IdentifierNamespace.ISBN, IdentifierNamespace.ISSN], onlineIdentifierNamespaces = [IdentifierNamespace.EISBN, IdentifierNamespace.EISSN]
+        Map<String, Object> queryParams = [refSub: refSub.id, current: RDStore.TIPP_STATUS_CURRENT.id, printIdentifiers: sql.getDataSource().getConnection().createArrayOf('varchar', printIdentifierNamespaces), onlineIdentifiers: sql.getDataSource().getConnection().createArrayOf('varchar', onlineIdentifierNamespaces), doi: IdentifierNamespace.DOI, proprietary: IdentifierNamespace.TITLE_ID] //current for now
         JsonSlurper slurper = new JsonSlurper()
         List<GroovyRowResult> rows = sql.rows(query, queryParams)
-        result.put('printIdentifiers', slurper.parseText(rows[0]['print_identifier'].toString()))
-        result.put('onlineIdentifiers', slurper.parseText(rows[0]['online_identifier'].toString()))
-        result.put('doi', slurper.parseText(rows[0]['doi'].toString()))
-        result.put('proprietaryIdentifiers', slurper.parseText(rows[0]['proprietary_identifier'].toString()))
+        Map<String, String> printIdentifiers = [:], onlineIdentifiers = [:], doi = [:], proprietaryIdentifiers = [:]
+        List printIds = rows[0]['print_identifier'] ? slurper.parseText(rows[0]['print_identifier'].toString()) : [],
+        onlineIds = rows[0]['online_identifier'] ? slurper.parseText(rows[0]['online_identifier'].toString()) : [],
+        dois = rows[0]['doi'] ? slurper.parseText(rows[0]['doi'].toString()) : [],
+        propIds = rows[0]['proprietary_identifier'] ? slurper.parseText(rows[0]['proprietary_identifier'].toString()) : []
+        printIdentifiers.putAll(printIds.collectEntries { row -> [row.entrySet()[0].getKey(), row.entrySet()[0].getValue()] })
+        onlineIdentifiers.putAll(onlineIds.collectEntries { row -> [row.entrySet()[0].getKey(), row.entrySet()[0].getValue()] })
+        doi.putAll(dois.collectEntries { row -> [row.entrySet()[0].getKey(), row.entrySet()[0].getValue()] })
+        proprietaryIdentifiers.putAll(propIds.collectEntries { row -> [row.entrySet()[0].getKey(), row.entrySet()[0].getValue()] })
+        result.put('printIdentifiers', printIdentifiers)
+        result.put('onlineIdentifiers', onlineIdentifiers)
+        result.put('doi', doi)
+        result.put('proprietaryIdentifiers', proprietaryIdentifiers)
         result
         /*
         else if(fetchWhat == 'ids') {
@@ -863,42 +872,36 @@ class SubscriptionControllerService {
      * @param report the COUNTER report result
      * @return the matching {@link TitleInstancePackagePlatform} or null, if no match has been found
      */
-    TitleInstancePackagePlatform matchReport(Map<String, Map<String, TitleInstancePackagePlatform>> titles, IdentifierNamespace propIdNamespace, Map report) {
-        TitleInstancePackagePlatform tipp = null
+    TitleInstancePackagePlatform matchReport(Map<String, Object> titles, IdentifierNamespace propIdNamespace, Map report) {
+        Long tipp = null
         if(report.onlineIdentifier || report.isbn) {
-            tipp = titles[IdentifierNamespace.EISSN]?.get(report.onlineIdentifier)
+            tipp = titles.onlineIdentifiers.get(report.onlineIdentifier)
             if(!tipp)
-                tipp = titles[IdentifierNamespace.EISSN]?.get(report.onlineIdentifier?.replaceAll('-',''))
+                tipp = titles.onlineIdentifiers.get(report.onlineIdentifier?.replaceAll('-',''))
             if(!tipp)
-                tipp = titles[IdentifierNamespace.EISBN]?.get(report.onlineIdentifier)
+                tipp = titles.onlineIdentifiers.get(report.isbn)
             if(!tipp)
-                tipp = titles[IdentifierNamespace.EISBN]?.get(report.onlineIdentifier?.replaceAll('-',''))
-            if(!tipp)
-                tipp = titles[IdentifierNamespace.EISBN]?.get(report.isbn)
-            if(!tipp)
-                tipp = titles[IdentifierNamespace.EISBN]?.get(report.isbn?.replaceAll('-',''))
+                tipp = titles.onlineIdentifiers.get(report.isbn?.replaceAll('-',''))
         }
         if(!tipp && (report.printIdentifier || report.isbn)) {
-            tipp = titles[IdentifierNamespace.ISSN]?.get(report.printIdentifier)
+            tipp = titles.printIdentifiers.get(report.printIdentifier)
             if(!tipp)
-                tipp = titles[IdentifierNamespace.ISSN]?.get(report.printIdentifier?.replaceAll('-',''))
+                tipp = titles.printIdentifiers.get(report.printIdentifier?.replaceAll('-',''))
             if(!tipp)
-                tipp = titles[IdentifierNamespace.ISBN]?.get(report.printIdentifier)
+                tipp = titles.printIdentifiers.get(report.isbn)
             if(!tipp)
-                tipp = titles[IdentifierNamespace.ISBN]?.get(report.printIdentifier?.replaceAll('-',''))
-            if(!tipp)
-                tipp = titles[IdentifierNamespace.ISBN]?.get(report.isbn)
-            if(!tipp)
-                tipp = titles[IdentifierNamespace.ISBN]?.get(report.isbn?.replaceAll('-',''))
+                tipp = titles.printIdentifiers.get(report.isbn?.replaceAll('-',''))
         }
         if(!tipp && report.doi) {
-            tipp = titles[IdentifierNamespace.DOI]?.get(report.doi)
+            tipp = titles.doi.get(report.doi)
         }
         if(!tipp && report.proprietaryIdentifier) {
             if(!tipp)
-                tipp = titles[propIdNamespace]?.get(report.proprietaryIdentifier)
+                tipp = titles.proprietaryIdentifiers.get(report.proprietaryIdentifier)
         }
-        GrailsHibernateUtil.unwrapIfProxy(tipp) as TitleInstancePackagePlatform
+        if(tipp)
+            TitleInstancePackagePlatform.get(tipp)
+        else null
     }
 
     /**
