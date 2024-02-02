@@ -874,21 +874,8 @@ join sub.orgRelations or_sub where
      * @param subscription the subscription whose titles should be returned
      * @return integer of current permanent titles
      */
-    Integer countCurrentPermanentTitles(Subscription subscription, boolean selfSub) {
-
-        Set<Subscription> subscriptions = []
-        subscriptions = linksGenerationService.getSuccessionChain(subscription, 'sourceSubscription')
-
-        if (selfSub) {
-            subscriptions << subscription
-        }
-
-        Integer countTitles = 0
-        if(subscriptions.size() > 0) {
-            countTitles = PermanentTitle.executeQuery("select count(*) from PermanentTitle as pi where pi.subscription in (:subs) and pi.issueEntitlement.status = :ieStatus",[subs: subscriptions, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0]
-        }
-
-        return countTitles
+    Integer countCurrentPermanentTitles(Subscription subscription) {
+        return PermanentTitle.executeQuery("select count(*) from PermanentTitle as pi where pi.subscription = :sub and pi.issueEntitlement.status = :ieStatus",[sub: subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0]
     }
 
     /**
@@ -1320,6 +1307,11 @@ join sub.orgRelations or_sub where
     }
 
     Map<String, Object> selectEntitlementsWithKBART(MultipartFile kbartFile, Subscription subscription) {
+        Integer countRows = 0
+        Integer count = 0
+        Integer countSelectTipps = 0
+        Integer countNotSelectTipps = 0
+
         InputStream stream = kbartFile.getInputStream()
         ArrayList<String> rows = stream.text.split('\n')
         int zdbCol = -1, onlineIdentifierCol = -1, printIdentifierCol = -1, titleUrlCol = -1, titleIdCol = -1, doiCol = -1
@@ -1352,6 +1344,7 @@ join sub.orgRelations or_sub where
         }
         Set<String> selectedTitles = []
         rows.eachWithIndex{ String row, int i ->
+            countRows++
             log.debug("now processing record ${i}")
             ArrayList<String> cols = row.split('\t', -1)
             if(cols.size() == titleRow.size()) {
@@ -1386,19 +1379,28 @@ join sub.orgRelations or_sub where
                         match = matchList[0] as TitleInstancePackagePlatform
                 }
                 if(match) {
+                    count++
                     IssueEntitlement ieMatch = IssueEntitlement.findBySubscriptionAndTippAndStatusNotEqual(subscription, match, RDStore.TIPP_STATUS_REMOVED)
-                    if(ieMatch)
+                    if(ieMatch) {
                         wrongTitles << cols
-                    else selectedTitles << match.gokbId
+                        countNotSelectTipps++
+                    }
+                    else {
+                        selectedTitles << match.gokbId
+                        countSelectTipps++
+                    }
                 }
                 else
+                {
                     wrongTitles << cols
+                    countNotSelectTipps++
+                }
             }
             else {
                 truncatedRows << i
             }
         }
-        [titleRow: titleRow, wrongTitles: wrongTitles, truncatedRows: truncatedRows.join(', '), selectedTitles: selectedTitles]
+        [titleRow: titleRow, wrongTitles: wrongTitles, truncatedRows: truncatedRows.join(', '), selectedTitles: selectedTitles, processRows: countRows, processCount: count, countSelectTipps: countSelectTipps, countNotSelectTipps: countNotSelectTipps]
     }
 
     /**
@@ -2412,13 +2414,17 @@ join sub.orgRelations or_sub where
      * @param subscription the subscription whose holding should be accessed
      * @return a map containing the process result
      */
-    Map tippSelectForSurvey(InputStream stream, Subscription subscription, SurveyConfig surveyConfig, Subscription newSub) {
+    Map tippSelectForSurvey(MultipartFile kbartFile, Subscription subscription, SurveyConfig surveyConfig, Subscription newSub) {
+        InputStream stream = kbartFile.getInputStream()
+
         Integer countRows = 0
         Integer count = 0
         Integer countSelectTipps = 0
         Integer countNotSelectTipps = 0
         Org contextOrg = contextService.getOrg()
         Set selectedTipps = [], truncatedRows = []
+        List wrongTitles = []
+        List titleRow = []
 
         int zdbCol = -1, onlineIdentifierCol = -1, printIdentifierCol = -1, titleUrlCol = -1, titleIdCol = -1, doiCol = -1, pickCol = -1
         Set<Package> subPkgs = SubscriptionPackage.executeQuery('select sp.pkg from SubscriptionPackage sp where sp.subscription = :subscription', [subscription: subscription])
@@ -2434,7 +2440,7 @@ join sub.orgRelations or_sub where
 
             ArrayList<String> rows = stream.text.split('\n')
             //read off first line of KBART file
-            List titleRow = rows.remove(0).split('\t')
+            titleRow = rows.remove(0).split('\t')
             titleRow.eachWithIndex { headerCol, int c ->
                 switch (headerCol.toLowerCase().trim()) {
                     case "zdb_id": zdbCol = c
@@ -2519,11 +2525,15 @@ join sub.orgRelations or_sub where
                                     selectedTipps << match.gokbId
                                     countSelectTipps++
                                 }
-                                if (!allowedToSelect) {
+                                else if (!allowedToSelect) {
                                     countNotSelectTipps++
+                                } else if(!ieInNewSub){
+                                    wrongTitles << cols
                                 }
                             }
                         }
+                    }else{
+                        wrongTitles << cols
                     }
                 }
                 else {
@@ -2532,7 +2542,7 @@ join sub.orgRelations or_sub where
             }
         }
 
-        return [processRows: countRows, processCount: count, selectedTipps: selectedTipps, countSelectTipps: countSelectTipps, countNotSelectTipps: countNotSelectTipps]
+        return [titleRow: titleRow, processRows: countRows, processCount: count, selectedTipps: selectedTipps, countSelectTipps: countSelectTipps, countNotSelectTipps: countNotSelectTipps, wrongTitles: wrongTitles, truncatedRows: truncatedRows.join(', ')]
     }
 
     @Deprecated
