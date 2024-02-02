@@ -1,4 +1,4 @@
-<%@ page import="de.laser.finance.CostItem; de.laser.survey.SurveyInfo; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.finance.CostItem; de.laser.RefdataValue; de.laser.survey.SurveyInfo; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
 
 <laser:htmlStart message="menu.institutions.org.info" serviceInjection="true">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
@@ -81,6 +81,12 @@
     .ui.table > tfoot > tr > td {
         background-color: #fff;
     }
+
+    .chartWrapper {
+        width: 100%;
+        min-height: 300px;
+        margin-bottom: 35px;
+    }
 </style>
 
     <div id="stat_subscriptions" class="stats-content">
@@ -88,7 +94,7 @@
 %{--            ${message(code:'subscription.plural')} <i class="icon clipboard" aria-hidden="true"></i>--}%
 %{--        </h3>--}%
 
-                <div class="chartWrapper" id="cw-subscriptions" style="width:100%; min-height:300px"></div>
+                <div class="chartWrapper" id="cw-subscription"></div>
 
                 <div class="ui secondary la-tab-with-js menu">
                     <g:each in="${subscriptionMap}" var="subStatus,subList">
@@ -140,7 +146,7 @@
 %{--        <h3 class="ui right aligned header">--}%
 %{--            ${message(code:'license.plural')} <i class="icon balance scale" aria-hidden="true"></i>--}%
 %{--        </h3>--}%
-                <div class="chartWrapper" id="cw-licenses" style="width:100%; min-height:300px"></div>
+                <div class="chartWrapper" id="cw-license"></div>
 
                 <div class="ui secondary la-tab-with-js menu">
                     <g:each in="${licenseMap}" var="subStatus,licList">
@@ -572,8 +578,8 @@
             $('#' + $(this).attr('data-target')).show()
 
             if (JSPC.app.info && JSPC.app.info.charts) {
-                JSPC.app.info.charts.echart1.resize()
-                JSPC.app.info.charts.echart2.resize()
+                JSPC.app.info.charts.subscription.resize()
+                JSPC.app.info.charts.license.resize()
             }
        })
 
@@ -594,61 +600,79 @@
 <laser:script file="${this.getGroovyPageFileName()}">
 
     JSPC.app.info = {
-        config1: {
-            tooltip: {
-                trigger: 'item'
-            },
+        config_subscription: {
+            tooltip: { trigger: 'axis' },
             series: [
-                {
-                    type: 'bar',
-                    color: '#5470c6',
-                    data: [${subscriptionTimelineMap.values().collect{ it.size() }.join(', ')}]
-                },
+                <g:each in="${subscriptionTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ RefdataValue.get(it).getI10n('value') }}" var="status">
+                    {
+                        name    : '${RefdataValue.get(status).getI10n('value')}',
+                        type    : 'bar',
+                        stack   : 'total',
+                        emphasis: { focus: 'series' },
+                        data    : [${subscriptionTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
+                        color   : <%
+                            // blue '#5470c6', green '#91cc75', yellow '#fac858', red '#ee6666', ice '#73c0de', dgreen '#3ba272', orange '#fc8452', purple '#9a60b4', pink '#ea7ccc'
+                            String color = ''
+                            switch (RefdataValue.get(status)) {
+                                case RDStore.SUBSCRIPTION_CURRENT:      color = '#91cc75'; break;
+                                case RDStore.SUBSCRIPTION_EXPIRED:      color = '#5470c6'; break;
+                                case RDStore.SUBSCRIPTION_INTENDED:     color = '#3ba272'; break;
+                                case RDStore.SUBSCRIPTION_TEST_ACCESS:  color = '#fac858'; break;
+                            }
+                            println "'${color}'"
+                            %>
+                    },
+                </g:each>
             ],
             xAxis: {
                 type: 'category',
                 data: [${subscriptionTimelineMap.keySet().join(', ')}]
-%{--                axisLabel: {--}%
-%{--                    formatter: function(id, idx) {--}%
-%{--                        return JSPC.app.info.config.series[1].data[idx].name--}%
-%{--                    }--}%
-%{--                },--}%
             },
-            yAxis: { gridIndex: 0 },
-            grid:  { left: '5%', right: '5%', top: '5%', bottom: '15%' },
+            yAxis:  { type: 'value' },
+            legend: { bottom: 0 },
+            grid:   { left: '5%', right: '5%', top: '5%', bottom: '20%' },
         },
-        config2: {
-            tooltip: {
-                trigger: 'item'
-            },
+        config_license: {
+            tooltip: { trigger: 'axis' },
             series: [
-                {
-                    type: 'bar',
-                    color: '#5470c6',
-                    data: [${licenseTimelineMap.values().collect{ it.size() }.join(', ')}]
-                },
+                <g:each in="${licenseTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ RefdataValue.get(it).getI10n('value') }}" var="status">
+                    {
+                        name    : '${RefdataValue.get(status).getI10n('value')}',
+                        type    : 'bar',
+                        stack   : 'total',
+                        emphasis: { focus: 'series' },
+                        data    : [${licenseTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
+                        color   : <%
+                            // blue '#5470c6', green '#91cc75', yellow '#fac858', red '#ee6666', ice '#73c0de', dgreen '#3ba272', orange '#fc8452', purple '#9a60b4', pink '#ea7ccc'
+                            color = ''
+                            switch (RefdataValue.get(status)) {
+                                case RDStore.LICENSE_CURRENT:      color = '#91cc75'; break;
+                                case RDStore.LICENSE_EXPIRED:      color = '#5470c6'; break;
+                                case RDStore.LICENSE_INTENDED:     color = '#3ba272'; break;
+                                case RDStore.LICENSE_NO_STATUS:    color = '#ee6666'; break;
+                            }
+                            println "'${color}'"
+                        %>
+                    },
+                </g:each>
             ],
             xAxis: {
                 type: 'category',
                 data: [${licenseTimelineMap.keySet().join(', ')}]
-        %{--                axisLabel: {--}%
-        %{--                    formatter: function(id, idx) {--}%
-        %{--                        return JSPC.app.info.config.series[1].data[idx].name--}%
-        %{--                    }--}%
-        %{--                },--}%
             },
-            yAxis: { gridIndex: 0 },
-            grid:  { left: '5%', right: '5%', top: '5%', bottom: '15%' },
-        }
+            yAxis:  { type: 'value' },
+            legend: { bottom: 0 },
+            grid:   { left: '5%', right: '5%', top: '5%', bottom: '20%' },
+        },
     };
 
 JSPC.app.info.charts = {}
 
-JSPC.app.info.charts.echart1 = echarts.init ($('#cw-subscriptions')[0]);
-JSPC.app.info.charts.echart1.setOption (JSPC.app.info.config1);
+JSPC.app.info.charts.subscription = echarts.init ($('#cw-subscription')[0]);
+JSPC.app.info.charts.subscription.setOption (JSPC.app.info.config_subscription);
 
-JSPC.app.info.charts.echart2 = echarts.init ($('#cw-licenses')[0]);
-JSPC.app.info.charts.echart2.setOption (JSPC.app.info.config2);
+JSPC.app.info.charts.license = echarts.init ($('#cw-license')[0]);
+JSPC.app.info.charts.license.setOption (JSPC.app.info.config_license);
 </laser:script>
 
 
