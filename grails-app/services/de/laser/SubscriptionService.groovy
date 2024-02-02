@@ -2214,21 +2214,46 @@ join sub.orgRelations or_sub where
      * @param uploadPriceInfo should price dates be updated as well?
      * @return a map containing the processing results
      */
-    Map issueEntitlementEnrichment(InputStream stream, Set<Long> entIds, Subscription subscription, boolean uploadCoverageDates, boolean uploadPriceInfo) {
+    Map issueEntitlementEnrichment(InputStream stream, int countIes, Subscription subscription, boolean uploadCoverageDates, boolean uploadPriceInfo) {
 
         Integer count = 0
         Integer countChangesPrice = 0
         Integer countChangesCoverageDates = 0
+
+        Set<Package> subPkgs = SubscriptionPackage.executeQuery('select sp.pkg from SubscriptionPackage sp where sp.subscription = :subscription', [subscription: subscription])
+
+        //now, assemble the identifiers available to highlight
+        Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNsAndNsType('zdb', TitleInstancePackagePlatform.class.name),
+                                                       eissn: IdentifierNamespace.findByNsAndNsType('eissn', TitleInstancePackagePlatform.class.name),
+                                                       isbn: IdentifierNamespace.findByNsAndNsType('isbn',TitleInstancePackagePlatform.class.name),
+                                                       issn : IdentifierNamespace.findByNsAndNsType('issn', TitleInstancePackagePlatform.class.name),
+                                                       eisbn: IdentifierNamespace.findByNsAndNsType('eisbn', TitleInstancePackagePlatform.class.name),
+                                                       doi: IdentifierNamespace.findByNsAndNsType('doi', TitleInstancePackagePlatform.class.name),
+                                                       title_id: IdentifierNamespace.findByNsAndNsType('title_id', TitleInstancePackagePlatform.class.name)]
 
         ArrayList<String> rows = stream.text.split('\n')
         Map<String, Integer> colMap = [publicationTitleCol: -1, zdbCol: -1, onlineIdentifierCol: -1, printIdentifierCol: -1, dateFirstInPrintCol: -1, dateFirstOnlineCol: -1,
                                        startDateCol       : -1, startVolumeCol: -1, startIssueCol: -1,
                                        endDateCol         : -1, endVolumeCol: -1, endIssueCol: -1,
                                        accessStartDateCol : -1, accessEndDateCol: -1, coverageDepthCol: -1, coverageNotesCol: -1, embargoCol: -1,
-                                       listPriceCol       : -1, listCurrencyCol: -1, listPriceEurCol: -1, listPriceUsdCol: -1, listPriceGbpCol: -1, localPriceCol: -1, localCurrencyCol: -1, priceDateCol: -1]
+                                       listPriceCol       : -1, listCurrencyCol: -1, listPriceEurCol: -1, listPriceUsdCol: -1, listPriceGbpCol: -1, localPriceCol: -1, localCurrencyCol: -1, priceDateCol: -1,
+                                       titleUrlCol: -1, titleIdCol: -1, doiCol: -1, titleUrlCol: -1, ]
         //read off first line of KBART file
-        rows[0].split('\t').eachWithIndex { headerCol, int c ->
+        List titleRow = rows.remove(0).split('\t'), wrongTitles = [], truncatedRows = []
+        titleRow.eachWithIndex { headerCol, int c ->
             switch (headerCol.toLowerCase().trim()) {
+                case "title_url": colMap.titleUrlCol = c
+                    break
+                case "title_id": colMap.titleIdCol = c
+                    break
+                case "doi_identifier": colMap.doiCol = c
+                    break
+                case "zugriffs-url": colMap.titleUrlCol = c
+                    break
+                case "access url": colMap.titleUrlCol = c
+                    break
+                case "doi": colMap.doiCol= c
+                    break
                 case "zdb_id": colMap.zdbCol = c
                     break
                 case "print_identifier": colMap.printIdentifierCol = c
@@ -2281,42 +2306,49 @@ join sub.orgRelations or_sub where
                     break
             }
         }
-        //after having read off the header row, pop the first row
-        rows.remove(0)
-        //now, assemble the identifiers available to highlight
-        Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNsAndNsType('zdb', TitleInstancePackagePlatform.class.name),
-                                                       eissn: IdentifierNamespace.findByNsAndNsType('eissn', TitleInstancePackagePlatform.class.name), isbn: IdentifierNamespace.findByNsAndNsType('isbn',TitleInstancePackagePlatform.class.name),
-                                                       issn : IdentifierNamespace.findByNsAndNsType('issn', TitleInstancePackagePlatform.class.name), eisbn: IdentifierNamespace.findByNsAndNsType('eisbn', TitleInstancePackagePlatform.class.name),
-                                                       doi  : IdentifierNamespace.findByNsAndNsType('doi', TitleInstancePackagePlatform.class.name)]
         rows.eachWithIndex { row, int i ->
             log.debug("now processing entitlement ${i}")
             ArrayList<String> cols = row.split('\t', -1)
-            Map<String, Object> idCandidate
-            if (colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol]) {
-                idCandidate = [namespaces: [namespaces.eissn, namespaces.eisbn], value: cols[colMap.onlineIdentifierCol]]
-            }
-            else if (colMap.doiTitleCol >= 0 && cols[colMap.doiTitleCol]) {
-                idCandidate = [namespaces: [namespaces.doi], value: cols[colMap.doiTitleCol]]
-            }
-            else if (colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol]) {
-                idCandidate = [namespaces: [namespaces.issn, namespaces.isbn], value: cols[colMap.printIdentifierCol]]
-            }
-            else if (colMap.zdbCol >= 0 && cols[colMap.zdbCol]) {
-                idCandidate = [namespaces: [namespaces.zdb], value: cols[colMap.zdbCol]]
-            }
-            if (((colMap.zdbCol >= 0 && cols[colMap.zdbCol].trim().isEmpty()) || colMap.zdbCol < 0) &&
-                    ((colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol].trim().isEmpty()) || colMap.onlineIdentifierCol < 0) &&
-                    ((colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol].trim().isEmpty()) || colMap.printIdentifierCol < 0)) {
-            } else {
+            if(cols.size() == titleRow.size()) {
+                TitleInstancePackagePlatform match = null
+                //cascade: 1. title_id, 2. title_url, 3. identifier map
+                if (colMap.titleIdCol >= 0 && cols[colMap.titleIdCol] != null && !cols[colMap.titleIdCol].trim().isEmpty()) {
+                    List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status != :removed', [subPkgs: subPkgs, value: cols[colMap.titleIdCol].trim(), ns: namespaces.title_id, removed: RDStore.TIPP_STATUS_REMOVED])
+                    if (matchList.size() == 1)
+                        match = matchList[0] as TitleInstancePackagePlatform
+                }
+                if (!match && colMap.titleUrlCol >= 0 && cols[colMap.titleUrlCol] != null && !cols[colMap.titleUrlCol].trim().isEmpty()) {
+                    match = TitleInstancePackagePlatform.findByHostPlatformURLAndPkgInListAndStatusNotEqual(cols[colMap.titleUrlCol].trim(), subPkgs, RDStore.TIPP_STATUS_REMOVED)
+                }
+                if (!match && colMap.doiCol >= 0 && cols[colMap.doiCol] != null && !cols[colMap.doiCol].trim().isEmpty()) {
+                    List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status != :removed', [subPkgs: subPkgs, value: cols[colMap.doiCol].trim(), ns: namespaces.doi, removed: RDStore.TIPP_STATUS_REMOVED])
+                    if (matchList.size() == 1)
+                        match = matchList[0] as TitleInstancePackagePlatform
+                }
+                if (!match && colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol] != null && !cols[colMap.onlineIdentifierCol].trim().isEmpty()) {
+                    List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns in (:ns) and tipp.status != :removed', [subPkgs: subPkgs, value: cols[colMap.onlineIdentifierCol].trim(), ns: [namespaces.eisbn, namespaces.eissn], removed: RDStore.TIPP_STATUS_REMOVED])
+                    if (matchList.size() == 1)
+                        match = matchList[0] as TitleInstancePackagePlatform
+                }
+                if (!match && colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol] != null && !cols[colMap.printIdentifierCol].trim().isEmpty()) {
+                    List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns in (:ns) and tipp.status != :removed', [subPkgs: subPkgs, value: cols[colMap.printIdentifierCol].trim(), ns: [namespaces.isbn, namespaces.issn], removed: RDStore.TIPP_STATUS_REMOVED])
+                    if (matchList.size() == 1)
+                        match = matchList[0] as TitleInstancePackagePlatform
+                }
+                if (!match && colMap.zdbCol >= 0 && cols[colMap.zdbCol] != null && !cols[colMap.zdbCol].trim().isEmpty()) {
+                    List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status != :removed', [subPkgs: subPkgs, value: cols[colMap.zdbCol].trim(), ns: namespaces.zdb, removed: RDStore.TIPP_STATUS_REMOVED])
+                    if (matchList.size() == 1)
+                        match = matchList[0] as TitleInstancePackagePlatform
+                }
 
-                List<Long> titleIds = TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp join tipp.ids ident where ident.ns in :namespaces and ident.value = :value', [namespaces:idCandidate.namespaces, value:idCandidate.value])
-                if (titleIds.size() > 0) {
-                    List<IssueEntitlement> issueEntitlements = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.id in (:titleIds) and ie.subscription.id = :subId and ie.status != :ieStatus', [titleIds: titleIds, subId: subscription.id, ieStatus: RDStore.TIPP_STATUS_REMOVED])
-                    if (issueEntitlements.size() > 0) {
-                        IssueEntitlement issueEntitlement = issueEntitlements[0]
+                if (match) {
+                    IssueEntitlement ieMatch = IssueEntitlement.findBySubscriptionAndTippAndStatusNotEqual(subscription, match, RDStore.TIPP_STATUS_REMOVED)
+                    if (ieMatch) {
                         IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage()
                         count++
-                        PriceItem priceItem = issueEntitlement.priceItems ? issueEntitlement.priceItems[0] : new PriceItem(issueEntitlement: issueEntitlement)
+                        log.debug('count'+count)
+                        PriceItem priceItem = ieMatch.priceItems ? ieMatch.priceItems[0] : new PriceItem(issueEntitlement: ieMatch)
+
                         colMap.each { String colName, int colNo ->
                             if (colNo > -1 && cols[colNo]) {
                                 String cellEntry = cols[colNo].trim()
@@ -2334,9 +2366,9 @@ join sub.orgRelations or_sub where
                                             break
                                         case "endIssueCol": ieCoverage.endIssue = cellEntry ?: null
                                             break
-                                        case "accessStartDateCol": issueEntitlement.accessStartDate = cellEntry ? DateUtils.parseDateGeneric(cellEntry) : issueEntitlement.accessStartDate
+                                        case "accessStartDateCol": ieMatch.accessStartDate = cellEntry ? DateUtils.parseDateGeneric(cellEntry) : ieMatch.accessStartDate
                                             break
-                                        case "accessEndDateCol": issueEntitlement.accessEndDate = cellEntry ? DateUtils.parseDateGeneric(cellEntry) : issueEntitlement.accessEndDate
+                                        case "accessEndDateCol": ieMatch.accessEndDate = cellEntry ? DateUtils.parseDateGeneric(cellEntry) : ieMatch.accessEndDate
                                             break
                                         case "embargoCol": ieCoverage.embargo = cellEntry ?: null
                                             break
@@ -2357,7 +2389,7 @@ join sub.orgRelations or_sub where
                                             case "listPriceEurCol": priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
                                                 priceItem.listCurrency = RDStore.CURRENCY_EUR
                                                 break
-                                            case "listPriceUsdCol": priceItem.listPrice = cellEntry ?  escapeService.parseFinancialValue(cellEntry) : null
+                                            case "listPriceUsdCol": priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
                                                 priceItem.listCurrency = RDStore.CURRENCY_USD
                                                 break
                                             case "listPriceGbpCol": priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
@@ -2367,7 +2399,7 @@ join sub.orgRelations or_sub where
                                                 break
                                             case "localCurrencyCol": priceItem.localCurrency = RefdataValue.getByValueAndCategory(cellEntry, RDConstants.CURRENCY)
                                                 break
-                                            case "priceDateCol": priceItem.startDate = cellEntry  ? DateUtils.parseDateGeneric(cellEntry) : null
+                                            case "priceDateCol": priceItem.startDate = cellEntry ? DateUtils.parseDateGeneric(cellEntry) : null
                                                 break
                                         }
                                     }
@@ -2378,33 +2410,39 @@ join sub.orgRelations or_sub where
                             }
                         }
 
-                        if(uploadCoverageDates && ieCoverage && !ieCoverage.findEquivalent(issueEntitlement.coverages)){
-                            ieCoverage.issueEntitlement = issueEntitlement
+                        if (uploadCoverageDates && ieCoverage && !ieCoverage.findEquivalent(ieMatch.coverages)) {
+                            ieCoverage.issueEntitlement = ieMatch
                             if (!ieCoverage.save()) {
                                 throw new EntitlementCreationException(ieCoverage.errors)
-                            }else{
+                            } else {
                                 countChangesCoverageDates++
                             }
                         }
-                        if(uploadPriceInfo && priceItem){
+
+                        if (uploadPriceInfo && priceItem) {
                             priceItem.setGlobalUID()
                             if (!priceItem.save()) {
                                 throw new Exception(priceItem.errors.toString())
-                            }else {
-
+                            } else {
                                 countChangesPrice++
                             }
                         }
+                    } else {
+                        wrongTitles << row
                     }
+                } else {
+                    wrongTitles << row
                 }
+            }else{
+
             }
         }
 
-        /*println(count)
+        println(count)
         println(countChangesCoverageDates)
-        println(countChangesPrice)*/
+        println(countChangesPrice)
 
-        return [issueEntitlements: entIds.size(), processCount: count, processCountChangesCoverageDates: countChangesCoverageDates, processCountChangesPrice: countChangesPrice]
+        return [countIes: countIes, processCount: count, processCountChangesCoverageDates: countChangesCoverageDates, processCountChangesPrice: countChangesPrice, wrongTitles: wrongTitles, truncatedRows: truncatedRows.join(', ')]
     }
 
 

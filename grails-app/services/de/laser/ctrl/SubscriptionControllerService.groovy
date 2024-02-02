@@ -2292,12 +2292,39 @@ class SubscriptionControllerService {
             Set entitlements = IssueEntitlement.executeQuery("select new map(ie.id as id, tipp.sortname as sortname) " + query.query, query.queryParams)
             result.entitlementIDs = entitlements
             if(params.kbartPreselect) {
+                String filename = params.kbartPreselect.originalFilename
+
+                int countQueryIes = IssueEntitlement.executeQuery("select count(*) " + query.query, query.queryParams)[0]
+
                 MultipartFile kbartFile = params.kbartPreselect
                 InputStream stream = kbartFile.getInputStream()
-                result.enrichmentProcess = subscriptionService.issueEntitlementEnrichment(stream, entitlements.id, result.subscription, (params.uploadCoverageDates == 'on'), (params.uploadPriceInfo == 'on'))
+
+                result.enrichmentProcess = subscriptionService.issueEntitlementEnrichment(stream, countQueryIes, result.subscription, (params.uploadCoverageDates == 'on'), (params.uploadPriceInfo == 'on'))
+
                 params.remove("kbartPreselect")
                 params.remove("uploadCoverageDates")
                 params.remove("uploadPriceInfo")
+
+
+                if (result.enrichmentProcess.wrongTitles) {
+                    //background of this procedure: the editor adding titles via KBART wishes to receive a "counter-KBART" which will then be sent to the provider for verification
+                    String dir = GlobalService.obtainFileStorageLocation()
+                    File f = new File(dir+"/${filename}_matchingErrors")
+                    String returnKBART = exportService.generateSeparatorTableString(result.enrichmentProcess.titleRow, result.enrichmentProcess.wrongTitles, '\t')
+                    FileOutputStream fos = new FileOutputStream(f)
+                    fos.withWriter { Writer w ->
+                        w.write(returnKBART)
+                    }
+                    fos.flush()
+                    fos.close()
+                    result.token = "${filename}_matchingErrors"
+                    result.fileformat = "kbart"
+                    result.errorCount = result.enrichmentProcess.wrongTitles.size()
+                    result.errorKBART = true
+                }
+
+                result.issueEntitlementEnrichment = true
+
             }
 
             if(result.subscription.ieGroups.size() > 0) {
