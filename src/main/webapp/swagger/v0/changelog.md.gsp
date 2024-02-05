@@ -2,6 +2,10 @@
 
 Source: ${de.laser.config.ConfigMapper.getGrailsServerURL()} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 2.8
+
+- new error code `503` introduced when too many database connections are open
+
 #### 2.7
 
 - internal refactoring

@@ -117,9 +117,7 @@ class LicenseController {
 
             prf.setBenchmark('links')
 
-            if(params.export)
-                result.links = linksGenerationService.getSourcesAndDestinations(result.license, result.user, RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE)-RDStore.LINKTYPE_LICENSE)
-            else result.links = linksGenerationService.getSourcesAndDestinations(result.license,result.user)
+            result.links = linksGenerationService.getSourcesAndDestinations(result.license, result.user, RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE)-RDStore.LINKTYPE_LICENSE)
 
             // -- private properties
 

@@ -1472,7 +1472,7 @@ class FilterService {
             qry_params.deleted = RDStore.TIPP_STATUS_REMOVED
         }*/
 
-        if (params.list('status').findAll()) {
+        if (params.status) {
             List<Long> status = Params.getLongList(params, 'status')
             if(qry_params.size() > 0){
                 base_qry += " and "

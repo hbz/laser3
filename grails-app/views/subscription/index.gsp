@@ -43,8 +43,17 @@
 <g:if test="${enrichmentProcess}">
     <ui:msg class="positive" header="${message(code: 'subscription.details.issueEntitlementEnrichment.label')}">
         <g:message code="subscription.details.issueEntitlementEnrichment.enrichmentProcess"
-                   args="[enrichmentProcess.issueEntitlements, enrichmentProcess.processCount, enrichmentProcess.processCountChangesCoverageDates, enrichmentProcess.processCountChangesPrice]"/>
+                   args="[enrichmentProcess.countIes, enrichmentProcess.processCount, enrichmentProcess.processCountChangesCoverageDates, enrichmentProcess.processCountChangesPrice]"/>
     </ui:msg>
+
+    <g:if test="${truncatedRows}">
+        <ui:msg icon="ui exclamation icon" class="error" message="subscription.details.addEntitlements.truncatedRows" args="[truncatedRows]"/>
+    </g:if>
+    <g:if test="${errorKBART}">
+        <ui:msg icon="ui exclamation icon" class="error" message="subscription.details.addEntitlements.titleNotMatched" args="[errorCount]"/>
+        <g:link class="ui icon button la-modern-button" controller="package" action="downloadLargeFile" params="[token: token, fileformat: fileformat]"><i class="ui icon download"></i></g:link>
+    </g:if>
+
 </g:if>
 
 <g:if test="${deletedSPs}">

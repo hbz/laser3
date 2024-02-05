@@ -137,7 +137,7 @@ class SubscriptionPackage implements Comparable {
    */
   String getIEandPackageSize(){
 
-    return '(<span data-tooltip="Titel in der Lizenz"><i class="ui icon archive"></i></span>' + executeQuery('select count(*) from IssueEntitlement ie join ie.subscription s join s.packages sp where sp = :ctx and ie.status = :current',[ctx:this,current:RDStore.TIPP_STATUS_CURRENT])[0] + ' / <span data-tooltip="Titel im Paket"><i class="ui icon book"></i></span>' + executeQuery('select count(tipp.id) from TitleInstancePackagePlatform tipp join tipp.pkg pkg where pkg = :ctx and tipp.status = :current',[ctx:this.pkg,current:RDStore.TIPP_STATUS_CURRENT])[0] + ')'
+    return '(<span data-tooltip="Titel in der Lizenz"><i class="ui icon archive"></i></span>' + executeQuery('select count(*) from IssueEntitlement ie where ie.subscription = :sub and ie.tipp.pkg = :pkg and ie.status = :current',[sub: this.subscription, pkg: this.pkg, current: RDStore.TIPP_STATUS_CURRENT])[0] + ' / <span data-tooltip="Titel im Paket"><i class="ui icon book"></i></span>' + executeQuery('select count(*) from TitleInstancePackagePlatform tipp join tipp.pkg pkg where pkg = :ctx and tipp.status = :current',[ctx:this.pkg,current:RDStore.TIPP_STATUS_CURRENT])[0] + ')'
   }
 
   /**
@@ -163,7 +163,7 @@ class SubscriptionPackage implements Comparable {
    * @return a concatenated string of the {@link Package} name and the count of current {@link TitleInstancePackagePlatform}s
    */
   String getPackageNameWithCurrentTippsCount() {
-    return this.pkg.name + ' ('+ IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription and tipp.pkg = :pkg and ie.status = :current', [subscription: this.subscription, pkg: this.pkg, current: RDStore.TIPP_STATUS_CURRENT])[0] +' / '+ TitleInstancePackagePlatform.countByPkgAndStatus(this.pkg, RDStore.TIPP_STATUS_CURRENT) +')'
+    return this.pkg.name + ' ('+ IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.subscription = :subscription and ie.tipp.pkg = :pkg and ie.status = :current', [subscription: this.subscription, pkg: this.pkg, current: RDStore.TIPP_STATUS_CURRENT])[0] +' / '+ TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform where pkg = :pkg and status = :status", [pkg: this.pkg, status: RDStore.TIPP_STATUS_CURRENT])[0] +')'
   }
 
   /**

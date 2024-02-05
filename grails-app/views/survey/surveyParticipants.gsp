@@ -14,10 +14,13 @@
     <laser:render template="actions"/>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon type="Survey">
-<ui:xEditable owner="${surveyInfo}" field="name"/>
-</ui:h1HeaderWithIcon>
-<uiSurvey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="surveyParticipants"/>
+<ui:h1HeaderWithIcon text="${surveyInfo.name}" type="Survey"/>
+
+<uiSurvey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="${actionName}"/>
+
+<g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id, RDStore.SURVEY_TYPE_TITLE_SELECTION]}">
+    <ui:linkWithIcon icon="bordered inverted orange clipboard la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+</g:if>
 
 <laser:render template="nav"/>
 
@@ -63,7 +66,7 @@
                             id="${surveyConfig.surveyInfo.id}"
                             params="[surveyConfigID: surveyConfig.id, tab: 'selectedParticipants']">
                         ${message(code: 'surveyParticipants.selectedParticipants')}
-                        <span class="ui floating blue circular label">${selectedSubParticipantsCount}</span></g:link>
+                        <span class="ui floating blue circular label">${selectedParticipantsCount}</span></g:link>
 
 
                     <g:if test="${surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]}">
