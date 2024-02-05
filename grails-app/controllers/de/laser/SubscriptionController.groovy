@@ -1234,6 +1234,82 @@ class SubscriptionController {
     }
 
     /**
+     * Call to preselect and add the selected entitlements via a KBART file
+     * @return the issue entitlement holding view
+     */
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+    })
+    def selectEntitlementsWithKBARTForSurvey() {
+        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
+        Subscription subscriberSub = result.subscription
+        result.institution = result.contextOrg
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        result.surveyInfo = result.surveyConfig.surveyInfo
+
+        Subscription baseSub = result.surveyConfig.subscription ?: subscriberSub.instanceOf
+        result.subscriber = subscriberSub.getSubscriber()
+        result.subscriberSub = subscriberSub
+
+        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
+        result.titleGroupID = issueEntitlementGroup ? issueEntitlementGroup.id.toString() : null
+        result.titleGroup = issueEntitlementGroup
+
+        String filename = params.kbartPreselect.originalFilename
+        result.putAll(subscriptionService.tippSelectForSurvey(params.kbartPreselect, baseSub, result.surveyConfig, subscriberSub))
+            if (result.selectedTipps) {
+
+                result.selectedTipps.each { String tippKey ->
+                    TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(tippKey)
+                    if (tipp) {
+                        try {
+                            if (!issueEntitlementGroup) {
+                                IssueEntitlementGroup.withTransaction {
+                                    issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: result.surveyConfig.issueEntitlementGroupName)
+                                    if (!issueEntitlementGroup.save())
+                                        log.error(issueEntitlementGroup.getErrors().getAllErrors().toListString())
+                                    else {
+                                        result.titleGroupID = issueEntitlementGroup.id.toString()
+                                        result.titleGroup = issueEntitlementGroup
+                                    }
+                                }
+                            }
+
+                            if (issueEntitlementGroup && subscriptionService.addEntitlement(subscriberSub, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
+                                log.debug("selectEntitlementsWithKBARTForSurvey: Added tipp ${tipp.gokbId} to sub ${subscriberSub.id}")
+                            }
+                        }
+                        catch (EntitlementCreationException e) {
+                            log.debug("Error selectEntitlementsWithKBARTForSurvey: Adding tipp ${tipp} to sub ${subscriberSub.id}: " + e.getMessage())
+                        }
+                    }
+                }
+            }
+
+        result.tippSelectForSurveySuccess = true
+        params.remove("kbartPreselect")
+
+        if (result.wrongTitles) {
+            //background of this procedure: the editor adding titles via KBART wishes to receive a "counter-KBART" which will then be sent to the provider for verification
+            String dir = GlobalService.obtainFileStorageLocation()
+            File f = new File(dir+"/${filename}_matchingErrors")
+            String returnKBART = exportService.generateSeparatorTableString(result.titleRow, result.wrongTitles, '\t')
+            FileOutputStream fos = new FileOutputStream(f)
+            fos.withWriter { Writer w ->
+                w.write(returnKBART)
+            }
+            fos.flush()
+            fos.close()
+            result.token = "${filename}_matchingErrors"
+            result.fileformat = "kbart"
+            result.errorCount = result.wrongTitles.size()
+            result.errorKBART = true
+        }
+        render template: 'entitlementProcessResult', model: result
+    }
+
+    /**
      * Call to persist the cached data and create the issue entitlement holding based on that data
      * @return the issue entitlement holding view
      */

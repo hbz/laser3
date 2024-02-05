@@ -17,6 +17,7 @@ import org.grails.web.util.WebUtils
 import org.springframework.context.MessageSource
 
 import java.text.SimpleDateFormat
+import java.time.Year
 
 /**
  * This service is a mirror of the {@link OrganisationController}, containing those controller methods
@@ -170,6 +171,44 @@ class OrganisationControllerService {
             map.collectEntries{ k,v -> [(k):(v.collect{ it[1] })] }
         }
 
+        Closure getTimelineMap = { struct ->
+            Map<String, Map> years = [:]
+            IntRange timeline = (Integer.parseInt(Year.now().toString()) - 7)..(Integer.parseInt(Year.now().toString()) + 3)
+
+            timeline.each { year ->
+                String y = year.toString()
+                years[y] = [:]
+
+                struct.each { e ->
+                    String s          = e[0] ? e[0].toString() : null
+                    Integer startYear = e[2] ? DateUtils.getYearAsInteger(e[2]) : null
+                    Integer endYear   = e[3] ? DateUtils.getYearAsInteger(e[3]) : null
+                    boolean current = false
+
+                    if (! startYear && endYear && year <= endYear) {
+                        current = true
+                    }
+                    else if (! endYear && startYear && year >= startYear) {
+                        current = true
+                    }
+                    else if (startYear <= year && year <= endYear) {
+                        current = true
+                    }
+                    else if (!startYear && !endYear) {
+                        current = true
+                    }
+
+                    if (current) {
+                        if (! years[y][s]) {
+                            years[y][s] = []
+                        }
+                        years[y][s] << e[1]
+                    }
+                }
+            }
+            years
+        }
+
         // subscriptions
 
         Map<String, Object> subQueryParams = [org: result.orgInstance, actionName: 'manageMembers', status: 'FETCH_ALL']
@@ -177,9 +216,28 @@ class OrganisationControllerService {
 //        println base_qry
 //        println qry_params
 
-        List<List> subStruct = Subscription.executeQuery('select s.status.id, s.id, s.startDate, s.endDate, s.referenceYear ' + base_qry, qry_params)
+        List<List> subStruct = Subscription.executeQuery('select s.status.id, s.id, s.startDate, s.endDate, s.isMultiYear, s.referenceYear ' + base_qry, qry_params)
         result.subscriptionMap = reduceMap(listToMap(subStruct))
 //        println 'subscriptionMap: ' + result.subscriptionMap
+
+        result.subscriptionTimelineMap = getTimelineMap(subStruct)
+//        println 'subscriptionTimelineMap: ' + result.subscriptionTimelineMap
+
+        // licenses
+
+        Map licenseParams = [org: result.orgInstance, activeInst: contextService.getOrg(), roleTypeC: RDStore.OR_LICENSING_CONSORTIUM]
+        String licenseQuery = ''' from License as l where (
+                                        exists ( select o from l.orgRelations as o where ( o.roleType = :roleTypeC AND o.org = :activeInst ) )
+                                        AND l.instanceOf is not null
+                                        AND exists ( select orgR from OrgRole as orgR where orgR.lic = l and orgR.org = :org )
+                                    ) order by l.sortableReference, l.reference, l.startDate, l.endDate, l.instanceOf asc '''
+
+        List<List> licStruct = License.executeQuery('select l.status.id, l.id, l.startDate, l.endDate, l.openEnded ' + licenseQuery, licenseParams)
+        result.licenseMap = reduceMap(listToMap(licStruct))
+//        println 'licenseMap: ' + result.licenseMap
+
+        result.licenseTimelineMap = getTimelineMap(licStruct)
+//        println 'licenseTimelineMap: ' + result.licenseTimelineMap
 
         // providers
 
@@ -200,20 +258,32 @@ class OrganisationControllerService {
         List<List> providerStruct = Org.executeQuery(providerQuery, providerParams) /*.unique()*/
         Map providerMap = listToMap(providerStruct)
         result.providerMap = providerMap.collectEntries{ k,v -> [(k):(v.collect{ [ it[1], it[2] ] })] }
+
+//        result.providerMap.each{subStatus, list ->
+//            list.each{struct ->
+//                Subscription sub = Subscription.get(struct[1])
+//                List<CostItem> subCostItems = CostItem.executeQuery(
+//                        ''' select ci from CostItem as ci right join ci.sub sub join sub.orgRelations oo
+//                        where ci.owner = :owner
+//                        and sub = :sub
+//                        and oo.roleType = :roleType
+//                        and ci.surveyOrg = null
+//                        and ci.costItemStatus != :deleted
+//                        order by ci.costTitle asc ''',
+//                        [
+//                                owner               : result.institution,
+//                                sub                 : sub,
+//                                roleType            : RDStore.OR_SUBSCRIPTION_CONSORTIA,
+//                                deleted             : RDStore.COST_ITEM_DELETED
+//                        ]
+//                )
+//                struct << [
+//                        costItems   : subCostItems,
+//                        sums        : financeService.calculateResults(subCostItems.id)
+//                ]
+//            }
+//        }
 //        println 'providerMap: ' + result.providerMap
-
-        // licenses
-
-        Map licenseParams = [org: result.orgInstance, activeInst: contextService.getOrg(), roleTypeC: RDStore.OR_LICENSING_CONSORTIUM]
-        String licenseQuery = ''' from License as l where (
-                                        exists ( select o from l.orgRelations as o where ( o.roleType = :roleTypeC AND o.org = :activeInst ) )
-                                        AND l.instanceOf is not null
-                                        AND exists ( select orgR from OrgRole as orgR where orgR.lic = l and orgR.org = :org )
-                                    ) order by l.sortableReference, l.reference, l.startDate, l.endDate, l.instanceOf asc '''
-
-        List<List> licStruct = License.executeQuery('select l.status.id, l.id, l.startDate, l.endDate ' + licenseQuery, licenseParams)
-        result.licenseMap = reduceMap(listToMap(licStruct))
-//        println 'licenseMap: ' + result.licenseMap
 
         // surveys
 

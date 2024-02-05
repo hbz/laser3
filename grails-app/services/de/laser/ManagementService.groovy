@@ -76,6 +76,9 @@ class ManagementService {
                     }
                     result << linkPackages(controller, parameterMap)
                 break
+            case "permanentTitles":
+                result << permanentTitles(controller, parameterMap)
+                break
             case "properties":
                     if(parameterMap.processOption) {
                         processProperties(controller, parameterMap)
@@ -301,6 +304,24 @@ class ManagementService {
                 result.filteredSubscriptions = result.subscriptions
                 if(result.filteredSubscriptions)
                     result.childWithCostItems = CostItem.executeQuery('select ci.subPkg from CostItem ci where ci.subPkg.subscription in (:filteredSubscriptions) and ci.costItemStatus != :deleted and ci.owner = :context',[context:result.institution, deleted:RDStore.COST_ITEM_DELETED, filteredSubscriptions:result.filteredSubscriptions])
+            }
+
+            [result:result,status:STATUS_OK]
+        }
+    }
+
+    Map<String,Object> permanentTitles(def controller, GrailsParameterMap params) {
+        Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
+        if(!result)
+            [result:null,status:STATUS_ERROR]
+        else {
+            if(controller instanceof SubscriptionController) {
+                result.filteredSubscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription)
+              }
+
+            if(controller instanceof MyInstitutionController) {
+                result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
+                result.filteredSubscriptions = result.subscriptions
             }
 
             [result:result,status:STATUS_OK]

@@ -747,7 +747,7 @@ class FinanceService {
                     if (org.isCustomerType_Consortium()) {
                         instanceFilter = " and sub.instanceOf = null "
                     }
-                    String subJoin = filterQuery.subFilter || instanceFilter ? "join ci.sub sub " : ""
+                    String subJoin = filterQuery.subFilter || filterQuery.filterData.filterCISub || instanceFilter ? "join ci.sub sub " : ""
                     String subFilter = filterQuery.subFilter+instanceFilter
                     subFilter = subFilter.replace(" and oo.org in (:filterConsMembers) ","")
                     Map<String,Object> ownFilter = [:]

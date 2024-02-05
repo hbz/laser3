@@ -9,6 +9,7 @@ import de.laser.Package
 import de.laser.Platform
 import de.laser.Subscription
 import de.laser.api.v0.special.ApiEZB
+import de.laser.exceptions.NativeSqlException
 import de.laser.finance.CostItem
 import de.laser.oap.OrgAccessPoint
 import de.laser.api.v0.catalogue.ApiCatalogue
@@ -35,7 +36,7 @@ class ApiManager {
     /**
      * The current version of the API. To be updated on every change which affects the output
      */
-    static final VERSION = '2.5'
+    static final VERSION = '2.8'
 
     /**
      * Checks if the request is valid and if, whether the permissions are granted for the context institution making
@@ -330,9 +331,15 @@ class ApiManager {
 
             if (tmp.checkFailureCodes_3()) {
                 if(tmp.obj instanceof Subscription) {
-                    Sql sql = GlobalService.obtainSqlConnection()
-                    result = ApiSubscription.requestSubscription((Subscription) tmp.obj, contextOrg, isInvoiceTool, sql)
-                    sql.close()
+                    try {
+                        Sql sql = GlobalService.obtainSqlConnection()
+                        result = ApiSubscription.requestSubscription((Subscription) tmp.obj, contextOrg, isInvoiceTool, sql)
+                        sql.close()
+                    }
+                    catch (NativeSqlException e) {
+                        log.error(e.getMessage())
+                        result = Constants.HTTP_SERVICE_UNAVAILABLE
+                    }
                 }
                 else if(tmp.obj instanceof DeletedObject) {
                     result = ApiDeletedObject.requestDeletedObject((DeletedObject) tmp.obj, contextOrg, isInvoiceTool)
@@ -403,6 +410,12 @@ class ApiManager {
                                                     "status": HttpStatus.INTERNAL_SERVER_ERROR.value()]))
                     response.status = HttpStatus.INTERNAL_SERVER_ERROR.value()
                     break
+                case Constants.HTTP_SERVICE_UNAVAILABLE:
+                    response.json = new JSON( trimJson(["message": "too many connections",
+                                                    "debug": result['debug'],
+                                                    "status": HttpStatus.SERVICE_UNAVAILABLE.value()]))
+                    response.status = HttpStatus.SERVICE_UNAVAILABLE.value()
+                    break
             }
         }
 
@@ -439,6 +452,12 @@ class ApiManager {
                                             "obj": obj, "q": query, "context": context,
                                             "status": HttpStatus.BAD_REQUEST.value()]))
             response.status = HttpStatus.BAD_REQUEST.value()
+        }
+        else if (Constants.HTTP_SERVICE_UNAVAILABLE == result) {
+            response.json = new JSON( trimJson(["message": "too many connections open",
+                                            "obj": obj, "q": query, "context": context,
+                                            "status": HttpStatus.SERVICE_UNAVAILABLE.value()]))
+            response.status = HttpStatus.SERVICE_UNAVAILABLE.value()
         }
         else if (Constants.HTTP_PRECONDITION_FAILED == result) {
             response.json = new JSON( trimJson(["message": "precondition failed; multiple matches",

@@ -58,6 +58,7 @@
                         <i class="download icon"></i>
                     </span>
                 </th>
+                <th scope="col" rowspan="3" class="center aligned"></th>
             </tr>
             <tr>
                 <th scope="col" class="la-smaller-table-head">${message(code: 'subscription.offerRequested.table.th')}</th>
@@ -298,6 +299,14 @@
                                 <i class="download small icon"></i>
                             </g:link>
                         </g:if>
+                    </td>
+                    <td>
+                        <g:link controller="subscription" action="subTransfer" id="${s.id}"
+                                class="ui icon button blue la-modern-button"
+                                role="button"
+                                aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                            <i aria-hidden="true" class="write icon"></i>
+                        </g:link>
                     </td>
                 </tr>
                 </tbody>

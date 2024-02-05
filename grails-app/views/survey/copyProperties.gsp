@@ -28,7 +28,7 @@
 
 <br/>
 
-<g:if test="${!(surveyInfo.status in [RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED])}">
+<g:if test="${surveyConfig.subSurveyUseForTransfer && !(surveyInfo.status in [RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED])}">
     <div class="ui segment">
         <strong>${message(code: 'renewalEvaluation.notInEvaliation')}</strong>
     </div>
@@ -367,7 +367,7 @@
 
                         <tr class="">
                             <td>
-                                <g:if test="${params.tab == 'customProperties' && (participant.oldSub && ((!participant.newCustomProperty && participant.oldCustomProperty) || (participant.newPrivateProperty && participant.oldCustomProperty && participant.oldCustomProperty.type.multipleOccurrence)))}">
+                                <g:if test="${params.tab == 'customProperties' && (participant.oldSub && ((!participant.newCustomProperty && participant.oldCustomProperty) || (participant.newCustomProperty && participant.oldCustomProperty && participant.oldCustomProperty.type.multipleOccurrence)))}">
                                     <g:checkBox name="selectedSub" value="${participant.newSub.id}" checked="false"/>
                                 </g:if>
                                 <g:elseif
@@ -375,7 +375,7 @@
                                     <g:checkBox name="selectedSub" value="${participant.newSub.id}" checked="false"/>
                                 </g:elseif>
                                 <g:elseif
-                                        test="${params.tab == 'surveyProperties' && (participant.oldSub && (participant.surveyProperty && participant.surveyProperty.getValue() && (!participant.newCustomProperty && participant.surveyProperty) || (participant.newCustomProperty && participant.newCustomProperty.type.multipleOccurrence)))}">
+                                        test="${params.tab == 'surveyProperties' && ((participant.surveyProperty && participant.surveyProperty.getValue() && (!participant.newCustomProperty && participant.surveyProperty) || (participant.newCustomProperty && participant.newCustomProperty.type.multipleOccurrence)))}">
                                     <g:checkBox name="selectedSub" value="${participant.newSub.id}" checked="false"/>
                                 </g:elseif>
                             </td>
