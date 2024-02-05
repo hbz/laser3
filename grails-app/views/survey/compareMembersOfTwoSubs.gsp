@@ -109,8 +109,7 @@
 
             </div>
 
-            <g:if test="${surveyConfig.subSurveyUseForTransfer}">
-                <div class="${(actionName == 'copySubPackagesAndIes') ? 'active' : ''} step">
+            <div class="${(actionName == 'copySubPackagesAndIes') ? 'active' : ''} step">
 
                     <div class="content">
                         <div class="title">
@@ -139,7 +138,7 @@
                     </g:else>
 
                 </div>
-            </g:if>
+
 
             <div class="${(actionName == 'copyProperties' && params.tab == 'surveyProperties') ? 'active' : ''} step">
 

@@ -70,7 +70,8 @@
 
             %{-- subscription transfer  --}%
 
-            <g:if test="${controllerName=='subscription' && (editable && contextService.getOrg().isCustomerType_Consortium())}">
+            <g:if test="${controllerName=='subscription' && (!actionName.startsWith('copy') && actionName != 'renewEntitlementsWithSurvey' && actionName != 'renewSubscription' && actionName != 'emptySubscription')
+            && (editable && contextService.getOrg().isCustomerType_Consortium())}">
                 <g:if test="${subscription && subscription._getCalculatedType() in [Subscription.TYPE_CONSORTIAL]}">
                     <div class="item la-cb-action">
                         <button class="ui icon button la-toggle-ui la-popup-tooltip la-delay" id="subscriptionTransfer-toggle"
@@ -187,7 +188,7 @@
                 </g:if>
             </g:if>
             <g:elseif test="${controllerName == 'license' && license}">
-                <g:set var="linkifyMap" value="${linksGenerationService.getSourcesAndDestinations(license, contextUser, RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE))}" />
+                <g:set var="linkifyMap" value="${linksGenerationService.getSourcesAndDestinations(license, contextUser, RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE)-RDStore.LINKTYPE_LICENSE)}" />
 
                 <g:if test="${linkifyMap}">
                     <div class="item la-cb-action-ext">

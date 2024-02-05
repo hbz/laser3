@@ -2290,7 +2290,7 @@ class MyInstitutionController  {
                          'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
                          [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
                 result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
-                result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(result.subscription, false)
+                result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(result.subscription)
 
 /*                if (result.surveyConfig.pickAndChoosePerpetualAccess) {
                     result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)

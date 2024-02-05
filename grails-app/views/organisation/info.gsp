@@ -1,6 +1,8 @@
-<%@ page import="de.laser.finance.CostItem; de.laser.survey.SurveyInfo; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.finance.CostItem; de.laser.RefdataValue; de.laser.survey.SurveyInfo; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
 
-<laser:htmlStart message="menu.institutions.org.info" serviceInjection="true" />
+<laser:htmlStart message="menu.institutions.org.info" serviceInjection="true">
+    <laser:javascript src="echarts.js"/>%{-- dont move --}%
+</laser:htmlStart>
 
 <laser:render template="breadcrumb"
           model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView, consortialView: consortialView]}"/>
@@ -35,7 +37,7 @@
                 <span class="label"> ${message(code: 'license.plural.current')} </span>
             </div>
             <div class="statistic stats-toggle" data-target="stat_providers">
-                <span class="value"> ${providerMap.get(RDStore.SUBSCRIPTION_CURRENT.id).collect{it.value[0]}.unique().size()} </span>
+                <span class="value"> ${providerMap.get(RDStore.SUBSCRIPTION_CURRENT.id).collect{it[0]}.unique().size()} </span>
                 <span class="label"> ${message(code:'default.provider.label')} (${message(code: 'subscription.plural.current')}) </span>
             </div>
             <div class="statistic stats-toggle" data-target="stat_surveys">
@@ -52,7 +54,6 @@
     <br />
 
 <style>
-
     .statistics > .stats-toggle.active {
         background-color: rgba(0,0,0, 0.045);
     }
@@ -80,12 +81,20 @@
     .ui.table > tfoot > tr > td {
         background-color: #fff;
     }
+
+    .chartWrapper {
+        width: 100%;
+        min-height: 300px;
+        margin-bottom: 35px;
+    }
 </style>
 
     <div id="stat_subscriptions" class="stats-content">
 %{--        <h3 class="ui right aligned header">--}%
 %{--            ${message(code:'subscription.plural')} <i class="icon clipboard" aria-hidden="true"></i>--}%
 %{--        </h3>--}%
+
+                <div class="chartWrapper" id="cw-subscription"></div>
 
                 <div class="ui secondary la-tab-with-js menu">
                     <g:each in="${subscriptionMap}" var="subStatus,subList">
@@ -137,6 +146,7 @@
 %{--        <h3 class="ui right aligned header">--}%
 %{--            ${message(code:'license.plural')} <i class="icon balance scale" aria-hidden="true"></i>--}%
 %{--        </h3>--}%
+                <div class="chartWrapper" id="cw-license"></div>
 
                 <div class="ui secondary la-tab-with-js menu">
                     <g:each in="${licenseMap}" var="subStatus,licList">
@@ -146,6 +156,8 @@
                         </a>
                     </g:each>
                 </div>
+
+
 
                 <g:each in="${licenseMap}" var="subStatus,licList">
                     <g:set var="subStatusRdv" value="${RefdataValue.get(subStatus)}" />
@@ -191,7 +203,7 @@
                     <g:each in="${providerMap}" var="subStatus,provList">
                         <g:set var="subStatusRdv" value="${RefdataValue.get(subStatus)}" />
                         <a href="#" class="item ${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="prov-${subStatusRdv.id}">
-                            ${subStatusRdv.getI10n('value')} <span class="ui blue circular label">${provList.collect{it.value[0]}.unique().size()}</span>
+                            ${subStatusRdv.getI10n('value')} <span class="ui blue circular label">${provList.collect{it[0]}.unique().size()}</span>
                         </a>
                     </g:each>
                 </div>
@@ -212,14 +224,16 @@
                         <table class="ui table very compact">
                             <thead>
                             <tr>
-                                <th class="nine wide">${message(code:'default.provider.label')}</th>
+                                <th class="eight wide">${message(code:'default.provider.label')}</th>
+                                <th class="one wide">${message(code:'subscription.plural')}</th>
                                 <th class="one wide"></th>
                                 <th class="two wide"></th>
                                 <th class="two wide"></th>
                                 <th class="two wide"></th>
                             </tr>
                             <tr data-ctype="provider-subsciption" style="display:none;">
-                                <th class="nine wide">${message(code:'subscription.label')}</th>
+                                <th class="eight wide">${message(code:'subscription.label')}</th>
+                                <th class="one wide"></th>
                                 <th class="one wide">${message(code:'subscription.referenceYear.label.shy')}</th>
                                 <th class="two wide">${message(code:'subscription.isMultiYear.label.shy')}</th>
                                 <th class="two wide">${message(code:'subscription.startDate.label')}</th>
@@ -227,7 +241,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                                <g:each in="${provList.collect{it.value[0]}.unique()}" var="provId">
+                                <g:each in="${provList.collect{it[0]}.unique()}" var="provId">
                                     <g:set var="prov" value="${Org.get(provId)}" />
                                     <tr>
                                         <td>
@@ -236,6 +250,7 @@
                                                 <g:link controller="org" action="show" id="${prov.id}" target="_blank">${prov.name}</g:link>
                                             </div>
                                         </td>
+                                        <td>${provList.findAll{it[0] == provId}.size()}</td>
                                         <td></td>
                                         <td></td>
                                         <td></td>
@@ -250,6 +265,7 @@
                                                             <g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link>
                                                         </div>
                                                     </td>
+                                                    <td></td>
                                                     <td> ${sub.referenceYear} </td>
                                                     <td> ${sub.isMultiYear ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")} </td>
                                                     <td> <g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/> </td>
@@ -560,7 +576,12 @@
             $('.stats-toggle').removeClass('active')
             $(this).addClass('active')
             $('#' + $(this).attr('data-target')).show()
-        })
+
+            if (JSPC.app.info && JSPC.app.info.charts) {
+                JSPC.app.info.charts.subscription.resize()
+                JSPC.app.info.charts.license.resize()
+            }
+       })
 
         $('.stats-toggle').first().trigger('click')
 
@@ -575,5 +596,124 @@
             }
         })
     </laser:script>
+
+<laser:script file="${this.getGroovyPageFileName()}">
+
+    JSPC.app.info = {
+        config_subscription: {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'shadow' }
+            },
+            series: [
+                <g:each in="${subscriptionTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ RefdataValue.get(it).getI10n('value') }}" var="status">
+                    {
+                        name    : '${RefdataValue.get(status).getI10n('value')}',
+                        type    : 'bar',
+                        stack   : 'total',
+%{--                        emphasis: { focus: 'series' },--}%
+                        data    : [${subscriptionTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
+                        color   : <%
+                            String color = ''
+                            switch (RefdataValue.get(status)) {
+                                case RDStore.SUBSCRIPTION_CURRENT:      color = 'JSPC.colors.hex.blue'; break;
+                                case RDStore.SUBSCRIPTION_EXPIRED:      color = 'JSPC.colors.hex.grey'; break;
+                                case RDStore.SUBSCRIPTION_INTENDED:     color = 'JSPC.colors.hex.yellow'; break;
+                                case RDStore.SUBSCRIPTION_TEST_ACCESS:  color = 'JSPC.colors.hex.green'; break;
+                            }
+                            println color
+                            %>
+                    },
+                </g:each>
+                    {
+                        name    : '${message(code: 'subscription.isMultiYear.label')}',
+                        type    : 'line',
+                        smooth  : true,
+                        lineStyle : {
+                            type: 'dotted',
+                            width: 3
+                        },
+%{--                        barWidth: 10,--}%
+%{--                        emphasis: { focus: 'series' },--}%
+                        data    : [<%
+                                    List<Long> subsPerYear = subscriptionTimelineMap.values().collect{ it.values().flatten() }
+                                    print subsPerYear.collect {
+                                        it.collect{ Subscription.get(it).isMultiYear ? 1 : 0 }.sum() ?: 0
+                                    }.join(', ')
+                                    %>],
+                        color   : JSPC.colors.hex.orange
+                    },
+            ],
+            xAxis: {
+                type: 'category',
+                data: [${subscriptionTimelineMap.keySet().join(', ')}]
+            },
+            yAxis:  { type: 'value' },
+            legend: { bottom: 0 },
+            grid:   { left: '5%', right: '5%', top: '5%', bottom: '20%' },
+        },
+        config_license: {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'shadow' }
+            },
+            series: [
+                <g:each in="${licenseTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ RefdataValue.get(it).getI10n('value') }}" var="status">
+                    {
+                        name    : '${RefdataValue.get(status).getI10n('value')}',
+                        type    : 'bar',
+                        stack   : 'total',
+%{--                        emphasis: { focus: 'series' },--}%
+                        data    : [${licenseTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
+                        color   : <%
+                            color = ''
+                            switch (RefdataValue.get(status)) {
+                                case RDStore.LICENSE_CURRENT:      color = 'JSPC.colors.hex.blue'; break;
+                                case RDStore.LICENSE_EXPIRED:      color = 'JSPC.colors.hex.grey'; break;
+                                case RDStore.LICENSE_INTENDED:     color = 'JSPC.colors.hex.yellow'; break;
+                                case RDStore.LICENSE_NO_STATUS:    color = 'JSPC.colors.hex.grey'; break;
+                            }
+                            println color
+                        %>
+                    },
+                </g:each>
+                    {
+                        name    : '${message(code: 'license.openEnded.label')}',
+                        type    : 'line',
+                        smooth  : true,
+                        lineStyle : {
+                            type: 'dotted',
+                            width: 3
+                        },
+%{--                        barWidth: 10,--}%
+%{--                        emphasis: { focus: 'series' },--}%
+                        data    : [<%
+                                    List<Long> licsPerYear = licenseTimelineMap.values().collect{ it.values().flatten() }
+                                    print licsPerYear.collect {
+                                        it.collect{ License.get(it).openEnded?.value == RDStore.YN_YES.value ? 1 : 0 }.sum() ?: 0
+                                    }.join(', ')
+                                    %>],
+                        color   : JSPC.colors.hex.orange
+                    },
+            ],
+            xAxis: {
+                type: 'category',
+                data: [${licenseTimelineMap.keySet().join(', ')}]
+            },
+            yAxis:  { type: 'value' },
+            legend: { bottom: 0 },
+            grid:   { left: '5%', right: '5%', top: '5%', bottom: '20%' },
+        },
+    };
+
+JSPC.app.info.charts = {}
+
+JSPC.app.info.charts.subscription = echarts.init ($('#cw-subscription')[0]);
+JSPC.app.info.charts.subscription.setOption (JSPC.app.info.config_subscription);
+
+JSPC.app.info.charts.license = echarts.init ($('#cw-license')[0]);
+JSPC.app.info.charts.license.setOption (JSPC.app.info.config_license);
+</laser:script>
+
 
 <laser:htmlEnd />

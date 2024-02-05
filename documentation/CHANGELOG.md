@@ -9,11 +9,19 @@
 
 5507    01.02.2024  dev     3.4         Andreas Feature     Beziehungsbezeichner korrigiert
 
+5554    01.02.2024  rc-3.3  3.3.5       Andreas Bug         Eigener Kostenfilter hakte, wenn nur nach Lizenz gefiltert wird
+
+--      31.01.2024  rc-3.3  3.3.5       Andreas Bug         Überflüssige Ladeanweisungen aus der Vertragssicht entfernt
+
+5552    31.01.2024  rc-3.3  3.3.5       Andreas Bug         Identifikator-Validierungen mit Fallbacks versehen
+
+--      31.01.2024  rc-3.3  3.3.5       Andreas Bug         Routine zur Abwehr zu vieler offener Datenbankverbindungen implementiert
+
 5501    30.01.2024  dev     3.4         Andreas Feature     Schieberegler zur Auswahl des Zeitraumes für Reports implementiert
 
 --      30.01.2024  rc-3.3  3.3.5       Andreas Bug         falsche Summierung bei Platform und Database Reports
 
-5548    29.01.2024  rc-3.3  3.3.5       Moe     Bug          Shortcut zur zugehörigen Lizenz in Umfrage
+5548    29.01.2024  rc-3.3  3.3.5       Moe     Bug         Shortcut zur zugehörigen Lizenz in Umfrage
 
 5547    29.01.2024  rc-3.3  3.3.5       Moe     Bug         Umfrageteilnehmer Zählung nicht korrekt dargestellt
 
@@ -29,7 +37,7 @@
 
 5541    26.01.2024  rc-3.3  3.3.5       Moe     Bug         Keine Kundennummer anzeigen wenn Plattform nicht Counter fähig ist
 
-5540    26.01.2024  rc-3.3  3.3.5       Moe     Bug          Nav Dokumente Reiter Anzahl Docs
+5540    26.01.2024  rc-3.3  3.3.5       Moe     Bug         Nav Dokumente Reiter Anzahl Docs
 
 5537    24.01.2024  rc-3.3  3.3.5       Moe     Bug         Dokument von Pro-Einrichtung in Titelumfrage sichtbar?!
 

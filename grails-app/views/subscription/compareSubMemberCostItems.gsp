@@ -5,11 +5,15 @@
 
 <ui:breadcrumbs>
     <ui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label"/>
-    <ui:crumb controller="subscription" action="subfinance" message="subscription.details.financials.label"/>
+    <ui:crumb controller="subscription" action="show" id="${params.id}" text="${subscription}"/>
+    <ui:crumb controller="subscription" action="subfinance" id="${params.id}" message="subscription.details.financials.label"/>
     <ui:crumb class="active" message="subscription.details.compareSubMemberCostItems.label"/>
 
 </ui:breadcrumbs>
 
+<ui:controlButtons>
+    <laser:render template="${customerTypeService.getActionsTemplatePath()}"/>
+</ui:controlButtons>
 
 <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" type="subscription"
                      visibleOrgRelations="${visibleOrgRelations}">
@@ -206,7 +210,7 @@
                 <g:set var="subscr" value="${row.orgs}"/>
                 <g:if test="${showBulkCostItems && editable}">
                     <td>
-                        <g:if test="${currentSubCostItems.size() > 0 && previousSubCostItems.size() <= 1 }">
+                        <g:if test="${currentSubCostItems && currentSubCostItems.size() > 0 && ((previousSubCostItems && previousSubCostItems.size() <= 1) || previousSubCostItems == null )}">
                             <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}"
                                         checked="false"/>
                         </g:if>
@@ -428,6 +432,7 @@
             <td></td>
             <td></td>
             <td></td>
+            <td></td>
             <td><g:formatNumber number="${sumOldCostInBillingCurrency}" minFractionDigits="2"
                                 maxFractionDigits="2" type="number"/></td>
             <td></td>
@@ -465,6 +470,7 @@
                     </strong>
                 </g:if>
             </td>
+            <td></td>
             <td></td>
         </tr>
         </tfoot>
