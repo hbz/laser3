@@ -319,6 +319,18 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         return this.name + ' ('+ TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform where pkg = :pkg and status = :status", [pkg: this, status: RDStore.TIPP_STATUS_CURRENT])[0] +')'
     }
 
+    int getCurrentTippsCount() {
+        return TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform where pkg = :pkg and status = :status", [pkg: this, status: RDStore.TIPP_STATUS_CURRENT])[0]
+    }
+
+    int getExpectedTippsCount() {
+        return TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform where pkg = :pkg and status = :status", [pkg: this, status: RDStore.TIPP_STATUS_EXPECTED])[0]
+    }
+
+    int getRetiredTippsCount() {
+        return TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform where pkg = :pkg and status = :status", [pkg: this, status: RDStore.TIPP_STATUS_RETIRED])[0]
+    }
+
     /**
      * Checks if the package is being marked for the given user with the given marker type
      * @param user the {@link User} whose watchlist should be checked
