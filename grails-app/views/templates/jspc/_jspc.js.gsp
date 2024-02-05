@@ -117,7 +117,21 @@ JSPC = {
             return JSPC.dict.registry[key][lang]
         },
     },
-
+    colors : { // -- charts
+        palette: [ '#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc', '#c4c4c4' ],
+        hex : {
+            blue:       '#5470c6',
+            green:      '#91cc75',
+            yellow:     '#fac858',
+            red:        '#ee6666',
+            ice:        '#73c0de',
+            darkgreen:  '#3ba272',
+            orange:     '#fc8452',
+            purple:     '#9a60b4',
+            pink:       '#ea7ccc',
+            grey:       '#c4c4c4'
+        },
+    },
     helper : { // -- snippets only
         goBack : function() {
             window.history.back();

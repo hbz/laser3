@@ -174,7 +174,7 @@ class OrganisationControllerService {
 
         Closure getTimelineMap = { struct ->
             Map<String, Map> years = [:]
-            IntRange timeline = 2015..Integer.parseInt(Year.now().toString() + 3)
+            IntRange timeline = (Integer.parseInt(Year.now().toString()) - 7)..(Integer.parseInt(Year.now().toString()) + 3)
 
             timeline.each { year ->
                 String y = year.toString()
@@ -193,6 +193,9 @@ class OrganisationControllerService {
                         current = true
                     }
                     else if (startYear <= year && year <= endYear) {
+                        current = true
+                    }
+                    else if (!startYear && !endYear) {
                         current = true
                     }
 
@@ -214,7 +217,7 @@ class OrganisationControllerService {
 //        println base_qry
 //        println qry_params
 
-        List<List> subStruct = Subscription.executeQuery('select s.status.id, s.id, s.startDate, s.endDate, s.referenceYear ' + base_qry, qry_params)
+        List<List> subStruct = Subscription.executeQuery('select s.status.id, s.id, s.startDate, s.endDate, s.isMultiYear, s.referenceYear ' + base_qry, qry_params)
         result.subscriptionMap = reduceMap(listToMap(subStruct))
 //        println 'subscriptionMap: ' + result.subscriptionMap
 
@@ -230,7 +233,7 @@ class OrganisationControllerService {
                                         AND exists ( select orgR from OrgRole as orgR where orgR.lic = l and orgR.org = :org )
                                     ) order by l.sortableReference, l.reference, l.startDate, l.endDate, l.instanceOf asc '''
 
-        List<List> licStruct = License.executeQuery('select l.status.id, l.id, l.startDate, l.endDate ' + licenseQuery, licenseParams)
+        List<List> licStruct = License.executeQuery('select l.status.id, l.id, l.startDate, l.endDate, l.openEnded ' + licenseQuery, licenseParams)
         result.licenseMap = reduceMap(listToMap(licStruct))
 //        println 'licenseMap: ' + result.licenseMap
 

@@ -601,28 +601,48 @@
 
     JSPC.app.info = {
         config_subscription: {
-            tooltip: { trigger: 'axis' },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'shadow' }
+            },
             series: [
                 <g:each in="${subscriptionTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ RefdataValue.get(it).getI10n('value') }}" var="status">
                     {
                         name    : '${RefdataValue.get(status).getI10n('value')}',
                         type    : 'bar',
                         stack   : 'total',
-                        emphasis: { focus: 'series' },
+%{--                        emphasis: { focus: 'series' },--}%
                         data    : [${subscriptionTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
                         color   : <%
-                            // blue '#5470c6', green '#91cc75', yellow '#fac858', red '#ee6666', ice '#73c0de', dgreen '#3ba272', orange '#fc8452', purple '#9a60b4', pink '#ea7ccc'
                             String color = ''
                             switch (RefdataValue.get(status)) {
-                                case RDStore.SUBSCRIPTION_CURRENT:      color = '#91cc75'; break;
-                                case RDStore.SUBSCRIPTION_EXPIRED:      color = '#5470c6'; break;
-                                case RDStore.SUBSCRIPTION_INTENDED:     color = '#3ba272'; break;
-                                case RDStore.SUBSCRIPTION_TEST_ACCESS:  color = '#fac858'; break;
+                                case RDStore.SUBSCRIPTION_CURRENT:      color = 'JSPC.colors.hex.blue'; break;
+                                case RDStore.SUBSCRIPTION_EXPIRED:      color = 'JSPC.colors.hex.grey'; break;
+                                case RDStore.SUBSCRIPTION_INTENDED:     color = 'JSPC.colors.hex.yellow'; break;
+                                case RDStore.SUBSCRIPTION_TEST_ACCESS:  color = 'JSPC.colors.hex.green'; break;
                             }
-                            println "'${color}'"
+                            println color
                             %>
                     },
                 </g:each>
+                    {
+                        name    : '${message(code: 'subscription.isMultiYear.label')}',
+                        type    : 'line',
+                        smooth  : true,
+                        lineStyle : {
+                            type: 'dotted',
+                            width: 3
+                        },
+%{--                        barWidth: 10,--}%
+%{--                        emphasis: { focus: 'series' },--}%
+                        data    : [<%
+                                    List<Long> subsPerYear = subscriptionTimelineMap.values().collect{ it.values().flatten() }
+                                    print subsPerYear.collect {
+                                        it.collect{ Subscription.get(it).isMultiYear ? 1 : 0 }.sum() ?: 0
+                                    }.join(', ')
+                                    %>],
+                        color   : JSPC.colors.hex.orange
+                    },
             ],
             xAxis: {
                 type: 'category',
@@ -633,28 +653,48 @@
             grid:   { left: '5%', right: '5%', top: '5%', bottom: '20%' },
         },
         config_license: {
-            tooltip: { trigger: 'axis' },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'shadow' }
+            },
             series: [
                 <g:each in="${licenseTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ RefdataValue.get(it).getI10n('value') }}" var="status">
                     {
                         name    : '${RefdataValue.get(status).getI10n('value')}',
                         type    : 'bar',
                         stack   : 'total',
-                        emphasis: { focus: 'series' },
+%{--                        emphasis: { focus: 'series' },--}%
                         data    : [${licenseTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
                         color   : <%
-                            // blue '#5470c6', green '#91cc75', yellow '#fac858', red '#ee6666', ice '#73c0de', dgreen '#3ba272', orange '#fc8452', purple '#9a60b4', pink '#ea7ccc'
                             color = ''
                             switch (RefdataValue.get(status)) {
-                                case RDStore.LICENSE_CURRENT:      color = '#91cc75'; break;
-                                case RDStore.LICENSE_EXPIRED:      color = '#5470c6'; break;
-                                case RDStore.LICENSE_INTENDED:     color = '#3ba272'; break;
-                                case RDStore.LICENSE_NO_STATUS:    color = '#ee6666'; break;
+                                case RDStore.LICENSE_CURRENT:      color = 'JSPC.colors.hex.blue'; break;
+                                case RDStore.LICENSE_EXPIRED:      color = 'JSPC.colors.hex.grey'; break;
+                                case RDStore.LICENSE_INTENDED:     color = 'JSPC.colors.hex.yellow'; break;
+                                case RDStore.LICENSE_NO_STATUS:    color = 'JSPC.colors.hex.grey'; break;
                             }
-                            println "'${color}'"
+                            println color
                         %>
                     },
                 </g:each>
+                    {
+                        name    : '${message(code: 'license.openEnded.label')}',
+                        type    : 'line',
+                        smooth  : true,
+                        lineStyle : {
+                            type: 'dotted',
+                            width: 3
+                        },
+%{--                        barWidth: 10,--}%
+%{--                        emphasis: { focus: 'series' },--}%
+                        data    : [<%
+                                    List<Long> licsPerYear = licenseTimelineMap.values().collect{ it.values().flatten() }
+                                    print licsPerYear.collect {
+                                        it.collect{ License.get(it).openEnded?.value == RDStore.YN_YES.value ? 1 : 0 }.sum() ?: 0
+                                    }.join(', ')
+                                    %>],
+                        color   : JSPC.colors.hex.orange
+                    },
             ],
             xAxis: {
                 type: 'category',
