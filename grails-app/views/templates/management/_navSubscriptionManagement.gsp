@@ -15,6 +15,10 @@
                     text="${message(code: 'subscription.details.linkPackagesMembers.label')}" tab="linkPackages"/>
 
     <ui:subNavItem controller="${controllerName}" action="${actionName}"
+                   params="${[id: params.id, tab: 'permanentTitles', isSiteReloaded:false]}"
+                   text="${message(code: 'subscriptionsManagement.permanentTitles')}" tab="permanentTitles"/>
+
+    <ui:subNavItem controller="${controllerName}" action="${actionName}"
                     params="${[id: params.id, tab: 'properties', isSiteReloaded:false]}"
                     text="${message(code: 'subscriptionsManagement.properties')}" tab="properties"/>
 

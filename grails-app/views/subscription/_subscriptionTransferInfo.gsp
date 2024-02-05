@@ -58,6 +58,7 @@
                         <i class="download icon"></i>
                     </span>
                 </th>
+                <th scope="col" rowspan="3" class="center aligned"></th>
             </tr>
             <tr>
                 <th scope="col" class="la-smaller-table-head">${message(code: 'subscription.offerRequested.table.th')}</th>
@@ -129,7 +130,7 @@
                     </td>
                     <td>
                         <%
-                            Set<DocContext> documentSet = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType', [subscription: s, docType: RDStore.DOC_TYPE_OFFER])
+                            Set<DocContext> documentSet = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType and owner.owner = :owner', [subscription: s, docType: RDStore.DOC_TYPE_OFFER, owner: contextService.getOrg()])
                             documentSet = documentSet.sort { it.owner?.title }
                         %>
                         <g:each in="${documentSet}" var="docctx">
@@ -252,7 +253,7 @@
                     </td>
                     <td>
                         <%
-                            Set<DocContext> documentSet2 = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType', [subscription: s, docType: RDStore.DOC_TYPE_RENEWAL])
+                            Set<DocContext> documentSet2 = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType and owner.owner = :owner', [subscription: s, docType: RDStore.DOC_TYPE_RENEWAL, owner: contextService.getOrg()])
                             documentSet2 = documentSet2.sort { it.owner?.title }
                         %>
                         <g:each in="${documentSet2}" var="docctx">
@@ -298,6 +299,14 @@
                                 <i class="download small icon"></i>
                             </g:link>
                         </g:if>
+                    </td>
+                    <td>
+                        <g:link controller="subscription" action="subTransfer" id="${s.id}"
+                                class="ui icon button blue la-modern-button"
+                                role="button"
+                                aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                            <i aria-hidden="true" class="write icon"></i>
+                        </g:link>
                     </td>
                 </tr>
                 </tbody>

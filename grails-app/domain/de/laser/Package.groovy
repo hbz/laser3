@@ -316,7 +316,19 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
      * @return a concatenated string of this package's name and the number of {@link TitleInstancePackagePlatform}s marked as current
      */
     String getPackageNameWithCurrentTippsCount() {
-        return this.name + ' ('+ TitleInstancePackagePlatform.countByPkgAndStatus(this, RDStore.TIPP_STATUS_CURRENT) +')'
+        return this.name + ' ('+ TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform where pkg = :pkg and status = :status", [pkg: this, status: RDStore.TIPP_STATUS_CURRENT])[0] +')'
+    }
+
+    int getCurrentTippsCount() {
+        return TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform where pkg = :pkg and status = :status", [pkg: this, status: RDStore.TIPP_STATUS_CURRENT])[0]
+    }
+
+    int getExpectedTippsCount() {
+        return TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform where pkg = :pkg and status = :status", [pkg: this, status: RDStore.TIPP_STATUS_EXPECTED])[0]
+    }
+
+    int getRetiredTippsCount() {
+        return TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform where pkg = :pkg and status = :status", [pkg: this, status: RDStore.TIPP_STATUS_RETIRED])[0]
     }
 
     /**

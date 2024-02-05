@@ -195,8 +195,11 @@ class PublicController {
 
         result.issueEntitlements = []
 
+        result.max    = params.max    ? Integer.parseInt(params.max.toString()) : 25
+        result.offset = params.offset ? Integer.parseInt(params.offset.toString()) : 0
+
         result.idnsPreset = IdentifierNamespace.findAll {
-            ns in ['eissn', 'issn', 'zdb', 'ezb']
+            ns in ['doi', 'eissn', 'issn', 'zdb', 'ezb', 'eisbn', 'isbn', 'title_id'] && nsType == TitleInstancePackagePlatform.class.name
         }
 
         if (params.id) {
@@ -208,11 +211,11 @@ class PublicController {
             if (scp) {
                 result.subscription = sub
 
-                String base_query = " FROM IssueEntitlement as ie WHERE ie.subscription = :sub and (ie.status.value != 'Deleted' and ie.status.value != 'Retired')"+
-                        " and exists (SELECT tipp FROM TitleInstancePackagePlatform as tipp WHERE ie.tipp = tipp and tipp.pkg = :pkg )"
-                Map<String, Object> queryParams = [sub: sub, pkg: pkg]
+                String base_query = " FROM IssueEntitlement as ie WHERE ie.subscription = :sub and (ie.status = :current or ie.status = :expected)"+
+                        " and ie.tipp.pkg = :pkg "
+                Map<String, Object> queryParams = [sub: sub, pkg: pkg, current: RDStore.TIPP_STATUS_CURRENT, expected: RDStore.TIPP_STATUS_EXPECTED]
 
-                result.issueEntitlementsCount = IssueEntitlement.executeQuery("select ie.id " + base_query, queryParams).size()
+                result.issueEntitlementsCount = IssueEntitlement.executeQuery("select count(*) " + base_query, queryParams)[0]
 
                 String query = "SELECT ie " + base_query
 
@@ -238,8 +241,9 @@ class PublicController {
 
                     queryParams.put('idv', '%' + idv.toLowerCase() + '%')
                 }
-                query += " order by LOWER(tipp.sortname)"
-                result.issueEntitlements = IssueEntitlement.executeQuery(query, queryParams)
+                query += " order by LOWER(ie.tipp.sortname)"
+
+                result.issueEntitlements = IssueEntitlement.executeQuery(query, queryParams, [max: result.max, offset: result.offset])
             }
             else {
                 redirect controller: 'public', action: 'gasco'

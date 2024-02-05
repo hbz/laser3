@@ -7,6 +7,7 @@ import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.SubscriptionPackage
 import de.laser.TitleInstancePackagePlatform
+import de.laser.exceptions.NativeSqlException
 import de.laser.finance.CostItem
 import de.laser.OrgSetting
 import de.laser.api.v0.*
@@ -234,7 +235,14 @@ class ApiOAMonitor {
 
             result.organisations = ApiCollectionReader.getOrgLinkCollection(allOrgRoles, ApiReader.IGNORE_SUBSCRIPTION, context) // de.laser.OrgRole
 
-            result.packages = ApiOAMonitor.getPackageCollectionWithTitleStubMaps(sub.packages, GlobalService.obtainSqlConnection())
+            try {
+                Sql sql = GlobalService.obtainSqlConnection()
+                result.packages = ApiOAMonitor.getPackageCollectionWithTitleStubMaps(sub.packages, sql)
+                sql.close()
+            }
+            catch(NativeSqlException e) {
+                result.packages = 'unable to fetch, please retry call later'
+            }
 
             Collection<CostItem> filtered = []
 

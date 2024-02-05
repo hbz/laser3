@@ -1271,6 +1271,84 @@ class SubscriptionControllerService {
         [result:result,status:STATUS_OK]
     }
 
+    Map<String,Object> compareSubMemberCostItems(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+        if(!result)
+            [result:null,status:STATUS_ERROR]
+
+        result.idSuffix = 'bulk'
+
+        result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(result.institution)
+        result.filteredSubChilds = getFilteredSubscribers(params,result.subscription)
+        result.filterSet = params.filterSet ? true : false
+
+        result.selectedCostItemElementID = params.selectedCostItemElement ? params.selectedCostItemElement.toString() : RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id.toString()
+
+        result.selectedCostItemElement = RefdataValue.get(Long.parseLong(result.selectedCostItemElementID))
+
+        result.showBulkCostItems = params.showBulkCostItems ? params.showBulkCostItems : null
+
+        if (params.processBulkCostItems) {
+            List<Long> selectedSubs = []
+            params.list("selectedSubs").each { id ->
+                selectedSubs << Long.parseLong(id)
+            }
+            if (selectedSubs && result.selectedCostItemElement) {
+                List<Subscription> subscriptionList = Subscription.findAllByIdInList(selectedSubs)
+                subscriptionList.each { Subscription memberSub ->
+                    if (params.percentOnOldPrice) {
+                        List<CostItem> previousSubCostItems
+                        Subscription previousSub = memberSub._getCalculatedPreviousForSurvey()
+                        if (previousSub) {
+                            previousSubCostItems = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(previousSub, result.institution, result.selectedCostItemElement, RDStore.COST_ITEM_DELETED)
+                        }
+
+                        Double percentage = 1 + params.double('percentOnOldPrice') / 100
+                        CostItem lastYearEquivalent = previousSubCostItems.size() == 1 ? previousSubCostItems[0] : null
+                        if (lastYearEquivalent) {
+
+                            List<CostItem> currentSubCostItems = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(memberSub, result.institution, result.selectedCostItemElement, RDStore.COST_ITEM_DELETED)
+
+                            currentSubCostItems.each { CostItem ci ->
+                                if (ci.sub) {
+                                    ci.costInBillingCurrency = lastYearEquivalent.costInBillingCurrency ? BigDecimal.valueOf(lastYearEquivalent.costInBillingCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInBillingCurrency
+                                    ci.costInLocalCurrency = lastYearEquivalent.costInLocalCurrency ? BigDecimal.valueOf(lastYearEquivalent.costInLocalCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInLocalCurrency
+                                    int taxRate = 0 //fallback
+                                    if (ci.taxKey)
+                                        taxRate = ci.taxKey.taxRate
+                                    ci.costInBillingCurrencyAfterTax = ci.costInBillingCurrency * (1.0 + (0.01 * taxRate))
+                                    ci.costInLocalCurrencyAfterTax = ci.costInLocalCurrency * (1.0 + (0.01 * taxRate))
+                                    ci.save()
+                                }
+                            }
+
+                        }
+                    } else if (params.percentOnCurrentPrice) {
+                        Double percentage = 1 + params.double('percentOnCurrentPrice') / 100
+
+                        List<CostItem> currentSubCostItems = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(memberSub, result.institution, result.selectedCostItemElement, RDStore.COST_ITEM_DELETED)
+
+                        currentSubCostItems.each { CostItem ci ->
+                            if (ci.sub) {
+                                ci.costInBillingCurrency = ci.costInBillingCurrency ? BigDecimal.valueOf(ci.costInBillingCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInBillingCurrency
+                                ci.costInLocalCurrency = ci.costInLocalCurrency ? BigDecimal.valueOf(ci.costInLocalCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInLocalCurrency
+                                int taxRate = 0 //fallback
+                                if (ci.taxKey)
+                                    taxRate = ci.taxKey.taxRate
+                                ci.costInBillingCurrencyAfterTax = ci.costInBillingCurrency * (1.0 + (0.01 * taxRate))
+                                ci.costInLocalCurrencyAfterTax = ci.costInLocalCurrency * (1.0 + (0.01 * taxRate))
+                                ci.save()
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+
+        [result:result,status:STATUS_OK]
+    }
+
     /**
      * Lists institutions and sets default parameters for the member adding form
      * @param controller unused
@@ -1658,53 +1736,6 @@ class SubscriptionControllerService {
                         checkedCache = ["checked": [:]]
                     }
 
-                    if (params.kbartPreselect) {
-                        //checkedCache.put('checked', [:])
-
-                        MultipartFile kbartFile = params.kbartPreselect
-                        InputStream stream = kbartFile.getInputStream()
-                        result.selectProcess = subscriptionService.tippSelectForSurvey(stream, baseSub, result.surveyConfig, subscriberSub)
-
-                        if (result.selectProcess.selectedTipps) {
-
-                            Integer countTippsToAdd = 0
-                            result.selectProcess.selectedTipps.each { String tippKey ->
-                                TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(tippKey)
-                                if (tipp) {
-                                    try {
-                                        if (!issueEntitlementGroup) {
-                                            issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: result.surveyConfig.issueEntitlementGroupName)
-                                            if (!issueEntitlementGroup.save())
-                                                log.error(issueEntitlementGroup.getErrors().getAllErrors().toListString())
-                                            else {
-                                                result.titleGroupID = issueEntitlementGroup.id.toString()
-                                                result.titleGroup = issueEntitlementGroup
-                                            }
-                                        }
-
-                                        if (issueEntitlementGroup && subscriptionService.addEntitlement(subscriberSub, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
-                                            log.debug("Added tipp ${tipp.gokbId} to sub ${subscriberSub.id}")
-                                            ++countTippsToAdd
-                                        }
-                                    }
-                                    catch (EntitlementCreationException e) {
-                                        log.debug("Error: Adding tipp ${tipp} to sub ${subscriberSub.id}: " + e.getMessage())
-                                        result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps', null, LocaleUtils.getCurrentLocale())
-                                    }
-
-                                }
-                            }
-                            if (countTippsToAdd > 0) {
-                                Object[] args = [countTippsToAdd]
-                                result.message = messageSource.getMessage('renewEntitlementsWithSurvey.tippsToAdd', args, LocaleUtils.getCurrentLocale())
-                            }
-                        }
-
-                        params.remove("kbartPreselect")
-                        params.tab = 'selectedIEs'
-                        result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(subscriberSub, result.surveyConfig)
-                    }
-
                     result.checkedCache = checkedCache.get('checked')
                     result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
 
@@ -1881,7 +1912,7 @@ class SubscriptionControllerService {
                     */
                 }
 
-                result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(subscriberSub, false)
+                result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(subscriberSub)
 
 /*            if (result.surveyConfig.pickAndChoosePerpetualAccess) {
                 result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)
@@ -2261,12 +2292,39 @@ class SubscriptionControllerService {
             Set entitlements = IssueEntitlement.executeQuery("select new map(ie.id as id, tipp.sortname as sortname) " + query.query, query.queryParams)
             result.entitlementIDs = entitlements
             if(params.kbartPreselect) {
+                String filename = params.kbartPreselect.originalFilename
+
+                int countQueryIes = entitlements.size()
+
                 MultipartFile kbartFile = params.kbartPreselect
                 InputStream stream = kbartFile.getInputStream()
-                result.enrichmentProcess = subscriptionService.issueEntitlementEnrichment(stream, entitlements.id, result.subscription, (params.uploadCoverageDates == 'on'), (params.uploadPriceInfo == 'on'))
+
+                result.enrichmentProcess = subscriptionService.issueEntitlementEnrichment(stream, countQueryIes, result.subscription, (params.uploadCoverageDates == 'on'), (params.uploadPriceInfo == 'on'))
+
                 params.remove("kbartPreselect")
                 params.remove("uploadCoverageDates")
                 params.remove("uploadPriceInfo")
+
+
+                if (result.enrichmentProcess.wrongTitles) {
+                    //background of this procedure: the editor adding titles via KBART wishes to receive a "counter-KBART" which will then be sent to the provider for verification
+                    String dir = GlobalService.obtainFileStorageLocation()
+                    File f = new File(dir+"/${filename}_matchingErrors")
+                    String returnKBART = exportService.generateSeparatorTableString(result.enrichmentProcess.titleRow, result.enrichmentProcess.wrongTitles, '\t')
+                    FileOutputStream fos = new FileOutputStream(f)
+                    fos.withWriter { Writer w ->
+                        w.write(returnKBART)
+                    }
+                    fos.flush()
+                    fos.close()
+                    result.token = "${filename}_matchingErrors"
+                    result.fileformat = "kbart"
+                    result.errorCount = result.enrichmentProcess.wrongTitles.size()
+                    result.errorKBART = true
+                }
+
+                result.issueEntitlementEnrichment = true
+
             }
 
             if(result.subscription.ieGroups.size() > 0) {
@@ -3727,7 +3785,9 @@ class SubscriptionControllerService {
      * @return a map of structure [sub: subscription, orgs: subscriber] containing the query results
      */
     List<Map> getFilteredSubscribers(GrailsParameterMap params, Subscription parentSub) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+        Map<String, Object> result = [:]
+
+        result.institution = parentSub.subscriber
         params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         GrailsParameterMap orgParams = params.clone()
         orgParams.remove("sort")
@@ -3844,30 +3904,30 @@ class SubscriptionControllerService {
 
             if ((result.contextOrg as Org).isCustomerType_Consortium() || (result.contextOrg as Org).isCustomerType_Support()) {
                 if(result.subscription.instanceOf){
-                    List subscrCostCounts = CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub = :sub and ci.owner = :ctx and ci.surveyOrg = null and ci.costItemStatus != :deleted', [sub: result.subscription, ctx: result.contextOrg, deleted: RDStore.COST_ITEM_DELETED])
+                    List subscrCostCounts = CostItem.executeQuery('select count(*) from CostItem ci where ci.sub = :sub and ci.owner = :ctx and ci.surveyOrg = null and ci.costItemStatus != :deleted', [sub: result.subscription, ctx: result.contextOrg, deleted: RDStore.COST_ITEM_DELETED])
                     result.currentCostItemCounts = subscrCostCounts ? subscrCostCounts[0] : 0
-                    result.currentSurveysCounts = SurveyConfig.executeQuery("from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
+                    result.currentSurveysCounts = SurveyConfig.executeQuery("select count(*) from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
                             [sub: result.subscription.instanceOf,
                              org: result.subscription.getSubscriber(),
-                             invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]]).size()
+                             invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]])[0]
                 }else{
-                    result.currentSurveysCounts = SurveyConfig.findAllBySubscription(result.subscription).size()
-                    List subscrCostCounts = CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub.instanceOf = :sub and ci.owner = :ctx and ci.costItemStatus != :deleted', [sub: result.subscription, ctx: result.institution, deleted: RDStore.COST_ITEM_DELETED]),
-                    ownCostCounts = CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub = :sub and ci.owner = :ctx and ci.costItemStatus != :deleted', [sub: result.subscription, ctx: result.institution, deleted: RDStore.COST_ITEM_DELETED])
+                    result.currentSurveysCounts = SurveyConfig.executeQuery("select count(*) from SurveyConfig as surConfig where surConfig.subscription = :sub", [sub: result.subscription])[0]
+                    List subscrCostCounts = CostItem.executeQuery('select count(*) from CostItem ci where ci.sub.instanceOf = :sub and ci.owner = :ctx and ci.costItemStatus != :deleted', [sub: result.subscription, ctx: result.institution, deleted: RDStore.COST_ITEM_DELETED]),
+                    ownCostCounts = CostItem.executeQuery('select count(*) from CostItem ci where ci.sub = :sub and ci.owner = :ctx and ci.costItemStatus != :deleted', [sub: result.subscription, ctx: result.institution, deleted: RDStore.COST_ITEM_DELETED])
                     int subscrCount = subscrCostCounts ? subscrCostCounts[0] : 0
                     int ownCount = ownCostCounts ? ownCostCounts[0] : 0
                     result.currentCostItemCounts = "${ownCount}/${subscrCount}"
                 }
                 result.currentMembersCounts =  Subscription.executeQuery('select count(*) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',[parent: result.subscription, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])[0]
             }else{
-                result.currentSurveysCounts = SurveyConfig.executeQuery("from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
+                result.currentSurveysCounts = SurveyConfig.executeQuery("select count(*) from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
                         [sub: result.subscription.instanceOf,
                          org: result.subscription.getSubscriber(),
-                         invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]]).size()
-                List subscrCostCounts = CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub = :sub and ci.isVisibleForSubscriber = true and ci.costItemStatus != :deleted', [sub: result.subscription, deleted: RDStore.COST_ITEM_DELETED])
+                         invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]])[0]
+                List subscrCostCounts = CostItem.executeQuery('select count(*) from CostItem ci where ci.sub = :sub and ci.isVisibleForSubscriber = true and ci.costItemStatus != :deleted', [sub: result.subscription, deleted: RDStore.COST_ITEM_DELETED])
                 int subscrCount = subscrCostCounts ? subscrCostCounts[0] : 0
                 if(result.contextCustomerType == CustomerTypeService.ORG_INST_PRO) {
-                    List ownCostCounts = CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub = :sub and ci.owner = :ctx and ci.costItemStatus != :deleted', [sub: result.subscription, ctx: result.institution, deleted: RDStore.COST_ITEM_DELETED])
+                    List ownCostCounts = CostItem.executeQuery('select count(*) from CostItem ci where ci.sub = :sub and ci.owner = :ctx and ci.costItemStatus != :deleted', [sub: result.subscription, ctx: result.institution, deleted: RDStore.COST_ITEM_DELETED])
                     int ownCount = ownCostCounts ? ownCostCounts[0] : 0
                     if(result.subscription.instanceOf)
                         result.currentCostItemCounts = "${ownCount}/${subscrCount}"
@@ -3884,7 +3944,8 @@ class SubscriptionControllerService {
             int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.subscription).size()
             result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
-            result.notesCount       = docstoreService.getNotes(result.subscription, result.contextOrg).size()
+            result.notesCount       = docstoreService.getNotesCount(result.subscription, result.contextOrg)
+            result.docsCount       = docstoreService.getDocsCount(result.subscription, result.contextOrg)
             result.checklistCount   = workflowService.getWorkflowCount(result.subscription, result.contextOrg)
 
             if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {

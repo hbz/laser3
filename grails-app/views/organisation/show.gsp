@@ -12,7 +12,7 @@
         <g:set var="entityName" value="${message(code: 'org.label')}"/>
     </g:else>
 
-<laser:htmlStart message="${isProviderOrAgency ? 'menu.institutions.provider_info' : 'menu.institutions.org_info'}" serviceInjection="true" />
+<laser:htmlStart message="${isProviderOrAgency ? 'menu.institutions.provider.show' : 'menu.institutions.org.show'}" serviceInjection="true" />
 
 <laser:render template="breadcrumb"
           model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView, consortialView: consortialView]}"/>

@@ -7,6 +7,7 @@ import de.laser.License
 import de.laser.Org
 import de.laser.Subscription
 import de.laser.SubscriptionService
+import de.laser.finance.CostItem
 import de.laser.storage.PropertyStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyConfigProperties
@@ -71,7 +72,11 @@ class SurveyControllerService {
         int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.surveyConfig).size()
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
-        result.notesCount = docstoreService.getNotes(result.surveyConfig, result.contextOrg).size()
+        result.notesCount = docstoreService.getNotesCount(result.surveyConfig, result.contextOrg)
+        result.docsCount       = docstoreService.getDocsCount(result.surveyConfig, result.contextOrg)
+        result.participantsCount = SurveyOrg.executeQuery("select count (*) from SurveyOrg where surveyConfig = :surveyConfig", [surveyConfig: result.surveyConfig])[0]
+        result.surveyCostItemsCount = CostItem.executeQuery("select count(*) from CostItem where owner = :owner and costItemStatus != :status and surveyOrg in (select surOrg from SurveyOrg as surOrg where surveyConfig = :surveyConfig)", [surveyConfig: result.surveyConfig, owner: result.surveyInfo.owner, status: RDStore.COST_ITEM_DELETED])[0]
+        result.evaluationCount =  SurveyOrg.executeQuery("select count (*) from SurveyOrg where surveyConfig = :surveyConfig and finishDate is not null", [surveyConfig: result.surveyConfig])[0] + '/' +SurveyOrg.executeQuery("select count (*) from SurveyOrg where surveyConfig = :surveyConfig", [surveyConfig: result.surveyConfig])[0]
 
         result.subscription = result.surveyConfig.subscription ?: null
 

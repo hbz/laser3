@@ -442,7 +442,13 @@ class AjaxController {
       Map checked = cache.get('checked')
 
       if(params.index == 'all') {
-          Map<String, Object> filterParams = JSON.parse(params.filterParams) as Map<String, Object>
+          Map<String, Object> filterParams = [:]
+          if(params.filterParams){
+              JSON.parse(params.filterParams).each {
+                  filterParams[it.key] = it.value
+              }
+          }
+
 		  Map<String, String> newChecked = checked ?: [:]
           if(params.referer == 'renewEntitlementsWithSurvey'){
 
@@ -474,8 +480,8 @@ class AjaxController {
               Subscription baseSub = Subscription.get(params.baseSubID)
 
               if(params.tab == 'allTipps') {
-                  params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-                  Map<String, Object> query = filterService.getTippQuery(params, baseSub.packages.pkg)
+                  filterParams.status = [RDStore.TIPP_STATUS_CURRENT.id]
+                  Map<String, Object> query = filterService.getTippQuery(filterParams, baseSub.packages.pkg)
                   List<Long> titleIDList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
 
                   titleIDList.each { Long tippID ->

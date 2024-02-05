@@ -73,7 +73,7 @@
             let formData = new FormData(this);
             //formData.append('kbartFile', kbart);
             $.ajax({
-                url: '<g:createLink controller="${controllerName}" action="${actionName == 'addEntitlements' ? 'selectEntitlementsWithKBART' : actionName}"/>',
+                url: '<g:createLink controller="${controllerName}" action="${actionName == 'addEntitlements' ? 'selectEntitlementsWithKBART' : actionName == 'renewEntitlementsWithSurvey' ? 'selectEntitlementsWithKBARTForSurvey' : actionName}"/>',
                 cache: false,
                 contentType: false,
                 processData: false,

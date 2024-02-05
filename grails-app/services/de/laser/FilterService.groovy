@@ -1359,7 +1359,7 @@ class FilterService {
 
         if(params.yearsFirstOnline) {
             base_qry += " and (Year(tipp.dateFirstOnline) in (:yearsFirstOnline)) "
-            qry_params.yearsFirstOnline = params.list('yearsFirstOnline').collect { Integer.parseInt(it) }
+            qry_params.yearsFirstOnline = Params.getLongList_forCommaSeparatedString(params, 'yearsFirstOnline').collect { Integer.parseInt(it.toString()) }
         }
 
         if (params.identifier) {
@@ -1472,7 +1472,7 @@ class FilterService {
             qry_params.deleted = RDStore.TIPP_STATUS_REMOVED
         }*/
 
-        if (params.list('status').findAll()) {
+        if (params.status) {
             List<Long> status = Params.getLongList(params, 'status')
             if(qry_params.size() > 0){
                 base_qry += " and "

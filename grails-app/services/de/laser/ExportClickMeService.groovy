@@ -5917,7 +5917,7 @@ class ExportClickMeService {
                         }
                     }
                 }
-                else if(fieldKey.contains('participantIdentifiers.')) {
+                else if(fieldKey.contains('participantIdentifiers.') || fieldKey.contains('providerIdentifiers.')) {
                     titles << fields.label
                     titles << "${fields.label} ${messageSource.getMessage('default.notes.plural', null, locale)}"
                 }

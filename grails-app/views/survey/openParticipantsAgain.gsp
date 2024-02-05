@@ -17,10 +17,13 @@
     <laser:render template="actions"/>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon type="Survey">
-    <ui:xEditable owner="${surveyInfo}" field="name"/>
-    <uiSurvey:status object="${surveyInfo}"/>
-</ui:h1HeaderWithIcon>
+<ui:h1HeaderWithIcon text="${surveyInfo.name}" type="Survey"/>
+
+<uiSurvey:status object="${surveyInfo}"/>
+
+<g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id, RDStore.SURVEY_TYPE_TITLE_SELECTION]}">
+    <ui:linkWithIcon icon="bordered inverted orange clipboard la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+</g:if>
 
 <laser:render template="nav"/>
 
