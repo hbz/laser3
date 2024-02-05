@@ -75,6 +75,14 @@
         display: none;
     }
 
+    .stats-content .secondary.menu .year {
+        float: right;
+        margin-left: auto;
+        font-size: 120%;
+        font-weight: bold;
+        color: #222;
+    }
+
     h3.header > i.icon {
         vertical-align: baseline !important;
     }
@@ -103,6 +111,7 @@
                             ${subStatusRdv.getI10n('value')} <span class="ui blue circular label">${subList.size()}</span>
                         </a>
                     </g:each>
+                    <div class="item year">..</div>
                 </div>
 
                 <g:each in="${subscriptionMap}" var="subStatus,subList">
@@ -122,7 +131,7 @@
                             <tbody>
                                 <g:each in="${subList}" var="subId">
                                     <g:set var="sub" value="${Subscription.get(subId)}" />
-                                    <tr>
+                                    <tr data-id="${subId}">
                                         <td>
                                             <div class="la-flexbox la-minor-object">
                                                 <i class="icon clipboard la-list-icon"></i>
@@ -155,9 +164,8 @@
                             ${subStatusRdv.getI10n('value')} <span class="ui blue circular label">${licList.size()}</span>
                         </a>
                     </g:each>
+                    <div class="item year">..</div>
                 </div>
-
-
 
                 <g:each in="${licenseMap}" var="subStatus,licList">
                     <g:set var="subStatusRdv" value="${RefdataValue.get(subStatus)}" />
@@ -175,7 +183,7 @@
                             <tbody>
                                 <g:each in="${licList}" var="licId">
                                     <g:set var="lic" value="${License.get(licId)}" />
-                                    <tr>
+                                    <tr data-id="${licId}">
                                         <td>
                                             <div class="la-flexbox la-minor-object">
                                                 <i class="icon balance scale la-list-icon"></i>
@@ -581,7 +589,7 @@
                 JSPC.app.info.charts.subscription.resize()
                 JSPC.app.info.charts.license.resize()
             }
-       })
+        })
 
         $('.stats-toggle').first().trigger('click')
 
@@ -613,6 +621,7 @@
                         stack   : 'total',
 %{--                        emphasis: { focus: 'series' },--}%
                         data    : [${subscriptionTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
+                        raw     : [${subscriptionTimelineMap.values().collect{ it[status] ?: [] }.join(', ')}],
                         color   : <%
                             String color = ''
                             switch (RefdataValue.get(status)) {
@@ -665,6 +674,7 @@
                         stack   : 'total',
 %{--                        emphasis: { focus: 'series' },--}%
                         data    : [${licenseTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
+                        raw     : [${licenseTimelineMap.values().collect{ it[status] ?: [] }.join(', ')}],
                         color   : <%
                             color = ''
                             switch (RefdataValue.get(status)) {
@@ -711,8 +721,46 @@ JSPC.app.info.charts = {}
 JSPC.app.info.charts.subscription = echarts.init ($('#cw-subscription')[0]);
 JSPC.app.info.charts.subscription.setOption (JSPC.app.info.config_subscription);
 
+JSPC.app.info.charts.subscription.on ('click', function (params) {
+    let x = '#stat_subscriptions'
+    let y = params.dataIndex
+    let s = params.seriesIndex
+
+    $(x + ' tr[data-id]').hide()
+
+    $.each( $(x + ' .menu .item[data-tab^=sub]'), function(i, e) {
+        let yList = JSPC.app.info.config_subscription.series[i].raw[y]
+        $(e).find('.blue.circular.label').text( yList.length )
+        yList.forEach((f) => {
+                $(x + ' tr[data-id=' + f + ']').show()
+        })
+    })
+    // JSPC.app.info.charts.subscription.dispatchAction({ type: 'select', dataIndex: y })
+    $($(x + ' .menu .item[data-tab^=sub]')[s]).trigger('click')
+    $(x + ' .menu .year').text(params.name)
+});
+
 JSPC.app.info.charts.license = echarts.init ($('#cw-license')[0]);
 JSPC.app.info.charts.license.setOption (JSPC.app.info.config_license);
+
+JSPC.app.info.charts.license.on ('click', function (params) {
+    let x = '#stat_licenses'
+    let y = params.dataIndex
+    let s = params.seriesIndex
+
+    $(x + ' tr[data-id]').hide()
+
+    $.each( $(x + ' .menu .item[data-tab^=lic]'), function(i, e) {
+        let yList = JSPC.app.info.config_license.series[i].raw[y]
+        $(e).find('.blue.circular.label').text( yList.length )
+        yList.forEach((f) => {
+                $(x + ' tr[data-id=' + f + ']').show()
+        })
+    })
+    // JSPC.app.info.charts.license.dispatchAction({ type: 'select', dataIndex: y })
+    $($(x + ' .menu .item[data-tab^=lic]')[s]).trigger('click')
+    $(x + ' .menu .year').text(params.name)
+});
 </laser:script>
 
 
