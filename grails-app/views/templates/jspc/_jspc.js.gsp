@@ -129,7 +129,7 @@ JSPC = {
             orange:     '#fc8452',
             purple:     '#9a60b4',
             pink:       '#ea7ccc',
-            grey:       '#c4c4c4'
+            grey:       '#d4d4d4'
         },
     },
     helper : { // -- snippets only
