@@ -18,6 +18,12 @@ tasks.register('gradle.helpWarningMode', Exec) {
     args '-c', './gradlew help --warning-mode=all'
 }
 
+tasks.register('gradle.rebuildDependencies', Exec) {
+    group = 'laser'
+    executable 'sh'
+    args '-c', './gradlew clean; ./gradlew build --stacktrace --refresh-dependencies'
+}
+
 tasks.register('system.environment') {
     group = 'laser'
     doLast {
