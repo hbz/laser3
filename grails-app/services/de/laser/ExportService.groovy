@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.base.AbstractReport
+import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.finance.BudgetCode
@@ -3510,20 +3511,183 @@ class ExportService {
 
 	Map<String, List> generateRenewalExport(Map configMap, Set showStatsInMonthRings, Org subscriber) {
 		log.debug("Begin generateRenewalExport")
-		boolean checkPerpetuallyPurchasedTitles = false
 		Sql sql = GlobalService.obtainSqlConnection()
-		Connection sqlConn = sql.getDataSource().getConnection()
 		Locale locale = LocaleUtils.getCurrentLocale()
 		//Map<String, Object> data = getTitleData(configMap, TitleInstancePackagePlatform.class.name, sql, showStatsInMonthRings, subscriber)
+		EhcacheWrapper userCache = contextService.getUserCache("/subscription/renewEntitlementsWithSurvey/generateRenewalExport")
 		long start = System.currentTimeMillis()
-		Map<String, Object> qryParams = [pkgIds: sqlConn.createArrayOf('bigint', configMap.pkgIds as Object[]), current: RDStore.TIPP_STATUS_CURRENT.id]
-		List identifiers = sql.rows("select tipp_id," +
-				"(select distinct(id_value) from identifier join identifier_namespace on id_ns_fk = idns_id where id_tipp_fk = tipp_id and idns_ns in ('isbn', 'issn')) as print_identifier," +
-				"(select distinct(id_value) from identifier join identifier_namespace on id_ns_fk = idns_id where id_tipp_fk = tipp_id and idns_ns in ('eisbn', 'eissn')) as online_identifier," +
-				"(select distinct(id_value) from identifier join identifier_namespace on id_ns_fk = idns_id where id_tipp_fk = tipp_id and idns_ns = ('doi')) as doi," +
-				"(select distinct(id_value) from identifier join identifier_namespace on id_ns_fk = idns_id where id_tipp_fk = tipp_id and idns_ns = ('title_id')) as proprietary_identifier " +
-				"from title_instance_package_platform where tipp_pkg_fk = any(:pkgIds) and tipp_status_rv_fk = :current", qryParams)
-		log.debug("${System.currentTimeMillis()-start} msecs for identifier")
+		//the query is being assembled here
+		Map<String, String> titleHeaders = getBaseTitleHeaders(TitleInstancePackagePlatform.class.name, true)
+		//the where clauses here
+        Map<String, Object> queryClauseParts = filterService.prepareTitleSQLQuery(configMap, TitleInstancePackagePlatform.class.name, sql)
+        String baseQuery = "select tipp_id, ${titleHeaders.values().join(', ')} from title_instance_package_platform left join tippcoverage on tc_tipp_fk = tipp_id join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id ${queryClauseParts.join} where ${queryClauseParts.where}${queryClauseParts.order}"
+		queryClauseParts.subscriber = subscriber
+        List<GroovyRowResult> rows = sql.rows(baseQuery, queryClauseParts.params)
+		Map<String, List> export = [titles: titleHeaders.keySet().toList()]
+		export.titles.addAll(showStatsInMonthRings.collect { Date month -> DateUtils.getSDF_yyyyMM().format(month) })
+		export.titles << "Pick"
+		Map<String, Object> identifierInverseMap = subscriptionControllerService.fetchTitles(configMap.refSub, true)
+		List excelRows = []
+		userCache.put('progress', 20)
+		List<GroovyRowResult> platformData = sql.rows("select plat_title_namespace, plat_guid from platform join package on plat_id = pkg_nominal_platform_fk where pkg_id = any(:pkgIds) group by plat_guid, plat_title_namespace", [pkgIds: sql.getDataSource().getConnection().createArrayOf('bigint', configMap.pkgIds as Object[])])
+		List<Object> platforms = []
+		Set<String> propIdNamespaces = []
+		platformData.each { GroovyRowResult row ->
+			platforms << row.plat_guid
+			propIdNamespaces << row.plat_title_namespace
+		}
+		Calendar filterTime = GregorianCalendar.getInstance()
+		filterTime.setTime(showStatsInMonthRings.first())
+		filterTime.set(Calendar.DATE, filterTime.getActualMinimum(Calendar.DAY_OF_MONTH))
+		Date startDate = filterTime.getTime()
+		filterTime.setTime(showStatsInMonthRings.last())
+		filterTime.set(Calendar.DATE, filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
+		Date endDate = filterTime.getTime()
+		configMap.customer = subscriber
+		configMap.startDate = startDate
+		configMap.endDate = endDate
+		Map<String, Object> requestResponse = getReports(configMap)
+		userCache.put('progress', 40)
+		int processed = 0
+		if(rows) {
+			double pointsPerIteration = 20/rows.size()
+			Map<Long, Map> allReports = [:]
+			//implicit COUNTER 4 check
+			Long titleMatch
+			int matched = 0
+			if(requestResponse.containsKey('reports')) {
+				double pointsPerMatch = 20/requestResponse.reports.size()
+				//COUNTER 4 result
+				for (GPathResult reportItem: requestResponse.reports) {
+					titleMatch = null
+					reportItem.'ns2:ItemIdentifier'.each { identifier ->
+						if(!titleMatch) {
+							switch (identifier.'ns2:Type'.text().toLowerCase()) {
+								case 'isbn': titleMatch = identifierInverseMap.onlineIdentifiers.get(identifier.'ns2:Value'.text())
+									if(!titleMatch)
+										titleMatch = identifierInverseMap.onlineIdentifiers.get(identifier.'ns2:Value'.text().replaceAll('-',''))
+									if(!titleMatch)
+										titleMatch = identifierInverseMap.printIdentifiers.get(identifier.'ns2:Value'.text().replaceAll('-',''))
+									if(!titleMatch)
+										titleMatch = identifierInverseMap.printIdentifiers.get(identifier.'ns2:Value'.text())
+									break
+								case 'online_isbn':
+								case 'online_issn': titleMatch = identifierInverseMap.onlineIdentifiers.get(identifier.'ns2:Value'.text())
+									if(!titleMatch)
+										titleMatch = identifierInverseMap.onlineIdentifiers.get(identifier.'ns2:Value'.text().replaceAll('-',''))
+									break
+								case 'print_issn':
+								case 'print_isbn': titleMatch = identifierInverseMap.printIdentifiers.get(identifier.'ns2:Value'.text())
+									if(!titleMatch)
+										titleMatch = identifierInverseMap.printIdentifiers.get(identifier.'ns2:Value'.text().replaceAll('-',''))
+									break
+								case 'doi': titleMatch = identifierInverseMap.doi.get(identifier.'ns2:Value'.text())
+									break
+								case 'proprietary_id': propIdNamespaces.each { String propIdNamespace ->
+									if(!titleMatch)
+										titleMatch = identifierInverseMap.proprietaryIdentifiers.get(identifier.'ns2:Value'.text())
+								}
+									break
+							}
+						}
+					}
+					if(titleMatch) {
+						Map<String, Integer> reports = allReports.containsKey(titleMatch) ? allReports.get(titleMatch) : [:]
+						for(GPathResult performance: reportItem.'ns2:ItemPerformance') {
+							Date reportFrom = DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:Begin'.text())
+							for(GPathResult instance: performance.'ns2:Instance'.findAll { instCand -> instCand.'ns2:MetricType'.text() == configMap.metricTypes }) {
+								reports.put(DateUtils.getSDF_yyyyMM().format(reportFrom), Integer.parseInt(instance.'ns2:Count'.text()))
+							}
+						}
+						allReports.put(titleMatch, reports)
+					}
+					matched++
+					double increment = matched*pointsPerMatch
+					userCache.put('progress', 40+increment)
+				}
+			}
+			else if(requestResponse.containsKey('items')) {
+				double pointsPerMatch = 20/requestResponse.items.size()
+				//COUNTER 5 result
+				for(def reportItem: requestResponse.items) {
+					titleMatch = null
+					reportItem["Item_ID"].each { idData ->
+						if(!titleMatch) {
+							switch(idData.Type.toLowerCase()) {
+								case 'isbn': titleMatch = identifierInverseMap.onlineIdentifiers.get(idData.Value)
+									if(!titleMatch)
+										titleMatch = identifierInverseMap.onlineIdentifiers.get(idData.Value)
+									if(!titleMatch)
+										titleMatch = identifierInverseMap.printIdentifiers.get(idData.Value.replaceAll('-',''))
+									if(!titleMatch)
+										titleMatch = identifierInverseMap.printIdentifiers.get(idData.Value.replaceAll('-',''))
+									break
+								case 'online_issn':
+								case 'online_isbn': titleMatch = identifierInverseMap.onlineIdentifiers.get(idData.Value)
+									if(!titleMatch)
+										titleMatch = identifierInverseMap.onlineIdentifiers.get(idData.Value.replaceAll('-',''))
+									break
+								case 'print_isbn':
+								case 'print_issn': titleMatch = identifierInverseMap.printIdentifiers.get(idData.Value)
+									if(!titleMatch)
+										titleMatch = identifierInverseMap.printIdentifiers.get(idData.Value.replaceAll('-',''))
+									break
+								case 'doi': titleMatch = identifierInverseMap.doi.get(idData.Value)
+									break
+								case 'proprietary_id': titleMatch = identifierInverseMap.proprietaryIdentifiers.get(idData.Value)
+									break
+							}
+						}
+					}
+					if(titleMatch) {
+						Map<String, Integer> reports = allReports.containsKey(titleMatch) ? allReports.get(titleMatch) : [:]
+						for(Map performance: reportItem.Performance) {
+							Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
+							for(Map instance: performance.Instance) {
+								reports.put(DateUtils.getSDF_yyyyMM().format(reportFrom), instance.Count)
+							}
+						}
+						allReports.put(titleMatch, reports)
+					}
+					matched++
+					double increment = matched*pointsPerMatch
+					userCache.put('progress', 40+increment)
+				}
+			}
+			userCache.put('progress', 60)
+			for(GroovyRowResult sqlRow : rows) {
+				List<Map<String, Object>> excelRow = []
+				if(allReports.containsKey(sqlRow.tipp_id))
+					sqlRow.putAll(allReports.get(sqlRow.tipp_id))
+				String style = ''
+				if(sqlRow.get(messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale)) == true)
+					style = 'negative'
+				export.titles.each { String col ->
+					def value = ''
+					if(sqlRow.containsKey(col)) {
+						value = sqlRow.get(col)
+						if(!value)
+							value = ''
+					}
+					if(col == messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale)) {
+						if(value == true)
+							excelRow << createCell('excel', RDStore.YN_NO.getI10n('value'), style)
+						else excelRow << createCell('excel', RDStore.YN_YES.getI10n('value'), style)
+					}
+					else
+						excelRow << createCell('excel', value, style)
+				}
+				excelRows << excelRow
+				processed++
+				double increment = processed*pointsPerIteration
+				userCache.put('progress', 60+increment)
+			}
+		}
+		userCache.put('progress', 80)
+		export.rows = excelRows
+		log.debug("End generateRenewalExport")
+		export
+        /*
 		List<String> titleHeaders = [
 				messageSource.getMessage('tipp.name',null,locale),
 				'Print Identifier',
@@ -3587,7 +3751,6 @@ class ExportService {
 		titleHeaders << "Pick"
 		List rows = []
 		Map<String,List> export = [titles:titleHeaders]
-		/*
 		data.titles.eachWithIndex { GroovyRowResult title, int outer ->
 			if(entitlementInstance == IssueEntitlement.class.name && data.coverageMap.get(title['ie_id'])) {
 				data.coverageMap.get(title['ie_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
@@ -3609,16 +3772,13 @@ class ExportService {
 			}
 		}
 		*/
-		//export.rows = rows
-		log.debug("End generateRenewalExport")
-		export
 	}
 
 	/**
 	 * Gets the map of column headers for KBART export with their database query mappings
 	 * @return a map of column headers and SQL query parts
 	 */
-	Map<String, String> getBaseTitleHeaders(String entitlementInstance) {
+	Map<String, String> getBaseTitleHeaders(String entitlementInstance, boolean checkPerpetuallyAccessToTitle = false) {
 		Locale locale = LocaleUtils.getCurrentLocale()
 		Map <String, String> mapping = [publication_title: 'tipp_name as publication_title',
 		 print_identifier: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('book','monograph') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ISBN).id}) or (lower(tipp_title_type) in ('journal','serial') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ISSN).id}))) as print_identifier",
@@ -3672,6 +3832,9 @@ class ExportService {
 		 localprice_eur: '',
 		 localprice_gbp: '',
 		 localprice_usd: '']
+		if(checkPerpetuallyAccessToTitle) {
+			mapping.put(messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale), "(select case when exists(select * from permanent_title join title_instance_package_platform as pt_tipp on pt_tipp_fk = pt_tipp.tipp_id where (pt_tipp_fk = tipp_id or pt_tipp.tipp_host_platform_url = tipp_host_platform_url) and pt_owner_fk = :subscriber) then true else false end) as ${messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale)}")
+		}
 		if(entitlementInstance == IssueEntitlement.class.name) {
 			mapping.date_first_issue_online = "to_char(ic_start_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') as date_first_issue_online"
 			mapping.num_first_vol_online = 'ic_start_volume as num_first_vol_online'
@@ -3959,6 +4122,7 @@ class ExportService {
 	 *  coreTitleIdentifierNamespaces: coreTitleIdentifierNamespaces,
 	 *  otherTitleIdentifierNamespaces: otherTitleIdentifierNamespaces]
 	 */
+    @Deprecated
 	Map<String, Object> getTitleData(Map configMap, String entitlementInstance, Sql sql, List showStatsInMonthRings = [], Org subscriber = null) {
 		Map<String, Object> queryData = filterService.prepareTitleSQLQuery(configMap, entitlementInstance, sql)
 		List<GroovyRowResult> titles = sql.rows(queryData.query+queryData.join+' where '+queryData.where+queryData.order, queryData.params),

@@ -121,8 +121,11 @@
     <g:else>
         <strong><g:message code="default.stats.error.noReportAvailable"/></strong>
     </g:else>
-    <div class="localLoadingIndicator" hidden="hidden">
-        <div class="ui inline medium text loader active">Aktualisiere Daten ..</div>
+    <div class="ui teal progress" id="localLoadingIndicator" hidden="hidden">
+        <div class="bar">
+            <div class="progress"></div>
+        </div>
+        <div class="label">Aktualisiere Daten ...</div>
     </div>
     <div id="reportWrapper"></div>
 </ui:modal>
@@ -148,7 +151,7 @@
         });
     });
     $("#generateReport").on('click', function() {
-        $('.localLoadingIndicator').show();
+        $('#localLoadingIndicator').progress();
         let fd = new FormData($('#individuallyExportModal').find('form')[0]);
         $.ajax({
             url: "<g:createLink action="renewEntitlementsWithSurvey"/>",
@@ -158,10 +161,26 @@
             contentType: false
         }).done(function(response){
             $("#reportWrapper").html(response);
-            $('.localLoadingIndicator').hide();
         }).fail(function(resp, status){
             $("#reportWrapper").text('Es ist zu einem Fehler beim Abruf gekommen');
-            $('.localLoadingIndicator').hide();
-        });;
+        });
+        checkProgress();
     });
+
+    function checkProgress() {
+        let percentage = 0;
+        setTimeout(function() {
+            $.ajax({
+                url: "<g:createLink controller="ajaxJson" action="checkProgress" params="[cachePath: '/subscription/renewEntitlementsWithSurvey/generateRenewalExport', cacheKey: 'progress']"/>"
+            }).done(function(response){
+                percentage = response.percent;
+                if(percentage !== null)
+                    $('#localLoadingIndicator').progress('set percent', percentage);
+                if(!$('#localLoadingIndicator').progress('is complete'))
+                    checkProgress();
+            }).fail(function(resp, status){
+                //TODO
+            });
+        }, 500);
+    }
 </laser:script>
