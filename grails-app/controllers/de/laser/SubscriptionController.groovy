@@ -397,7 +397,13 @@ class SubscriptionController {
             return
         }
         else {
-            subscriptionService.setOrgLicRole(result.subscription,License.get(params.license),true)
+            License lic = License.get(params.license)
+            subscriptionService.setOrgLicRole(result.subscription,lic,true)
+            Subscription.findAllByInstanceOf(result.subscription).each { Subscription childSub ->
+                License.findAllByInstanceOf(lic).each { License childLic ->
+                    subscriptionService.setOrgLicRole(childSub, childLic, true)
+                }
+            }
             redirect(url: request.getHeader('referer'))
         }
     }

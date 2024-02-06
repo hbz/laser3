@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5550    06.02.2024  dev     3.4         Andreas Bug         Entknüpfung eines Vertrages auf Konsortialebene wirkte sich nicht auf Teilnehmer aus
+
+5545    06.02.2024  dev     3.4         Andreas Bug         Adressmodal eindeutiger zugewiesen
+
 5507    01.02.2024  dev     3.4         Andreas Feature     Beziehungsbezeichner korrigiert
 
 5554    01.02.2024  rc-3.3  3.3.5       Andreas Bug         Eigener Kostenfilter hakte, wenn nur nach Lizenz gefiltert wird
