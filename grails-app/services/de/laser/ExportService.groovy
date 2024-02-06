@@ -744,6 +744,8 @@ class ExportService {
 	 * @return an Excel worksheet of the usage report, either according to the COUNTER 4 or COUNTER 5 format
 	 */
 	Map<String, Object> generateReport(GrailsParameterMap params, Boolean showPriceDate = false, Boolean showMetricType = false, Boolean showOtherData = false) {
+		EhcacheWrapper userCache = contextService.getUserCache("/subscription/stats")
+		userCache.put('progress', 0)
 		Profiler prf = new Profiler()
 		prf.setBenchmark('start export')
 		Locale locale = LocaleUtils.getCurrentLocale()
@@ -776,18 +778,14 @@ class ExportService {
 		SXSSFSheet sheet
         Set<String> metricTypes = params.list('metricType')
 		String reportType = params.reportType
-		/*
-		continue here:
-		use two maps:
-		a) tipp_id -> tipp_name
-		b) id_ns -> id_value -> tipp_id
-		 */
 		Map<String, Object> titles = [:] //structure: namespace -> value -> tipp
 		Set<TitleInstancePackagePlatform> titlesSorted = [] //fallback structure to preserve sorting
 		prf.setBenchmark('prepare title identifier map')
         if(reportType in Counter4Report.COUNTER_4_TITLE_REPORTS || reportType in Counter5Report.COUNTER_5_TITLE_REPORTS) {
 			titles = subscriptionControllerService.fetchTitles(refSub)
+			userCache.put('progress', 10)
 			titlesSorted = TitleInstancePackagePlatform.executeQuery('select ie.tipp from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :refSub and ie.status = :current order by tipp.sortname, tipp.name', [refSub: refSub, current: RDStore.TIPP_STATUS_CURRENT])
+			userCache.put('progress', 20)
         }
 		//reportTypes.each { String reportType ->
 		Set<String> columnHeaders = []
@@ -806,6 +804,7 @@ class ExportService {
 			queryParams.endDate = dateRangeParams.endDate
 			//the data
 			Map<String, Object> requestResponse = getReports(queryParams)
+			userCache.put('progress', 40)
 			prf.setBenchmark('data fetched from provider')
 			if(requestResponse.containsKey('reports')) {
 				Set<String> availableMetrics = requestResponse.reports.'**'.findAll { node -> node.name() == 'MetricType' }.collect { node -> node.text()}.toSet()
@@ -1154,6 +1153,7 @@ class ExportService {
 						}
 						int i = 0
 						prf.setBenchmark('loop through assembled rows')
+						double pointsPerIteration = 20/titlesSorted.size()
 						for(TitleInstancePackagePlatform title: titlesSorted) {
 							Instant start = Instant.now().truncatedTo(ChronoUnit.MICROS)
 							Map metricRow = titleRows.get(title.id)
@@ -1171,6 +1171,7 @@ class ExportService {
 										cell.setCellValue(titleRow.get(columnHeaders[c]) ?: empty)
 									}
 									i++
+									userCache.put('progress', 80+i*pointsPerIteration)
 								}
 							}
 							Duration diff = Duration.between(start, Instant.now().truncatedTo(ChronoUnit.MICROS))
@@ -1188,11 +1189,19 @@ class ExportService {
 					}
 					log.debug(debugString)
 				}
-				if(wb.getNumberOfSheets() == 0)
+				if(wb.getNumberOfSheets() == 0) {
+					userCache.put('progress', 0)
 					[error: 'noMetricsAvailable']
-				else [result: wb]
+				}
+				else {
+					userCache.put('progress', 100)
+					[result: wb]
+				}
 			}
-			else requestResponse
+			else {
+				userCache.put('progress', 0)
+				requestResponse
+			}
 		}
 		//revision 5
 		else if(params.revision == AbstractReport.COUNTER_5) {
@@ -1348,6 +1357,7 @@ class ExportService {
 				}
 				rowno = 14
 				Map<String, Object> data = [:]
+				double pointsPerIteration
 				switch(reportType.toLowerCase()) {
 					case [Counter5Report.PLATFORM_MASTER_REPORT, Counter5Report.PLATFORM_USAGE]:
 						data = [:]
@@ -1358,6 +1368,7 @@ class ExportService {
 						else {
 							reportItems.addAll(requestResponse.items)
 						}
+						pointsPerIteration = 20/reportItems.size()
 						for(def reportItem: reportItems) {
 							for(Map performance: reportItem.Performance) {
 								Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
@@ -1389,6 +1400,7 @@ class ExportService {
 											cell.setCellValue(dataTypeRow.getValue().get(columnHeaders[c]) ?: "")
 										}
 										i++
+										userCache.put('progress', 80+i*pointsPerIteration)
 									}
 								}
 							}
@@ -1424,6 +1436,7 @@ class ExportService {
 					case Counter5Report.DATABASE_MASTER_REPORT:
 						data = prepareDataWithDatabases(requestResponse, reportType)
 						int i = 0
+						pointsPerIteration = data.size()
 						for(Map.Entry<String, Object> databaseRow: data) {
 							for(Map.Entry<String, Object> platformRow: databaseRow.getValue()) {
 								for(Map.Entry<String, Object> metricRow: platformRow.getValue()) {
@@ -1434,6 +1447,7 @@ class ExportService {
 											cell.setCellValue(dataTypeRow.getValue().get(columnHeaders[c]) ?: "")
 										}
 										i++
+										userCache.put('progress', 80+i*pointsPerIteration)
 									}
 								}
 							}
@@ -1443,6 +1457,7 @@ class ExportService {
 					case Counter5Report.DATABASE_SEARCH_AND_ITEM_USAGE:
 						data = prepareDataWithDatabases(requestResponse, reportType)
 						int i = 0
+						pointsPerIteration = data.size()
 						for(Map.Entry<String, Object> databaseRow: data) {
 							for(Map.Entry<String, Object> platformRow: databaseRow.getValue()) {
 								for(Map.Entry<String, Object> metricRow: platformRow.getValue()) {
@@ -1452,6 +1467,7 @@ class ExportService {
 										cell.setCellValue(metricRow.getValue().get(columnHeaders[c]) ?: "")
 									}
 									i++
+									userCache.put('progress', 80+i*pointsPerIteration)
 								}
 							}
 						}
@@ -1488,6 +1504,7 @@ class ExportService {
 				}
 				if(reportType in Counter5Report.COUNTER_5_TITLE_REPORTS) {
 					if(titleRows.size() > 0) {
+						pointsPerIteration = titlesSorted.size()
 						prf.setBenchmark('loop through assembled rows')
 						for(TitleInstancePackagePlatform title: titlesSorted) {
 							Instant start = Instant.now().truncatedTo(ChronoUnit.MICROS)
@@ -1507,6 +1524,7 @@ class ExportService {
 											cell.setCellValue(titleRow.get(columnHeaders[c]) ?: "")
 										}
 										i++
+										userCache.put('progress', 80+i*pointsPerIteration)
 									}
 									rowno += titleYop.size()
 								}
@@ -1572,12 +1590,16 @@ class ExportService {
 	 * @return a map of titles with the row containing the columns as specified for the given report
 	 */
 	Map<String, Object> prepareDataWithTitles(Map<String, Object> titles, IdentifierNamespace propIdNamespace, String reportType, requestResponse, Boolean showPriceDate = false, Boolean showOtherData = false) {
+		EhcacheWrapper userCache = contextService.getUserCache("/subscription/stats")
+		double pointsPerIteration
+		int processed = 0
 		Map<Long, Map<String, Map>> titleRows = [:]
 		Map<String, Object> result = [:]
 		Calendar limit = GregorianCalendar.getInstance()
 		limit.set(2000, 0, 1)
 		if(reportType in Counter5Report.COUNTER_5_REPORTS) {
 			Map<Date, Integer> countsPerMonth = [:]
+			pointsPerIteration = 40/requestResponse.items.size()
 			for(def reportItem: requestResponse.items) {
 				Map<String, String> identifierMap = buildIdentifierMap(reportItem, AbstractReport.COUNTER_5)
 				TitleInstancePackagePlatform tipp = subscriptionControllerService.matchReport(titles, propIdNamespace, identifierMap)
@@ -1699,12 +1721,15 @@ class ExportService {
 						}
 					}
 				}
+				processed++
+				userCache.put('progress', 40+processed*pointsPerIteration)
 			}
 			result.sumRows =  countsPerMonth
 		}
         else if(reportType in Counter4Report.COUNTER_4_REPORTS) {
 			Map<String, Map<Date, Integer>> countsPerMonth = [:], sumsPerYOP = [:]
 			Set<String> metricsAvailable = []
+			pointsPerIteration = 20/requestResponse.reports.size()
 			for (GPathResult reportItem: requestResponse.reports) {
 				Map<String, String> identifierMap = buildIdentifierMap(reportItem, AbstractReport.COUNTER_4)
 				TitleInstancePackagePlatform tipp = subscriptionControllerService.matchReport(titles, propIdNamespace, identifierMap)
@@ -1824,6 +1849,8 @@ class ExportService {
 						}
 					}
 				}
+				processed++
+				userCache.put('progress', 40+processed*pointsPerIteration)
 			}
 			result.metricsAvailable = metricsAvailable
 			result.sumRows = countsPerMonth
@@ -1919,6 +1946,7 @@ class ExportService {
 		//log.debug("iteration time inner loop: ${iterInner}")
 
 		//}
+		userCache.put('progress', 80)
 		result.titleRows = titleRows
 		result
 	}
@@ -1938,10 +1966,14 @@ class ExportService {
 	 	]
 	 */
 	Map<String, Object> prepareDataWithDatabases(Map requestResponse, String reportType) {
+		EhcacheWrapper userCache = contextService.getUserCache("/subscription/stats")
+		double pointsPerIteration
+		int processed = 0
 		Map<String, Object> databaseRows = [:]
 		//mini example: https://connect.liblynx.com/sushi/r5/reports/dr?customer_id=2246867&requestor_id=facd706b-cf11-42f9-8d92-a874e594a218&begin_date=2023-01&end_date=2023-12
 		//take https://laser-dev.hbz-nrw.de/subscription/membersSubscriptionsManagement/59727?tab=customerIdentifiers&isSiteReloaded=false as base for customer identifiers!
 		if(reportType in Counter5Report.COUNTER_5_REPORTS) {
+			pointsPerIteration = 40/requestResponse.items.size()
 			for(def reportItem: requestResponse.items) {
 				String propID = reportItem.Item_ID.find { Map itemId -> itemId.Type == 'Proprietary' }?.Value
 				for(Map performance: reportItem.Performance) {
@@ -1993,9 +2025,12 @@ class ExportService {
 						}
 					}
 				}
+				processed++
+				userCache.put('progress', 40+processed*pointsPerIteration)
 			}
 		}
 		else if(reportType in Counter4Report.COUNTER_4_REPORTS) {
+			pointsPerIteration = 20/requestResponse.reports.size()
 			for (GPathResult reportItem: requestResponse.reports) {
 				String databaseName = reportItem.'ns2:ItemName'.text()
 				for (GPathResult performance: reportItem.'ns2:ItemPerformance') {
@@ -2039,6 +2074,8 @@ class ExportService {
 						databaseRows.put(databaseName, databaseRow)
 					}
 				}
+				processed++
+				userCache.put('progress', 40+processed*pointsPerIteration)
 			}
 			/*
             for(AbstractReport report: reports) {
@@ -2081,6 +2118,7 @@ class ExportService {
             }
 			*/
 		}
+		userCache.put('progress', 80)
 		databaseRows
 	}
 

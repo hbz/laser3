@@ -1619,9 +1619,9 @@ class SubscriptionController {
                 if (!folder.exists()) {
                     folder.mkdir()
                 }
-                //File f = new File(dir+'/'+token)
+                File f = new File(dir+'/'+token)
                 Map<String, String> fileResult = [token: token]
-                //if(!f.exists()) {
+                if(!f.exists()) {
                     SortedSet<Date> monthsInRing = new TreeSet<Date>()
                     Calendar startTime = GregorianCalendar.getInstance(), endTime = GregorianCalendar.getInstance()
                     if (ctrlResult.result.subscriberSub.startDate && ctrlResult.result.subscriberSub.endDate) {
@@ -1693,13 +1693,11 @@ class SubscriptionController {
                     wb.dispose()
                     render template: '/templates/usageReport', model: fileResult
                     return
-                /*
                 }
                 else {
                     render template: '/templates/usageReport', model: fileResult
                     return
                 }
-                */
             }
             else {
                 flash.error = message(code: 'default.stats.error.noReportSelected')

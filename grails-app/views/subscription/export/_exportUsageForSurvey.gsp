@@ -121,11 +121,11 @@
     <g:else>
         <strong><g:message code="default.stats.error.noReportAvailable"/></strong>
     </g:else>
-    <div class="ui teal progress" id="localLoadingIndicator" hidden="hidden">
+    <div class="ui teal progress" id="localLoadingIndicator" hidden>
         <div class="bar">
             <div class="progress"></div>
         </div>
-        <div class="label">Aktualisiere Daten ...</div>
+        <div class="label">Erzeuge Tabelle ...</div>
     </div>
     <div id="reportWrapper"></div>
 </ui:modal>
@@ -176,7 +176,9 @@
                 percentage = response.percent;
                 if(percentage !== null)
                     $('#localLoadingIndicator').progress('set percent', percentage);
-                if(!$('#localLoadingIndicator').progress('is complete'))
+                if($('#localLoadingIndicator').progress('is complete'))
+                    $('#localLoadingIndicator').hide();
+                else
                     checkProgress();
             }).fail(function(resp, status){
                 //TODO
