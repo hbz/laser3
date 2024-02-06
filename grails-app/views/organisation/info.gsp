@@ -1,4 +1,4 @@
-<%@ page import="de.laser.finance.CostItem; de.laser.RefdataValue; de.laser.survey.SurveyInfo; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
+<%@ page import="java.time.Year; de.laser.finance.CostItem; de.laser.RefdataValue; de.laser.survey.SurveyInfo; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
 
 <laser:htmlStart message="menu.institutions.org.info" serviceInjection="true">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
@@ -25,8 +25,6 @@
 
 <laser:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" />
 
-        <h2 class="ui header" style="color:#fff;background-color:#f00;padding:0.5em 1em;margin:2em 0">DEMO</h2>
-
         <div class="ui five statistics">
             <div class="statistic stats-toggle" data-target="stat_subscriptions">
                 <span class="value"> ${subscriptionMap.get(RDStore.SUBSCRIPTION_CURRENT.id).size()} </span>
@@ -49,9 +47,6 @@
                 <span class="label"> Kosten (${message(code: 'subscription.plural.current')}) </span>
             </div>
         </div>
-
-    <br />
-    <br />
 
 <style>
     .statistics > .stats-toggle.active {
@@ -97,12 +92,17 @@
     }
 </style>
 
-    <div id="stat_subscriptions" class="stats-content">
-%{--        <h3 class="ui right aligned header">--}%
-%{--            ${message(code:'subscription.plural')} <i class="icon clipboard" aria-hidden="true"></i>--}%
-%{--        </h3>--}%
+    <h2 class="ui header" style="color:#fff;background-color:#f2cccd;padding:0.5em 1em;margin:3em 0">DEMO</h2>
 
+    <div id="stat_subscriptions" class="stats-content">
                 <div class="chartWrapper" id="cw-subscription"></div>
+
+                <div class="ui secondary la-tab-with-js menu">
+                    <g:each in="${subscriptionTimelineMap.keySet()}" var="year">
+                        <a href="#" class="item" data-tab="year-${year}"> ${year} </a>
+%{--                        <a href="#" class="item ${year == Year.now().toString() ? 'active' : ''}" data-tab="year-${year}"> ${year} </a>--}%
+                    </g:each>
+                </div>
 
                 <div class="ui secondary la-tab-with-js menu">
                     <g:each in="${subscriptionMap}" var="subStatus,subList">
@@ -111,7 +111,6 @@
                             ${subStatusRdv.getI10n('value')} <span class="ui blue circular label">${subList.size()}</span>
                         </a>
                     </g:each>
-                    <div class="item year">..</div>
                 </div>
 
                 <g:each in="${subscriptionMap}" var="subStatus,subList">
@@ -152,24 +151,27 @@
     </div>
 
     <div id="stat_licenses" class="stats-content">
-%{--        <h3 class="ui right aligned header">--}%
-%{--            ${message(code:'license.plural')} <i class="icon balance scale" aria-hidden="true"></i>--}%
-%{--        </h3>--}%
                 <div class="chartWrapper" id="cw-license"></div>
 
                 <div class="ui secondary la-tab-with-js menu">
-                    <g:each in="${licenseMap}" var="subStatus,licList">
-                        <g:set var="subStatusRdv" value="${RefdataValue.get(subStatus)}" />
-                        <a href="#" class="item ${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="lic-${subStatusRdv.id}">
-                            ${subStatusRdv.getI10n('value')} <span class="ui blue circular label">${licList.size()}</span>
-                        </a>
+                    <g:each in="${licenseTimelineMap.keySet()}" var="year">
+                        <a href="#" class="item" data-tab="year-${year}"> ${year} </a>
+%{--                        <a href="#" class="item ${year == Year.now().toString() ? 'active' : ''}" data-tab="year-${year}"> ${year} </a>--}%
                     </g:each>
-                    <div class="item year">..</div>
                 </div>
 
-                <g:each in="${licenseMap}" var="subStatus,licList">
-                    <g:set var="subStatusRdv" value="${RefdataValue.get(subStatus)}" />
-                    <div class="ui tab right attached segment ${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="lic-${subStatusRdv.id}">
+                <div class="ui secondary la-tab-with-js menu">
+                    <g:each in="${licenseMap}" var="licStatus,licList">
+                        <g:set var="licStatusRdv" value="${RefdataValue.get(licStatus)}" />
+                        <a href="#" class="item ${licStatusRdv == RDStore.LICENSE_CURRENT ? 'active' : ''}" data-tab="lic-${licStatusRdv.id}">
+                            ${licStatusRdv.getI10n('value')} <span class="ui blue circular label">${licList.size()}</span>
+                        </a>
+                    </g:each>
+                </div>
+
+                <g:each in="${licenseMap}" var="licStatus,licList">
+                    <g:set var="licStatusRdv" value="${RefdataValue.get(licStatus)}" />
+                    <div class="ui tab right attached segment ${licStatusRdv == RDStore.LICENSE_CURRENT ? 'active' : ''}" data-tab="lic-${licStatusRdv.id}">
 
                         <table class="ui table very compact">
                             <thead>
@@ -203,9 +205,14 @@
     </div>
 
     <div id="stat_providers" class="stats-content">
-%{--        <h3 class="ui right aligned header">--}%
-%{--            ${message(code:'default.provider.label')} <i class="icon university" aria-hidden="true"></i>--}%
-%{--        </h3>--}%
+%{--        <div class="chartWrapper" id="cw-provider"></div>--}%
+
+%{--                <div class="ui secondary la-tab-with-js menu">--}%
+%{--                    <g:each in="${subscriptionTimelineMap.keySet()}" var="year">--}%
+%{--                        <a href="#" class="item" data-tab="year-${year}"> ${year} </a>--}%
+%{--                    --}%%{--                        <a href="#" class="item ${year == Year.now().toString() ? 'active' : ''}" data-tab="year-${year}"> ${year} </a>--}%
+%{--                    </g:each>--}%
+%{--                </div>--}%
 
                 <div class="ui secondary la-tab-with-js menu">
                     <g:each in="${providerMap}" var="subStatus,provList">
@@ -579,9 +586,11 @@
     </div>
 
     <laser:script file="${this.getGroovyPageFileName()}">
-        $('.stats-toggle').on('click', function() {
+        let $statsToggle = $('.stats-toggle')
+
+        $statsToggle.on('click', function() {
             $('.stats-content').hide()
-            $('.stats-toggle').removeClass('active')
+            $statsToggle.removeClass('active')
             $(this).addClass('active')
             $('#' + $(this).attr('data-target')).show()
 
@@ -591,7 +600,7 @@
             }
         })
 
-        $('.stats-toggle').first().trigger('click')
+        $statsToggle.first().trigger('click')
 
         $('#provider-toggle-subscriptions').checkbox({
             onChange: function() {
@@ -603,165 +612,197 @@
                 $('table *[data-ctype=survey-subsciption]').toggle()
             }
         })
-    </laser:script>
-
-<laser:script file="${this.getGroovyPageFileName()}">
 
     JSPC.app.info = {
-        config_subscription: {
-            tooltip: {
-                trigger: 'axis',
-                axisPointer: { type: 'shadow' }
+        chart_config: {
+            subscription: {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'shadow' }
+                },
+                series: [
+                    <g:each in="${subscriptionTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ RefdataValue.get(it).getI10n('value') }}" var="status">
+                        {
+                            name    : '${RefdataValue.get(status).getI10n('value')}',
+                            type    : 'bar',
+                            stack   : 'total',
+    %{--                        emphasis: { focus: 'series' },--}%
+                            data    : [${subscriptionTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
+                            raw     : [${subscriptionTimelineMap.values().collect{ it[status] ?: [] }.join(', ')}],
+                            color   : <%
+                                String color = 'JSPC.colors.hex.pink'
+                                switch (RefdataValue.get(status)) {
+                                    case RDStore.SUBSCRIPTION_CURRENT:      color = 'JSPC.colors.hex.green'; break;
+                                    case RDStore.SUBSCRIPTION_EXPIRED:      color = 'JSPC.colors.hex.grey'; break;
+                                    case RDStore.SUBSCRIPTION_INTENDED:     color = 'JSPC.colors.hex.blue'; break;
+                                    case RDStore.SUBSCRIPTION_ORDERED:      color = 'JSPC.colors.hex.ice'; break;
+                                    case RDStore.SUBSCRIPTION_TEST_ACCESS:  color = 'JSPC.colors.hex.yellow'; break;
+                                    case RDStore.SUBSCRIPTION_NO_STATUS:    color = 'JSPC.colors.hex.red'; break;
+                                }
+                                println color
+                                %>
+                        },
+                    </g:each>
+                        {
+                            name    : '${message(code: 'subscription.isMultiYear.label')}',
+                            type    : 'line',
+                            smooth  : true,
+                            lineStyle : {
+                                type: 'dotted',
+                                width: 3
+                            },
+    %{--                        emphasis: { focus: 'series' },--}%
+                            data    : [<%
+                                        List<Long> subsPerYear = subscriptionTimelineMap.values().collect{ it.values().flatten() }
+                                        print subsPerYear.collect {
+                                            it.collect{ Subscription.get(it).isMultiYear ? 1 : 0 }.sum() ?: 0
+                                        }.join(', ')
+                                        %>],
+                            color   : JSPC.colors.hex.orange
+                        },
+                ],
+                xAxis: {
+                    type: 'category',
+                    data: [${subscriptionTimelineMap.keySet().join(', ')}]
+                },
+                yAxis:  { type: 'value' },
+                legend: { bottom: 0 },
+                grid:   { left: '5%', right: '5%', top: '5%', bottom: '20%' },
             },
-            series: [
-                <g:each in="${subscriptionTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ RefdataValue.get(it).getI10n('value') }}" var="status">
-                    {
-                        name    : '${RefdataValue.get(status).getI10n('value')}',
-                        type    : 'bar',
-                        stack   : 'total',
-%{--                        emphasis: { focus: 'series' },--}%
-                        data    : [${subscriptionTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
-                        raw     : [${subscriptionTimelineMap.values().collect{ it[status] ?: [] }.join(', ')}],
-                        color   : <%
-                            String color = ''
-                            switch (RefdataValue.get(status)) {
-                                case RDStore.SUBSCRIPTION_CURRENT:      color = 'JSPC.colors.hex.blue'; break;
-                                case RDStore.SUBSCRIPTION_EXPIRED:      color = 'JSPC.colors.hex.grey'; break;
-                                case RDStore.SUBSCRIPTION_INTENDED:     color = 'JSPC.colors.hex.yellow'; break;
-                                case RDStore.SUBSCRIPTION_TEST_ACCESS:  color = 'JSPC.colors.hex.green'; break;
-                            }
-                            println color
+            license: {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'shadow' }
+                },
+                series: [
+                    <g:each in="${licenseTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ RefdataValue.get(it).getI10n('value') }}" var="status">
+                        {
+                            name    : '${RefdataValue.get(status).getI10n('value')}',
+                            type    : 'bar',
+                            stack   : 'total',
+    %{--                        emphasis: { focus: 'series' },--}%
+                            data    : [${licenseTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
+                            raw     : [${licenseTimelineMap.values().collect{ it[status] ?: [] }.join(', ')}],
+                            color   : <%
+                                color = 'JSPC.colors.hex.pink'
+                                switch (RefdataValue.get(status)) {
+                                    case RDStore.LICENSE_CURRENT:      color = 'JSPC.colors.hex.green'; break;
+                                    case RDStore.LICENSE_EXPIRED:      color = 'JSPC.colors.hex.grey'; break;
+                                    case RDStore.LICENSE_INTENDED:     color = 'JSPC.colors.hex.blue'; break;
+                                    case RDStore.LICENSE_NO_STATUS:    color = 'JSPC.colors.hex.red'; break;
+                                }
+                                println color
                             %>
-                    },
-                </g:each>
-                    {
-                        name    : '${message(code: 'subscription.isMultiYear.label')}',
-                        type    : 'line',
-                        smooth  : true,
-                        lineStyle : {
-                            type: 'dotted',
-                            width: 3
                         },
-%{--                        barWidth: 10,--}%
-%{--                        emphasis: { focus: 'series' },--}%
-                        data    : [<%
-                                    List<Long> subsPerYear = subscriptionTimelineMap.values().collect{ it.values().flatten() }
-                                    print subsPerYear.collect {
-                                        it.collect{ Subscription.get(it).isMultiYear ? 1 : 0 }.sum() ?: 0
-                                    }.join(', ')
-                                    %>],
-                        color   : JSPC.colors.hex.orange
-                    },
-            ],
-            xAxis: {
-                type: 'category',
-                data: [${subscriptionTimelineMap.keySet().join(', ')}]
-            },
-            yAxis:  { type: 'value' },
-            legend: { bottom: 0 },
-            grid:   { left: '5%', right: '5%', top: '5%', bottom: '20%' },
-        },
-        config_license: {
-            tooltip: {
-                trigger: 'axis',
-                axisPointer: { type: 'shadow' }
-            },
-            series: [
-                <g:each in="${licenseTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ RefdataValue.get(it).getI10n('value') }}" var="status">
-                    {
-                        name    : '${RefdataValue.get(status).getI10n('value')}',
-                        type    : 'bar',
-                        stack   : 'total',
-%{--                        emphasis: { focus: 'series' },--}%
-                        data    : [${licenseTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
-                        raw     : [${licenseTimelineMap.values().collect{ it[status] ?: [] }.join(', ')}],
-                        color   : <%
-                            color = ''
-                            switch (RefdataValue.get(status)) {
-                                case RDStore.LICENSE_CURRENT:      color = 'JSPC.colors.hex.blue'; break;
-                                case RDStore.LICENSE_EXPIRED:      color = 'JSPC.colors.hex.grey'; break;
-                                case RDStore.LICENSE_INTENDED:     color = 'JSPC.colors.hex.yellow'; break;
-                                case RDStore.LICENSE_NO_STATUS:    color = 'JSPC.colors.hex.grey'; break;
-                            }
-                            println color
-                        %>
-                    },
-                </g:each>
-                    {
-                        name    : '${message(code: 'license.openEnded.label')}',
-                        type    : 'line',
-                        smooth  : true,
-                        lineStyle : {
-                            type: 'dotted',
-                            width: 3
+                    </g:each>
+                        {
+                            name    : '${message(code: 'license.openEnded.label')}',
+                            type    : 'line',
+                            smooth  : true,
+                            lineStyle : {
+                                type: 'dotted',
+                                width: 3
+                            },
+    %{--                        emphasis: { focus: 'series' },--}%
+                            data    : [<%
+                                        List<Long> licsPerYear = licenseTimelineMap.values().collect{ it.values().flatten() }
+                                        print licsPerYear.collect {
+                                            it.collect{ License.get(it).openEnded?.value == RDStore.YN_YES.value ? 1 : 0 }.sum() ?: 0
+                                        }.join(', ')
+                                        %>],
+                            color   : JSPC.colors.hex.orange
                         },
-%{--                        barWidth: 10,--}%
-%{--                        emphasis: { focus: 'series' },--}%
-                        data    : [<%
-                                    List<Long> licsPerYear = licenseTimelineMap.values().collect{ it.values().flatten() }
-                                    print licsPerYear.collect {
-                                        it.collect{ License.get(it).openEnded?.value == RDStore.YN_YES.value ? 1 : 0 }.sum() ?: 0
-                                    }.join(', ')
-                                    %>],
-                        color   : JSPC.colors.hex.orange
-                    },
-            ],
-            xAxis: {
-                type: 'category',
-                data: [${licenseTimelineMap.keySet().join(', ')}]
+                ],
+                xAxis: {
+                    type: 'category',
+                    data: [${licenseTimelineMap.keySet().join(', ')}]
+                },
+                yAxis:  { type: 'value' },
+                legend: { bottom: 0 },
+                grid:   { left: '5%', right: '5%', top: '5%', bottom: '20%' },
             },
-            yAxis:  { type: 'value' },
-            legend: { bottom: 0 },
-            grid:   { left: '5%', right: '5%', top: '5%', bottom: '20%' },
-        },
+        }
     };
 
-JSPC.app.info.charts = {}
+        JSPC.app.info.charts = {}
 
-JSPC.app.info.charts.subscription = echarts.init ($('#cw-subscription')[0]);
-JSPC.app.info.charts.subscription.setOption (JSPC.app.info.config_subscription);
+        JSPC.app.info.charts.subscription = echarts.init ($('#cw-subscription')[0]);
+        JSPC.app.info.charts.subscription.setOption (JSPC.app.info.chart_config.subscription);
 
-JSPC.app.info.charts.subscription.on ('click', function (params) {
-    let x = '#stat_subscriptions'
-    let y = params.dataIndex
-    let s = params.seriesIndex
+        JSPC.app.info.charts.subscription.on ('click', function (params) {
+            let x = '#stat_subscriptions'
+            let y = params.dataIndex
+            let s = params.seriesIndex
 
-    $(x + ' tr[data-id]').hide()
+        console.log(params)
 
-    $.each( $(x + ' .menu .item[data-tab^=sub]'), function(i, e) {
-        let yList = JSPC.app.info.config_subscription.series[i].raw[y]
-        $(e).find('.blue.circular.label').text( yList.length )
-        yList.forEach((f) => {
-                $(x + ' tr[data-id=' + f + ']').show()
-        })
-    })
-    // JSPC.app.info.charts.subscription.dispatchAction({ type: 'select', dataIndex: y })
-    $($(x + ' .menu .item[data-tab^=sub]')[s]).trigger('click')
-    $(x + ' .menu .year').text(params.name)
-});
+            $(x + ' tr[data-id]').hide()
 
-JSPC.app.info.charts.license = echarts.init ($('#cw-license')[0]);
-JSPC.app.info.charts.license.setOption (JSPC.app.info.config_license);
+            $.each( $(x + ' .menu .item[data-tab^=sub-]'), function(i, e) {
+                let yList = JSPC.app.info.chart_config.subscription.series[i].raw[y]
+                $(e).find('.blue.circular.label').text( yList.length )
+                yList.forEach((f) => {
+                        $(x + ' tr[data-id=' + f + ']').show()
+                })
+            })
+            // JSPC.app.info.charts.subscription.dispatchAction({ type: 'select', dataIndex: y })
+            $($(x + ' .menu .item[data-tab^=sub]')[s]).trigger('click')
 
-JSPC.app.info.charts.license.on ('click', function (params) {
-    let x = '#stat_licenses'
-    let y = params.dataIndex
-    let s = params.seriesIndex
+            $(x + ' .menu .item[data-tab^=year-]').removeClass('active')
+            $(x + ' .menu .item[data-tab=year-' + params.name + ']').addClass('active')
+        });
 
-    $(x + ' tr[data-id]').hide()
+        JSPC.app.info.charts.license = echarts.init ($('#cw-license')[0]);
+        JSPC.app.info.charts.license.setOption (JSPC.app.info.chart_config.license);
 
-    $.each( $(x + ' .menu .item[data-tab^=lic]'), function(i, e) {
-        let yList = JSPC.app.info.config_license.series[i].raw[y]
-        $(e).find('.blue.circular.label').text( yList.length )
-        yList.forEach((f) => {
-                $(x + ' tr[data-id=' + f + ']').show()
-        })
-    })
-    // JSPC.app.info.charts.license.dispatchAction({ type: 'select', dataIndex: y })
-    $($(x + ' .menu .item[data-tab^=lic]')[s]).trigger('click')
-    $(x + ' .menu .year').text(params.name)
-});
-</laser:script>
+        JSPC.app.info.charts.license.on ('click', function (params) {
+            let x = '#stat_licenses'
+            let y = params.dataIndex
+            let s = params.seriesIndex
+
+            $(x + ' tr[data-id]').hide()
+
+            $.each( $(x + ' .menu .item[data-tab^=lic-]'), function(i, e) {
+                let yList = JSPC.app.info.chart_config.license.series[i].raw[y]
+                $(e).find('.blue.circular.label').text( yList.length )
+                yList.forEach((f) => {
+                        $(x + ' tr[data-id=' + f + ']').show()
+                })
+            })
+            // JSPC.app.info.charts.license.dispatchAction({ type: 'select', dataIndex: y })
+            $($(x + ' .menu .item[data-tab^=lic-]')[s]).trigger('click')
+
+            $(x + ' .menu .item[data-tab^=year-]').removeClass('active')
+            $(x + ' .menu .item[data-tab=year-' + params.name + ']').addClass('active')
+        });
+
+        let $subYears = $('#stat_subscriptions .menu .item[data-tab^=year-]')
+        $subYears.on ('click', function() {
+            $subYears.removeClass('active')
+            $(this).addClass('active')
+
+            let y = $(this).attr('data-tab')
+            $subYears.each( function(i, e) {
+                if ($(e).attr('data-tab') == y) {
+                    JSPC.app.info.charts.subscription.trigger('click', {type: 'click', name: y.replace('year-', ''), dataIndex: i})
+                }
+            })
+        });
+
+        let $licYears = $('#stat_licenses .menu .item[data-tab^=year-]')
+        $licYears.on ('click', function() {
+            $licYears.removeClass('active')
+            $(this).addClass('active')
+
+            let y = $(this).attr('data-tab')
+            $licYears.each( function(i, e) {
+                if ($(e).attr('data-tab') == y) {
+                    JSPC.app.info.charts.license.trigger('click', {type: 'click', name: y.replace('year-', ''), dataIndex: i})
+                }
+            })
+        });
+
+    </laser:script>
 
 
 <laser:htmlEnd />

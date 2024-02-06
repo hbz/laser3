@@ -222,7 +222,9 @@ class OrganisationControllerService {
 //        println 'subscriptionMap: ' + result.subscriptionMap
 
         result.subscriptionTimelineMap = getTimelineMap(subStruct)
-//        println 'subscriptionTimelineMap: ' + result.subscriptionTimelineMap
+
+//        println '\nsubStruct: ' + subStruct
+//        println '\nsubscriptionTimelineMap: ' + result.subscriptionTimelineMap
 
         // licenses
 
@@ -258,6 +260,10 @@ class OrganisationControllerService {
 
         List<List> providerStruct = Org.executeQuery(providerQuery, providerParams) /*.unique()*/
         Map providerMap = listToMap(providerStruct)
+
+//        println '\nproviderStruct: ' + providerStruct
+//        println '\nproviderMap: ' + providerMap
+
         result.providerMap = providerMap.collectEntries{ k,v -> [(k):(v.collect{ [ it[1], it[2] ] })] }
 
 //        result.providerMap.each{subStatus, list ->
@@ -284,8 +290,7 @@ class OrganisationControllerService {
 //                ]
 //            }
 //        }
-//        println 'providerMap: ' + result.providerMap
-
+//        println '\nproviderMap: ' + result.providerMap
         // surveys
 
 //        List<SurveyInfo> surveyStruct =  SurveyInfo.executeQuery(
