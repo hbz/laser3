@@ -307,6 +307,12 @@
                         </g:else>
                     </ui:msg>
                 </g:elseif>
+                <div class="ui teal progress" id="progressIndicator" hidden>
+                    <div class="bar">
+                        <div class="progress"></div>
+                    </div>
+                    <div class="label">Erzeuge Tabelle ...</div>
+                </div>
                 <div id="reportWrapper"></div>
             </g:if>
         </g:else>
@@ -401,7 +407,7 @@
                 });
             });
             $("#generateReport").on('click', function() {
-                $('#globalLoadingIndicator').show();
+                $('#progressIndicator').show();
                 let fd = new FormData($('#stats')[0]);
                 fd.append('startDate',startDate);
                 fd.append('endDate',endDate);
@@ -413,8 +419,30 @@
                     contentType: false
                 }).done(function(response){
                     $("#reportWrapper").html(response);
-                    $('#globalLoadingIndicator').hide();
+                    $('#progressIndicator').hide();
                 });
+                checkProgress();
             });
+
+            function checkProgress() {
+                let percentage = 0;
+                setTimeout(function() {
+                    $.ajax({
+                        url: "<g:createLink controller="ajaxJson" action="checkProgress" params="[cachePath: '/subscription/stats', cacheKey: 'progress']"/>"
+                    }).done(function(response){
+                        percentage = response.percent;
+                        if(percentage !== null)
+                            $('#progressIndicator').progress('set percent', percentage);
+                        if($('#progressIndicator').progress('is complete')) {
+                            $('#progressIndicator').hide();
+                        }
+                        else {
+                            checkProgress();
+                        }
+                    }).fail(function(resp, status){
+                        //TODO
+                    });
+                }, 500);
+            }
         </laser:script>
 <laser:htmlEnd />

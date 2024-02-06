@@ -3,6 +3,7 @@ package de.laser
 import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
 import de.laser.auth.User
+import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.exceptions.EntitlementCreationException
@@ -1234,82 +1235,6 @@ class SubscriptionController {
     }
 
     /**
-     * Call to preselect and add the selected entitlements via a KBART file
-     * @return the issue entitlement holding view
-     */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
-    })
-    def selectEntitlementsWithKBARTForSurvey() {
-        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
-        Subscription subscriberSub = result.subscription
-        result.institution = result.contextOrg
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
-        result.surveyInfo = result.surveyConfig.surveyInfo
-
-        Subscription baseSub = result.surveyConfig.subscription ?: subscriberSub.instanceOf
-        result.subscriber = subscriberSub.getSubscriber()
-        result.subscriberSub = subscriberSub
-
-        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
-        result.titleGroupID = issueEntitlementGroup ? issueEntitlementGroup.id.toString() : null
-        result.titleGroup = issueEntitlementGroup
-
-        String filename = params.kbartPreselect.originalFilename
-        result.putAll(subscriptionService.tippSelectForSurvey(params.kbartPreselect, baseSub, result.surveyConfig, subscriberSub))
-            if (result.selectedTipps) {
-
-                result.selectedTipps.each { String tippKey ->
-                    TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(tippKey)
-                    if (tipp) {
-                        try {
-                            if (!issueEntitlementGroup) {
-                                IssueEntitlementGroup.withTransaction {
-                                    issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: result.surveyConfig.issueEntitlementGroupName)
-                                    if (!issueEntitlementGroup.save())
-                                        log.error(issueEntitlementGroup.getErrors().getAllErrors().toListString())
-                                    else {
-                                        result.titleGroupID = issueEntitlementGroup.id.toString()
-                                        result.titleGroup = issueEntitlementGroup
-                                    }
-                                }
-                            }
-
-                            if (issueEntitlementGroup && subscriptionService.addEntitlement(subscriberSub, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
-                                log.debug("selectEntitlementsWithKBARTForSurvey: Added tipp ${tipp.gokbId} to sub ${subscriberSub.id}")
-                            }
-                        }
-                        catch (EntitlementCreationException e) {
-                            log.debug("Error selectEntitlementsWithKBARTForSurvey: Adding tipp ${tipp} to sub ${subscriberSub.id}: " + e.getMessage())
-                        }
-                    }
-                }
-            }
-
-        result.tippSelectForSurveySuccess = true
-        params.remove("kbartPreselect")
-
-        if (result.wrongTitles) {
-            //background of this procedure: the editor adding titles via KBART wishes to receive a "counter-KBART" which will then be sent to the provider for verification
-            String dir = GlobalService.obtainFileStorageLocation()
-            File f = new File(dir+"/${filename}_matchingErrors")
-            String returnKBART = exportService.generateSeparatorTableString(result.titleRow, result.wrongTitles, '\t')
-            FileOutputStream fos = new FileOutputStream(f)
-            fos.withWriter { Writer w ->
-                w.write(returnKBART)
-            }
-            fos.flush()
-            fos.close()
-            result.token = "${filename}_matchingErrors"
-            result.fileformat = "kbart"
-            result.errorCount = result.wrongTitles.size()
-            result.errorKBART = true
-        }
-        render template: 'entitlementProcessResult', model: result
-    }
-
-    /**
      * Call to persist the cached data and create the issue entitlement holding based on that data
      * @return the issue entitlement holding view
      */
@@ -1676,6 +1601,8 @@ class SubscriptionController {
         if(params.exportForImport) {
             if(params.reportType) {
                 ctrlResult = subscriptionControllerService.renewEntitlementsWithSurvey(this, params)
+                EhcacheWrapper userCache = contextService.getUserCache("/subscription/renewEntitlementsWithSurvey/generateRenewalExport")
+                userCache.put('progress', 0)
                 params.loadFor = params.tab
                 String token = "renewal_${params.reportType}_${params.platform}_${ctrlResult.result.subscriber.id}_${ctrlResult.result.subscriberSub.id}"
                 if(params.metricType) {
@@ -1692,9 +1619,9 @@ class SubscriptionController {
                 if (!folder.exists()) {
                     folder.mkdir()
                 }
-                //File f = new File(dir+'/'+token)
+                File f = new File(dir+'/'+token)
                 Map<String, String> fileResult = [token: token]
-                //if(!f.exists()) {
+                if(!f.exists()) {
                     SortedSet<Date> monthsInRing = new TreeSet<Date>()
                     Calendar startTime = GregorianCalendar.getInstance(), endTime = GregorianCalendar.getInstance()
                     if (ctrlResult.result.subscriberSub.startDate && ctrlResult.result.subscriberSub.endDate) {
@@ -1739,23 +1666,25 @@ class SubscriptionController {
                     //queryMap.sub = ctrlResult.result.subscription
                     queryMap.status = RDStore.TIPP_STATUS_CURRENT.id
                     queryMap.pkgIds = ctrlResult.result.parentSubscription.packages?.pkg?.id
+                    queryMap.refSub = ctrlResult.result.parentSubscription
                     //Map<String, List> export = exportService.generateTitleExportCustom(queryMap, TitleInstancePackagePlatform.class.name, monthsInRing.sort { Date monthA, Date monthB -> monthA <=> monthB }, ctrlResult.result.subscriber, true)
                     Map<String, List> export = exportService.generateRenewalExport(queryMap, monthsInRing, ctrlResult.result.subscriber)
-
+                    /*
                     String refYes = RDStore.YN_YES.getI10n('value')
                     String refNo = RDStore.YN_NO.getI10n('value')
+                    userCache.put('progress', 100) //debug only
                     export.rows.eachWithIndex { def field, int index ->
                         if(export.rows[index][0] && export.rows[index][0].style == 'negative'){
                             export.rows[index] << [field: refNo, style: 'negative']
                         }else {
                             export.rows[index] << [field: refYes, style: null]
                         }
-
                     }
-
+                    */
                     Map sheetData = [:]
                     sheetData[g.message(code: 'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow: export.titles, columnData: export.rows]
                     wb = exportService.generateXLSXWorkbook(sheetData)
+                    userCache.put('progress', 100)
                     FileOutputStream fos = new FileOutputStream(dir+'/'+token)
                     //--> to document
                     wb.write(fos)
@@ -1764,13 +1693,11 @@ class SubscriptionController {
                     wb.dispose()
                     render template: '/templates/usageReport', model: fileResult
                     return
-                /*
                 }
                 else {
                     render template: '/templates/usageReport', model: fileResult
                     return
                 }
-                */
             }
             else {
                 flash.error = message(code: 'default.stats.error.noReportSelected')
