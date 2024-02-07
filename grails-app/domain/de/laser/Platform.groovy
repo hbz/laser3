@@ -27,6 +27,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
   String provenance
   String titleNamespace
   String centralApiKey
+  String natstatSupplierID
 
   @RefdataInfo(cat = RDConstants.PLATFORM_STATUS)
   RefdataValue status
@@ -68,6 +69,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
         provenance column:'plat_data_provenance'
     titleNamespace column:'plat_title_namespace', type: 'text'
      centralApiKey column:'plat_central_api_key', type: 'text'
+ natstatSupplierID column:'plat_natstat_supplier_id', type: 'text'
         primaryUrl column:'plat_primary_url'
             status column:'plat_status_rv_fk'
    serviceProvider column:'plat_servprov_rv_fk'
@@ -89,6 +91,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
     provenance(nullable:true, blank:false)
     titleNamespace(nullable:true, blank:false)
     centralApiKey(nullable:true, blank:false)
+    natstatSupplierID(nullable: true, blank: false)
     serviceProvider (nullable:true)
     softwareProvider(nullable:true)
     gokbId (blank:false, unique: true, maxSize:511)

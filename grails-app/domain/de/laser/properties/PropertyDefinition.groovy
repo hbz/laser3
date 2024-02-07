@@ -62,7 +62,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             PRS_PROP,
             SUB_PROP,
             //ORG_PROP, // erms-4798
-            PLA_PROP,
+            //PLA_PROP, // erms-4837
             SVY_PROP,
             LIC_PROP
     ]
@@ -80,7 +80,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     public static final String[] AVAILABLE_GROUPS_DESCR = [
             //ORG_PROP, // erms-4798
             SUB_PROP,
-            PLA_PROP,
+            //PLA_PROP, // erms-4837
             SVY_PROP,
             LIC_PROP
     ]

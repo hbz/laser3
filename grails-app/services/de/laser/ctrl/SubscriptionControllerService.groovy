@@ -178,10 +178,10 @@ class SubscriptionControllerService {
                 else if(suppliers.size() == 1) {
                     prf.setBenchmark('before loading platform')
                     Long supplier_id = suppliers[0]
-                    PlatformProperty platform = PlatformProperty.executeQuery('select pp from PlatformProperty pp join pp.type pd where pp.owner.id = :owner and pd.name = :name and pd.descr = :descr', [owner: supplier_id, name: 'NatStat Supplier ID', descr: PropertyDefinition.PLA_PROP])[0]
+                    //PlatformProperty platform = PlatformProperty.executeQuery('select pp from PlatformProperty pp join pp.type pd where pp.owner.id = :owner and pd.name = :name and pd.descr = :descr', [owner: supplier_id, name: 'NatStat Supplier ID', descr: PropertyDefinition.PLA_PROP])[0]
                     //        PlatformProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyStore.PLA_NATSTAT_SID)
                     prf.setBenchmark('before institutional usage identifier')
-                    result.natStatSupplierId = platform?.stringValue ?: null
+                    result.natStatSupplierId = Platform.get(suppliers[0]).natstatSupplierID
                     if (result.institutional_usage_identifier != OrgSetting.SETTING_NOT_FOUND) {
                         prf.setBenchmark('before usage data')
                         def fsresult = factService.generateUsageData(result.institution.id, supplier_id, result.subscription)
