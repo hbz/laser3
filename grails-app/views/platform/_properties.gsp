@@ -1,6 +1,8 @@
 <%@ page import="de.laser.Platform; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.CustomerTypeService" %>
 <laser:serviceInjection />
 <!-- _properties -->
+%{--
+deactivated as of ERMS-4837
 
 <g:set var="availPropDefGroups" value="${PropertyDefinitionGroup.getAvailableGroups(contextOrg, Platform.class.name)}" />
 
@@ -48,6 +50,7 @@
     </laser:script>
 
 </div><!-- .card -->
+--}%
 
 <%-- private properties --%>
 <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro()}">
