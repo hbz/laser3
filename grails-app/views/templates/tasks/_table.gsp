@@ -1,7 +1,8 @@
 <%@ page import="de.laser.storage.RDConstants" %>
 <laser:serviceInjection />
 
-<g:set var="userIsInstEditorOrRoleAdmin" value="${userService.hasAffiliation_or_ROLEADMIN(user, contextService.getOrg(), 'INST_EDITOR')}" />
+<g:set var="institution" value="${contextService.getOrg()}"/>
+<g:set var="userIsInstEditorOrRoleAdmin" value="${userService.hasAffiliation_or_ROLEADMIN(user, institution, 'INST_EDITOR')}" />
 
 <div class="ui grid la-clear-before">
     <div class="sixteen wide column">
@@ -52,7 +53,7 @@
                         </g:if>
                     </td>
                     <td>
-                        <g:if test="${taskInstance.responsibleOrg?.id == contextService.getOrg().id || taskInstance.responsibleUser?.id == contextService.getUser().id}">
+                        <g:if test="${taskInstance.responsibleOrg?.id == institution.id || taskInstance.responsibleUser?.id == user.id}">
                             <i class="icon hand point right sc_grey"></i>
                         </g:if>
                         <g:if test="${taskInstance.responsibleOrg}"> ${taskInstance.responsibleOrg.name} <br /> </g:if>
@@ -62,7 +63,7 @@
                         <ui:xEditableRefData config="${RDConstants.TASK_STATUS}" owner="${taskInstance}" field="status" overwriteEditable="${overwriteEditable}" />
                     </td>
                     <td>
-                        <g:if test="${taskInstance.creator?.id == contextService.getUser().id}">
+                        <g:if test="${taskInstance.creator?.id == user.id}">
                             <i class="icon hand point right sc_grey"></i>
                         </g:if>
                         ${taskInstance.creator.display}
