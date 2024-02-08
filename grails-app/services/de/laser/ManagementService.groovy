@@ -524,15 +524,18 @@ class ManagementService {
             if(controller instanceof SubscriptionController) {
                 Set<Subscription> validSubChildren = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent and oo.roleType = :roleType order by oo.org.sortname asc", [parent: result.subscription, roleType: RDStore.OR_SUBSCRIBER_CONS])
                 if (validSubChildren) {
-                    Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :ctx and sp.instanceOf = null", [subscriptionSet: validSubChildren, ctx: result.institution])
+                    String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+                    String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :ctx and sp.instanceOf = null order by sp.type.${localizedName}"
+                    Set<PropertyDefinition> propList = new TreeSet<PropertyDefinition>()
+                    propList.addAll(PropertyDefinition.executeQuery(query, [subscriptionSet: validSubChildren, ctx: result.institution]))
                     propList.addAll(result.subscription.propertySet.type)
                     result.propList = propList
                     result.filteredSubscriptions = validSubChildren
                     List<Subscription> childSubs = result.subscription.getNonDeletedDerivedSubscriptions()
                     if (childSubs) {
-                        String localizedName = LocaleUtils.getLocalizedAttributeName('name')
-                        String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
-                        Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet: childSubs, context: result.institution])
+                        String childQuery = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
+                        Set<PropertyDefinition> memberProperties = new TreeSet<PropertyDefinition>()
+                        memberProperties.addAll(PropertyDefinition.executeQuery(childQuery, [subscriptionSet: childSubs, context: result.institution]))
                         result.memberProperties = memberProperties
                     }
                 }

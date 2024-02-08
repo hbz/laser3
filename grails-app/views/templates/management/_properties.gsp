@@ -1,8 +1,10 @@
 <%@ page import="de.laser.properties.SubscriptionProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.storage.RDStore; de.laser.AuditConfig" %>
 <laser:serviceInjection/>
+    <%
+        SortedSet<PropertyDefinition> allProperties = new TreeSet<PropertyDefinition>()
+        allProperties.addAll(PropertyDefinition.findAllByTenantIsNullAndDescr(PropertyDefinition.SUB_PROP) + PropertyDefinition.findAllByTenantAndDescr(contextOrg, PropertyDefinition.SUB_PROP))
+    %>
 
-    <g:set var="allProperties"
-           value="${PropertyDefinition.findAllByTenantIsNullAndDescr(PropertyDefinition.SUB_PROP) + PropertyDefinition.findAllByTenantAndDescr(contextOrg, PropertyDefinition.SUB_PROP)}"/>
 
     <g:if test="${controllerName == "subscription"}">
         <div class="ui segment">
