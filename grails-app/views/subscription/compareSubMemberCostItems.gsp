@@ -432,7 +432,6 @@
             <td></td>
             <td></td>
             <td></td>
-            <td></td>
             <td><g:formatNumber number="${sumOldCostInBillingCurrency}" minFractionDigits="2"
                                 maxFractionDigits="2" type="number"/></td>
             <td></td>
@@ -518,7 +517,14 @@
                         }).modal('show');
                     })
                 });
+
+         $('#selectedCostItemElement').on('change', function() {
+            var selectedCostItemElement = $("#selectedCostItemElement").val()
+            var url = "<g:createLink controller="${controllerName}" action="${actionName}" id="${params.id}"/>?selectedCostItemElement="+selectedCostItemElement;
+            location.href = url;
+         });
     </laser:script>
+
 </g:if>
 
 <laser:htmlEnd/>
