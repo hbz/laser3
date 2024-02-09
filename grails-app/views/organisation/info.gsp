@@ -87,12 +87,12 @@
 
     .chartWrapper {
         width: 100%;
-        min-height: 300px;
+        min-height: 350px;
         margin-bottom: 35px;
     }
 </style>
 
-    <h2 class="ui header" style="color:#fff;background-color:#f2cccd;padding:0.5em 1em;margin:3em 0">DEMO</h2>
+    <h2 class="ui header"><span style="color:#fff;background-color:red;padding:0.5em 1em;margin:3em 0">DEMO</span></h2>
 
     <div id="stats_subscription" class="stats-content">
                 <div class="chartWrapper" id="cw-subscription"></div>
@@ -645,9 +645,13 @@
                             type    : 'line',
                             smooth  : true,
                             lineStyle : {
-                                type: 'dotted',
-                                width: 3
+                                type: 'solid',
+                                width: 2,
+                                shadowColor: 'rgba(0,0,0,0.3)',
+                                shadowBlur: 10,
+                                shadowOffsetY: 8
                             },
+%{--                            areaStyle: {},--}%
     %{--                        emphasis: { focus: 'series' },--}%
                             data    : [<%
                                         List<Long> subsPerYear = subscriptionTimelineMap.values().collect{ it.values().flatten() }
@@ -655,7 +659,7 @@
                                             it.collect{ Subscription.get(it).isMultiYear ? 1 : 0 }.sum() ?: 0
                                         }.join(', ')
                                         %>],
-                            color   : JSPC.colors.hex.orange
+                            color   : JSPC.colors.hex.pink
                         },
                 ],
                 xAxis: {
@@ -697,9 +701,13 @@
                             type    : 'line',
                             smooth  : true,
                             lineStyle : {
-                                type: 'dotted',
-                                width: 3
+                                type: 'solid',
+                                width: 2,
+                                shadowColor: 'rgba(0,0,0,0.3)',
+                                shadowBlur: 10,
+                                shadowOffsetY: 8
                             },
+%{--                            areaStyle: {},--}%
     %{--                        emphasis: { focus: 'series' },--}%
                             data    : [<%
                                         List<Long> licsPerYear = licenseTimelineMap.values().collect{ it.values().flatten() }
@@ -707,7 +715,7 @@
                                             it.collect{ License.get(it).openEnded?.value == RDStore.YN_YES.value ? 1 : 0 }.sum() ?: 0
                                         }.join(', ')
                                         %>],
-                            color   : JSPC.colors.hex.orange
+                            color   : JSPC.colors.hex.pink
                         },
                 ],
                 xAxis: {
@@ -744,24 +752,35 @@
                             %>
                         },
                     </g:each>
-
-%{--                        {--}%
-%{--                            name    : '${message(code: 'subscription.isMultiYear.label')}',--}%
-%{--                            type    : 'line',--}%
-%{--                            smooth  : true,--}%
-%{--                            lineStyle : {--}%
-%{--                                type: 'dotted',--}%
-%{--                                width: 3--}%
-%{--                            },--}%
-%{--                    --}%%{--                        emphasis: { focus: 'series' },--}%
-%{--                            data    : [<%--}%
-%{--                                    List<Long> srvPerYear = surveyTimelineMap.values().collect{ it.values().flatten() }--}%
-%{--                                    print srvPerYear.collect {--}%
-%{--                                        it.collect{ SurveyInfo.get(it).isMultiYear ? 1 : 0 }.sum() ?: 0--}%
-%{--                                    }.join(', ')--}%
-%{--                                %>],--}%
-%{--                            color   : JSPC.colors.hex.orange--}%
-%{--                        },--}%
+                    <g:set var="surveyTypeTimeline" value="${surveyTimelineMap.values().collect{ it.values().collect{ it.collect{ it[0].type }}.flatten()}}" />
+                    <g:each in="${surveyTypeTimeline.flatten().unique()}" var="type">
+                        {
+                            name    : '${type.getI10n('value')}',
+                            type    : 'line',
+%{--                            stack   : 'total_type',--}%
+                            smooth  : true,
+                            lineStyle : {
+                                type: 'solid',
+                                width: 2,
+                                shadowColor: 'rgba(0,0,0,0.3)',
+                                shadowBlur: 10,
+                                shadowOffsetY: 8
+                            },
+%{--                            areaStyle: {},--}%
+%{--                emphasis: { focus: 'series' },--}%
+                            data    : ${surveyTypeTimeline.collect{ it.findAll{ it2 -> it2 == type }.size() }},
+                            color   : "<%
+                                color = 'JSPC.colors.hex.grey'
+                                switch (type) {
+                                    case RDStore.SURVEY_TYPE_INTEREST:          color = '#ff9688'; break;
+                                    case RDStore.SURVEY_TYPE_RENEWAL:           color = '#ebff82'; break;
+                                    case RDStore.SURVEY_TYPE_SUBSCRIPTION:      color = '#fee8d2'; break;
+                                    case RDStore.SURVEY_TYPE_TITLE_SELECTION:   color = '#45b2ff'; break;
+                                }
+                                print color
+                            %>"
+                        },
+                    </g:each>
                 ],
                 xAxis: {
                     type: 'category',
@@ -842,6 +861,5 @@
         });
 
     </laser:script>
-
 
 <laser:htmlEnd />

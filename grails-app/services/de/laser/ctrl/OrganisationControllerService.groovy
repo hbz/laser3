@@ -327,7 +327,7 @@ class OrganisationControllerService {
 
 //        println '\nsurveyMap: ' + result.surveyMap
 //        println '\nsurveyStruct: ' + surveyStruct
-//        println '\nsurveyTimelineMap: ' + result.surveyTimelineMap
+        println '\nsurveyTimelineMap: ' + result.surveyTimelineMap
 
         // costs
 
