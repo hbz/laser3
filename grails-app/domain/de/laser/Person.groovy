@@ -43,6 +43,8 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
     Date lastUpdated
     Date lastUpdatedCascading
 
+    SortedSet propertySet
+
     static mapping = {
         id              column:'prs_id'
         globalUID       column:'prs_guid'

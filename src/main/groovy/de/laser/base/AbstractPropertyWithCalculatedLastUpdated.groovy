@@ -30,7 +30,7 @@ import groovy.util.logging.Slf4j
  */
 @Slf4j
 abstract class AbstractPropertyWithCalculatedLastUpdated
-        implements CalculatedLastUpdated, Serializable {
+        implements CalculatedLastUpdated, Serializable, Comparable {
 
     /*
     abstract PropertyDefinition type
@@ -230,5 +230,18 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
         else if (type == URL.toString() || type == URL.class.name) {
             urlValue = parseValue(value, type)
         }
+    }
+
+    @Override
+    int compareTo(Object o) {
+        int result
+        AbstractPropertyWithCalculatedLastUpdated target = (AbstractPropertyWithCalculatedLastUpdated) o
+        result = type.getI10n('name').toLowerCase() <=> target.type.getI10n('name').toLowerCase()
+        //the further clauses are necessary because of the nature of Sets, otherwise, properties which share the type (e.g. when a property of a given type may be assigned multiple times) and even (null-)value would disappear
+        if(!result)
+            result = getValueInI10n()?.toLowerCase() <=> target.getValueInI10n()?.toLowerCase()
+        if(!result)
+            result = id <=> target.id
+        return result
     }
 }

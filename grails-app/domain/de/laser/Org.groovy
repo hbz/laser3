@@ -104,6 +104,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
     SortedSet ids
     SortedSet altnames
+    SortedSet propertySet
 
     static transients = [
             'deleted', 'customerType', 'customerTypeI10n', 'designation',

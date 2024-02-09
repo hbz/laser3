@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5559    09.02.2024  dev     3.4         Andreas Feature     Performanzverbesserungen bei license/show und subscription/show
+
 5551    07.02.2024  dev     3.4         Andreas Feature     fehlende Felder dem Einrichtungsexport nachgereicht
 
 4837    07.02.2024  dev     3.4         Andreas Feature     Abwicklung der allgemeinen Plattformmerkmale

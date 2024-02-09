@@ -138,6 +138,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     Date lastUpdated
     Date lastUpdatedCascading
 
+    SortedSet propertySet
     SortedSet issueEntitlements
     SortedSet packages
     SortedSet ids

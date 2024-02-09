@@ -171,7 +171,7 @@ class SubscriptionControllerService {
                 //def task_usage = task {
                 // usage
                 prf.setBenchmark('before platform query')
-                Set suppliers = Platform.executeQuery('select plat.id from IssueEntitlement ie join ie.tipp tipp join tipp.platform plat where ie.subscription = :sub and ie.status != :removed', [sub: result.subscription, removed: RDStore.TIPP_STATUS_REMOVED])
+                Set suppliers = Platform.executeQuery('select plat.id from SubscriptionPackage sp join sp.pkg pkg join pkg.nominalPlatform plat where sp.subscription = :sub', [sub: result.subscription])
                 if (suppliers.size() > 1) {
                     log.debug('Found different content platforms for this subscription, cannot show usage')
                 }
@@ -187,7 +187,7 @@ class SubscriptionControllerService {
                         def fsresult = factService.generateUsageData(result.institution.id, supplier_id, result.subscription)
                         prf.setBenchmark('before usage data sub period')
                         def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(result.institution.id, supplier_id, result.subscription)
-                        Set<RefdataValue> holdingTypes = RefdataValue.executeQuery('select tipp.titleType from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :context', [context: result.subscription])
+                        Set<RefdataValue> holdingTypes = RefdataValue.executeQuery('select tipp.titleType from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :context and ie.status = :current', [context: result.subscription, current: RDStore.TIPP_STATUS_CURRENT])
                         if (!holdingTypes) {
                             log.debug('No types found, maybe there are no issue entitlements linked to subscription')
                         } else if (holdingTypes.size() > 1) {

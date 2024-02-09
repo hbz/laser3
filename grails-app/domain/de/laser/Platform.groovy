@@ -47,6 +47,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
   Org org
 
   SortedSet altnames
+  SortedSet propertySet
 
   static mappedBy = [tipps: 'platform', altnames: 'platform']
 

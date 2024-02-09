@@ -72,6 +72,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     Date lastUpdatedCascading
 
     SortedSet ids
+    SortedSet propertySet
 
     static transients = [
             'referenceConcatenated', 'licensingConsortium', 'licensor', 'licensee', 'providers', 'agencies',
@@ -123,7 +124,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
            lastUpdated     column: 'lic_last_updated'
       lastUpdatedCascading column: 'lic_last_updated_cascading'
 
-       propertySet sort:'type', order:'desc', batchSize: 10
+       propertySet batchSize: 10
 
               ids               sort: 'ns', batchSize: 10
               //pkgs            batchSize: 10

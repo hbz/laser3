@@ -78,6 +78,8 @@ class SurveyConfig {
 
     String transferWorkflow
 
+    SortedSet propertySet
+
     static hasMany = [
             documents       : DocContext,
             surveyProperties: SurveyConfigProperties,

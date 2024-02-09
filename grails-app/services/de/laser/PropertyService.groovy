@@ -424,7 +424,7 @@ class PropertyService {
      */
     List<AbstractPropertyWithCalculatedLastUpdated> getOrphanedProperties(Object obj, List<List> sorted) {
 
-        List<AbstractPropertyWithCalculatedLastUpdated> result = []
+        SortedSet<AbstractPropertyWithCalculatedLastUpdated> result = new TreeSet<AbstractPropertyWithCalculatedLastUpdated>()
         List orphanedIds = obj.propertySet.findAll{ it.type.tenant == null }.collect{ it.id }
 
         sorted.each{ List entry -> orphanedIds.removeAll(entry[1].getCurrentProperties(obj).id)}
@@ -433,16 +433,16 @@ class PropertyService {
             switch (obj.class.simpleName) {
 
                 case License.class.simpleName:
-                    result = LicenseProperty.findAllByIdInList(orphanedIds)
+                    result.addAll(LicenseProperty.findAllByIdInList(orphanedIds))
                     break
                 case Subscription.class.simpleName:
-                    result = SubscriptionProperty.findAllByIdInList(orphanedIds)
+                    result.addAll(SubscriptionProperty.findAllByIdInList(orphanedIds))
                     break
                 case Org.class.simpleName:
-                    result = OrgProperty.findAllByIdInList(orphanedIds)
+                    result.addAll(OrgProperty.findAllByIdInList(orphanedIds))
                     break
                 case Platform.class.simpleName:
-                    result = PlatformProperty.findAllByIdInList(orphanedIds)
+                    result.addAll(PlatformProperty.findAllByIdInList(orphanedIds))
                     break
             }
         }
@@ -451,7 +451,7 @@ class PropertyService {
         //log.debug('orphanedIds        : ' + orphanedIds)
         //log.debug('orphaned Properties: ' + result)
 
-        result
+        result.toList()
     }
 
     /**
