@@ -4,6 +4,7 @@ import de.laser.annotations.DebugInfo
 import de.laser.auth.User
 import de.laser.cache.EhcacheWrapper
 import de.laser.helper.FilterLogic
+import de.laser.helper.Profiler
 import de.laser.storage.RDStore
 import de.laser.utils.SwissKnife
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -56,7 +57,8 @@ class TitleController  {
     })
     def list() {
         log.debug("list : ${params}")
-
+        Profiler prf = new Profiler()
+        prf.setBenchmark('init')
         Map<String, Object> result = [:]
 
         result.user = contextService.getUser()
@@ -65,7 +67,7 @@ class TitleController  {
         Map ttParams = FilterLogic.resolveTabAndStatusForTitleTabsMenu(params, 'Tipps')
         if (ttParams.status) { params.status = ttParams.status }
         if (ttParams.tab)    { params.tab = ttParams.tab }
-
+        prf.setBenchmark('before tipp query')
         Map<String, Object> query = filterService.getTippQuery(params, [])
         result.filterSet = query.filterSet
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-256")
@@ -78,6 +80,7 @@ class TitleController  {
 
         List<Long> titlesList = subCache.get('titleIDs') ?: []
         if(!titlesList) {
+            prf.setBenchmark('load title IDs, no cache or cache changed')
             titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
             subCache.put('titleIDs', titlesList)
         }
@@ -86,6 +89,7 @@ class TitleController  {
             //List counts = TitleInstancePackagePlatform.executeQuery('select new map(count(*) as count, tipp.status as status) '+countQueryString+' group by tipp.status', countQueryParams)
             List counts = subCache.get('counts') ?: []
             if(!counts) {
+                prf.setBenchmark('get counts')
                 counts = TitleInstancePackagePlatform.executeQuery('select new map(count(*) as count, tipp.status as status) from TitleInstancePackagePlatform tipp where tipp.status != :removed group by tipp.status', [removed: RDStore.TIPP_STATUS_REMOVED])
                 subCache.put('counts', counts)
             }
@@ -124,10 +128,11 @@ class TitleController  {
             result.allTippsCounts = result.currentTippsCounts + result.plannedTippsCounts +  result.expiredTippsCounts + result.deletedTippsCounts
             */
         }
-
+        prf.setBenchmark('before title objects')
         result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: params.sort?: 'sortname', order: params.order]) : []
         result.num_tipp_rows = titlesList.size()
-
+        List bm = prf.stopBenchmark()
+        result.benchMark = bm
         result
     }
 
