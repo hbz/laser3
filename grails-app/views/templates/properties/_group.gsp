@@ -99,7 +99,8 @@
                     <td>
                         <ui:xEditable owner="${prop}" type="textarea" field="note" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                     </td>
-                    <td class="x la-js-editmode-container">  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
+                    <%-- TODO a class for text-align: right when read-only mode is set --%>
+                    <td class="x la-js-editmode-container" <g:if test="${!overwriteEditable}">style="text-align: right"</g:if>>  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
                         <g:if test="${overwriteEditable && (prop.hasProperty("instanceOf") && !prop.instanceOf)}">
                             <g:if test="${showConsortiaFunctions}">
                                 <g:set var="auditMsg" value="${message(code:'property.audit.toggle', args: [prop.type.name])}" />
@@ -256,6 +257,14 @@
                             <g:elseif test="${prop.tenant?.id == consortium?.id && atSubscr}">
                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.notInherited.fromConsortia')}" data-position="top right"><i class="icon cart arrow down grey "></i></span>
                             </g:elseif>
+                            <g:else>
+                                <g:if test="${AuditConfig.getConfig(prop)}">
+                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.on.tooltip')}" data-position="top right"><i class="icon thumbtack green"></i></span>
+                                </g:if>
+                                <g:else>
+                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.off.tooltip')}" data-position="top right"><i class="icon la-thumbtack slash grey"></i></span>
+                                </g:else>
+                            </g:else>
                         </g:else>
                     </td>
                 </tr>
