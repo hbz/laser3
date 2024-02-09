@@ -275,8 +275,8 @@ class AjaxHtmlController {
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         result.subscription.packages.pkg.gokbId.each { String uuid ->
             Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: uuid])
-            if (queryResult.warning) {
-                List records = queryResult.warning.result
+            if (queryResult) {
+                List records = queryResult.result
                 packageMetadata.put(uuid, records[0])
             }
         }
@@ -302,8 +302,8 @@ class AjaxHtmlController {
             Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: subscriptionPackage.pkg.gokbId])
             if (queryResult.error && queryResult.error == 404) {
                 flash.error = message(code: 'wekb.error.404') as String
-            } else if (queryResult.warning) {
-                List records = queryResult.warning.result
+            } else if (queryResult) {
+                List records = queryResult.result
                 packageInfos.packageInstanceRecord = records ? records[0] : [:]
             }
             result.packages << packageInfos

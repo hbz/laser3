@@ -1,6 +1,10 @@
 <%@ page import="de.laser.RefdataValue;de.laser.storage.RDConstants" %>
 <laser:htmlStart message="menu.public.all_titles" />
 
+    <ui:debugInfo>
+        <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
+    </ui:debugInfo>
+
     <ui:breadcrumbs>
       <ui:crumb message="menu.public.all_titles" class="active" />
     </ui:breadcrumbs>

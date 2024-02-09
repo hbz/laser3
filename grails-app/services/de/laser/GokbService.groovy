@@ -31,14 +31,14 @@ class GokbService {
         Set records = []
 
         Map queryResult = executeQuery(apiSource.baseUrl + apiSource.fixToken + '/searchApi', queryParams)
-        if (queryResult.warning && queryResult.warning.result) {
-            records.addAll(queryResult.warning.result)
-            result.recordsCount = queryResult.warning.result_count_total
+        if (queryResult && queryResult.result) {
+            records.addAll(queryResult.result)
+            result.recordsCount = queryResult.result_count_total
             result.records = records
         }
         else {
-            if(queryResult.warning.code == "error")
-                result.error = messageSource.getMessage('wekb.error.500', [queryResult.warning.message] as Object[], LocaleUtils.getCurrentLocale())
+            if(queryResult.code == "error")
+                result.error = messageSource.getMessage('wekb.error.500', [queryResult.message] as Object[], LocaleUtils.getCurrentLocale())
             result.recordsCount = 0
             result.records = records
         }
@@ -78,9 +78,9 @@ class GokbService {
 
             Closure success = { resp, json ->
                 log.debug ("server response: ${resp.getStatus().getReason()}, server: ${resp.getHeaders().get('Server')}, content length: ${resp.getHeaders().get('Content-Length')}")
-
+                result = json
 //                if (resp.getStatus().getCode() < 400) {
-                    result = ['warning': json]      // warning <-> info ?
+//                    result = ['warning': json]      // warning <-> info ?
 //                } else {
 //                    result = ['info': json]         // ???
 //                }
