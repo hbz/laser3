@@ -1562,8 +1562,8 @@ join sub.orgRelations or_sub where
         subscribedPlatforms.each { Platform platformInstance ->
             if(!result) {
                 Map queryResult = gokbService.executeQuery(wekbSource.baseUrl + wekbSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
-                if (queryResult.warning) {
-                    List records = queryResult.warning.result
+                if (queryResult) {
+                    List records = queryResult.result
                     if(records) {
                         if(records[0].statisticsFormat != null)
                             result = true

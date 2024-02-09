@@ -940,8 +940,8 @@ class SubscriptionControllerService {
             Platform platform = pkg.nominalPlatform
             Map<String, Object> queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/sushiSources", [:])
             Map platformRecord
-            if (queryResult.warning) {
-                Map<String, Object> records = queryResult.warning
+            if (queryResult) {
+                Map<String, Object> records = queryResult
                 if(records.counter4ApiSources.containsKey(platform.gokbId)) {
                     platformRecord = records.counter4ApiSources.get(platform.gokbId)
                 }
@@ -2041,23 +2041,23 @@ class SubscriptionControllerService {
                 [result:result, status: STATUS_ERROR]
             }
             else {
-                if(queryCuratoryGroups.warning) {
-                    List recordsCuratoryGroups = queryCuratoryGroups.warning.result
+                if(queryCuratoryGroups) {
+                    List recordsCuratoryGroups = queryCuratoryGroups.result
                     result.curatoryGroups = recordsCuratoryGroups?.findAll {it.status == "Current"}
                 }
                 result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
 
                 Set records = []
                 Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/searchApi' , queryParams)
-                if (queryResult.containsKey("warning")) {
-                    if(queryResult.warning.containsKey("result")) {
-                        records.addAll(queryResult.warning.result)
-                        result.recordsCount = queryResult.warning.result_count_total
+                if (queryResult) {
+                    if(queryResult.containsKey("result")) {
+                        records.addAll(queryResult.result)
+                        result.recordsCount = queryResult.result_count_total
                         result.records = records
                         [result:result,status:STATUS_OK]
                     }
-                    else if(queryResult.warning.code == "error") {
-                        result.error = messageSource.getMessage('wekb.error.500', [queryResult.warning.message].toArray(), LocaleUtils.getCurrentLocale())
+                    else if(queryResult.code == "error") {
+                        result.error = messageSource.getMessage('wekb.error.500', [queryResult.message].toArray(), LocaleUtils.getCurrentLocale())
                         [result: result, status: STATUS_ERROR]
                     }
                 }

@@ -2219,8 +2219,8 @@ class ExportService {
 		SimpleDateFormat monthFormatter = DateUtils.getSDF_yyyyMM()
 		Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/sushiSources", [:])
 		Map platformRecord
-		if (queryResult.warning) {
-			Map<String, Object> records = queryResult.warning
+		if (queryResult) {
+			Map<String, Object> records = queryResult
 			if(records.counter4ApiSources.containsKey(configMap.platform.gokbId)) {
 				platformRecord = records.counter4ApiSources.get(configMap.platform.gokbId)
 			}

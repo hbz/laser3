@@ -3771,8 +3771,8 @@ class ExportClickMeService {
                 sheetTitle = messageSource.getMessage('default.ProviderAgency.export.label', null, locale)
                 ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
                 Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [componentType: 'Org', max: 10000])
-                if (queryResult.warning) {
-                    List records = queryResult.warning.result
+                if (queryResult) {
+                    List records = queryResult.result
                     records.each { Map providerRecord ->
                         wekbRecords.put(providerRecord.uuid, providerRecord)
                     }

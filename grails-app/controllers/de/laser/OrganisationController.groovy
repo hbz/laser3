@@ -485,8 +485,8 @@ class OrganisationController  {
             result.error = message(code:'wekb.error.'+queryCuratoryGroups.error) as String
         }
         else {
-            if (queryCuratoryGroups.warning) {
-                List recordsCuratoryGroups = queryCuratoryGroups.warning.result
+            if (queryCuratoryGroups) {
+                List recordsCuratoryGroups = queryCuratoryGroups.result
                 result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
             }
         }
