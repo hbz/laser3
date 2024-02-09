@@ -312,11 +312,11 @@ class OrganisationControllerService {
         surveyParams.owner = result.institution
 
         result.surveyMap = [:]
-        ['notFinish', 'finish', 'open', 'termination'].each{
+        ['notFinish', 'finish', 'open', 'termination'].sort().each{
             surveyParams.tab = it
             Map<String, Object> fsq = filterService.getParticipantSurveyQuery_New(surveyParams, sdf, result.orgInstance as Org)
             List sr = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
-            if (sr) {
+            if (sr /*|| it == 'open' */) {
                 result.surveyMap[it] = sr
             }
         }

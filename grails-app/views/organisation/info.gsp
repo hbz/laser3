@@ -107,7 +107,7 @@
                 <div class="ui secondary la-tab-with-js menu">
                     <g:each in="${subscriptionMap}" var="subStatus,subList">
                         <g:set var="subStatusRdv" value="${RefdataValue.get(subStatus)}" />
-                        <a href="#" class="item ${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="sub-${subStatusRdv.id}">
+                        <a href="#" class="item ${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="subscription-${subStatusRdv.id}">
                             ${subStatusRdv.getI10n('value')} <span class="ui blue circular label">${subList.size()}</span>
                         </a>
                     </g:each>
@@ -115,7 +115,7 @@
 
                 <g:each in="${subscriptionMap}" var="subStatus,subList">
                     <g:set var="subStatusRdv" value="${RefdataValue.get(subStatus)}" />
-                    <div class="ui tab right attached segment ${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="sub-${subStatusRdv.id}">
+                    <div class="ui tab segment ${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="subscription-${subStatusRdv.id}">
 
                         <table class="ui table very compact">
                             <thead>
@@ -163,7 +163,7 @@
                 <div class="ui secondary la-tab-with-js menu">
                     <g:each in="${licenseMap}" var="licStatus,licList">
                         <g:set var="licStatusRdv" value="${RefdataValue.get(licStatus)}" />
-                        <a href="#" class="item ${licStatusRdv == RDStore.LICENSE_CURRENT ? 'active' : ''}" data-tab="lic-${licStatusRdv.id}">
+                        <a href="#" class="item ${licStatusRdv == RDStore.LICENSE_CURRENT ? 'active' : ''}" data-tab="license-${licStatusRdv.id}">
                             ${licStatusRdv.getI10n('value')} <span class="ui blue circular label">${licList.size()}</span>
                         </a>
                     </g:each>
@@ -171,7 +171,7 @@
 
                 <g:each in="${licenseMap}" var="licStatus,licList">
                     <g:set var="licStatusRdv" value="${RefdataValue.get(licStatus)}" />
-                    <div class="ui tab right attached segment ${licStatusRdv == RDStore.LICENSE_CURRENT ? 'active' : ''}" data-tab="lic-${licStatusRdv.id}">
+                    <div class="ui tab segment ${licStatusRdv == RDStore.LICENSE_CURRENT ? 'active' : ''}" data-tab="license-${licStatusRdv.id}">
 
                         <table class="ui table very compact">
                             <thead>
@@ -234,7 +234,7 @@
 
                 <g:each in="${providerMap}" var="subStatus,provList">
                     <g:set var="subStatusRdv" value="${RefdataValue.get(subStatus)}" />
-                    <div class="ui tab right attached segment ${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="prov-${subStatusRdv.id}">
+                    <div class="ui tab segment ${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="prov-${subStatusRdv.id}">
 
                         <table class="ui table very compact">
                             <thead>
@@ -246,7 +246,7 @@
                                 <th class="two wide"></th>
                                 <th class="two wide"></th>
                             </tr>
-                            <tr data-ctype="provider-subsciption" style="display:none;">
+                            <tr data-ctype="provider-subsciption" class="hidden">
                                 <th class="eight wide">${message(code:'subscription.label')}</th>
                                 <th class="one wide"></th>
                                 <th class="one wide">${message(code:'subscription.referenceYear.label.shy')}</th>
@@ -273,7 +273,7 @@
                                         <g:each in="${provList}" var="provStruct">
                                             <g:if test="${provId == provStruct[0]}">
                                                 <g:set var="sub" value="${Subscription.get(provStruct[1])}" />
-                                                <tr data-ctype="provider-subsciption" style="display:none;">
+                                                <tr data-ctype="provider-subsciption" class="hidden">
                                                     <td style="padding-left:2rem;">
                                                         <div class="la-flexbox la-minor-object">
                                                             <i class="icon clipboard la-list-icon"></i>
@@ -325,7 +325,7 @@
                 <br />
 
                 <g:each in="${surveyMap}" var="surveyStatus,surveyData">
-                    <div class="ui tab right attached segment ${surveyStatus == 'open' ? 'active' : ''}" data-tab="survey-${surveyStatus}">
+                    <div class="ui tab segment ${surveyStatus == 'open' ? 'active' : ''}" data-tab="survey-${surveyStatus}">
 
                         <table class="ui table very compact">
                             <thead>
@@ -340,7 +340,7 @@
                                 <th class="one wide">${message(code:'default.endDate.label')}</th>
                                 <th class="two wide">Status</th>
                             </tr>
-                            <tr data-ctype="survey-subsciption" style="display:none;">
+                            <tr data-ctype="survey-subsciption" class="hidden">
                                 <th class="seven wide">${message(code:'subscription.label')}</th>
                                 <th class="one wide">${message(code:'subscription.referenceYear.label.shy')}</th>
                                 <th class="one wide">${message(code:'subscription.isMultiYear.label.shy')}</th>
@@ -387,7 +387,7 @@
 
                                 <g:if test="${surveyConfig.subscription}">
                                     <g:set var="sub" value="${surveyConfig.subscription}" />
-                                    <tr data-ctype="survey-subsciption" style="display:none;">
+                                    <tr data-id="${surveyInfo.id}" data-ctype="survey-subsciption" class="hidden">
                                         <td style="padding-left:2rem;">
                                             <div class="la-flexbox la-minor-object">
                                                 <i class="icon clipboard la-list-icon"></i>
@@ -595,14 +595,18 @@
 
         $statsToggle.first().trigger('click')
 
-        $('#provider-toggle-subscriptions').checkbox({
-            onChange: function() {
-                $('table *[data-ctype=provider-subsciption]').toggle()
+        $('#provider-toggle-subscriptions').on('change', function() {
+            if ($(this).prop('checked')) {
+                $('table *[data-ctype=provider-subsciption]').removeClass('hidden')
+            } else {
+                $('table *[data-ctype=provider-subsciption]').addClass('hidden')
             }
         })
-        $('#survey-toggle-subscriptions').checkbox({
-            onChange: function() {
-                $('table *[data-ctype=survey-subsciption]').toggle()
+        $('#survey-toggle-subscriptions').on('change', function() {
+            if ($(this).prop('checked')) {
+                $('table *[data-ctype=survey-subsciption]').removeClass('hidden')
+            } else {
+                $('table *[data-ctype=survey-subsciption]').addClass('hidden')
             }
         })
 
@@ -780,82 +784,58 @@
         JSPC.app.info.charts.license.setOption (JSPC.app.info.chart_config.license);
         JSPC.app.info.charts.survey.setOption (JSPC.app.info.chart_config.survey);
 
-        JSPC.app.info.charts.subscription.on ('click', function (params) {
-            let x = '#stats_subscription'
-            let y = params.dataIndex
-            let s = params.seriesIndex
+        $( ['subscription', 'license', 'survey'] ).each( function(i) {
+            let statsId     = '#stats_' + this
+            let chart       = JSPC.app.info.charts[this]
+            let chartConfig = JSPC.app.info.chart_config[this]
 
-            $(x + ' tr[data-id]').hide()
+%{--            console.log( statsId )--}%
+%{--            console.log( chart )--}%
+%{--            console.log( chartConfig )--}%
 
-            $.each( $(x + ' .menu .item[data-tab^=sub-]'), function(i, e) {
-                let yList = JSPC.app.info.chart_config.subscription.series[i].raw[y]
-                $(e).find('.blue.circular.label').text( yList.length )
-                yList.forEach((f) => {
-                        $(x + ' tr[data-id=' + f + ']').show()
+            chart.on ('click', function (params) {
+                let t = statsId.replace('#stats_', '')
+                let y = params.dataIndex
+                let s = params.seriesIndex
+
+%{--                console.log( statsId + ' -> ' + t + ' : ' + y + ' ' + s)--}%
+
+                $(statsId + ' tr[data-id]').hide()
+%{--                $(statsId + ' tr[data-id]').addClass('hidden')--}%
+
+                $.each( $(statsId + ' .menu .item[data-tab^=' + t + ']'), function(i, e) {
+                    let yList = chartConfig.series[i].raw[y]
+                    $(e).find('.blue.circular.label').text( yList.length )
+                    yList.forEach((f) => {
+                            $(statsId + ' tr[data-id=' + f + ']').show()
+%{--                            $(statsId + ' tr[data-id=' + f + ']').removeClass('hidden')--}%
+                    })
                 })
-            })
-            // JSPC.app.info.charts.subscription.dispatchAction({ type: 'select', dataIndex: y })
-            $($(x + ' .menu .item[data-tab^=sub]')[s]).trigger('click')
+                // chart.dispatchAction({ type: 'select', dataIndex: y })
+                $($(statsId + ' .menu .item[data-tab^=' + t + ']')[s]).trigger('click')
 
-            $(x + ' .menu .item[data-tab^=year-]').removeClass('active')
-            $(x + ' .menu .item[data-tab=year-' + params.name + ']').addClass('active')
+                $(statsId + ' .menu .item[data-tab^=year-]').removeClass('active')
+                $(statsId + ' .menu .item[data-tab=year-' + params.name + ']').addClass('active')
+            });
+
         });
 
-        JSPC.app.info.charts.license.on ('click', function (params) {
-            let x = '#stats_license'
-            let y = params.dataIndex
-            let s = params.seriesIndex
+        $( ['subscription', 'license', 'survey'] ).each( function(i) {
+            let statsId = '#stats_' + this
+            let chart   = JSPC.app.info.charts[this]
 
-            $(x + ' tr[data-id]').hide()
+%{--            console.log( statsId + ' ' + chart )--}%
 
-            $.each( $(x + ' .menu .item[data-tab^=lic-]'), function(i, e) {
-                let yList = JSPC.app.info.chart_config.license.series[i].raw[y]
-                $(e).find('.blue.circular.label').text( yList.length )
-                yList.forEach((f) => {
-                        $(x + ' tr[data-id=' + f + ']').show()
-                })
-            })
-            // JSPC.app.info.charts.license.dispatchAction({ type: 'select', dataIndex: y })
-            $($(x + ' .menu .item[data-tab^=lic-]')[s]).trigger('click')
-
-            $(x + ' .menu .item[data-tab^=year-]').removeClass('active')
-            $(x + ' .menu .item[data-tab=year-' + params.name + ']').addClass('active')
-        });
-
-        JSPC.app.info.charts.survey.on ('click', function (params) {
-            let x = '#stats_survey'
-            let y = params.dataIndex
-            let s = params.seriesIndex
-
-            $(x + ' tr[data-id]').hide()
-
-            $.each( $(x + ' .menu .item[data-tab^=survey-]'), function(i, e) {
-                let yList = JSPC.app.info.chart_config.survey.series[i].raw[y]
-                $(e).find('.blue.circular.label').text( yList.length )
-                yList.forEach((f) => {
-                        $(x + ' tr[data-id=' + f + ']').show()
-                })
-            })
-            // JSPC.app.info.charts.survey.dispatchAction({ type: 'select', dataIndex: y })
-            $($(x + ' .menu .item[data-tab^=survey]')[s]).trigger('click')
-
-            $(x + ' .menu .item[data-tab^=year-]').removeClass('active')
-            $(x + ' .menu .item[data-tab=year-' + params.name + ']').addClass('active')
-        });
-
-        $( [['#stats_subscription', JSPC.app.info.charts.subscription], ['#stats_license', JSPC.app.info.charts.license], ['#stats_survey', JSPC.app.info.charts.survey]] ).each( function(i) {
-            let statId = this[0]
-            let statChart = this[1]
-
-            let $years = $(statId + ' .menu .item[data-tab^=year-]')
+            let $years = $(statsId + ' .menu .item[data-tab^=year-]')
             $years.on ('click', function() {
+                console.log(this)
                 $years.removeClass('active')
                 $(this).addClass('active')
 
                 let y = $(this).attr('data-tab')
                 $years.each( function(i, e) {
                     if ($(e).attr('data-tab') == y) {
-                        statChart.trigger('click', {type: 'click', name: y.replace('year-', ''), dataIndex: i})
+                        chart.trigger('click', {type: 'click', name: y.replace('year-', ''), dataIndex: i})
                     }
                 })
             });

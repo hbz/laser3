@@ -164,7 +164,7 @@ class SurveyTagLib {
         String us = '?'
 
         switch (attrs.status) {
-            case 'notFinish':   us = 'Abgelaufen'; break
+            case 'notFinish':   us = 'Ausgelaufen'; break
             case 'finish':      us = 'Abgeschlossen'; break
             case 'open':        us = 'Offen'; break
             case 'termination': us = 'Vorsorglich gekündigt'; break
