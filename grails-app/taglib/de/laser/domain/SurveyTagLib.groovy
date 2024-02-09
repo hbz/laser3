@@ -160,6 +160,18 @@ class SurveyTagLib {
         }
     }
 
+    def virtualState = { attrs, body ->
+        String us = '?'
+
+        switch (attrs.status) {
+            case 'notFinish':   us = 'Abgelaufen'; break
+            case 'finish':      us = 'Abgeschlossen'; break
+            case 'open':        us = 'Offen'; break
+            case 'termination': us = 'Vorsorglich gekündigt'; break
+        }
+        out << us
+    }
+
     def finishIcon = { attrs, body ->
         SurveyConfig surveyConfig = attrs.surveyConfig as SurveyConfig
         Org participant = attrs.participant as Org
