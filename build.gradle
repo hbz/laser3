@@ -143,6 +143,28 @@ java {
 
 springBoot {
     mainClass = 'de.laser.Application'
+
+    buildInfo {
+        buildProperties {
+            doLast {
+                Properties properties = new Properties()
+
+                properties.setProperty('info.app.build.date', new SimpleDateFormat('dd.MM.yyyy HH:mm').format(new Date()))
+                properties.setProperty('info.app.build.host', InetAddress.localHost.hostName)
+                properties.setProperty('info.app.build.javaVersion', System.getProperty('java.version'))
+
+                try {
+                    File gitProperties = new File("${project.rootDir}/git.properties")
+                    gitProperties.withInputStream { properties.load(it) } // read props from file
+
+                    File grailsBuildInfo = new File("${project.buildDir}/resources/main/META-INF/grails.build.info")
+                    grailsBuildInfo.withInputStream { properties.load(it) } // read props from file
+
+                    grailsBuildInfo.withOutputStream { properties.store(it, null) } // write back to file
+                } catch (Exception e) {}
+            }
+        }
+    }
 }
 
 bootRun {
@@ -164,26 +186,6 @@ gitProperties {
     //dateFormatTimeZone = "PST"
     gitPropertiesDir = new File("${project.rootDir}/")
 }
-
-//buildProperties {
-//    inputs.property('info.app.build.date', new SimpleDateFormat('dd.MM.yyyy HH:mm').format(new Date()))
-//    inputs.property('info.app.build.host', InetAddress.localHost.hostName)
-//    inputs.property('info.app.build.javaVersion', System.getProperty('java.version'))
-//
-//    doLast {
-//        File grailsBuildInfo = it.outputs.files.files.find { it.name == 'grails.build.info' } as File
-//        if (! grailsBuildInfo) return
-//
-//        Properties properties = new Properties()
-//        grailsBuildInfo.withInputStream { properties.load(it) } // read props from file
-//        File BuildInfoFile = new File("${project.rootDir}/git.properties")
-//        BuildInfoFile.withInputStream { properties.load(it) } // read props from file
-//
-//        properties.setProperty('build.time', new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(new Date()))
-//
-//        grailsBuildInfo.withOutputStream { properties.store(it, null) } // write back to file
-//    }
-//}
 
 // ---[ war ]---
 
