@@ -1242,7 +1242,7 @@ class SubscriptionController {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def selectEntitlementsWithKBARTForSurvey() {
-        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
+        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         Subscription subscriberSub = result.subscription
         result.institution = result.contextOrg
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)

@@ -159,7 +159,7 @@ class OrganisationControllerService {
     }
 
     //--------------------------------------------- info -------------------------------------------------
-    
+
     Map<String,Object> info(OrganisationController controller, GrailsParameterMap params) {
         Map<String, Object> result = getResultGenericsAndCheckAccess(controller, params)
 
@@ -218,10 +218,11 @@ class OrganisationControllerService {
 
         List<List> subStruct = Subscription.executeQuery('select s.status.id, s.id, s.startDate, s.endDate, s.isMultiYear, s.referenceYear ' + base_qry, qry_params)
         result.subscriptionMap = reduceMap(listToMap(subStruct))
-//        println 'subscriptionMap: ' + result.subscriptionMap
-
         result.subscriptionTimelineMap = getTimelineMap(subStruct)
-//        println 'subscriptionTimelineMap: ' + result.subscriptionTimelineMap
+
+//        println '\nsubStruct: ' + subStruct
+//        println '\nsubscriptionMap: ' + result.subscriptionMap
+//        println '\nsubscriptionTimelineMap: ' + result.subscriptionTimelineMap
 
         // licenses
 
@@ -234,10 +235,11 @@ class OrganisationControllerService {
 
         List<List> licStruct = License.executeQuery('select l.status.id, l.id, l.startDate, l.endDate, l.openEnded ' + licenseQuery, licenseParams)
         result.licenseMap = reduceMap(listToMap(licStruct))
-//        println 'licenseMap: ' + result.licenseMap
-
         result.licenseTimelineMap = getTimelineMap(licStruct)
-//        println 'licenseTimelineMap: ' + result.licenseTimelineMap
+
+//        println '\nlicStruct: ' + licStruct
+//        println '\nlicenseMap: ' + result.licenseMap
+//        println '\nlicenseTimelineMap: ' + result.licenseTimelineMap
 
         // providers
 
@@ -257,6 +259,10 @@ class OrganisationControllerService {
 
         List<List> providerStruct = Org.executeQuery(providerQuery, providerParams) /*.unique()*/
         Map providerMap = listToMap(providerStruct)
+
+//        println '\nproviderStruct: ' + providerStruct
+//        println '\nproviderMap: ' + providerMap
+
         result.providerMap = providerMap.collectEntries{ k,v -> [(k):(v.collect{ [ it[1], it[2] ] })] }
 
 //        result.providerMap.each{subStatus, list ->
@@ -283,8 +289,7 @@ class OrganisationControllerService {
 //                ]
 //            }
 //        }
-//        println 'providerMap: ' + result.providerMap
-
+//        println '\nproviderMap: ' + result.providerMap
         // surveys
 
 //        List<SurveyInfo> surveyStruct =  SurveyInfo.executeQuery(
@@ -305,14 +310,23 @@ class OrganisationControllerService {
         GrailsParameterMap surveyParams = new GrailsParameterMap(WebUtils.retrieveGrailsWebRequest().getCurrentRequest())
         surveyParams.owner = result.institution
 
-        result.surveyMap2 = [:]
-
-        ['open', 'finish', 'termination',  'notFinish'].each{
+        result.surveyMap = [:]
+        ['notFinish', 'finish', 'open', 'termination'].sort().each{
             surveyParams.tab = it
             Map<String, Object> fsq = filterService.getParticipantSurveyQuery_New(surveyParams, sdf, result.orgInstance as Org)
-            result.surveyMap2[it] = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
+            List sr = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
+            if (sr /*|| it == 'open' */) {
+                result.surveyMap[it] = sr
+            }
         }
-//        println result.surveyMap2
+
+        List<List> surveyStruct = []
+        result.surveyMap.each{it -> it.value.each{e -> surveyStruct << [it.key, e, e[0].startDate, e[0].endDate]}}
+        result.surveyTimelineMap = getTimelineMap(surveyStruct)
+
+//        println '\nsurveyMap: ' + result.surveyMap
+//        println '\nsurveyStruct: ' + surveyStruct
+//        println '\nsurveyTimelineMap: ' + result.surveyTimelineMap
 
         // costs
 
@@ -337,11 +351,11 @@ class OrganisationControllerService {
                 filterConsMembers   : [result.orgInstance],
                 filterSubStatus     : RDStore.SUBSCRIPTION_CURRENT,
                 deleted             : RDStore.COST_ITEM_DELETED
-            ]
+        ]
         )
         result.costs = [
-            costItems   : consCostItems,
-            sums        : financeService.calculateResults(consCostItems.id)
+                costItems   : consCostItems,
+                sums        : financeService.calculateResults(consCostItems.id)
         ]
 //        println result.costs
 

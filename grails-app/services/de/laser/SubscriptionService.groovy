@@ -851,6 +851,19 @@ join sub.orgRelations or_sub where
         countIes
     }
 
+    /**
+     * Gets the current issue entitlements for the given subscription
+     * @param subscription the subscription whose titles should be returned
+     * @return integer of all issue entitlements without removed
+     */
+    Integer countAllIssueEntitlements(Subscription subscription) {
+        Integer countIes = subscription ?
+                IssueEntitlement.executeQuery("select count(*) from IssueEntitlement as ie where ie.subscription = :sub and ie.status != :ieStatus",
+                        [sub: subscription, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+                : 0
+        countIes
+    }
+
     Integer countCurrentIssueEntitlementsNotInIEGroup(Subscription subscription, IssueEntitlementGroup issueEntitlementGroup) {
         Integer countIes = subscription ?
                 IssueEntitlement.executeQuery("select count(*) from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :ieStatus " +
@@ -869,6 +882,17 @@ join sub.orgRelations or_sub where
     Integer countCurrentPermanentTitles(Subscription subscription) {
         return PermanentTitle.executeQuery("select count(*) from PermanentTitle as pi where pi.subscription = :sub and pi.issueEntitlement.status = :ieStatus",[sub: subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0]
     }
+
+    /**
+     * Gets the current permanent titles for the given subscription
+     * @param subscription the subscription whose titles should be returned
+     * @return integer of all permanent titles without removed
+     */
+    Integer countAllPermanentTitles(Subscription subscription) {
+        return PermanentTitle.executeQuery("select count(*) from PermanentTitle as pi where pi.subscription = :sub and pi.issueEntitlement.status != :ieStatus",[sub: subscription, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+    }
+
+
 
     /**
      * Gets the IDs of current issue entitlements for the given subscription

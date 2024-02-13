@@ -34,8 +34,10 @@
                     <th>${message(code: 'default.endDate.label.shy')}</th>
                     <th>${message(code: 'default.status.label')}</th>
                     <th>${message(code: 'subscription.hasPerpetualAccess.label')}</th>
-                    <th>${message(code: 'permanentTitle.label')}</th>
-                    <th>${message(code: 'package.label')}</th>
+                    <th>${message(code: 'refdata.Current')} ${message(code: 'permanentTitle.label')}</th>
+                    <th>${message(code: 'refdata.Current')} ${message(code: 'issueEntitlement.label')}</th>
+                    <th>${message(code: 'default.all')} ${message(code: 'permanentTitle.label')}</th>
+                    <th>${message(code: 'default.all')} ${message(code: 'issueEntitlement.label')}</th>
                     <th class="la-no-uppercase">
                         <ui:multiYearIcon isConsortial="true" />
                     </th>
@@ -80,11 +82,20 @@
                         <g:set var="countCurrentPermanentTitles" value="${subscriptionService.countCurrentPermanentTitles(sub)}"/>
                         <g:set var="countCurrentIssueEntitlements" value="${subscriptionService.countCurrentIssueEntitlements(sub)}"/>
 
+                        <g:set var="countAllPermanentTitles" value="${subscriptionService.countAllPermanentTitles(sub)}"/>
+                        <g:set var="countAllIssueEntitlements" value="${subscriptionService.countAllIssueEntitlements(sub)}"/>
+
                         <td class="center aligned ${(sub.hasPerpetualAccess && countCurrentPermanentTitles != countCurrentIssueEntitlements) || (!sub.hasPerpetualAccess && countCurrentPermanentTitles > 0 && countCurrentPermanentTitles != countCurrentIssueEntitlements) ? 'negative' : ''}">
-                            ${countCurrentPermanentTitles}
+                            <g:link controller="subscription" action="index" id="${sub.id}" params="[hasPerpetualAccess: RDStore.YN_YES.id.toString()]">${countCurrentPermanentTitles}</g:link>
                         </td>
                         <td class="center aligned ${(sub.hasPerpetualAccess && countCurrentPermanentTitles != countCurrentIssueEntitlements) || (!sub.hasPerpetualAccess && countCurrentPermanentTitles > 0 && countCurrentPermanentTitles != countCurrentIssueEntitlements) ? 'negative' : ''}">
-                            ${countCurrentIssueEntitlements}
+                            <g:link controller="subscription" action="index" id="${sub.id}">${countCurrentIssueEntitlements}</g:link>
+                        </td>
+                        <td class="center aligned ${(sub.hasPerpetualAccess && countAllPermanentTitles != countAllIssueEntitlements) || (!sub.hasPerpetualAccess && countAllPermanentTitles > 0 && countAllPermanentTitles != countAllIssueEntitlements) ? 'negative' : ''}">
+                            <g:link controller="subscription" action="index" id="${sub.id}" params="[hasPerpetualAccess: RDStore.YN_YES.id.toString(), status: [RDStore.TIPP_STATUS_CURRENT.id, RDStore.TIPP_STATUS_RETIRED.id, RDStore.TIPP_STATUS_DELETED.id, RDStore.TIPP_STATUS_EXPECTED.id]]">${countAllPermanentTitles}</g:link>
+                        </td>
+                        <td class="center aligned ${(sub.hasPerpetualAccess && countAllPermanentTitles != countAllIssueEntitlements) || (!sub.hasPerpetualAccess && countAllPermanentTitles > 0 && countAllPermanentTitles != countAllIssueEntitlements) ? 'negative' : ''}">
+                            <g:link controller="subscription" action="index" id="${sub.id}" params="[status: [RDStore.TIPP_STATUS_CURRENT.id, RDStore.TIPP_STATUS_RETIRED.id, RDStore.TIPP_STATUS_DELETED.id, RDStore.TIPP_STATUS_EXPECTED.id]]">${countAllIssueEntitlements}</g:link>
                         </td>
                         <td>
                             <g:if test="${sub.isMultiYear}">
