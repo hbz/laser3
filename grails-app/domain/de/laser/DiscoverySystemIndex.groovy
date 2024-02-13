@@ -3,6 +3,9 @@ package de.laser
 import de.laser.annotations.RefdataInfo
 import de.laser.storage.RDConstants
 
+/**
+ * A linking class showing which discovery system indices a given institution is currently using
+ */
 class DiscoverySystemIndex implements Comparable {
 
     @RefdataInfo(cat = RDConstants.DISCOVERY_SYSTEM_INDEX)
