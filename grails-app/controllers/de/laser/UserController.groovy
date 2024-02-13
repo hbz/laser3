@@ -5,6 +5,7 @@ import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.ctrl.UserControllerService
 import de.laser.annotations.DebugInfo
+import de.laser.helper.Profiler
 import de.laser.utils.PasswordUtils
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
@@ -77,18 +78,21 @@ class UserController {
      */
     @Secured(['ROLE_ADMIN'])
     def list() {
+        Profiler prf = new Profiler()
         Map<String, Object> result = userControllerService.getResultGenerics(params)
+        prf.setBenchmark('init')
         Map filterParams = params
 
-        result.users = userService.getUserSet(filterParams)
-        result.total = result.users.size()
+        Set<User> users = userService.getUserSet(filterParams)
+        prf.setBenchmark('after users')
+        result.total = users.size()
+        result.users = users.drop(result.offset).take(result.max)
 
         result.titleMessage = message(code:'user.show_all.label') as String
-        Set<Org> availableComboOrgs = Org.executeQuery(
-                'select c.fromOrg from Combo c where c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.name asc',
-                [ctxOrg: contextService.getOrg(), type: RDStore.COMBO_TYPE_CONSORTIUM]
-        )
-        availableComboOrgs.add(contextService.getOrg())
+        String query = "select new map(concat('${Org.class.name}:',c.fromOrg.id) as oid,c.fromOrg.sortname as name) from Combo c where c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.sortname asc"
+        Set availableComboOrgs = Org.executeQuery(query, [ctxOrg: result.orgInstance, type: RDStore.COMBO_TYPE_CONSORTIUM])
+        availableComboOrgs.add([oid: genericOIDService.getOID(result.orgInstance), name: result.orgInstance.sortname])
+        prf.setBenchmark('after combo orgs')
         result.filterConfig = [filterableRoles:Role.findAllByRoleTypeInList(['user']), orgField: true, availableComboOrgs: availableComboOrgs]
 
         result.tmplConfig = [
@@ -100,7 +104,7 @@ class UserController {
                 showAllAffiliations: true,
                 modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA')
         ]
-
+        result.benchMark = prf.stopBenchmark()
         render view: '/user/global/list', model: result
     }
 

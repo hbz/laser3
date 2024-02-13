@@ -140,3 +140,7 @@
         </g:each>
     </tbody>
 </table>
+
+<g:if test="${users}">
+    <ui:paginate params="${params}" max="${max}" total="${total}" />
+</g:if>
