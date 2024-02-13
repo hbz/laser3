@@ -2,14 +2,17 @@ tasks.register('dbm.createGormDiff', Exec) {
     group = 'laser'
     executable 'sh'
     String date = java.time.LocalDate.now().format('yyyy-MM-dd')
-    args '-c', './grailsw prod dbm-gorm-diff changelogs/' + date + '.groovy --add'
+//    args '-c', './grailsw prod dbm-gorm-diff changelogs/' + date + '.groovy --add'
+    args '-c', './gradlew dbmGormDiff -Pargs="changelogs/' + date + '.groovy --add" -Dgrails.env=prod'
+
 }
 
 tasks.register('dbm.createGormDiff-storage', Exec) {
     group = 'laser'
     executable 'sh'
     String date = java.time.LocalDate.now().format('yyyy-MM-dd')
-    args '-c', './grailsw prod dbm-gorm-diff changelogs/' + date + '-storage.groovy --dataSource=storage --add'
+//    args '-c', './grailsw prod dbm-gorm-diff changelogs/' + date + '-storage.groovy --dataSource=storage --add'
+    args '-c', './gradlew dbmGormDiff -Pargs="changelogs/' + date + '-storage.groovy --add --dataSource=storage" -Dgrails.env=prod'
 }
 
 tasks.register('gradle.helpWarningMode', Exec) {
