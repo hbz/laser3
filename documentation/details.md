@@ -1,5 +1,5 @@
 
-## Details: Upgrade from [Grails 5.3.3](./grails5/details.md) to Grails 6.0.0
+## Details: Upgrade from [Grails 5.3.3](./grails5/details.md) to Grails 6.1.2
 
 ### ExecutorGrailsPlugin
 
