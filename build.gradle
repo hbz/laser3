@@ -126,7 +126,7 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.14.0'                // 2023
     implementation 'org.apache.poi:poi-ooxml:3.17'                          // 2017 : [freeze] : 5.x available
     implementation 'org.codehaus.gpars:gpars:1.2.1'                         // 2014
-    implementation 'org.codehaus.janino:janino:3.1.11'                      // 2023 : logback
+    implementation 'org.codehaus.janino:janino:3.1.12'                      // 2024 : logback
     implementation 'org.liquibase:liquibase-core:4.19.0'                    // 2023 : + org.grails.plugins:database-migration // [freeze - not 4.19.1]
     implementation 'org.quartz-scheduler:quartz:2.3.2'                      // 2019
 
@@ -135,6 +135,10 @@ dependencies {
     runtimeOnly 'org.apache.tomcat:tomcat-jdbc'
     runtimeOnly 'javax.xml.bind:jaxb-api:2.3.1'                             // 2018 : [?]
     runtimeOnly 'org.postgresql:postgresql:42.7.1'                          // 2024
+}
+
+java {
+    sourceCompatibility = JavaVersion.toVersion("11")
 }
 
 springBoot {
@@ -194,10 +198,6 @@ war {
     )
     dependsOn compileGroovyPages
 }
-
-//java {
-//    sourceCompatibility = JavaVersion.toVersion("11")
-//}
 
 // ---[ plugin: asset pipeline ]---
 
