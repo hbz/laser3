@@ -11,8 +11,8 @@ buildscript {
         maven { url 'https://repo.grails.org/grails/core' }
     }
     dependencies {
-        classpath 'org.grails:grails-gradle-plugin:' + grailsGradlePluginVersion            // 2023
-        classpath 'org.grails.plugins:hibernate5:' + gormVersion                            // 2023
+        classpath 'org.grails:grails-gradle-plugin:' + grailsGradlePluginVersion            // 2024
+        classpath 'org.grails.plugins:hibernate5:' + gormVersion                            // 2024
         classpath 'org.grails.plugins:database-migration:4.2.1'                             // 2023
         classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:4.3.0'                     // 2023
         classpath 'com.gorylenko.gradle-git-properties:gradle-git-properties:2.4.1'         // 2022
@@ -90,7 +90,7 @@ dependencies {
     implementation 'org.grails.plugins:async'
     implementation 'org.grails.plugins:scaffolding'
     implementation 'org.grails.plugins:events'
-    implementation 'org.grails.plugins:hibernate5:' + gormVersion   // [fix]
+    implementation 'org.grails.plugins:hibernate5:' + gormVersion
     implementation 'org.grails.plugins:gsp'
 
     implementation 'io.micronaut:micronaut-http-client'
@@ -104,7 +104,7 @@ dependencies {
     implementation 'org.elasticsearch:elasticsearch:7.17.14'                                // 2023
     implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.14'  // 2023
 
-    implementation 'org.grails.plugins:spring-security-core:6.0.2'          // 2023
+    implementation 'org.grails.plugins:spring-security-core:6.1.1'          // 2024
     implementation 'org.grails.plugins:audit-logging:4.0.3'                 // 2021
     implementation 'org.grails.plugins:database-migration:4.2.1', {         // 2023
         exclude module: 'spring-boot-cli'
