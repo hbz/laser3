@@ -78,6 +78,10 @@
         color: #222;
     }
 
+    .menu > .item.black {
+        color: #1b1b1b;
+        font-weight: bold;
+    }
     h3.header > i.icon {
         vertical-align: baseline !important;
     }
@@ -98,6 +102,7 @@
                 <div class="chartWrapper" id="cw-subscription"></div>
 
                 <div class="ui secondary la-tab-with-js menu">
+                    <div class="item black">${message(code: 'subscription.periodOfValidity.label')}:</div>
                     <g:each in="${subscriptionTimelineMap.keySet()}" var="year">
                         <a href="#" class="item" data-tab="year-${year}"> ${year} </a>
 %{--                        <a href="#" class="item ${year == Year.now().toString() ? 'active' : ''}" data-tab="year-${year}"> ${year} </a>--}%
@@ -105,6 +110,7 @@
                 </div>
 
                 <div class="ui secondary la-tab-with-js menu">
+                    <div class="item black">${message(code: 'subscription.status.label')}:</div>
                     <g:each in="${subscriptionMap}" var="subStatus,subList">
                         <g:set var="subStatusRdv" value="${RefdataValue.get(subStatus)}" />
                         <a href="#" class="item ${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="subscription-${subStatusRdv.id}">
@@ -154,6 +160,7 @@
                 <div class="chartWrapper" id="cw-license"></div>
 
                 <div class="ui secondary la-tab-with-js menu">
+                    <div class="item black">${message(code: 'subscription.periodOfValidity.label')}:</div>
                     <g:each in="${licenseTimelineMap.keySet()}" var="year">
                         <a href="#" class="item" data-tab="year-${year}"> ${year} </a>
 %{--                        <a href="#" class="item ${year == Year.now().toString() ? 'active' : ''}" data-tab="year-${year}"> ${year} </a>--}%
@@ -161,6 +168,7 @@
                 </div>
 
                 <div class="ui secondary la-tab-with-js menu">
+                    <div class="item black">${message(code: 'license.status.label')}:</div>
                     <g:each in="${licenseMap}" var="licStatus,licList">
                         <g:set var="licStatusRdv" value="${RefdataValue.get(licStatus)}" />
                         <a href="#" class="item ${licStatusRdv == RDStore.LICENSE_CURRENT ? 'active' : ''}" data-tab="license-${licStatusRdv.id}">
@@ -215,6 +223,7 @@
 %{--                </div>--}%
 
                 <div class="ui secondary la-tab-with-js menu">
+                    <div class="item black">${message(code: 'subscription.status.label')}:</div>
                     <g:each in="${providerMap}" var="subStatus,provList">
                         <g:set var="subStatusRdv" value="${RefdataValue.get(subStatus)}" />
                         <a href="#" class="item ${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="prov-${subStatusRdv.id}">
@@ -301,6 +310,7 @@
         <div class="chartWrapper" id="cw-survey"></div>
 
         <div class="ui secondary la-tab-with-js menu">
+            <div class="item black">${message(code: 'subscription.periodOfValidity.label')}:</div>
             <g:each in="${surveyTimelineMap.keySet()}" var="year">
                 <a href="#" class="item" data-tab="year-${year}"> ${year} </a>
             %{--                        <a href="#" class="item ${year == Year.now().toString() ? 'active' : ''}" data-tab="year-${year}"> ${year} </a>--}%
@@ -308,6 +318,7 @@
         </div>
 
                 <div class="ui secondary la-tab-with-js menu">
+                    <div class="item black">${message(code: 'default.status.label')}:</div>
                     <g:each in="${surveyMap}" var="surveyStatus,surveyData">
                         <a href="#" class="item ${surveyStatus == 'open' ? 'active' : ''}" data-tab="survey-${surveyStatus}">
                             <uiSurvey:virtualState status="${surveyStatus}" />
