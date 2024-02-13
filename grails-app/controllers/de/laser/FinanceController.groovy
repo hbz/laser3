@@ -497,6 +497,9 @@ class FinanceController  {
         render(template: "/finance/ajaxModal", model: result)
     }
 
+    /**
+     * Same call as {@link #editCostItem}, but instead of a modal, the editing is done in a new view
+     */
     @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()

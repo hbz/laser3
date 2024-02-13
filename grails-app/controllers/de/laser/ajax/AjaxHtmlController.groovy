@@ -424,6 +424,9 @@ class AjaxHtmlController {
         }
     }
 
+    /**
+     * Opens the task reading modal
+     */
     @Secured(['ROLE_USER'])
     def readTask() {
         Map<String, Object> result = [:]

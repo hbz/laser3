@@ -183,6 +183,9 @@ class YodaController {
         result
     }
 
+    /**
+     * Call to open the list of ${@link FilterChainProxy}s
+     */
     @Secured(['ROLE_YODA'])
     def systemOddments() {
         Map<String, Object> result = [:]
@@ -641,6 +644,9 @@ class YodaController {
         redirect controller: 'home'
     }
 
+    /**
+     * Lists the currently created bulk files (= the export cache)
+     */
     @Secured(['ROLE_YODA'])
     Map<String, Object> manageTempUsageFiles() {
         File dir = new File(GlobalService.obtainFileStorageLocation())
@@ -649,6 +655,10 @@ class YodaController {
         [tempFiles: tempFiles]
     }
 
+    /**
+     * Deletes the given temp file; intended for debugging purposes (= file creation test)
+     * @return redirects back to the list view @ {@link #manageTempUsageFiles()}
+     */
     @Secured(['ROLE_YODA'])
     def deleteTempFile() {
         if(params.containsKey('filename')) {
@@ -950,6 +960,10 @@ class YodaController {
         redirect controller: 'platform', action: 'list'
     }
 
+    /**
+     * Updates the recent we:kb changes cache
+     * @return redirects back to the dashboard
+     */
     @Secured(['ROLE_YODA'])
     def reloadWekbChanges() {
         log.info('--> reloadWekbChanges')

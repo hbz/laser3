@@ -38,7 +38,6 @@ import java.time.LocalDate
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AdminController  {
 
-    CacheService cacheService
     ContextService contextService
     DataConsistencyService dataConsistencyService
     DataloadService dataloadService
@@ -445,6 +444,15 @@ class AdminController  {
         result
     }
 
+    /**
+     * Runs a check through all {@link Identifier}s whose namespaces have a validation regex defined and checks whether the values match the defined validation patterns
+     * @return a {@link Map} containing for each concerned {@link IdentifierNamespace} the
+     * <ul>
+     *     <li>total count of identifiers</li>
+     *     <li>count of valid identifiers</li>
+     *     <li>count of invalid identifiers</li>
+     * </ul>
+     */
     @Secured(['ROLE_ADMIN'])
     def identifierValidation() {
         Map<String, Object> result = [
@@ -1213,6 +1221,11 @@ SELECT * FROM (
         redirect(action: 'listMailTemplates')
     }
 
+    /**
+     * Loads every {@link Subscription} where {@link PermanentTitle} records are supposed to be by definition but have not been generated
+     * @see Subscription#hasPerpetualAccess
+     * @see IssueEntitlement
+     */
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def missingPermantTitlesInSubs() {
