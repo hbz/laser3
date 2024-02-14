@@ -57,9 +57,9 @@
                 </td>
                 <td class="x">
                     <%
-                        boolean check = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN');
+                        boolean check = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
                         if (! check) {
-                            check = editable && userService.isUserEditableForInstAdm(us, editor);
+                            check = editable && userService.isUserEditableForInstAdm(us, editor)
                         }
                     %>
 
@@ -140,3 +140,7 @@
         </g:each>
     </tbody>
 </table>
+
+<g:if test="${users}">
+    <ui:paginate params="${params}" max="${max}" total="${total}" />
+</g:if>

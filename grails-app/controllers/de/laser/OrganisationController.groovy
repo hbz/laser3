@@ -1443,7 +1443,9 @@ class OrganisationController  {
         Map filterParams = params
         filterParams.org = genericOIDService.getOID(result.orgInstance)
 
-        result.users = userService.getUserSet(filterParams)
+        Map users = userService.getUserSet(filterParams)
+        result.total = users.count
+        result.users = users.data
         result.titleMessage = "${result.orgInstance.name} - ${message(code:'org.nav.users')}"
         result.inContextOrg = false
         result.multipleAffiliationsWarning = true
@@ -1469,7 +1471,6 @@ class OrganisationController  {
                 modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA'),
                 availableComboOrgs: availableComboOrgs
         ]
-        result.total = result.users.size()
         render view: '/user/global/list', model: result
     }
 
