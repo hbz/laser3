@@ -426,23 +426,26 @@ class PropertyService {
 
         List<AbstractPropertyWithCalculatedLastUpdated> result = []
         List orphanedIds = obj.propertySet.findAll{ it.type.tenant == null }.collect{ it.id }
-
+        String localizedName = LocaleUtils.getLocalizedAttributeName('name')
         sorted.each{ List entry -> orphanedIds.removeAll(entry[1].getCurrentProperties(obj).id)}
 
         if (! orphanedIds.isEmpty()) {
             switch (obj.class.simpleName) {
-
                 case License.class.simpleName:
-                    result = LicenseProperty.findAllByIdInList(orphanedIds)
+                    String query = "select prop from LicenseProperty prop join prop.type pd where prop.id in (:orphanedIds) order by pd.${localizedName}"
+                    result = LicenseProperty.executeQuery(query, [orphanedIds: orphanedIds])
                     break
                 case Subscription.class.simpleName:
-                    result = SubscriptionProperty.findAllByIdInList(orphanedIds)
+                    String query = "select prop from SubscriptionProperty prop join prop.type pd where prop.id in (:orphanedIds) order by pd.${localizedName}"
+                    result = SubscriptionProperty.executeQuery(query, [orphanedIds: orphanedIds])
                     break
                 case Org.class.simpleName:
-                    result = OrgProperty.findAllByIdInList(orphanedIds)
+                    String query = "select prop from OrgProperty prop join prop.type pd where prop.id in (:orphanedIds) order by pd.${localizedName}"
+                    result = OrgProperty.executeQuery(query, [orphanedIds: orphanedIds])
                     break
                 case Platform.class.simpleName:
-                    result = PlatformProperty.findAllByIdInList(orphanedIds)
+                    String query = "select prop from PlatformProperty prop join prop.type pd where prop.id in (:orphanedIds) order by pd.${localizedName}"
+                    result = PlatformProperty.executeQuery(query, [orphanedIds: orphanedIds])
                     break
             }
         }
