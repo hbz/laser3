@@ -1281,6 +1281,13 @@ class SubscriptionControllerService {
         [result:result,status:STATUS_OK]
     }
 
+    /**
+     * Opens a view containing the cost items of a subscription and comparing those with the equivalent cost items of the previous year ring,
+     * i.e. from the same subscription of the last year
+     * @param controller unused
+     * @param params the request parameter map
+     * @return a {@link Map} containing the comparison data
+     */
     Map<String,Object> compareSubMemberCostItems(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)

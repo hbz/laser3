@@ -108,6 +108,10 @@ class ContextService {
         return new SessionCacheWrapper()
     }
 
+    /**
+     * Gets the cache key token for the given user
+     * @return the user's cache key in format [user.id:user.formalOrg.id:user.formalRole.id]
+     */
     String getFormalCacheKeyToken() {
         User user = getUser()
         '[' + user.id + ':' + user.formalOrg.id + ':' + user.formalRole.id + ']'
@@ -145,14 +149,32 @@ class ContextService {
         _hasInstRoleAndPerm_or_ROLEADMIN('INST_ADM', orgPerms, false)
     }
 
+    /**
+     * Same as {@link #isInstUser_or_ROLEADMIN()}, but support-type customers get access denied
+     * @param orgPerms the customer types to verify
+     * @return true if the given permissions are granted, false otherwise
+     * @see CustomerTypeService
+     */
     boolean isInstUser_denySupport_or_ROLEADMIN(String orgPerms = null) {
         _hasInstRoleAndPerm_or_ROLEADMIN('INST_USER', orgPerms, true)
     }
 
+    /**
+     * Same as {@link #isInstEditor_or_ROLEADMIN()}, but support-type customers get access denied
+     * @param orgPerms the customer types to verify
+     * @return true if the given permissions are granted, false otherwise
+     * @see CustomerTypeService
+     */
     boolean isInstEditor_denySupport_or_ROLEADMIN(String orgPerms = null) {
         _hasInstRoleAndPerm_or_ROLEADMIN('INST_EDITOR', orgPerms, true)
     }
 
+    /**
+     * Same as {@link #isInstAdm_or_ROLEADMIN()}, but support-type customers get access denied
+     * @param orgPerms the customer types to verify
+     * @return true if the given permissions are granted, false otherwise
+     * @see CustomerTypeService
+     */
     boolean isInstAdm_denySupport_or_ROLEADMIN(String orgPerms = null) {
         _hasInstRoleAndPerm_or_ROLEADMIN('INST_ADM', orgPerms, true)
     }
@@ -185,6 +207,7 @@ class ContextService {
     /**
      * Checks if the context organisation is an institution at all and if it is of the given customer type.
      * If no customer type is being submitted, this check returns true (= substitution call)
+     * Do not use this method directly!
      * @param orgPerms the customer type(s) to check
      * @return true if the context institution has the given customer type or no customer type has been submitted, false otherwise
      * @see OrgSetting
@@ -236,6 +259,11 @@ class ContextService {
 
     // -----
 
+    /**
+     * Performs the navigation panel check against cached entries
+     * @param attrs the cached page call attributes
+     * @return true if access is granted, false otherwise
+     */
     boolean checkCachedNavPerms(GroovyPageAttributes attrs) {
 
         boolean check = false

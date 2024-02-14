@@ -1376,6 +1376,11 @@ class ControlledListService {
         }
     }
 
+    /**
+     * Retrieves a list of platforms matching the given request parameters
+     * @param params the request parameter map
+     * @return a map containing platforms, an empty one if no platforms match the filter
+     */
     Map getPlatforms(GrailsParameterMap params) {
         Org institution = contextService.getOrg()
         String consortiumFilter = "", platNameFilter = ""
@@ -1390,6 +1395,11 @@ class ControlledListService {
         [results: Platform.executeQuery(qryString, qryParams)]
     }
 
+    /**
+     * Retrieves a list of provider organisations matching the given request parameters
+     * @param params the request parameter map
+     * @return a map containing providers, an empty one if no providers match the filter
+     */
     Map getProviders(GrailsParameterMap params) {
         Org institution = contextService.getOrg()
         String consortiumFilter = "", orgNameFilter = ""
