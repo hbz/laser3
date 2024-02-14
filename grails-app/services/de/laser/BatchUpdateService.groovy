@@ -4,9 +4,17 @@ import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
 import groovy.sql.Sql
 
+/**
+ * This service is a container for methods which are resource-intensive or bulk process methods
+ */
 @Transactional
 class BatchUpdateService {
 
+    /**
+     * Marks for the given subscriptions the entire holding of the given package as deleted. It uses
+     * a temp table to process the marking in batches
+     * @param configMap the request parameter map
+     */
     void clearIssueEntitlements(Map configMap) {
         Sql sql = GlobalService.obtainSqlConnection()
         Map queryParams = [pkg_id: configMap.pkg_id,

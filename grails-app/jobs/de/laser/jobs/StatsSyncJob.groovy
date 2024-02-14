@@ -5,7 +5,9 @@ import de.laser.config.ConfigMapper
 import de.laser.base.AbstractJob
 import groovy.util.logging.Slf4j
 
-@Deprecated
+/**
+ * Triggers at 04:00 A.M. every night and cleans up cached export files
+ */
 @Slf4j
 class StatsSyncJob extends AbstractJob {
 
