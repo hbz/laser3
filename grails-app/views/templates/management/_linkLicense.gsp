@@ -48,25 +48,27 @@
                 </g:else>
             </div>
 
-            <div class="two fields">
-                <div class="eight wide field" style="text-align: left;">
-                    <div class="ui buttons">
-                        <button class="ui positive button" ${!editable ? 'disabled="disabled"' : ''} type="submit"
-                                name="processOption"
-                                value="linkLicense">${message(code: 'subscriptionsManagement.linkLicenses.button')}</button>
+            <g:if test="${validLicenses}">
+                <div class="two fields">
+                    <div class="eight wide field" style="text-align: left;">
+                        <div class="ui buttons">
+                            <button class="ui positive button" ${!editable ? 'disabled="disabled"' : ''} type="submit"
+                                    name="processOption"
+                                    value="linkLicense">${message(code: 'subscriptionsManagement.linkLicenses.button')}</button>
+                        </div>
+                    </div>
+                    <div class="eight wide field" style="text-align: right;">
+                        <div class="ui buttons">
+                            <button class="ui button negative js-open-confirm-modal" ${!editable ? 'disabled="disabled"' : ''}
+                                    data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.deleteLicenses.button.confirm')}"
+                                    data-confirm-term-how="ok"
+                                    name="processOption"
+                                    data-confirm-id="deleteLicenses"
+                                    value="unlinkLicense">${message(code: 'subscriptionsManagement.deleteLicenses.button')}</button>
+                        </div>
                     </div>
                 </div>
-                <div class="eight wide field" style="text-align: right;">
-                    <div class="ui buttons">
-                        <button class="ui button negative js-open-confirm-modal" ${!editable ? 'disabled="disabled"' : ''}
-                                data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.deleteLicenses.button.confirm')}"
-                                data-confirm-term-how="ok"
-                                name="processOption"
-                                data-confirm-id="deleteLicenses"
-                                value="unlinkLicense">${message(code: 'subscriptionsManagement.deleteLicenses.button')}</button>
-                    </div>
-                </div>
-            </div>
+            </g:if>
         </div><!-- .segment -->
 
         <div class="ui segment">

@@ -162,10 +162,7 @@ class UsageController  {
 
         if (params.supplier != 'null'){
             platform = Platform.get(params.supplier)
-            def cp = platform.propertySet.find(){
-                it.type.name = "NatStat Supplier ID"
-            }
-            supplier = cp.stringValue
+            supplier = platform.natstatSupplierID
         }
         if (params.institution != 'null'){
             instOrg = Org.get(params.institution)

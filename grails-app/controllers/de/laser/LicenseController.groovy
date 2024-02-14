@@ -294,7 +294,7 @@ class LicenseController {
                         linkPossible = s._getCalculatedType() == CalculatedType.TYPE_LOCAL
                     }
                     else {
-                        linkPossible = institution.isCustomerType_Consortium()
+                        linkPossible = result.institution.isCustomerType_Consortium()
                     }
                     if(linkPossible)
                         subscriptionService.setOrgLicRole(s,newLicense,unlink)

@@ -116,7 +116,7 @@ class StatsSyncService {
             "where titleIdentifier.ns.ns in ('zdb','doi') "+
             "and ie.status.value <> '${RDStore.TIPP_STATUS_REMOVED}' " +
             "and po.roleType.value in ('Provider','Content Provider') "+
-            "and exists (select cp from pf.propertySet as cp where cp.type.name = 'NatStat Supplier ID')" +
+            "and pf.natstatSupplierID != null" +
             "and (orgrel.roleType.value = 'Subscriber_Consortial' or orgrel.roleType.value = 'Subscriber') " +
             "and exists (select 1 from OrgSetting as os where os.org=orgrel.org and os.key='${OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID}' and os.strValue<>'') "
         if (queryParams['supplier'] != null){

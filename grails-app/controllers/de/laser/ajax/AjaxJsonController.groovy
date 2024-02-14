@@ -19,6 +19,7 @@ import de.laser.ReportingLocalService
 import de.laser.SubscriptionDiscountScale
 import de.laser.SubscriptionService
 import de.laser.auth.Role
+import de.laser.cache.EhcacheWrapper
 import de.laser.finance.PriceItem
 import de.laser.helper.Params
 import de.laser.utils.CodeUtils
@@ -586,6 +587,15 @@ class AjaxJsonController {
         else {
             render result as JSON
         }
+    }
+
+    @Secured(['ROLE_USER'])
+    def checkProgress() {
+        EhcacheWrapper userCache = contextService.getUserCache(params.cachePath)
+        Map<String, Object> result = [percent: userCache.get(params.cacheKey)]
+        if(result.percent == 100)
+            userCache.remove(params.cacheKey)
+        render result as JSON
     }
 
     /**

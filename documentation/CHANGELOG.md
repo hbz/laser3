@@ -7,6 +7,16 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5551    07.02.2024  dev     3.4         Andreas Feature     fehlende Felder dem Einrichtungsexport nachgereicht
+
+4982    07.02.2024  dev     3.4         Andreas Feature     Strukturabbau bei we:kb-API-Antworten
+
+4837    07.02.2024  dev     3.4         Andreas Feature     Abwicklung der allgemeinen Plattformmerkmale
+
+5550    06.02.2024  dev     3.4         Andreas Bug         Entknüpfung eines Vertrages auf Konsortialebene wirkte sich nicht auf Teilnehmer aus
+
+5545    06.02.2024  dev     3.4         Andreas Bug         Adressmodal eindeutiger zugewiesen
+
 5556    05.02.2024  rc-3.3  3.3.5       Moe     Bug         Kosten anzeigen falsche Teilnehmer-Anzeige
 
 5555    05.02.2024  rc-3.3  3.3.5       Moe     Feature     Alle Pakete für Yoda mit Titel-Vergleich LASER vs WEKB

@@ -3,6 +3,7 @@ package de.laser
 import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
 import de.laser.auth.User
+import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.exceptions.EntitlementCreationException
@@ -208,8 +209,8 @@ class SubscriptionController {
             if (queryResult.error && queryResult.error == 404) {
                 result.wekbServerUnavailable = message(code: 'wekb.error.404')
             }
-            else if (queryResult.warning) {
-                List records = queryResult.warning.result
+            else if (queryResult) {
+                List records = queryResult.result
                 if(records[0]) {
                     records[0].lastRun = platformInstance.counter5LastRun ?: platformInstance.counter4LastRun
                     records[0].id = platformInstance.id
@@ -397,7 +398,13 @@ class SubscriptionController {
             return
         }
         else {
-            subscriptionService.setOrgLicRole(result.subscription,License.get(params.license),true)
+            License lic = License.get(params.license)
+            subscriptionService.setOrgLicRole(result.subscription,lic,true)
+            Subscription.findAllByInstanceOf(result.subscription).each { Subscription childSub ->
+                License.findAllByInstanceOf(lic).each { License childLic ->
+                    subscriptionService.setOrgLicRole(childSub, childLic, true)
+                }
+            }
             redirect(url: request.getHeader('referer'))
         }
     }
@@ -1676,6 +1683,8 @@ class SubscriptionController {
         if(params.exportForImport) {
             if(params.reportType) {
                 ctrlResult = subscriptionControllerService.renewEntitlementsWithSurvey(this, params)
+                EhcacheWrapper userCache = contextService.getUserCache("/subscription/renewEntitlementsWithSurvey/generateRenewalExport")
+                userCache.put('progress', 0)
                 params.loadFor = params.tab
                 String token = "renewal_${params.reportType}_${params.platform}_${ctrlResult.result.subscriber.id}_${ctrlResult.result.subscriberSub.id}"
                 if(params.metricType) {
@@ -1692,9 +1701,9 @@ class SubscriptionController {
                 if (!folder.exists()) {
                     folder.mkdir()
                 }
-                //File f = new File(dir+'/'+token)
+                File f = new File(dir+'/'+token)
                 Map<String, String> fileResult = [token: token]
-                //if(!f.exists()) {
+                if(!f.exists()) {
                     SortedSet<Date> monthsInRing = new TreeSet<Date>()
                     Calendar startTime = GregorianCalendar.getInstance(), endTime = GregorianCalendar.getInstance()
                     if (ctrlResult.result.subscriberSub.startDate && ctrlResult.result.subscriberSub.endDate) {
@@ -1739,23 +1748,25 @@ class SubscriptionController {
                     //queryMap.sub = ctrlResult.result.subscription
                     queryMap.status = RDStore.TIPP_STATUS_CURRENT.id
                     queryMap.pkgIds = ctrlResult.result.parentSubscription.packages?.pkg?.id
+                    queryMap.refSub = ctrlResult.result.parentSubscription
                     //Map<String, List> export = exportService.generateTitleExportCustom(queryMap, TitleInstancePackagePlatform.class.name, monthsInRing.sort { Date monthA, Date monthB -> monthA <=> monthB }, ctrlResult.result.subscriber, true)
                     Map<String, List> export = exportService.generateRenewalExport(queryMap, monthsInRing, ctrlResult.result.subscriber)
-
+                    /*
                     String refYes = RDStore.YN_YES.getI10n('value')
                     String refNo = RDStore.YN_NO.getI10n('value')
+                    userCache.put('progress', 100) //debug only
                     export.rows.eachWithIndex { def field, int index ->
                         if(export.rows[index][0] && export.rows[index][0].style == 'negative'){
                             export.rows[index] << [field: refNo, style: 'negative']
                         }else {
                             export.rows[index] << [field: refYes, style: null]
                         }
-
                     }
-
+                    */
                     Map sheetData = [:]
                     sheetData[g.message(code: 'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow: export.titles, columnData: export.rows]
                     wb = exportService.generateXLSXWorkbook(sheetData)
+                    userCache.put('progress', 100)
                     FileOutputStream fos = new FileOutputStream(dir+'/'+token)
                     //--> to document
                     wb.write(fos)
@@ -1764,13 +1775,11 @@ class SubscriptionController {
                     wb.dispose()
                     render template: '/templates/usageReport', model: fileResult
                     return
-                /*
                 }
                 else {
                     render template: '/templates/usageReport', model: fileResult
                     return
                 }
-                */
             }
             else {
                 flash.error = message(code: 'default.stats.error.noReportSelected')

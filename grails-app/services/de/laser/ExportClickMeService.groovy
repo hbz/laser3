@@ -87,6 +87,9 @@ class ExportClickMeService {
                                 'participant.funderType'        : [field: 'participant.funderType', label: 'Funder Type', message: 'org.funderType.label'],
                                 'participant.funderHskType'     : [field: 'participant.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
                                 'participant.libraryType'       : [field: 'participant.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
+                                'participant.url'               : [field: 'participant.url', label: 'URL', message: 'default.url.label'],
+                                'participant.legalPatronName'   : [field: 'participant.legalPatronName', label: 'Lagal Patron Name', message: 'org.legalPatronName.label'],
+                                'participant.urlGov'            : [field: 'participant.urlGov', label: 'URL of governing institution', message: 'org.urlGov.label'],
                                 /*
                                 'participantContact.General contact person'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
                                 'participantContact.Functional Contact Billing Adress'   : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
@@ -100,6 +103,9 @@ class ExportClickMeService {
                                 'participant.discoverySystemsFrontend' : [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
                                 'participant.discoverySystemsIndex' : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label'],
                                 'participant.uuid'              : [field: 'participant.globalUID', label: 'Laser-UUID',  message: null],
+                                'participant.libraryNetwork'    : [field: 'participant.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
+                                'participant.country'           : [field: 'participant.country', label: 'Country', message: 'org.country.label'],
+                                'participant.region'            : [field: 'participant.region', label: 'Region', message: 'org.region.label']
                             ]
                     ],
                     participantContacts : [
@@ -191,6 +197,9 @@ class ExportClickMeService {
                             'participant.funderType'        : [field: 'orgs.funderType', label: 'Funder Type', message: 'org.funderType.label'],
                             'participant.funderHskType'     : [field: 'orgs.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
                             'participant.libraryType'       : [field: 'orgs.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
+                            'participant.url'               : [field: 'orgs.url', label: 'URL', message: 'default.url.label'],
+                            'participant.legalPatronName'   : [field: 'orgs.legalPatronName', label: 'Lagal Patron Name', message: 'org.legalPatronName.label'],
+                            'participant.urlGov'            : [field: 'orgs.urlGov', label: 'URL of governing institution', message: 'org.urlGov.label'],
                             /*
                             'participantContact.General contact person'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
                             'participantContact.Functional Contact Billing Adress'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
@@ -202,7 +211,10 @@ class ExportClickMeService {
                             'participant.linkResolverBaseURL'    : [field: 'orgs.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
                             'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
                             'participant.discoverySystemsFrontend' : [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
-                            'participant.discoverySystemsIndex' : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label']
+                            'participant.discoverySystemsIndex' : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label'],
+                            'participant.libraryNetwork'    : [field: 'orgs.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
+                            'participant.country'           : [field: 'orgs.country', label: 'Country', message: 'org.country.label'],
+                            'participant.region'            : [field: 'orgs.region', label: 'Region', message: 'org.region.label']
                     ]
             ],
             participantContacts : [
@@ -591,6 +603,9 @@ class ExportClickMeService {
                             'participant.funderType'        : [field: 'orgs.funderType', label: 'Funder Type', message: 'org.funderType.label'],
                             'participant.funderHskType'     : [field: 'orgs.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
                             'participant.libraryType'       : [field: 'orgs.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
+                            'participant.url'               : [field: 'orgs.url', label: 'URL', message: 'default.url.label'],
+                            'participant.legalPatronName'   : [field: 'orgs.legalPatronName', label: 'Lagal Patron Name', message: 'org.legalPatronName.label'],
+                            'participant.urlGov'            : [field: 'orgs.urlGov', label: 'URL of governing institution', message: 'org.urlGov.label'],
                             /*
                             'participantContact.General contact person'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
                             'participantContact.Functional Contact Billing Adress'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
@@ -602,7 +617,10 @@ class ExportClickMeService {
                             'participant.linkResolverBaseURL'    : [field: 'orgs.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
                             'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
                             'participant.discoverySystemsFrontend' : [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
-                            'participant.discoverySystemsIndex' : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label']
+                            'participant.discoverySystemsIndex' : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label'],
+                            'participant.libraryNetwork'    : [field: 'orgs.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
+                            'participant.country'           : [field: 'orgs.country', label: 'Country', message: 'org.country.label'],
+                            'participant.region'            : [field: 'orgs.region', label: 'Region', message: 'org.region.label']
                     ]
             ],
 
@@ -731,6 +749,9 @@ class ExportClickMeService {
                             'participant.funderType'        : [field: 'orgs.funderType', label: 'Funder Type', message: 'org.funderType.label'],
                             'participant.funderHskType'     : [field: 'orgs.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
                             'participant.libraryType'       : [field: 'orgs.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
+                            'participant.url'               : [field: 'orgs.url', label: 'URL', message: 'default.url.label'],
+                            'participant.legalPatronName'   : [field: 'orgs.legalPatronName', label: 'Lagal Patron Name', message: 'org.legalPatronName.label'],
+                            'participant.urlGov'            : [field: 'orgs.urlGov', label: 'URL of governing institution', message: 'org.urlGov.label'],
                             /*
                             'participantContact.General contact person'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
                             'participantContact.Functional Contact Billing Adress'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
@@ -740,7 +761,10 @@ class ExportClickMeService {
                             'participant.eInvoice'          : [field: 'orgs.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
                             'participant.eInvoicePortal'    : [field: 'orgs.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
                             'participant.linkResolverBaseURL'    : [field: 'orgs.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
-                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers']
+                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
+                            'participant.libraryNetwork'    : [field: 'orgs.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
+                            'participant.country'           : [field: 'orgs.country', label: 'Country', message: 'org.country.label'],
+                            'participant.region'            : [field: 'orgs.region', label: 'Region', message: 'org.region.label']
                     ]
             ],
 
@@ -1025,6 +1049,9 @@ class ExportClickMeService {
                             'participant.funderType'        : [field: 'sub.subscriber.funderType', label: 'Funder Type', message: 'org.funderType.label'],
                             'participant.funderHskType'     : [field: 'sub.subscriber.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
                             'participant.libraryType'       : [field: 'sub.subscriber.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
+                            'participant.url'               : [field: 'sub.subscriber.url', label: 'URL', message: 'default.url.label'],
+                            'participant.legalPatronName'   : [field: 'sub.subscriber.legalPatronName', label: 'Lagal Patron Name', message: 'org.legalPatronName.label'],
+                            'participant.urlGov'            : [field: 'sub.subscriber.urlGov', label: 'URL of governing institution', message: 'org.urlGov.label'],
                             /*
                             'participantContact.General contact person'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
                             'participantContact.Functional Contact Billing Adress'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
@@ -1037,6 +1064,9 @@ class ExportClickMeService {
                             'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
                             'participant.discoverySystemsFrontend' : [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
                             'participant.discoverySystemsIndex' : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label'],
+                            'participant.libraryNetwork'    : [field: 'sub.subscriber.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
+                            'participant.country'           : [field: 'sub.subscriber.country', label: 'Country', message: 'org.country.label'],
+                            'participant.region'            : [field: 'sub.subscriber.region', label: 'Region', message: 'org.region.label'],
                             'participant.uuid'              : [field: 'sub.subscriber.globalUID', label: 'Laser-UUID',  message: null],
                     ]
             ],
@@ -1152,6 +1182,9 @@ class ExportClickMeService {
                     fields: [
                             'participant.sortname'          : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
                             'participant.name'              : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
+                            'participant.url'               : [field: 'url', label: 'URL', message: 'default.url.label'],
+                            'participant.legalPatronName'   : [field: 'legalPatronName', label: 'Name of Legal Patron', message: 'org.legalPatronName.label'],
+                            'participant.urlGov'            : [field: 'urlGov', label: 'URL of governing institution', message: 'org.urlGov.label'],
                             'participant.funderType'        : [field: 'funderType', label: 'Funder Type', message: 'org.funderType.label'],
                             'participant.funderHskType'     : [field: 'funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
                             'participant.libraryType'       : [field: 'libraryType', label: 'Library Type', message: 'org.libraryType.label'],
@@ -1166,7 +1199,10 @@ class ExportClickMeService {
                             'participant.linkResolverBaseURL'    : [field: 'linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
                             'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
                             'participant.discoverySystemsFrontend' : [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
-                            'participant.discoverySystemsIndex' : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label']
+                            'participant.discoverySystemsIndex' : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label'],
+                            'participant.libraryNetwork'    : [field: 'libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
+                            'participant.country'           : [field: 'country', label: 'Country', message: 'org.country.label'],
+                            'participant.region'            : [field: 'region', label: 'Region', message: 'org.region.label']
                     ]
             ],
             participantAccessPoints : [
@@ -1220,6 +1256,9 @@ class ExportClickMeService {
                     fields: [
                             'participant.sortname'          : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
                             'participant.name'              : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
+                            'participant.url'               : [field: 'url', label: 'URL', message: 'default.url.label'],
+                            'participant.legalPatronName'   : [field: 'legalPatronName', label: 'Lagal Patron Name', message: 'org.legalPatronName.label'],
+                            'participant.urlGov'            : [field: 'urlGov', label: 'URL of governing institution', message: 'org.urlGov.label'],
                             'participant.funderType'        : [field: 'funderType', label: 'Funder Type', message: 'org.funderType.label'],
                             'participant.funderHskType'     : [field: 'funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
                             'participant.libraryType'       : [field: 'libraryType', label: 'Library Type', message: 'org.libraryType.label'],
@@ -1233,6 +1272,9 @@ class ExportClickMeService {
                             'participant.eInvoicePortal'    : [field: 'eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
                             'participant.linkResolverBaseURL'    : [field: 'linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
                             'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
+                            'participant.libraryNetwork'    : [field: 'libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
+                            'participant.country'           : [field: 'country', label: 'Country', message: 'org.country.label'],
+                            'participant.region'            : [field: 'region', label: 'Region', message: 'org.region.label']
                     ]
             ],
             participantIdentifiers : [
@@ -1389,6 +1431,9 @@ class ExportClickMeService {
                             'participant.funderType'        : [field: 'participant.funderType', label: 'Funder Type', message: 'org.funderType.label'],
                             'participant.funderHskType'     : [field: 'participant.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
                             'participant.libraryType'       : [field: 'participant.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
+                            'participant.url'               : [field: 'participant.url', label: 'URL', message: 'default.url.label'],
+                            'participant.legalPatronName'   : [field: 'participant.legalPatronName', label: 'Lagal Patron Name', message: 'org.legalPatronName.label'],
+                            'participant.urlGov'            : [field: 'participant.urlGov', label: 'URL of governing institution', message: 'org.urlGov.label'],
                             /*
                             'participantContact.General contact person'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
                             'participantContact.Functional Contact Billing Adress'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
@@ -1399,6 +1444,9 @@ class ExportClickMeService {
                             'participant.eInvoicePortal'    : [field: 'participant.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
                             'participant.linkResolverBaseURL'    : [field: 'participant.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
                             'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
+                            'participant.libraryNetwork'    : [field: 'participant.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
+                            'participant.country'           : [field: 'participant.country', label: 'Country', message: 'org.country.label'],
+                            'participant.region'            : [field: 'participant.region', label: 'Region', message: 'org.region.label'],
                             'participant.uuid'              : [field: 'participant.globalUID', label: 'Laser-UUID',  message: null],
                     ]
             ],
@@ -3723,8 +3771,8 @@ class ExportClickMeService {
                 sheetTitle = messageSource.getMessage('default.ProviderAgency.export.label', null, locale)
                 ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
                 Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [componentType: 'Org', max: 10000])
-                if (queryResult.warning) {
-                    List records = queryResult.warning.result
+                if (queryResult) {
+                    List records = queryResult.result
                     records.each { Map providerRecord ->
                         wekbRecords.put(providerRecord.uuid, providerRecord)
                     }

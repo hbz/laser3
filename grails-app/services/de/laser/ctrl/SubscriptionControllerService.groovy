@@ -178,10 +178,10 @@ class SubscriptionControllerService {
                 else if(suppliers.size() == 1) {
                     prf.setBenchmark('before loading platform')
                     Long supplier_id = suppliers[0]
-                    PlatformProperty platform = PlatformProperty.executeQuery('select pp from PlatformProperty pp join pp.type pd where pp.owner.id = :owner and pd.name = :name and pd.descr = :descr', [owner: supplier_id, name: 'NatStat Supplier ID', descr: PropertyDefinition.PLA_PROP])[0]
+                    //PlatformProperty platform = PlatformProperty.executeQuery('select pp from PlatformProperty pp join pp.type pd where pp.owner.id = :owner and pd.name = :name and pd.descr = :descr', [owner: supplier_id, name: 'NatStat Supplier ID', descr: PropertyDefinition.PLA_PROP])[0]
                     //        PlatformProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyStore.PLA_NATSTAT_SID)
                     prf.setBenchmark('before institutional usage identifier')
-                    result.natStatSupplierId = platform?.stringValue ?: null
+                    result.natStatSupplierId = Platform.get(suppliers[0]).natstatSupplierID
                     if (result.institutional_usage_identifier != OrgSetting.SETTING_NOT_FOUND) {
                         prf.setBenchmark('before usage data')
                         def fsresult = factService.generateUsageData(result.institution.id, supplier_id, result.subscription)
@@ -732,7 +732,7 @@ class SubscriptionControllerService {
      * @param refSub the {@link Subscription} whose entitlements should be queried; if none existent, the underlying package's are being queried
      * @return
      */
-    Map<String, Object> fetchTitles(Subscription refSub) {
+    Map<String, Object> fetchTitles(Subscription refSub, boolean allTitles = false) {
         Map<String, Object> result = [:]
         /*
         desired:
@@ -755,11 +755,21 @@ class SubscriptionControllerService {
             }
         }
          */
-        String query = "select * from " +
-                "(select json_agg(json_build_object(id_value, id_tipp_fk)) as print_identifier from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on id_tipp_fk = ie_tipp_fk where ie_subscription_fk = :refSub and ie_status_rv_fk = :current and idns_ns = any(:printIdentifiers)) as print," +
-                "(select json_agg(json_build_object(id_value, id_tipp_fk)) as online_identifier from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on id_tipp_fk = ie_tipp_fk where ie_subscription_fk = :refSub and ie_status_rv_fk = :current and idns_ns = any(:onlineIdentifiers)) as online," +
-                "(select json_agg(json_build_object(id_value, id_tipp_fk)) as doi from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on id_tipp_fk = ie_tipp_fk where ie_subscription_fk = :refSub and ie_status_rv_fk = :current and idns_ns = :doi) as doi," +
-                "(select json_agg(json_build_object(id_value, id_tipp_fk)) as proprietary_identifier from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on id_tipp_fk = ie_tipp_fk where ie_subscription_fk = :refSub and ie_status_rv_fk = :current and idns_ns = :proprietary) as proprietary"
+        String query
+        if(allTitles) {
+            query = "select * from " +
+                    "(select json_agg(json_build_object(id_value, id_tipp_fk)) as print_identifier from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_sub_fk = :refSub and tipp_status_rv_fk = :current and idns_ns = any(:printIdentifiers)) as print," +
+                    "(select json_agg(json_build_object(id_value, id_tipp_fk)) as online_identifier from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_sub_fk = :refSub and tipp_status_rv_fk = :current and idns_ns = any(:onlineIdentifiers)) as online," +
+                    "(select json_agg(json_build_object(id_value, id_tipp_fk)) as doi from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_sub_fk = :refSub and tipp_status_rv_fk = :current and idns_ns = :doi) as doi," +
+                    "(select json_agg(json_build_object(id_value, id_tipp_fk)) as proprietary_identifier from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_sub_fk = :refSub and tipp_status_rv_fk = :current and idns_ns = :proprietary) as proprietary"
+        }
+        else {
+            query = "select * from " +
+                    "(select json_agg(json_build_object(id_value, id_tipp_fk)) as print_identifier from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on id_tipp_fk = ie_tipp_fk where ie_subscription_fk = :refSub and ie_status_rv_fk = :current and idns_ns = any(:printIdentifiers)) as print," +
+                    "(select json_agg(json_build_object(id_value, id_tipp_fk)) as online_identifier from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on id_tipp_fk = ie_tipp_fk where ie_subscription_fk = :refSub and ie_status_rv_fk = :current and idns_ns = any(:onlineIdentifiers)) as online," +
+                    "(select json_agg(json_build_object(id_value, id_tipp_fk)) as doi from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on id_tipp_fk = ie_tipp_fk where ie_subscription_fk = :refSub and ie_status_rv_fk = :current and idns_ns = :doi) as doi," +
+                    "(select json_agg(json_build_object(id_value, id_tipp_fk)) as proprietary_identifier from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on id_tipp_fk = ie_tipp_fk where ie_subscription_fk = :refSub and ie_status_rv_fk = :current and idns_ns = :proprietary) as proprietary"
+        }
         Sql sql = GlobalService.obtainSqlConnection()
         Object[] printIdentifierNamespaces = [IdentifierNamespace.ISBN, IdentifierNamespace.ISSN], onlineIdentifierNamespaces = [IdentifierNamespace.EISBN, IdentifierNamespace.EISSN]
         Map<String, Object> queryParams = [refSub: refSub.id, current: RDStore.TIPP_STATUS_CURRENT.id, printIdentifiers: sql.getDataSource().getConnection().createArrayOf('varchar', printIdentifierNamespaces), onlineIdentifiers: sql.getDataSource().getConnection().createArrayOf('varchar', onlineIdentifierNamespaces), doi: IdentifierNamespace.DOI, proprietary: IdentifierNamespace.TITLE_ID] //current for now
@@ -930,8 +940,8 @@ class SubscriptionControllerService {
             Platform platform = pkg.nominalPlatform
             Map<String, Object> queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/sushiSources", [:])
             Map platformRecord
-            if (queryResult.warning) {
-                Map<String, Object> records = queryResult.warning
+            if (queryResult) {
+                Map<String, Object> records = queryResult
                 if(records.counter4ApiSources.containsKey(platform.gokbId)) {
                     platformRecord = records.counter4ApiSources.get(platform.gokbId)
                 }
@@ -2031,23 +2041,23 @@ class SubscriptionControllerService {
                 [result:result, status: STATUS_ERROR]
             }
             else {
-                if(queryCuratoryGroups.warning) {
-                    List recordsCuratoryGroups = queryCuratoryGroups.warning.result
+                if(queryCuratoryGroups) {
+                    List recordsCuratoryGroups = queryCuratoryGroups.result
                     result.curatoryGroups = recordsCuratoryGroups?.findAll {it.status == "Current"}
                 }
                 result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
 
                 Set records = []
                 Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/searchApi' , queryParams)
-                if (queryResult.containsKey("warning")) {
-                    if(queryResult.warning.containsKey("result")) {
-                        records.addAll(queryResult.warning.result)
-                        result.recordsCount = queryResult.warning.result_count_total
+                if (queryResult) {
+                    if(queryResult.containsKey("result")) {
+                        records.addAll(queryResult.result)
+                        result.recordsCount = queryResult.result_count_total
                         result.records = records
                         [result:result,status:STATUS_OK]
                     }
-                    else if(queryResult.warning.code == "error") {
-                        result.error = messageSource.getMessage('wekb.error.500', [queryResult.warning.message].toArray(), LocaleUtils.getCurrentLocale())
+                    else if(queryResult.code == "error") {
+                        result.error = messageSource.getMessage('wekb.error.500', [queryResult.message].toArray(), LocaleUtils.getCurrentLocale())
                         [result: result, status: STATUS_ERROR]
                     }
                 }

@@ -56,16 +56,15 @@ class IssueEntitlementController {
       result.editable = result.issueEntitlementInstance.subscription.isEditableBy(result.user)
 
       // Get usage statistics
-      def title_id = result.issueEntitlementInstance.tipp.id
-      def org = result.issueEntitlementInstance.subscription.getSubscriber() // TODO
-      def supplier =  result.issueEntitlementInstance.tipp.platform
-      def supplier_id = supplier?.id
+      Long title_id = result.issueEntitlementInstance.tipp.id
+      Org org = result.issueEntitlementInstance.subscription.getSubscriber() // TODO
+      Platform supplier =  result.issueEntitlementInstance.tipp.platform
+      Long supplier_id = supplier?.id
 
       if (title_id != null &&
            org != null &&
            supplier_id != null && ConfigMapper.getShowStatsInfo()) {
-          PlatformProperty platform = PlatformProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyStore.PLA_NATSTAT_SID)
-          result.natStatSupplierId = platform?.stringValue ?: null
+          result.natStatSupplierId = supplier.natstatSupplierID
           def fsresult = factService.generateUsageData(org.id, supplier_id, result.issueEntitlementInstance.subscription, title_id)
           def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(org.id, supplier_id, result.issueEntitlementInstance.subscription, title_id)
           result.institutional_usage_identifier = OrgSetting.get(org, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)

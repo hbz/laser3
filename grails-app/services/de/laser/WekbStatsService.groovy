@@ -204,15 +204,15 @@ class WekbStatsService {
         Map orgMap1 = gokbService.executeQuery(apiUrl, base + [componentType: 'Org'])
         Map orgMap2 = gokbService.executeQuery(apiUrl, base + [componentType: 'Vendor'])
         Map orgCombinedMap = [result: []]
-        orgCombinedMap.result.addAll(orgMap1.warning.result)
-        orgCombinedMap.result.addAll(orgMap2.warning.result)
+        orgCombinedMap.result.addAll(orgMap1.result)
+        orgCombinedMap.result.addAll(orgMap2.result)
         process(orgCombinedMap as Map, 'org')
 
         Map platformMap = gokbService.executeQuery(apiUrl, base + [componentType: 'Platform'])
-        process(platformMap.warning as Map, 'platform')
+        process(platformMap as Map, 'platform')
 
         Map packageMap = gokbService.executeQuery(apiUrl, base + [componentType: 'Package'])
-        process(packageMap.warning as Map, 'package')
+        process(packageMap as Map, 'package')
 
         result
     }

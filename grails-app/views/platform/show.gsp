@@ -1,4 +1,4 @@
-<%@ page import="de.laser.remote.ApiSource; de.laser.storage.RDConstants; de.laser.Platform; de.laser.RefdataValue; de.laser.utils.DateUtils" %>
+<%@ page import="de.laser.remote.ApiSource; de.laser.storage.RDConstants; de.laser.Platform; de.laser.RefdataValue; de.laser.utils.DateUtils;" %>
 <laser:htmlStart message="platform.details" />
 
     <g:set var="entityName" value="${message(code: 'platform.label')}"/>
@@ -38,6 +38,10 @@
                         <dl>
                             <dt>${message(code: 'default.status.label')}</dt>
                             <dd>${platformInstance.status.getI10n("value")}</dd>
+                        </dl>
+                        <dl>
+                            <dt>${message(code: 'platform.natstat.supplier')}</dt>
+                            <dd><ui:xEditable owner="${platformInstance}" field="natstatSupplierID"/></dd>
                         </dl>
                     </div>
                 </div>

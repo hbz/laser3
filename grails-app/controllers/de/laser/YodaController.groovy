@@ -687,8 +687,8 @@ class YodaController {
         if (allPlatforms.error && allPlatforms.error == 404) {
             result.wekbServerUnavailable = message(code: 'wekb.error.404')
         }
-        else if (allPlatforms.warning) {
-            Map records = allPlatforms.warning
+        else if (allPlatforms) {
+            Map records = allPlatforms
             List allRecords = []
             allRecords.addAll(records.counter4ApiSources.values())
             allRecords.addAll(records.counter5ApiSources.values())
