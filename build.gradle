@@ -1,6 +1,6 @@
 import java.text.SimpleDateFormat
 
-version '3.3.5'
+version '3.3.6'
 group 'de.laser'
 
 // ---[ build script ]---
@@ -11,8 +11,8 @@ buildscript {
         maven { url 'https://repo.grails.org/grails/core' }
     }
     dependencies {
-        classpath 'org.grails:grails-gradle-plugin:' + grailsGradlePluginVersion            // 2023
-        classpath 'org.grails.plugins:hibernate5:' + gormVersion                            // 2023
+        classpath 'org.grails:grails-gradle-plugin:' + grailsGradlePluginVersion            // 2024
+        classpath 'org.grails.plugins:hibernate5:' + gormVersion                            // 2024
         classpath 'org.grails.plugins:database-migration:4.2.1'                             // 2023
         classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:4.3.0'                     // 2023
         classpath 'com.gorylenko.gradle-git-properties:gradle-git-properties:2.4.1'         // 2022
@@ -90,7 +90,7 @@ dependencies {
     implementation 'org.grails.plugins:async'
     implementation 'org.grails.plugins:scaffolding'
     implementation 'org.grails.plugins:events'
-    implementation 'org.grails.plugins:hibernate5:' + gormVersion   // [fix]
+    implementation 'org.grails.plugins:hibernate5:' + gormVersion
     implementation 'org.grails.plugins:gsp'
 
     implementation 'io.micronaut:micronaut-http-client'
@@ -104,7 +104,7 @@ dependencies {
     implementation 'org.elasticsearch:elasticsearch:7.17.14'                                // 2023
     implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.14'  // 2023
 
-    implementation 'org.grails.plugins:spring-security-core:6.0.2'          // 2023
+    implementation 'org.grails.plugins:spring-security-core:6.1.1'          // 2024
     implementation 'org.grails.plugins:audit-logging:4.0.3'                 // 2021
     implementation 'org.grails.plugins:database-migration:4.2.1', {         // 2023
         exclude module: 'spring-boot-cli'
@@ -126,7 +126,7 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.14.0'                // 2023
     implementation 'org.apache.poi:poi-ooxml:3.17'                          // 2017 : [freeze] : 5.x available
     implementation 'org.codehaus.gpars:gpars:1.2.1'                         // 2014
-    implementation 'org.codehaus.janino:janino:3.1.11'                      // 2023 : logback
+    implementation 'org.codehaus.janino:janino:3.1.12'                      // 2024 : logback
     implementation 'org.liquibase:liquibase-core:4.19.0'                    // 2023 : + org.grails.plugins:database-migration // [freeze - not 4.19.1]
     implementation 'org.quartz-scheduler:quartz:2.3.2'                      // 2019
 
@@ -137,8 +137,34 @@ dependencies {
     runtimeOnly 'org.postgresql:postgresql:42.7.1'                          // 2024
 }
 
+java {
+    sourceCompatibility = JavaVersion.toVersion("11")
+}
+
 springBoot {
     mainClass = 'de.laser.Application'
+
+    buildInfo {
+        buildProperties {
+            doLast {
+                Properties properties = new Properties()
+
+                properties.setProperty('info.app.build.date', new SimpleDateFormat('dd.MM.yyyy HH:mm').format(new Date()))
+                properties.setProperty('info.app.build.host', InetAddress.localHost.hostName)
+                properties.setProperty('info.app.build.javaVersion', System.getProperty('java.version'))
+
+                try {
+                    File gitProperties = new File("${project.rootDir}/git.properties")
+                    gitProperties.withInputStream { properties.load(it) } // read props from file
+
+                    File grailsBuildInfo = new File("${project.buildDir}/resources/main/META-INF/grails.build.info")
+                    grailsBuildInfo.withInputStream { properties.load(it) } // read props from file
+
+                    grailsBuildInfo.withOutputStream { properties.store(it, null) } // write back to file
+                } catch (Exception e) {}
+            }
+        }
+    }
 }
 
 bootRun {
@@ -161,26 +187,6 @@ gitProperties {
     gitPropertiesDir = new File("${project.rootDir}/")
 }
 
-buildProperties {
-    inputs.property('info.app.build.date', new SimpleDateFormat('dd.MM.yyyy HH:mm').format(new Date()))
-    inputs.property('info.app.build.host', InetAddress.localHost.hostName)
-    inputs.property('info.app.build.javaVersion', System.getProperty('java.version'))
-
-    doLast {
-        File grailsBuildInfo = it.outputs.files.files.find { it.name == 'grails.build.info' } as File
-        if (! grailsBuildInfo) return
-
-        Properties properties = new Properties()
-        grailsBuildInfo.withInputStream { properties.load(it) } // read props from file
-        File BuildInfoFile = new File("${project.rootDir}/git.properties")
-        BuildInfoFile.withInputStream { properties.load(it) } // read props from file
-
-        properties.setProperty('build.time', new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(new Date()))
-
-        grailsBuildInfo.withOutputStream { properties.store(it, null) } // write back to file
-    }
-}
-
 // ---[ war ]---
 
 war {
@@ -194,10 +200,6 @@ war {
     )
     dependsOn compileGroovyPages
 }
-
-//java {
-//    sourceCompatibility = JavaVersion.toVersion("11")
-//}
 
 // ---[ plugin: asset pipeline ]---
 

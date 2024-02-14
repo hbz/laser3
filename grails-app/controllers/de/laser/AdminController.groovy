@@ -1,6 +1,9 @@
 package de.laser
 
+import de.laser.annotations.DebugInfo
 import de.laser.config.ConfigDefaults
+import de.laser.remote.ApiSource
+import de.laser.storage.RDConstants
 import de.laser.utils.AppUtils
 import de.laser.helper.DatabaseInfo
 import de.laser.utils.DateUtils
@@ -52,6 +55,7 @@ class AdminController  {
     RefdataService refdataService
     SessionFactory sessionFactory
     StatsSyncService statsSyncService
+    GokbService gokbService
 
     /**
      * Empty call, loads empty admin dashboard
@@ -1227,6 +1231,91 @@ SELECT * FROM (
         group by s order by s.name''', [orgRole: RDStore.OR_SUBSCRIBER, removed: RDStore.TIPP_STATUS_REMOVED])
 
         result.editable = true
+        result
+    }
+
+    /**
+     * Lists current packages in the we:kb ElasticSearch index.
+     * @return Data from we:kb ES
+     */
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
+    def packageLaserVsWekb() {
+
+        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        if (!apiSource) {
+            redirect controller: 'package', action: 'list'
+            return
+        }
+        Map<String, Object> result = [
+                flagContentGokb : true // gokbService.executeQuery
+        ]
+        result.user = contextService.getUser()
+        SwissKnife.setPaginationParams(result, params, result.user)
+
+        result.editUrl = apiSource.editUrl
+
+        Map<String, Object> queryParams = [componentType: "Package"]
+        if (params.q) {
+            result.filterSet = true
+            queryParams.name = params.q
+            queryParams.ids = ["Anbieter_Produkt_ID,${params.q}", "isil,${params.q}"]
+        }
+
+        if(params.status) {
+            result.filterSet = true
+        }
+        else if(!params.status) {
+            params.status = ['Current', 'Expected', 'Retired', 'Deleted']
+        }
+        queryParams.status = params.status
+
+        if (params.provider) {
+            result.filterSet = true
+            queryParams.provider = params.provider
+        }
+
+        if (params.curatoryGroup) {
+            result.filterSet = true
+            queryParams.curatoryGroupExact = params.curatoryGroup
+        }
+
+        if (params.ddc) {
+            result.filterSet = true
+            Set<String> selDDC = []
+            params.list("ddc").each { String key ->
+                selDDC << RefdataValue.get(key).value
+            }
+            queryParams.ddc = selDDC
+        }
+
+        //you rarely encounter it; ^ is the XOR operator in Java - if both options are set, we mean all curatory group types
+        if (params.containsKey('curatoryGroupProvider') ^ params.containsKey('curatoryGroupOther')) {
+            result.filterSet = true
+            if(params.curatoryGroupProvider)
+                queryParams.curatoryGroupType = "Provider"
+            else if(params.curatoryGroupOther)
+                queryParams.curatoryGroupType = "Other" //setting to this includes also missing ones, this is already implemented in we:kb
+        }
+
+        Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
+        if(!params.sort)
+            params.sort = 'name'
+        if(queryCuratoryGroups.code == 404) {
+            result.error = message(code:'wekb.error.'+queryCuratoryGroups.error) as String
+        }
+        else {
+            if (queryCuratoryGroups.warning) {
+                List recordsCuratoryGroups = queryCuratoryGroups.warning.result
+                result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
+            }
+            result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
+
+            result.putAll(gokbService.doQuery(result, params.clone(), queryParams))
+        }
+
         result
     }
 }
