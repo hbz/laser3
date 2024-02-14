@@ -361,7 +361,6 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
 
     /**
      * Triggers before the database update of the identifier; prefixes WIB IDs and ISILs if they start by a number
-     * @return
      */
     def beforeUpdate() {
         log.debug("beforeUpdate")

@@ -205,6 +205,10 @@ class OrgAccessPoint extends AbstractBase {
         accessPointIpRanges
     }
 
+    /**
+     * Collects all the mail domains for the given access point and returns sets of the IPv4 and IPv6 ranges
+     * @return a {@link Map} of structure {accessPointMailDomains: []} containing the defined mail domains of the access point
+     */
     Map<String, Object> getAccessPointMailDomains() {
         Map<String, Object> accessPoints = [:]
 

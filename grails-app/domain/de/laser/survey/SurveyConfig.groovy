@@ -338,7 +338,7 @@ class SurveyConfig {
     }
 
     /**
-     * Get the subscriptions which is target of this survey
+     * Gets the subscriptions which is target of this survey
      * @return list of subscription
      */
     List<Subscription> orgSubscriptions() {

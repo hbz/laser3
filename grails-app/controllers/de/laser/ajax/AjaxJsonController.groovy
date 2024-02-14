@@ -589,6 +589,9 @@ class AjaxJsonController {
         }
     }
 
+    /**
+     * Reads from cache the current complection percentage of the given process in order to update the progress bar
+     */
     @Secured(['ROLE_USER'])
     def checkProgress() {
         EhcacheWrapper userCache = contextService.getUserCache(params.cachePath)
@@ -835,6 +838,9 @@ class AjaxJsonController {
         }
     }
 
+    /**
+     * Call to retrieve all possible title series for the given context
+     */
     @Secured(['ROLE_USER'])
     def getAllPossibleSeries() {
         Map result = [:]
@@ -849,6 +855,9 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Call to retrieve all possible title subjects for the given context
+     */
     @Secured(['ROLE_USER'])
     def getAllPossibleSubjects() {
         Map result = [:]
@@ -863,6 +872,9 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Call to retrieve all possible Dewey decimal classifications (DDCs) for the given context
+     */
     @Secured(['ROLE_USER'])
     def getAllPossibleDdcs() {
         Map result = [:]
@@ -877,6 +889,9 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Call to retrieve all possible title languages for the given context
+     */
     @Secured(['ROLE_USER'])
     def getAllPossibleLanguages() {
         Map result = [:]
@@ -891,6 +906,9 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Call to retrieve all possible first online publishing years for the given context
+     */
     @Secured(['ROLE_USER'])
     def getAllPossibleDateFirstOnlineYears() {
         Map result = [:]
@@ -905,6 +923,9 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Call to retrieve all possible title medium types for the given context
+     */
     @Secured(['ROLE_USER'])
     def getAllPossibleMediumTypes() {
         Map result = [:]
@@ -919,6 +940,9 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Call to retrieve all possible title types for the given context
+     */
     @Secured(['ROLE_USER'])
     def getAllPossibleTitleTypes() {
         Map result = [:]
@@ -933,6 +957,9 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Call to retrieve all possible title publishers (not providers nor vendors!) for the given context
+     */
     @Secured(['ROLE_USER'])
     def getAllPossiblePublishers() {
         Map result = [:]
@@ -947,6 +974,9 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Call to retrieve all possible coverage depths for the given context
+     */
     @Secured(['ROLE_USER'])
     def getAllPossibleCoverageDepths() {
         Map result = [:]
@@ -961,6 +991,9 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Retrieves the selected organisation for the organisation merge table
+     */
     @Secured(['ROLE_USER'])
     def loadOrganisationForMerge() {
         Map<String, Object> mergeInfo = [:]

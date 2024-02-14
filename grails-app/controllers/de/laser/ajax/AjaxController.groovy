@@ -1024,6 +1024,9 @@ class AjaxController {
         }
     }
 
+    /**
+     * Toggles the state of a marker for a we:kb object, i.e. whether it is on the user's watchlist or not
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def toggleMarker() {
