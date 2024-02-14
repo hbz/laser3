@@ -752,18 +752,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
       name ? "${name}" : "Subscription ${id}"
   }
 
-  /**
-   * JSON definition of the subscription object
-   * see http://manbuildswebsite.com/2010/02/15/rendering-json-in-grails-part-3-customise-your-json-with-object-marshallers/
-   * Also http://jwicz.wordpress.com/2011/07/11/grails-custom-xml-marshaller/
-   */
-  static {
-    grails.converters.JSON.registerObjectMarshaller(User) {
-      // you can filter here the key-value pairs to output:
-      return it?.properties.findAll {k,v -> k != 'passwd'}
-    }
-  }
-
     /**
      * Returns the renewal date of this subscription
      * @return the manual renewal date
