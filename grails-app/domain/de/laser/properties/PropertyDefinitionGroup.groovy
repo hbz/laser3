@@ -187,7 +187,8 @@ class PropertyDefinitionGroup {
     }
 
     Class getOwnerClass(currentObject) {
-        switch(currentObject.class.name) {
+        def unproxy = GrailsHibernateUtil.unwrapIfProxy(currentObject)
+        switch(unproxy.class.name) {
             case License.class.name:
                 return LicenseProperty.class
             case Org.class.name:

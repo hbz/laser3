@@ -196,6 +196,13 @@ class DocstoreService {
         Doc.executeQuery("select dc from DocContext dc, Doc d where " + query, queryParams)
     }
 
+    /**
+     * Counts the notes attached to the given object and owned by the given institution.
+     * Notes are technically {@link Doc}s with the type {@link Doc#CONTENT_TYPE_STRING}
+     * @param objInstance the object, one of {@link Subscription}, {@link License}, {@link Org} or {@link SurveyConfig}, to which the notes are attached
+     * @param docOwner the institution {@link Org} whose notes should be counted
+     * @return the count of matching notes
+     */
     int getNotesCount(def objInstance, Org docOwner) {
 
         Map queryParams = [instance: objInstance, del: RDStore.DOC_CTX_STATUS_DELETED, docOwner: docOwner]
@@ -222,6 +229,12 @@ class DocstoreService {
         Doc.executeQuery("select count(*) from DocContext dc, Doc d where " + query, queryParams)[0]
     }
 
+    /**
+     * Counts the documents ({@link Doc}s with {@link Doc#contentType} other than note) attached to the given object and owned by the given institution
+     * @param objInstance the object, one of {@link Subscription}, {@link License}, {@link Org} or {@link SurveyConfig}, to which the documents are attached
+     * @param docOwner the institution {@link Org} whose documents should be counted
+     * @return the count of matching documents
+     */
     int getDocsCount(def objInstance, Org docOwner) {
 
         Map queryParams = [instance: objInstance, del: RDStore.DOC_CTX_STATUS_DELETED, docOwner: docOwner]

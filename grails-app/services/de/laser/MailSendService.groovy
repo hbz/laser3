@@ -82,6 +82,12 @@ class MailSendService {
         result
     }
 
+    /**
+     * Identical to {@link #mailSendConfigBySurvey(de.laser.survey.SurveyInfo, boolean)}, but expecting a list whose first element is being processed
+     * @param surveys the survey and its members to be notified
+     * @param reminderMail is the mail a reminder mail?
+     * @return a {@link Map} containing the details of the mail to be sent
+     */
     Map mailSendConfigBySurveys(List<SurveyInfo> surveys, boolean reminderMail) {
         Map<String, Object> result = [:]
 
@@ -271,6 +277,15 @@ class MailSendService {
         result
     }
 
+    /**
+     * Identical to {@link #mailSendProcessBySurvey(de.laser.survey.SurveyInfo, boolean, grails.web.servlet.mvc.GrailsParameterMap)} but expecting a list whose first element is being processed
+     * @param surveys the survey whose participants should be notified
+     * @param reminderMail is this a reminder mail?
+     * @param parameterMap the request parameter map, containing also the mail header and body which are being submitted via form
+     * @return a ${link Map} containing the details of and about the mail to be send
+     * @see #mailSendConfigBySurveys(java.util.List, boolean)
+     * @see SurveyInfo
+     */
     Map mailSendProcessBySurveys(List<SurveyInfo> surveys, boolean reminderMail, Org org, GrailsParameterMap parameterMap) {
         Map<String, Object> result = [:]
 

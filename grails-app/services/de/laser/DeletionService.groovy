@@ -938,7 +938,7 @@ class DeletionService {
 
     /**
      * Use this method with VERY MUCH CARE!
-     * Deletes a {@link Collection} of {@link TitleInstancePackagePlatform} objects WITH their depending objects ({@link TIPPCoverage} and {@link Identifier})
+     * Deletes a {@link Collection} of {@link TitleInstancePackagePlatform} objects WITH their depending objects
      * @param tipp the {@link Collection} of {@link TitleInstancePackagePlatform} to delete
      * @return the success flag
      */

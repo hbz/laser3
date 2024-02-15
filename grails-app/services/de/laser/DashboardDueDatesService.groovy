@@ -357,6 +357,14 @@ class DashboardDueDatesService {
         liste
     }
 
+    /**
+     * Counts the {@link DashboardDueDate}s the responsible user has set, matching the given hidden and done flag
+     * @param user the user whose due dates should be counted
+     * @param org the institution responsible for the due date
+     * @param isHidden are the due dates to be counted hidden?
+     * @param isDone are the due dates to be counted completed?
+     * @return the count of the due dates matching the flags
+     */
     int countDashboardDueDates(User user, Org org, isHidden, isDone){
         return DashboardDueDate.executeQuery(
                 """select count(*) from DashboardDueDate as das join das.dueDateObject ddo 

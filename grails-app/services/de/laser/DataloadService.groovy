@@ -901,8 +901,9 @@ class DataloadService {
 
     /**
      * Updates the given domain index with the given record generating closure.
-     * This bulk operation is being flushed at every 100 records
+     * This bulk operation is being flushed after a given amount of records
      * @param domainClass the domain class whose index should be updated
+     * @param bulkSize the count of records to be processed in a batch
      * @param recgen_closure the closure to be used for record generation
      * @see ESWrapperService#ES_Indices
      */
