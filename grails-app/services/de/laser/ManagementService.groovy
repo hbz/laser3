@@ -310,24 +310,6 @@ class ManagementService {
         }
     }
 
-    Map<String,Object> permanentTitles(def controller, GrailsParameterMap params) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
-        if(!result)
-            [result:null,status:STATUS_ERROR]
-        else {
-            if(controller instanceof SubscriptionController) {
-                result.filteredSubscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription)
-              }
-
-            if(controller instanceof MyInstitutionController) {
-                result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
-                result.filteredSubscriptions = result.subscriptions
-            }
-
-            [result:result,status:STATUS_OK]
-        }
-    }
-
     /**
      * Processes the given input and performs (un-)linking of the selected members to the given package(s).
      * If specified, titles will be generated or deleted as well
@@ -501,6 +483,30 @@ class ManagementService {
                 flash.message = result.message.join('<br>')
             }
                     */
+        }
+    }
+
+    /**
+     * Loads the {@link PermanentTitle} records for the given subscription or the entire institution
+     * @param controller the controller instance
+     * @param params the request parameter map
+     * @return a {@link Map} containing the view data
+     */
+    Map<String,Object> permanentTitles(def controller, GrailsParameterMap params) {
+        Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
+        if(!result)
+            [result:null,status:STATUS_ERROR]
+        else {
+            if(controller instanceof SubscriptionController) {
+                result.filteredSubscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription)
+            }
+
+            if(controller instanceof MyInstitutionController) {
+                result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
+                result.filteredSubscriptions = result.subscriptions
+            }
+
+            [result:result,status:STATUS_OK]
         }
     }
 

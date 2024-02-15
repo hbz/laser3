@@ -29,7 +29,22 @@ class FilterService {
     GenericOIDService genericOIDService
     PropertyService propertyService
 
+    /**
+     * Subclass for generic parameter containing:
+     * <ul>
+     *     <li>the query string</li>
+     *     <li>the parameter map</li>
+     *     <li>the flag marking whether a filter has been set</li>
+     * </ul>
+     */
     class Result {
+
+        /**
+         * Constructor call to initialise the generic container
+         * @param query the query string
+         * @param queryParams the named argument map
+         * @param isFilterSet the flag whether a filter has been applied to the results to be retrieved or not
+         */
         Result(String query = null, Map<String, Object>queryParams = [:], boolean isFilterSet = false) {
             this.query        = query
             this.queryParams  = queryParams
@@ -1590,11 +1605,13 @@ class FilterService {
     /**
      * Prepares the SQL query for title retrieval, assembling the columns necessary, departing from the given type of entitlement (= which table and set of columns to fetch)
      * currently existing config parameters:
-     * configMap.sub
-     * configMap.ieStatus
-     * configMap.tippIds
-     * as defined in filterService.getTippQuery(), filterServie.getIssueEntitlementQuery()
-     * as defined in myInstitutionController.currentTitles()
+     * <ul>
+     *  <li>configMap.sub</li>
+     *  <li>configMap.ieStatus</li>
+     *  <li>configMap.tippIds</li>
+     *  <li>as defined in {@link #getTippQuery(java.util.Map, java.util.List)}}, {@link #getIssueEntitlementQuery(grails.web.servlet.mvc.GrailsParameterMap, java.util.Collection)}</li>
+     *  <li>as defined in {@link MyInstitutionController#currentTitles()}</li>
+     * </ul>
      * @param configMap the filter parameters
      * @param entitlementInstance the type of object (i.e. table) to fetch
      * @param sql the SQL connection; needed for generation of arrays

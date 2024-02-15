@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.annotations.UnstableFeature
 import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigMapper
 import de.laser.exceptions.NativeSqlException
@@ -97,6 +98,14 @@ class GlobalService {
         new Sql(dataSource)
     }
 
+    /**
+     * Currently disused, method and procedure flow under development
+     * Notifies a user that a background process (e.g. linking of a large package to many subscriptions) has been terminated
+     * @param userId the user who triggered the process and is now going to be notified
+     * @param cacheKey the cache entry under which the finish message is going to be saved
+     * @param mess the message string being displayed
+     */
+    @UnstableFeature
     void notifyBackgroundProcessFinish(long userId, String cacheKey, String mess) {
         EhcacheWrapper cache = cacheService.getTTL1800Cache("finish_${userId}")
         cache.put(cacheKey, mess)
