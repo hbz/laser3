@@ -143,28 +143,6 @@ java {
 
 springBoot {
     mainClass = 'de.laser.Application'
-
-    buildInfo {
-        buildProperties {
-            doLast {
-                Properties properties = new Properties()
-
-                properties.setProperty('info.app.build.date', new SimpleDateFormat('dd.MM.yyyy HH:mm').format(new Date()))
-                properties.setProperty('info.app.build.host', InetAddress.localHost.hostName)
-                properties.setProperty('info.app.build.javaVersion', System.getProperty('java.version'))
-
-                try {
-                    File gitProperties = new File("${project.rootDir}/git.properties")
-                    gitProperties.withInputStream { properties.load(it) } // read props from file
-
-                    File grailsBuildInfo = new File("${project.buildDir}/resources/main/META-INF/grails.build.info")
-                    grailsBuildInfo.withInputStream { properties.load(it) } // read props from file
-
-                    grailsBuildInfo.withOutputStream { properties.store(it, null) } // write back to file
-                } catch (Exception e) {}
-            }
-        }
-    }
 }
 
 bootRun {
@@ -189,6 +167,29 @@ gitProperties {
 
 // ---[ war ]---
 
+tasks.register('war.updateBuildInfo', Task) {
+    group 'laser'
+
+    doFirst {
+        Properties properties = new Properties()
+        properties.setProperty('info.app.build.date', new SimpleDateFormat('dd.MM.yyyy HH:mm').format(new Date()))
+        properties.setProperty('info.app.build.host', InetAddress.localHost.hostName)
+        properties.setProperty('info.app.build.javaVersion', System.getProperty('java.version'))
+
+        try {
+            File gitProperties = new File("${project.rootDir}/git.properties")
+            gitProperties.withInputStream { properties.load(it) } // read props from file
+
+            File grailsBuildInfo = new File("${project.buildDir}/resources/main/META-INF/grails.build.info")
+            grailsBuildInfo.withInputStream { properties.load(it) } // read props from file
+
+            grailsBuildInfo.withOutputStream { properties.store(it, null) } // write back to file
+        }
+        catch (Exception e) {
+        }
+    }
+}
+
 war {
     enabled = true
     archiveBaseName = 'laser3'
@@ -199,6 +200,7 @@ war {
             '**/groovy-groovydoc-*.jar'
     )
     dependsOn compileGroovyPages
+    dependsOn 'war.updateBuildInfo'
 }
 
 // ---[ plugin: asset pipeline ]---
