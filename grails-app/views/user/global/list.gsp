@@ -1,6 +1,8 @@
 <%@ page import="de.laser.*; de.laser.auth.*" %>
 <laser:htmlStart message="menu.institutions.users" serviceInjection="true"/>
-
+    <ui:debugInfo>
+        <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+    </ui:debugInfo>
         <g:if test="${controllerName == 'myInstitution'}">
         %{-- myInstitution has no breadcrumb yet --}%
             <laser:render template="/organisation/breadcrumb" model="${[ inContextOrg: inContextOrg, orgInstance: orgInstance, institutionalView: institutionalView, params:params ]}"/>

@@ -17,15 +17,15 @@ import java.util.regex.Pattern
 /**
  * A title instance. Title instances in LAS:eR and we:kb are mandatorily linked to a {@link Package} and a {@link Platform}. Titles may be (list is not exhaustive):
  * <ul>
- *     <li>(E)Books</li>
- *     <li>Databases</li>
- *     <li>Journals</li>
- *     <li>Films</li>
+ *     <li>(E)books</li>
+ *     <li>databases</li>
+ *     <li>journals</li>
+ *     <li>films</li>
  *     <li>...</li>
  * </ul>
  * Title instance records may have an access start / access end date; those are set by the provider and define from when to when this title is available in the given package context.
- * The package context defines the subscribability of the title; usually, titles are subscribed within a package and those packages are then linked to a subscription.
- * This class represents the global entitlement level, i.e. the title which counts for the package provided by the provider and is independent from negotiatory differences which may vary
+ * The package context defines if and how a title may be subscribed; usually, titles are subscribed within a package and those packages are then linked to a subscription.
+ * This class represents the global entitlement level, i.e. the title which counts for the package provided by the provider and is independent from negotiation differences which may vary
  * from subscription to subscription. See {@link IssueEntitlement} for the local holding level. Local means for the institution subscribing the title within a certain subscription context.
  * This class is moreover a mirror of the we:kb TitleInstancePackagePlatform implementation <a href="https://github.com/hbz/wekb/blob/wekb-dev/server/gokbg3/grails-app/domain/org/gokb/cred/TitleInstancePackagePlatform.groovy">(see TitleInstancePackagePlatform in we:kb)</a>
  * and generally a reflection of a KBART record (see <a href="https://groups.niso.org/apps/group_public/download.php/16900/RP-9-2014_KBART.pdf">KBART specification</a>)

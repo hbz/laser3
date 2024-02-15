@@ -51,9 +51,9 @@ class UserService {
      * @param params the request parameter map
      * @return a list of users, either globally or belonging to a given institution
      */
-    Set<User> getUserSet(Map params) {
+    Map<String, Object> getUserMap(Map params) {
         // only context org depending
-        List baseQuery = ['select distinct u from User u']
+        String baseQuery = 'select distinct u from User u'
         List whereQuery = []
         Map queryParams = [:]
 
@@ -73,8 +73,9 @@ class UserService {
             whereQuery.add('(genfunc_filter_matcher(u.username, :name) = true or genfunc_filter_matcher(u.display, :name) = true)')
             queryParams.put('name', params.name)
         }
-        String query = baseQuery.join(', ') + (whereQuery ? ' where ' + whereQuery.join(' and ') : '') + ' order by u.username'
-        User.executeQuery(query, queryParams /*,params */)
+        String query = baseQuery + (whereQuery ? ' where ' + whereQuery.join(' and ') : '') + ' order by u.username',
+        countQuery = 'select count(distinct(u)) from User u' + (whereQuery ? ' where ' + whereQuery.join(' and ') : '')
+        [count: User.executeQuery(countQuery, queryParams)[0], data: User.executeQuery(query, queryParams, [max: params.max, offset: params.offset])]
     }
 
     /**
