@@ -3,10 +3,8 @@ package de.laser
 
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.survey.SurveyConfig
-import de.laser.survey.SurveyInfo
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
-import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.properties.*
 import de.laser.survey.SurveyResult
@@ -24,7 +22,6 @@ import java.text.SimpleDateFormat
 @Transactional
 class PropertyService {
 
-    AccessService accessService
     ContextService contextService
     GenericOIDService genericOIDService
     MessageSource messageSource

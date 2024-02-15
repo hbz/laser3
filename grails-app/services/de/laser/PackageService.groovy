@@ -137,6 +137,14 @@ class PackageService {
         }
     }
 
+    /**
+     * Substitution call for {@link #unlinkFromSubscription(de.laser.Package, java.util.List, de.laser.Org, java.lang.Object)} with a single subscription
+     * @param pkg the {@link de.laser.Package} to be unlinked
+     * @param subscription the {@link Subscription} from which the package should be detached
+     * @param contextOrg the {@link de.laser.Org} whose cost items should be verified
+     * @param deletePackage should the package be unlinked, too?
+     * @return
+     */
     boolean unlinkFromSubscription(de.laser.Package pkg, Subscription subscription, Org contextOrg, deletePackage) {
         unlinkFromSubscription(pkg, [subscription.id], contextOrg, deletePackage)
     }
@@ -144,6 +152,7 @@ class PackageService {
     /**
      * Unlinks a subscription from the given package and removes resp. marks as delete every dependent object from that link such as cost items, pending change configurations etc.
      * The unlinking can be done iff no cost items are linked to the (subscription) package
+     * @param pkg the {@link de.laser.Package} to be unlinked
      * @param subscription the {@link Subscription} from which the package should be detached
      * @param contextOrg the {@link de.laser.Org} whose cost items should be verified
      * @param deletePackage should the package be unlinked, too?
