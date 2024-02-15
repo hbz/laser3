@@ -11,6 +11,17 @@ class CustomUserDetails extends GrailsUser {
 
     User user
 
+    /**
+     * Constructor class for the user container
+     * @param username name of user
+     * @param password the user's password
+     * @param enabled is the account enabled?
+     * @param accountNonExpired is the account not expired (i.e. active)?
+     * @param credentialsNonExpired are the account credentials not expired (i.e. valid)?
+     * @param accountNonLocked is the account not locked?
+     * @param authorities the permissions granted to the account
+     * @param id the user database ID
+     */
     CustomUserDetails (
             String username,
             String password,

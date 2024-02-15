@@ -29,7 +29,7 @@ class CustomAuthSuccessHandler extends CustomAjaxAwareAuthenticationSuccessHandl
      * See the super class(es) for the documentation of the arguments
      * @param request the request which caused the successful authentication
      * @param response the response
-     * @param authentication the <tt>Authentication</tt> object which was created during
+     * @param authentication the {@link Authentication} object which was created during
      * the authentication process.
      * @throws ServletException
      * @throws IOException
