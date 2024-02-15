@@ -51,7 +51,7 @@ class UserService {
      * @param params the request parameter map
      * @return a list of users, either globally or belonging to a given institution
      */
-    Map<String, Object> getUserSet(Map params) {
+    Map<String, Object> getUserMap(Map params) {
         // only context org depending
         String baseQuery = 'select distinct u from User u'
         List whereQuery = []

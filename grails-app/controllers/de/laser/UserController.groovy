@@ -84,7 +84,7 @@ class UserController {
         Map filterParams = params.clone()
         filterParams.max = result.max
         filterParams.offset = result.offset
-        Map userData = userService.getUserSet(filterParams)
+        Map userData = userService.getUserMap(filterParams)
         prf.setBenchmark('after users')
         result.total = userData.count
         result.users = userData.data

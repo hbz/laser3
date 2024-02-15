@@ -2519,9 +2519,9 @@ class MyInstitutionController  {
         filterParams.max = result.max
         filterParams.offset = result.offset
         filterParams.org = genericOIDService.getOID(result.institution)
-        Map users = userService.getUserSet(filterParams)
-        result.total = users.count
-        result.users = users.data
+        Map userData = userService.getUserMap(filterParams)
+        result.total = userData.count
+        result.users = userData.data
         result.titleMessage = "${result.institution}"
         result.inContextOrg = true
         result.orgInstance = result.institution
