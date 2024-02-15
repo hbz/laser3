@@ -229,6 +229,13 @@ class TaskService {
         tasks
     }
 
+    /**
+     * Gets the tasks for the given object for which the given user or institution is responsible
+     * @param user the user responsible for those tasks which should be retrieved
+     * @param org the institution responsible for those tasks which should be retrieved
+     * @param obj the object to which the tasks are related
+     * @return a list of tasks
+     */
     List<Task> getTasksByResponsiblesAndObject(User user, Org org, Object obj) {
         List<Task> tasks = []
         String tableName = ''

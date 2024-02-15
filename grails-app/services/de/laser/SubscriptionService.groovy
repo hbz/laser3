@@ -60,7 +60,7 @@ class SubscriptionService {
 
 
     /**
-     * ex MyInstitutionController.currentSubscriptions()
+     * ex {@link MyInstitutionController#currentSubscriptions()}
      * Gets the current subscriptions for the given institution
      * @param params the request parameter map
      * @param contextUser the user whose settings should be considered

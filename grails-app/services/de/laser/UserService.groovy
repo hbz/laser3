@@ -5,7 +5,6 @@ import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserRole
 import de.laser.storage.RDStore
-import de.laser.utils.DatabaseUtils
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -129,6 +128,7 @@ class UserService {
     }
 
     /**
+     * Links the given user to the given institution with the given role
      * @param user the user to link
      * @param formalOrgId the institution ID to which the user should be linked
      * @param formalRoleId the ID of the role to attribute to the given user
