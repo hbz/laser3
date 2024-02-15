@@ -144,6 +144,17 @@ class Task {
         displayArgs
     }
 
+    /**
+     * Gets the name of the object to which this task is related
+     * @return one of:
+     * <ul>
+     *     <li>{@link License#reference}</li>
+     *     <li>{@link Org#name}</li>
+     *     <li>{@link Package#name}</li>
+     *     <li>{@link Subscription#name}</li>
+     *     <li>{@link de.laser.survey.SurveyInfo#name}</li>
+     * </ul>
+     */
     String getObjectName() {
         String name = ''
         if (license) {

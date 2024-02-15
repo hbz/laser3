@@ -2515,10 +2515,13 @@ class MyInstitutionController  {
     def users() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        Map filterParams = params
+        Map filterParams = params.clone()
+        filterParams.max = result.max
+        filterParams.offset = result.offset
         filterParams.org = genericOIDService.getOID(result.institution)
-
-        result.users = userService.getUserSet(filterParams)
+        Map userData = userService.getUserMap(filterParams)
+        result.total = userData.count
+        result.users = userData.data
         result.titleMessage = "${result.institution}"
         result.inContextOrg = true
         result.orgInstance = result.institution
@@ -2539,7 +2542,6 @@ class MyInstitutionController  {
                 showAllAffiliations: false,
                 modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA')
         ]
-        result.total = result.users.size()
 
         render view: '/user/global/list', model: result
     }

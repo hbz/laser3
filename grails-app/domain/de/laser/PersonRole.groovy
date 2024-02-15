@@ -163,7 +163,7 @@ class PersonRole implements Comparable<PersonRole>{
     }
 
     /**
-     * Comprator method between two person role links; compared are the function types; if they are equal, the person last, then first names are being compared with each other
+     * Comparator method between two person role links; compared are the function types; if they are equal, the person last, then first names are being compared with each other
      * @param that the object to compare with
      * @return the comparison result (-1, 0 or 1)
      */
