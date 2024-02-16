@@ -104,6 +104,7 @@
 </style>
 
             <h2 class="ui header"><span style="color:#fff;background-color:red;padding:0.5em 1em;margin:3em 0">DEMO</span></h2>
+            <g:set var="areStatsAvailableCache" value="[:]" />
 
             <div id="stats_subscription" class="stats-content">
                 <div class="chartWrapper" id="cw-subscription"></div>
@@ -158,7 +159,9 @@
                                         </td>
                                         <g:if test="${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT}">
                                             <td>
-                                                <g:if test="${subscriptionService.areStatsAvailable(sub)}">
+                                                <% if (! areStatsAvailableCache.containsKey(sub.id.toString())) { areStatsAvailableCache.putAt(sub.id.toString(), subscriptionService.areStatsAvailable(sub)) } %>
+
+                                                <g:if test="${areStatsAvailableCache.get(sub.id.toString())}">
                                                     <g:link controller="subscription" action="stats" id="${sub.id}" target="_blank">${RDStore.YN_YES.getI10n('value')}</g:link>
                                                 </g:if>
                                                 <g:else>
@@ -289,7 +292,9 @@
                                         </td>
                                         <td>
                                             <g:if test="${sub.status == RDStore.SUBSCRIPTION_CURRENT}">
-                                                <g:if test="${subscriptionService.areStatsAvailable(sub)}">
+                                                <% if (! areStatsAvailableCache.containsKey(sub.id.toString())) { areStatsAvailableCache.putAt(sub.id.toString(), subscriptionService.areStatsAvailable(sub)) } %>
+
+                                                <g:if test="${areStatsAvailableCache.get(sub.id.toString())}">
                                                     <g:link controller="subscription" action="stats" id="${sub.id}" target="_blank">${RDStore.YN_YES.getI10n('value')}</g:link>
                                                 </g:if>
                                                 <g:else>
