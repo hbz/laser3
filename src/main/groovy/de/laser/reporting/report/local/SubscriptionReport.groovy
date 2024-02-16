@@ -19,6 +19,9 @@ import org.springframework.context.MessageSource
 
 import java.text.SimpleDateFormat
 
+/**
+ * Report container for the data of a {@link Subscription}
+ */
 class SubscriptionReport {
 
     static String KEY = 'subscription'
@@ -28,6 +31,12 @@ class SubscriptionReport {
 
     static int NUMBER_OF_TIMELINE_ELEMENTS = 4
 
+    /**
+     * Gets the configuration for the current subscription, based on the calculated type
+     * @param sub the {@link Subscription} to be exported
+     * @return the {@link SubscriptionXCfg} holding for the current subscription
+     * @see de.laser.interfaces.CalculatedType
+     */
     static Map<String, Object> getCurrentConfig(Subscription sub) {
 
         String calcType = sub._getCalculatedType()
@@ -48,14 +57,29 @@ class SubscriptionReport {
         }
     }
 
+    /**
+     * Returns the default query configuration for the given subscription
+     * @param sub the {@link Subscription} to be exported
+     * @return the default query configuration
+     */
     static Map<String, Object> getCurrentQueryConfig(Subscription sub) {
         getCurrentConfig( sub ).base.query.default
     }
 
+    /**
+     * Returns the current timeline configuration for the given subscription
+     * @param sub the {@link Subscription} to be exported
+     * @return the current timeline
+     */
     static Map<String, Object> getCurrentTimelineConfig(Subscription sub) {
         getCurrentConfig( sub ).base.timeline
     }
 
+    /**
+     * Returns the timeline labels for the given request map
+     * @param params the request parameter map
+     * @return a list of labels matching the query
+     */
     static List<String> getTimelineQueryLabels(GrailsParameterMap params) {
         List<String> meta = []
 
@@ -72,6 +96,12 @@ class SubscriptionReport {
         }
         meta
     }
+
+    /**
+     * Returns the annual timeline labels for the given request map
+     * @param params the request parameter map
+     * @return a list of labels matching the query
+     */
     static List<String> getTimelineQueryLabelsForAnnual(GrailsParameterMap params) {
         List<String> meta = []
 
@@ -84,6 +114,11 @@ class SubscriptionReport {
         meta
     }
 
+    /**
+     * Performs the query: retrieves the data requested in the parameter map
+     * @param params the request parameter map
+     * @return a {@link Map} containing the retrieved data
+     */
     static Map<String, Object> query(GrailsParameterMap params) {
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
