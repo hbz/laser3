@@ -591,21 +591,13 @@
         </g:if>
 
         <g:if test="${subscription && subscription.packages}">
-            <%
-                Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: subscription])
-                if(!subscribedPlatforms) {
-                    subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription or ie.subscription = (select s.instanceOf from Subscription s where s = :subscription)", [subscription: subscription])
-                }
-                boolean areStatsAvailable = subscriptionService.areStatsAvailable(subscribedPlatforms)
-            %>
-            <g:if test="${subscribedPlatforms && areStatsAvailable}">
+            <g:if test="${subscriptionService.areStatsAvailable(subscription)}">
                 <div class="ui card">
                     <div class="content">
                         <div id="statsInfos" class="ui accordion la-accordion-showMore js-subscription-info-accordion">
                             <div class="item">
                                 <div class="title">
-                                    <div
-                                            class="ui button icon blue la-modern-button la-delay right floated ">
+                                    <div class="ui button icon blue la-modern-button la-delay right floated ">
                                         <i class="ui angle double down icon"></i>
                                     </div>
 
