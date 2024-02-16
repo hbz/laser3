@@ -1582,6 +1582,20 @@ join sub.orgRelations or_sub where
                 [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE])
     }
 
+    boolean areStatsAvailable(Subscription subscription) {
+        Set<Platform> subscribedPlatforms = Platform.executeQuery(
+                "select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription",
+                [subscription: subscription]
+        )
+        if (!subscribedPlatforms) {
+            subscribedPlatforms = Platform.executeQuery(
+                    "select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription or ie.subscription = (select s.instanceOf from Subscription s where s = :subscription)",
+                    [subscription: subscription]
+            )
+        }
+        areStatsAvailable(subscribedPlatforms)
+    }
+
     /**
      * Called from views
      * Checks if statistics are provided by at least one of the given platforms

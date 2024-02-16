@@ -133,9 +133,15 @@
                         <table class="ui table very compact">
                             <thead>
                                 <tr>
-                                    <th class="nine wide">${message(code:'subscription.label')}</th>
+                                    <g:if test="${subStatusRdv != RDStore.SUBSCRIPTION_CURRENT}">
+                                        <th class="ten wide">${message(code:'subscription.label')}</th>
+                                    </g:if>
+                                    <g:else>
+                                        <th class="nine wide">${message(code:'subscription.label')}</th>
+                                        <th class="one wide"><ui:usageIcon /></th>
+                                    </g:else>
+                                    <th class="one wide"><ui:multiYearIcon isConsortial="true" /></th>
                                     <th class="one wide">${message(code:'subscription.referenceYear.label.shy')}</th>
-                                    <th class="two wide">${message(code:'subscription.isMultiYear.label.shy')}</th>
                                     <th class="two wide">${message(code:'subscription.startDate.label')}</th>
                                     <th class="two wide">${message(code:'subscription.endDate.label')}</th>
                                 </tr>
@@ -150,8 +156,18 @@
                                                 <g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link>
                                             </div>
                                         </td>
-                                        <td> ${sub.referenceYear} </td>
+                                        <g:if test="${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT}">
+                                            <td>
+                                                <g:if test="${subscriptionService.areStatsAvailable(sub)}">
+                                                    <g:link controller="subscription" action="stats" id="${sub.id}" target="_blank">${RDStore.YN_YES.getI10n('value')}</g:link>
+                                                </g:if>
+                                                <g:else>
+                                                    ${RDStore.YN_NO.getI10n('value')}
+                                                </g:else>
+                                            </td>
+                                        </g:if>
                                         <td> ${sub.isMultiYear ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")} </td>
+                                        <td> ${sub.referenceYear} </td>
                                         <td> <g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/> </td>
                                         <td> <g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/> </td>
                                     </tr>
@@ -249,9 +265,11 @@
                         <table class="ui table very compact">
                             <thead>
                             <tr>
-                                <th class="eight wide">${message(code:'default.provider.label')}</th>
-                                <th class="two wide">${message(code:'subscription.referenceYear.label.shy')}</th>
-                                <th class="two wide">${message(code:'subscription.isMultiYear.label.shy')}</th>
+                                <th class="seven wide">${message(code:'subscription.label')}</th>
+                                <th class="two wide">${message(code:'default.status.label')}</th>
+                                <th class="one wide"><ui:usageIcon /></th>
+                                <th class="one wide"><ui:multiYearIcon isConsortial="true" /></th>
+                                <th class="one wide">${message(code:'subscription.referenceYear.label.shy')}</th>
                                 <th class="two wide">${message(code:'subscription.startDate.label')}</th>
                                 <th class="two wide">${message(code:'subscription.endDate.label')}</th>
                             </tr>
@@ -266,8 +284,21 @@
                                                 <g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link>
                                             </div>
                                         </td>
-                                        <td> ${sub.referenceYear} </td>
+                                        <td>
+                                            ${sub.status.getI10n('value')}
+                                        </td>
+                                        <td>
+                                            <g:if test="${sub.status == RDStore.SUBSCRIPTION_CURRENT}">
+                                                <g:if test="${subscriptionService.areStatsAvailable(sub)}">
+                                                    <g:link controller="subscription" action="stats" id="${sub.id}" target="_blank">${RDStore.YN_YES.getI10n('value')}</g:link>
+                                                </g:if>
+                                                <g:else>
+                                                    ${RDStore.YN_NO.getI10n('value')}
+                                                </g:else>
+                                            </g:if>
+                                        </td>
                                         <td> ${sub.isMultiYear ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")} </td>
+                                        <td> ${sub.referenceYear} </td>
                                         <td> <g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/> </td>
                                         <td> <g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/> </td>
                                     </tr>
@@ -314,7 +345,8 @@
                         <table class="ui table very compact">
                             <thead>
                             <tr>
-                                <th class="seven wide">${message(code:'survey.label')}</th>
+                                <th class="six wide">${message(code:'survey.label')}</th>
+                                <th class="one wide"></th>
                                 <th class="one wide"></th>
                                 <th class="one wide"></th>
                                 <th class="one wide"></th>
@@ -325,9 +357,10 @@
                                 <th class="two wide">Status</th>
                             </tr>
                             <tr data-ctype="survey-subsciption" class="hidden">
-                                <th class="seven wide">${message(code:'subscription.label')}</th>
+                                <th class="six wide">${message(code:'subscription.label')}</th>
+                                <th class="one wide">${message(code:'default.status.label')}</th>
+                                <th class="one wide"><ui:multiYearIcon isConsortial="true" /></th>
                                 <th class="one wide">${message(code:'subscription.referenceYear.label.shy')}</th>
-                                <th class="one wide">${message(code:'subscription.isMultiYear.label.shy')}</th>
                                 <th class="one wide">${message(code:'subscription.startDate.label')}</th>
                                 <th class="one wide">${message(code:'subscription.endDate.label')}</th>
                                 <th class="one wide"></th>
@@ -349,6 +382,7 @@
                                             <g:link controller="survey" action="show" id="${surveyInfo.id}" target="_blank">${surveyInfo.name}</g:link>
                                         </div>
                                     </td>
+                                    <td></td>
                                     <td></td>
                                     <td></td>
                                     <td></td>
@@ -378,8 +412,11 @@
                                                 <g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link>
                                             </div>
                                         </td>
-                                        <td> ${sub.referenceYear} </td>
+                                        <td>
+                                            ${sub.status.getI10n('value')}
+                                        </td>
                                         <td> ${sub.isMultiYear ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")} </td>
+                                        <td> ${sub.referenceYear} </td>
                                         <td> <g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/> </td>
                                         <td> <g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/> </td>
                                         <td></td>
