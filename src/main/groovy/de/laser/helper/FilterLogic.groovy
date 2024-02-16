@@ -5,10 +5,20 @@ import de.laser.storage.RDStore
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.util.logging.Slf4j
 
+/**
+ * This helper class contains generic methods for filter logic and resolving
+ */
 @UnstableFeature
 @Slf4j
 class FilterLogic {
 
+    /**
+     * Resolves which status should be considered for the requested title tab menu
+     * @param params the request parameter map
+     * @param entites the type of title – one of IEs or Tipps
+     * @param ignorePlannedIEs should planned issue entitlements be ignored?
+     * @return a {@link Map} containing the tab and status to be rendered
+     */
     static Map<String, Object> resolveTabAndStatusForTitleTabsMenu(GrailsParameterMap params, String entites, boolean ignorePlannedIEs = false) {
         log.debug('resolveTabAndStatusForTitleTabsMenu( .., ' + entites + ', ' + ignorePlannedIEs + ' )')
 
