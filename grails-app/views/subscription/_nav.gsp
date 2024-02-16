@@ -34,14 +34,7 @@
         </g:if>
 
         <g:if test="${subscription.packages}">
-            <%
-                Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: subscription])
-                if(!subscribedPlatforms) {
-                    subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription or ie.subscription = (select s.instanceOf from Subscription s where s = :subscription)", [subscription: subscription])
-                }
-                boolean statsAvailable = subscriptionService.areStatsAvailable(subscribedPlatforms)
-            %>
-            <g:if test="${statsAvailable}">
+            <g:if test="${subscriptionService.areStatsAvailable(subscription)}">
                 <ui:subNavItem controller="subscription" action="stats" params="${[id:params.id]}" message="default.stats.label" />
             </g:if>
             <g:else>

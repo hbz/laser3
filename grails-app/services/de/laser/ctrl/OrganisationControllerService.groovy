@@ -241,9 +241,15 @@ class OrganisationControllerService {
 //        println '\nlicenseMap: ' + result.licenseMap
 //        println '\nlicenseTimelineMap: ' + result.licenseTimelineMap
 
-        // providers
+        // provider
 
-        String providerQuery = '''select sub.status.id, por.org.id, sub.id, sub.startDate, sub.endDate, sub.referenceYear, sub.name from OrgRole por
+//        String providerQuery = '''select sub.status.id, sub.id, sub.startDate, sub.endDate, sub.referenceYear, sub.name, por.org.id from OrgRole por
+//                                    join por.sub sub
+//                                    where sub.id in (:subIdList)
+//                                    and por.roleType in (:porTypes)
+//                                    order by por.org.sortname, por.org.name, sub.name, sub.startDate, sub.endDate asc '''
+//
+        String providerQuery = '''select por.org.id, sub.id, sub.startDate, sub.endDate, sub.referenceYear, sub.name, sub.status.id from OrgRole por
                                     join por.sub sub
                                     where sub.id in (:subIdList)
                                     and por.roleType in (:porTypes)
@@ -258,12 +264,16 @@ class OrganisationControllerService {
 //        println providerParams
 
         List<List> providerStruct = Org.executeQuery(providerQuery, providerParams) /*.unique()*/
-        Map providerMap = listToMap(providerStruct)
+//        Map providerMap = listToMap(providerStruct)
+        Map providerMap = providerStruct.groupBy{ it[0] }.sort{ it -> Org.get(it.key).sortname ?: Org.get(it.key).name }
 
 //        println '\nproviderStruct: ' + providerStruct
 //        println '\nproviderMap: ' + providerMap
 
-        result.providerMap = providerMap.collectEntries{ k,v -> [(k):(v.collect{ [ it[1], it[2] ] })] }
+        result.providerMap = providerMap.collectEntries{ k,v -> [(k):(v.collect{ it[1] })] }
+        result.providerTimelineMap = getTimelineMap(providerStruct)
+
+//        println '\nproviderTimelineMap: ' + result.providerTimelineMap
 
 //        result.providerMap.each{subStatus, list ->
 //            list.each{struct ->
@@ -290,6 +300,7 @@ class OrganisationControllerService {
 //            }
 //        }
 //        println '\nproviderMap: ' + result.providerMap
+
         // surveys
 
 //        List<SurveyInfo> surveyStruct =  SurveyInfo.executeQuery(
@@ -324,6 +335,7 @@ class OrganisationControllerService {
         result.surveyMap.each{it -> it.value.each{e -> surveyStruct << [it.key, e, e[0].startDate, e[0].endDate]}}
         result.surveyTimelineMap = getTimelineMap(surveyStruct)
 
+        println "!"
 //        println '\nsurveyMap: ' + result.surveyMap
 //        println '\nsurveyStruct: ' + surveyStruct
 //        println '\nsurveyTimelineMap: ' + result.surveyTimelineMap
