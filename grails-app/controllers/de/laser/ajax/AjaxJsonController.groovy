@@ -595,9 +595,11 @@ class AjaxJsonController {
     @Secured(['ROLE_USER'])
     def checkProgress() {
         EhcacheWrapper userCache = contextService.getUserCache(params.cachePath)
-        Map<String, Object> result = [percent: userCache.get(params.cacheKey)]
-        if(result.percent == 100)
-            userCache.remove(params.cacheKey)
+        Map<String, Object> result = [percent: userCache.get('progress'), label: userCache.get('label')]
+        if(result.percent == 100) {
+            userCache.remove('progress')
+            userCache.remove('label')
+        }
         render result as JSON
     }
 

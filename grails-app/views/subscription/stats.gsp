@@ -1,4 +1,4 @@
-<%@ page import="grails.converters.JSON; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.Subscription; de.laser.Platform; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report; de.laser.interfaces.CalculatedType; de.laser.base.AbstractReport" %>
+<%@ page import="java.text.SimpleDateFormat; grails.converters.JSON; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.Subscription; de.laser.Platform; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report; de.laser.interfaces.CalculatedType; de.laser.base.AbstractReport" %>
 <laser:htmlStart message="subscription.details.stats.label" serviceInjection="true"/>
 
         <ui:debugInfo>
@@ -265,7 +265,8 @@
                         </div>
 
                         <div class="field">
-                            <div id="selDate" class="ui labeled ticked range slider"></div>
+                            <label for="selDate">Zeitraum für Reports wählen</label>
+                            <div id="selDate" class="ui yellow labeled ticked range slider"></div>
                         </div>
 
                         <div class="four fields">
@@ -286,6 +287,13 @@
                             </div>
                         </div>
                     </g:form>
+                    <div class="ui teal progress" id="progressIndicator" hidden>
+                        <div class="bar">
+                            <div class="progress"></div>
+                        </div>
+                        <div class="label"></div>
+                    </div>
+                    <div id="reportWrapper"></div>
                 </g:if>
                 <g:elseif test="${error}">
                     <ui:msg icon="ui times icon" class="error" noClose="true">
@@ -307,43 +315,52 @@
                         </g:else>
                     </ui:msg>
                 </g:elseif>
-                <div class="ui teal progress" id="progressIndicator" hidden>
-                    <div class="bar">
-                        <div class="progress"></div>
-                    </div>
-                    <div class="label">Erzeuge Tabelle ...</div>
-                </div>
-                <div id="reportWrapper"></div>
             </g:if>
         </g:else>
         <laser:script file="${this.getGroovyPageFileName()}">
-            /*
-                equivalency table:
-                0: 2021-01
-                max: current value +1
-                start: last month
-                end: current month
-            */
             let step = 1;
             let monthIndex = 0;
+            let startIndex = 0;
+            let endIndex = 0;
             let limit = new Date();
             limit.setHours(0);
             limit.setMinutes(0);
             limit.setSeconds(0);
             limit.setMilliseconds(0);
-            let currDate = new Date(2021, 0, 1, 0, 0, 0, 0);
+            let currDate = new Date(limit.getFullYear()-1, 0, 1, 0, 0, 0, 0);
+            let startDate;
+            <g:if test="${subscription.startDate}">
+                let start = new Date(<g:formatDate date="${subscription.startDate}" format="yyyy, M, d"/>, 0, 0, 0, 0);
+                start.setMonth(start.getMonth()-1); //correction because month is 0-based
+                if(start.getTime() < currDate.getTime())
+                    currDate = start;
+                startDate = '<g:formatDate date="${subscription.startDate}" format="yyyy-MM"/>';
+            </g:if>
+            <g:else>
+                let start = new Date(limit.getFullYear()-1, 0, 1, 0, 0, 0, 0);
+                startDate = start.getFullYear()+'-01';
+            </g:else>
             let currMonth = currDate.getMonth()+1;
             if(currMonth < 10)
                 currMonth = '0'+currMonth;
-            let startDate = currDate.getFullYear()+'-'+currMonth;
             currMonth = limit.getMonth(); //previous month
             let endDate;
-            if(currMonth > 0 && currMonth < 10) {
-                currMonth = '0'+currMonth;
-                endDate = limit.getFullYear()+'-'+currMonth;
-            }
-            else if(currMonth === 0)
-                endDate = (limit.getFullYear()-1)+'-12';
+            <g:if test="${subscription.endDate}">
+                <g:if test="${subscription.endDate < new Date() && subscription.status != RDStore.SUBSCRIPTION_TEST_ACCESS}">
+                    endDate = '<g:formatDate date="${subscription.endDate}" format="yyyy-MM"/>';
+                </g:if>
+                <g:else>
+                    endDate = '<g:formatDate date="${new Date()}" format="yyyy-MM"/>';
+                </g:else>
+            </g:if>
+            <g:else>
+                if(currMonth > 0 && currMonth < 10) {
+                    currMonth = '0'+currMonth;
+                    endDate = limit.getFullYear()+'-'+currMonth;
+                }
+                else if(currMonth === 0)
+                    endDate = (limit.getFullYear()-1)+'-12';
+            </g:else>
             let months = [];
             let displayMonths = [];
             while(currDate.getTime() <= limit.getTime()) {
@@ -353,14 +370,18 @@
                 if(currMonth === '01')
                     displayMonths.push(currDate.getFullYear()+'-'+currMonth);
                 months.push(currDate.getFullYear()+'-'+currMonth);
+                if(currDate.getFullYear()+'-'+currMonth === startDate)
+                    startIndex = monthIndex;
+                if(currDate.getFullYear()+'-'+currMonth === endDate)
+                    endIndex = monthIndex;
                 currDate.setMonth(currDate.getMonth()+1);
                 monthIndex++;
             }
             $("#selDate").slider({
                 min: 0,
                 max: months.length-1,
-                start: 0,
-                end: months.length-2,
+                start: startIndex,
+                end: endIndex,
                 step: step,
                 restrictedLabels: displayMonths,
                 showLabelTicks: 'always',
@@ -428,9 +449,10 @@
                 let percentage = 0;
                 setTimeout(function() {
                     $.ajax({
-                        url: "<g:createLink controller="ajaxJson" action="checkProgress" params="[cachePath: '/subscription/stats', cacheKey: 'progress']"/>"
+                        url: "<g:createLink controller="ajaxJson" action="checkProgress" params="[cachePath: '/subscription/stats']"/>"
                     }).done(function(response){
                         percentage = response.percent;
+                        $('#progressIndicator div.label').text(response.label);
                         if(percentage !== null)
                             $('#progressIndicator').progress('set percent', percentage);
                         if($('#progressIndicator').progress('is complete')) {
