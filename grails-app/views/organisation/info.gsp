@@ -159,7 +159,9 @@
                                         </td>
                                         <g:if test="${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT}">
                                             <td>
-                                                <% if (! areStatsAvailableCache.containsKey(sub.id.toString())) { areStatsAvailableCache.putAt(sub.id.toString(), subscriptionService.areStatsAvailable(sub)) } %>
+                                                <% if (! areStatsAvailableCache.containsKey(sub.id.toString())) {
+                                                    areStatsAvailableCache.putAt(sub.id.toString(), sub.packages ? subscriptionService.areStatsAvailable(sub) : false)
+                                                } %>
 
                                                 <g:if test="${areStatsAvailableCache.get(sub.id.toString())}">
                                                     <g:link controller="subscription" action="stats" id="${sub.id}" target="_blank">${RDStore.YN_YES.getI10n('value')}</g:link>
@@ -292,7 +294,9 @@
                                         </td>
                                         <td>
                                             <g:if test="${sub.status == RDStore.SUBSCRIPTION_CURRENT}">
-                                                <% if (! areStatsAvailableCache.containsKey(sub.id.toString())) { areStatsAvailableCache.putAt(sub.id.toString(), subscriptionService.areStatsAvailable(sub)) } %>
+                                                <% if (! areStatsAvailableCache.containsKey(sub.id.toString())) {
+                                                    areStatsAvailableCache.putAt(sub.id.toString(), sub.packages ? subscriptionService.areStatsAvailable(sub) : false)
+                                                } %>
 
                                                 <g:if test="${areStatsAvailableCache.get(sub.id.toString())}">
                                                     <g:link controller="subscription" action="stats" id="${sub.id}" target="_blank">${RDStore.YN_YES.getI10n('value')}</g:link>
@@ -607,12 +611,26 @@
 
     <laser:script file="${this.getGroovyPageFileName()}">
 
-    JSPC.app.info = {
-        chart_config: {
+        JSPC.app.info = {
+            chart_config_helper: {
+                tooltip_formatter_notNull: function (params, x, callback) {
+                    let content = ''
+                    params.forEach(function (e) {
+                        if (e.value > 0) {
+                            content = content + '<br/>' + e.marker + ' ' + e.seriesName + '&nbsp;&nbsp;&nbsp;<strong style="float:right">' + e.value + '</strong>'
+                        }
+                    })
+                    return '<div>' + params[0].name + content + '</div>'
+                }
+            }
+        }
+
+        JSPC.app.info.chart_config = {
             subscription: {
                 tooltip: {
                     trigger: 'axis',
-                    axisPointer: { type: 'shadow' }
+                    axisPointer: { type: 'shadow' },
+                    formatter: JSPC.app.info.chart_config_helper.tooltip_formatter_notNull
                 },
                 series: [
                     <g:each in="${subscriptionTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ RefdataValue.get(it).getI10n('value') }}" var="status">
@@ -670,7 +688,8 @@
             license: {
                 tooltip: {
                     trigger: 'axis',
-                    axisPointer: { type: 'shadow' }
+                    axisPointer: { type: 'shadow' },
+                    formatter: JSPC.app.info.chart_config_helper.tooltip_formatter_notNull
                 },
                 series: [
                     <g:each in="${licenseTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ RefdataValue.get(it).getI10n('value') }}" var="status">
@@ -726,7 +745,8 @@
             provider: {
                 tooltip: {
                     trigger: 'axis',
-                    axisPointer: { type: 'shadow' }
+                    axisPointer: { type: 'shadow' },
+                    formatter: JSPC.app.info.chart_config_helper.tooltip_formatter_notNull
                 },
                 series: [
                 <g:each in="${providerTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ Org.get(it).sortname ?: Org.get(it.key).name  }}" var="provider">
@@ -756,7 +776,8 @@
             survey: {
                 tooltip: {
                     trigger: 'axis',
-                    axisPointer: { type: 'shadow' }
+                    axisPointer: { type: 'shadow' },
+                    formatter: JSPC.app.info.chart_config_helper.tooltip_formatter_notNull
                 },
                 series: [
                     <g:each in="${surveyTimelineMap.values().collect{ it.keySet() }.flatten().unique()}" var="status"> %{-- sort --}%
@@ -817,8 +838,7 @@
                 legend: { bottom: 0 },
                 grid:   { left: '5%', right: '5%', top: '5%', bottom: '20%' },
             },
-        }
-    };
+        };
 
         JSPC.app.info.charts = {
             subscription :  echarts.init ($('#cw-subscription')[0]),
