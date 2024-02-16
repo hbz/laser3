@@ -336,7 +336,6 @@ class OrganisationControllerService {
         result.surveyMap.each{it -> it.value.each{e -> surveyStruct << [it.key, e, e[0].startDate, e[0].endDate]}}
         result.surveyTimelineMap = getTimelineMap(surveyStruct)
 
-        println "!"
 //        println '\nsurveyMap: ' + result.surveyMap
 //        println '\nsurveyStruct: ' + surveyStruct
 //        println '\nsurveyTimelineMap: ' + result.surveyTimelineMap
