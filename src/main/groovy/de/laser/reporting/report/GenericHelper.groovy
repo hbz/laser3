@@ -76,6 +76,12 @@ class GenericHelper {
         getField(objConfig, fieldName)?.type
     }
 
+    /**
+     * Retrieves the label to the given field name
+     * @param objConfig the object configuration map
+     * @param fieldName the field name to which the label should be retrieved
+     * @return the associated label
+     */
     static String getFieldLabel(Map<String, Object> objConfig, String fieldName) {
         // println '- GenericHelper.getFieldLabel() : ' + fieldName
         String label = '?'
@@ -190,10 +196,21 @@ class GenericHelper {
         label
     }
 
+    /**
+     * Flags the given value as fuzzy-matched
+     * @param value the value to flag
+     * @return a concatenated string ( value *), marking the value as unmatched
+     */
     static String flagUnmatched(String value) {
         '(' + value + ' *)'
     }
 
+    /**
+     * Returns from the given filter result the requested database ID list
+     * @param filterResult the filter result map
+     * @param key the ID list to be retrieved
+     * @return a list of database IDs or an empty list if the list does not exist in the filter result map
+     */
     static List<Long> getFilterResultDataIdList(Map<String, Object> filterResult, String key) {
         filterResult.data.getAt( key + 'IdList') as List ?: []
     }

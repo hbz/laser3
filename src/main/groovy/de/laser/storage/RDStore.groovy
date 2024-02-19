@@ -5,6 +5,9 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+/**
+ * Container class for frequently used controlled list values, so called {@link RefdataValue}s
+ */
 @CompileStatic
 @Slf4j
 class RDStore {
