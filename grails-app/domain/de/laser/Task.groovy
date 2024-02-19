@@ -66,7 +66,7 @@ class Task {
         org             column:'tsk_org_fk'
         pkg             column:'tsk_pkg_fk'
         subscription    column:'tsk_sub_fk'
-        surveyConfig      column:'tsk_sur_config_fk'
+        surveyConfig    column:'tsk_sur_config_fk'
 
         title           column:'tsk_title'
         description     column:'tsk_description', type: 'text'
