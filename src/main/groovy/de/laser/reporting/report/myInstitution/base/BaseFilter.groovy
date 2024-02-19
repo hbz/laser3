@@ -8,7 +8,7 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 
 /**
- * The class containing the generic filter data
+ * The class containing the generic filter data and methods shared by the detailed object filters
  */
 class BaseFilter {
 

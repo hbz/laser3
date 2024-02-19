@@ -317,6 +317,12 @@ class RDStore {
 
     // --
 
+    /**
+     * Initialising method. Retrieves the controlled list value for the given value in the given category
+     * @param value the controlled list value
+     * @param category the controlled list category
+     * @return the {@link RefdataValue} matching in the given category
+     */
     static RefdataValue getRefdataValue(String value, String category) {
         RefdataValue result = RefdataValue.getByValueAndCategory(value, category)
 
