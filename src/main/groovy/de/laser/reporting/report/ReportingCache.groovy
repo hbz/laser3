@@ -66,6 +66,10 @@ class ReportingCache {
 
     // ---
 
+    /**
+     * Reads and returns the basic configuration parameters of the current report
+     * @return the configuration map
+     */
     Map<String, Object> readMeta() {
         Map<String, Object> cache = get()
         cache.meta as Map<String, Object>

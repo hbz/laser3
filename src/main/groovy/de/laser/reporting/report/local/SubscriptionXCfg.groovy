@@ -2,6 +2,9 @@ package de.laser.reporting.report.local
 
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 
+/**
+ * Container class for the report configurations holding for each subscription type
+ */
 class SubscriptionXCfg {
 
     static Map<String, Object> CONFIG = [

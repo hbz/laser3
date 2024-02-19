@@ -6,11 +6,19 @@ import groovy.util.logging.Slf4j
 import org.grails.web.servlet.mvc.GrailsWebRequest
 import org.grails.web.util.WebUtils
 
-
+/**
+ * Helper class to properly treat filter parameters
+ */
 @Slf4j
 class Params {
 
-    // takes String or Long; removes 0, null and empty values
+    /**
+     * Collects all longs submitted in a {@link GrailsParameterMap}.
+     * Takes String or Long; removes 0, null and empty values
+     * @param params the request parameter map from which the values should be read off
+     * @param key the parameter key
+     * @return a list of parsed longs
+     */
     static List<Long> getLongList(GrailsParameterMap params, String key) {
         params.list(key).findAll().collect{
             if (it != 'FETCH_ALL') { // workaround until FETCH_ALL is removed // TODO: erms-5511
@@ -19,7 +27,14 @@ class Params {
         }.findAll()
     }
 
-    // takes String or Long; removes 0, null and empty values
+    //
+    /**
+     * Collects all longs submitted in a {@link LinkedHashMap}.
+     * Takes String or Long; removes 0, null and empty values
+     * @param map the request parameter map from which the values should be read off
+     * @param key the parameter key
+     * @return a list of parsed longs
+     */
     static List<Long> getLongList(LinkedHashMap map, String key) {
         List result = []
 
@@ -42,17 +57,36 @@ class Params {
         result.findAll()
     }
 
-    // takes String or Long; removes 0, null and empty values
+    /**
+     * Collects all reference data values submitted as longs in a ${@link GrailsParameterMap}.
+     * Takes String or Long; removes 0, null and empty values
+     * @param params the request parameter map
+     * @param key the parameter key
+     * @return a list of {@link RefdataValue}s selected in the form
+     */
     static List<RefdataValue> getRefdataList(GrailsParameterMap params, String key) {
         getLongList(params, key).collect{ RefdataValue.get(it) }
     }
 
-    // takes String or Long; removes 0, null and empty values
+    //
+    /**
+     * Collects all reference data values submitted as longs in a ${@link LinkedHashMap}.
+     * Takes String or Long; removes 0, null and empty values
+     * @param map the request parameter map
+     * @param key the parameter key
+     * @return a list of {@link RefdataValue}s selected in the form
+     */
     static List<RefdataValue> getRefdataList(LinkedHashMap map, String key) {
         getLongList(map, key).collect{ RefdataValue.get(it) }
     }
 
-    // takes String; removes 0, null and empty values
+    /**
+     * Reads the longs submitted in a comma-separated list from a {@link GrailsParameterMap}.
+     * Takes String; removes 0, null and empty values
+     * @param params the request parameter map
+     * @param key the parameter key
+     * @return a list of parsed longs read off from the map
+     */
     static List<Long> getLongList_forCommaSeparatedString(GrailsParameterMap params, String key) {
         List result = []
 
@@ -64,7 +98,13 @@ class Params {
         result
     }
 
-    // takes String; removes 0, null and empty values
+    /**
+     * Reads the longs submitted in a comma-separated list from a {@link LinkedHashMap}.
+     * Takes String; removes 0, null and empty values
+     * @param map the request parameter map
+     * @param key the parameter key
+     * @return a list of parsed longs read off from the map
+     */
     static List<Long> getLongList_forCommaSeparatedString(LinkedHashMap map, String key) {
         List result = []
 
@@ -112,6 +152,9 @@ class Params {
 
     // ---
 
+    /**
+     * Test suite for checking the reading of list values
+     */
     static void test() {
 
         Map map = new LinkedHashMap()
