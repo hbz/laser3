@@ -43,6 +43,7 @@
 ### Usage
 #### Adding changes to changelog
 
-    ./gradlew dbmGormDiff -Pargs='changelogs/<currentDate>.groovy --add' -Dgrails.env=prod
+    grails (prod) dbm-gorm-diff changelogs/<currentDate>.groovy --add
+
 
   
