@@ -32,7 +32,9 @@ import org.springframework.context.MessageSource
 import java.time.Year
 
 /**
- * This class contains general methods for retrieving configuration parameters
+ * This class contains general methods for retrieving configuration parameters.
+ * It is moreover the base class for the detailed object configuration, containing parameters for data sources and display.
+ * The subclasses are not annotated in detail!
  */
 @Slf4j
 class BaseConfig {

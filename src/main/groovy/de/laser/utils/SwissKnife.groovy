@@ -1,17 +1,15 @@
 package de.laser.utils
 
-import de.laser.ContextService
-import de.laser.Org
 import de.laser.auth.User
 import de.laser.storage.BeanStore
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.util.logging.Slf4j
-import org.grails.taglib.GroovyPageAttributes
 import org.springframework.context.MessageSource
 
-import javax.servlet.http.HttpServletRequest
-
+/**
+ * The "Swiss knife", containing various helper methods for quick reuse
+ * which have been copy-pasted all over the code
+ */
 @Slf4j
 class SwissKnife {
 
@@ -33,6 +31,11 @@ class SwissKnife {
             '14' : 'fourteen'
     ]
 
+    /**
+     * Retrieves the message token and translation for the given label
+     * @param attrs the entire HTML attribute map
+     * @return a {@link List} of matching translation strings
+     */
     static List<String> getTextAndMessage(Map<String, Object> attrs) {
         MessageSource messageSource = BeanStore.getMessageSource()
         Locale locale = LocaleUtils.getCurrentLocale()
@@ -56,9 +59,8 @@ class SwissKnife {
 
     /**
      * Checking if key exists in messages_<lang>.properties
-     *
      * @param key
-     * @return boolean
+     * @return true if it exists, false otherwise
      */
     static boolean checkMessageKey(String key) {
         if (key) {
@@ -78,12 +80,11 @@ class SwissKnife {
     }
 
     /**
-     * Adds max and offset to given map
-     *
-     * @param result
-     * @param params
-     * @param user
-     * @return
+     * Adds max and offset to given map – sets pagination parameters for list views
+     * @param result the result map, rendered in the view, containing the results
+     * @param params the request parameter map
+     * @param user the current {@link User}
+     * @return the result map filled with max and offset
      */
     static Map<String, Object> setPaginationParams(Map<String, Object> result, GrailsParameterMap params, User user) {
         result.max    = params.max    ? Integer.parseInt(params.max.toString()) : user.getPageSizeOrDefault()
@@ -92,15 +93,31 @@ class SwissKnife {
         result
     }
 
+    /**
+     * Converts the given string with underscores into camel case
+     * @param text the input text
+     * @param capitalized should the text be capitalised?
+     * @return the converted text
+     */
     static String toCamelCase(String text, boolean capitalized) {
         text = text.replaceAll( "(_)([A-Za-z0-9])", { Object[] it -> it[2].toUpperCase() } )
         return capitalized ? capitalize(text) : text
     }
 
+    /**
+     * Converts the given text into snake case, i.e. explodes it with underscores (and removes initial underscores)
+     * @param text the input text
+     * @return the converted text
+     */
     static String toSnakeCase(String text) {
         text.replaceAll( /([A-Z])/, /_$1/ ).toLowerCase().replaceAll( /^_/, '' )
     }
 
+    /**
+     * Performs a deep clone of the given input map, i.e. all leaves are being copied as well. It works depth-first
+     * @param map the {@link Map} to clone
+     * @return the map clone
+     */
     static Map deepClone(Map map) {
         Map cloned = [:]
         map.each { k,v ->

@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5219    19.02.2024  dev     3.4         Andreas Feature     Aktualisierung der internen Dokumentation
+
 --      14.02.2024  dev     3.4         Andreas Feature     Performanzverbesserung bei der Nutzerverwaltung
 
 5559    14.02.2024  dev     3.4         Andreas Feature     Ladebefehle bei Merkmalsladung umgestellt

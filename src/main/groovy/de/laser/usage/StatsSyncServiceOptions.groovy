@@ -11,6 +11,7 @@ import de.laser.storage.RDConstants
 import de.laser.properties.PlatformProperty
 import groovy.util.logging.Slf4j
 
+@Deprecated
 @Slf4j
 class StatsSyncServiceOptions {
 

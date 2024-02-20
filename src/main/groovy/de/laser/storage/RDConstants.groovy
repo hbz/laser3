@@ -2,6 +2,10 @@ package de.laser.storage
 
 import groovy.transform.CompileStatic
 
+/**
+ * Container class for reference data category names
+ * @see de.laser.RefdataCategory
+ */
 @CompileStatic
 class RDConstants {
 

@@ -3,6 +3,9 @@ package de.laser.utils
 import groovy.transform.CompileStatic
 import org.springframework.context.i18n.LocaleContextHolder
 
+/**
+ * A container class to group locale-loading methods
+ */
 @CompileStatic
 class LocaleUtils {
 
