@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      20.02.2024  rc-3.3  3.3.6       
+
 5556    05.02.2024  rc-3.3  3.3.5       Moe     Bug         Kosten anzeigen falsche Teilnehmer-Anzeige
 
 5555    05.02.2024  rc-3.3  3.3.5       Moe     Feature     Alle Pakete für Yoda mit Titel-Vergleich LASER vs WEKB
