@@ -23,30 +23,7 @@
 
 <ui:messages data="${flash}"/>
 
-        <div class="ui five statistics">
-            <div class="statistic stats-toggle" data-target="stats_subscription">
-                <span class="value"> ${subscriptionMap.get(RDStore.SUBSCRIPTION_CURRENT.id)?.size() ?: 0} </span>
-                <span class="label"> ${message(code: 'subscription.plural.current')} </span>
-            </div>
-            <div class="statistic stats-toggle" data-target="stats_license">
-                <span class="value"> ${licenseMap.get(RDStore.LICENSE_CURRENT.id)?.size() ?: 0} </span>
-                <span class="label"> ${message(code: 'license.plural.current')} </span>
-            </div>
-            <div class="statistic stats-toggle" data-target="stats_provider">
-                <span class="value"> ${providerMap?.size() ?: 0} </span>
-                <span class="label"> ${message(code:'default.provider.label')} </span>
-            </div>
-            <div class="statistic stats-toggle" data-target="stats_survey">
-                <span class="value"> ${surveyMap.get('open')?.size() ?: 0} </span>
-                <span class="label"> Offene Umfragen </span>
-            </div>
-            <div class="statistic stats-toggle" data-target="stats_cost">
-                <span class="value"> ${costs.costItems?.size() ?: 0} </span>
-                <span class="label"> Kosten (${message(code: 'subscription.plural.current')}) </span>
-            </div>
-        </div>
-
-        <laser:render template="info/style" />
+            <laser:render template="info/partial" model="${[context: 'consAtInst']}"/>
 
             <h2 class="ui header"><span style="color:#fff;background-color:red;padding:0.5em 1em;margin:3em 0">DEMO</span></h2>
             <g:set var="areStatsAvailableCache" value="[:]" />
@@ -64,22 +41,22 @@
 
                 <div class="ui secondary la-tab-with-js menu">
                     <div class="item black">${message(code: 'subscription.status.label')}:</div>
-                    <g:each in="${subscriptionMap}" var="subStatus,subList">
-                        <g:set var="subStatusRdv" value="${RefdataValue.get(subStatus)}" />
-                        <a href="#" class="item ${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="subscription-${subStatusRdv.id}">
-                            ${subStatusRdv.getI10n('value')} <span class="ui blue circular label">${subList.size()}</span>
+                    <g:each in="${subscriptionMap}" var="subStatusId,subList">
+                        <g:set var="subStatus" value="${RefdataValue.get(subStatusId)}" />
+                        <a href="#" class="item ${subStatus == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="subscription-${subStatus.id}">
+                            ${subStatus.getI10n('value')} <span class="ui blue circular label">${subList.size()}</span>
                         </a>
                     </g:each>
                 </div>
 
-                <g:each in="${subscriptionMap}" var="subStatus,subList">
-                    <g:set var="subStatusRdv" value="${RefdataValue.get(subStatus)}" />
-                    <div class="ui tab segment ${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="subscription-${subStatusRdv.id}">
+                <g:each in="${subscriptionMap}" var="subStatusId,subList">
+                    <g:set var="subStatus" value="${RefdataValue.get(subStatusId)}" />
+                    <div class="ui tab segment ${subStatus == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="subscription-${subStatus.id}">
 
                         <table class="ui table very compact">
                             <thead>
                                 <tr>
-                                    <g:if test="${subStatusRdv != RDStore.SUBSCRIPTION_CURRENT}">
+                                    <g:if test="${subStatus != RDStore.SUBSCRIPTION_CURRENT}">
                                         <th class="ten wide">${message(code:'subscription.label')}</th>
                                     </g:if>
                                     <g:else>
@@ -102,7 +79,7 @@
                                                 <g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link>
                                             </div>
                                         </td>
-                                        <g:if test="${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT}">
+                                        <g:if test="${subStatus == RDStore.SUBSCRIPTION_CURRENT}">
                                             <td>
                                                 <% if (! areStatsAvailableCache.containsKey(sub.id.toString())) {
                                                     areStatsAvailableCache.putAt(sub.id.toString(), sub.packages ? subscriptionService.areStatsAvailable(sub) : false)
@@ -308,7 +285,7 @@
                                 <th class="one wide">Teilnahme</th>
                                 <th class="one wide">${message(code:'surveyInfo.type.label')}</th>
                                 <th class="one wide">${message(code:'default.endDate.label')}</th>
-                                <th class="two wide">Status</th>
+                                <th class="two wide">${message(code:'default.status.label')}</th>
                             </tr>
                             <tr data-ctype="survey-subsciption" class="hidden">
                                 <th class="six wide">${message(code:'subscription.label')}</th>
@@ -366,9 +343,7 @@
                                                 <g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link>
                                             </div>
                                         </td>
-                                        <td>
-                                            ${sub.status.getI10n('value')}
-                                        </td>
+                                        <td> ${sub.status.getI10n('value')} </td>
                                         <td> ${sub.isMultiYear ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")} </td>
                                         <td> ${sub.referenceYear} </td>
                                         <td> <g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/> </td>
@@ -556,20 +531,6 @@
 
     <laser:script file="${this.getGroovyPageFileName()}">
 
-        JSPC.app.info = {
-            chart_config_helper: {
-                tooltip_formatter_notNull: function (params, x, callback) {
-                    let content = ''
-                    params.forEach(function (e) {
-                        if (e.value > 0) {
-                            content = content + '<br/>' + e.marker + ' ' + e.seriesName + '&nbsp;&nbsp;&nbsp;<strong style="float:right">' + e.value + '</strong>'
-                        }
-                    })
-                    return '<div>' + params[0].name + content + '</div>'
-                }
-            }
-        }
-
         JSPC.app.info.chart_config = {
             subscription: {
                 tooltip: {
@@ -604,13 +565,7 @@
                             name    : '${message(code: 'subscription.isMultiYear.label')}',
                             type    : 'line',
                             smooth  : true,
-                            lineStyle : {
-                                type: 'solid',
-                                width: 2,
-                                shadowColor: 'rgba(0,0,0,0.3)',
-                                shadowBlur: 10,
-                                shadowOffsetY: 8
-                            },
+                            lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,
 %{--                            areaStyle: {},--}%
     %{--                        emphasis: { focus: 'series' },--}%
                             data    : [<%
@@ -661,13 +616,7 @@
                             name    : '${message(code: 'license.openEnded.label')}',
                             type    : 'line',
                             smooth  : true,
-                            lineStyle : {
-                                type: 'solid',
-                                width: 2,
-                                shadowColor: 'rgba(0,0,0,0.3)',
-                                shadowBlur: 10,
-                                shadowOffsetY: 8
-                            },
+                            lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,
 %{--                            areaStyle: {},--}%
     %{--                        emphasis: { focus: 'series' },--}%
                             data    : [<%
@@ -752,13 +701,7 @@
                             type    : 'line',
 %{--                            stack   : 'total_type',--}%
                             smooth  : true,
-                            lineStyle : {
-                                type: 'solid',
-                                width: 2,
-                                shadowColor: 'rgba(0,0,0,0.3)',
-                                shadowBlur: 10,
-                                shadowOffsetY: 8
-                            },
+                            lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,
 %{--                            areaStyle: {},--}%
 %{--                emphasis: { focus: 'series' },--}%
                             data    : ${surveyTypeTimeline.collect{ it.findAll{ it2 -> it2 == type }.size() }},
@@ -858,21 +801,6 @@
             });
         });
 
-        let $statsToggle = $('.stats-toggle')
-
-        $statsToggle.on('click', function() {
-            $('.stats-content').hide()
-            $statsToggle.removeClass('active')
-            $(this).addClass('active')
-            $('#' + $(this).attr('data-target')).show()
-
-            if (JSPC.app.info && JSPC.app.info.charts) {
-                $.each(JSPC.app.info.charts, function(i, e) { e.resize() })
-            }
-        })
-
-        $statsToggle.first().trigger('click')
-
         $('#survey-toggle-subscriptions').on('change', function() {
             if ($(this).prop('checked')) {
                 $('table *[data-ctype=survey-subsciption]').removeClass('hidden')
@@ -880,7 +808,6 @@
                 $('table *[data-ctype=survey-subsciption]').addClass('hidden')
             }
         })
-
 
     </laser:script>
 

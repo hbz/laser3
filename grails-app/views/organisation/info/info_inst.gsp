@@ -23,26 +23,7 @@
 
 <ui:messages data="${flash}"/>
 
-        <div class="ui four statistics">
-            <div class="statistic stats-toggle" data-target="stats_subscription">
-                <span class="value"> ${subscriptionMap.get(RDStore.SUBSCRIPTION_CURRENT.id)?.size() ?: 0} </span>
-                <span class="label"> ${message(code: 'subscription.plural.current')} </span>
-            </div>
-            <div class="statistic stats-toggle" data-target="stats_license">
-                <span class="value"> ${licenseMap.get(RDStore.LICENSE_CURRENT.id)?.size() ?: 0} </span>
-                <span class="label"> ${message(code: 'license.plural.current')} </span>
-            </div>
-            <div class="statistic stats-toggle" data-target="stats_provider">
-                <span class="value"> ${providerMap?.size() ?: 0} </span>
-                <span class="label"> ${message(code:'default.provider.label')} </span>
-            </div>
-            <div class="statistic stats-toggle" data-target="stats_survey">
-                <span class="value"> ${surveyMap.get('open')?.size() ?: 0} </span>
-                <span class="label"> Offene Umfragen </span>
-            </div>
-        </div>
-
-        <laser:render template="info/style" />
+            <laser:render template="info/partial" model="${[context: 'inst']}"/>
 
             <h2 class="ui header"><span style="color:#fff;background-color:red;padding:0.5em 1em;margin:3em 0">DEMO</span></h2>
             <g:set var="areStatsAvailableCache" value="[:]" />
@@ -59,22 +40,22 @@
 
                 <div class="ui secondary la-tab-with-js menu">
                     <div class="item black">${message(code: 'subscription.status.label')}:</div>
-                    <g:each in="${subscriptionMap}" var="subStatus,subList">
-                        <g:set var="subStatusRdv" value="${RefdataValue.get(subStatus)}" />
-                        <a href="#" class="item ${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="subscription-${subStatusRdv.id}">
-                            ${subStatusRdv.getI10n('value')} <span class="ui blue circular label">${subList.size()}</span>
+                    <g:each in="${subscriptionMap}" var="subStatusId,subList">
+                        <g:set var="subStatus" value="${RefdataValue.get(subStatusId)}" />
+                        <a href="#" class="item ${subStatus == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="subscription-${subStatus.id}">
+                            ${subStatus.getI10n('value')} <span class="ui blue circular label">${subList.size()}</span>
                         </a>
                     </g:each>
                 </div>
 
-                <g:each in="${subscriptionMap}" var="subStatus,subList">
-                    <g:set var="subStatusRdv" value="${RefdataValue.get(subStatus)}" />
-                    <div class="ui tab segment ${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="subscription-${subStatusRdv.id}">
+                <g:each in="${subscriptionMap}" var="subStatusId,subList">
+                    <g:set var="subStatus" value="${RefdataValue.get(subStatusId)}" />
+                    <div class="ui tab segment ${subStatus == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="subscription-${subStatus.id}">
 
                         <table class="ui table very compact">
                             <thead>
                                 <tr>
-                                    <g:if test="${subStatusRdv != RDStore.SUBSCRIPTION_CURRENT}">
+                                    <g:if test="${subStatus != RDStore.SUBSCRIPTION_CURRENT}">
                                         <th class="six wide">${message(code:'subscription.label')}</th>
                                         <th class="four wide">${message(code:'consortium.label')}</th>
                                     </g:if>
@@ -108,7 +89,7 @@
                                                 </div>
                                             </g:if>
                                         </td>
-                                        <g:if test="${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT}">
+                                        <g:if test="${subStatus == RDStore.SUBSCRIPTION_CURRENT}">
                                             <td>
                                                 <% if (! areStatsAvailableCache.containsKey(sub.id.toString())) {
                                                     areStatsAvailableCache.putAt(sub.id.toString(), sub.packages ? subscriptionService.areStatsAvailable(sub) : false)
@@ -332,7 +313,7 @@
                                 <th class="one wide">Teilnahme</th>
                                 <th class="one wide">${message(code:'surveyInfo.type.label')}</th>
                                 <th class="one wide">${message(code:'default.endDate.label')}</th>
-                                <th class="one wide">Status</th>
+                                <th class="one wide">${message(code:'default.status.label')}</th>
                             </tr>
                             <tr data-ctype="survey-subsciption" class="hidden">
                                 <th class="six wide">${message(code:'subscription.label')}</th>
@@ -582,20 +563,6 @@
 
     <laser:script file="${this.getGroovyPageFileName()}">
 
-        JSPC.app.info = {
-            chart_config_helper: {
-                tooltip_formatter_notNull: function (params, x, callback) {
-                    let content = ''
-                    params.forEach(function (e) {
-                        if (e.value > 0) {
-                            content = content + '<br/>' + e.marker + ' ' + e.seriesName + '&nbsp;&nbsp;&nbsp;<strong style="float:right">' + e.value + '</strong>'
-                        }
-                    })
-                    return '<div>' + params[0].name + content + '</div>'
-                }
-            }
-        }
-
         JSPC.app.info.chart_config = {
             subscription: {
                 tooltip: {
@@ -609,7 +576,6 @@
                             name    : '${RefdataValue.get(status).getI10n('value')}',
                             type    : 'bar',
                             stack   : 'total',
-    %{--                        emphasis: { focus: 'series' },--}%
                             data    : [${subscriptionTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
                             raw     : [${subscriptionTimelineMap.values().collect{ it[status] ?: [] }.join(', ')}],
                             color   : <%
@@ -630,15 +596,7 @@
                             name    : '${message(code: 'subscription.isMultiYear.label')}',
                             type    : 'line',
                             smooth  : true,
-                            lineStyle : {
-                                type: 'solid',
-                                width: 2,
-                                shadowColor: 'rgba(0,0,0,0.3)',
-                                shadowBlur: 10,
-                                shadowOffsetY: 8
-                            },
-%{--                            areaStyle: {},--}%
-    %{--                        emphasis: { focus: 'series' },--}%
+                            lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,
                             data    : [<%
                                         List<Long> subsPerYear = subscriptionTimelineMap.values().collect{ it.values().flatten() }
                                         print subsPerYear.collect {
@@ -646,6 +604,18 @@
                                         }.join(', ')
                                         %>],
                             color   : JSPC.colors.hex.pink
+                        },
+                        {
+                            name    : '${RDStore.SUBSCRIPTION_TYPE_LOCAL.getI10n('value')}',
+                            type    : 'line',
+                            smooth  : true,
+                            lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,
+                            data    : [<%
+                                print subsPerYear.collect {
+                                    it.collect{ Subscription.get(it).type == RDStore.SUBSCRIPTION_TYPE_LOCAL ? 1 : 0 }.sum() ?: 0
+                                }.join(', ')
+                            %>],
+                            color   : JSPC.colors.hex.ice
                         },
                 ],
                 xAxis: {
@@ -668,7 +638,6 @@
                             name    : '${RefdataValue.get(status).getI10n('value')}',
                             type    : 'bar',
                             stack   : 'total',
-    %{--                        emphasis: { focus: 'series' },--}%
                             data    : [${licenseTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
                             raw     : [${licenseTimelineMap.values().collect{ it[status] ?: [] }.join(', ')}],
                             color   : <%
@@ -687,15 +656,7 @@
                             name    : '${message(code: 'license.openEnded.label')}',
                             type    : 'line',
                             smooth  : true,
-                            lineStyle : {
-                                type: 'solid',
-                                width: 2,
-                                shadowColor: 'rgba(0,0,0,0.3)',
-                                shadowBlur: 10,
-                                shadowOffsetY: 8
-                            },
-%{--                            areaStyle: {},--}%
-    %{--                        emphasis: { focus: 'series' },--}%
+                            lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,
                             data    : [<%
                                         List<Long> licsPerYear = licenseTimelineMap.values().collect{ it.values().flatten() }
                                         print licsPerYear.collect {
@@ -725,9 +686,6 @@
                         name    : '<% print Org.get(provider).name %>',
                         type    : 'bar',
                         stack   : 'total',
-%{--                        areaStyle : {},--}%
-%{--                        smooth  : true,--}%
-                %{--                        emphasis: { focus: 'series' },--}%
                         data    : [${providerTimelineMap.values().collect{ it[provider] ? it[provider].size() : 0 }.join(', ')}],
                         raw     : [${providerTimelineMap.values().collect{ it[provider] ?: [] }.join(', ')}]
                     },
@@ -756,7 +714,6 @@
                             name    : '<uiSurvey:virtualState status="${status}" />',
                             type    : 'bar',
                             stack   : 'total',
-                    %{--                        emphasis: { focus: 'series' },--}%
                             data    : [${surveyTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
                             raw     : [${surveyTimelineMap.values().collect{ it[status] ? it[status].collect{ it[0].id } : [] }.join(', ')}],
                             color   : <%
@@ -776,17 +733,8 @@
                         {
                             name    : '${type.getI10n('value')}',
                             type    : 'line',
-%{--                            stack   : 'total_type',--}%
                             smooth  : true,
-                            lineStyle : {
-                                type: 'solid',
-                                width: 2,
-                                shadowColor: 'rgba(0,0,0,0.3)',
-                                shadowBlur: 10,
-                                shadowOffsetY: 8
-                            },
-%{--                            areaStyle: {},--}%
-%{--                emphasis: { focus: 'series' },--}%
+                            lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,
                             data    : ${surveyTypeTimeline.collect{ it.findAll{ it2 -> it2 == type }.size() }},
                             color   : "<%
                                 color = 'JSPC.colors.hex.grey'
@@ -884,21 +832,6 @@
             });
         });
 
-        let $statsToggle = $('.stats-toggle')
-
-        $statsToggle.on('click', function() {
-            $('.stats-content').hide()
-            $statsToggle.removeClass('active')
-            $(this).addClass('active')
-            $('#' + $(this).attr('data-target')).show()
-
-            if (JSPC.app.info && JSPC.app.info.charts) {
-                $.each(JSPC.app.info.charts, function(i, e) { e.resize() })
-            }
-        })
-
-        $statsToggle.first().trigger('click')
-
         $('#survey-toggle-subscriptions').on('change', function() {
             if ($(this).prop('checked')) {
                 $('table *[data-ctype=survey-subsciption]').removeClass('hidden')
@@ -906,7 +839,6 @@
                 $('table *[data-ctype=survey-subsciption]').addClass('hidden')
             }
         })
-
 
     </laser:script>
 

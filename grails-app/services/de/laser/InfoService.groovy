@@ -74,36 +74,38 @@ class InfoService {
 
         // --- subscriptions ---
 
-        Map<String, Object> subQueryParams = [org: member, actionName: 'manageMembers', status: 'FETCH_ALL']
-        def (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(subQueryParams)
+        def (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([
+                org: member,
+                actionName: 'manageMembers',
+                status: 'FETCH_ALL'
+        ])
 
-//        println base_qry
-//        println qry_params
+//        println base_qry; println qry_params
 
         List<List> subStruct = Subscription.executeQuery('select s.status.id, s.id, s.startDate, s.endDate, s.isMultiYear, s.referenceYear ' + base_qry, qry_params)
         result.subscriptionMap = Helper.reduceMap(Helper.listToMap(subStruct))
         result.subscriptionTimelineMap = Helper.getTimelineMap(subStruct)
 
-//        println '\nsubStruct: ' + subStruct
-//        println '\nsubscriptionMap: ' + result.subscriptionMap
-//        println '\nsubscriptionTimelineMap: ' + result.subscriptionTimelineMap
+//        println '\nsubStruct: ' + subStruct; println '\nsubscriptionMap: ' + result.subscriptionMap; println '\nsubscriptionTimelineMap: ' + result.subscriptionTimelineMap
 
         // --- licenses ---
 
-        Map licenseParams = [org: member, activeInst: contextService.getOrg(), roleTypeC: RDStore.OR_LICENSING_CONSORTIUM]
         String licenseQuery = ''' from License as l where (
                                         exists ( select o from l.orgRelations as o where ( o.roleType = :roleTypeC AND o.org = :activeInst ) )
                                         AND l.instanceOf is not null
                                         AND exists ( select orgR from OrgRole as orgR where orgR.lic = l and orgR.org = :org )
                                     ) order by l.sortableReference, l.reference, l.startDate, l.endDate, l.instanceOf asc '''
 
-        List<List> licStruct = License.executeQuery('select l.status.id, l.id, l.startDate, l.endDate, l.openEnded ' + licenseQuery, licenseParams)
+        List<List> licStruct = License.executeQuery(
+                'select l.status.id, l.id, l.startDate, l.endDate, l.openEnded ' + licenseQuery, [
+                    org: member,
+                    activeInst: contextService.getOrg(),
+                    roleTypeC: RDStore.OR_LICENSING_CONSORTIUM
+        ])
         result.licenseMap = Helper.reduceMap(Helper.listToMap(licStruct))
         result.licenseTimelineMap = Helper.getTimelineMap(licStruct)
 
-//        println '\nlicStruct: ' + licStruct
-//        println '\nlicenseMap: ' + result.licenseMap
-//        println '\nlicenseTimelineMap: ' + result.licenseTimelineMap
+//        println '\nlicStruct: ' + licStruct; println '\nlicenseMap: ' + result.licenseMap; println '\nlicenseTimelineMap: ' + result.licenseTimelineMap
 
         // --- provider ---
 
@@ -118,15 +120,13 @@ class InfoService {
                 porTypes : [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
         ]
 
-//        println providerQuery
-//        println providerParams
+//        println providerQuery; println providerParams
 
         List<List> providerStruct = Org.executeQuery(providerQuery, providerParams) /*.unique()*/
 //        Map providerMap = Helper.listToMap(providerStruct)
         Map providerMap = providerStruct.groupBy{ it[0] }.sort{ it -> Org.get(it.key).sortname ?: Org.get(it.key).name }
 
-//        println '\nproviderStruct: ' + providerStruct
-//        println '\nproviderMap: ' + providerMap
+//        println '\nproviderStruct: ' + providerStruct; println '\nproviderMap: ' + providerMap
 
         result.providerMap = providerMap.collectEntries{ k,v -> [(k):(v.collect{ it[1] })] }
         result.providerTimelineMap = Helper.getTimelineMap(providerStruct)
@@ -193,9 +193,7 @@ class InfoService {
         result.surveyMap.each{it -> it.value.each{e -> surveyStruct << [it.key, e, e[0].startDate, e[0].endDate]}}
         result.surveyTimelineMap = Helper.getTimelineMap(surveyStruct)
 
-//        println '\nsurveyMap: ' + result.surveyMap
-//        println '\nsurveyStruct: ' + surveyStruct
-//        println '\nsurveyTimelineMap: ' + result.surveyTimelineMap
+//        println '\nsurveyMap: ' + result.surveyMap; println '\nsurveyStruct: ' + surveyStruct; println '\nsurveyTimelineMap: ' + result.surveyTimelineMap
 
         // --- costs ---
 
@@ -237,35 +235,34 @@ class InfoService {
 
         // --- subscriptions ---
 
-        Map<String, Object> subQueryParams = [org: institution, actionName: 'manageMembers', status: 'FETCH_ALL']
-        def (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(subQueryParams)
+        def (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([
+                org: institution,
+                status: 'FETCH_ALL'
+        ])
 
-//        println base_qry
-//        println qry_params
+//        println base_qry; println qry_params
 
         List<List> subStruct = Subscription.executeQuery('select s.status.id, s.id, s.startDate, s.endDate, s.isMultiYear, s.referenceYear ' + base_qry, qry_params)
         result.subscriptionMap = Helper.reduceMap(Helper.listToMap(subStruct))
         result.subscriptionTimelineMap = Helper.getTimelineMap(subStruct)
 
-//        println '\nsubStruct: ' + subStruct
-//        println '\nsubscriptionMap: ' + result.subscriptionMap
-//        println '\nsubscriptionTimelineMap: ' + result.subscriptionTimelineMap
+//        println '\nsubStruct: ' + subStruct; println '\nsubscriptionMap: ' + result.subscriptionMap; println '\nsubscriptionTimelineMap: ' + result.subscriptionTimelineMap
 
         // --- licenses ---
-
-        Map licenseParams   = [org: institution, roleTypes: [RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS]]
 
         String licenseQuery = ''' from License as l where 
                                     ( exists ( select o from l.orgRelations as o where ( ( o.roleType in (:roleTypes) ) AND o.org = :org ) ) )
                                     order by l.sortableReference, l.reference, l.startDate, l.endDate, l.instanceOf asc '''
 
-        List<List> licStruct = License.executeQuery('select l.status.id, l.id, l.startDate, l.endDate, l.openEnded ' + licenseQuery, licenseParams)
+        List<List> licStruct = License.executeQuery(
+                'select l.status.id, l.id, l.startDate, l.endDate, l.openEnded ' + licenseQuery, [
+                    org: institution,
+                    roleTypes: [RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS]
+        ])
         result.licenseMap = Helper.reduceMap(Helper.listToMap(licStruct))
         result.licenseTimelineMap = Helper.getTimelineMap(licStruct)
 
-//        println '\nlicStruct: ' + licStruct
-//        println '\nlicenseMap: ' + result.licenseMap
-//        println '\nlicenseTimelineMap: ' + result.licenseTimelineMap
+//        println '\nlicStruct: ' + licStruct; println '\nlicenseMap: ' + result.licenseMap; println '\nlicenseTimelineMap: ' + result.licenseTimelineMap
 
         // --- provider ---
 
@@ -286,46 +283,18 @@ class InfoService {
                 porTypes : [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
         ]
 
-//        println providerQuery
-//        println providerParams
+//        println providerQuery; println providerParams
 
         List<List> providerStruct = Org.executeQuery(providerQuery, providerParams) /*.unique()*/
 //        Map providerMap = Helper.listToMap(providerStruct)
         Map providerMap = providerStruct.groupBy{ it[0] }.sort{ it -> Org.get(it.key).sortname ?: Org.get(it.key).name }
 
-//        println '\nproviderStruct: ' + providerStruct
-//        println '\nproviderMap: ' + providerMap
+//        println '\nproviderStruct: ' + providerStruct; println '\nproviderMap: ' + providerMap
 
         result.providerMap = providerMap.collectEntries{ k,v -> [(k):(v.collect{ it[1] })] }
         result.providerTimelineMap = Helper.getTimelineMap(providerStruct)
 
-//        println '\nproviderTimelineMap: ' + result.providerTimelineMap
-
-//        result.providerMap.each{subStatus, list ->
-//            list.each{struct ->
-//                Subscription sub = Subscription.get(struct[1])
-//                List<CostItem> subCostItems = CostItem.executeQuery(
-//                        ''' select ci from CostItem as ci right join ci.sub sub join sub.orgRelations oo
-//                        where ci.owner = :owner
-//                        and sub = :sub
-//                        and oo.roleType = :roleType
-//                        and ci.surveyOrg = null
-//                        and ci.costItemStatus != :deleted
-//                        order by ci.costTitle asc ''',
-//                        [
-//                                owner               : institution,
-//                                sub                 : sub,
-//                                roleType            : RDStore.OR_SUBSCRIPTION_CONSORTIA,
-//                                deleted             : RDStore.COST_ITEM_DELETED
-//                        ]
-//                )
-//                struct << [
-//                        costItems   : subCostItems,
-//                        sums        : financeService.calculateResults(subCostItems.id)
-//                ]
-//            }
-//        }
-//        println '\nproviderMap: ' + result.providerMap
+//        println '\nproviderMap: ' + result.providerMap; println '\nproviderTimelineMap: ' + result.providerTimelineMap
 
         // --- surveys ---
 
@@ -363,9 +332,7 @@ class InfoService {
         result.surveyMap.each{it -> it.value.each{e -> surveyStruct << [it.key, e, e[0].startDate, e[0].endDate]}}
         result.surveyTimelineMap = Helper.getTimelineMap(surveyStruct)
 
-        println '\nsurveyMap: ' + result.surveyMap
-        println '\nsurveyStruct: ' + surveyStruct
-        println '\nsurveyTimelineMap: ' + result.surveyTimelineMap
+//        println '\nsurveyMap: ' + result.surveyMap; println '\nsurveyStruct: ' + surveyStruct; println '\nsurveyTimelineMap: ' + result.surveyTimelineMap
 
         // --- costs ---
 
