@@ -2267,6 +2267,8 @@ class ExportService {
 							}
 							break
 					}
+					if(platformRecord.sushiPlatform)
+						url += "&platform=${platformRecord.sushiPlatform}"
 					url += configMap.metricTypes ? "&metric_type=${configMap.metricTypes}" : ""
 					url += configMap.accessTypes ? "&access_type=${configMap.accessTypes}" : ""
 					url += configMap.accessMethods ? "&access_method=${configMap.accessMethods}" : ""
