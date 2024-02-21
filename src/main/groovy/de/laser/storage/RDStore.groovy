@@ -5,6 +5,9 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+/**
+ * Container class for frequently used controlled list values, so called {@link RefdataValue}s
+ */
 @CompileStatic
 @Slf4j
 class RDStore {
@@ -317,6 +320,12 @@ class RDStore {
 
     // --
 
+    /**
+     * Initialising method. Retrieves the controlled list value for the given value in the given category
+     * @param value the controlled list value
+     * @param category the controlled list category
+     * @return the {@link RefdataValue} matching in the given category
+     */
     static RefdataValue getRefdataValue(String value, String category) {
         RefdataValue result = RefdataValue.getByValueAndCategory(value, category)
 

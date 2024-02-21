@@ -17,7 +17,8 @@ import java.sql.Timestamp
 import java.time.Year
 
 /**
- * This class contains general methods for data querying
+ * This class contains general methods for data querying.
+ * Those methods are being shared by classes specifying queries for each object individually
  */
 class BaseQuery {
 

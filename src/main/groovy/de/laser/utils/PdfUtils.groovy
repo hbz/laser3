@@ -4,13 +4,22 @@ import de.laser.custom.CustomWkhtmltoxService
 import grails.util.Holders
 import groovy.util.logging.Slf4j
 
+/**
+ * Capsule class for PDF generation
+ */
 @Slf4j
 class PdfUtils {
 
     public static final String LANDSCAPE_DYNAMIC   = 'LANDSCAPE_DYNAMIC'
     public static final String PORTRAIT_FIXED_A4   = 'PORTRAIT_FIXED_A4'
 
-
+    /**
+     * Creates the PDF file from the given model in the given format, rendering the given view
+     * @param model the input data model
+     * @param format the page format, one of {@link #LANDSCAPE_DYNAMIC} or {@link #PORTRAIT_FIXED_A4}
+     * @param view the view to parse
+     * @return the file byte array
+     */
     static byte[] getPdf(Map<String, Object> model, String format, String view) {
         log.debug('getPdf( ' + format + ', ' + view + ' )')
 
