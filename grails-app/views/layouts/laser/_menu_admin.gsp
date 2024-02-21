@@ -52,7 +52,6 @@
 
         <div class="divider"></div>
         <ui:link addItemAttributes="true" controller="admin" action="missingPermantTitlesInSubs">${message(code:'menu.admin.missingPermantTitlesInSubs')}</ui:link>
-        <div class="divider"></div>
         <ui:link addItemAttributes="true" controller="admin" action="packageLaserVsWekb">${message(code:'menu.admin.packageLaserVsWekb')}</ui:link>
         <div class="divider"></div>
 
