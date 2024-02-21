@@ -23,85 +23,7 @@
 
 <ui:messages data="${flash}"/>
 
-<laser:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" />
-
-        <div class="ui five statistics">
-            <div class="statistic stats-toggle" data-target="stats_subscription">
-                <span class="value"> ${subscriptionMap.get(RDStore.SUBSCRIPTION_CURRENT.id)?.size() ?: 0} </span>
-                <span class="label"> ${message(code: 'subscription.plural.current')} </span>
-            </div>
-            <div class="statistic stats-toggle" data-target="stats_license">
-                <span class="value"> ${licenseMap.get(RDStore.LICENSE_CURRENT.id)?.size() ?: 0} </span>
-                <span class="label"> ${message(code: 'license.plural.current')} </span>
-            </div>
-            <div class="statistic stats-toggle" data-target="stats_provider">
-                <span class="value"> ${providerMap?.size() ?: 0} </span>
-                <span class="label"> ${message(code:'default.provider.label')} </span>
-            </div>
-            <div class="statistic stats-toggle" data-target="stats_survey">
-                <span class="value"> ${surveyMap.get('open')?.size() ?: 0} </span>
-                <span class="label"> Offene Umfragen </span>
-            </div>
-            <div class="statistic stats-toggle" data-target="stats_cost">
-                <span class="value"> ${costs.costItems?.size() ?: 0} </span>
-                <span class="label"> Kosten (${message(code: 'subscription.plural.current')}) </span>
-            </div>
-        </div>
-
-<style>
-    .statistics > .stats-toggle.active {
-        background-color: rgba(0,0,0, 0.045);
-    }
-    .statistics > .stats-toggle.active > span {
-        color: #1b1c1d !important;
-    }
-    .statistics > .statistic > span {
-        color: #015591 !important;
-    }
-    .statistics > .statistic:hover > span {
-        color: #1b1c1d !important;
-    }
-    .statistics > .statistic:hover {
-        cursor: pointer;
-        background-color: rgba(0,0,0, 0.1);
-    }
-
-    .stats-content {
-        display: none;
-    }
-
-    .stats-content .secondary.menu .year {
-        float: right;
-        margin-left: auto;
-        font-size: 120%;
-        font-weight: bold;
-        color: #222;
-    }
-    .stats-content .secondary.menu .item {
-        padding: 0.7em 0.9em;
-        border: 1px solid transparent;
-    }
-    .stats-content .secondary.menu .item.active {
-        border-color: #004678;
-    }
-
-    .menu > .item.black {
-        color: #1b1b1b;
-        font-weight: bold;
-    }
-    h3.header > i.icon {
-        vertical-align: baseline !important;
-    }
-    .ui.table > tfoot > tr > td {
-        background-color: #fff;
-    }
-
-    .chartWrapper {
-        width: 100%;
-        min-height: 350px;
-        margin-bottom: 35px;
-    }
-</style>
+            <laser:render template="info/partial" model="${[context: 'consAtInst']}"/>
 
             <h2 class="ui header"><span style="color:#fff;background-color:red;padding:0.5em 1em;margin:3em 0">DEMO</span></h2>
             <g:set var="areStatsAvailableCache" value="[:]" />
@@ -119,22 +41,22 @@
 
                 <div class="ui secondary la-tab-with-js menu">
                     <div class="item black">${message(code: 'subscription.status.label')}:</div>
-                    <g:each in="${subscriptionMap}" var="subStatus,subList">
-                        <g:set var="subStatusRdv" value="${RefdataValue.get(subStatus)}" />
-                        <a href="#" class="item ${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="subscription-${subStatusRdv.id}">
-                            ${subStatusRdv.getI10n('value')} <span class="ui blue circular label">${subList.size()}</span>
+                    <g:each in="${subscriptionMap}" var="subStatusId,subList">
+                        <g:set var="subStatus" value="${RefdataValue.get(subStatusId)}" />
+                        <a href="#" class="item ${subStatus == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="subscription-${subStatus.id}">
+                            ${subStatus.getI10n('value')} <span class="ui blue circular label">${subList.size()}</span>
                         </a>
                     </g:each>
                 </div>
 
-                <g:each in="${subscriptionMap}" var="subStatus,subList">
-                    <g:set var="subStatusRdv" value="${RefdataValue.get(subStatus)}" />
-                    <div class="ui tab segment ${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="subscription-${subStatusRdv.id}">
+                <g:each in="${subscriptionMap}" var="subStatusId,subList">
+                    <g:set var="subStatus" value="${RefdataValue.get(subStatusId)}" />
+                    <div class="ui tab segment ${subStatus == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="subscription-${subStatus.id}">
 
                         <table class="ui table very compact">
                             <thead>
                                 <tr>
-                                    <g:if test="${subStatusRdv != RDStore.SUBSCRIPTION_CURRENT}">
+                                    <g:if test="${subStatus != RDStore.SUBSCRIPTION_CURRENT}">
                                         <th class="ten wide">${message(code:'subscription.label')}</th>
                                     </g:if>
                                     <g:else>
@@ -157,7 +79,7 @@
                                                 <g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link>
                                             </div>
                                         </td>
-                                        <g:if test="${subStatusRdv == RDStore.SUBSCRIPTION_CURRENT}">
+                                        <g:if test="${subStatus == RDStore.SUBSCRIPTION_CURRENT}">
                                             <td>
                                                 <% if (! areStatsAvailableCache.containsKey(sub.id.toString())) {
                                                     areStatsAvailableCache.putAt(sub.id.toString(), sub.packages ? subscriptionService.areStatsAvailable(sub) : false)
@@ -363,7 +285,7 @@
                                 <th class="one wide">Teilnahme</th>
                                 <th class="one wide">${message(code:'surveyInfo.type.label')}</th>
                                 <th class="one wide">${message(code:'default.endDate.label')}</th>
-                                <th class="two wide">Status</th>
+                                <th class="two wide">${message(code:'default.status.label')}</th>
                             </tr>
                             <tr data-ctype="survey-subsciption" class="hidden">
                                 <th class="six wide">${message(code:'subscription.label')}</th>
@@ -414,16 +336,14 @@
 
                                 <g:if test="${surveyConfig.subscription}">
                                     <g:set var="sub" value="${surveyConfig.subscription}" />
-                                    <tr data-id="${surveyInfo.id}" data-ctype="survey-subsciption" class="hidden">
+                                    <tr data-id="${surveyInfo.id}" data-ctype="survey-subsciption" class="hidden sub">
                                         <td style="padding-left:2rem;">
                                             <div class="la-flexbox la-minor-object">
                                                 <i class="icon clipboard la-list-icon"></i>
                                                 <g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link>
                                             </div>
                                         </td>
-                                        <td>
-                                            ${sub.status.getI10n('value')}
-                                        </td>
+                                        <td> ${sub.status.getI10n('value')} </td>
                                         <td> ${sub.isMultiYear ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")} </td>
                                         <td> ${sub.referenceYear} </td>
                                         <td> <g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/> </td>
@@ -611,20 +531,6 @@
 
     <laser:script file="${this.getGroovyPageFileName()}">
 
-        JSPC.app.info = {
-            chart_config_helper: {
-                tooltip_formatter_notNull: function (params, x, callback) {
-                    let content = ''
-                    params.forEach(function (e) {
-                        if (e.value > 0) {
-                            content = content + '<br/>' + e.marker + ' ' + e.seriesName + '&nbsp;&nbsp;&nbsp;<strong style="float:right">' + e.value + '</strong>'
-                        }
-                    })
-                    return '<div>' + params[0].name + content + '</div>'
-                }
-            }
-        }
-
         JSPC.app.info.chart_config = {
             subscription: {
                 tooltip: {
@@ -659,13 +565,7 @@
                             name    : '${message(code: 'subscription.isMultiYear.label')}',
                             type    : 'line',
                             smooth  : true,
-                            lineStyle : {
-                                type: 'solid',
-                                width: 2,
-                                shadowColor: 'rgba(0,0,0,0.3)',
-                                shadowBlur: 10,
-                                shadowOffsetY: 8
-                            },
+                            lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,
 %{--                            areaStyle: {},--}%
     %{--                        emphasis: { focus: 'series' },--}%
                             data    : [<%
@@ -716,13 +616,7 @@
                             name    : '${message(code: 'license.openEnded.label')}',
                             type    : 'line',
                             smooth  : true,
-                            lineStyle : {
-                                type: 'solid',
-                                width: 2,
-                                shadowColor: 'rgba(0,0,0,0.3)',
-                                shadowBlur: 10,
-                                shadowOffsetY: 8
-                            },
+                            lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,
 %{--                            areaStyle: {},--}%
     %{--                        emphasis: { focus: 'series' },--}%
                             data    : [<%
@@ -749,7 +643,7 @@
                     formatter: JSPC.app.info.chart_config_helper.tooltip_formatter_notNull
                 },
                 series: [
-                <g:each in="${providerTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ Org.get(it).sortname ?: Org.get(it.key).name  }}" var="provider">
+                <g:each in="${providerTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ Org.get(it).sortname ?: Org.get(it).name }}" var="provider">
                     {
                         name    : '<% print Org.get(provider).name %>',
                         type    : 'bar',
@@ -807,13 +701,7 @@
                             type    : 'line',
 %{--                            stack   : 'total_type',--}%
                             smooth  : true,
-                            lineStyle : {
-                                type: 'solid',
-                                width: 2,
-                                shadowColor: 'rgba(0,0,0,0.3)',
-                                shadowBlur: 10,
-                                shadowOffsetY: 8
-                            },
+                            lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,
 %{--                            areaStyle: {},--}%
 %{--                emphasis: { focus: 'series' },--}%
                             data    : ${surveyTypeTimeline.collect{ it.findAll{ it2 -> it2 == type }.size() }},
@@ -913,21 +801,6 @@
             });
         });
 
-        let $statsToggle = $('.stats-toggle')
-
-        $statsToggle.on('click', function() {
-            $('.stats-content').hide()
-            $statsToggle.removeClass('active')
-            $(this).addClass('active')
-            $('#' + $(this).attr('data-target')).show()
-
-            if (JSPC.app.info && JSPC.app.info.charts) {
-                $.each(JSPC.app.info.charts, function(i, e) { e.resize() })
-            }
-        })
-
-        $statsToggle.first().trigger('click')
-
         $('#survey-toggle-subscriptions').on('change', function() {
             if ($(this).prop('checked')) {
                 $('table *[data-ctype=survey-subsciption]').removeClass('hidden')
@@ -935,7 +808,6 @@
                 $('table *[data-ctype=survey-subsciption]').addClass('hidden')
             }
         })
-
 
     </laser:script>
 

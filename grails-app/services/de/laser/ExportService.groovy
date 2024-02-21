@@ -2328,6 +2328,8 @@ class ExportService {
 							}
 							break
 					}
+					if(platformRecord.counterR5SushiPlatform)
+						url += "&platform=${platformRecord.counterR5SushiPlatform}"
 					url += configMap.metricTypes ? "&metric_type=${configMap.metricTypes}" : ""
 					url += configMap.accessTypes ? "&access_type=${configMap.accessTypes}" : ""
 					url += configMap.accessMethods ? "&access_method=${configMap.accessMethods}" : ""
