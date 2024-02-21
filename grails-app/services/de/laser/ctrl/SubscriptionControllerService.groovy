@@ -977,8 +977,8 @@ class SubscriptionControllerService {
                                 }
                                 break
                         }
-                        if(platformRecord.sushiPlatform)
-                            queryArguments += "&platform=${platformRecord.sushiPlatform}"
+                        if(platformRecord.counterR5SushiPlatform)
+                            queryArguments += "&platform=${platformRecord.counterR5SushiPlatform}"
                         Map<String, Object> availableReports = statsSyncService.fetchJSONData(configMap.statsUrl + queryArguments, true)
                         if(availableReports && availableReports.list) {
                             availableReports.list.each { listEntry ->
