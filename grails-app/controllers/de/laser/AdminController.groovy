@@ -389,6 +389,7 @@ class AdminController  {
                     dbmDbCreate      : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT + '.dbCreate', String),
                     defaultCollate   : DatabaseInfo.getDatabaseCollate(),
                     dbConflicts      : DatabaseInfo.getDatabaseConflicts(),
+                    dbStmtTimeout    : DatabaseInfo.getStatementTimeout(),
                     dbSize           : DatabaseInfo.getDatabaseSize(),
                     dbStatistics     : DatabaseInfo.getDatabaseStatistics(),
                     dbActivity       : DatabaseInfo.getDatabaseActivity(),
@@ -401,6 +402,7 @@ class AdminController  {
                     dbmDbCreate      : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.dbCreate', String), // TODO
                     defaultCollate   : DatabaseInfo.getDatabaseCollate( DatabaseInfo.DS_STORAGE ),
                     dbConflicts      : DatabaseInfo.getDatabaseConflicts( DatabaseInfo.DS_STORAGE ),
+                    dbStmtTimeout    : DatabaseInfo.getStatementTimeout( DatabaseInfo.DS_STORAGE ),
                     dbSize           : DatabaseInfo.getDatabaseSize( DatabaseInfo.DS_STORAGE ),
                     dbStatistics     : DatabaseInfo.getDatabaseStatistics( DatabaseInfo.DS_STORAGE ),
                     dbActivity       : DatabaseInfo.getDatabaseActivity( DatabaseInfo.DS_STORAGE ),
