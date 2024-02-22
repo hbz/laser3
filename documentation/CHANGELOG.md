@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5581    22.02.2024  dev     3.4         Andreas Bug         Tracking für Excelspalten eingebaut
+
 5579    20.02.2024  rc-3.3  3.3.6       Andreas Feature     SUSHI-Konfiguration um Plattformnamen/filter erweiter
 
 --      20.02.2024  rc-3.3  3.3.6       Andreas Bug         Abfrageargumente bei Titelumfrage korrigiert

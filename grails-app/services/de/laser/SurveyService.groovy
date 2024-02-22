@@ -189,7 +189,7 @@ class SurveyService {
             if (exportForSurveyOwner) {
                 titles.addAll([messageSource.getMessage('org.sortname.label', null, locale),
                                messageSource.getMessage('surveyParticipants.label', null, locale),
-                               messageSource.getMessage('surveyOrg.ownerComment.label', null, locale)])
+                               messageSource.getMessage('surveyOrg.ownerComment.export.label', null, locale)])
                 if (surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
                     titles.add(messageSource.getMessage('surveyProperty.subName', null, locale))
                 }
