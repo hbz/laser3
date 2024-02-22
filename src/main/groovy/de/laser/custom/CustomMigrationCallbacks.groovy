@@ -59,6 +59,9 @@ class CustomMigrationCallbacks {
 		}
 	}
 
+	/**
+	 * Cleanup method for obsolete changelog files (up to 2023-05-31)
+	 */
 	static void _localChangelogMigration_july24() {
 		groovy.sql.Sql sql = new groovy.sql.Sql(BeanStore.getDataSource())
 
@@ -86,6 +89,9 @@ class CustomMigrationCallbacks {
 		}
 	}
 
+	/**
+	 * Cleanup method for obsolete changelog files for the storage database (up to 2023-05-31)
+	 */
 	static void _localChangelogMigration_july24_storage() {
 		groovy.sql.Sql sql = new groovy.sql.Sql(BeanStore.getStorageDataSource())
 

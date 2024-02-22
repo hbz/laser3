@@ -66,7 +66,7 @@ class Task {
         org             column:'tsk_org_fk'
         pkg             column:'tsk_pkg_fk'
         subscription    column:'tsk_sub_fk'
-        surveyConfig      column:'tsk_sur_config_fk'
+        surveyConfig    column:'tsk_sur_config_fk'
 
         title           column:'tsk_title'
         description     column:'tsk_description', type: 'text'
@@ -144,6 +144,17 @@ class Task {
         displayArgs
     }
 
+    /**
+     * Gets the name of the object to which this task is related
+     * @return one of:
+     * <ul>
+     *     <li>{@link License#reference}</li>
+     *     <li>{@link Org#name}</li>
+     *     <li>{@link Package#name}</li>
+     *     <li>{@link Subscription#name}</li>
+     *     <li>{@link de.laser.survey.SurveyInfo#name}</li>
+     * </ul>
+     */
     String getObjectName() {
         String name = ''
         if (license) {

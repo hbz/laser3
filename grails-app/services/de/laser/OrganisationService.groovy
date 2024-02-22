@@ -265,6 +265,15 @@ class OrganisationService {
         records
     }
 
+    /**
+     * Gets all namespaces which have a validation pattern defined
+     * @return a {@link Map} containing namespaces with validations in structure:
+     * {
+     *     pattern: validationRegex,
+     *     prompt: error message token,
+     *     placeholder: help message token
+     * }
+     */
     Map<String, Object> getNamespacesWithValidations() {
         Map<String, Object> result = [:]
         Locale locale = LocaleUtils.getCurrentLocale()

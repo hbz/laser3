@@ -881,6 +881,12 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         }
     }
 
+    /**
+     * Compares the given organisation with another. Compared are name and id; id because otherwise, SortedSet would eliminate organisation
+     * duplicates
+     * @param o the object to be compared
+     * @return the comparison result (-1, 0 or 1)
+     */
     @Override
     int compareTo(Org o) {
         int result = sortname <=> o.sortname

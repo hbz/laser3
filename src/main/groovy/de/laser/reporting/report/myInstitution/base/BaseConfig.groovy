@@ -31,6 +31,11 @@ import org.springframework.context.MessageSource
 
 import java.time.Year
 
+/**
+ * This class contains general methods for retrieving configuration parameters.
+ * It is moreover the base class for the detailed object configuration, containing parameters for data sources and display.
+ * The subclasses are not annotated in detail!
+ */
 @Slf4j
 class BaseConfig {
 
@@ -92,6 +97,11 @@ class BaseConfig {
             CHART_BAR, CHART_PIE
     ]
 
+    /**
+     * Determines the configuration class for the given object type key
+     * @param key the object type key
+     * @return the appropriate configuration {@link Class}
+     */
     static Class getCurrentConfigClass(String key) {
 
         if (key == KEY_COSTITEM) { CostItemXCfg }
@@ -112,6 +122,11 @@ class BaseConfig {
         }
     }
 
+    /**
+     * Gets for the given object type the configuration details
+     * @param key the object type to which the configuration table should be retrieved
+     * @return the configuration details map
+     */
     static Map<String, Map> getCurrentConfigDetailsTable(String key) {
         Class config = getCurrentConfigClass(key)
 
@@ -121,6 +136,12 @@ class BaseConfig {
             [:]
         }
     }
+
+    /**
+     * Gets for the given object type the configuration about the data to be retrieved from an ElasticSearch index
+     * @param key the object type for which the configuration should be retrieved
+     * @return the ElasticSeach data configuration map
+     */
     static Map<String, Map> getCurrentConfigElasticsearchData(String key) {
         Class config = getCurrentConfigClass(key)
 
@@ -131,6 +152,11 @@ class BaseConfig {
         }
     }
 
+    /**
+     * Gets the complete configuration for the given object
+     * @param key the object type key
+     * @return the entire config map for the given object
+     */
     static Map<String, Object> getCurrentConfig(String key) {
         Class config = getCurrentConfigClass(key)
 
@@ -141,6 +167,11 @@ class BaseConfig {
         }
     }
 
+    /**
+     * Gets the current object configuration from the given filter key
+     * @param filter the filter key for which the configuration should be retrieved
+     * @return the matching object configuration map
+     */
     static Map<String, Object> getCurrentConfigByFilter(String filter) {
         Map<String, Object> cfg = [:]
         // println '|--- BaseConfig.getCurrentConfigByFilterAndPrefix( ' + filter + ' )'
@@ -185,10 +216,21 @@ class BaseConfig {
 //        cfg
 //    }
 
+    /**
+     * Substitution call for {@link #getCustomImplRefdata(java.lang.String, java.lang.Class)}, without configuration class
+     * @param key the object type key for which the reference data should be retrieved
+     * @return the reference data map containing the labels for the chart
+     */
     static Map<String, Object> getCustomImplRefdata(String key) {
         getCustomImplRefdata(key, null)
     }
 
+    /**
+     * Retrieves the reference data values in order to display the requested attribute on a chart
+     * @param key the object type key for which the reference data should be retrieved
+     * @param cfgClass the configuration class (= requested object type); determining the property definition type whose property definitions may be retrieved
+     * @return the reference data map containing the labels for the chart
+     */
     static Map<String, Object> getCustomImplRefdata(String key, Class cfgClass) {
 
         ContextService contextService = BeanStore.getContextService()
@@ -402,6 +444,11 @@ class BaseConfig {
         }
     }
 
+    /**
+     * Gets the reference data labels from the we:kb ElasticSearch API
+     * @param key the attribute key for which the labels should be retrieved
+     * @return a map containing the label and the reference data values for chart display
+     */
     static Map<String, Object> getElasticSearchRefdata(String key) {
 
         // println 'BaseConfig.getElasticSearchRefdata() ' + key
@@ -425,24 +472,52 @@ class BaseConfig {
         }
     }
 
+    /**
+     * Gets the label associated to the given token
+     * @param token the token to which the label should be retrieved
+     * @return the matching label from the message resource bundle
+     */
     static String getLabel(String token) {
         //println 'getConfigLabel(): ' + key
         MessageSource messageSource = BeanStore.getMessageSource()
         messageSource.getMessage(token, null, LocaleUtils.getCurrentLocale())
     }
 
+    /**
+     * Gets the config label for the given token
+     * @param token the token being queried
+     * @return the associated label
+     */
     static String getConfigLabel(def token) {
         getLabel('reporting.cfg.' + token)
     }
 
+    /**
+     * Gets the filter label for the given key
+     * @param key the key being queried
+     * @return the associated label
+     */
     static String getFilterLabel(String key) {
         getLabel('reporting.cfg.filter.' + key)
     }
 
+    /**
+     * Gets the source label for the given key and source
+     * @param key the key being queried
+     * @param source the source from which the request is coming
+     * @return the associated label
+     */
     static String getSourceLabel(String key, String source) {
         getLabel('reporting.cfg.source.' + key + '.' + source)
     }
 
+    /**
+     * Gets the label for the given key, query and value
+     * @param key the field key to be displayed
+     * @param qKey the query key specifying the key
+     * @param qValues the values set among which a generic value may be displayed
+     * @return the associated message key
+     */
     static String getQueryLabel(String key, String qKey, List qValues) {
         if (qValues[0].startsWith('generic')) {
             getLabel('reporting.cfg.' + qValues[0])
@@ -451,6 +526,12 @@ class BaseConfig {
         }
     }
 
+    /**
+     * Gets the distribution label matching to the given key and distribution
+     * @param key the field key to which the distribution should be retrieved
+     * @param dist the distribution value for which the label should be displayed
+     * @return the associated message key
+     */
     static String getDistributionLabel(String key, String dist) {
         getLabel('reporting.cfg.dist.' + key + '.' + dist)
     }

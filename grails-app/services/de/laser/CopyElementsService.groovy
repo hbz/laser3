@@ -951,6 +951,13 @@ class CopyElementsService {
         }
     }
 
+    /**
+     * Deletes the given workflows from the target object
+     * @param toDeleteWorkflows the workflows which should be deleted
+     * @param targetObject the target object from which the tasks should be deleted
+     * @param flash the message container
+     * @return true if the deletion was successful, false otherwise
+     */
     boolean deleteWorkflows(List<Long> toDeleteWorkflows, Object targetObject, def flash) {
         log.debug('toDeleteWorkflows: ' + toDeleteWorkflows)
 
@@ -1004,6 +1011,14 @@ class CopyElementsService {
         }
     }
 
+    /**
+     * Copies the given workflow list into the target object
+     * @param sourceObject the object from which the workflows should be taken
+     * @param toCopyWorkflows the workflow IDs to be copied
+     * @param targetObject the target object into which the workflows should be copied
+     * @param flash the message container
+     * @return true if the transfer was successful, false otherwise
+     */
     boolean copyWorkflows(Object sourceObject, List<Long> toCopyWorkflows, Object targetObject, def flash) {
         log.debug('toCopyWorkflows: ' + toCopyWorkflows)
         boolean succuess = true
@@ -1779,6 +1794,10 @@ class CopyElementsService {
         compareService.compareProperties(objectsToCompare)
     }
 
+    /**
+     * Gets the flash message container for the current request
+     * @return the {@link FlashScope} container for this request
+     */
     FlashScope getCurrentFlashScope() {
         GrailsWebRequest grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
         HttpServletRequest request = grailsWebRequest.getCurrentRequest()

@@ -184,6 +184,7 @@ class MyInstitutionControllerService {
                 break
             case 'users':
                 result.editable = contextService.isInstAdm_or_ROLEADMIN()
+                SwissKnife.setPaginationParams(result, params, user)
                 break
             case 'managePropertyDefinitions':
                 result.editable = false

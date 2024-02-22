@@ -1825,7 +1825,7 @@ class ExportClickMeService {
      * @param subscription the subscription whose members should be exported
      * @return the configuration map for the subscription member export
      */
-    Map<String, Object> getExportSubscriptionMembersFields(Org institution, Subscription subscription, List<Subscription> childSubs = []) {
+    Map<String, Object> getExportSubscriptionMembersFields(Org institution, Subscription subscription) {
 
         Map<String, Object> exportFields = [:]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
@@ -1835,6 +1835,7 @@ class ExportClickMeService {
                 exportFields.put(it.key, it.value)
             }
         }
+        List<Subscription> childSubs = []
 
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
@@ -1967,6 +1968,7 @@ class ExportClickMeService {
     /**
      * Gets the subscription fields for the given institution
      * @param institution the context institution whose perspective should be taken for the export
+     * @param showTransferFields should the subscription transfer fields be displayed as well?
      * @return the configuration map for the subscription export
      */
     Map<String, Object> getExportSubscriptionFields(Org institution,boolean showTransferFields = false) {
@@ -2068,6 +2070,7 @@ class ExportClickMeService {
      * Generic call from views
      * Gets the subscription fields for the given institution for the UI
      * @param institution the context institution whose perspective should be taken for the export
+     * @param showTransferFields should the subscription transfer fields be displayed as well?
      * @return the configuration map for the subscription export for the UI
      */
     Map<String, Object> getExportSubscriptionFieldsForUI(Org institution, boolean showTransferFields = false) {
@@ -2420,7 +2423,8 @@ class ExportClickMeService {
     }
 
     /**
-     * Gets the cost item fields for the given institution
+     * Gets the cost item fields for the given institution. The export may be restricted to packages of a certain subscription
+     * @param sub the {@link Subscription} whose packages should be included in the export
      * @return the configuration map for the cost item export
      */
     Map<String, Object> getExportCostItemFields(Subscription sub = null) {
@@ -2475,7 +2479,8 @@ class ExportClickMeService {
 
     /**
      * Generic call from views
-     * Gets the cost item fields for the given institution
+     * Gets the cost item fields for the given institution. The export may be restricted to packages of a certain subscription
+     * @param sub the {@link Subscription} whose packages should be included in the export
      * @return the configuration map for the cost item export for UI
      */
     Map<String, Object> getExportCostItemFieldsForUI(Subscription sub = null) {
@@ -2538,7 +2543,7 @@ class ExportClickMeService {
      * Gets the cost item fields for the given institution
      * @return the configuration map for the cost item export
      */
-    Map<String, Object> getExportSurveyCostItemFields(Subscription sub = null) {
+    Map<String, Object> getExportSurveyCostItemFields() {
         Org institution = contextService.getOrg()
         Map<String, Object> exportFields = [:]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
@@ -2573,7 +2578,7 @@ class ExportClickMeService {
      * Gets the cost item fields for the given institution
      * @return the configuration map for the cost item export for UI
      */
-    Map<String, Object> getExportSurveyCostItemFieldsForUI(SurveyConfig surveyConfig = null) {
+    Map<String, Object> getExportSurveyCostItemFieldsForUI() {
         Org institution = contextService.getOrg()
 
         Map<String, Object> fields = [:]
@@ -3244,6 +3249,7 @@ class ExportClickMeService {
      * @param renewalResult the result to export
      * @param selectedFields the fields which should appear
      * @param format the {@link FORMAT} to be exported
+     * @param contactSources the types of contact (public or private) to be exported
      * @return the output in the desired format
      */
     def exportRenewalResult(Map renewalResult, Map<String, Object> selectedFields, FORMAT format, Set<String> contactSources) {
@@ -3593,6 +3599,8 @@ class ExportClickMeService {
      * @param result the subscription set to export
      * @param selectedFields the fields which should appear
      * @param consortium the consortium as reference
+     * @param contactSwitch which set of contacts should be considered (public or private)?
+     * @param format the {@link FORMAT} to be exported
      * @return an Excel worksheet containing the export
      */
     def exportConsortiaParticipations(Set result, Map<String, Object> selectedFields, Org consortium, Set<String> contactSwitch, FORMAT format) {
@@ -3709,6 +3717,7 @@ class ExportClickMeService {
      * @param result the cost item set to export
      * @param selectedFields the fields which should appear
      * @param format the {@link FORMAT} to be exported
+     * @param contactSources which set of contacts should be considered (public or private)?
      * @return the output in the desired format
      */
     def exportCostItems(Map result, Map<String, Object> selectedFields, FORMAT format, Set<String> contactSources) {
@@ -3752,6 +3761,14 @@ class ExportClickMeService {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
+    /**
+     * Exports the given fields from the given survey cost items
+     * @param result the cost item set to export
+     * @param selectedFields the fields which should appear
+     * @param format the {@link FORMAT} to be exported
+     * @param contactSources which set of contacts should be considered (public or private)?
+     * @return the output in the desired format
+     */
     def exportSurveyCostItems(ArrayList<CostItem> result, Map<String, Object> selectedFields, FORMAT format, Set<String> contactSources) {
         Locale locale = LocaleUtils.getCurrentLocale()
 

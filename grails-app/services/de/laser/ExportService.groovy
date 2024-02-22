@@ -746,6 +746,7 @@ class ExportService {
 	Map<String, Object> generateReport(GrailsParameterMap params, Boolean showPriceDate = false, Boolean showMetricType = false, Boolean showOtherData = false) {
 		EhcacheWrapper userCache = contextService.getUserCache("/subscription/stats")
 		userCache.put('progress', 0)
+		userCache.put('label', 'Bereite Laden vor ...')
 		Profiler prf = new Profiler()
 		prf.setBenchmark('start export')
 		Locale locale = LocaleUtils.getCurrentLocale()
@@ -754,6 +755,7 @@ class ExportService {
 			return null
 		Subscription refSub
 		Org customer = result.subscription.getSubscriber()
+		boolean allTitles = false
 		if (params.statsForSurvey == true) {
 			if(params.loadFor == 'allTipps')
 				refSub = result.subscription.instanceOf //look at statistics of the whole set of titles, i.e. of the consortial parent subscription
@@ -763,7 +765,10 @@ class ExportService {
 		else if(subscriptionService.countCurrentIssueEntitlements(result.subscription) > 0){
 			refSub = result.subscription
 		}
-		else refSub = result.subscription.instanceOf
+		else {
+			refSub = result.subscription.instanceOf
+			allTitles = true
+		}
 		prf.setBenchmark('get platforms')
 		Platform platform = Platform.get(params.platform)
 		prf.setBenchmark('get namespaces')
@@ -782,7 +787,8 @@ class ExportService {
 		Set<TitleInstancePackagePlatform> titlesSorted = [] //fallback structure to preserve sorting
 		prf.setBenchmark('prepare title identifier map')
         if(reportType in Counter4Report.COUNTER_4_TITLE_REPORTS || reportType in Counter5Report.COUNTER_5_TITLE_REPORTS) {
-			titles = subscriptionControllerService.fetchTitles(refSub)
+			userCache.put('label', 'Hole Titel ...')
+			titles = subscriptionControllerService.fetchTitles(refSub, allTitles)
 			userCache.put('progress', 10)
 			titlesSorted = TitleInstancePackagePlatform.executeQuery('select ie.tipp from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :refSub and ie.status = :current order by tipp.sortname, tipp.name', [refSub: refSub, current: RDStore.TIPP_STATUS_CURRENT])
 			userCache.put('progress', 20)
@@ -795,6 +801,7 @@ class ExportService {
 		int rowno = 0
 		//revision 4
 		if(params.revision == AbstractReport.COUNTER_4) {
+			userCache.put('label', 'Hole Daten vom Anbieter ...')
 			prf.setBenchmark('before SUSHI call')
 			Map<String, Object> queryParams = [reportType: reportType, customer: customer, platform: platform]
 			if(params.metricType) {
@@ -807,6 +814,7 @@ class ExportService {
 			userCache.put('progress', 40)
 			prf.setBenchmark('data fetched from provider')
 			if(requestResponse.containsKey('reports')) {
+				userCache.put('label', 'Erzeuge Tabelle ...')
 				Set<String> availableMetrics = requestResponse.reports.'**'.findAll { node -> node.name() == 'MetricType' }.collect { node -> node.text()}.toSet()
 				workbook = new XSSFWorkbook()
 				POIXMLProperties xmlProps = workbook.getProperties()
@@ -1024,8 +1032,11 @@ class ExportService {
 								}
 								break
 							case Counter4Report.DATABASE_REPORT_1:
+								int i = 0
+								prf.setBenchmark('loop through assembled rows')
 								rowno = 9
 								Map<String, Map<String, Object>> data = prepareDataWithDatabases(requestResponse, reportType)
+								double pointsPerIteration = 20/data.size()
 								data.each { String databaseName, Map<String, Object> databaseMetrics ->
 									databaseMetrics.each { String databaseMetricType, Map<String, Object> metricRow ->
 										columnHeaders.eachWithIndex { String colHeader, int c ->
@@ -1035,12 +1046,15 @@ class ExportService {
 									}
 									row = sheet.createRow(rowno)
 									rowno++
+									i++
+									userCache.put('progress', 80+i*pointsPerIteration)
 								}
 								break
 							case Counter4Report.DATABASE_REPORT_2:
 								rowno = 9
 								Map<String, Object> data = prepareDataWithDatabases(requestResponse, reportType)
-								int totalSum = 0
+								double pointsPerIteration = 20/data.size()
+								int totalSum = 0, i = 0
 								/*
                                 TODO migrate
                                 Counter4Report.withNewSession {
@@ -1094,11 +1108,15 @@ class ExportService {
 									}
 									rowno++
 									row = sheet.createRow(rowno)
+									i++
+									userCache.put('progress', 80+i*pointsPerIteration)
 								}
 								break
 							case Counter4Report.PLATFORM_REPORT_1:
+								int i = 0
 								rowno = 9
 								Map<String, Map<String, Object>> data = prepareDataWithDatabases(requestResponse, reportType)
+								double pointsPerIteration = 20/data.size()
 								data.each { String databaseName, Map<String, Object> databaseMetrics ->
 									databaseMetrics.each { String databaseMetricType, Map<String, Object> metricRow ->
 										columnHeaders.eachWithIndex { String colHeader, int c ->
@@ -1108,6 +1126,8 @@ class ExportService {
 									}
 									row = sheet.createRow(rowno)
 									rowno++
+									i++
+									userCache.put('progress', 80+i*pointsPerIteration)
 								}
 								/*
                                 TODO migrate
@@ -1151,31 +1171,33 @@ class ExportService {
 								*/
 								break
 						}
-						int i = 0
-						prf.setBenchmark('loop through assembled rows')
-						double pointsPerIteration = 20/titlesSorted.size()
-						for(TitleInstancePackagePlatform title: titlesSorted) {
-							Instant start = Instant.now().truncatedTo(ChronoUnit.MICROS)
-							Map metricRow = titleRows.get(title.id)
-							if(metricRow) {
-								Map titleRow = metricRow.get(metricType)
-								if(titleRow) {
-									row = sheet.createRow(i+rowno)
-									cell = row.createCell(0)
-									cell.setCellValue(title.name)
-									for(int c = 1; c < columnHeaders.size(); c++) {
-										cell = row.createCell(c)
-										def empty = ""
-										if(columnHeaders[c].matches('\\d{4}-\\d{2}'))
-											empty = 0
-										cell.setCellValue(titleRow.get(columnHeaders[c]) ?: empty)
+						if(titlesSorted) {
+							int i = 0
+							prf.setBenchmark('loop through assembled rows')
+							double pointsPerIteration = 20/titlesSorted.size()
+							for(TitleInstancePackagePlatform title: titlesSorted) {
+								Instant start = Instant.now().truncatedTo(ChronoUnit.MICROS)
+								Map metricRow = titleRows.get(title.id)
+								if(metricRow) {
+									Map titleRow = metricRow.get(metricType)
+									if(titleRow) {
+										row = sheet.createRow(i+rowno)
+										cell = row.createCell(0)
+										cell.setCellValue(title.name)
+										for(int c = 1; c < columnHeaders.size(); c++) {
+											cell = row.createCell(c)
+											def empty = ""
+											if(columnHeaders[c].matches('\\d{4}-\\d{2}'))
+												empty = 0
+											cell.setCellValue(titleRow.get(columnHeaders[c]) ?: empty)
+										}
+										i++
+										userCache.put('progress', 80+i*pointsPerIteration)
 									}
-									i++
-									userCache.put('progress', 80+i*pointsPerIteration)
 								}
+								Duration diff = Duration.between(start, Instant.now().truncatedTo(ChronoUnit.MICROS))
+								//log.debug("cell row generated in ${diff} micros")
 							}
-							Duration diff = Duration.between(start, Instant.now().truncatedTo(ChronoUnit.MICROS))
-							//log.debug("cell row generated in ${diff} micros")
 						}
 					}
 				}
@@ -1205,6 +1227,7 @@ class ExportService {
 		}
 		//revision 5
 		else if(params.revision == AbstractReport.COUNTER_5) {
+			userCache.put('label', 'Hole Daten vom Anbieter ...')
 			prf.setBenchmark('before SUSHI call')
 			Map<String, Object> queryParams = [reportType: reportType, customer: customer, platform: platform]
 			if(params.metricType) {
@@ -1233,6 +1256,7 @@ class ExportService {
 				sheet.trackAllColumnsForAutoSizing()
 
 				prf.setBenchmark('data fetched from provider')
+				userCache.put('label', 'Erzeuge Tabelle ...')
 				/*
 				desideratum:
 				if(reportType in Counter5Report.COUNTER_5_TITLE_REPORTS) {
@@ -2304,6 +2328,8 @@ class ExportService {
 							}
 							break
 					}
+					if(platformRecord.counterR5SushiPlatform)
+						url += "&platform=${platformRecord.counterR5SushiPlatform}"
 					url += configMap.metricTypes ? "&metric_type=${configMap.metricTypes}" : ""
 					url += configMap.accessTypes ? "&access_type=${configMap.accessTypes}" : ""
 					url += configMap.accessMethods ? "&access_method=${configMap.accessMethods}" : ""
@@ -3560,6 +3586,7 @@ class ExportService {
         Map<String, Object> queryClauseParts = filterService.prepareTitleSQLQuery(configMap, TitleInstancePackagePlatform.class.name, sql)
         String baseQuery = "select tipp_id, ${titleHeaders.values().join(', ')} from title_instance_package_platform left join tippcoverage on tc_tipp_fk = tipp_id join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id ${queryClauseParts.join} where ${queryClauseParts.where}${queryClauseParts.order}"
 		queryClauseParts.subscriber = subscriber
+		userCache.put('label', 'Hole Titel ...')
         List<GroovyRowResult> rows = sql.rows(baseQuery, queryClauseParts.params)
 		Map<String, List> export = [titles: titleHeaders.keySet().toList()]
 		export.titles.addAll(showStatsInMonthRings.collect { Date month -> DateUtils.getSDF_yyyyMM().format(month) })
@@ -3584,8 +3611,10 @@ class ExportService {
 		configMap.customer = subscriber
 		configMap.startDate = startDate
 		configMap.endDate = endDate
+		userCache.put('label', 'Hole Daten vom Anbieter ...')
 		Map<String, Object> requestResponse = getReports(configMap)
 		userCache.put('progress', 40)
+		userCache.put('label', 'Erzeuge Tabelle ...')
 		int processed = 0
 		if(rows) {
 			double pointsPerIteration = 20/rows.size()

@@ -15,7 +15,6 @@ import grails.gorm.transactions.Transactional
 class AddressbookService {
 
     ContextService contextService
-    FilterService filterService
     PropertyService propertyService
     UserService userService
 

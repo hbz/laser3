@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5579    20.02.2024  rc-3.3  3.3.6       Andreas Feature     SUSHI-Konfiguration um Plattformnamen/filter erweiter
+
+--      20.02.2024  rc-3.3  3.3.6       Andreas Bug         Abfrageargumente bei Titelumfrage korrigiert
+
+5219    19.02.2024  dev     3.4         Andreas Feature     Aktualisierung der internen Dokumentation
+
+--      14.02.2024  dev     3.4         Andreas Feature     Performanzverbesserung bei der Nutzerverwaltung
+
 5559    14.02.2024  dev     3.4         Andreas Feature     Ladebefehle bei Merkmalsladung umgestellt
 
 5551    07.02.2024  dev     3.4         Andreas Feature     fehlende Felder dem Einrichtungsexport nachgereicht

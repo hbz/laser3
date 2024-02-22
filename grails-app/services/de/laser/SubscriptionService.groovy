@@ -60,7 +60,7 @@ class SubscriptionService {
 
 
     /**
-     * ex MyInstitutionController.currentSubscriptions()
+     * ex {@link MyInstitutionController#currentSubscriptions()}
      * Gets the current subscriptions for the given institution
      * @param params the request parameter map
      * @param contextUser the user whose settings should be considered
@@ -1572,6 +1572,20 @@ join sub.orgRelations or_sub where
     boolean showConsortiaFunctions(Org contextOrg, Subscription subscription) {
         return ((subscription.getConsortia()?.id == contextOrg.id) && subscription._getCalculatedType() in
                 [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE])
+    }
+
+    boolean areStatsAvailable(Subscription subscription) {
+        Set<Platform> subscribedPlatforms = Platform.executeQuery(
+                "select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription",
+                [subscription: subscription]
+        )
+        if (!subscribedPlatforms) {
+            subscribedPlatforms = Platform.executeQuery(
+                    "select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription or ie.subscription = (select s.instanceOf from Subscription s where s = :subscription)",
+                    [subscription: subscription]
+            )
+        }
+        areStatsAvailable(subscribedPlatforms)
     }
 
     /**

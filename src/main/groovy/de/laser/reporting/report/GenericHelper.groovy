@@ -11,9 +11,18 @@ import org.springframework.context.MessageSource
 
 import java.lang.reflect.Field
 
+/**
+ * Helper class containing frequently used methods
+ */
 @Slf4j
 class GenericHelper {
 
+    /**
+     * Returns the field matching the given field name from the given configuration map
+     * @param objConfig the object configuration map containing the fields
+     * @param fieldName the name key to retrieve
+     * @return the value defined for the given field in the object configuration map
+     */
     static Map<String, Object> getField(Map<String, Object> objConfig, String fieldName) {
         Map<String, Object> field = objConfig.fields.get(fieldName)
         if (field) {
@@ -25,25 +34,54 @@ class GenericHelper {
         }
     }
 
+    /**
+     * Checks if the given field in the configuration map may be distributed multiple times
+     * @param cfg the object configuration map
+     * @param fieldName the field name to check
+     * @return true if the field can be assigned multiple times, false otherwise
+     */
     static boolean isFieldMultiple(Map<String, Object> cfg, String fieldName) {
         Map field = getField(cfg, fieldName) ?: [:]
         field.spec == BaseConfig.FIELD_IS_MULTIPLE
     }
 
+    /**
+     * Checks if the given object is a {@link Collection}
+     * @param obj the object to check
+     * @return true if the object is an instance of {@link Collection}, false otherwise
+     */
     static boolean isCollection(def obj) {
         obj instanceof Collection
     }
 
+    /**
+     * Checks if the given field in the configuration map is virtual, i.e. influenced by other fields or not
+     * @param cfg the object configuration map
+     * @param fieldName the field name to check
+     * @return true if the field is virtual, false otherwise
+     */
     static boolean isFieldVirtual(Map<String, Object> cfg, String fieldName) {
         Map field = getField(cfg, fieldName) ?: [:]
         field.spec == BaseConfig.FIELD_IS_VIRTUAL
     }
 
+    /**
+     * Returns the type of the given field name
+     * @param cfg the object configuration map
+     * @param fieldName the field name
+     * @return the field type, see {@link BaseConfig} and {@link BaseDetailsExport} for the possible types
+     */
     static String getFieldType(Map<String, Object> objConfig, String fieldName) {
         // println '- GenericHelper.getFieldType() : ' + fieldName
         getField(objConfig, fieldName)?.type
     }
 
+    /**
+     * Retrieves the label to the given field name
+     * @param objConfig the object configuration map
+     * @param fieldName the field name to which the label should be retrieved
+     * @return the associated label
+     */
     static String getFieldLabel(Map<String, Object> objConfig, String fieldName) {
         // println '- GenericHelper.getFieldLabel() : ' + fieldName
         String label = '?'
@@ -158,10 +196,21 @@ class GenericHelper {
         label
     }
 
+    /**
+     * Flags the given value as fuzzy-matched
+     * @param value the value to flag
+     * @return a concatenated string ( value *), marking the value as unmatched
+     */
     static String flagUnmatched(String value) {
         '(' + value + ' *)'
     }
 
+    /**
+     * Returns from the given filter result the requested database ID list
+     * @param filterResult the filter result map
+     * @param key the ID list to be retrieved
+     * @return a list of database IDs or an empty list if the list does not exist in the filter result map
+     */
     static List<Long> getFilterResultDataIdList(Map<String, Object> filterResult, String key) {
         filterResult.data.getAt( key + 'IdList') as List ?: []
     }

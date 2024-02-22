@@ -39,27 +39,59 @@ import org.springframework.context.MessageSource
 
 import javax.sql.DataSource
 
+/**
+ * This class contains loading pipes for services and configuration parameters
+ */
 @CompileStatic
 class BeanStore {
 
+    /**
+     * Gets and loads the given bean from the application context holder
+     * @param bean the bean name to load
+     * @return the defined context bean
+     */
     static def get(String bean) {
         Holders.grailsApplication.mainContext.getBean(bean)
     }
 
     // -- Grails --
 
+    /**
+     * Returns the application tag library
+     * @return the {@link ApplicationTagLib} holding for the application context
+     */
     static ApplicationTagLib getApplicationTagLib() {
         Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
     }
+
+    /**
+     * Returns the principal data source bean
+     * @return the currently holding principal {@link DataSource}
+     */
     static DataSource getDataSource() {
         Holders.grailsApplication.mainContext.getBean('dataSource') as DataSource
     }
+
+    /**
+     * Returns the secondary storage data source bean
+     * @return the currently holding secondary storage {@link DataSource}
+     */
     static DataSource getStorageDataSource() {
         Holders.grailsApplication.mainContext.getBean('dataSource_storage') as DataSource
     }
+
+    /**
+     * Returns the Groovy page renderer
+     * @return the currently valid {@link PageRenderer}
+     */
     static PageRenderer getGroovyPageRenderer() {
         Holders.grailsApplication.mainContext.getBean('groovyPageRenderer') as PageRenderer
     }
+
+    /**
+     * Returns the message source loader which enabled access to the message resource bundle
+     * @return the {@link MessageSource} container
+     */
     static MessageSource getMessageSource() {
         MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource') as MessageSource
 
@@ -77,99 +109,224 @@ class BeanStore {
 //        }
         messageSource
     }
+
+    /**
+     * Returns the Spring security service, containing principal security and access rights checkup methods
+     * @return the currently valid {@link SpringSecurityService}
+     */
     static SpringSecurityService getSpringSecurityService() {
         Holders.grailsApplication.mainContext.getBean('springSecurityService') as SpringSecurityService
     }
+
+    /**
+     * Returns the Grails URL mappings holder
+     * @return the currently valid {@link UrlMappingsHolder}
+     */
     static UrlMappingsHolder getUrlMappingsHolder() {
         Holders.grailsApplication.mainContext.getBean('grailsUrlMappingsHolder') as UrlMappingsHolder
     }
 
     // -- Laser --
 
+    /**
+     * @return the currently holding {@link AccessService}
+     */
     static AccessService getAccessService() {
         Holders.grailsApplication.mainContext.getBean('accessService') as AccessService
     }
+
+    /**
+     * @return the currently holding {@link AuditService}
+     */
     static AuditService getAuditService() {
         Holders.grailsApplication.mainContext.getBean('auditService') as AuditService
     }
+
+    /**
+     * @return the currently holding {@link CacheService}
+     */
     static CacheService getCacheService() {
         Holders.grailsApplication.mainContext.getBean('cacheService') as CacheService
     }
+
+    /**
+     * @return the currently holding {@link CascadingUpdateService}
+     */
     static CascadingUpdateService getCascadingUpdateService() {
         Holders.grailsApplication.mainContext.getBean('cascadingUpdateService') as CascadingUpdateService
     }
+
+    /**
+     * @return the currently holding {@link ContextService}
+     */
     static ContextService getContextService() {
         Holders.grailsApplication.mainContext.getBean('contextService') as ContextService
     }
+
+    /**
+     * @return the currently holding {@link CustomerTypeService}
+     */
     static CustomerTypeService getCustomerTypeService() {
         Holders.grailsApplication.mainContext.getBean('customerTypeService') as CustomerTypeService
     }
+
+    /**
+     * @return the currently holding {@link DeletionService}
+     */
     static DeletionService getDeletionService() {
         Holders.grailsApplication.mainContext.getBean('deletionService') as DeletionService
     }
+
+    /**
+     * @return the currently holding {@link EscapeService}
+     */
     static EscapeService getEscapeService() {
         Holders.grailsApplication.mainContext.getBean('escapeService') as EscapeService
     }
+
+    /**
+     * @return the currently holding {@link ESWrapperService}
+     */
     static ESWrapperService getESWrapperService() {
         Holders.grailsApplication.mainContext.getBean('ESWrapperService') as ESWrapperService
     }
+
+    /**
+     * @return the currently holding {@link FinanceControllerService}
+     */
     static FinanceControllerService getFinanceControllerService() {
         Holders.grailsApplication.mainContext.getBean('financeControllerService') as FinanceControllerService
     }
+
+    /**
+     * @return the currently holding {@link FinanceService}
+     */
     static FinanceService getFinanceService() {
         Holders.grailsApplication.mainContext.getBean('financeService') as FinanceService
     }
+
+    /**
+     * @return the currently holding {@link GenericOIDService}
+     */
     static GenericOIDService getGenericOIDService() {
         Holders.grailsApplication.mainContext.getBean('genericOIDService') as GenericOIDService
     }
+
+    /**
+     * @return the currently holding {@link GlobalSourceSyncService}
+     */
     static GlobalSourceSyncService getGlobalSourceSyncService() {
         Holders.grailsApplication.mainContext.getBean('globalSourceSyncService') as GlobalSourceSyncService
     }
+
+    /**
+     * @return the currently holding {@link GokbService}
+     */
     static GokbService getGokbService() {
         Holders.grailsApplication.mainContext.getBean('gokbService') as GokbService
     }
+
+    /**
+     * @return the currently holding {@link LicenseService}
+     */
     static LicenseService getLicenseService() {
         Holders.grailsApplication.mainContext.getBean('licenseService') as LicenseService
     }
+
+    /**
+     * @return the currently holding {@link LinksGenerationService}
+     */
     static LinksGenerationService getLinksGenerationService() {
         Holders.grailsApplication.mainContext.getBean('linksGenerationService') as LinksGenerationService
     }
+
+    /**
+     * @return the currently holding {@link MailService}
+     */
     static MailService getMailService() {
         Holders.grailsApplication.mainContext.getBean('mailService') as MailService
     }
+
+    /**
+     * @return the currently holding {@link MailSendService}
+     */
     static MailSendService getMailSendService() {
         Holders.grailsApplication.mainContext.getBean('mailSendService') as MailSendService
     }
+
+    /**
+     * @return the currently holding {@link OrganisationService}
+     */
     static OrganisationService getOrganisationService() {
         Holders.grailsApplication.mainContext.getBean('organisationService') as OrganisationService
     }
+
+    /**
+     * @return the currently holding {@link OrgTypeService}
+     */
     static OrgTypeService getOrgTypeService() {
         Holders.grailsApplication.mainContext.getBean('orgTypeService') as OrgTypeService
     }
+
+    /**
+     * @return the currently holding {@link PendingChangeService}
+     */
     static PendingChangeService getPendingChangeService() {
         Holders.grailsApplication.mainContext.getBean('pendingChangeService') as PendingChangeService
     }
+
+    /**
+     * @return the currently holding {@link PropertyService}
+     */
     static PropertyService getPropertyService() {
         Holders.grailsApplication.mainContext.getBean('propertyService') as PropertyService
     }
+
+    /**
+     * @return the currently holding {@link ShareService}
+     */
     static ShareService getShareService() {
         Holders.grailsApplication.mainContext.getBean('shareService') as ShareService
     }
+
+    /**
+     * @return the currently holding {@link SubscriptionService}
+     */
     static SubscriptionService getSubscriptionService() {
         Holders.grailsApplication.mainContext.getBean('subscriptionService') as SubscriptionService
     }
+
+    /**
+     * @return the currently holding {@link SubscriptionsQueryService}
+     */
     static SubscriptionsQueryService getSubscriptionsQueryService() {
         Holders.grailsApplication.mainContext.getBean('subscriptionsQueryService') as SubscriptionsQueryService
     }
+
+    /**
+     * @return the currently holding {@link SystemService}
+     */
     static SystemService getSystemService() {
         Holders.grailsApplication.mainContext.getBean('systemService') as SystemService
     }
+
+    /**
+     * @return the currently holding {@link UserService}
+     */
     static UserService getUserService() {
         Holders.grailsApplication.mainContext.getBean('userService') as UserService
     }
+
+    /**
+     * @return the currently holding {@link WorkflowService}
+     */
     static WorkflowService getWorkflowService() {
         Holders.grailsApplication.mainContext.getBean('workflowService') as WorkflowService
     }
+
+    /**
+     * @return the currently holding {@link YodaService}
+     */
     static YodaService getYodaService() {
         Holders.grailsApplication.mainContext.getBean('yodaService') as YodaService
     }

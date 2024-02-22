@@ -22,7 +22,7 @@
                 <div class="field">
                     <label for="org"><g:message code="user.org"/></label>
                     <g:select from="${availableComboOrgs}" noSelection="${['': message(code:'default.all')]}" class="ui search dropdown"
-                              value="${params.org}" optionKey="${{genericOIDService.getOID(it)}}" optionValue="${{it.getDesignation()}}" id="org" name="org" />
+                              value="${params.org}" optionKey="${{it.oid}}" optionValue="${{it.name}}" id="org" name="org" />
                 </div>
             </g:if>
 

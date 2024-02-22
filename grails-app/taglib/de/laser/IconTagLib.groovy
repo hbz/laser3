@@ -291,7 +291,6 @@ class IconTagLib {
         out << '<span class="la-long-tooltip la-popup-tooltip la-delay"'
         out << ' data-position="bottom center" data-content="' + tt +'">'
         out << '<i class="forward icon' + color + '"></i>'
-//        out << '<i class="double angle right icon' + color + '"></i>'
         out << '</span>'
     }
 
@@ -315,6 +314,16 @@ class IconTagLib {
             out << '<span>'
         }
         out << '<i class="icon ' + (attrs.color ? attrs.color + ' ' : '') + 'star"></i>'
+        out << '</span>'
+    }
+
+    def usageIcon = { attrs, body ->
+        String tt = message(code: 'default.usage.label')
+        String color = attrs.color ? ' grey' : '' // tmp override
+
+        out << '<span class="la-long-tooltip la-popup-tooltip la-delay"'
+        out << ' data-position="bottom center" data-content="' + tt +'">'
+        out << '<i class="chart bar icon' + color + '"></i>'
         out << '</span>'
     }
 }

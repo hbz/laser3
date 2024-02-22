@@ -956,7 +956,7 @@ class SubscriptionControllerService {
                     if(configMap.revision == AbstractReport.COUNTER_5) {
                         String apiKey = platformRecord.centralApiKey ?: ci.requestorKey
                         String queryArguments = "?customer_id=${ci.value}"
-                        switch(platformRecord.sushiApiAuthenticationMethod) {
+                        switch(configMap.sushiApiAuthenticationMethod) {
                             case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR:
                                 if(ci.requestorKey) {
                                     queryArguments += "&requestor_id=${ci.requestorKey}"
@@ -985,7 +985,8 @@ class SubscriptionControllerService {
                                 }
                                 break
                         }
-
+                        if(platformRecord.counterR5SushiPlatform)
+                            queryArguments += "&platform=${platformRecord.counterR5SushiPlatform}"
                         Map<String, Object> availableReports = statsSyncService.fetchJSONData(configMap.statsUrl + queryArguments, true)
                         if(availableReports && availableReports.list) {
                             availableReports.list.each { listEntry ->
@@ -1281,6 +1282,13 @@ class SubscriptionControllerService {
         [result:result,status:STATUS_OK]
     }
 
+    /**
+     * Opens a view containing the cost items of a subscription and comparing those with the equivalent cost items of the previous year ring,
+     * i.e. from the same subscription of the last year
+     * @param controller unused
+     * @param params the request parameter map
+     * @return a {@link Map} containing the comparison data
+     */
     Map<String,Object> compareSubMemberCostItems(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)
@@ -1924,7 +1932,21 @@ class SubscriptionControllerService {
                     */
                 }
 
-                result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(subscriberSub)
+                /*
+                <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
+                                ${surveyService.countPerpetualAccessTitlesBySubAndNotInIEGroup(subParticipant, surveyConfig)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
+                            </g:if>
+                            <g:else>
+                                ${subscriptionService.countCurrentIssueEntitlementsNotInIEGroup(subParticipant, ieGroup)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
+                            </g:else>
+                 */
+                if(result.surveyConfig.pickAndChoosePerpetualAccess) {
+                    result.countCurrentPermanentTitles = surveyService.countPerpetualAccessTitlesBySubAndNotInIEGroup(subscriberSub, result.surveyConfig)
+                }
+                else {
+                    result.countCurrentPermanentTitles = issueEntitlementGroup ? subscriptionService.countCurrentIssueEntitlementsNotInIEGroup(subscriberSub, issueEntitlementGroup) : 0
+                }
+
 
 /*            if (result.surveyConfig.pickAndChoosePerpetualAccess) {
                 result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)

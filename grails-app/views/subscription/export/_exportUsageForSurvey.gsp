@@ -15,8 +15,8 @@
     String dummy
     subscribedPlatforms.each { Platform platformInstance ->
         Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
-        if (queryResult.warning) {
-            List records = queryResult.warning.result
+        if (queryResult) {
+            List records = queryResult.result
             if(records[0]) {
                 if(records[0].counterR5SushiApiSupported == 'Yes') {
                     revision = AbstractReport.COUNTER_5
@@ -94,6 +94,13 @@
                 </div>
             </div>
         </g:form>
+        <div class="ui teal progress" id="localLoadingIndicator" hidden>
+            <div class="bar">
+                <div class="progress"></div>
+            </div>
+            <div class="label"></div>
+        </div>
+        <div id="reportWrapper"></div>
     </g:if>
     <g:elseif test="${dummyCIs}">
         <g:message code="default.usage.renewal.dummy.header"/>
@@ -121,13 +128,6 @@
     <g:else>
         <strong><g:message code="default.stats.error.noReportAvailable"/></strong>
     </g:else>
-    <div class="ui teal progress" id="localLoadingIndicator" hidden>
-        <div class="bar">
-            <div class="progress"></div>
-        </div>
-        <div class="label">Erzeuge Tabelle ...</div>
-    </div>
-    <div id="reportWrapper"></div>
 </ui:modal>
 <laser:script>
     $("#reportType").on('change', function() {
@@ -171,9 +171,10 @@
         let percentage = 0;
         setTimeout(function() {
             $.ajax({
-                url: "<g:createLink controller="ajaxJson" action="checkProgress" params="[cachePath: '/subscription/renewEntitlementsWithSurvey/generateRenewalExport', cacheKey: 'progress']"/>"
+                url: "<g:createLink controller="ajaxJson" action="checkProgress" params="[cachePath: '/subscription/renewEntitlementsWithSurvey/generateRenewalExport']"/>"
             }).done(function(response){
                 percentage = response.percent;
+                $('#localLoadingIndicator div.label').text(response.label);
                 if(percentage !== null)
                     $('#localLoadingIndicator').progress('set percent', percentage);
                 if($('#localLoadingIndicator').progress('is complete'))

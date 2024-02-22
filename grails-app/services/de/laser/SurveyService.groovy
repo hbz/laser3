@@ -885,20 +885,6 @@ class SurveyService {
         return Org.executeQuery(tmpQuery, tmpQueryParams, params)
     }
 
-    int countFilteredSurveyOrgs(List orgIDs, String query, queryParams, params) {
-
-        if (!(orgIDs?.size() > 0)) {
-            return []
-        }
-        String tmpQuery = query
-        tmpQuery = tmpQuery.replace("order by", "and o.id in (:orgIDs) order by")
-
-        Map tmpQueryParams = queryParams
-        tmpQueryParams.put("orgIDs", orgIDs)
-
-        return Org.executeQuery(tmpQuery, tmpQueryParams, params)
-    }
-
     /**
      * Retrieves the counts of surveys in the different stages
      * @param parameterMap the filter parameter map
@@ -1246,7 +1232,9 @@ class SurveyService {
      * @param participant the participant whose data should be retrieved
      * @param titles the title IDs upon which usage data may be restricted
      * @return the enriched result map with the usage data
+     * @deprecated usage is being processed as part of {@link SubscriptionController#renewEntitlementsWithSurvey()}
      */
+    @Deprecated
     Map<String, Object> getStatsForParticipant(Map<String, Object> result, GrailsParameterMap params, Subscription subscription, Org participant, List<Long> titles){
         Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: subscription])
 
@@ -1626,11 +1614,12 @@ class SurveyService {
     }
 
     /**
-     *
-     * @param surveyConfig
-     * @param participants
-     * @param contextOrg
-     * @return
+     * Exports those survey results which differ from their base subscription property, i.e.
+     * where the member completing the survey submitted a different value as currently defined in the equivalent subscription property
+     * @param surveyConfig the survey whose results should be exported
+     * @param participants the members participating at the survey
+     * @param contextOrg the context consortium
+     * @return an Excel workbook containing the differences
      */
     def exportPropertiesChanged(SurveyConfig surveyConfig, def participants, Org contextOrg) {
         Locale locale = LocaleUtils.getCurrentLocale()
@@ -1798,6 +1787,13 @@ class SurveyService {
         return count
     }
 
+    /**
+     * Called from _evaluationParticipantsView.gsp
+     * Counts those perpetually purchased titles of the subscription's holding which are not part of the titles subject of the survey
+     * @param subscription the {@link Subscription} containing the entire holding
+     * @param surveyConfig the {@link SurveyConfig} in which the titles may be picked
+     * @return the count of titles not figuring in the survey's selectable titles
+     */
     Integer countPerpetualAccessTitlesBySubAndNotInIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
         Integer count = 0
         Set<Subscription> subscriptions = linksGenerationService.getSuccessionChain(subscription, 'sourceSubscription')
@@ -1843,6 +1839,13 @@ class SurveyService {
         countIes
     }
 
+    /**
+     *
+     * @param subscription
+     * @param surveyConfig
+     * @param status
+     * @return
+     */
     Integer countIssueEntitlementsByIEGroupWithStatus(Subscription subscription, SurveyConfig surveyConfig, RefdataValue status) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         Integer countIes = issueEntitlementGroup ?
@@ -1852,6 +1855,12 @@ class SurveyService {
         countIes
     }
 
+    /**
+     * currently unused
+     * @param subscription
+     * @param surveyConfig
+     * @return
+     */
     Integer countCurrentIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         Integer countIes = issueEntitlementGroup ?
@@ -1885,6 +1894,13 @@ class SurveyService {
         else 0.0
     }
 
+    /**
+     * currently unused
+     * @param subscription
+     * @param surveyConfig
+     * @param currency
+     * @return
+     */
     BigDecimal sumListPriceTippInCurrencyOfCurrentIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig, RefdataValue currency) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         BigDecimal sumListPrice = issueEntitlementGroup ?
@@ -1894,6 +1910,12 @@ class SurveyService {
         sumListPrice
     }
 
+    /**
+     * currently unused
+     * @param subscription
+     * @param currency
+     * @return
+     */
     BigDecimal sumListPriceTippInCurrencyOfCurrentIssueEntitlements(Subscription subscription, RefdataValue currency) {
         BigDecimal sumListPrice = 0.0
         sumListPrice = PriceItem.executeQuery("select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :status)",
@@ -1939,6 +1961,13 @@ class SurveyService {
         groovyPageRenderer.render view: '/mailTemplates/text/notificationSurvey', model: [language: language, survey: surveyInfo, reminder: reminder]
     }
 
+    /**
+     * Generates a notification mail containing the details of all surveys for the participants in the given {@link SurveyInfo} list;
+     * basically identical to {@link #surveyMailTextAsString(de.laser.survey.SurveyInfo, boolean)}, but for more than one survey
+     * @param surveys the {@link SurveyInfo}s to process
+     * @param reminder is the mail a reminder to participate at the given surveys?
+     * @return the mail text as plain string
+     */
     String surveysMailTextAsString(List<SurveyInfo> surveys, boolean reminder = false) {
         Locale language = new Locale("de")
         groovyPageRenderer.render view: '/mailTemplates/text/notificationSurveys', model: [language: language, surveys: surveys, reminder: reminder]

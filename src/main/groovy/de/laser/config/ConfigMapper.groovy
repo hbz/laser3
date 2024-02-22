@@ -7,6 +7,7 @@ import org.springframework.core.env.Environment
 /**
  * Maps the configuration settings defined in the local configuration file to configuration variables
  * to which may be referred in the application code
+ * The getters are not being annotated as being functionally all equivalent (reads off the setting for XYZ ...)
  */
 @Slf4j
 class ConfigMapper {
@@ -83,6 +84,12 @@ class ConfigMapper {
             WEKB_API_USERNAME, WEKB_API_PASSWORD
     ]
 
+    /**
+     * Gets a configuration file stored on the local computer containing specific configuration overrides.
+     * It has to be stored at the (server-)user's home directory/.grails/laser3-config.groovy (see sample config file)
+     * @param environment the environment (local, dev, QA, prod) to load
+     * @return the configuration file
+     */
     static File getCurrentConfigFile(Environment environment) {
         Map<String, Object> sysProps = environment.properties.get('systemProperties') as Map
 
@@ -96,6 +103,9 @@ class ConfigMapper {
         new File("${System.getProperty('user.home')}/.grails/${cfgFile}")
     }
 
+    /**
+     * Checks if the current configuration settings are all existent
+     */
     static void checkCurrentConfig() {
         log.info('ConfigMapper - checkCurrentConfig')
 
@@ -243,6 +253,12 @@ class ConfigMapper {
 
     // -- raw --
 
+    /**
+     * Reads the given configuration setting
+     * @param cfg the configuration setting list, in structure [variable name, variable class]
+     * @param output where should the setting be logged?
+     * @return the property read off
+     */
     static def readConfig(List cfg, int output = NO_OUTPUT) {
         def result
 

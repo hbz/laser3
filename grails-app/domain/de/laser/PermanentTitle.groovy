@@ -48,6 +48,11 @@ class PermanentTitle {
         tipp column: 'pt_tipp_fk', index: 'pt_tipp_idx'
     }
 
+    /**
+     * Retrieves the subscription information about the permanent title record for the given context institution
+     * @param contextOrg the current user's institution
+     * @return a concatenated string containing the subscription within which permanent access has been purchased
+     */
     String getPermanentTitleInfo(Org contextOrg){
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         String period = subscription.startDate ? sdf.format(subscription.startDate)  : ''

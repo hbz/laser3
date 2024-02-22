@@ -51,6 +51,7 @@ class OrganisationController  {
     GenericOIDService genericOIDService
     GokbService gokbService
     IdentifierService identifierService
+    InfoService infoService
     OrganisationControllerService organisationControllerService
     OrganisationService organisationService
     OrgTypeService orgTypeService
@@ -1040,16 +1041,36 @@ class OrganisationController  {
     @UnstableFeature
     @Check404(domain=Org)
     def info() {
-        Map<String,Object> ctrlResult = organisationControllerService.info(this, params)
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
+        Map<String,Object> info = [:]
+        String view = ''
 
-        Map<String,Object> result = ctrlResult.result as Map<String, Object>
-        if (!result) {
+        Org ctxOrg = contextService.getOrg()
+        Org org    = result.orgInstance as Org
+
+        if (ctxOrg.isCustomerType_Inst() && ctxOrg == org) {
+            info = infoService.getInfo_Inst(ctxOrg)
+            view = 'info/info_inst'
+        }
+        else if (ctxOrg.isCustomerType_Consortium() && org.isCustomerType_Inst()) {
+            info = infoService.getInfo_ConsAtInst(ctxOrg, org)
+            view = 'info/info_consAtInst'
+        }
+        else {
             response.sendError(401); return
         }
-        if (! (contextService.getOrg().isCustomerType_Consortium() && result.orgInstance.isCustomerType_Inst())) {
-            response.sendError(401); return
-        }
-        result
+
+        result.subscriptionMap          = info.subscriptionMap
+        result.subscriptionTimelineMap  = info.subscriptionTimelineMap
+        result.licenseMap               = info.licenseMap
+        result.licenseTimelineMap       = info.licenseTimelineMap
+        result.providerMap              = info.providerMap
+        result.providerTimelineMap      = info.providerTimelineMap
+        result.surveyMap                = info.surveyMap
+        result.surveyTimelineMap        = info.surveyTimelineMap
+        result.costs                    = info.costs
+
+        render view: view, model: result
     }
 
 
@@ -1443,7 +1464,9 @@ class OrganisationController  {
         Map filterParams = params
         filterParams.org = genericOIDService.getOID(result.orgInstance)
 
-        result.users = userService.getUserSet(filterParams)
+        Map userData = userService.getUserMap(filterParams)
+        result.total = userData.count
+        result.users = userData.data
         result.titleMessage = "${result.orgInstance.name} - ${message(code:'org.nav.users')}"
         result.inContextOrg = false
         result.multipleAffiliationsWarning = true
@@ -1469,7 +1492,6 @@ class OrganisationController  {
                 modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA'),
                 availableComboOrgs: availableComboOrgs
         ]
-        result.total = result.users.size()
         render view: '/user/global/list', model: result
     }
 

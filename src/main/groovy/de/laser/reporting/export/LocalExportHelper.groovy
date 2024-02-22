@@ -122,7 +122,7 @@ class LocalExportHelper extends BaseExportHelper {
 //    }
 
     /**
-     * Gets the cached field result stored under the given token
+     * Gets the cached filter result stored under the given token
      * @param token the token to load
      * @return the cached filter result
      */
