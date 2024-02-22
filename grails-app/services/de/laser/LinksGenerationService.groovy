@@ -259,6 +259,13 @@ class LinksGenerationService {
                     configMap.source = genericOIDService.resolveOID(params["pair_${configMap.link.id}"])
                     configMap.destination = genericOIDService.resolveOID(params.context)
                 }
+                def currentObject = genericOIDService.resolveOID(params.context)
+                List childInstances = currentObject.getClass().findAllByInstanceOf(currentObject)
+                if(childInstances) {
+                    configMap.contextInstances = childInstances
+                    def pairObject = genericOIDService.resolveOID(params.pair_new)
+                    configMap.pairInstances = pairObject.getClass().findAllByInstanceOf(pairObject)
+                }
             }
             else if(!params["linkType_${configMap.link.id}"]) {
                 result.error = messageSource.getMessage('default.linking.linkTypeError',null,locale)
@@ -407,8 +414,18 @@ class LinksGenerationService {
                     destinationChild = destinationChildren.find { dest -> dest.getSubscriber() == sourceChild.getSubscriber() }
                 else if(sourceChild instanceof License)
                     destinationChild = destinationChildren.find { dest -> dest.getLicensee() == sourceChild.getLicensee() }
-                if(destinationChild)
-                    Links.executeUpdate('delete from Links li where :source in (li.sourceSubscription,li.sourceLicense) and :destination in (li.destinationSubscription,li.destinationLicense) and li.linkType = :linkType and li.owner = :owner',[source:sourceChild, destination:destinationChild, linkType:obj.linkType, owner:obj.owner])
+                if(destinationChild) {
+                    //cleaning up doublets as well
+                    Links.executeQuery('select li from Links li where :source in (li.sourceSubscription,li.sourceLicense) and :destination in (li.destinationSubscription,li.destinationLicense) and li.linkType = :linkType and li.owner = :owner',[source:sourceChild, destination:destinationChild, linkType:obj.linkType, owner:obj.owner]).each { Links li ->
+                        DocContext childComment = DocContext.findByLink(li)
+                        if(childComment) {
+                            Doc commentContent = childComment.owner
+                            childComment.delete()
+                            commentContent.delete()
+                        }
+                        li.delete()
+                    }
+                }
             }
             obj.delete()
             true
