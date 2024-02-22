@@ -198,10 +198,11 @@ class ExportService {
 				}
 				for(int i = 0;i < titleRow.size(); i++) {
 					try {
+						sheet.trackColumnForAutoSizing(i)
 						sheet.autoSizeColumn(i)
 					}
 					catch (Exception e) {
-						log.error("Null pointer exception in column ${i}")
+						log.error("Exception in column ${i}: ${e}")
 					}
 				}
 			}
@@ -2328,6 +2329,8 @@ class ExportService {
 							}
 							break
 					}
+					if(platformRecord.counterR5SushiPlatform)
+						url += "&platform=${platformRecord.counterR5SushiPlatform}"
 					url += configMap.metricTypes ? "&metric_type=${configMap.metricTypes}" : ""
 					url += configMap.accessTypes ? "&access_type=${configMap.accessTypes}" : ""
 					url += configMap.accessMethods ? "&access_method=${configMap.accessMethods}" : ""

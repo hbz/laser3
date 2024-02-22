@@ -143,6 +143,11 @@ class DatabaseInfo {
         rows.collect{getGroovyRowResultAsMap(it) }
     }
 
+    static String getStatementTimeout(String dsIdentifier = DS_DEFAULT) {
+        DataSource dataSource = getDataSource(dsIdentifier)
+        (new Sql(dataSource)).firstRow('show statement_timeout')[0] as String
+    }
+
     /**
      * Gets all tables with their respective collation and indices in the given database. Default is the default data source
      * @param dsIdentifier the data source identifier of the database whose tables should be retrieved; one of DS_DEFAULT or DS_STORAGE
