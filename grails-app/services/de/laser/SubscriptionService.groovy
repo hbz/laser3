@@ -39,7 +39,9 @@ import java.util.concurrent.ExecutorService
 
 @Transactional
 class SubscriptionService {
+
     AuditService auditService
+    BatchUpdateService batchUpdateService
     ComparisonService comparisonService
     ContextService contextService
     EscapeService escapeService
@@ -936,7 +938,7 @@ join sub.orgRelations or_sub where
         */
         if ( createEntitlements ) {
             //List packageTitles = sql.rows("select * from title_instance_package_platform where tipp_pkg_fk = :pkgId and tipp_status_rv_fk = :current", [pkgId: pkg.id, current: RDStore.TIPP_STATUS_CURRENT.id])
-            packageService.bulkAddHolding(sql, subscription.id, pkg.id, subscription.hasPerpetualAccess)
+            batchUpdateService.bulkAddHolding(sql, subscription.id, pkg.id, subscription.hasPerpetualAccess)
         }
     }
 
@@ -957,12 +959,17 @@ join sub.orgRelations or_sub where
         }
 
         if ( createEntitlements ) {
+            //continue with testing that!
+            int batchStep = 5000
+            int total = sql.rows("select count(*) from title_instance_package_platform where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :removed", [pkgId: pkg.id, removed: RDStore.TIPP_STATUS_REMOVED.id])[0]["count"]
             //List packageTitles = sql.rows("select * from title_instance_package_platform where tipp_pkg_fk = :pkgId and tipp_status_rv_fk = :current", [pkgId: pkg.id, current: RDStore.TIPP_STATUS_CURRENT.id])
             sql.withBatch("insert into issue_entitlement (ie_version, ie_guid, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_status_rv_fk, ie_perpetual_access_by_sub_fk) select " +
                     "0, concat('issueentitlement:',gen_random_uuid()), now(), now(), (select sub_id from subscription where sub_id = :subId), ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_status_rv_fk, (select case sub_has_perpetual_access when true then sub_id else null end from subscription where sub_id = :subId) from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id " +
-                    "where tipp_pkg_fk = :pkgId and ie_subscription_fk = :parentId and ie_status_rv_fk != :removed") { BatchingPreparedStatementWrapper stmt ->
+                    "where tipp_pkg_fk = :pkgId and ie_subscription_fk = :parentId and ie_status_rv_fk != :removed limit :offset :limit") { BatchingPreparedStatementWrapper stmt ->
                 memberSubs.each { Subscription memberSub ->
-                    stmt.addBatch([pkgId: pkg.id, subId: memberSub.id, parentId: subscription.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
+                    for(int i = 0; i < total; i += batchStep) {
+                        stmt.addBatch([pkgId: pkg.id, subId: memberSub.id, parentId: subscription.id, removed: RDStore.TIPP_STATUS_REMOVED.id, limit: batchStep, offset: i])
+                    }
                 }
             }
             if(subscription.hasPerpetualAccess) {
@@ -1005,7 +1012,7 @@ join sub.orgRelations or_sub where
         sql.executeInsert('insert into subscription_package (sp_version, sp_pkg_fk, sp_sub_fk, sp_date_created, sp_last_updated) values (0, :pkgId, :subId, now(), now()) on conflict on constraint sub_package_unique do nothing', [pkgId: pkg.id, subId: target.id])
         //List consortiumHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where tipp_pkg_fk = :pkgId and ie_subscription_fk = :consortium and ie_status_rv_fk = :current", [pkgId: pkg.id, consortium: consortia.id, current: RDStore.TIPP_STATUS_CURRENT.id])
         if(withEntitlements)
-            packageService.bulkAddHolding(sql, target.id, pkg.id, target.hasPerpetualAccess, consortia.id)
+            batchUpdateService.bulkAddHolding(sql, target.id, pkg.id, target.hasPerpetualAccess, consortia.id)
         /*
         List<SubscriptionPackage> dupe = SubscriptionPackage.executeQuery(
                 "from SubscriptionPackage where subscription = :sub and pkg = :pkg", [sub: target, pkg: pkg])
