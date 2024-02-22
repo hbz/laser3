@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5582    22.02.2024  dev     3.4         Andreas Bug         Lizenzver-/entknüpfung wurde nicht automatisch an die Teilnehmer weitergereicht
+
 5581    22.02.2024  dev     3.4         Andreas Bug         Tracking für Excelspalten eingebaut
 
 5579    20.02.2024  rc-3.3  3.3.6       Andreas Feature     SUSHI-Konfiguration um Plattformnamen/filter erweiter
