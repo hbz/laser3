@@ -116,14 +116,26 @@ class PackageController {
             queryParams.ddc = selDDC
         }
 
-        //you rarely encounter it; ^ is the XOR operator in Java - if both options are set, we mean all curatory group types
-        if (params.containsKey('curatoryGroupProvider') ^ params.containsKey('curatoryGroupOther')) {
+        if (params.curatoryGroupType) {
             result.filterSet = true
-            if(params.curatoryGroupProvider)
-                queryParams.curatoryGroupType = "Provider"
-            else if(params.curatoryGroupOther)
-                queryParams.curatoryGroupType = "Other" //setting to this includes also missing ones, this is already implemented in we:kb
+            queryParams.curatoryGroupType = params.curatoryGroupType
         }
+
+        if(params.automaticUpdates) {
+            result.filterSet = true
+            queryParams.automaticUpdates = params.automaticUpdates
+        }
+
+        result.curatoryGroupTypes = [
+                [value: 'Provider', name: message(code: 'package.curatoryGroup.provider')],
+                [value: 'Vendor', name: message(code: 'package.curatoryGroup.vendor')],
+                [value: 'Other', name: message(code: 'package.curatoryGroup.other')]
+        ]
+
+        result.automaticUpdates = [
+                [value: 'true', name: message(code: 'package.index.result.automaticUpdates')],
+                [value: 'false', name: message(code: 'package.index.result.noAutomaticUpdates')]
+        ]
 
         Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
         if(!params.sort)
