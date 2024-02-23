@@ -1087,10 +1087,13 @@ class SurveyController {
         result.idSuffix ="surveyCostItemsBulk"
 
         result.costItemsByCostItemElement = []
+
+        String query = 'from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.org.id in (:orgIds) and surOrg.surveyConfig = :surConfig)'
+
         if(params.tab == 'selectedSubParticipants') {
-            result.costItemsByCostItemElement = CostItem.executeQuery('from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.org.id in (:orgIds) and surOrg.surveyConfig = :surConfig)', [status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig, orgIds: surveyOrgs.orgsWithSubIDs]).groupBy {it.costItemElement}
+            result.costItemsByCostItemElement = CostItem.executeQuery(query, [status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig, orgIds: surveyOrgs.orgsWithSubIDs]).groupBy {it.costItemElement}
         }else {
-            result.costItemsByCostItemElement = CostItem.executeQuery('from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.org.id in (:orgIds) and surOrg.surveyConfig = :surConfig)', [status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig, orgIds: surveyOrgs.orgsWithoutSubIDs]).groupBy {it.costItemElement}
+            result.costItemsByCostItemElement = CostItem.executeQuery(query, [status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig, orgIds: surveyOrgs.orgsWithoutSubIDs]).groupBy {it.costItemElement}
         }
 
         result
