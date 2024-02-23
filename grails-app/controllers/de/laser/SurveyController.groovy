@@ -1085,6 +1085,14 @@ class SurveyController {
         }
 
         result.idSuffix ="surveyCostItemsBulk"
+
+        result.costItemsByCostItemElement = []
+        if(params.tab == 'selectedSubParticipants') {
+            result.costItemsByCostItemElement = CostItem.executeQuery('from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.org.id in (:orgIds) and surOrg.surveyConfig = :surConfig)', [status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig, orgIds: surveyOrgs.orgsWithSubIDs]).groupBy {it.costItemElement}
+        }else {
+            result.costItemsByCostItemElement = CostItem.executeQuery('from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.org.id in (:orgIds) and surOrg.surveyConfig = :surConfig)', [status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig, orgIds: surveyOrgs.orgsWithoutSubIDs]).groupBy {it.costItemElement}
+        }
+
         result
 
     }
@@ -2933,6 +2941,7 @@ class SurveyController {
 
 
         result.mode = result.costItem ? "edit" : ""
+        result.selectedCostItemElement = params.selectedCostItemElement ?: null
         result.taxKey = result.costItem ? result.costItem.taxKey : null
         result.idSuffix = "edit_${result.costItem ? result.costItem.id : result.participant.id}"
         render(template: "/survey/costItemModal", model: result)
@@ -3849,9 +3858,17 @@ class SurveyController {
                     try {
 
                         def surveyOrg = genericOIDService.resolveOID(it)
-                        if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg,RDStore.COST_ITEM_DELETED)) {
-                            surveyOrgsDo << surveyOrg
+
+                        if(cost_item_element){
+                            if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElement(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element)) {
+                                surveyOrgsDo << surveyOrg
+                            }
+                        }else {
+                            if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg, RDStore.COST_ITEM_DELETED)) {
+                                surveyOrgsDo << surveyOrg
+                            }
                         }
+                        
                     } catch (Exception e) {
                         log.error("Non-valid surveyOrg sent ${it}", e)
                     }

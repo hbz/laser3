@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfig;de.laser.RefdataValue;de.laser.finance.CostItem;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.storage.RDConstants; de.laser.survey.SurveyConfig;de.laser.RefdataValue;de.laser.finance.CostItem;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;" %>
 <laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyCostItems.label')})" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -217,6 +217,34 @@
                     </div>
 
                 </div>
+
+                <br>
+                <br>
+                <div class="ui segment">
+                    <h3>
+                        <g:message code="costItem.label"/> in <g:message code="survey.label"/>
+                    </h3>
+                    <table class="ui sortable celled la-js-responsive-table la-table table">
+                        <thead>
+                        <tr>
+                            <th>${message(code: 'sidewide.number')}</th>
+                            <th>${message(code: 'financials.costItemElement')}</th>
+                            <th>${message(code: 'default.count.label')}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <g:each in="${costItemsByCostItemElement}" var="ctByCostItemElement" status="i">
+                            <tr>
+                                <td>${i + 1}</td>
+                                <td>${RefdataValue.findByValueAndOwner(ctByCostItemElement.key, RefdataCategory.findByDesc(RDConstants.COST_ITEM_ELEMENT)).getI10n('value')}</td>
+                                <td>${ctByCostItemElement.value.size()}</td>
+                            </tr>
+                        </g:each>
+                        </tbody>
+                    </table>
+                </div>
+
+
 
                 <g:if test="${params.tab == 'selectedSubParticipants'}">
 

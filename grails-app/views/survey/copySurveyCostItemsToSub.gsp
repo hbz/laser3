@@ -139,7 +139,7 @@
                             (<g:formatNumber number="${participant.surveyCostItem.costInBillingCurrency}" minFractionDigits="2"
                                              maxFractionDigits="2" type="number"/>)
 
-                            ${(participant.surveyCostItem.billingCurrency?.getI10n('value')?.split('-')).first()}
+                            ${participant.surveyCostItem.billingCurrency?.getI10n('value')}
 
                             <g:set var="sumSurveyCostItem"
                                    value="${sumSurveyCostItem + participant.surveyCostItem.costInBillingCurrency?:0}"/>
@@ -165,7 +165,7 @@
                                                  minFractionDigits="2"
                                                  maxFractionDigits="2" type="number"/>)
 
-                                ${(costItemParticipantSub.billingCurrency?.getI10n('value')?.split('-')).first()}
+                                ${costItemParticipantSub.billingCurrency?.getI10n('value')}
                                 <g:set var="sumNewCostItem"
                                        value="${sumNewCostItem + costItemParticipantSub.costInBillingCurrency?:0}"/>
                                 <g:set var="sumNewCostItemAfterTax"
