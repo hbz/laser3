@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5589    23.02.2024  dev     3.4         Andreas Feature     Anpassung des we:kb-Paketfilters
+
+5576    23.02.2024  dev     3.4         Andreas Feature     Umstellung der Paketverknüpfung auf Teilprozesse zu je 5000 Einträge
+
 5582    22.02.2024  dev     3.4         Andreas Bug         Lizenzver-/entknüpfung wurde nicht automatisch an die Teilnehmer weitergereicht
 
 5581    22.02.2024  dev     3.4         Andreas Bug         Tracking für Excelspalten eingebaut

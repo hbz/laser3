@@ -2003,7 +2003,7 @@ class SubscriptionControllerService {
             }
 
             ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-
+            Locale locale = LocaleUtils.getCurrentLocale()
             SwissKnife.setPaginationParams(result, params, result.user)
 
             result.editUrl = apiSource.baseUrl
@@ -2042,14 +2042,26 @@ class SubscriptionControllerService {
                 }
             }
 
-            //you rarely encounter it; ^ is the XOR operator in Java - if both options are set, we mean all curatory group types
-            if (params.containsKey('curatoryGroupProvider') ^ params.containsKey('curatoryGroupOther')) {
+            if (params.curatoryGroupType) {
                 result.filterSet = true
-                if(params.curatoryGroupProvider)
-                    queryParams.curatoryGroupType = "provider"
-                else if(params.curatoryGroupOther)
-                    queryParams.curatoryGroupType = "other" //setting to this includes also missing ones, this is already implemented in we:kb
+                queryParams.curatoryGroupType = params.curatoryGroupType
             }
+
+            if(params.automaticUpdates) {
+                result.filterSet = true
+                queryParams.automaticUpdates = params.automaticUpdates
+            }
+
+            result.curatoryGroupTypes = [
+                    [value: 'Provider', name: messageSource.getMessage('package.curatoryGroup.provider', null, locale)],
+                    [value: 'Vendor', name: messageSource.getMessage('package.curatoryGroup.vendor', null, locale)],
+                    [value: 'Other', name: messageSource.getMessage('package.curatoryGroup.other', null, locale)]
+            ]
+
+            result.automaticUpdates = [
+                    [value: 'true', name: messageSource.getMessage('package.index.result.automaticUpdates', null, locale)],
+                    [value: 'false', name: messageSource.getMessage('package.index.result.noAutomaticUpdates', null, locale)]
+            ]
 
             queryParams.sort = params.sort ?: "name"
             queryParams.order = params.order ?: "asc"
@@ -2060,7 +2072,7 @@ class SubscriptionControllerService {
 
             Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl+apiSource.fixToken+'/groups', [:])
             if(queryCuratoryGroups.error && queryCuratoryGroups.error == 404) {
-                result.error = messageSource.getMessage('wekb.error.404', null, LocaleUtils.getCurrentLocale())
+                result.error = messageSource.getMessage('wekb.error.404', null, locale)
                 [result:result, status: STATUS_ERROR]
             }
             else {
@@ -2080,7 +2092,7 @@ class SubscriptionControllerService {
                         [result:result,status:STATUS_OK]
                     }
                     else if(queryResult.code == "error") {
-                        result.error = messageSource.getMessage('wekb.error.500', [queryResult.message].toArray(), LocaleUtils.getCurrentLocale())
+                        result.error = messageSource.getMessage('wekb.error.500', [queryResult.message].toArray(), locale)
                         [result: result, status: STATUS_ERROR]
                     }
                 }
