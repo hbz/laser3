@@ -4,18 +4,7 @@
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
 <ui:controlButtons>
-    <ui:exportDropdown>
-        <ui:exportDropdownItem>
-            <g:link class="item" controller="survey" action="show"
-                    params="${params + [exportXLSX: true, surveyConfigID: surveyConfig.id]}">${message(code: 'survey.exportSurvey')}</g:link>
-        </ui:exportDropdownItem>
-        <g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
-        <ui:exportDropdownItem>
-            <g:link class="item" controller="survey" action="show"
-                    params="${params + [exportXLSX: true, surveyCostItems: true]}">${message(code: 'survey.exportSurveyCostItems')}</g:link>
-        </ui:exportDropdownItem>
-        </g:if>
-    </ui:exportDropdown>
+    <laser:render template="exports"/>
     <laser:render template="actions"/>
 </ui:controlButtons>
 

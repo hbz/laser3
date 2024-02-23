@@ -13,11 +13,7 @@
 </ui:breadcrumbs>
 
 <ui:controlButtons>
-    <ui:exportDropdown>
-        <ui:exportDropdownItem>
-            <a class="item" data-ui="modal" href="#individuallyExportCostItemModal">Export</a>
-        </ui:exportDropdownItem>
-    </ui:exportDropdown>
+    <laser:render template="exports"/>
     <laser:render template="actions"/>
 </ui:controlButtons>
 
@@ -435,8 +431,5 @@ JSPC.app.addForAllSurveyCostItem = function(orgsIDs) {
                     }
 
 </laser:script>
-
-
-<laser:render template="export/individuallyExportCostItemModal" model="[modalID: 'individuallyExportCostItemModal', contactSwitch: true]" />
 
 <laser:htmlEnd />
