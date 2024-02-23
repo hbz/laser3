@@ -822,34 +822,7 @@ class SurveyController {
 
         }
 
-        if ( params.exportXLSX ) {
-
-            SXSSFWorkbook wb
-            if ( params.surveyCostItems ) {
-                SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
-                String datetoday = sdf.format(new Date())
-                String filename = "${datetoday}_" + g.message(code: "survey.label")
-                //if(wb instanceof XSSFWorkbook) file += "x";
-                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems([result.surveyConfig], result.institution)
-            }else{
-                SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
-                String datetoday = sdf.format(new Date())
-                String filename = "${datetoday}_" + g.message(code: "survey.label")
-                //if(wb instanceof XSSFWorkbook) file += "x";
-                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                wb = (SXSSFWorkbook) surveyService.exportSurveys([result.surveyConfig], result.institution)
-            }
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
-            return
-        }else {
-            result
-        }
+        result
     }
 
     /**
@@ -1085,6 +1058,19 @@ class SurveyController {
         }
 
         result.idSuffix ="surveyCostItemsBulk"
+
+        result.costItemsByCostItemElement = []
+
+        String query = 'from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.org.id in (:orgIds) and surOrg.surveyConfig = :surConfig)'
+        Set<Long> orgsId = surveyOrgs.orgsWithoutSubIDs
+
+        if(params.tab == 'selectedSubParticipants') {
+            orgsId = surveyOrgs.orgsWithSubIDs
+        }
+
+        result.costItemsByCostItemElement = CostItem.executeQuery(query, [status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig, orgIds: orgsId]).groupBy {it.costItemElement}
+
+
         result
 
     }
@@ -1530,31 +1516,6 @@ class SurveyController {
 
         params.tab = params.tab ?: 'participantsViewAllFinish'
 
-        /*if ( params.exportXLSX ) {
-            SXSSFWorkbook wb
-            if ( params.surveyCostItems ) {
-                SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
-                String datetoday = sdf.format(new Date())
-                String filename = "${datetoday}_" + g.message(code: "survey.label")
-                //if(wb instanceof XSSFWorkbook) file += "x";
-                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems([result.surveyConfig], result.institution)
-            }else {
-                SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
-                String datetoday = sdf.format(new Date())
-                String filename = "${datetoday}_" + g.message(code: "survey.label")
-                //if(wb instanceof XSSFWorkbook) file += "x";
-                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                wb = (SXSSFWorkbook) surveyService.exportSurveys([result.surveyConfig], result.institution)
-            }
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
-            return
-        }else */
         String message = g.message(code: 'renewalexport.renewals')
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         String datetoday = sdf.format(new Date())
@@ -2933,6 +2894,7 @@ class SurveyController {
 
 
         result.mode = result.costItem ? "edit" : ""
+        result.selectedCostItemElement = params.selectedCostItemElement ?: null
         result.taxKey = result.costItem ? result.costItem.taxKey : null
         result.idSuffix = "edit_${result.costItem ? result.costItem.id : result.participant.id}"
         render(template: "/survey/costItemModal", model: result)
@@ -3687,20 +3649,6 @@ class SurveyController {
             redirect(uri: request.getHeader('referer'))
         }
 
-/*        if (params.exportXLSX) {
-            //if(wb instanceof XSSFWorkbook) file += "x";
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems([result.surveyConfig], result.institution)
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
-            return
-        } else {
-            redirect(uri: request.getHeader('referer'))
-        }*/
-
     }
 
     /**
@@ -3849,9 +3797,17 @@ class SurveyController {
                     try {
 
                         def surveyOrg = genericOIDService.resolveOID(it)
-                        if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg,RDStore.COST_ITEM_DELETED)) {
-                            surveyOrgsDo << surveyOrg
+
+                        if(cost_item_element){
+                            if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElement(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element)) {
+                                surveyOrgsDo << surveyOrg
+                            }
+                        }else {
+                            if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg, RDStore.COST_ITEM_DELETED)) {
+                                surveyOrgsDo << surveyOrg
+                            }
                         }
+                        
                     } catch (Exception e) {
                         log.error("Non-valid surveyOrg sent ${it}", e)
                     }
@@ -5498,5 +5454,43 @@ class SurveyController {
         render template: "/survey/export/individuallyExportRenewModal", model: [modalID: 'individuallyRenewalExportModal', surveyConfig: result.surveyConfig, surveyInfo: result.surveyInfo,
                                                                                 modalTextHeader: 'Excel-Export ('+ g.message(code: 'subscription.referenceYear.label')+': '+ result.surveyConfig.subscription.referenceYear+')']
 
+    }
+
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+    })
+    Map<String,Object> exportModal() {
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        if(result.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!result.result) {
+                response.sendError(401)
+                return
+            }
+        }
+
+        if (!result.editable) {
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
+        }
+
+        String templateName = ""
+        String modalID = "individuallyExportSurvey"
+        boolean contactSwitch = false
+
+        if(params.exportType == 'costItemsExport'){
+            templateName = "export/individuallyExportCostItemModal"
+            contactSwitch = true
+        }else if(params.exportType == 'renewalExport'){
+            templateName = "export/individuallyExportRenewModal"
+            contactSwitch = false
+        }else {
+            templateName = "export/individuallyExportModal"
+            contactSwitch = true
+        }
+
+        result.modalID = modalID
+        result.contactSwitch = contactSwitch
+
+        render(template: templateName, model: result)
     }
 }

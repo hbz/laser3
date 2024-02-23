@@ -160,7 +160,24 @@ class ExportService {
 				headerRow.setHeightInPoints(16.75f)
 				titleRow.eachWithIndex{ colHeader, int i ->
 					Cell cell = headerRow.createCell(i)
-					cell.setCellValue(colHeader)
+
+					if(colHeader instanceof String){
+						cell.setCellValue(colHeader)
+					}
+
+					if(colHeader instanceof Map) {
+						cell.setCellValue(colHeader.field)
+						switch (colHeader.style) {
+							case 'positive': cell.setCellStyle(csPositive)
+								break
+							case 'neutral': cell.setCellStyle(csNeutral)
+								break
+							case 'negative': cell.setCellStyle(csNegative)
+								break
+							case 'bold': cell.setCellStyle(bold)
+								break
+						}
+					}
 				}
 				sheet.createFreezePane(0,1)
 				Row row

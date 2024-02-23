@@ -265,8 +265,10 @@
                         </div>
 
                         <div class="field">
-                            <label for="selDate">Zeitraum für Reports wählen</label>
-                            <div id="selDate" class="ui yellow labeled ticked range slider"></div>
+                            <label for="selDate">Zeitraum für Reports wählen (von .. bis)</label>
+                            <div style="margin:2em 2.5em 4em">
+                                <div id="selDate" class="ui green labeled ticked range slider"></div>
+                            </div>
                         </div>
 
                         <div class="four fields">
@@ -318,6 +320,16 @@
             </g:if>
         </g:else>
         <laser:script file="${this.getGroovyPageFileName()}">
+            JSPC.app.stats_slider_date_format = function (value, variant) {
+                let date = new Date(value.split('-')[0], value.split('-')[1])
+                return date.toLocaleDateString('de-DE', {year: 'numeric', month: variant})
+            }
+            JSPC.app.stats_slider_color = function (start, end) {
+                let colors = ['green', 'yellow', 'orange', 'red']
+                $('#selDate').removeClass(colors)
+                $('#selDate').addClass(colors[Math.min(3, Math.floor((end - start) * 0.33))])
+            }
+
             let step = 1;
             let monthIndex = 0;
             let startIndex = 0;
@@ -362,13 +374,10 @@
                     endDate = (limit.getFullYear()-1)+'-12';
             </g:else>
             let months = [];
-            let displayMonths = [];
             while(currDate.getTime() <= limit.getTime()) {
                 currMonth = currDate.getMonth()+1;
                 if(currMonth < 10)
                     currMonth = '0'+currMonth;
-                if(currMonth === '01')
-                    displayMonths.push(currDate.getFullYear()+'-'+currMonth);
                 months.push(currDate.getFullYear()+'-'+currMonth);
                 if(currDate.getFullYear()+'-'+currMonth === startDate)
                     startIndex = monthIndex;
@@ -383,16 +392,29 @@
                 start: startIndex,
                 end: endIndex,
                 step: step,
-                restrictedLabels: displayMonths,
                 showLabelTicks: 'always',
                 interpretLabel: function(value) {
-                    return months[value];
+                    return JSPC.app.stats_slider_date_format( months[value], 'short' )
+                },
+                showThumbTooltip: true,
+                tooltipConfig: {
+                    position: 'bottom center',
+                    variation: 'visible primary large'
+                },
+                onMove: function(range, start, end) {
+                    $('#selDate .thumb[data-tooltip=' + start + ']').attr('data-tooltip', JSPC.app.stats_slider_date_format( months[start], 'long' ))
+                    $('#selDate .thumb[data-tooltip=' + end + ']').attr('data-tooltip', JSPC.app.stats_slider_date_format( months[end], 'long' ))
+                    JSPC.app.stats_slider_color(start, end)
                 },
                 onChange: function(range, start, end) {
                     startDate = months[start];
                     endDate = months[end];
+                    $('#selDate .thumb[data-tooltip=' + start + ']').attr('data-tooltip', JSPC.app.stats_slider_date_format( months[start], 'long' ))
+                    $('#selDate .thumb[data-tooltip=' + end + ']').attr('data-tooltip', JSPC.app.stats_slider_date_format( months[end], 'long' ))
+                    JSPC.app.stats_slider_color(start, end)
                 }
-            });
+            }).slider('set value', null);
+
             $("#reportType").on('change', function() {
                 <g:applyCodec encodeAs="none">
                     let platforms = ${platformsJSON};

@@ -254,7 +254,7 @@
                                         minFractionDigits="2"
                                         maxFractionDigits="2" type="number"/>
 
-                        ${(costItemParticipantSub.billingCurrency?.getI10n('value')?.split('-')).first()}
+                        ${costItemParticipantSub.billingCurrency?.getI10n('value')}
                         <g:set var="sumOldCostInBillingCurrency"
                                value="${sumOldCostInBillingCurrency + costItemParticipantSub.costInBillingCurrency ?: 0}"/>
 
@@ -291,7 +291,7 @@
                                 minFractionDigits="2"
                                 maxFractionDigits="2" type="number"/>
 
-                        ${(costItemParticipantSub.billingCurrency?.getI10n('value')?.split('-')).first()}
+                        ${costItemParticipantSub.billingCurrency?.getI10n('value')}
                         <g:set var="sumOldCostInBillingCurrencyAfterTax"
                                value="${sumOldCostInBillingCurrencyAfterTax + costItemParticipantSub.costInBillingCurrencyAfterTax ?: 0}"/>
                         <g:set var="oldCostItemAfterTax"
@@ -337,7 +337,7 @@
                                         minFractionDigits="2"
                                         maxFractionDigits="2" type="number"/>
 
-                        ${(costItemParticipantSub.billingCurrency?.getI10n('value')?.split('-')).first()}
+                        ${costItemParticipantSub.billingCurrency?.getI10n('value')}
                         <g:set var="sumNewCostInBillingCurrency"
                                value="${sumNewCostInBillingCurrency + costItemParticipantSub.costInBillingCurrency ?: 0}"/>
 
@@ -381,7 +381,7 @@
                                 minFractionDigits="2"
                                 maxFractionDigits="2" type="number"/>
 
-                        ${(costItemParticipantSub.billingCurrency?.getI10n('value')?.split('-')).first()}
+                        ${costItemParticipantSub.billingCurrency?.getI10n('value')}
                         <g:set var="sumNewCostInBillingCurrencyAfterTax"
                                value="${sumNewCostInBillingCurrencyAfterTax + costItemParticipantSub.costInBillingCurrencyAfterTax ?: 0}"/>
 

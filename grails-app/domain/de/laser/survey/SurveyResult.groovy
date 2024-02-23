@@ -123,12 +123,13 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
         }
     }
 
+
     /**
-     * Gets a {@link CostItem} belonging to the participant and the survey ({@link SurveyOrg} retrieved by the {@link SurveyConfig} and the participant {@link Org}) of this property
+     * Gets a {@link List} of {@link CostItem}s belonging to the participant and the survey ({@link SurveyOrg} retrieved by the {@link SurveyConfig} and the participant {@link Org}) of this property
      * @return
      */
-    CostItem getCostItem(){
-        return CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant), RDStore.COST_ITEM_DELETED)
+    List<CostItem> getCostItems(){
+        return CostItem.findAllBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant), RDStore.COST_ITEM_DELETED)
     }
 
     /**

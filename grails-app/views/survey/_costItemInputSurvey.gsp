@@ -24,6 +24,15 @@
 
     </div>
 
+
+
+    <g:if test="${costItem}">
+        <g:set var="selectedCostItemElement" value="${costItem.costItemElement?.id}"/>
+    </g:if>
+    <g:else>
+        <g:set var="selectedCostItemElement" value="${selectedCostItemElement ? (selectedCostItemElement instanceof String ? Long.parseLong(selectedCostItemElement) : selectedCostItemElement) : ''}"/>
+    </g:else>
+
     <div class="eight wide field">
         <div class="two fields la-fields-no-margin-button">
             <div class="field">
@@ -34,7 +43,7 @@
                                   optionKey="id"
                                   optionValue="value"
                                   noSelection="${[null: message(code: 'default.select.choose.label')]}"
-                                  value="${costItem?.costItemElement?.id}"/>
+                                  value="${selectedCostItemElement}"/>
                 </g:if>
                 <g:else>
                     ${message(code: 'financials.costItemElement.noneDefined')}
