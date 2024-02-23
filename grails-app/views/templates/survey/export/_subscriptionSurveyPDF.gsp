@@ -385,139 +385,279 @@
         </g:if>
 </g:if>
 
-<g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
-    <g:set var="costItemSurvey"
-           value="${surveyOrg ? CostItem.findBySurveyOrg(surveyOrg) : null}"/>
+<g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id, RDStore.SURVEY_TYPE_TITLE_SELECTION.id]}">
+    <g:set var="costItemSurveys"
+           value="${surveyOrg ? CostItem.findAllBySurveyOrg(surveyOrg) : null}"/>
 
-    <g:if test="${surveyInfo.owner.id != institution.id && ((costItemSums && costItemSums.subscrCosts) || costItemSurvey)}">
+    <% Set<RefdataValue> costItemElementsNotInSurveyCostItems = [] %>
+
+    <g:if test="${surveyInfo.owner.id != institution.id && ((costItemSums && costItemSums.subscrCosts) || costItemSurveys)}">
         <g:set var="showCostItemSurvey" value="${true}"/>
 
-        <div>
-            <h2><g:message code="surveyConfigsInfo.costItems"/></h2>
-            <%
-                def elementSign = 'notSet'
-                String icon = ''
-            %>
+        <h2>
+            <g:message code="surveyConfigsInfo.costItems"/>
+        </h2>
 
-            <table>
-                <thead>
-                <tr>
-                    <th colspan="4">
-                        <g:message code="surveyConfigsInfo.oldPrice"/>
-                    </th>
-                    <th colspan="4">
-                        <g:message code="surveyConfigsInfo.newPrice"/>
-                    </th>
-                    <th rowspan="2">Diff.</th>
-                </tr>
-                <tr>
+        <div class="ui card la-time-card">
+            <div class="content">
+                <%
+                    def elementSign = 'notSet'
+                    String icon = ''
+                    String dataTooltip = ""
+                %>
 
-                    <th><g:message code="financials.costItemElement"/></th>
-                    <th><g:message code="financials.invoice_total"/></th>
-                    <th><g:message code="financials.newCosts.taxTypeAndRate"/></th>
-                    <th><g:message
-                            code="financials.newCosts.totalAmount"/></th>
+                <table class="ui celled compact la-js-responsive-table la-table-inCard table">
+                    <thead>
+                    <tr>
+                        <th colspan="4" class="center aligned">
+                            <g:message code="surveyConfigsInfo.oldPrice"/>
+                        </th>
+                        <th colspan="4" class="center aligned">
+                            <g:message code="surveyConfigsInfo.newPrice"/>
+                        </th>
+                        <th rowspan="2">Diff.</th>
+                    </tr>
+                    <tr>
 
-                    <th><g:message code="financials.costItemElement"/></th>
-                    <th><g:message code="financials.invoice_total"/></th>
-                    <th><g:message code="financials.newCosts.taxTypeAndRate"/></th>
-                    <th><g:message
-                            code="financials.newCosts.totalAmount"/></th>
+                        <th class="la-smaller-table-head"><g:message code="financials.costItemElement"/></th>
+                        <th class="la-smaller-table-head"><g:message code="financials.invoice_total"/></th>
+                        <th class="la-smaller-table-head"><g:message code="financials.newCosts.taxTypeAndRate"/></th>
+                        <th class="la-smaller-table-head"><g:message
+                                code="financials.newCosts.totalAmount"/></th>
 
-                </tr>
-                </thead>
+                        <th class="la-smaller-table-head"><g:message code="financials.costItemElement"/></th>
+                        <th class="la-smaller-table-head"><g:message code="financials.invoice_total"/></th>
+                        <th class="la-smaller-table-head"><g:message code="financials.newCosts.taxTypeAndRate"/></th>
+                        <th class="la-smaller-table-head"><g:message
+                                code="financials.newCosts.totalAmount"/></th>
+
+                    </tr>
+                    </thead>
 
 
-                <tbody>
-                <g:if test="${costItemSums && costItemSums.subscrCosts}">
-                    <g:each in="${costItemSums.subscrCosts.sort { it.costItemElement }}" var="costItem">
-                        <tr>
-                            <td>
-                                <%
-                                    elementSign = 'notSet'
-                                    icon = ''
-                                    if (costItem.costItemElementConfiguration) {
-                                        elementSign = costItem.costItemElementConfiguration
-                                    }
-                                    switch (elementSign) {
-                                        case RDStore.CIEC_POSITIVE:
-                                            icon = '+'
-                                            break
-                                        case RDStore.CIEC_NEGATIVE:
-                                            icon = '-'
-                                            break
-                                        case RDStore.CIEC_NEUTRAL:
-                                            icon = ''
-                                            break
-                                        default:
-                                            icon = ''
-                                            break
-                                    }
-                                %>
-                                ${raw(icon)}
-
-                                ${costItem.costItemElement?.getI10n('value')}
-                            </td>
-                            <td>
-                                <strong>
-                                    <g:formatNumber
-                                            number="${costItem.costInBillingCurrency}"
-                                            minFractionDigits="2" maxFractionDigits="2"
-                                            type="number"/>
-                                </strong>
-
-                                ${(costItem.billingCurrency?.getI10n('value').split('-')).first()}
-                            </td>
-                            <td>
-                                <g:if test="${costItem.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
-                                    ${RDStore.TAX_TYPE_REVERSE_CHARGE.getI10n("value")}
-                                </g:if>
-                                <g:elseif test="${costItem.taxKey}">
-                                    ${costItem.taxKey.taxType?.getI10n("value") + " (" + costItem.taxKey.taxRate + "%)"}
-                                </g:elseif>
-                            </td>
-                            <td>
-                                <strong>
-                                    <g:formatNumber
-                                            number="${costItem.costInBillingCurrencyAfterTax}"
-                                            minFractionDigits="2" maxFractionDigits="2"
-                                            type="number"/>
-                                </strong>
-
-                                ${(costItem.billingCurrency?.getI10n('value').split('-')).first()}
-
-                                <g:if test="${costItem.startDate || costItem.endDate}">
-                                    <br/>(${formatDate(date: costItem.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItem.endDate, format: message(code: 'default.date.format.notime'))})
-                                </g:if>
-                            </td>
-
-                            <g:if test="${costItemSurvey && costItemSurvey.costItemElement == costItem.costItemElement}">
-                                <g:set var="showCostItemSurvey" value="${false}"/>
+                    <tbody class="top aligned">
+                    <g:if test="${costItemSums && costItemSums.subscrCosts}">
+                        <g:each in="${costItemSums.subscrCosts.sort { it.costItemElement }}" var="costItem">
+                            <tr>
                                 <td>
                                     <%
                                         elementSign = 'notSet'
                                         icon = ''
+                                        dataTooltip = ""
+                                        if (costItem.costItemElementConfiguration) {
+                                            elementSign = costItem.costItemElementConfiguration
+                                        }
+                                        switch (elementSign) {
+                                            case RDStore.CIEC_POSITIVE:
+                                                dataTooltip = message(code: 'financials.costItemConfiguration.positive')
+                                                icon = '<i class="plus green circle icon"></i>'
+                                                break
+                                            case RDStore.CIEC_NEGATIVE:
+                                                dataTooltip = message(code: 'financials.costItemConfiguration.negative')
+                                                icon = '<i class="minus red circle icon"></i>'
+                                                break
+                                            case RDStore.CIEC_NEUTRAL:
+                                                dataTooltip = message(code: 'financials.costItemConfiguration.neutral')
+                                                icon = '<i class="circle yellow icon"></i>'
+                                                break
+                                            default:
+                                                dataTooltip = message(code: 'financials.costItemConfiguration.notSet')
+                                                icon = '<i class="question circle icon"></i>'
+                                                break
+                                        }
+                                    %>
+                                    <span class="la-popup-tooltip la-delay" data-position="right center"
+                                          data-content="${dataTooltip}">${raw(icon)}</span>
+
+                                    ${costItem.costItemElement?.getI10n('value')}
+                                </td>
+                                <td>
+                                    <strong>
+                                        <g:formatNumber
+                                                number="${costItem.costInBillingCurrency}"
+                                                minFractionDigits="2" maxFractionDigits="2"
+                                                type="number"/>
+                                    </strong>
+
+                                    ${costItem.billingCurrency?.getI10n('value')}
+                                </td>
+                                <td>
+                                    <g:if test="${costItem.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
+                                        ${RDStore.TAX_TYPE_REVERSE_CHARGE.getI10n("value")}
+                                    </g:if>
+                                    <g:elseif test="${costItem.taxKey}">
+                                        ${costItem.taxKey.taxType?.getI10n("value") + " (" + costItem.taxKey.taxRate + "%)"}
+                                    </g:elseif>
+                                </td>
+                                <td>
+                                    <strong>
+                                        <g:formatNumber
+                                                number="${costItem.costInBillingCurrencyAfterTax}"
+                                                minFractionDigits="2" maxFractionDigits="2"
+                                                type="number"/>
+                                    </strong>
+
+                                    ${costItem.billingCurrency?.getI10n('value')}
+
+                                    <g:if test="${costItem.startDate || costItem.endDate}">
+                                        <br/>(${formatDate(date: costItem.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItem.endDate, format: message(code: 'default.date.format.notime'))})
+                                    </g:if>
+                                </td>
+
+                                <g:set var="surveyCostItems" scope="request"
+                                       value="${CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndCostItemElement(surveyOrg, RDStore.COST_ITEM_DELETED, costItem.costItemElement)}"/>
+
+                                <% costItemElementsNotInSurveyCostItems <<  costItem.costItemElement %>
+                                <g:if test="${surveyCostItems}">
+                                    <g:each in="${surveyCostItems}"
+                                            var="costItemSurvey">
+                                        <td>
+                                            <%
+                                                elementSign = 'notSet'
+                                                icon = ''
+                                                dataTooltip = ""
+                                                if (costItemSurvey.costItemElementConfiguration) {
+                                                    elementSign = costItemSurvey.costItemElementConfiguration
+                                                }
+                                                switch (elementSign) {
+                                                    case RDStore.CIEC_POSITIVE:
+                                                        dataTooltip = message(code: 'financials.costItemConfiguration.positive')
+                                                        icon = '<i class="plus green circle icon"></i>'
+                                                        break
+                                                    case RDStore.CIEC_NEGATIVE:
+                                                        dataTooltip = message(code: 'financials.costItemConfiguration.negative')
+                                                        icon = '<i class="minus red circle icon"></i>'
+                                                        break
+                                                    case RDStore.CIEC_NEUTRAL:
+                                                        dataTooltip = message(code: 'financials.costItemConfiguration.neutral')
+                                                        icon = '<i class="circle yellow icon"></i>'
+                                                        break
+                                                    default:
+                                                        dataTooltip = message(code: 'financials.costItemConfiguration.notSet')
+                                                        icon = '<i class="question circle icon"></i>'
+                                                        break
+                                                }
+                                            %>
+                                            <span class="la-popup-tooltip la-delay" data-position="right center"
+                                                  data-content="${dataTooltip}">${raw(icon)}</span>
+
+                                            ${costItemSurvey.costItemElement?.getI10n('value')}
+                                        </td>
+                                        <td>
+                                            <strong>
+                                                <g:formatNumber
+                                                        number="${costItemSurvey.costInBillingCurrency}"
+                                                        minFractionDigits="2" maxFractionDigits="2"
+                                                        type="number"/>
+                                            </strong>
+
+                                            ${costItemSurvey.billingCurrency?.getI10n('value')}
+                                        </td>
+                                        <td>
+                                            <g:if test="${costItemSurvey.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
+                                                ${RDStore.TAX_TYPE_REVERSE_CHARGE.getI10n("value")}
+                                            </g:if>
+                                            <g:elseif test="${costItemSurvey.taxKey}">
+                                                ${costItemSurvey.taxKey.taxType?.getI10n("value") + " (" + costItemSurvey.taxKey.taxRate + "%)"}
+                                            </g:elseif>
+                                        </td>
+                                        <td>
+                                            <strong>
+                                                <g:formatNumber
+                                                        number="${costItemSurvey.costInBillingCurrencyAfterTax}"
+                                                        minFractionDigits="2" maxFractionDigits="2"
+                                                        type="number"/>
+                                            </strong>
+
+                                            ${costItemSurvey.billingCurrency?.getI10n('value')}
+
+
+                                            <g:if test="${costItemSurvey.startDate || costItemSurvey.endDate}">
+                                                <br/>(${formatDate(date: costItemSurvey.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSurvey.endDate, format: message(code: 'default.date.format.notime'))})
+                                            </g:if>
+
+                                            <g:if test="${costItemSurvey.costDescription}">
+                                                <br/>
+
+                                                <div class="ui icon la-popup-tooltip la-delay"
+                                                     data-position="right center"
+                                                     data-variation="tiny"
+                                                     data-content="${costItemSurvey.costDescription}">
+                                                    <i class="question small circular inverted icon"></i>
+                                                </div>
+                                            </g:if>
+                                        </td>
+                                        <td>
+                                            <g:set var="oldCostItem"
+                                                   value="${costItem.costInBillingCurrency ?: 0.0}"/>
+
+                                            <g:set var="newCostItem"
+                                                   value="${costItemSurvey.costInBillingCurrency ?: 0.0}"/>
+
+                                            <strong><g:formatNumber
+                                                    number="${(newCostItem - oldCostItem)}"
+                                                    minFractionDigits="2" maxFractionDigits="2" type="number"/>
+                                                <br/>
+                                                (<g:formatNumber
+                                                        number="${((newCostItem - oldCostItem) / oldCostItem) * 100}"
+                                                        minFractionDigits="2"
+                                                        maxFractionDigits="2" type="number"/>%)</strong>
+                                        </td>
+                                    </g:each>
+                                </g:if>
+                                <g:else>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </g:else>
+                            </tr>
+                        </g:each>
+                    </g:if>
+
+                    <g:set var="costItemsWithoutSubCostItems"
+                           value="${surveyOrg && costItemElementsNotInSurveyCostItems ? CostItem.findAllBySurveyOrgAndCostItemElementNotInList(surveyOrg, costItemElementsNotInSurveyCostItems) : []}"/>
+                    <g:if test="${costItemsWithoutSubCostItems}">
+                        <g:each in="${costItemsWithoutSubCostItems}" var="costItemSurvey">
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    <%
+                                        elementSign = 'notSet'
+                                        icon = ''
+                                        dataTooltip = ""
                                         if (costItemSurvey.costItemElementConfiguration) {
                                             elementSign = costItemSurvey.costItemElementConfiguration
                                         }
                                         switch (elementSign) {
                                             case RDStore.CIEC_POSITIVE:
-                                                icon = '+'
+                                                dataTooltip = message(code: 'financials.costItemConfiguration.positive')
+                                                icon = '<i class="plus green circle icon"></i>'
                                                 break
                                             case RDStore.CIEC_NEGATIVE:
-                                                icon = '-'
+                                                dataTooltip = message(code: 'financials.costItemConfiguration.negative')
+                                                icon = '<i class="minus red circle icon"></i>'
                                                 break
                                             case RDStore.CIEC_NEUTRAL:
-                                                icon = ''
+                                                dataTooltip = message(code: 'financials.costItemConfiguration.neutral')
+                                                icon = '<i class="circle yellow icon"></i>'
                                                 break
                                             default:
-                                                icon = ''
+                                                dataTooltip = message(code: 'financials.costItemConfiguration.notSet')
+                                                icon = '<i class="question circle icon"></i>'
                                                 break
                                         }
                                     %>
-                                    ${raw(icon)}
+
+                                    <span class="la-popup-tooltip la-delay" data-position="right center"
+                                          data-content="${dataTooltip}">${raw(icon)}</span>
 
                                     ${costItemSurvey.costItemElement?.getI10n('value')}
+
                                 </td>
                                 <td>
                                     <strong>
@@ -527,7 +667,7 @@
                                                 type="number"/>
                                     </strong>
 
-                                    ${(costItemSurvey.billingCurrency?.getI10n('value').split('-')).first()}
+                                    ${costItemSurvey.billingCurrency?.getI10n('value')}
                                 </td>
                                 <td>
                                     <g:if test="${costItemSurvey.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
@@ -545,8 +685,10 @@
                                                 type="number"/>
                                     </strong>
 
-                                    ${(costItemSurvey.billingCurrency?.getI10n('value').split('-')).first()}
+                                    ${costItemSurvey.billingCurrency?.getI10n('value')}
 
+                                    <g:set var="newCostItem"
+                                           value="${costItemSurvey.costInBillingCurrency ?: 0.0}"/>
 
                                     <g:if test="${costItemSurvey.startDate || costItemSurvey.endDate}">
                                         <br/>(${formatDate(date: costItemSurvey.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSurvey.endDate, format: message(code: 'default.date.format.notime'))})
@@ -554,125 +696,25 @@
 
                                     <g:if test="${costItemSurvey.costDescription}">
                                         <br/>
-                                        (${costItemSurvey.costDescription})
+
+                                        <div class="ui icon la-popup-tooltip la-delay"
+                                             data-position="right center"
+                                             data-variation="tiny"
+                                             data-content="${costItemSurvey.costDescription}">
+                                            <i class="question small circular inverted icon"></i>
+                                        </div>
                                     </g:if>
                                 </td>
 
-                            </g:if>
-                            <g:else>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </g:else>
+                                <td>
+                                </td>
+                            </tr>
+                        </g:each>
+                    </g:if>
 
-                            <td>
-                                <g:if test="${costItemSurvey && costItemSurvey.costItemElement == costItem.costItemElement}">
-
-                                    <g:set var="oldCostItem"
-                                           value="${costItem.costInBillingCurrency ?: 0.0}"/>
-
-                                    <g:set var="newCostItem"
-                                           value="${costItemSurvey.costInBillingCurrency ?: 0.0}"/>
-
-                                    <strong><g:formatNumber
-                                            number="${(newCostItem - oldCostItem)}"
-                                            minFractionDigits="2" maxFractionDigits="2" type="number"/>
-                                        <br/>
-                                        (<g:formatNumber
-                                                number="${((newCostItem - oldCostItem) / oldCostItem) * 100}"
-                                                minFractionDigits="2"
-                                                maxFractionDigits="2" type="number"/>%)</strong>
-                                </g:if>
-                            </td>
-                        </tr>
-                    </g:each>
-                </g:if>
-
-                <g:if test="${showCostItemSurvey && costItemSurvey}">
-                    <tr>
-
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-
-                        <td>
-                            <%
-                                elementSign = 'notSet'
-                                icon = ''
-                                if (costItemSurvey.costItemElementConfiguration) {
-                                    elementSign = costItemSurvey.costItemElementConfiguration
-                                }
-                                switch (elementSign) {
-                                    case RDStore.CIEC_POSITIVE:
-                                        icon = '+'
-                                        break
-                                    case RDStore.CIEC_NEGATIVE:
-                                        icon = '-'
-                                        break
-                                    case RDStore.CIEC_NEUTRAL:
-                                        icon = ''
-                                        break
-                                    default:
-                                        icon = ''
-                                        break
-                                }
-                            %>
-                            ${raw(icon)}
-
-                            ${costItemSurvey.costItemElement?.getI10n('value')}
-
-                        </td>
-                        <td>
-                            <strong>
-                                <g:formatNumber
-                                        number="${costItemSurvey.costInBillingCurrency}"
-                                        minFractionDigits="2" maxFractionDigits="2"
-                                        type="number"/>
-                            </strong>
-
-                            ${(costItemSurvey.billingCurrency?.getI10n('value').split('-')).first()}
-                        </td>
-                        <td>
-                            <g:if test="${costItemSurvey.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
-                                ${RDStore.TAX_TYPE_REVERSE_CHARGE.getI10n("value")}
-                            </g:if>
-                            <g:elseif test="${costItemSurvey.taxKey}">
-                                ${costItemSurvey.taxKey.taxType?.getI10n("value") + " (" + costItemSurvey.taxKey.taxRate + "%)"}
-                            </g:elseif>
-                        </td>
-                        <td>
-                            <strong>
-                                <g:formatNumber
-                                        number="${costItemSurvey.costInBillingCurrencyAfterTax}"
-                                        minFractionDigits="2" maxFractionDigits="2"
-                                        type="number"/>
-                            </strong>
-
-                            ${(costItemSurvey.billingCurrency?.getI10n('value').split('-')).first()}
-
-                            <g:set var="newCostItem"
-                                   value="${costItemSurvey.costInBillingCurrency ?: 0.0}"/>
-
-                            <g:if test="${costItemSurvey.startDate || costItemSurvey.endDate}">
-                                <br/>(${formatDate(date: costItemSurvey.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSurvey.endDate, format: message(code: 'default.date.format.notime'))})
-                            </g:if>
-
-                            <g:if test="${costItemSurvey.costDescription}">
-                                <br/>
-                                (${costItemSurvey.costDescription})
-                            </g:if>
-                        </td>
-
-                        <td>
-                        </td>
-                    </tr>
-                </g:if>
-
-                </tbody>
-            </table>
-
+                    </tbody>
+                </table>
+            </div>
         </div>
     </g:if>
 
@@ -681,13 +723,13 @@
             <div class="content">
                 <g:if test="${costItemSums.ownCosts}">
                     <g:if test="${(contextOrg.id != subscription.getConsortia()?.id && subscription.instanceOf) || !subscription.instanceOf}">
-                        <h2 class="ui header">${message(code: 'financials.label')} : ${message(code: 'financials.tab.ownCosts')}</h2>
-                        <g:render template="/subscription/financials" model="[data: costItemSums.ownCosts]"/>
+                        <h2 class="ui header">${message(code: 'financials.label')} : ${message(code: 'financials.tab.ownCosts')} </h2>
+                        <laser:render template="/subscription/financials" model="[data: costItemSums.ownCosts]"/>
                     </g:if>
                 </g:if>
                 <g:if test="${costItemSums.consCosts}">
-                    <h2 class="ui header">${message(code: 'financials.label')} : ${message(code: 'financials.tab.consCosts')}</h2>
-                    <g:render template="/subscription/financials" model="[data: costItemSums.consCosts]"/>
+                    <h2 class="ui header">${message(code: 'financials.label')} : ${message(code: 'financials.tab.consCosts')} ${message(code: 'surveyCostItem.info')}</h2>
+                    <laser:render template="/subscription/financials" model="[data: costItemSums.consCosts]"/>
                 </g:if>
             </div>
         </div>

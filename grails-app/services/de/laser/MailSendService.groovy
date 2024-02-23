@@ -54,31 +54,7 @@ class MailSendService {
      * @return a {@link Map} containing the details of the mail to be sent
      */
     Map mailSendConfigBySurvey(SurveyInfo surveyInfo, boolean reminderMail) {
-        Map<String, Object> result = [:]
-        String ownerFromMail
-        if(OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
-            ownerFromMail = OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY).strValue
-        }
-
-        result.mailReplyTo = ownerFromMail ?: ''
-        result.mailFrom = fromMail
-        result.mailSubject = ""
-        result.mailText = ""
-
-        Locale language = new Locale("de")
-
-        result.mailSubject = subjectSystemPraefix
-        if(reminderMail) {
-            Object[] args
-            result.mailSubject = result.mailSubject + ' ' + messageSource.getMessage('email.subject.surveysReminder', args, language)
-        }
-
-        result.mailSubject = result.mailSubject + ' ' + surveyInfo.name + ' ('+surveyInfo.type.getI10n('value', language)+')'
-        result.mailSubject = escapeService.replaceUmlaute(result.mailSubject)
-
-        result.mailText = surveyService.surveyMailTextAsString(surveyInfo, reminderMail)
-
-
+        Map<String, Object> result =  mailSendConfigBySurveys([surveyInfo], reminderMail)
         result
     }
 
@@ -91,12 +67,12 @@ class MailSendService {
     Map mailSendConfigBySurveys(List<SurveyInfo> surveys, boolean reminderMail) {
         Map<String, Object> result = [:]
 
-        String ownerFromMail
+        String ownerReplyTo
         if(OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
-            ownerFromMail = OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY).strValue
+            ownerReplyTo = OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY).strValue
         }
 
-        result.replyTo = ownerFromMail ?: ''
+        result.replyTo = ownerReplyTo ?: ''
         result.mailFrom = fromMail
         result.mailSubject = ""
         result.mailText = ""
@@ -132,9 +108,9 @@ class MailSendService {
 
         FlashScope flash = getCurrentFlashScope()
 
-        String ownerFromMail
+        String ownerReplyTo
         if(OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
-            ownerFromMail = OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY).strValue
+            ownerReplyTo = OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY).strValue
         }
 
         result.mailFrom = fromMail
@@ -149,8 +125,8 @@ class MailSendService {
             result.surveyConfig = surveyInfo.surveyConfigs[0]
             String replyToMail
 
-            if(ownerFromMail){
-                replyToMail = ownerFromMail
+            if(ownerReplyTo){
+                replyToMail = ownerReplyTo
             }else {
                 List generalContactsEMails = []
 
@@ -291,9 +267,9 @@ class MailSendService {
 
         FlashScope flash = getCurrentFlashScope()
 
-        String ownerFromMail
+        String ownerReplyTo
         if(OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
-            ownerFromMail = OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY).strValue
+            ownerReplyTo = OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY).strValue
         }
 
         result.mailFrom = fromMail
@@ -303,8 +279,8 @@ class MailSendService {
 
         if (result.editable) {
             String replyToMail
-            if(ownerFromMail){
-                replyToMail = ownerFromMail
+            if(ownerReplyTo){
+                replyToMail = ownerReplyTo
             }else{
                 List generalContactsEMails = []
 
@@ -405,15 +381,15 @@ class MailSendService {
                             ccAddress = user.getSetting(UserSetting.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
                         }
 
-                        String ownerFromMail
+                        String ownerReplyTo
                         if(OrgSetting.get(survey.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
-                            ownerFromMail = OrgSetting.get(survey.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY).strValue
+                            ownerReplyTo = OrgSetting.get(survey.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY).strValue
                         }
 
                         String mailFrom = fromMail
 
-                        if(ownerFromMail){
-                            replyToMail = ownerFromMail
+                        if(ownerReplyTo){
+                            replyToMail = ownerReplyTo
                         }else {
 
                             List generalContactsEMails = []

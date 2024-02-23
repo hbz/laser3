@@ -369,7 +369,7 @@
                                                      minFractionDigits="2"
                                                      maxFractionDigits="2" type="number"/>)
 
-                                    ${(costItemParticipantSub.billingCurrency?.getI10n('value')?.split('-')).first()}
+                                    ${costItemParticipantSub.billingCurrency?.getI10n('value')}
                                     <g:set var="sumOldCostItem"
                                            value="${sumOldCostItem + costItemParticipantSub.costInBillingCurrency ?: 0}"/>
                                     <g:set var="sumOldCostItemAfterTax"
@@ -396,7 +396,7 @@
                                                  minFractionDigits="2"
                                                  maxFractionDigits="2" type="number"/>)
 
-                                ${(participant.surveyCostItem.billingCurrency?.getI10n('value')?.split('-')).first()}
+                                ${participant.surveyCostItem.billingCurrency?.getI10n('value')}
 
                                 <g:set var="sumSurveyCostItem"
                                        value="${sumSurveyCostItem + participant.surveyCostItem.costInBillingCurrency ?: 0}"/>
@@ -433,7 +433,7 @@
                                                      minFractionDigits="2"
                                                      maxFractionDigits="2" type="number"/>)
 
-                                    ${(costItemParticipantSuccessorSub.billingCurrency?.getI10n('value')?.split('-')).first()}
+                                    ${costItemParticipantSuccessorSub.billingCurrency?.getI10n('value')}
                                     <g:set var="sumNewCostItem"
                                            value="${sumNewCostItem + costItemParticipantSuccessorSub.costInBillingCurrency ?: 0}"/>
                                     <g:set var="sumNewCostItemAfterTax"

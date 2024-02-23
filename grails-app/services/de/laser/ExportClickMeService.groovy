@@ -1509,28 +1509,16 @@ class ExportClickMeService {
                     fields: [
                             'costItem.costItemElement'                  : [field: 'costItemElement', label: 'Cost Item Element', message: 'financials.costItemElement'],
                             'costItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
-                            'costItem.reference'                        : [field: 'costItem.reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
-                            'costItem.budgetCodes'                      : [field: 'costItem.budgetcodes', label: 'Budget Code', message: 'financials.budgetCode'],
                             'costItem.costItemElementConfiguration'     : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
                             'costItem.costItemStatus'                   : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
                             'costItem.costInBillingCurrency'            : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
                             'costItem.billingCurrency'                  : [field: 'costItem.billingCurrency', label: 'Billing Currency', message: 'default.currency.label'],
                             'costItem.costInBillingCurrencyAfterTax'    : [field: 'costItem.costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount'],
-                            'costItem.currencyRate'                     : [field: 'costItem.currencyRate', label: 'Exchange Rate', message: 'financials.newCosts.exchangeRate'],
                             'costItem.taxType'                          : [field: 'costItem.taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType'],
                             'costItem.taxRate'                          : [field: 'costItem.taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate'],
-                            'costItem.costInLocalCurrency'              : [field: 'costItem.costInLocalCurrency', label: 'Cost In Local Currency', message: 'financials.costInLocalCurrency'],
-                            'costItem.costInLocalCurrencyAfterTax'      : [field: 'costItem.costInLocalCurrencyAfterTax', label: 'Cost in Local Currency after taxation', message: 'financials.costInLocalCurrencyAfterTax'],
-
-                            'costItem.datePaid'                         : [field: 'costItem.datePaid', label: 'Financial Year', message: 'financials.financialYear'],
-                            'costItem.financialYear'                    : [field: 'costItem.financialYear', label: 'Date Paid', message: 'financials.datePaid'],
-                            'costItem.invoiceDate'                      : [field: 'costItem.invoiceDate', label: 'Invoice Date', message: 'financials.invoiceDate'],
                             'costItem.startDate'                        : [field: 'costItem.startDate', label: 'Date From', message: 'financials.dateFrom'],
                             'costItem.endDate'                          : [field: 'costItem.endDate', label: 'Date To', message: 'financials.dateTo'],
-
-                            'costItem.costDescription'                  : [field: 'costItem.costDescription', label: 'Description', message: 'default.description.label'],
-                            'costItem.invoiceNumber'                    : [field: 'costItem.invoice.invoiceNumber', label: 'Invoice Number', message: 'financials.invoice_number'],
-                            'costItem.orderNumber'                      : [field: 'costItem.order.orderNumber', label: 'Order Number', message: 'financials.order_number'],
+                            'costItem.costDescription'                  : [field: 'costItem.costDescription', label: 'Description', message: 'default.description.label']
                     ]
             ],
 
@@ -3283,7 +3271,12 @@ class ExportClickMeService {
         renewalData.add([createTableCell(format, messageSource.getMessage('renewalEvaluation.continuetoSubscription.label', null, locale) + " (${renewalResult.orgsContinuetoSubscription.size()})", 'positive')])
 
         renewalResult.orgsContinuetoSubscription.sort { it.participant.sortname }.each { participantResult ->
-            _setRenewalRow(participantResult, selectedExportFields, renewalData, false, renewalResult.multiYearTermTwoSurvey, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermFourSurvey, renewalResult.multiYearTermFiveSurvey, format, contactSources)
+            participantResult.multiYearTermTwoSurvey = renewalResult.multiYearTermTwoSurvey
+            participantResult.multiYearTermThreeSurvey = renewalResult.multiYearTermThreeSurvey
+            participantResult.multiYearTermFourSurvey = renewalResult.multiYearTermFourSurvey
+            participantResult.multiYearTermFiveSurvey = renewalResult.multiYearTermFiveSurvey
+
+            _setRenewalRow(participantResult, selectedExportFields, renewalData, false, format, contactSources)
         }
 
         renewalData.add([createTableCell(format, ' ')])
@@ -3309,8 +3302,19 @@ class ExportClickMeService {
                 costItem = CostItem.findBySubAndCostItemStatusNotEqualAndCostItemElement(successorSub, RDStore.COST_ITEM_DELETED, RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE)
             }
 
+            Map renewalMap = [:]
 
-            _setRenewalRow([participant: sub.getSubscriber(), sub: sub, multiYearTermTwoSurvey: renewalResult.multiYearTermTwoSurvey, multiYearTermThreeSurvey: renewalResult.multiYearTermThreeSurvey, multiYearTermFourSurvey: renewalResult.multiYearTermFourSurvey, multiYearTermFiveSurvey: renewalResult.multiYearTermFiveSurvey, properties: renewalResult.properties, costItem: costItem], selectedExportFields, renewalData, true, renewalResult.multiYearTermTwoSurvey, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermFourSurvey, renewalResult.multiYearTermFiveSurvey, format, contactSources)
+            renewalMap.sub = sub
+            renewalMap.participant = sub.getSubscriber()
+            renewalMap.multiYearTermTwoSurvey = renewalResult.multiYearTermTwoSurvey
+            renewalMap.multiYearTermThreeSurvey = renewalResult.multiYearTermThreeSurvey
+            renewalMap.multiYearTermFourSurvey = renewalResult.multiYearTermFourSurvey
+            renewalMap.multiYearTermFiveSurvey = renewalResult.multiYearTermFiveSurvey
+            renewalMap.properties = renewalResult.properties
+            renewalMap.costItem = costItem
+
+
+            _setRenewalRow(renewalMap, selectedExportFields, renewalData, true, format, contactSources)
 
         }
 
@@ -3326,7 +3330,19 @@ class ExportClickMeService {
                 costItem = CostItem.findBySubAndCostItemStatusNotEqualAndCostItemElement(sub, RDStore.COST_ITEM_DELETED, RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE)
             }
             Org org = sub.getSubscriber()
-            _setRenewalRow([participant: org, sub: sub, multiYearTermTwoSurvey: renewalResult.multiYearTermTwoSurvey, multiYearTermThreeSurvey: renewalResult.multiYearTermThreeSurvey, multiYearTermFourSurvey: renewalResult.multiYearTermFourSurvey, multiYearTermFiveSurvey: renewalResult.multiYearTermFiveSurvey, properties: renewalResult.properties, costItem: costItem], selectedExportFields, renewalData, true, renewalResult.multiYearTermTwoSurvey, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermFourSurvey, renewalResult.multiYearTermFiveSurvey, format, contactSources)
+
+            Map renewalMap = [:]
+
+            renewalMap.sub = sub
+            renewalMap.participant = org
+            renewalMap.multiYearTermTwoSurvey = renewalResult.multiYearTermTwoSurvey
+            renewalMap.multiYearTermThreeSurvey = renewalResult.multiYearTermThreeSurvey
+            renewalMap.multiYearTermFourSurvey = renewalResult.multiYearTermFourSurvey
+            renewalMap.multiYearTermFiveSurvey = renewalResult.multiYearTermFiveSurvey
+            renewalMap.properties = renewalResult.properties
+            renewalMap.costItem = costItem
+
+            _setRenewalRow(renewalMap, selectedExportFields, renewalData, true, format, contactSources)
 
         }
 
@@ -3337,7 +3353,12 @@ class ExportClickMeService {
 
 
         renewalResult.newOrgsContinuetoSubscription.sort{it.participant.sortname}.each { participantResult ->
-            _setRenewalRow(participantResult, selectedExportFields, renewalData, false, renewalResult.multiYearTermTwoSurvey, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermFourSurvey, renewalResult.multiYearTermFiveSurvey, format, contactSources)
+            participantResult.multiYearTermTwoSurvey = renewalResult.multiYearTermTwoSurvey
+            participantResult.multiYearTermThreeSurvey = renewalResult.multiYearTermThreeSurvey
+            participantResult.multiYearTermFourSurvey = renewalResult.multiYearTermFourSurvey
+            participantResult.multiYearTermFiveSurvey = renewalResult.multiYearTermFiveSurvey
+
+            _setRenewalRow(participantResult, selectedExportFields, renewalData, false, format, contactSources)
         }
 
         renewalData.add([createTableCell(format, ' ')])
@@ -3347,7 +3368,12 @@ class ExportClickMeService {
 
 
         renewalResult.orgsWithTermination.sort{it.participant.sortname}.each { participantResult ->
-            _setRenewalRow(participantResult, selectedExportFields, renewalData, false, renewalResult.multiYearTermTwoSurvey, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermFourSurvey, renewalResult.multiYearTermFiveSurvey, format, contactSources)
+            participantResult.multiYearTermTwoSurvey = renewalResult.multiYearTermTwoSurvey
+            participantResult.multiYearTermThreeSurvey = renewalResult.multiYearTermThreeSurvey
+            participantResult.multiYearTermFourSurvey = renewalResult.multiYearTermFourSurvey
+            participantResult.multiYearTermFiveSurvey = renewalResult.multiYearTermFiveSurvey
+
+            _setRenewalRow(participantResult, selectedExportFields, renewalData, false, format, contactSources)
         }
 
         renewalData.add([createTableCell(format, ' ')])
@@ -3357,7 +3383,12 @@ class ExportClickMeService {
 
 
         renewalResult.orgsWithoutResult.sort{it.participant.sortname}.each { participantResult ->
-            _setRenewalRow(participantResult, selectedExportFields, renewalData, false, renewalResult.multiYearTermTwoSurvey, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermFourSurvey, renewalResult.multiYearTermFiveSurvey, format, contactSources)
+            participantResult.multiYearTermTwoSurvey = renewalResult.multiYearTermTwoSurvey
+            participantResult.multiYearTermThreeSurvey = renewalResult.multiYearTermThreeSurvey
+            participantResult.multiYearTermFourSurvey = renewalResult.multiYearTermFourSurvey
+            participantResult.multiYearTermFiveSurvey = renewalResult.multiYearTermFiveSurvey
+
+            _setRenewalRow(participantResult, selectedExportFields, renewalData, false, format, contactSources)
         }
 
         renewalData.add([createTableCell(format, ' ')])
@@ -3367,7 +3398,12 @@ class ExportClickMeService {
 
 
         renewalResult.orgInsertedItself.sort{it.participant.sortname}.each { participantResult ->
-            _setRenewalRow(participantResult, selectedExportFields, renewalData, false, renewalResult.multiYearTermTwoSurvey, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermFourSurvey, renewalResult.multiYearTermFiveSurvey, format, contactSources)
+            participantResult.multiYearTermTwoSurvey = renewalResult.multiYearTermTwoSurvey
+            participantResult.multiYearTermThreeSurvey = renewalResult.multiYearTermThreeSurvey
+            participantResult.multiYearTermFourSurvey = renewalResult.multiYearTermFourSurvey
+            participantResult.multiYearTermFiveSurvey = renewalResult.multiYearTermFiveSurvey
+
+            _setRenewalRow(participantResult, selectedExportFields, renewalData, false, format, contactSources)
         }
 
 
@@ -4317,7 +4353,7 @@ class ExportClickMeService {
      * @param multiYearTermFiveSurvey should five years running times appear?
      * @param format the format to use for export
      */
-    private void _setRenewalRow(Map participantResult, Map<String, Object> selectedFields, List renewalData, boolean onlySubscription, PropertyDefinition multiYearTermTwoSurvey, PropertyDefinition multiYearTermThreeSurvey, PropertyDefinition multiYearTermFourSurvey, PropertyDefinition multiYearTermFiveSurvey, FORMAT format, Set<String> contactSources){
+    private void _setRenewalRow(Map participantResult, Map<String, Object> selectedFields, List renewalData, boolean onlySubscription, FORMAT format, Set<String> contactSources){
         List row = []
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         selectedFields.keySet().each { String fieldKey ->
@@ -4339,32 +4375,32 @@ class ExportClickMeService {
                     }
                 } else if (fieldKey == 'survey.period') {
                     String period = ""
-                    if (multiYearTermTwoSurvey) {
-                        SurveyResult participantResultProperty = SurveyResult.findBySurveyConfigAndParticipantAndType(participantResult.surveyConfig, participantResult.participant, multiYearTermTwoSurvey)
+                    if (participantResult.multiYearTermTwoSurvey) {
+                        SurveyResult participantResultProperty = SurveyResult.findBySurveyConfigAndParticipantAndType(participantResult.surveyConfig, participantResult.participant, participantResult.multiYearTermTwoSurvey)
                         if (participantResultProperty && participantResultProperty.refValue?.id == RDStore.YN_YES.id) {
                             period = participantResult.newSubPeriodTwoStartDate ? sdf.format(participantResult.newSubPeriodTwoStartDate) : " "
                             period = participantResult.newSubPeriodTwoEndDate ? period + " - " + sdf.format(participantResult.newSubPeriodTwoEndDate) : " "
                         }
                     }
 
-                    if (multiYearTermThreeSurvey) {
-                        SurveyResult participantResultProperty = SurveyResult.findBySurveyConfigAndParticipantAndType(participantResult.surveyConfig, participantResult.participant, multiYearTermThreeSurvey)
+                    if (participantResult.multiYearTermThreeSurvey) {
+                        SurveyResult participantResultProperty = SurveyResult.findBySurveyConfigAndParticipantAndType(participantResult.surveyConfig, participantResult.participant, participantResult.multiYearTermThreeSurvey)
                         if (participantResultProperty && participantResultProperty.refValue?.id == RDStore.YN_YES.id) {
                             period = participantResult.newSubPeriodThreeStartDate ? sdf.format(participantResult.newSubPeriodThreeStartDate) : " "
                             period = participantResult.newSubPeriodThreeEndDate ? period + " - " + sdf.format(participantResult.newSubPeriodThreeEndDate) : " "
                         }
                     }
 
-                    if (multiYearTermFourSurvey) {
-                        SurveyResult participantResultProperty = SurveyResult.findBySurveyConfigAndParticipantAndType(participantResult.surveyConfig, participantResult.participant, multiYearTermFourSurvey)
+                    if (participantResult.multiYearTermFourSurvey) {
+                        SurveyResult participantResultProperty = SurveyResult.findBySurveyConfigAndParticipantAndType(participantResult.surveyConfig, participantResult.participant, participantResult.multiYearTermFourSurvey)
                         if (participantResultProperty && participantResultProperty.refValue?.id == RDStore.YN_YES.id) {
                             period = participantResult.newSubPeriodFourStartDate ? sdf.format(participantResult.newSubPeriodFourStartDate) : " "
                             period = participantResult.newSubPeriodFourEndDate ? period + " - " + sdf.format(participantResult.newSubPeriodFourEndDate) : " "
                         }
                     }
 
-                    if (multiYearTermFiveSurvey) {
-                        SurveyResult participantResultProperty = SurveyResult.findBySurveyConfigAndParticipantAndType(participantResult.surveyConfig, participantResult.participant, multiYearTermFiveSurvey)
+                    if (participantResult.multiYearTermFiveSurvey) {
+                        SurveyResult participantResultProperty = SurveyResult.findBySurveyConfigAndParticipantAndType(participantResult.surveyConfig, participantResult.participant, participantResult.multiYearTermFiveSurvey)
                         if (participantResultProperty && participantResultProperty.refValue?.id == RDStore.YN_YES.id) {
                             period = participantResult.newSubPeriodFiveStartDate ? sdf.format(participantResult.newSubPeriodFiveStartDate) : " "
                             period = participantResult.newSubPeriodFiveEndDate ? period + " - " + sdf.format(participantResult.newSubPeriodFiveEndDate) : " "
@@ -4398,35 +4434,35 @@ class ExportClickMeService {
                     String fourComment = participantResult.participantPropertyFourComment ?: ' '
                     String fiveComment = participantResult.participantPropertyFiveComment ?: ' '
                     String participantPropertyMultiYearComment = ' '
-                    if (multiYearTermTwoSurvey) {
-                        SurveyResult participantMultiYearTermResultProperty = SurveyResult.findBySurveyConfigAndParticipantAndType(participantResult.surveyConfig, participantResult.participant, multiYearTermTwoSurvey)
+                    if (participantResult.multiYearTermTwoSurvey) {
+                        SurveyResult participantMultiYearTermResultProperty = SurveyResult.findBySurveyConfigAndParticipantAndType(participantResult.surveyConfig, participantResult.participant, participantResult.multiYearTermTwoSurvey)
                         if (participantMultiYearTermResultProperty && participantMultiYearTermResultProperty.refValue?.id == RDStore.YN_YES.id) {
                             participantPropertyMultiYearComment = twoComment
                         }
                     }
 
-                    if (multiYearTermThreeSurvey) {
-                        SurveyResult participantMultiYearTermResultProperty = SurveyResult.findBySurveyConfigAndParticipantAndType(participantResult.surveyConfig, participantResult.participant, multiYearTermThreeSurvey)
+                    if (participantResult.multiYearTermThreeSurvey) {
+                        SurveyResult participantMultiYearTermResultProperty = SurveyResult.findBySurveyConfigAndParticipantAndType(participantResult.surveyConfig, participantResult.participant, participantResult.multiYearTermThreeSurvey)
                         if (participantMultiYearTermResultProperty && participantMultiYearTermResultProperty.refValue?.id == RDStore.YN_YES.id) {
                             participantPropertyMultiYearComment = threeComment
                         }
                     }
 
-                    if (multiYearTermFourSurvey) {
-                        SurveyResult participantMultiYearTermResultProperty = SurveyResult.findBySurveyConfigAndParticipantAndType(participantResult.surveyConfig, participantResult.participant, multiYearTermFourSurvey)
+                    if (participantResult.multiYearTermFourSurvey) {
+                        SurveyResult participantMultiYearTermResultProperty = SurveyResult.findBySurveyConfigAndParticipantAndType(participantResult.surveyConfig, participantResult.participant, participantResult.multiYearTermFourSurvey)
                         if (participantMultiYearTermResultProperty && participantMultiYearTermResultProperty.refValue?.id == RDStore.YN_YES.id) {
                             participantPropertyMultiYearComment = fourComment
                         }
                     }
 
-                    if (multiYearTermFiveSurvey) {
-                        SurveyResult participantMultiYearTermResultProperty = SurveyResult.findBySurveyConfigAndParticipantAndType(participantResult.surveyConfig, participantResult.participant, multiYearTermFiveSurvey)
+                    if (participantResult.multiYearTermFiveSurvey) {
+                        SurveyResult participantMultiYearTermResultProperty = SurveyResult.findBySurveyConfigAndParticipantAndType(participantResult.surveyConfig, participantResult.participant, participantResult.multiYearTermFiveSurvey)
                         if (participantMultiYearTermResultProperty && participantMultiYearTermResultProperty.refValue?.id == RDStore.YN_YES.id) {
                             participantPropertyMultiYearComment = fiveComment
                         }
                     }
 
-                    if (!multiYearTermTwoSurvey && !multiYearTermThreeSurvey && !multiYearTermFourSurvey && !multiYearTermFiveSurvey) {
+                    if (!participantResult.multiYearTermTwoSurvey && !participantResult.multiYearTermThreeSurvey && !participantResult.multiYearTermFourSurvey && !participantResult.multiYearTermFiveSurvey) {
                         row.add(createTableCell(format, ' '))
                     }else {
                         row.add(createTableCell(format, participantPropertyMultiYearComment))

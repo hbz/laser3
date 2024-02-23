@@ -180,7 +180,6 @@
                 <th>
                     ${message(code: 'surveyCostItems.label')}
                 </th>
-                <th></th>
             </g:if>
 
             <g:if test="${tmplConfigItem.equalsIgnoreCase('marker')}">
@@ -769,35 +768,39 @@
                         <g:message code="surveyOrg.perennialTerm.available"/>
                     </g:if>
                     <g:else>
-                        <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemStatusNotEqual(orgSub, institution, RDStore.COST_ITEM_DELETED)}"
-                                var="costItem">
-
-                            <g:if test="${costItem.costItemElement?.id?.toString() == selectedCostItemElement}">
-
-                                <strong><g:formatNumber number="${costItem.costInBillingCurrencyAfterTax}"
-                                                   minFractionDigits="2"
-                                                   maxFractionDigits="2" type="number"/></strong>
-
-                                (<g:formatNumber number="${costItem.costInBillingCurrency}" minFractionDigits="2"
-                                                 maxFractionDigits="2" type="number"/>)
-
-                                ${(costItem.billingCurrency?.getI10n('value')?.split('-')).first()}
-
-                                <br />
-                                <g:if test="${costItem.startDate || costItem.endDate}">
-                                    (${costItem.startDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.startDate) : ''} - ${costItem.endDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.endDate) : ''})
-                                </g:if>
-
+                        <table class="ui very basic compact table">
+                            <tbody>
+                            <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemStatusNotEqualAndCostItemElement(orgSub, institution, RDStore.COST_ITEM_DELETED, RefdataValue.get(selectedCostItemElement instanceof String ? Long.parseLong(selectedCostItemElement) : selectedCostItemElement))}"
+                                    var="costItem">
                                 <g:set var="sumOldCostItem"
-                                       value="${sumOldCostItem + costItem.costInBillingCurrency?:0}"/>
+                                       value="${sumOldCostItem + costItem.costInBillingCurrency ?: 0}"/>
                                 <g:set var="sumOldCostItemAfterTax"
-                                       value="${sumOldCostItemAfterTax + costItem.costInBillingCurrencyAfterTax?:0}"/>
+                                       value="${sumOldCostItemAfterTax + costItem.costInBillingCurrencyAfterTax ?: 0}"/>
 
-                                <g:set var="oldCostItem" value="${costItem.costInBillingCurrency?:null}"/>
-                                <g:set var="oldCostItemAfterTax" value="${costItem.costInBillingCurrencyAfterTax?:null}"/>
+                                <g:set var="oldCostItem" value="${costItem.costInBillingCurrency ?: null}"/>
+                                <g:set var="oldCostItemAfterTax" value="${costItem.costInBillingCurrencyAfterTax ?: null}"/>
 
-                            </g:if>
-                        </g:each>
+                                <tr>
+                                    <td>
+                                        <strong><g:formatNumber number="${costItem.costInBillingCurrencyAfterTax}"
+                                                                minFractionDigits="2"
+                                                                maxFractionDigits="2" type="number"/></strong>
+
+                                        (<g:formatNumber number="${costItem.costInBillingCurrency}" minFractionDigits="2"
+                                                         maxFractionDigits="2" type="number"/>)
+                                    </td>
+                                    <td>
+                                        ${costItem.billingCurrency?.getI10n('value')}
+                                    </td>
+                                    <td>
+                                        <g:if test="${costItem.startDate || costItem.endDate}">
+                                            ${costItem.startDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.startDate) : ''} - ${costItem.endDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.endDate) : ''}
+                                        </g:if>
+                                    </td>
+                                </tr>
+                            </g:each>
+                            </tbody>
+                        </table>
                     </g:else>
                 </g:if>
 
@@ -812,44 +815,73 @@
                     </g:if>
                     <g:else>
 
-                        <g:set var="costItem" scope="request"
-                               value="${CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg, RDStore.COST_ITEM_DELETED)}"/>
+                        <g:set var="costItems" scope="request"
+                               value="${CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndCostItemElement(surveyOrg, RDStore.COST_ITEM_DELETED, RefdataValue.get(selectedCostItemElement instanceof String ? Long.parseLong(selectedCostItemElement) : selectedCostItemElement))}"/>
 
-                        <g:if test="${costItem}">
+                        <g:if test="${costItems}">
+                            <table class="ui very basic compact table">
+                                <tbody>
+                                <g:each in="${costItems}"
+                                        var="costItem">
+                                    <g:set var="sumSurveyCostItem"
+                                           value="${sumSurveyCostItem + costItem.costInBillingCurrency ?: 0}"/>
+                                    <g:set var="sumSurveyCostItemAfterTax"
+                                           value="${sumSurveyCostItemAfterTax + costItem.costInBillingCurrencyAfterTax ?: 0}"/>
 
-                            <strong><g:formatNumber number="${costItem.costInBillingCurrencyAfterTax}" minFractionDigits="2"
-                                               maxFractionDigits="2" type="number"/></strong>
+                                    <tr>
+                                        <td>
+                                            <strong><g:formatNumber number="${costItem.costInBillingCurrencyAfterTax}" minFractionDigits="2"
+                                                                    maxFractionDigits="2" type="number"/></strong>
 
-                            (<g:formatNumber number="${costItem.costInBillingCurrency}" minFractionDigits="2"
-                                             maxFractionDigits="2" type="number"/>)
+                                            (<g:formatNumber number="${costItem.costInBillingCurrency}" minFractionDigits="2"
+                                                             maxFractionDigits="2" type="number"/>)
 
-                            ${(costItem.billingCurrency?.getI10n('value')?.split('-')).first()}
+                                        </td>
+                                        <td>
+                                            ${costItem.billingCurrency?.getI10n('value')}
+                                        </td>
 
-                            <g:set var="sumSurveyCostItem"
-                                   value="${sumSurveyCostItem + costItem.costInBillingCurrency?:0}"/>
-                            <g:set var="sumSurveyCostItemAfterTax"
-                                   value="${sumSurveyCostItemAfterTax + costItem.costInBillingCurrencyAfterTax?:0}"/>
+                                        <td>
+                                            <g:if test="${oldCostItem || oldCostItemAfterTax}">
 
-                            <g:if test="${oldCostItem || oldCostItemAfterTax}">
-                                <br /><strong><g:formatNumber number="${((costItem.costInBillingCurrencyAfterTax-oldCostItemAfterTax)/oldCostItemAfterTax)*100}"
-                                                       minFractionDigits="2"
-                                                       maxFractionDigits="2" type="number"/>%</strong>
+                                                <strong><g:formatNumber
+                                                        number="${((costItem.costInBillingCurrencyAfterTax - oldCostItemAfterTax) / oldCostItemAfterTax) * 100}"
+                                                        minFractionDigits="2"
+                                                        maxFractionDigits="2" type="number"/>%</strong>
 
-                                (<g:formatNumber number="${((costItem.costInBillingCurrency-oldCostItem)/oldCostItem)*100}" minFractionDigits="2"
-                                                 maxFractionDigits="2" type="number"/>%)
-                            </g:if>
+                                                (<g:formatNumber number="${((costItem.costInBillingCurrency - oldCostItem) / oldCostItem) * 100}"
+                                                                 minFractionDigits="2"
+                                                                 maxFractionDigits="2" type="number"/>%)
 
-                            <br />
-                            <g:if test="${costItem.startDate || costItem.endDate}">
-                                (${costItem.startDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.startDate) : ''} - ${costItem.endDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.endDate) : ''})
-                            </g:if>
+                                            </g:if>
+                                        </td>
+                                        <td>
+                                            <g:if test="${costItem.startDate || costItem.endDate}">
+                                                ${costItem.startDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.startDate) : ''} - ${costItem.endDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.endDate) : ''}
+                                            </g:if>
+                                        </td>
 
-                            <button onclick="JSPC.app.addEditSurveyCostItem(${params.id}, ${surveyConfig.id}, ${org.id}, ${costItem.id})"
-                                    class="ui icon circular button right floated trigger-modal"
-                                    role="button"
-                                    aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="write icon"></i>
-                            </button>
+                                        <td>
+                                            <button onclick="JSPC.app.addEditSurveyCostItem(${params.id}, ${surveyConfig.id}, ${org.id}, ${costItem.id})"
+                                                    class="ui icon circular button right floated trigger-modal"
+                                                    role="button"
+                                                    aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                                <i aria-hidden="true" class="write icon"></i>
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <g:if test="${costItem && costItem.costDescription}">
+
+                                                <div class="ui icon la-popup-tooltip la-delay" data-content="${costItem.costDescription}">
+                                                    <i class="info circular inverted icon"></i>
+                                                </div>
+                                            </g:if>
+                                        </td>
+                                    </tr>
+                                </g:each>
+                                </tbody>
+                            </table>
+
                         </g:if>
                         <g:else>
                             <button onclick="JSPC.app.addEditSurveyCostItem(${params.id}, ${surveyConfig.id}, ${org.id}, ${'null'})"
@@ -861,18 +893,6 @@
                         </g:else>
 
                     </g:else>
-                </td>
-
-                <td class="center aligned">
-                    <g:set var="costItem" scope="request"
-                           value="${CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg, RDStore.COST_ITEM_DELETED)}"/>
-                    <g:if test="${costItem && costItem.costDescription}">
-
-                        <div class="ui icon la-popup-tooltip la-delay" data-content="${costItem.costDescription}">
-                            <i class="info circular inverted icon"></i>
-                        </div>
-                    </g:if>
-
                 </td>
             </g:if>
 
@@ -941,7 +961,6 @@
                                          maxFractionDigits="2" type="number"/>%)
                     </g:if>
                 </td>
-                <td></td>
             </g:if>
         </tr>
         </tfoot>
@@ -1009,7 +1028,8 @@
                                     id: id,
                                     surveyConfigID: surveyConfigID,
                                     participant: participant,
-                                    costItem: costItem
+                                    costItem: costItem,
+                                    selectedCostItemElement: "${selectedCostItemElement}"
                                 }
             }).done( function(data) {
                 $('.ui.dimmer.modals > #modalSurveyCostItem').remove();

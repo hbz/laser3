@@ -218,16 +218,19 @@
 
             <td>
 
-                <g:set var="costItem" value="${participantResult.resultOfParticipation.getCostItem()}"/>
+                <g:set var="costItems" value="${participantResult.resultOfParticipation.getCostItems()}"/>
 
-                <g:if test="${costItem}">
-                    <strong><g:formatNumber number="${costItem.costInBillingCurrencyAfterTax}" minFractionDigits="2"
-                                            maxFractionDigits="2" type="number"/></strong>
+                <g:if test="${costItems}">
+                    <g:each in="${costItems}" var="costItem">
+                        <strong><g:formatNumber number="${costItem.costInBillingCurrencyAfterTax}" minFractionDigits="2"
+                                                maxFractionDigits="2" type="number"/></strong>
 
-                    (<g:formatNumber number="${costItem.costInBillingCurrency}" minFractionDigits="2"
-                                     maxFractionDigits="2" type="number"/>)
+                        (<g:formatNumber number="${costItem.costInBillingCurrency}" minFractionDigits="2"
+                                         maxFractionDigits="2" type="number"/>)
 
-                    ${(costItem.billingCurrency?.getI10n('value')?.split('-'))?.first()}
+                        ${costItem.billingCurrency?.getI10n('value')}
+                        <br>
+                    </g:each>
                 </g:if>
             </td>
             <td class="x">
