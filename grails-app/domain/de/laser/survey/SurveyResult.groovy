@@ -125,7 +125,7 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
 
 
     /**
-     * Get list of {@link CostItem} belonging to the participant and the survey ({@link SurveyOrg} retrieved by the {@link SurveyConfig} and the participant {@link Org}) of this property
+     * Gets a {@link List} of {@link CostItem}s belonging to the participant and the survey ({@link SurveyOrg} retrieved by the {@link SurveyConfig} and the participant {@link Org}) of this property
      * @return
      */
     List<CostItem> getCostItems(){
