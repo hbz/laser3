@@ -1089,12 +1089,14 @@ class SurveyController {
         result.costItemsByCostItemElement = []
 
         String query = 'from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.org.id in (:orgIds) and surOrg.surveyConfig = :surConfig)'
+        Set<Long> orgsId = surveyOrgs.orgsWithoutSubIDs
 
         if(params.tab == 'selectedSubParticipants') {
-            result.costItemsByCostItemElement = CostItem.executeQuery(query, [status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig, orgIds: surveyOrgs.orgsWithSubIDs]).groupBy {it.costItemElement}
-        }else {
-            result.costItemsByCostItemElement = CostItem.executeQuery(query, [status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig, orgIds: surveyOrgs.orgsWithoutSubIDs]).groupBy {it.costItemElement}
+            orgsId = surveyOrgs.orgsWithSubIDs
         }
+
+        result.costItemsByCostItemElement = CostItem.executeQuery(query, [status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig, orgIds: orgsId]).groupBy {it.costItemElement}
+
 
         result
 
