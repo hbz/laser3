@@ -750,7 +750,7 @@
                                     ${costItem.billingCurrency?.getI10n('value')}
                                 </td>
                                 <td>
-                                    <g:if test="${costItem.taxKey == de.laser.finance.CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
+                                    <g:if test="${costItem.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
                                         ${RDStore.TAX_TYPE_REVERSE_CHARGE.getI10n("value")}
                                     </g:if>
                                     <g:elseif test="${costItem.taxKey}">
@@ -938,7 +938,7 @@
                                     ${costItemSurvey.billingCurrency?.getI10n('value')}
                                 </td>
                                 <td>
-                                    <g:if test="${costItemSurvey.taxKey == de.laser.finance.CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
+                                    <g:if test="${costItemSurvey.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
                                         ${RDStore.TAX_TYPE_REVERSE_CHARGE.getI10n("value")}
                                     </g:if>
                                     <g:elseif test="${costItemSurvey.taxKey}">
