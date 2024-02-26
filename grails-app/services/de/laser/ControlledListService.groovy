@@ -214,6 +214,9 @@ class ControlledListService {
                 filter.values = filterPropVal
             }
         }
+        if(params.providerFilter) {
+            //to be implemented
+        }
         Set<String> refdataFields = ['form','resource','kind']
         refdataFields.each { String refdataField ->
             if(params[refdataField]) {

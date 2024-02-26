@@ -149,6 +149,21 @@
                     <g:hiddenField name="${selectLink}" value="${genericOIDService.getOID(RDStore.LINKTYPE_LICENSE)}§${1}"/>
                 </g:if>
                 <g:else>
+                    <g:if test="${linkInstanceType != Combo.class.name && !link}">
+                        <div class="row">
+                            <div class="four wide column">
+                                <g:message code="default.provider.label"/>
+                            </div>
+                            <div class="twelve wide column">
+                                <div class="ui search selection dropdown la-full-width" id="providerFilter">
+                                    <input type="hidden" name="providerFilter"/>
+                                    <i class="dropdown icon"></i>
+                                    <input type="text" class="search"/>
+                                    <div class="default text"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </g:if>
                     <div class="row">
                         <div class="four wide column">
                             ${thisString}
@@ -194,13 +209,43 @@
 </ui:modal>
 <g:if test="${!link}">
     <laser:script file="${this.getGroovyPageFileName()}">
-        $("#${selectPair}").dropdown({
+        function initPairDropdown(selProv) {
+            let providerFilter = '';
+            if(typeof(selProv) !== 'undefined') {
+                providerFilter = '&providerFilter='+selProv;
+            }
+            $("#${selectPair}").dropdown({
+                apiSettings: {
+                    url: "<g:createLink controller="ajaxJson" action="${lookupName}"/>?status=FETCH_ALL&query={query}&filterMembers=${atConsortialParent}&ctx=${genericOIDService.getOID(context)}"+providerFilter,
+                    cache: false
+                },
+                clearable: true,
+                minCharacters: 1
+            });
+        }
+        $("#providerFilter").dropdown({
             apiSettings: {
-                url: "<g:createLink controller="ajaxJson" action="${lookupName}"/>?status=FETCH_ALL&query={query}&filterMembers=${atConsortialParent}&ctx=${genericOIDService.getOID(context)}",
+                url: "<g:createLink controller="ajaxJson" action="lookupProvidersAgencies"/>?query={query}",
                 cache: false
             },
             clearable: true,
             minCharacters: 1
+        });
+        <g:if test="${context instanceof Subscription || context instanceof License}">
+            <g:set var="firstProvider" value="${context.orgRelations.find { OrgRole oo -> oo.roleType.id == RDStore.OR_PROVIDER.id }?.org}"/>
+            <g:if test="${firstProvider}">
+                let providerOID = "${genericOIDService.getOID(firstProvider)}";
+                let providerText = "${firstProvider.name}";
+                $("#providerFilter").dropdown('set value', providerOID).dropdown('set text', providerText);
+                initPairDropdown(providerOID);
+            </g:if>
+            <g:else>
+                initPairDropdown();
+            </g:else>
+        </g:if>
+        $("#providerFilter").change(function() {
+            let selProv = $("#providerFilter").dropdown('get value');
+            initPairDropdown(selProv);
         });
     </laser:script>
 </g:if>
