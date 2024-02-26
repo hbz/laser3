@@ -229,6 +229,10 @@ class ApiController {
                 respStruct = exportService.generateSeparatorTableString(result.titleRow, result.columnData, '\t')
                 status = HttpStatus.OK.value()
             }
+            if(!result) {
+                respStruct = ""
+                status = HttpStatus.NOT_FOUND.value()
+            }
             else {
                 respStruct = result
                 switch(result) {
