@@ -797,7 +797,7 @@ class LicenseController {
                 if (params.targetObjectId){
                     flash.error = ""
                     flash.message = ""
-                    redirect controller: 'license', action: 'show', params: [id: genericOIDService.resolveOID(params.targetObjectId).id]
+                    redirect controller: 'license', action: 'show', params: [id: params.targetObjectId.split(':')[1]]
                     return
                 }
                 break
