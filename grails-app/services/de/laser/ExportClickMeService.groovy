@@ -267,7 +267,7 @@ class ExportClickMeService {
                             'costItemsElements' : [:],
                             'costItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
                             'costItem.reference'                        : [field: 'costItem.reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
-                            'costItem.budgetCodes'                      : [field: 'costItem.budgetcodes', label: 'Budget Code', message: 'financials.budgetCode'],
+                            'costItem.budgetCodes'                      : [field: 'costItem.budgetcodes.value', label: 'Budget Code', message: 'financials.budgetCode'],
                             'costItem.costItemElementConfiguration'     : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
                             'costItem.costItemStatus'                   : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
                             'costItem.costInBillingCurrency'            : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
@@ -429,7 +429,7 @@ class ExportClickMeService {
                     /*
                             'costItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
                             'costItem.reference'                        : [field: 'costItem.reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
-                            'costItem.budgetCodes'                      : [field: 'costItem.budgetcodes', label: 'Budget Code', message: 'financials.budgetCode'],
+                            'costItem.budgetCodes'                      : [field: 'costItem.budgetcodes.value', label: 'Budget Code', message: 'financials.budgetCode'],
                             'costItem.costItemElementConfiguration'     : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
                             'costItem.costItemStatus'                   : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
                             'costItem.costInBillingCurrency'            : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
@@ -533,7 +533,7 @@ class ExportClickMeService {
                             /*
                                     'costItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
                                     'costItem.reference'                        : [field: 'costItem.reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
-                                    'costItem.budgetCodes'                      : [field: 'costItem.budgetcodes', label: 'Budget Code', message: 'financials.budgetCode'],
+                                    'costItem.budgetCodes'                      : [field: 'costItem.budgetcodes.value', label: 'Budget Code', message: 'financials.budgetCode'],
                                     'costItem.costItemElementConfiguration'     : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
                                     'costItem.costItemStatus'                   : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
                                     'costItem.costInBillingCurrency'            : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
@@ -1020,7 +1020,7 @@ class ExportClickMeService {
                             'costItem.costItemElement'                  : [field: 'costItemElement', label: 'Cost Item Element', message: 'financials.costItemElement', defaultChecked: 'true'],
                             'costItem.costTitle'                        : [field: 'costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle', defaultChecked: 'true'],
                             'costItem.reference'                        : [field: 'reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
-                            'costItem.budgetCodes'                      : [field: 'budgetcodes', label: 'Budget Code', message: 'financials.budgetCode'],
+                            'costItem.budgetCodes'                      : [field: 'budgetcodes.value', label: 'Budget Code', message: 'financials.budgetCode'],
                             'costItem.costItemElementConfiguration'     : [field: 'costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration', defaultChecked: 'true'],
                             'costItem.costItemStatus'                   : [field: 'costItemStatus', label: 'Status', message: 'default.status.label', defaultChecked: 'true'],
                             'costItem.costInBillingCurrency'            : [field: 'costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total', defaultChecked: 'true'],
@@ -1432,21 +1432,51 @@ class ExportClickMeService {
 
             participantSurveyCostItems : [
                     label: 'Cost Items',
-                    message: 'surveyCostItems.label',
+                    message: 'exportClickMe.survey.costItems',
                     fields: [
-                            'survey.oldPrice'                  : [field: '', label: 'Old Price', message: 'surveyConfigsInfo.oldPrice'],
-                            'costItem.costItemElement'                  : [field: 'costItemElement', label: 'Cost Item Element', message: 'financials.costItemElement'],
-                            'costItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
-                            'costItem.costItemElementConfiguration'     : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
-                            'costItem.costItemStatus'                   : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
-                            'costItem.costInBillingCurrency'            : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
-                            'costItem.billingCurrency'                  : [field: 'costItem.billingCurrency', label: 'Billing Currency', message: 'default.currency.label'],
-                            'costItem.costInBillingCurrencyAfterTax'    : [field: 'costItem.costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount'],
-                            'costItem.taxType'                          : [field: 'costItem.taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType'],
-                            'costItem.taxRate'                          : [field: 'costItem.taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate'],
-                            'costItem.startDate'                        : [field: 'costItem.startDate', label: 'Date From', message: 'financials.dateFrom'],
-                            'costItem.endDate'                          : [field: 'costItem.endDate', label: 'Date To', message: 'financials.dateTo'],
-                            'costItem.costDescription'                  : [field: 'costItem.costDescription', label: 'Description', message: 'default.description.label']
+                            'costItemsElements' : [:],
+                            'participantSurveyCostItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
+                            'participantSurveyCostItem.costItemElementConfiguration'     : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
+                            'participantSurveyCostItem.costItemStatus'                   : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
+                            'participantSurveyCostItem.costInBillingCurrency'            : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
+                            'participantSurveyCostItem.billingCurrency'                  : [field: 'costItem.billingCurrency', label: 'Billing Currency', message: 'default.currency.label'],
+                            'participantSurveyCostItem.costInBillingCurrencyAfterTax'    : [field: 'costItem.costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount'],
+                            'participantSurveyCostItem.taxType'                          : [field: 'costItem.taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType'],
+                            'participantSurveyCostItem.taxRate'                          : [field: 'costItem.taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate'],
+                            'participantSurveyCostItem.startDate'                        : [field: 'costItem.startDate', label: 'Date From', message: 'financials.dateFrom'],
+                            'participantSurveyCostItem.endDate'                          : [field: 'costItem.endDate', label: 'Date To', message: 'financials.dateTo'],
+                            'participantSurveyCostItem.costDescription'                  : [field: 'costItem.costDescription', label: 'Description', message: 'default.description.label']
+                    ]
+            ],
+
+            participantSurveySubCostItems : [
+                    label: 'Cost Items',
+                    message: 'exportClickMe.subscription.costItems',
+                    fields: [
+                            'costItemsElements' : [:],
+                            'participantSubCostItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
+                            'participantSubCostItem.reference'                        : [field: 'costItem.reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
+                            'participantSubCostItem.budgetCodes'                      : [field: 'costItem.budgetcodes.value', label: 'Budget Code', message: 'financials.budgetCode'],
+                            'participantSubCostItem.costItemElementConfiguration'     : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
+                            'participantSubCostItem.costItemStatus'                   : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
+                            'participantSubCostItem.costInBillingCurrency'            : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
+                            'participantSubCostItem.billingCurrency'                  : [field: 'costItem.billingCurrency', label: 'Billing Currency', message: 'default.currency.label'],
+                            'participantSubCostItem.costInBillingCurrencyAfterTax'    : [field: 'costItem.costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount'],
+                            'participantSubCostItem.currencyRate'                     : [field: 'costItem.currencyRate', label: 'Exchange Rate', message: 'financials.newCosts.exchangeRate'],
+                            'participantSubCostItem.taxType'                          : [field: 'costItem.taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType'],
+                            'participantSubCostItem.taxRate'                          : [field: 'costItem.taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate'],
+                            'participantSubCostItem.costInLocalCurrency'              : [field: 'costItem.costInLocalCurrency', label: 'Cost In Local Currency', message: 'financials.costInLocalCurrency'],
+                            'participantSubCostItem.costInLocalCurrencyAfterTax'      : [field: 'costItem.costInLocalCurrencyAfterTax', label: 'Cost in Local Currency after taxation', message: 'financials.costInLocalCurrencyAfterTax'],
+
+                            'participantSubCostItem.datePaid'                         : [field: 'costItem.datePaid', label: 'Financial Year', message: 'financials.financialYear'],
+                            'participantSubCostItem.financialYear'                    : [field: 'costItem.financialYear', label: 'Date Paid', message: 'financials.datePaid'],
+                            'participantSubCostItem.invoiceDate'                      : [field: 'costItem.invoiceDate', label: 'Invoice Date', message: 'financials.invoiceDate'],
+                            'participantSubCostItem.startDate'                        : [field: 'costItem.startDate', label: 'Date From', message: 'financials.dateFrom'],
+                            'participantSubCostItem.endDate'                          : [field: 'costItem.endDate', label: 'Date To', message: 'financials.dateTo'],
+
+                            'participantSubCostItem.costDescription'                  : [field: 'costItem.costDescription', label: 'Description', message: 'default.description.label'],
+                            'participantSubCostItem.invoiceNumber'                    : [field: 'costItem.invoice.invoiceNumber', label: 'Invoice Number', message: 'financials.invoice_number'],
+                            'participantSubCostItem.orderNumber'                      : [field: 'costItem.order.orderNumber', label: 'Order Number', message: 'financials.order_number'],
                     ]
             ],
 
@@ -3053,6 +3083,20 @@ class ExportClickMeService {
             exportFields.put("pickAndChoose", [field: null, defaultChecked: 'true'])
         }
 
+        if(surveyConfig.subscription) {
+            CostItem.executeQuery('from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg as surOrg where surveyConfig = :surveyConfig)', [status: RDStore.COST_ITEM_DELETED, surveyConfig: surveyConfig]).groupBy {it.costItemElement.id}.each {
+                exportFields.put("costItemsElementSurveyCostItem.${it.key}", [field: null, label: RefdataValue.get(it.key).getI10n('value')])
+            }
+
+            List<Subscription> childSubs = surveyConfig.subscription.getNonDeletedDerivedSubscriptions()
+            if(childSubs) {
+
+                CostItem.findAllBySubInListAndCostItemStatusNotEqualAndCostItemElementIsNotNull(childSubs, RDStore.COST_ITEM_DELETED).groupBy {it.costItemElement.id}.each {
+                    exportFields.put("costItemsElementSubCostItem.${it.key}", [field: null, label: RefdataValue.get(it.key).getI10n('value')])
+                }
+            }
+        }
+
         exportFields
     }
 
@@ -3113,6 +3157,23 @@ class ExportClickMeService {
             }
         }
 
+        fields.participantSurveyCostItems.fields.costItemsElements.clear()
+        fields.participantSurveySubCostItems.fields.costItemsElements.clear()
+
+        if(surveyConfig.subscription) {
+            CostItem.executeQuery('from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg as surOrg where surveyConfig = :surveyConfig)', [status: RDStore.COST_ITEM_DELETED, surveyConfig: surveyConfig]).groupBy {it.costItemElement.id}.each {
+                fields.participantSurveyCostItems.fields.costItemsElements << ["costItemsElementSurveyCostItem.${it.key}": [field: null, label: RefdataValue.get(it.key).getI10n('value')]]
+            }
+
+            List<Subscription> childSubs = surveyConfig.subscription.getNonDeletedDerivedSubscriptions()
+            if(childSubs) {
+
+                CostItem.findAllBySubInListAndCostItemStatusNotEqualAndCostItemElementIsNotNull(childSubs, RDStore.COST_ITEM_DELETED).groupBy {it.costItemElement.id}.each {
+                    fields.participantSurveySubCostItems.fields.costItemsElements << ["costItemsElementSubCostItem.${it.key}":[field: null, label: RefdataValue.get(it.key).getI10n('value')]]
+                }
+            }
+        }
+
         if(!surveyConfig.subscription){
             fields.remove('subscription')
         }else {
@@ -3142,25 +3203,58 @@ class ExportClickMeService {
 
         if(surveyConfig.pickAndChoose || !surveyConfig.subscription){
             fields.remove('participantSurveyCostItems')
+            fields.remove('participantSurveySubCostItems')
         }else {
             if(!fields.containsKey('participantSurveyCostItems')){
                 fields.put('participantSurveyCostItems',[
                         label: 'Cost Items',
-                        message: 'surveyCostItems.label',
+                        message: 'exportClickMe.survey.costItems',
                         fields: [
-                                'survey.oldPrice'                  : [field: '', label: 'Old Price', message: 'surveyConfigsInfo.oldPrice'],
-                                'costItem.costItemElement'                  : [field: 'costItemElement', label: 'Cost Item Element', message: 'financials.costItemElement'],
-                                'costItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
-                                'costItem.costItemElementConfiguration'     : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
-                                'costItem.costItemStatus'                   : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
-                                'costItem.costInBillingCurrency'            : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
-                                'costItem.billingCurrency'                  : [field: 'costItem.billingCurrency', label: 'Billing Currency', message: 'default.currency.label'],
-                                'costItem.costInBillingCurrencyAfterTax'    : [field: 'costItem.costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount'],
-                                'costItem.taxType'                          : [field: 'costItem.taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType'],
-                                'costItem.taxRate'                          : [field: 'costItem.taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate'],
-                                'costItem.startDate'                        : [field: 'costItem.startDate', label: 'Date From', message: 'financials.dateFrom'],
-                                'costItem.endDate'                          : [field: 'costItem.endDate', label: 'Date To', message: 'financials.dateTo'],
-                                'costItem.costDescription'                  : [field: 'costItem.costDescription', label: 'Description', message: 'default.description.label']
+                                'costItemsElements' : [:],
+                                'participantSurveyCostItems.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
+                                'participantSurveyCostItems.costItemElementConfiguration'     : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
+                                'participantSurveyCostItems.costItemStatus'                   : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
+                                'participantSurveyCostItems.costInBillingCurrency'            : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
+                                'participantSurveyCostItems.billingCurrency'                  : [field: 'costItem.billingCurrency', label: 'Billing Currency', message: 'default.currency.label'],
+                                'participantSurveyCostItems.costInBillingCurrencyAfterTax'    : [field: 'costItem.costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount'],
+                                'participantSurveyCostItems.taxType'                          : [field: 'costItem.taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType'],
+                                'participantSurveyCostItems.taxRate'                          : [field: 'costItem.taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate'],
+                                'participantSurveyCostItems.startDate'                        : [field: 'costItem.startDate', label: 'Date From', message: 'financials.dateFrom'],
+                                'participantSurveyCostItems.endDate'                          : [field: 'costItem.endDate', label: 'Date To', message: 'financials.dateTo'],
+                                'participantSurveyCostItems.costDescription'                  : [field: 'costItem.costDescription', label: 'Description', message: 'default.description.label']
+                        ]
+                ])
+            }
+
+            if(!fields.containsKey('participantSurveySubCostItems')){
+                fields.put('participantSurveySubCostItems', [
+                        label: 'Cost Items',
+                        message: 'exportClickMe.subscription.costItems',
+                        fields: [
+                                'costItemsElements' : [:],
+                                'participantSubCostItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
+                                'participantSubCostItem.reference'                        : [field: 'costItem.reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
+                                'participantSubCostItem.budgetCodes'                      : [field: 'costItem.budgetcodes.value', label: 'Budget Code', message: 'financials.budgetCode'],
+                                'participantSubCostItem.costItemElementConfiguration'     : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
+                                'participantSubCostItem.costItemStatus'                   : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
+                                'participantSubCostItem.costInBillingCurrency'            : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
+                                'participantSubCostItem.billingCurrency'                  : [field: 'costItem.billingCurrency', label: 'Billing Currency', message: 'default.currency.label'],
+                                'participantSubCostItem.costInBillingCurrencyAfterTax'    : [field: 'costItem.costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount'],
+                                'participantSubCostItem.currencyRate'                     : [field: 'costItem.currencyRate', label: 'Exchange Rate', message: 'financials.newCosts.exchangeRate'],
+                                'participantSubCostItem.taxType'                          : [field: 'costItem.taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType'],
+                                'participantSubCostItem.taxRate'                          : [field: 'costItem.taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate'],
+                                'participantSubCostItem.costInLocalCurrency'              : [field: 'costItem.costInLocalCurrency', label: 'Cost In Local Currency', message: 'financials.costInLocalCurrency'],
+                                'participantSubCostItem.costInLocalCurrencyAfterTax'      : [field: 'costItem.costInLocalCurrencyAfterTax', label: 'Cost in Local Currency after taxation', message: 'financials.costInLocalCurrencyAfterTax'],
+
+                                'participantSubCostItem.datePaid'                         : [field: 'costItem.datePaid', label: 'Financial Year', message: 'financials.financialYear'],
+                                'participantSubCostItem.financialYear'                    : [field: 'costItem.financialYear', label: 'Date Paid', message: 'financials.datePaid'],
+                                'participantSubCostItem.invoiceDate'                      : [field: 'costItem.invoiceDate', label: 'Invoice Date', message: 'financials.invoiceDate'],
+                                'participantSubCostItem.startDate'                        : [field: 'costItem.startDate', label: 'Date From', message: 'financials.dateFrom'],
+                                'participantSubCostItem.endDate'                          : [field: 'costItem.endDate', label: 'Date To', message: 'financials.dateTo'],
+
+                                'participantSubCostItem.costDescription'                  : [field: 'costItem.costDescription', label: 'Description', message: 'default.description.label'],
+                                'participantSubCostItem.invoiceNumber'                    : [field: 'costItem.invoice.invoiceNumber', label: 'Invoice Number', message: 'financials.invoice_number'],
+                                'participantSubCostItem.orderNumber'                      : [field: 'costItem.order.orderNumber', label: 'Order Number', message: 'financials.order_number'],
                         ]
                 ])
             }
@@ -4082,22 +4176,46 @@ class ExportClickMeService {
             }
         }
 
-        selectedExportFields.put('participantSurveyCostItems', [:])
-
-        Map selectedCostItemFields = [:]
-        selectedExportFields.keySet().findAll { it.startsWith('costItem.') }.each {
-            selectedCostItemFields.put(it, selectedExportFields.get(it))
-        }
-        selectedCostItemFields.each {
-            selectedExportFields.remove(it.key)
+        Map<String, List<RefdataValue>> selectedCostItemElements = [selectedCostItemElementsForSurveyCostItems: [], selectedCostItemElementsForSubCostItems: []]
+        List<String> removeSelectedCostItemElements = []
+        selectedExportFields.keySet().findAll {it.startsWith('costItemsElementSurveyCostItem.')}.each {
+            selectedCostItemElements.selectedCostItemElementsForSurveyCostItems << RefdataValue.get(Long.parseLong(it.split("\\.")[1]))
+            removeSelectedCostItemElements << it
         }
 
-        Integer maxCostItemsElements = 0
-        maxCostItemsElements = CostItem.executeQuery('select count(*) as countCostItems from CostItem where surveyOrg in (:surveyOrgs) group by costItemElement', [surveyOrgs: participantsNotFinish+participantsFinish]).size()
+        selectedExportFields.keySet().findAll {it.startsWith('costItemsElementSubCostItem.')}.each {
+            selectedCostItemElements.selectedCostItemElementsForSubCostItems << RefdataValue.get(Long.parseLong(it.split("\\.")[1]))
+            removeSelectedCostItemElements << it
+        }
 
-        List<RefdataValue> costItemsElements = CostItem.executeQuery('from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg as surOrg where surveyConfig = :surveyConfig)', [status: RDStore.COST_ITEM_DELETED, surveyConfig: result.surveyConfig]).groupBy {it.costItemElement}.collect {RefdataValue.findByValueAndOwner(it.key, RefdataCategory.findByDesc(RDConstants.COST_ITEM_ELEMENT))}
+        Map selectedCostItemFields = [forSurveyCostItems: [:], forSubCostItems: [:]]
+        if(selectedCostItemElements){
+            selectedExportFields.keySet().findAll {it.startsWith('participantSubCostItem.')}.each {
+                selectedCostItemFields.forSubCostItems.put(it, selectedExportFields.get(it))
+            }
 
-        List titles = _exportTitles(selectedExportFields, locale, selectedCostItemFields, maxCostItemsElements, contactSwitch, null, format)
+            selectedExportFields.keySet().findAll {it.startsWith('participantSurveyCostItem.')}.each {
+                selectedCostItemFields.forSurveyCostItems.put(it, selectedExportFields.get(it))
+            }
+
+            selectedCostItemFields.forSurveyCostItems.each {
+                selectedExportFields.remove(it.key)
+            }
+
+            selectedCostItemFields.forSubCostItems.each {
+                selectedExportFields.remove(it.key)
+            }
+
+            removeSelectedCostItemElements.each {
+                selectedExportFields.remove(it)
+            }
+
+            selectedExportFields.put('participantSurveyCostItems', [:])
+            selectedExportFields.put('participantSurveySubCostItems', [:])
+
+        }
+
+        List titles = _exportTitles(selectedExportFields, locale, selectedCostItemFields, null, contactSwitch, selectedCostItemElements, format)
 
         List exportData = []
 
@@ -4115,8 +4233,15 @@ class ExportClickMeService {
             participantResult.participant = surveyOrg.org
             participantResult.surveyConfig = result.surveyConfig
             participantResult.surveyOwner = result.surveyConfig.surveyInfo.owner
+            participantResult.subCostItems = participantResult.sub ? CostItem.findAllBySubAndCostItemElementInListAndCostItemStatusNotEqualAndOwner(participantResult.sub, selectedCostItemElements.selectedCostItemElementsForSubCostItems, RDStore.COST_ITEM_DELETED, participantResult.surveyOwner, [sort: 'costItemElement']) : []
+            participantResult.surveyCostItems = CostItem.findAllBySurveyOrgAndCostItemElementAndCostItemStatusNotEqual(surveyOrg, selectedCostItemElements.selectedCostItemElementsForSurveyCostItems, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])
+            participantResult.surveyOrg = surveyOrg
+            participantResult.selectedCostItemElementsForSubCostItems = selectedCostItemElements.selectedCostItemElementsForSubCostItems
+            participantResult.selectedCostItemElementsForSurveyCostItems = selectedCostItemElements.selectedCostItemElementsForSurveyCostItems
 
-            _setSurveyEvaluationRow(participantResult, selectedExportFields, exportData, costItemsElements, selectedCostItemFields, format, contactSwitch)
+            _setSurveyEvaluationRow(participantResult, selectedExportFields, exportData, selectedCostItemFields, format, contactSwitch)
+
+
         }
 
         exportData.add([createTableCell(format, ' ')])
@@ -4137,8 +4262,13 @@ class ExportClickMeService {
             participantResult.participant = surveyOrg.org
             participantResult.surveyConfig = result.surveyConfig
             participantResult.surveyOwner = result.surveyConfig.surveyInfo.owner
+            participantResult.subCostItems = participantResult.sub ? CostItem.findAllBySubAndCostItemElementInListAndCostItemStatusNotEqualAndOwner(participantResult.sub, selectedCostItemElements.selectedCostItemElementsForSubCostItems, RDStore.COST_ITEM_DELETED, participantResult.surveyOwner, [sort: 'costItemElement']) : []
+            participantResult.surveyCostItems = CostItem.findAllBySurveyOrgAndCostItemElementAndCostItemStatusNotEqual(surveyOrg, selectedCostItemElements.selectedCostItemElementsForSurveyCostItems, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])
+            participantResult.surveyOrg = surveyOrg
+            participantResult.selectedCostItemElementsForSubCostItems = selectedCostItemElements.selectedCostItemElementsForSubCostItems
+            participantResult.selectedCostItemElementsForSurveyCostItems = selectedCostItemElements.selectedCostItemElementsForSurveyCostItems
 
-            _setSurveyEvaluationRow(participantResult, selectedExportFields, exportData, costItemsElements, selectedCostItemFields, format, contactSwitch)
+            _setSurveyEvaluationRow(participantResult, selectedExportFields, exportData, selectedCostItemFields, format, contactSwitch)
         }
 
         /*exportData.add([[field: '', style: null]])
@@ -4158,8 +4288,14 @@ class ExportClickMeService {
 
             participantResult.participant = surveyOrg.org
             participantResult.surveyConfig = result.surveyConfig
+            participantResult.surveyOwner = result.surveyConfig.surveyInfo.owner
+            participantResult.subCostItems = participantResult.sub ? CostItem.findAllBySubAndCostItemElementInListAndCostItemStatusNotEqualAndOwner(participantResult.sub, selectedCostItemElements.selectedCostItemElementsForSubCostItems, RDStore.COST_ITEM_DELETED, participantResult.surveyOwner, [sort: 'costItemElement']) : []
+            participantResult.surveyCostItems = CostItem.findAllBySurveyOrgAndCostItemElementAndCostItemStatusNotEqual(surveyOrg, selectedCostItemElements.selectedCostItemElementsForSurveyCostItems, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])
+            participantResult.surveyOrg = surveyOrg
+            participantResult.selectedCostItemElementsForSubCostItems = selectedCostItemElements.selectedCostItemElementsForSubCostItems
+            participantResult.selectedCostItemElementsForSurveyCostItems = selectedCostItemElements.selectedCostItemElementsForSurveyCostItems
 
-            _setSurveyEvaluationRow(participantResult, selectedExportFields, exportData, costItemsElements, selectedCostItemFields, format, contactSwitch)
+            _setSurveyEvaluationRow(participantResult, selectedExportFields, exportData, selectedCostItemFields, format, contactSwitch)
         }*/
 
 
@@ -5208,14 +5344,8 @@ class ExportClickMeService {
      * @param format the {@link FORMAT} to be exported
      * @param contactSources which set of contacts should be considered?
      */
-    private void _setSurveyEvaluationRow(Map participantResult, Map<String, Object> selectedFields, List exportData, List costItemElements, Map selectedCostItemFields, FORMAT format, Set<String> contactSources = []){
+    private void _setSurveyEvaluationRow(Map participantResult, Map<String, Object> selectedFields, List exportData, Map selectedCostItemFields, FORMAT format, Set<String> contactSources = []){
         List row = []
-
-        SurveyOrg surveyOrg
-
-        if(participantResult.surveyConfig && participantResult.participant){
-            surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(participantResult.surveyConfig, participantResult.participant)
-        }
 
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         selectedFields.keySet().each { String fieldKey ->
@@ -5281,60 +5411,58 @@ class ExportClickMeService {
                 }else if (fieldKey.startsWith('participantCustomerIdentifiers.')) {
                     _setOrgFurtherInformation(participantResult.participant, row, fieldKey, format)
                 }else if (fieldKey == 'participantSurveyCostItems') {
-                    List<CostItem> surveyCostItems = CostItem.findAllBySurveyOrgAndCostItemElementInListAndCostItemStatusNotEqual(surveyOrg, costItemElements, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])
-                    if(surveyCostItems){
-                        surveyCostItems.each { CostItem surCostItem ->
-                            selectedCostItemFields.each {
-                                def fieldValue = _getFieldValue(surCostItem, it.value.field.replace('costItem.', ''), sdf)
+                    for(int c = 0; c < participantResult.selectedCostItemElementsForSurveyCostItems.size(); c++) {
+                        CostItem costItem
+                        if(c < participantResult.surveyCostItems.size())
+                            costItem = participantResult.surveyCostItems.get(c)
+                        if(costItem) {
+                            String cieVal = costItem.costItemElement ? costItem.costItemElement.getI10n('value') : ''
+                            row.add(createTableCell(format, cieVal))
+                            selectedCostItemFields.forSurveyCostItems.each {
+                                def fieldValue = _getFieldValue(costItem, it.value.field.replace('costItem.', ''), sdf)
                                 row.add(createTableCell(format, fieldValue))
                             }
                         }
-                    }else {
-                        selectedCostItemFields.each {
+                        else {
                             row.add(createTableCell(format, ' '))
-                        }
-                    }
-                }else if (fieldKey == 'survey.oldPrice') {
-
-                    if(participantResult.sub) {
-                        List<CostItem> subCostItems = CostItem.findAllBySubAndCostItemElementInListAndCostItemStatusNotEqualAndOwner(participantResult.sub, costItemElements, RDStore.COST_ITEM_DELETED, participantResult.surveyOwner, [sort: 'costItemElement'])
-
-                        if (subCostItems) {
-                            subCostItems.each { CostItem surCostItem ->
-                                selectedCostItemFields.each {
-                                    def fieldValue = _getFieldValue(surCostItem, it.value.field.replace('costItem.', ''), sdf)
-                                    row.add(createTableCell(format, fieldValue))
-                                }
-                            }
-                        }
-                        else{
-                            selectedCostItemFields.each {
+                            for(int e = 0; e < selectedCostItemFields.size(); e++) {
                                 row.add(createTableCell(format, ' '))
                             }
                         }
                     }
-                    else {
-                        selectedCostItemFields.each {
+                }else if (fieldKey == 'participantSurveySubCostItems') {
+                    for(int c = 0; c < participantResult.selectedCostItemElementsForSubCostItems.size(); c++) {
+                        CostItem costItem
+                        if(c < participantResult.subCostItems.size())
+                            costItem = participantResult.subCostItems.get(c)
+                        if(costItem) {
+                            String cieVal = costItem.costItemElement ? costItem.costItemElement.getI10n('value') : ''
+                            row.add(createTableCell(format, cieVal))
+                            selectedCostItemFields.forSubCostItems.each {
+                                def fieldValue = _getFieldValue(costItem, it.value.field.replace('costItem.', ''), sdf)
+                                row.add(createTableCell(format, fieldValue))
+                            }
+                        }
+                        else {
                             row.add(createTableCell(format, ' '))
+                            for(int e = 0; e < selectedCostItemFields.size(); e++) {
+                                row.add(createTableCell(format, ' '))
+                            }
                         }
                     }
                 } else if (fieldKey == 'survey.ownerComment') {
-                    String ownerComment = ""
-                    if (surveyOrg) {
-                        ownerComment = surveyOrg.ownerComment
-                    }
-                    row.add(createTableCell(format, surveyOrg.ownerComment))
+                    row.add(createTableCell(format, participantResult.surveyOrg.ownerComment))
                 } else if (fieldKey == 'survey.finishDate') {
                     String finishDate = ""
-                    if (surveyOrg && surveyOrg.finishDate) {
-                        finishDate = sdf.format(surveyOrg.finishDate)
+                    if (participantResult.surveyOrg.finishDate) {
+                        finishDate = sdf.format(participantResult.surveyOrg.finishDate)
                     }
                     row.add(createTableCell(format, finishDate))
                 }
                 else if (fieldKey == 'survey.reminderMailDate') {
                     String reminderMailDate = ""
-                    if (surveyOrg && surveyOrg.reminderMailDate) {
-                        reminderMailDate = sdf.format(surveyOrg.reminderMailDate)
+                    if (participantResult.surveyOrg.reminderMailDate) {
+                        reminderMailDate = sdf.format(participantResult.surveyOrg.reminderMailDate)
                     }
                     row.add(createTableCell(format, reminderMailDate))
                 }else if (fieldKey == 'pickAndChoose') {
@@ -6127,81 +6255,90 @@ class ExportClickMeService {
                 /*else if (fieldKey.endsWith('.billingContact')) {
                     if(contactSources) {
                         contactSources.each { String contactSwitch ->
-                            titles .add(createTableCell(format,  "${RDStore.PRS_FUNC_FC_BILLING_ADDRESS."${localizedValue}"} ${messageSource.getMessage("org.export.column.${contactSwitch}", null, locale)}"))
+                            titles.add(createTableCell(format,  "${RDStore.PRS_FUNC_FC_BILLING_ADDRESS."${localizedValue}"} ${messageSource.getMessage("org.export.column.${contactSwitch}", null, locale)}"))
                         }
                     }
                     else
-                        titles .add(createTableCell(format,  RDStore.PRS_FUNC_FC_BILLING_ADDRESS."${localizedValue}"))
+                        titles.add(createTableCell(format,  RDStore.PRS_FUNC_FC_BILLING_ADDRESS."${localizedValue}"))
                 }
                 else if (fieldKey.endsWith('.billingAdress')) {
                     if(contactSources) {
                         contactSources.each { String contactSwitch ->
-                            titles .add(createTableCell(format,  "${RDStore.ADDRESS_TYPE_BILLING."${localizedValue}"} ${messageSource.getMessage("org.export.column.${contactSwitch}", null, locale)}"))
+                            titles.add(createTableCell(format,  "${RDStore.ADDRESS_TYPE_BILLING."${localizedValue}"} ${messageSource.getMessage("org.export.column.${contactSwitch}", null, locale)}"))
                         }
                     }
                     else
-                        titles .add(createTableCell(format,  RDStore.ADDRESS_TYPE_BILLING."${localizedValue}"))
+                        titles.add(createTableCell(format,  RDStore.ADDRESS_TYPE_BILLING."${localizedValue}"))
                 }
                 else if (fieldKey.endsWith('.postAdress')) {
                     if(contactSources) {
                         contactSources.each { String contactSwitch ->
-                            titles .add(createTableCell(format,  "${RDStore.ADDRESS_TYPE_POSTAL."${localizedValue}"} ${messageSource.getMessage("org.export.column.${contactSwitch}", null, locale)}"))
+                            titles.add(createTableCell(format,  "${RDStore.ADDRESS_TYPE_POSTAL."${localizedValue}"} ${messageSource.getMessage("org.export.column.${contactSwitch}", null, locale)}"))
                         }
                     }
                     else
-                        titles .add(createTableCell(format,  RDStore.ADDRESS_TYPE_POSTAL."${localizedValue}"))
+                        titles.add(createTableCell(format,  RDStore.ADDRESS_TYPE_POSTAL."${localizedValue}"))
                 }*/
                 else if (fieldKey == 'participant.readerNumbers') {
-                    titles .add(createTableCell(format,  messageSource.getMessage('readerNumber.semester.label', null, locale)))
-                    titles .add(createTableCell(format,  messageSource.getMessage('readerNumber.dueDate.label', null, locale)))
-                    titles .add(createTableCell(format,  RDStore.READER_NUMBER_STUDENTS."${localizedValue}"))
-                    titles .add(createTableCell(format,  RDStore.READER_NUMBER_SCIENTIFIC_STAFF."${localizedValue}"))
-                    titles .add(createTableCell(format,  RDStore.READER_NUMBER_FTE."${localizedValue}"))
-                    titles .add(createTableCell(format,  RDStore.READER_NUMBER_USER."${localizedValue}"))
-                    titles .add(createTableCell(format,  RDStore.READER_NUMBER_PEOPLE."${localizedValue}"))
-                    titles .add(createTableCell(format,  messageSource.getMessage('readerNumber.sum.label', null, locale)))
-                    titles .add(createTableCell(format,  messageSource.getMessage('readerNumber.note.label', null, locale)))
+                    titles.add(createTableCell(format,  messageSource.getMessage('readerNumber.semester.label', null, locale)))
+                    titles.add(createTableCell(format,  messageSource.getMessage('readerNumber.dueDate.label', null, locale)))
+                    titles.add(createTableCell(format,  RDStore.READER_NUMBER_STUDENTS."${localizedValue}"))
+                    titles.add(createTableCell(format,  RDStore.READER_NUMBER_SCIENTIFIC_STAFF."${localizedValue}"))
+                    titles.add(createTableCell(format,  RDStore.READER_NUMBER_FTE."${localizedValue}"))
+                    titles.add(createTableCell(format,  RDStore.READER_NUMBER_USER."${localizedValue}"))
+                    titles.add(createTableCell(format,  RDStore.READER_NUMBER_PEOPLE."${localizedValue}"))
+                    titles.add(createTableCell(format,  messageSource.getMessage('readerNumber.sum.label', null, locale)))
+                    titles.add(createTableCell(format,  messageSource.getMessage('readerNumber.note.label', null, locale)))
                 }
                 else if ((fieldKey == 'participantSubCostItem' || fieldKey == 'subCostItem' || fieldKey == 'renewalSurveyCostItems') && maxCostItemsElements > 0 && selectedCostItemFields.size() > 0) {
                     for(int i = 0; i < maxCostItemsElements; i++) {
-                        titles .add(createTableCell(format,  messageSource.getMessage("financials.costItemElement", null, locale)))
+                        titles.add(createTableCell(format,  messageSource.getMessage("financials.costItemElement", null, locale)))
                         selectedCostItemFields.each {
-                            titles .add(createTableCell(format,  (it.value.message ? messageSource.getMessage("${it.value.message}", null, locale) : it.value.label)))
+                            titles.add(createTableCell(format,  (it.value.message ? messageSource.getMessage("${it.value.message}", null, locale) : it.value.label)))
                         }
                     }
                 }
-                else if (fieldKey == 'participantSurveyCostItems' && maxCostItemsElements > 0 && selectedCostItemFields.size() > 0) {
-                    for(int i = 0; i < maxCostItemsElements; i++) {
-                        selectedCostItemFields.each {
-                            titles .add(createTableCell(format,  (it.value.message ? messageSource.getMessage("${it.value.message}", null, locale) : it.value.label)))
+                else if (fieldKey == 'participantSurveyCostItems' && selectedCostElements.selectedCostItemElementsForSurveyCostItems.size() > 0 && selectedCostItemFields.forSurveyCostItems.size() > 0) {
+                    for(int i = 0; i < selectedCostElements.selectedCostItemElementsForSurveyCostItems.size(); i++) {
+                        titles.add(createTableCell(format,  messageSource.getMessage("financials.costItemElement", null, locale)))
+                        selectedCostItemFields.forSurveyCostItems.each {
+                            titles.add(createTableCell(format,  (it.value.message ? messageSource.getMessage("${it.value.message}", null, locale) : it.value.label)))
                         }
                     }
                 }
-                else if (fieldKey == 'survey.oldPrice' && maxCostItemsElements > 0 && selectedCostItemFields.size() > 0) {
-                    for(int i = 0; i < maxCostItemsElements; i++) {
-                        selectedCostItemFields.each {
-                            String oldPrideInfo = messageSource.getMessage("surveyConfigsInfo.oldPrice", null, locale)
+                else if (fieldKey == 'participantSurveySubCostItems' && selectedCostElements.selectedCostItemElementsForSubCostItems.size() > 0 && selectedCostItemFields.forSubCostItems.size() > 0) {
+                    String style = 'neutral'
+                    for(int i = 0; i < selectedCostElements.selectedCostItemElementsForSubCostItems.size(); i++) {
+                        String oldPrideInfo = messageSource.getMessage("surveyConfigsInfo.oldPrice", null, locale)
+                        titles.add(createTableCell(format,  oldPrideInfo + '-' + messageSource.getMessage("financials.costItemElement", null, locale), style))
+                        selectedCostItemFields.forSubCostItems.each {
                             oldPrideInfo = oldPrideInfo + '-' + (it.value.message ? messageSource.getMessage("${it.value.message}", null, locale) : it.value.label)
-                            titles .add(createTableCell(format,  oldPrideInfo, 'neutral'))
+                            titles.add(createTableCell(format,  oldPrideInfo, style))
+                        }
+
+                        if(style == 'neutral'){
+                            style = 'neutral2'
+                        }else {
+                            style = 'neutral'
                         }
                     }
                 }
                 else if(fieldKey == 'pickAndChoose') {
-                    titles .add(createTableCell(format,  "${messageSource.getMessage('surveyEvaluation.titles.currentAndFixedEntitlements', null, locale)}"))
-                    titles .add(createTableCell(format,  "${messageSource.getMessage('tipp.price.plural', null, locale)}"))
-                    titles .add(createTableCell(format,  "Budget"))
-                    titles .add(createTableCell(format,  "Diff."))
+                    titles.add(createTableCell(format,  "${messageSource.getMessage('surveyEvaluation.titles.currentAndFixedEntitlements', null, locale)}"))
+                    titles.add(createTableCell(format,  "${messageSource.getMessage('tipp.price.plural', null, locale)}"))
+                    titles.add(createTableCell(format,  "Budget"))
+                    titles.add(createTableCell(format,  "Diff."))
                 }
                 else if(fieldKey == 'subCostItem') {
                     selectedCostElements.each { String titleSuffix, List<RefdataValue> costItemElements ->
                         costItemElements.each { RefdataValue cie ->
-                            titles .add(createTableCell(format,  "${cie.getI10n('value')} (${colHeaderMap.get(titleSuffix)})"))
+                            titles.add(createTableCell(format,  "${cie.getI10n('value')} (${colHeaderMap.get(titleSuffix)})"))
                         }
                     }
                 }
                 else if(fieldKey.contains('participantIdentifiers.') || fieldKey.contains('providerIdentifiers.')) {
-                    titles .add(createTableCell(format,  fields.label))
-                    titles .add(createTableCell(format,  "${fields.label} ${messageSource.getMessage('default.notes.plural', null, locale)}"))
+                    titles.add(createTableCell(format,  fields.label))
+                    titles.add(createTableCell(format,  "${fields.label} ${messageSource.getMessage('default.notes.plural', null, locale)}"))
                 }
                 else {
                     String label = (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label)
@@ -6209,15 +6346,15 @@ class ExportClickMeService {
                         label += ' (Meine Merkmale)'
                     else if(fields.privateProperty == false)
                         label += ' (Allgemeine Merkmale)'
-                    titles .add(createTableCell(format,  label))
+                    titles.add(createTableCell(format,  label))
                     if (fieldKey.startsWith('surveyProperty.')) {
-                        titles .add(createTableCell(format,  (messageSource.getMessage('surveyResult.participantComment', null, locale) + " " + messageSource.getMessage('renewalEvaluation.exportRenewal.to', null, locale) + " " + (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label))))
-                        titles .add(createTableCell(format,  (messageSource.getMessage('surveyResult.commentOnlyForOwner', null, locale) + " " + messageSource.getMessage('renewalEvaluation.exportRenewal.to', null, locale) + " " + (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label))))
+                        titles.add(createTableCell(format,  (messageSource.getMessage('surveyResult.participantComment', null, locale) + " " + messageSource.getMessage('renewalEvaluation.exportRenewal.to', null, locale) + " " + (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label))))
+                        titles.add(createTableCell(format,  (messageSource.getMessage('surveyResult.commentOnlyForOwner', null, locale) + " " + messageSource.getMessage('renewalEvaluation.exportRenewal.to', null, locale) + " " + (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label))))
                     }else if (fieldKey.contains('Property')) {
-                        titles .add(createTableCell(format,  "${label} ${messageSource.getMessage('default.notes.plural', null, locale)}"))
+                        titles.add(createTableCell(format,  "${label} ${messageSource.getMessage('default.notes.plural', null, locale)}"))
                     }
                     if(fieldKey.contains('licProperty')) {
-                        titles .add(createTableCell(format,  "${label} ${messageSource.getMessage('property.table.paragraph', null, locale)}"))
+                        titles.add(createTableCell(format,  "${label} ${messageSource.getMessage('property.table.paragraph', null, locale)}"))
                     }
                 }
             }

@@ -11,24 +11,27 @@
     <ui:crumb message="surveyInfo.transferMembers" class="active"/>
 </ui:breadcrumbs>
 
-%{--<ui:controlButtons>
-    <g:if test="${surveyConfig.subSurveyUseForTransfer}">
-        <ui:actionsDropdown>
-            <g:if test="${parentSuccessorSubscription}">
+<ui:controlButtons>
+    <laser:render template="exports"/>
 
-                <ui:actionsDropdownItem data-ui="modal" href="#transferParticipantsModal"
-                                           message="surveyInfo.transferParticipants"/>
-            </g:if>
-            <ui:actionsDropdownItem controller="survey" action="renewalEvaluation"
-                                       params="[id: params.id, surveyConfigID: surveyConfig.id]"
-                                       message="surveyInfo.evaluation"/>
+%{--   <g:if test="${surveyConfig.subSurveyUseForTransfer}">
+       <ui:actionsDropdown>
+           <g:if test="${parentSuccessorSubscription}">
 
-        --}%%{--<ui:actionsDropdownItem controller="survey" action="setCompleted"
-                                   params="[id: params.id, surveyConfigID: surveyConfig.id]"
-                                   message="surveyInfo.completed.action"/>--}%%{--
-        </ui:actionsDropdown>
-    </g:if>
-</ui:controlButtons>--}%
+               <ui:actionsDropdownItem data-ui="modal" href="#transferParticipantsModal"
+                                          message="surveyInfo.transferParticipants"/>
+           </g:if>
+           <ui:actionsDropdownItem controller="survey" action="renewalEvaluation"
+                                      params="[id: params.id, surveyConfigID: surveyConfig.id]"
+                                      message="surveyInfo.evaluation"/>
+
+       --}%%{--<ui:actionsDropdownItem controller="survey" action="setCompleted"
+                                  params="[id: params.id, surveyConfigID: surveyConfig.id]"
+                                  message="surveyInfo.completed.action"/>--}%%{--
+       </ui:actionsDropdown>
+   </g:if>
+--}%
+</ui:controlButtons>
 
 <ui:h1HeaderWithIcon text="${surveyInfo.name}" type="Survey" />
 <uiSurvey:status object="${surveyInfo}"/>

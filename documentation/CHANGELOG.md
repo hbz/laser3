@@ -9,6 +9,16 @@
 
 5575    27.02.2024  dev     3.4         Andreas Feature     Erweiterung der Paketverknüpfungsmeldung
 
+5020    27.02.2024  dev     3.4         Andreas Feature     Umstellung des Vergleichs-Menüpunktes
+
+5595    26.02.2024  rc-3.3  3.3.7       Andreas Bug         BudgetCodes wurden im Export nicht aufgelöst
+
+5993    26.02.2024  rc-3.3  3.3.7       Andreas Bug         Neuer Versuch zur Behebung des Session-Mismatches
+
+5592    26.02.2024  rc-3.3  3.3.7       Andreas Bug         falsche Ausgabe bei EZB-Lizenzschnittstelle behoben
+
+5591    26.02.2024  rc-3.3  3.3.7       Andreas Bug         unnötige OID-Auflösung behoben
+
 5589    23.02.2024  dev     3.4         Andreas Feature     Anpassung des we:kb-Paketfilters
 
 5576    23.02.2024  dev     3.4         Andreas Feature     Umstellung der Paketverknüpfung auf Teilprozesse zu je 5000 Einträge
