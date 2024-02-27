@@ -211,8 +211,10 @@
     <laser:script file="${this.getGroovyPageFileName()}">
         function initPairDropdown(selProv) {
             let providerFilter = '';
-            if(typeof(selProv) !== 'undefined') {
+            let minChars = 1;
+            if(typeof(selProv) !== 'undefined' && selProv.length > 0) {
                 providerFilter = '&providerFilter='+selProv;
+                minChars = 0;
             }
             $("#${selectPair}").dropdown({
                 apiSettings: {
@@ -220,7 +222,7 @@
                     cache: false
                 },
                 clearable: true,
-                minCharacters: 1
+                minCharacters: minChars
             });
         }
         $("#providerFilter").dropdown({
@@ -232,7 +234,7 @@
             minCharacters: 1
         });
         <g:if test="${context instanceof Subscription || context instanceof License}">
-            <g:set var="firstProvider" value="${context.orgRelations.find { OrgRole oo -> oo.roleType.id == RDStore.OR_PROVIDER.id }?.org}"/>
+            <g:set var="firstProvider" value="${context.orgRelations.find { OrgRole oo -> oo.roleType.id in [RDStore.OR_PROVIDER.id, RDStore.OR_LICENSOR.id] }?.org}"/>
             <g:if test="${firstProvider}">
                 let providerOID = "${genericOIDService.getOID(firstProvider)}";
                 let providerText = "${firstProvider.name}";
