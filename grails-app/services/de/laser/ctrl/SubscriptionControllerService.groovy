@@ -118,9 +118,7 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         else {
             prf.setBenchmark('this-n-that')
-            if (result.institution) {
-                result.institutional_usage_identifier = OrgSetting.get(result.institution, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
-            }
+            result.institutional_usage_identifier = OrgSetting.get(result.institution, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
             prf.setBenchmark('packages')
 
             result.pendingChangeConfigSettings = RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)
@@ -1568,6 +1566,7 @@ class SubscriptionControllerService {
                             executorService.execute({
                                 Thread.currentThread().setName("PackageTransfer_"+result.subscription.id)
                                 packagesToProcess.each { Package pkg ->
+                                    subscriptionService.cachePackageName("PackageTransfer_"+result.subscription.id, pkg.name)
                                     subscriptionService.addToMemberSubscription(result.subscription, updatedSubList, pkg, params.linkWithEntitlements == 'on')
                                     /*
                                         if()
@@ -1989,7 +1988,7 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         else {
             if(subscriptionService.checkThreadRunning('PackageTransfer_'+result.subscription.id) && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,Package.findByGokbId(params.addUUID))) {
-                result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null, LocaleUtils.getCurrentLocale())
+                result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running.withPackage',[subscriptionService.getCachedPackageName('PackageTransfer_'+result.subscription.id)], LocaleUtils.getCurrentLocale())
                 result.bulkProcessRunning = true
             }
             if (result.subscription.packages) {
@@ -2162,6 +2161,7 @@ class SubscriptionControllerService {
                                 }
                                 Package pkgToLink = Package.findByGokbId(pkgUUID)
                                 result.packageName = pkgToLink.name
+                                subscriptionService.cachePackageName("PackageTransfer_"+result.subscription.id, pkgToLink.name)
                                 subscriptionService.addToSubscription(result.subscription, pkgToLink, createEntitlements)
                                 if(linkToChildren) {
                                     subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, createEntitlementsForChildren)
@@ -2176,6 +2176,7 @@ class SubscriptionControllerService {
                     }
                     else {
                         Package pkgToLink = globalSourceSyncService.createOrUpdatePackage(pkgUUID)
+                        subscriptionService.cachePackageName("PackageTransfer_"+result.subscription.id, pkgToLink.name)
                         subscriptionService.addToSubscription(result.subscription, pkgToLink, createEntitlements)
                         if(linkToChildren) {
                             subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, createEntitlementsForChildren)
@@ -2280,7 +2281,7 @@ class SubscriptionControllerService {
             Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
             threadArray.each {
                 if (it.name == 'PackageTransfer_'+result.subscription.id) {
-                    result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null,locale)
+                    result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running.withPackage',[subscriptionService.getCachedPackageName(it.name)] as Object[],locale)
                 }
                 else if (it.name == 'EntitlementEnrichment_'+result.subscription.id) {
                     result.message = messageSource.getMessage('subscription.details.addEntitlements.thread.running', null, locale)

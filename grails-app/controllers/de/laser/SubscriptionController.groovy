@@ -109,7 +109,12 @@ class SubscriptionController {
                 response.setContentType('application/pdf')
                 response.outputStream.withStream { it << pdf }
             }
-            else ctrlResult.result
+            else {
+                if(subscriptionService.checkThreadRunning('PackageTransfer_'+ctrlResult.result.subscription.id)) {
+                    flash.message = message(code: 'subscription.details.linkPackage.thread.running.withPackage', args: [subscriptionService.getCachedPackageName('PackageTransfer_'+ctrlResult.result.subscription.id)] as Object[])
+                }
+                ctrlResult.result
+            }
         }
     }
 
@@ -619,6 +624,9 @@ class SubscriptionController {
                 }
             }
             else {
+                if(subscriptionService.checkThreadRunning("PackageTransfer_"+ctrlResult.result.subscription.id)) {
+                    flash.message = message(code: 'subscription.details.linkPackage.thread.running.withPackage', args: [subscriptionService.getCachedPackageName('PackageTransfer_'+ctrlResult.result.subscription.id)] as Object[])
+                }
                 ctrlResult.result
             }
         }
