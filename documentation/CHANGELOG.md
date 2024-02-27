@@ -13,6 +13,8 @@
 
 5592    26.02.2024  rc-3.3  3.3.7       Andreas Bug         falsche Ausgabe bei EZB-Lizenzschnittstelle behoben
 
+5591    26.02.2024  rc-3.3  3.3.7       Andreas Bug         unnötige OID-Auflösung behoben
+
 5579    20.02.2024  rc-3.3  3.3.6       Andreas Feature     SUSHI-Konfiguration um Plattformnamen/filter erweiter
 
 --      20.02.2024  rc-3.3  3.3.6       Andreas Bug         Abfrageargumente bei Titelumfrage korrigiert
