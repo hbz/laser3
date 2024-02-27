@@ -132,7 +132,7 @@ class SurveyController {
         prf.setBenchmark("after properties")
 
         prf.setBenchmark("before surveyYears")
-        result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate)", [org: result.institution]) ?: []
+        result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate) desc", [org: result.institution]) ?: []
 
         if (params.validOnYear == null || params.validOnYear == '') {
             SimpleDateFormat sdfyear = DateUtils.getSDF_yyyy()
@@ -213,7 +213,7 @@ class SurveyController {
 
         params.tab = params.tab ?: 'created'
 
-        result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate)", [org: result.institution]) ?: []
+        result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate) desc", [org: result.institution]) ?: []
 
         if (params.validOnYear == null || params.validOnYear == '') {
             SimpleDateFormat sdfyear = DateUtils.getSDF_yyyy()
