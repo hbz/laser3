@@ -947,7 +947,6 @@ class YodaController {
     def reloadWekbPlatform() {
         if(!globalSourceSyncService.running) {
             log.debug("start reloading ...")
-            //continue here with tests
             executorService.execute({
                 Thread.currentThread().setName("GlobalDataUpdate_Platform")
                 globalSourceSyncService.reloadData('Platform')

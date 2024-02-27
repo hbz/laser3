@@ -39,6 +39,7 @@ import java.util.concurrent.ExecutorService
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SubscriptionController {
 
+    BatchUpdateService batchUpdateService
     ContextService contextService
     CopyElementsService copyElementsService
     CustomerTypeService customerTypeService
@@ -1176,7 +1177,7 @@ class SubscriptionController {
                     Sql sql = GlobalService.obtainSqlConnection()
                     childSubIds.each { Long childSubId ->
                         pkgIds.each { Long pkgId ->
-                            packageService.bulkAddHolding(sql, childSubId, pkgId, result.subscription.hasPerpetualAccess, result.subscription.id)
+                            batchUpdateService.bulkAddHolding(sql, childSubId, pkgId, result.subscription.hasPerpetualAccess, result.subscription.id)
                         }
                     }
                     sql.close()

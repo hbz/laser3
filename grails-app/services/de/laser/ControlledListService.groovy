@@ -128,7 +128,10 @@ class ControlledListService {
                 queryString += " and s.instanceOf = null "
                 break
             case CalculatedType.TYPE_PARTICIPATION:
-                queryString += " and s.instanceOf != null "
+                Org subscriber = ctx.getSubscriber()
+                queryString += " and s.instanceOf != null and exists (select os from OrgRole os where os.sub = s and os.roleType in (:subscriberCons) and os.org = :subscriber) "
+                filter.subscriberCons = [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
+                filter.subscriber = subscriber
                 break
         }
         if(params.restrictLevel) {
@@ -213,6 +216,11 @@ class ControlledListService {
                 }
                 filter.values = filterPropVal
             }
+        }
+        if(params.providerFilter) {
+            queryString += " and exists (select op from OrgRole op where op.sub = s and op.roleType in (:providerRoleTypes) and op.org = :filterProvider) "
+            filter.providerRoleTypes = [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
+            filter.filterProvider = genericOIDService.resolveOID(params.providerFilter)
         }
         Set<String> refdataFields = ['form','resource','kind']
         refdataFields.each { String refdataField ->
@@ -361,6 +369,11 @@ class ControlledListService {
             case CalculatedType.TYPE_PARTICIPATION:
                 licFilter += " and l.instanceOf != null "
                 break
+        }
+        if(params.providerFilter) {
+            licFilter += " and exists (select ol from OrgRole ol where ol.lic = l and ol.roleType = :providerRoleType and ol.org = :filterProvider) "
+            filterParams.providerRoleType = RDStore.OR_LICENSOR
+            filterParams.filterProvider = genericOIDService.resolveOID(params.providerFilter)
         }
         result = License.executeQuery('select l from License as l join l.orgRelations ol where ol.org = :org and ol.roleType in (:orgRoles)'+licFilter+" order by l.reference asc",filterParams)
         if(result.size() > 0) {

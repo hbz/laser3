@@ -222,10 +222,11 @@ class ExportService {
 				}
 				for(int i = 0;i < titleRow.size(); i++) {
 					try {
+						sheet.trackColumnForAutoSizing(i)
 						sheet.autoSizeColumn(i)
 					}
 					catch (Exception e) {
-						log.error("Null pointer exception in column ${i}")
+						log.error("Exception in column ${i}: ${e}")
 					}
 				}
 			}
