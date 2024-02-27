@@ -133,6 +133,9 @@ class ExportService {
 		XSSFCellStyle csNeutral = wb.createCellStyle()
 		csNeutral.setFillForegroundColor(new XSSFColor(new Color(255,235,156)))
 		csNeutral.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+		XSSFCellStyle csNeutral2 = wb.createCellStyle()
+		csNeutral2.setFillForegroundColor(new XSSFColor(new Color(255,205,156)))
+		csNeutral2.setFillPattern(FillPatternType.SOLID_FOREGROUND)
 		XSSFCellStyle bold = wb.createCellStyle()
 		XSSFFont font = wb.createFont()
 		font.setBold(true)
@@ -172,6 +175,8 @@ class ExportService {
 								break
 							case 'neutral': cell.setCellStyle(csNeutral)
 								break
+							case 'neutral2': cell.setCellStyle(csNeutral2)
+								break
 							case 'negative': cell.setCellStyle(csNegative)
 								break
 							case 'bold': cell.setCellStyle(bold)
@@ -204,6 +209,8 @@ class ExportService {
 							case 'positive': cell.setCellStyle(csPositive)
 								break
 							case 'neutral': cell.setCellStyle(csNeutral)
+								break
+							case 'neutral2': cell.setCellStyle(csNeutral2)
 								break
 							case 'negative': cell.setCellStyle(csNegative)
 								break
