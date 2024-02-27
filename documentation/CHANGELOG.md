@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5020    27.02.2024  dev     3.4         Andreas Feature     Umstellung des Vergleichs-Menüpunktes
+
 5595    26.02.2024  rc-3.3  3.3.7       Andreas Bug         BudgetCodes wurden im Export nicht aufgelöst
 
 5993    26.02.2024  rc-3.3  3.3.7       Andreas Bug         Neuer Versuch zur Behebung des Session-Mismatches
