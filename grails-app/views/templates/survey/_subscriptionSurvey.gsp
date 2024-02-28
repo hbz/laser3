@@ -659,7 +659,6 @@
     <% Set<RefdataValue> costItemElementsNotInSurveyCostItems = [] %>
 
     <g:if test="${surveyInfo.owner.id != institution.id && ((costItemSums && costItemSums.subscrCosts) || costItemSurveys)}">
-        <g:set var="showCostItemSurvey" value="${true}"/>
 
         <div class="ui card la-time-card">
 
@@ -775,8 +774,8 @@
                                 <g:set var="surveyCostItems" scope="request"
                                        value="${CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndCostItemElement(surveyOrg, RDStore.COST_ITEM_DELETED, costItem.costItemElement)}"/>
 
-                                <% costItemElementsNotInSurveyCostItems <<  costItem.costItemElement %>
-                                <g:if test="${surveyCostItems}">
+
+                                <g:if test="${surveyCostItems && !(costItem.costItemElement in (costItemElementsNotInSurveyCostItems))}">
                                     <g:each in="${surveyCostItems}"
                                             var="costItemSurvey">
                                         <td>
@@ -881,6 +880,8 @@
                                     <td></td>
                                 </g:else>
                             </tr>
+
+                            <% costItemElementsNotInSurveyCostItems <<  costItem.costItemElement %>
                         </g:each>
                     </g:if>
 
