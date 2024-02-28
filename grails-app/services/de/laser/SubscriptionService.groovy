@@ -42,6 +42,7 @@ class SubscriptionService {
 
     AuditService auditService
     BatchUpdateService batchUpdateService
+    CacheService cacheService
     ComparisonService comparisonService
     ContextService contextService
     EscapeService escapeService
@@ -52,7 +53,6 @@ class SubscriptionService {
     GokbService gokbService
     LinksGenerationService linksGenerationService
     MessageSource messageSource
-    PackageService packageService
     PropertyService propertyService
     RefdataService refdataService
     SubscriptionsQueryService subscriptionsQueryService
@@ -2886,6 +2886,16 @@ join sub.orgRelations or_sub where
             }
         }
         threadRunning
+    }
+
+    String getCachedPackageName(String processName) {
+        EhcacheWrapper ttl3600 = cacheService.getTTL3600Cache(processName)
+        ttl3600.get('package')
+    }
+
+    void cachePackageName(String processName, String packageName) {
+        EhcacheWrapper ttl3600 = cacheService.getTTL3600Cache(processName)
+        ttl3600.put('package', packageName)
     }
 
     //-------------------------------------- cronjob section ----------------------------------------
