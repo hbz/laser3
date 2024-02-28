@@ -104,6 +104,10 @@
                     </span>
                 </g:if>
 
+                <g:if test="${participantResult.sub}">
+                    <ui:xEditableAsIcon owner="${participantResult.sub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea" overwriteEditable="${false}"/>
+                </g:if>
+
             </td>
             <td>
                 ${participantResult.resultOfParticipation.getResult()}
