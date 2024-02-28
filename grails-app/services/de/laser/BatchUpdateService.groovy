@@ -58,9 +58,9 @@ class BatchUpdateService {
             queryParams = [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id]
             Set<Long> total = sql.rows("select tipp_id from title_instance_package_platform ${whereClause}", queryParams).tipp_id
             for(int i = 0; i < total.size(); i += bulkStep) {
-                Map<String, Object> subQueryParams = [idSubSet: sql.getDataSource().getConnection().createArrayOf('bigint', total.drop(i).take(bulkStep) as Object[])]
+                Map<String, Object> subQueryParams = [subId: subId, idSubSet: sql.getDataSource().getConnection().createArrayOf('bigint', total.drop(i).take(bulkStep) as Object[])]
                 sql.executeInsert("insert into issue_entitlement (ie_version, ie_guid, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_status_rv_fk ${perpetualAccessColHeader}) " +
-                        "select 0, concat('issueentitlement:',gen_random_uuid()), now(), now(), ${subId}, tipp_id, tipp_access_start_date, tipp_access_end_date, tipp_status_rv_fk ${perpetualAccessCol} from title_instance_package_platform where tipp_id = any(:idSubSet)", subQueryParams)
+                        "select 0, concat('issueentitlement:',gen_random_uuid()), now(), now(), :subId, tipp_id, tipp_access_start_date, tipp_access_end_date, tipp_status_rv_fk ${perpetualAccessCol} from title_instance_package_platform where tipp_id = any(:idSubSet)", subQueryParams)
                 sql.executeInsert("insert into issue_entitlement_coverage (ic_version, ic_ie_fk, ic_date_created, ic_last_updated) " +
                         "select 0, (select ie_id from issue_entitlement where ie_tipp_fk = tc_tipp_fk and ie_subscription_fk = :subId), now(), now() from tippcoverage where tc_tipp_fk = any(:idSubSet)", subQueryParams)
                 sql.executeInsert("insert into price_item (pi_version, pi_ie_fk, pi_date_created, pi_last_updated, pi_guid) " +
