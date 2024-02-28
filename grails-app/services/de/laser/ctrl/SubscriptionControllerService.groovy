@@ -2141,6 +2141,7 @@ class SubscriptionControllerService {
                 //to be deployed in parallel thread
                 executorService.execute({
                     Thread.currentThread().setName("PackageTransfer_"+result.subscription.id)
+                    subscriptionService.cachePackageName("PackageTransfer_"+result.subscription.id, params.pkgName)
                     long start = System.currentTimeSeconds()
                     if(!Package.findByGokbId(pkgUUID)) {
                         try {
@@ -2161,8 +2162,6 @@ class SubscriptionControllerService {
                                     }
                                 }
                                 Package pkgToLink = Package.findByGokbId(pkgUUID)
-                                result.packageName = pkgToLink.name
-                                subscriptionService.cachePackageName("PackageTransfer_"+result.subscription.id, pkgToLink.name)
                                 subscriptionService.addToSubscription(result.subscription, pkgToLink, createEntitlements)
                                 if(linkToChildren) {
                                     subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, createEntitlementsForChildren)
