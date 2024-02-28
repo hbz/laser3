@@ -249,7 +249,7 @@
                 <g:if test="${participantResult.sub}">
                     <br/>
                     <g:link controller="subscription" action="show" id="${participantResult.sub?.id}"
-                            class="ui button icon"><i class="icon clipboard"></i></g:link>
+                            class="ui button orange icon"><i class="icon clipboard"></i></g:link>
                 </g:if>
             </td>
 
