@@ -562,6 +562,15 @@
                             data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                         <i class="chart pie icon"></i>
                     </g:link>
+
+                    <g:if test="${surveyConfig.subscription}">
+                        <g:set var="participantSub" value="${surveyConfig.subscription.getDerivedSubscriptionBySubscribers(participant)}"/>
+                            <g:if test="${participantSub}">
+                                <br/>
+                                <g:link controller="subscription" action="show" id="${participantSub.id}"
+                                        class="ui button orange icon"><i class="icon clipboard"></i></g:link>
+                            </g:if>
+                    </g:if>
                 </td>
 
             </tr>
@@ -1098,6 +1107,15 @@
                             data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                         <i class="chart pie icon"></i>
                     </g:link>
+
+                    <g:if test="${surveyConfig.subscription}">
+                        <g:set var="participantSub" value="${surveyConfig.subscription.getDerivedSubscriptionBySubscribers(participant)}"/>
+                        <g:if test="${participantSub}">
+                            <br/>
+                            <g:link controller="subscription" action="show" id="${participantSub.id}"
+                                    class="ui button orange icon"><i class="icon clipboard"></i></g:link>
+                        </g:if>
+                    </g:if>
                 </td>
             </tr>
 
