@@ -326,16 +326,16 @@ class PackageController {
         if (queryResult.error && queryResult.error == 404) {
             flash.error = message(code:'wekb.error.404') as String
         }
-        else if (queryResult.warning) {
-            List records = queryResult.warning.result
+        else if (queryResult) {
+            List records = queryResult.result
             result.packageInstanceRecord = records ? records[0] : [:]
         }
         if(packageInstance.nominalPlatform) {
             //record filled with LAS:eR and we:kb data
             Map<String, Object> platformInstanceRecord = [:]
             queryResult = gokbService.executeQuery(apiSource.baseUrl+apiSource.fixToken+"/searchApi", [uuid: packageInstance.nominalPlatform.gokbId])
-            if(queryResult.warning) {
-                List records = queryResult.warning.result
+            if(queryResult) {
+                List records = queryResult.result
                 if(records)
                     platformInstanceRecord.putAll(records[0])
                 platformInstanceRecord.name = packageInstance.nominalPlatform.name
