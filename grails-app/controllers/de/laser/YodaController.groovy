@@ -608,7 +608,7 @@ class YodaController {
         log.debug("match package holdings to issue entitlement holdings ...")
         flash.message = "Bestände werden korrigiert ..."
         yodaService.matchPackageHoldings(params.long('pkgId'))
-        redirect controller: 'package', action: 'index'
+        redirect(url: request.getHeader('referer'))
     }
 
     @Deprecated
@@ -858,7 +858,7 @@ class YodaController {
         else {
             log.debug("process running, lock is set!")
         }
-        redirect controller: 'package'
+        redirect(url: request.getHeader('referer'))
     }
 
     /**
@@ -879,7 +879,7 @@ class YodaController {
         }
         flash.message = "Pakete werden nachgehalten ..."
 
-        redirect controller: 'package'
+        redirect(url: request.getHeader('referer'))
     }
 
     /**
