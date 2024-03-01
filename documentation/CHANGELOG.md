@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      01.03.2024  rc-3.3  3.3.7       Andreas Feature     Erweiterungen der Titelbereinigung
+
 5575    27.02.2024  dev     3.4         Andreas Feature     Erweiterung der Paketverknüpfungsmeldung
 
 5020    27.02.2024  dev     3.4         Andreas Feature     Umstellung des Vergleichs-Menüpunktes
