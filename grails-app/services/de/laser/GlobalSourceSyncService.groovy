@@ -252,21 +252,36 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     log.error("we:kb server is down")
                 }
                 else {
+                    Set<String> wekbTippUUIDs = []
                     if(result) {
-                        processScrollPage(result, componentType, null, packageUUID, permanentlyDeletedTitles)
+                        wekbTippUUIDs.addAll(processScrollPage(result, componentType, null, packageUUID, permanentlyDeletedTitles))
                     }
                     else {
                         log.info("no records updated - leaving everything as is ...")
                     }
                     Package pkg = Package.findByGokbId(packageUUID)
                     if(pkg) {
-                        permanentlyDeletedTitles.each { String delUUID ->
-                            TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbIdAndPkgAndStatusNotEqual(delUUID, pkg, RDStore.TIPP_STATUS_REMOVED)
-                            if(tipp) {
+                        permanentlyDeletedTitles.collate(65000).each { subSet ->
+                            Set<TitleInstancePackagePlatform> delTippsInPackage = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.gokbId in (:delUUIDs) and tipp.pkg = :pkg and tipp.status != :removed', [delUUIDs: subSet, pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED])
+                            delTippsInPackage.each { TitleInstancePackagePlatform tipp ->
                                 tipp.status = RDStore.TIPP_STATUS_REMOVED
                                 tipp.save()
                                 IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed, ie.lastUpdated = :now where ie.tipp = :tipp and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, tipp: tipp, now: new Date()])
                                 PermanentTitle.executeUpdate('delete from PermanentTitle pt where pt.tipp = :tipp', [tipp: tipp])
+                            }
+                        }
+                        Set<String> orphanedTippUUIDs = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status != :removed', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED])
+                        orphanedTippUUIDs.removeAll(wekbTippUUIDs)
+                        if(orphanedTippUUIDs) {
+                            log.info("located ${orphanedTippUUIDs.size()} without connection")
+                            orphanedTippUUIDs.collate(65000).each { subSet ->
+                                Set<TitleInstancePackagePlatform> orphanedTipps = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.gokbId in (:delUUIDs) and tipp.pkg = :pkg and tipp.status != :removed', [delUUIDs: subSet, pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED])
+                                orphanedTipps.each { TitleInstancePackagePlatform tipp ->
+                                    tipp.status = RDStore.TIPP_STATUS_REMOVED
+                                    tipp.save()
+                                    IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed, ie.lastUpdated = :now where ie.tipp = :tipp and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, tipp: tipp, now: new Date()])
+                                    PermanentTitle.executeUpdate('delete from PermanentTitle pt where pt.tipp = :tipp', [tipp: tipp])
+                                }
                             }
                         }
                     }
@@ -577,8 +592,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param pkgFilter an optional package filter to restrict the data to be loaded
      * @param permanentlyDeletedTitles a set of keys of permanently deleted titles in order to clear them in LAS:eR too
      * @throws SyncException if an error occurs during the update process
+     * @returns a {@link Set} of we:kb title UUIDs (used only for RECTYPE_TIPP)
      */
-    void processScrollPage(Map<String, Object> result, String componentType, String changedSince, String pkgFilter = null, Set<String> permanentlyDeletedTitles = []) throws SyncException {
+    Set<String> processScrollPage(Map<String, Object> result, String componentType, String changedSince, String pkgFilter = null, Set<String> permanentlyDeletedTitles = []) throws SyncException {
+        Set<String> wekbTippUUIDs = []
         if(result.count >= MAX_TIPP_COUNT_PER_PAGE) {
             int offset = 0, max = MAX_TIPP_COUNT_PER_PAGE
             Map<String, Object> queryParams = [componentType: componentType, offset: offset, max: max, sort: 'lastUpdated']
@@ -647,6 +664,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 }
                                 break
                             case RECTYPE_TIPP:
+                                wekbTippUUIDs.addAll( result.records.collect { tipp -> tipp.uuid } )
                                 if(offset == 0)
                                     updateRecords(result.records, offset, permanentlyDeletedTitles)
                                 else updateRecords(result.records, offset)
@@ -725,7 +743,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         }
                     }
                     break
-                case RECTYPE_TIPP: updateRecords(result.records, 0, permanentlyDeletedTitles)
+                case RECTYPE_TIPP: wekbTippUUIDs.addAll( result.records.collect { tipp -> tipp.uuid } )
+                    updateRecords(result.records, 0, permanentlyDeletedTitles)
                     break
             }
         }
@@ -733,6 +752,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             log.error("we:kb server is down")
             throw new SyncException("we:kb server is unavailable!")
         }
+        wekbTippUUIDs
     }
 
     /**
@@ -1702,6 +1722,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
             tippA.accessStartDate = tippB.accessStartDate
             tippA.accessEndDate = tippB.accessEndDate
             tippA.volume = tippB.volume
+            //rare case, but occurred ...
+            if(tippA.pkg.gokbId != tippB.packageUUID) {
+                log.warn("Package UUID mismatch! Assign title to correct package ...")
+                Package correct = Package.findByGokbId(tippB.packageUUID)
+                if(correct) {
+                    tippA.pkg = correct
+                }
+            }
             if(!tippA.save())
                 throw new SyncException("Error on updating base title data: ${tippA.getErrors().getAllErrors().toListString()}")
             //these queries have to be observed very closely. They may first cause an extreme bottleneck (the underlying query may have many Sequence Scans), then they direct the issue holdings
