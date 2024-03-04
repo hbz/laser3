@@ -69,25 +69,26 @@
             </g:if>
         </div>
 
-        <div class="two fields">
+        <div class="three fields">
             <div class="field">
-                <label>${message(code: 'package.curatoryGroup.type')}</label>
-                <div class="inline fields la-filter-inline">
-                    <div class="inline field">
-                        <div class="ui checkbox">
-                            <label for="curatoryGroupProvider">${message(code: 'package.curatoryGroup.provider')}</label>
-                            <input id="curatoryGroupProvider" name="curatoryGroupProvider" type="checkbox" <g:if test="${params.curatoryGroupProvider}">checked=""</g:if>
-                                   tabindex="0">
-                        </div>
-                    </div>
-                    <div class="inline field">
-                        <div class="ui checkbox">
-                            <label for="curatoryGroupOther">${message(code: 'package.curatoryGroup.other')}</label>
-                            <input id="curatoryGroupOther" name="curatoryGroupOther" type="checkbox" <g:if test="${params.curatoryGroupOther}">checked=""</g:if>
-                                   tabindex="0">
-                        </div>
-                    </div>
-                </div>
+                <label for="curatoryGroupType">${message(code: 'package.curatoryGroup.type')}</label>
+                <g:select class="ui fluid search select dropdown" name="curatoryGroupType"
+                          from="${curatoryGroupTypes}"
+                          optionKey="value"
+                          optionValue="name"
+                          value="${params.curatoryGroupType}"
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"
+                />
+            </div>
+            <div class="field">
+                <label for="automaticUpdates">${message(code: 'package.source.automaticUpdates')}</label>
+                <g:select class="ui fluid search select dropdown" name="automaticUpdates"
+                          from="${automaticUpdates}"
+                          optionKey="value"
+                          optionValue="name"
+                          value="${params.automaticUpdates}"
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"
+                />
             </div>
             <div class="field la-field-right-aligned">
                 <a href="${request.forwardURI}" class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>

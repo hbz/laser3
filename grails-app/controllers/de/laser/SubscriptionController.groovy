@@ -39,6 +39,7 @@ import java.util.concurrent.ExecutorService
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SubscriptionController {
 
+    BatchUpdateService batchUpdateService
     ContextService contextService
     CopyElementsService copyElementsService
     CustomerTypeService customerTypeService
@@ -108,7 +109,12 @@ class SubscriptionController {
                 response.setContentType('application/pdf')
                 response.outputStream.withStream { it << pdf }
             }
-            else ctrlResult.result
+            else {
+                if(subscriptionService.checkThreadRunning('PackageTransfer_'+ctrlResult.result.subscription.id)) {
+                    flash.message = message(code: 'subscription.details.linkPackage.thread.running.withPackage', args: [subscriptionService.getCachedPackageName('PackageTransfer_'+ctrlResult.result.subscription.id)] as Object[])
+                }
+                ctrlResult.result
+            }
         }
     }
 
@@ -618,6 +624,9 @@ class SubscriptionController {
                 }
             }
             else {
+                if(subscriptionService.checkThreadRunning("PackageTransfer_"+ctrlResult.result.subscription.id)) {
+                    flash.message = message(code: 'subscription.details.linkPackage.thread.running.withPackage', args: [subscriptionService.getCachedPackageName('PackageTransfer_'+ctrlResult.result.subscription.id)] as Object[])
+                }
                 ctrlResult.result
             }
         }
@@ -1176,7 +1185,7 @@ class SubscriptionController {
                     Sql sql = GlobalService.obtainSqlConnection()
                     childSubIds.each { Long childSubId ->
                         pkgIds.each { Long pkgId ->
-                            packageService.bulkAddHolding(sql, childSubId, pkgId, result.subscription.hasPerpetualAccess, result.subscription.id)
+                            batchUpdateService.bulkAddHolding(sql, childSubId, pkgId, result.subscription.hasPerpetualAccess, result.subscription.id)
                         }
                     }
                     sql.close()

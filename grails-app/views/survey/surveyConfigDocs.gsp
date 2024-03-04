@@ -13,6 +13,7 @@
 </ui:breadcrumbs>
 
 <ui:controlButtons>
+    <laser:render template="exports"/>
     <laser:render template="actions"/>
 </ui:controlButtons>
 

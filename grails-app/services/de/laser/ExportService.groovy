@@ -133,6 +133,9 @@ class ExportService {
 		XSSFCellStyle csNeutral = wb.createCellStyle()
 		csNeutral.setFillForegroundColor(new XSSFColor(new Color(255,235,156)))
 		csNeutral.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+		XSSFCellStyle csNeutral2 = wb.createCellStyle()
+		csNeutral2.setFillForegroundColor(new XSSFColor(new Color(255,205,156)))
+		csNeutral2.setFillPattern(FillPatternType.SOLID_FOREGROUND)
 		XSSFCellStyle bold = wb.createCellStyle()
 		XSSFFont font = wb.createFont()
 		font.setBold(true)
@@ -160,7 +163,26 @@ class ExportService {
 				headerRow.setHeightInPoints(16.75f)
 				titleRow.eachWithIndex{ colHeader, int i ->
 					Cell cell = headerRow.createCell(i)
-					cell.setCellValue(colHeader)
+
+					if(colHeader instanceof String){
+						cell.setCellValue(colHeader)
+					}
+
+					if(colHeader instanceof Map) {
+						cell.setCellValue(colHeader.field)
+						switch (colHeader.style) {
+							case 'positive': cell.setCellStyle(csPositive)
+								break
+							case 'neutral': cell.setCellStyle(csNeutral)
+								break
+							case 'neutral2': cell.setCellStyle(csNeutral2)
+								break
+							case 'negative': cell.setCellStyle(csNegative)
+								break
+							case 'bold': cell.setCellStyle(bold)
+								break
+						}
+					}
 				}
 				sheet.createFreezePane(0,1)
 				Row row
@@ -187,6 +209,8 @@ class ExportService {
 							case 'positive': cell.setCellStyle(csPositive)
 								break
 							case 'neutral': cell.setCellStyle(csNeutral)
+								break
+							case 'neutral2': cell.setCellStyle(csNeutral2)
 								break
 							case 'negative': cell.setCellStyle(csNegative)
 								break

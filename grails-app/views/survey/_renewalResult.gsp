@@ -104,6 +104,10 @@
                     </span>
                 </g:if>
 
+                <g:if test="${participantResult.sub}">
+                    <ui:xEditableAsIcon owner="${participantResult.sub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea" overwriteEditable="${false}"/>
+                </g:if>
+
             </td>
             <td>
                 ${participantResult.resultOfParticipation.getResult()}
@@ -245,7 +249,7 @@
                 <g:if test="${participantResult.sub}">
                     <br/>
                     <g:link controller="subscription" action="show" id="${participantResult.sub?.id}"
-                            class="ui button icon"><i class="icon clipboard"></i></g:link>
+                            class="ui button orange icon"><i class="icon clipboard"></i></g:link>
                 </g:if>
             </td>
 

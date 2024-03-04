@@ -74,12 +74,17 @@
                 <th>${message(code: 'sidewide.number')}</th>
                 <th>${message(code: 'subscription.details.consortiaMembers.label')}</th>
                 <th>${message(code: 'copySurveyCostItems.surveyCostItem')}
-                    <g:if test="${surveyConfig.comment}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                              data-content="${surveyConfig.comment}">
-                            <i class="question circle icon"></i>
-                        </span>
-                    </g:if>
+                    <br>
+                    <g:set var="costItemElements"
+                           value="${CostItem.executeQuery('from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg as surOrg where surveyConfig = :surveyConfig)', [status: RDStore.COST_ITEM_DELETED, surveyConfig: surveyConfig]).groupBy {it.costItemElement}.collect {RefdataValue.findByValueAndOwner(it.key, RefdataCategory.findByDesc(RDConstants.COST_ITEM_ELEMENT))}}"/>
+
+                    <ui:select name="selectedCostItemElement"
+                               from="${costItemElements}"
+                               optionKey="id"
+                               optionValue="value"
+                               value="${selectedCostItemElementID}"
+                               class="ui dropdown"
+                               id="selectedCostItemElement"/>
                 </th>
                 <th>${message(code: 'copySurveyCostItems.newCostItem')}</th>
                 <th></th>
@@ -87,17 +92,10 @@
             </thead>
             <tbody>
             <g:each in="${participantsList}" var="participant" status="i">
-                <g:set var="costElement"
-                       value="${RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE}"/>
-
-                <g:if test="${participant.surveyCostItem}">
-                    <g:set var="costElement"
-                           value="${participant.surveyCostItem.costItemElement}"/>
-                </g:if>
 
                 <tr class="">
                     <td>
-                        <g:if test="${participant.surveyCostItem && !CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, institution, costElement, RDStore.COST_ITEM_DELETED)}">
+                        <g:if test="${participant.surveyCostItem && !CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, institution, selectedCostItemElement, RDStore.COST_ITEM_DELETED)}">
                             <g:checkBox name="selectedSurveyCostItem" value="${participant.surveyCostItem.id}" checked="false"/>
                         </g:if>
                     </td>
@@ -131,48 +129,59 @@
                     <td>
 
                         <g:if test="${participant.surveyCostItem}">
-                            ${participant.surveyCostItem.costItemElement?.getI10n('value')}<br />
-                            <strong><g:formatNumber number="${participant.surveyCostItem.costInBillingCurrencyAfterTax}"
-                                               minFractionDigits="2"
-                                               maxFractionDigits="2" type="number"/></strong>
+                            <table class="ui very basic compact table">
+                                <tbody><tr>
+                                    <td>
+                                        <strong><g:formatNumber number="${participant.surveyCostItem.costInBillingCurrencyAfterTax}"
+                                                                minFractionDigits="2"
+                                                                maxFractionDigits="2" type="number"/></strong>
 
-                            (<g:formatNumber number="${participant.surveyCostItem.costInBillingCurrency}" minFractionDigits="2"
-                                             maxFractionDigits="2" type="number"/>)
-
-                            ${participant.surveyCostItem.billingCurrency?.getI10n('value')}
-
-                            <g:set var="sumSurveyCostItem"
-                                   value="${sumSurveyCostItem + participant.surveyCostItem.costInBillingCurrency?:0}"/>
-                            <g:set var="sumSurveyCostItemAfterTax"
-                                   value="${sumSurveyCostItemAfterTax + participant.surveyCostItem.costInBillingCurrencyAfterTax?:0}"/>
-
-
+                                        (<g:formatNumber number="${participant.surveyCostItem.costInBillingCurrency}" minFractionDigits="2"
+                                                         maxFractionDigits="2" type="number"/>)
+                                    </td>
+                                    <td>
+                                        ${participant.surveyCostItem.billingCurrency?.getI10n('value')}
+                                    </td>
+                                    <g:set var="sumSurveyCostItem"
+                                           value="${sumSurveyCostItem + participant.surveyCostItem.costInBillingCurrency ?: 0}"/>
+                                    <g:set var="sumSurveyCostItemAfterTax"
+                                           value="${sumSurveyCostItemAfterTax + participant.surveyCostItem.costInBillingCurrencyAfterTax ?: 0}"/>
+                                </tr>
+                                </tbody>
+                            </table>
                         </g:if>
                     </td>
 
                     <td>
                         <g:if test="${participant.newSub}">
-                            <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, institution, costElement, RDStore.COST_ITEM_DELETED)}"
-                                    var="costItemParticipantSub">
+                            <table class="ui very basic compact table">
+                                <tbody>
+                                <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, institution, selectedCostItemElement, RDStore.COST_ITEM_DELETED)}"
+                                        var="costItemParticipantSub">
+                                    <tr>
+                                        <td>
+                                            <strong><g:formatNumber
+                                                    number="${costItemParticipantSub.costInBillingCurrencyAfterTax}"
+                                                    minFractionDigits="2"
+                                                    maxFractionDigits="2" type="number"/></strong>
 
-                                ${costItemParticipantSub.costItemElement?.getI10n('value')}<br />
-                                <strong><g:formatNumber
-                                        number="${costItemParticipantSub.costInBillingCurrencyAfterTax}"
-                                        minFractionDigits="2"
-                                        maxFractionDigits="2" type="number"/></strong>
+                                            (<g:formatNumber number="${costItemParticipantSub.costInBillingCurrency}"
+                                                             minFractionDigits="2"
+                                                             maxFractionDigits="2" type="number"/>)
+                                        </td>
+                                        <td>
+                                            ${costItemParticipantSub.billingCurrency?.getI10n('value')}
+                                        </td>
 
-                                (<g:formatNumber number="${costItemParticipantSub.costInBillingCurrency}"
-                                                 minFractionDigits="2"
-                                                 maxFractionDigits="2" type="number"/>)
+                                        <g:set var="sumNewCostItem"
+                                               value="${sumNewCostItem + costItemParticipantSub.costInBillingCurrency ?: 0}"/>
+                                        <g:set var="sumNewCostItemAfterTax"
+                                               value="${sumNewCostItemAfterTax + costItemParticipantSub.costInBillingCurrencyAfterTax ?: 0}"/>
+                                    </tr>
 
-                                ${costItemParticipantSub.billingCurrency?.getI10n('value')}
-                                <g:set var="sumNewCostItem"
-                                       value="${sumNewCostItem + costItemParticipantSub.costInBillingCurrency?:0}"/>
-                                <g:set var="sumNewCostItemAfterTax"
-                                       value="${sumNewCostItemAfterTax + costItemParticipantSub.costInBillingCurrencyAfterTax?:0}"/>
-
-
-                            </g:each>
+                                </g:each>
+                                </tbody>
+                            </table>
                         </g:if>
                     </td>
                     <td>
@@ -231,6 +240,12 @@
         } else {
             $("tr[class!=disabled] input[name=selectedSurveyCostItem]").prop('checked', false)
         }
-    })
+    });
+
+        $('#selectedCostItemElement').on('change', function() {
+        var selectedCostItemElement = $("#selectedCostItemElement").val()
+        var url = "<g:createLink controller="survey" action="$actionName" params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID]}"/>&selectedCostItemElement="+selectedCostItemElement;
+            location.href = url;
+         });
 </laser:script>
 <laser:htmlEnd />

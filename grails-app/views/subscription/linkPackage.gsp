@@ -54,12 +54,12 @@
                               title="${message(code: 'package.show.pkg_name')}"
                               params="${params}"/>
             <th>${message(code: 'package.status.label')}</th>
-            <g:sortableColumn property="titleCount"
+            <g:sortableColumn property="currentTippCount"
                               title="${message(code: 'package.compare.overview.tipps')}"
                               params="${params}"/>
-            <g:sortableColumn property="providerName" title="${message(code: 'package.content_provider')}"
+            <g:sortableColumn property="provider.name" title="${message(code: 'package.content_provider')}"
                               params="${params}"/>
-            <g:sortableColumn property="nominalPlatformName"
+            <g:sortableColumn property="nominalPlatform.name"
                               title="${message(code: 'platform.label')}"
                               params="${params}"/>
             <th>${message(code: 'package.curatoryGroup.label')}</th>

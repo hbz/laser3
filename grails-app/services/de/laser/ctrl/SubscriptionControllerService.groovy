@@ -44,6 +44,7 @@ import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.grails.orm.hibernate.cfg.PropertyConfig
+import org.hibernate.Session
 import org.springframework.context.MessageSource
 import org.springframework.transaction.TransactionStatus
 import org.springframework.web.multipart.MultipartFile
@@ -72,6 +73,7 @@ class SubscriptionControllerService {
 
     AddressbookService addressbookService
     AuditService auditService
+    BatchUpdateService batchUpdateService
     ContextService contextService
     DocstoreService docstoreService
     FactService factService
@@ -117,9 +119,7 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         else {
             prf.setBenchmark('this-n-that')
-            if (result.institution) {
-                result.institutional_usage_identifier = OrgSetting.get(result.institution, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
-            }
+            result.institutional_usage_identifier = OrgSetting.get(result.institution, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
             prf.setBenchmark('packages')
 
             result.pendingChangeConfigSettings = RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)
@@ -1465,108 +1465,109 @@ class SubscriptionControllerService {
                     excludes.addAll(PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key+PendingChangeConfiguration.NOTIFICATION_SUFFIX})
                     Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscription.id, excludes)
                     List<Long> memberSubs = []
-                    members.each { Org cm ->
-                        log.debug("Generating separate slaved instances for members")
-                        Date startDate = params.valid_from ? DateUtils.parseDateGeneric(params.valid_from) : null
-                        Date endDate = params.valid_to ? DateUtils.parseDateGeneric(params.valid_to) : null
-                        Subscription memberSub = new Subscription(
-                                type: result.subscription.type ?: null,
-                                kind: result.subscription.kind ?: null,
-                                status: subStatus,
-                                name: result.subscription.name,
-                                //name: result.subscription.name + " (" + (cm.get(0).sortname ?: cm.get(0).name) + ")",
-                                startDate: startDate,
-                                endDate: endDate,
-                                administrative: result.subscription._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE,
-                                manualRenewalDate: result.subscription.manualRenewalDate,
-                                /* manualCancellationDate: result.subscription.manualCancellationDate, */
-                                identifier: UUID.randomUUID().toString(),
-                                instanceOf: result.subscription,
-                                isSlaved: true,
-                                resource: result.subscription.resource ?: null,
-                                form: result.subscription.form ?: null,
-                                isMultiYear: params.checkSubRunTimeMultiYear ?: false
-                        )
-                        inheritedAttributes.each { attr ->
-                            memberSub[attr.referenceField] = result.subscription[attr.referenceField]
-                        }
-                        if (!memberSub.save()) {
-                            memberSub.errors.each { e ->
-                                log.debug("Problem creating new sub: ${e}")
+                    //needed for that the subscriptions are present in the moment of the parallel process
+                    Subscription.withNewSession { Session sess ->
+                        //very dirty and uglymost solution, if it works ...
+                        members.each { Org cm ->
+                            log.debug("Generating separate slaved instances for members")
+                            Date startDate = params.valid_from ? DateUtils.parseDateGeneric(params.valid_from) : null
+                            Date endDate = params.valid_to ? DateUtils.parseDateGeneric(params.valid_to) : null
+                            Subscription memberSub = new Subscription(
+                                    type: result.subscription.type ?: null,
+                                    kind: result.subscription.kind ?: null,
+                                    status: subStatus,
+                                    name: result.subscription.name,
+                                    //name: result.subscription.name + " (" + (cm.get(0).sortname ?: cm.get(0).name) + ")",
+                                    startDate: startDate,
+                                    endDate: endDate,
+                                    administrative: result.subscription._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE,
+                                    manualRenewalDate: result.subscription.manualRenewalDate,
+                                    /* manualCancellationDate: result.subscription.manualCancellationDate, */
+                                    identifier: UUID.randomUUID().toString(),
+                                    instanceOf: result.subscription,
+                                    isSlaved: true,
+                                    resource: result.subscription.resource ?: null,
+                                    form: result.subscription.form ?: null,
+                                    isMultiYear: params.checkSubRunTimeMultiYear ?: false
+                            )
+                            inheritedAttributes.each { attr ->
+                                memberSub[attr.referenceField] = result.subscription[attr.referenceField]
                             }
-                            result.error = memberSub.errors
-                        }
-                        if (memberSub) {
-                            if(result.subscription._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE) {
-                                new OrgRole(org: cm, sub: memberSub, roleType: RDStore.OR_SUBSCRIBER_CONS_HIDDEN).save()
+                            if (!memberSub.save()) {
+                                memberSub.errors.each { e ->
+                                    log.debug("Problem creating new sub: ${e}")
+                                }
+                                result.error = memberSub.errors
                             }
-                            else {
-                                new OrgRole(org: cm, sub: memberSub, roleType: RDStore.OR_SUBSCRIBER_CONS).save()
-                            }
-                            new OrgRole(org: result.institution, sub: memberSub, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).save()
-                            synShareTargetList.add(memberSub)
-                            SubscriptionProperty.findAllByOwner(result.subscription).each { SubscriptionProperty sp ->
-                                AuditConfig ac = AuditConfig.getConfig(sp)
-                                if (ac) {
-                                    // multi occurrence props; add one additional with backref
-                                    if (sp.type.multipleOccurrence) {
-                                        SubscriptionProperty additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, sp.type, sp.tenant)
-                                        additionalProp = sp.copyInto(additionalProp)
-                                        additionalProp.instanceOf = sp
-                                        additionalProp.save()
+                            if (memberSub) {
+                                if(result.subscription._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE) {
+                                    new OrgRole(org: cm, sub: memberSub, roleType: RDStore.OR_SUBSCRIBER_CONS_HIDDEN).save()
+                                }
+                                else {
+                                    new OrgRole(org: cm, sub: memberSub, roleType: RDStore.OR_SUBSCRIBER_CONS).save()
+                                }
+                                new OrgRole(org: result.institution, sub: memberSub, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).save()
+                                synShareTargetList.add(memberSub)
+                                SubscriptionProperty.findAllByOwner(result.subscription).each { SubscriptionProperty sp ->
+                                    AuditConfig ac = AuditConfig.getConfig(sp)
+                                    if (ac) {
+                                        // multi occurrence props; add one additional with backref
+                                        if (sp.type.multipleOccurrence) {
+                                            SubscriptionProperty additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, sp.type, sp.tenant)
+                                            additionalProp = sp.copyInto(additionalProp)
+                                            additionalProp.instanceOf = sp
+                                            additionalProp.save()
+                                        }
+                                        else {
+                                            // no match found, creating new prop with backref
+                                            SubscriptionProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, sp.type, sp.tenant)
+                                            newProp = sp.copyInto(newProp)
+                                            newProp.instanceOf = sp
+                                            newProp.save()
+                                        }
                                     }
-                                    else {
-                                        // no match found, creating new prop with backref
-                                        SubscriptionProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, sp.type, sp.tenant)
-                                        newProp = sp.copyInto(newProp)
-                                        newProp.instanceOf = sp
-                                        newProp.save()
+                                }
+                                Identifier.findAllBySub(result.subscription).each { Identifier id ->
+                                    AuditConfig ac = AuditConfig.getConfig(id)
+                                    if(ac) {
+                                        Identifier.constructWithFactoryResult([value: id.value, parent: id, reference: memberSub, namespace: id.ns])
                                     }
                                 }
-                            }
-                            Identifier.findAllBySub(result.subscription).each { Identifier id ->
-                                AuditConfig ac = AuditConfig.getConfig(id)
-                                if(ac) {
-                                    Identifier.constructWithFactoryResult([value: id.value, parent: id, reference: memberSub, namespace: id.ns])
-                                }
-                            }
 
-                            memberSub.refresh()
-
-                            licensesToProcess.each { License lic ->
-                                subscriptionService.setOrgLicRole(memberSub,lic,false)
-                            }
-                            params.list('propRow').each { String rowKey ->
-                                if(params.containsKey('propValue'+rowKey) && params["propValue${rowKey}"] != "") {
-                                    PropertyDefinition propDef = PropertyDefinition.get(params["propId${rowKey}"])
-                                    String propValue = params["propValue${rowKey}"] as String
-                                    if(propDef.isRefdataValueType())
-                                        propValue = RefdataValue.class.name+':'+propValue
-                                    subscriptionService.createProperty(propDef, memberSub, (Org) result.institution, propValue, params["propNote${rowKey}"] as String)
+                                licensesToProcess.each { License lic ->
+                                    subscriptionService.setOrgLicRole(memberSub,lic,false)
                                 }
-                            }
-                            if(params.customerIdentifier || params.requestorKey) {
-                                result.subscription.packages.each { SubscriptionPackage sp ->
-                                    CustomerIdentifier ci = new CustomerIdentifier(customer: cm, type: RDStore.CUSTOMER_IDENTIFIER_TYPE_DEFAULT, value: params.customerIdentifier, requestorKey: params.requestorKey, platform: sp.pkg.nominalPlatform, owner: result.institution, isPublic: true)
-                                    if(!ci.save())
-                                        log.error(ci.errors.getAllErrors().toListString())
+                                params.list('propRow').each { String rowKey ->
+                                    if(params.containsKey('propValue'+rowKey) && params["propValue${rowKey}"] != "") {
+                                        PropertyDefinition propDef = PropertyDefinition.get(params["propId${rowKey}"])
+                                        String propValue = params["propValue${rowKey}"] as String
+                                        if(propDef.isRefdataValueType())
+                                            propValue = RefdataValue.class.name+':'+propValue
+                                        subscriptionService.createProperty(propDef, memberSub, (Org) result.institution, propValue, params["propNote${rowKey}"] as String)
+                                    }
                                 }
-                            }
+                                if(params.customerIdentifier || params.requestorKey) {
+                                    result.subscription.packages.each { SubscriptionPackage sp ->
+                                        CustomerIdentifier ci = new CustomerIdentifier(customer: cm, type: RDStore.CUSTOMER_IDENTIFIER_TYPE_DEFAULT, value: params.customerIdentifier, requestorKey: params.requestorKey, platform: sp.pkg.nominalPlatform, owner: result.institution, isPublic: true)
+                                        if(!ci.save())
+                                            log.error(ci.errors.getAllErrors().toListString())
+                                    }
+                                }
 
-                            memberSubs << memberSub.id
+                                memberSubs << memberSub.id
+                            }
+                            //}
                         }
-                                //}
+
+                        result.subscription.syncAllShares(synShareTargetList)
+                        sess.flush()
                     }
-
-                    result.subscription.syncAllShares(synShareTargetList)
-
                     if(packagesToProcess) {
-                        //needed for that the subscriptions are present in the moment of the parallel process
-                        globalService.cleanUpGorm()
                             List<Subscription> updatedSubList = Subscription.findAllByIdInList(memberSubs)
                             executorService.execute({
                                 Thread.currentThread().setName("PackageTransfer_"+result.subscription.id)
                                 packagesToProcess.each { Package pkg ->
+                                    subscriptionService.cachePackageName("PackageTransfer_"+result.subscription.id, pkg.name)
                                     subscriptionService.addToMemberSubscription(result.subscription, updatedSubList, pkg, params.linkWithEntitlements == 'on')
                                     /*
                                         if()
@@ -1988,7 +1989,7 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         else {
             if(subscriptionService.checkThreadRunning('PackageTransfer_'+result.subscription.id) && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,Package.findByGokbId(params.addUUID))) {
-                result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null, LocaleUtils.getCurrentLocale())
+                result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running.withPackage',[subscriptionService.getCachedPackageName('PackageTransfer_'+result.subscription.id)], LocaleUtils.getCurrentLocale())
                 result.bulkProcessRunning = true
             }
             if (result.subscription.packages) {
@@ -2002,7 +2003,7 @@ class SubscriptionControllerService {
             }
 
             ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-
+            Locale locale = LocaleUtils.getCurrentLocale()
             SwissKnife.setPaginationParams(result, params, result.user)
 
             result.editUrl = apiSource.baseUrl
@@ -2041,14 +2042,26 @@ class SubscriptionControllerService {
                 }
             }
 
-            //you rarely encounter it; ^ is the XOR operator in Java - if both options are set, we mean all curatory group types
-            if (params.containsKey('curatoryGroupProvider') ^ params.containsKey('curatoryGroupOther')) {
+            if (params.curatoryGroupType) {
                 result.filterSet = true
-                if(params.curatoryGroupProvider)
-                    queryParams.curatoryGroupType = "provider"
-                else if(params.curatoryGroupOther)
-                    queryParams.curatoryGroupType = "other" //setting to this includes also missing ones, this is already implemented in we:kb
+                queryParams.curatoryGroupType = params.curatoryGroupType
             }
+
+            if(params.automaticUpdates) {
+                result.filterSet = true
+                queryParams.automaticUpdates = params.automaticUpdates
+            }
+
+            result.curatoryGroupTypes = [
+                    [value: 'Provider', name: messageSource.getMessage('package.curatoryGroup.provider', null, locale)],
+                    [value: 'Vendor', name: messageSource.getMessage('package.curatoryGroup.vendor', null, locale)],
+                    [value: 'Other', name: messageSource.getMessage('package.curatoryGroup.other', null, locale)]
+            ]
+
+            result.automaticUpdates = [
+                    [value: 'true', name: messageSource.getMessage('package.index.result.automaticUpdates', null, locale)],
+                    [value: 'false', name: messageSource.getMessage('package.index.result.noAutomaticUpdates', null, locale)]
+            ]
 
             queryParams.sort = params.sort ?: "name"
             queryParams.order = params.order ?: "asc"
@@ -2059,7 +2072,7 @@ class SubscriptionControllerService {
 
             Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl+apiSource.fixToken+'/groups', [:])
             if(queryCuratoryGroups.error && queryCuratoryGroups.error == 404) {
-                result.error = messageSource.getMessage('wekb.error.404', null, LocaleUtils.getCurrentLocale())
+                result.error = messageSource.getMessage('wekb.error.404', null, locale)
                 [result:result, status: STATUS_ERROR]
             }
             else {
@@ -2079,7 +2092,7 @@ class SubscriptionControllerService {
                         [result:result,status:STATUS_OK]
                     }
                     else if(queryResult.code == "error") {
-                        result.error = messageSource.getMessage('wekb.error.500', [queryResult.message].toArray(), LocaleUtils.getCurrentLocale())
+                        result.error = messageSource.getMessage('wekb.error.500', [queryResult.message].toArray(), locale)
                         [result: result, status: STATUS_ERROR]
                     }
                 }
@@ -2128,6 +2141,7 @@ class SubscriptionControllerService {
                 //to be deployed in parallel thread
                 executorService.execute({
                     Thread.currentThread().setName("PackageTransfer_"+result.subscription.id)
+                    subscriptionService.cachePackageName("PackageTransfer_"+result.subscription.id, params.pkgName)
                     long start = System.currentTimeSeconds()
                     if(!Package.findByGokbId(pkgUUID)) {
                         try {
@@ -2148,7 +2162,6 @@ class SubscriptionControllerService {
                                     }
                                 }
                                 Package pkgToLink = Package.findByGokbId(pkgUUID)
-                                result.packageName = pkgToLink.name
                                 subscriptionService.addToSubscription(result.subscription, pkgToLink, createEntitlements)
                                 if(linkToChildren) {
                                     subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, createEntitlementsForChildren)
@@ -2163,6 +2176,7 @@ class SubscriptionControllerService {
                     }
                     else {
                         Package pkgToLink = globalSourceSyncService.createOrUpdatePackage(pkgUUID)
+                        subscriptionService.cachePackageName("PackageTransfer_"+result.subscription.id, pkgToLink.name)
                         subscriptionService.addToSubscription(result.subscription, pkgToLink, createEntitlements)
                         if(linkToChildren) {
                             subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, createEntitlementsForChildren)
@@ -2267,7 +2281,7 @@ class SubscriptionControllerService {
             Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
             threadArray.each {
                 if (it.name == 'PackageTransfer_'+result.subscription.id) {
-                    result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null,locale)
+                    result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running.withPackage',[subscriptionService.getCachedPackageName(it.name)] as Object[],locale)
                 }
                 else if (it.name == 'EntitlementEnrichment_'+result.subscription.id) {
                     result.message = messageSource.getMessage('subscription.details.addEntitlements.thread.running', null, locale)
@@ -2725,7 +2739,7 @@ class SubscriptionControllerService {
                             Sql sql = GlobalService.obtainSqlConnection()
                             childSubIds.each { Long childSubId ->
                                 pkgIds.each { Long pkgId ->
-                                    packageService.bulkAddHolding(sql, childSubId, pkgId, result.subscription.hasPerpetualAccess, result.subscription.id)
+                                    batchUpdateService.bulkAddHolding(sql, childSubId, pkgId, result.subscription.hasPerpetualAccess, result.subscription.id)
                                 }
                             }
                             sql.close()

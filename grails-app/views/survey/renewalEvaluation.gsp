@@ -13,9 +13,7 @@
 
 
 <ui:controlButtons>
-    <ui:exportDropdown>
-        <ui:actionsDropdownItem data-ui="modal" href="#individuallyExportModal" message="renewalEvaluation.exportRenewal"/>
-    </ui:exportDropdown>
+    <laser:render template="exports"/>
     <laser:render template="actions"/>
 </ui:controlButtons>
 
@@ -383,8 +381,6 @@
         </div>
 
     </g:form>
-
-    <laser:render template="export/individuallyExportRenewModal" model="[modalID: 'individuallyExportModal']" />
 
 
     <laser:script file="${this.getGroovyPageFileName()}">

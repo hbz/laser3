@@ -4,6 +4,7 @@
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
 <ui:controlButtons>
+    <laser:render template="exports"/>
     <laser:render template="actions"/>
 </ui:controlButtons>
 

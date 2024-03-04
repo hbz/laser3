@@ -11,15 +11,7 @@
 </ui:breadcrumbs>
 
 <ui:controlButtons>
-    <g:if test="${surveyInfo.status != RDStore.SURVEY_IN_PROCESSING}">
-        <ui:exportDropdown>
-            <ui:exportDropdownItem>
-                <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
-            </ui:exportDropdownItem>
-
-        </ui:exportDropdown>
-    </g:if>
-
+    <laser:render template="exports"/>
     <laser:render template="actions"/>
 </ui:controlButtons>
 

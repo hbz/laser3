@@ -40,6 +40,7 @@ import java.util.concurrent.ExecutorService
 @Transactional
 class CopyElementsService {
 
+    BatchUpdateService batchUpdateService
     CompareService compareService
     ComparisonService comparisonService
     ContextService contextService
@@ -50,7 +51,6 @@ class CopyElementsService {
     GlobalService globalService
     LicenseService licenseService
     MessageSource messageSource
-    PackageService packageService
     SubscriptionService subscriptionService
     TaskService taskService
     WorkflowService workflowService
@@ -414,7 +414,7 @@ class CopyElementsService {
                     memberHoldingsToTransfer << newSubscription
                     //Sql sql = GlobalService.obtainSqlConnection()
                     //List sourceHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where ie_subscription_fk = :source and ie_status_rv_fk = :current", [source: subMember.id, current: RDStore.TIPP_STATUS_CURRENT.id])
-                    //packageService.bulkAddHolding(sql, newSubscription.id, sourceHolding, subMember.hasPerpetualAccess)
+                    //batchUpdateService.bulkAddHolding(sql, newSubscription.id, sourceHolding, subMember.hasPerpetualAccess)
                     /*subMember.issueEntitlements?.each { ie ->
                         if (ie.status != RDStore.TIPP_STATUS_REMOVED) {
                             def ieProperties = ie.properties
@@ -1612,12 +1612,12 @@ class CopyElementsService {
                     }
                     Sql sql = GlobalService.obtainSqlConnection()
                     //List subscriptionHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where tipp_pkg_fk = :pkgId and ie_subscription_fk = :source", [pkgId: newSubscriptionPackage.pkg.id, source: subscriptionPackage.subscription.id])
-                    packageService.bulkAddHolding(sql, targetObject.id, newSubscriptionPackage.pkg.id, targetObject.hasPerpetualAccess, null, subscriptionPackage.subscription.id)
+                    batchUpdateService.bulkAddHolding(sql, targetObject.id, newSubscriptionPackage.pkg.id, targetObject.hasPerpetualAccess, null, subscriptionPackage.subscription.id)
                     if(subscriptionPackage in packagesToTakeForChildren) {
                         Subscription.findAllByInstanceOf(targetObject).each { Subscription child ->
                             if(!SubscriptionPackage.findByPkgAndSubscription(subscriptionPackage.pkg, child)) {
                                 SubscriptionPackage childSp = new SubscriptionPackage(pkg: subscriptionPackage.pkg, subscription: child).save()
-                                packageService.bulkAddHolding(sql, child.id, childSp.pkg.id, child.hasPerpetualAccess, targetObject.id)
+                                batchUpdateService.bulkAddHolding(sql, child.id, childSp.pkg.id, child.hasPerpetualAccess, targetObject.id)
                             }
                         }
                     }
