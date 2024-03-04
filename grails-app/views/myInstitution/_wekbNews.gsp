@@ -1,30 +1,26 @@
 <%@ page import="de.laser.remote.ApiSource" %>
 <laser:serviceInjection />
 
-<g:if test="${tmplView == 'info' && wekbChanges.counts.all > 0}">
+<g:if test="${tmplView == 'info' && wekbNews.counts.all > 0}">
 
     <div id="wekb-menu" style="margin:1em 0 2em 0">
         <div style="margin:1em 0;padding:0 1em; text-align:right">
             <div class="ui large labels">
                 <a href="#" id="wekb-menu-trigger" class="ui label"><i class="icon blue la-gokb"></i>&nbsp;We:kb-News</a>
-%{--                <g:if test="${wekbChanges.counts.my > 0}">--}%
                     <a href="#" class="ui icon label la-popup-tooltip la-delay wekb-flyout-trigger" data-preset="all,my"
                        data-content="${message(code: 'menu.my')}" data-position="top right">
-                            <i class="icon yellow star"></i> ${wekbChanges.counts.my}
+                            <i class="icon yellow star"></i> ${wekbNews.counts.my}
                     </a>
-%{--                </g:if>--}%
-%{--                <g:if test="${wekbChanges.counts.marker > 0}">--}%
                     <a href="#" class="ui icon label la-popup-tooltip la-delay wekb-flyout-trigger" data-preset="all,marker"
                        data-content="${message(code: 'marker.WEKB_CHANGES')}" data-position="top right">
-                            <i class="icon purple bookmark"></i> ${wekbChanges.counts.marker}
+                            <i class="icon purple bookmark"></i> ${wekbNews.counts.marker}
                     </a>
-%{--                </g:if>--}%
             </div>
         </div>
         <div id="wekb-menu-content" style="display:none">
 
-%{--                Folgende Ressourcen wurden in den vergangenen <strong>${wekbChanges.query.days}</strong> Tagen--}%
-%{--        (seit dem <strong>${wekbChanges.query.changedSince}</strong>) geändert, bzw. neu angelegt.--}%
+%{--                Folgende Ressourcen wurden in den vergangenen <strong>${wekbNews.query.days}</strong> Tagen--}%
+%{--        (seit dem <strong>${wekbNews.query.changedSince}</strong>) geändert, bzw. neu angelegt.--}%
 
             <div class="ui three column grid">
 
@@ -32,21 +28,17 @@
                     <div class="ui fluid card" style="margin-bottom:0">
                         <div class="content">
                             <div class="header">
-                                <a href="#" class="wekb-flyout-trigger" data-preset="org,all">${message(code: 'default.ProviderAgency.label')}%{--: ${wekbChanges.org.count}--}%</a>
+                                <a href="#" class="wekb-flyout-trigger" data-preset="org,all">${message(code: 'default.ProviderAgency.label')}%{--: ${wekbNews.org.count}--}%</a>
                                 <div class="right floated meta"><i class="icon university"></i></div>
                             </div>
                         </div>
                         <div class="content">
                             <div class="description">
-%{--                                <div style="width:50%;min-width:130px;float:left">--}%
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="org,created">Neu: ${wekbChanges.org.created.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="org,updated">Geändert: ${wekbChanges.org.countUpdated}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="org,deleted">Gelöscht: ${wekbChanges.org.deleted.size()}</a> <br/>
-%{--                                </div>--}%
-%{--                                <div style="width:50%;min-width:130px;float:left">--}%
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="org,my"><i class="icon star"></i>${wekbChanges.org.my.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="org,marker"><i class="icon bookmark"></i>${wekbChanges.org.marker.size()}</a> <br/>
-%{--                                </div>--}%
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="org,created">Neu: ${wekbNews.org.created.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="org,updated">Geändert: ${wekbNews.org.countUpdated}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="org,deleted">Gelöscht: ${wekbNews.org.deleted.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="org,my"><i class="icon star"></i>${wekbNews.org.my.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="org,marker"><i class="icon bookmark"></i>${wekbNews.org.marker.size()}</a> <br/>
                             </div>
                         </div>
                     </div>
@@ -56,21 +48,17 @@
                     <div class="ui fluid card" style="margin-bottom:0">
                         <div class="content">
                             <div class="header">
-                                <a href="#" class="wekb-flyout-trigger" data-preset="platform,all">${message(code: 'platform.plural')}%{--: ${wekbChanges.platform.count}--}%</a>
+                                <a href="#" class="wekb-flyout-trigger" data-preset="platform,all">${message(code: 'platform.plural')}%{--: ${wekbNews.platform.count}--}%</a>
                                 <div class="right floated meta"><i class="icon cloud"></i></div>
                             </div>
                         </div>
                         <div class="content">
                             <div class="description">
-%{--                                <div style="width:50%;min-width:130px;float:left">--}%
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="platform,created">Neu: ${wekbChanges.platform.created.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="platform,updated">Geändert: ${wekbChanges.platform.countUpdated}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="platform,deleted">Gelöscht: ${wekbChanges.platform.deleted.size()}</a> <br/>
-%{--                                </div>--}%
-%{--                                <div style="width:50%;min-width:130px;float:left">--}%
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="platform,my"><i class="icon star"></i>${wekbChanges.platform.my.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="platform,marker"><i class="icon bookmark"></i>${wekbChanges.platform.marker.size()}</a> <br/>
-%{--                                </div>--}%
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="platform,created">Neu: ${wekbNews.platform.created.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="platform,updated">Geändert: ${wekbNews.platform.countUpdated}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="platform,deleted">Gelöscht: ${wekbNews.platform.deleted.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="platform,my"><i class="icon star"></i>${wekbNews.platform.my.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="platform,marker"><i class="icon bookmark"></i>${wekbNews.platform.marker.size()}</a> <br/>
                             </div>
                         </div>
                     </div>
@@ -80,21 +68,17 @@
                     <div class="ui fluid card" style="margin-bottom:0">
                         <div class="content">
                             <div class="header">
-                                <a href="#" class="wekb-flyout-trigger" data-preset="package,all">${message(code: 'package.plural')}%{--: ${wekbChanges.package.count}--}%</a>
+                                <a href="#" class="wekb-flyout-trigger" data-preset="package,all">${message(code: 'package.plural')}%{--: ${wekbNews.package.count}--}%</a>
                                 <div class="right floated meta"><i class="icon gift"></i></div>
                             </div>
                         </div>
                         <div class="content">
                             <div class="description">
-%{--                                <div style="width:50%;min-width:130px;float:left">--}%
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="package,created">Neu: ${wekbChanges.package.created.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="package,updated">Geändert: ${wekbChanges.package.countUpdated}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="package,deleted">Gelöscht: ${wekbChanges.package.deleted.size()}</a> <br/>
-%{--                                </div>--}%
-%{--                                <div style="width:50%;min-width:130px;float:left">--}%
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="package,my"><i class="icon star"></i>${wekbChanges.package.my.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="package,marker"><i class="icon bookmark"></i>${wekbChanges.package.marker.size()}</a> <br/>
-%{--                                </div>--}%
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="package,created">Neu: ${wekbNews.package.created.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="package,updated">Geändert: ${wekbNews.package.countUpdated}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="package,deleted">Gelöscht: ${wekbNews.package.deleted.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="package,my"><i class="icon star"></i>${wekbNews.package.my.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="package,marker"><i class="icon bookmark"></i>${wekbNews.package.marker.size()}</a> <br/>
                             </div>
                         </div>
                     </div>
@@ -115,7 +99,7 @@
 
         if (!JSPC.app.dashboard) { JSPC.app.dashboard = {} }
 
-        JSPC.app.dashboard.wekbChanges = {
+        JSPC.app.dashboard.wekbNews = {
             preset: {
                 obj: 'all', filter: 'all'
             },
@@ -125,25 +109,25 @@
         $('a.wekb-flyout-trigger').on ('click', function(e) {
             e.preventDefault()
             let preset = $(this).attr ('data-preset').split(',')
-            JSPC.app.dashboard.wekbChanges.preset.obj = preset[0]
-            JSPC.app.dashboard.wekbChanges.preset.filter = preset[1]
+            JSPC.app.dashboard.wekbNews.preset.obj = preset[0]
+            JSPC.app.dashboard.wekbNews.preset.filter = preset[1]
 
             $('#globalLoadingIndicator').show()
 
-            if (JSPC.app.dashboard.wekbChanges.dataLoaded) {
-                JSPC.app.dashboard.wekbChanges.flyout (preset[0], preset[1])
+            if (JSPC.app.dashboard.wekbNews.dataLoaded) {
+                JSPC.app.dashboard.wekbNews.flyout (preset[0], preset[1])
 
                 $('#wekbFlyout').flyout('show')
                 $('#globalLoadingIndicator').hide()
             }
             else {
                 $.ajax ({
-                    url: "<g:createLink controller="ajaxHtml" action="wekbChangesFlyout"/>"
+                    url: "<g:createLink controller="ajaxHtml" action="wekbNewsFlyout"/>"
                 }).done (function (response) {
-                    JSPC.app.dashboard.wekbChanges.dataLoaded = true
+                    JSPC.app.dashboard.wekbNews.dataLoaded = true
 
                     $('#wekbFlyout').html (response)
-                    JSPC.app.dashboard.wekbChanges.flyout (preset[0], preset[1])
+                    JSPC.app.dashboard.wekbNews.flyout (preset[0], preset[1])
 
                     $('#wekbFlyout').flyout('show')
                     $('#globalLoadingIndicator').hide()
@@ -155,11 +139,11 @@
 
         });
 
-        JSPC.app.dashboard.wekbChanges.flyout  = function(obj, filter) {
+        JSPC.app.dashboard.wekbNews.flyout  = function(obj, filter) {
             console.log(obj,filter)
 
-            if (! obj)    { obj    = JSPC.app.dashboard.wekbChanges.preset.obj }     else { JSPC.app.dashboard.wekbChanges.preset.obj = obj }
-            if (! filter) { filter = JSPC.app.dashboard.wekbChanges.preset.filter }  else { JSPC.app.dashboard.wekbChanges.preset.filter = filter }
+            if (! obj)    { obj    = JSPC.app.dashboard.wekbNews.preset.obj }     else { JSPC.app.dashboard.wekbNews.preset.obj = obj }
+            if (! filter) { filter = JSPC.app.dashboard.wekbNews.preset.filter }  else { JSPC.app.dashboard.wekbNews.preset.filter = filter }
 
             $('#wekbFlyout .filterWrapper .button').removeClass ('active')
             $('#wekbFlyout .filterWrapper .button[data-obj=' + obj + ']').addClass ('active')
@@ -167,33 +151,33 @@
 
             let cats = '#wekbFlyout .dataWrapper'
             if (obj == 'all') {
-                $(cats).show()
+                $(cats).removeClass('hidden')
             }
             else {
-                $(cats).hide()
-                $('#wekbFlyout .dataWrapper[data-obj=' + obj + ']').show()
+                $(cats).addClass('hidden')
+                $('#wekbFlyout .dataWrapper[data-obj=' + obj + ']').removeClass('hidden')
             }
 
             let rows = '#wekbFlyout .dataWrapper .row'
             if (filter == 'all') {
-                $(rows).show()
+                $(rows).removeClass('hidden')
             }
             else {
-                $(rows).hide()
+                $(rows).addClass('hidden')
                 if (filter == 'created') {
-                    $(rows + '[data-f1=created]').show()
+                    $(rows + '[data-f1=created]').removeClass('hidden')
                 }
                 else if (filter == 'updated') {
-                    $(rows + '[data-f1=updated]').show()
+                    $(rows + '[data-f1=updated]').removeClass('hidden')
                 }
                 else if (filter == 'deleted') {
-                    $(rows + '[data-f1=deleted]').show()
+                    $(rows + '[data-f1=deleted]').removeClass('hidden')
                 }
                 else if (filter == 'my') {
-                    $(rows + '[data-f2=true]').show()
+                    $(rows + '[data-f2=true]').removeClass('hidden')
                 }
                 else if (filter == 'marker') {
-                    $(rows + '[data-f3=true]').show()
+                    $(rows + '[data-f3=true]').removeClass('hidden')
                 }
             }
         }
@@ -207,36 +191,36 @@
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
 
         tmplConfig = [
-                ['org',      wekbChanges.org,        'default.ProviderAgency.label', 'university',   'menu.my.providers'],
-                ['platform', wekbChanges.platform,   'platform.plural',              'cloud',        'menu.my.platforms'],
-                ['package',  wekbChanges.package,    'package.plural',               'gift',         'menu.my.packages']
+                ['org',      wekbNews.org,        'default.ProviderAgency.label', 'university',   'menu.my.providers'],
+                ['platform', wekbNews.platform,   'platform.plural',              'cloud',        'menu.my.platforms'],
+                ['package',  wekbNews.package,    'package.plural',               'gift',         'menu.my.packages']
         ]
     %>
 
     <div class="filterWrapper" style="margin:2em">
         <p style="margin:0 2em 2em">
-            Änderungen der letzten <strong>${wekbChanges.query.days}</strong> Tage: <strong>${wekbChanges.counts.all}</strong> Datensätze.<br />
-            Letzter Datenabgleich: <strong>${wekbChanges.query.call}</strong>
+            Änderungen der letzten <strong>${wekbNews.query.days}</strong> Tage: <strong>${wekbNews.counts.all}</strong> Datensätze.<br />
+            Letzter Datenabgleich: <strong>${wekbNews.query.call}</strong>
             <span style="float:right">
                 <a href="${apiSource.baseUrl}" target="_blank"><i class="icon large la-gokb"></i></a>
             </span>
         </p>
         <div class="filter" style="margin:0 2em 0.5em; text-align:right;">
             <div class="ui buttons mini">
-                <span class="ui button" data-obj="org">${message(code: 'default.ProviderAgency.label')}: ${wekbChanges.org.count}</span>
-                <span class="ui button" data-obj="platform">${message(code: 'platform.plural')}: ${wekbChanges.platform.count}</span>
-                <span class="ui button" data-obj="package">${message(code: 'package.plural')}: ${wekbChanges.package.count}</span>
+                <span class="ui button" data-obj="org">${message(code: 'default.ProviderAgency.label')}: ${wekbNews.org.count}</span>
+                <span class="ui button" data-obj="platform">${message(code: 'platform.plural')}: ${wekbNews.platform.count}</span>
+                <span class="ui button" data-obj="package">${message(code: 'package.plural')}: ${wekbNews.package.count}</span>
                 <span class="ui button la-popup-tooltip la-long-tooltip la-delay" data-obj="all"
                       data-content="Alle anzeigen: ${message(code: 'default.ProviderAgency.label')}, ${message(code: 'platform.plural')}, ${message(code: 'package.plural')}">Alle</span>
             </div>
         </div>
         <div class="filter" style="margin:0 2em 0.5em; text-align:right;">
             <div class="ui buttons mini">
-                <span class="ui button" data-filter="created">Neue Objekte: ${wekbChanges.counts.created}</span>
-                <span class="ui button" data-filter="updated">Geänderte Objekte: ${wekbChanges.counts.updated}</span>
-                <span class="ui button" data-filter="deleted">Gelöschte Objekte: ${wekbChanges.counts.deleted}</span>
-                <span class="ui button" data-filter="my"><i class="icon star"></i> ${wekbChanges.counts.my}</span>
-                <span class="ui button" data-filter="marker"><i class="icon bookmark"></i> ${wekbChanges.counts.marker}</span>
+                <span class="ui button" data-filter="created">Neue Objekte: ${wekbNews.counts.created}</span>
+                <span class="ui button" data-filter="updated">Geänderte Objekte: ${wekbNews.counts.updated}</span>
+                <span class="ui button" data-filter="deleted">Gelöschte Objekte: ${wekbNews.counts.deleted}</span>
+                <span class="ui button" data-filter="my"><i class="icon star"></i> ${wekbNews.counts.my}</span>
+                <span class="ui button" data-filter="marker"><i class="icon bookmark"></i> ${wekbNews.counts.marker}</span>
                 <span class="ui button la-popup-tooltip la-long-tooltip la-delay" data-filter="all"
                       data-content="Alle anzeigen: Neue Objekte, Geänderte Objekte, Gelöschte Objekte, Meine Objekte, Meine Beobachtungsliste">Alle</span>
             </div>
@@ -254,6 +238,9 @@
         .filterWrapper > .filter .button.active {
             color: #ffffff;
             background-color: #004678;
+        }
+        .dataWrapper .grid .row .column .label {
+            margin-left: 1em;
         }
     </style>
 
@@ -310,7 +297,7 @@
 
     <laser:script file="${this.getGroovyPageFileName()}">
         $('#wekbFlyout .filterWrapper .button').on ('click', function(e) {
-            JSPC.app.dashboard.wekbChanges.flyout ($(this).attr('data-obj'), $(this).attr('data-filter'))
+            JSPC.app.dashboard.wekbNews.flyout ($(this).attr('data-obj'), $(this).attr('data-filter'))
         });
     </laser:script>
 </g:if>

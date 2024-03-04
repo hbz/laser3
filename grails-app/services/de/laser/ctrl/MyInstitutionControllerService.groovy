@@ -2,7 +2,6 @@ package de.laser.ctrl
 
 import de.laser.*
 import de.laser.auth.User
-import de.laser.cache.EhcacheWrapper
 import de.laser.utils.DateUtils
 import de.laser.helper.Profiler
 import de.laser.storage.RDStore
@@ -31,7 +30,7 @@ class MyInstitutionControllerService {
     SurveyService surveyService
     TaskService taskService
     UserService userService
-    WekbStatsService wekbStatsService
+    WekbNewsService wekbNewsService
     WorkflowService workflowService
     MessageSource messageSource
 
@@ -141,8 +140,8 @@ class MyInstitutionControllerService {
         result.surveys = activeSurveyConfigs.groupBy {it?.id}
         result.countSurvey = result.surveys.size()
         */
-        prf.setBenchmark('wekbChanges')
-        result.wekbChanges = wekbStatsService.getCurrentChanges()
+        prf.setBenchmark('wekbNews')
+        result.wekbNews = wekbNewsService.getCurrentNews()
 
         result.benchMark = prf.stopBenchmark()
         [status: STATUS_OK, result: result]

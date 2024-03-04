@@ -294,8 +294,6 @@ class IconTagLib {
         out << '</span>'
     }
 
-    // <ui:myIcon type="wekbchanges" color="optional" />
-
     def markerIcon = { attrs, body ->
         String tooltip = attrs.type ? message(code: 'marker.' + attrs.type ) : message(code: 'marker.label')
 

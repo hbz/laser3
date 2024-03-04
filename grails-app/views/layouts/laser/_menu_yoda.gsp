@@ -104,7 +104,7 @@
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'accessType']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateAccessType')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'openAccess']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateOpenAccess')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'titleNamespace']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateTitleNamespace')}</ui:link>
-                        <ui:link addItemAttributes="true" controller="yoda" action="reloadWekbChanges" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateWekbChanges')}</ui:link>
+                        <ui:link addItemAttributes="true" controller="yoda" action="reloadwekbNews" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateWekbNews')}</ui:link>
 %{--                    </div>--}%
 %{--                </div>--}%
 

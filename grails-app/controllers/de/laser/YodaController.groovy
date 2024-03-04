@@ -85,7 +85,7 @@ class YodaController {
     SubscriptionService subscriptionService
     SurveyUpdateService surveyUpdateService
     YodaService yodaService
-    WekbStatsService wekbStatsService
+    WekbNewsService wekbNewsService
 
     /**
      * Shows the Yoda-dashboard
@@ -964,9 +964,9 @@ class YodaController {
      * @return redirects back to the dashboard
      */
     @Secured(['ROLE_YODA'])
-    def reloadWekbChanges() {
-        log.info('--> reloadWekbChanges')
-        wekbStatsService.updateCache()
+    def reloadwekbNews() {
+        log.info('--> reloadwekbNews')
+        wekbNewsService.updateCache()
         redirect controller: 'myInstitution', action: 'dashboard'
     }
 

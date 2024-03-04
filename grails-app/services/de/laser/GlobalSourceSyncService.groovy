@@ -981,7 +981,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
     /**
      * This records the package changes so that subscription holders may decide whether they apply them or not except price changes which are auto-applied
-     * @deprecated changes are always being processed directly to the issue entitlements whenever a change occurs; notification is being taken care by {@link WekbStatsService}
+     * @deprecated changes are always being processed directly to the issue entitlements whenever a change occurs; notification is being taken care by {@link WekbNewsService}
      */
     @Deprecated
     Map<String, Set<TitleChange>> trackPackageHistory() {
@@ -1630,7 +1630,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param pkgA the old package (as {@link Package} which is already persisted)
      * @param pkgB the new package (as unprocessed {@link Map}
      * @return a {@link Set} of {@link Map}s with the differences
-     * @deprecated unused because the notification of the changes done in the we:kb are being processed in {@link WekbStatsService}
+     * @deprecated unused because the notification of the changes done in the we:kb are being processed in {@link WekbNewsService}
      */
     @Deprecated
     Set<Map<String,Object>> getPkgPropDiff(Package pkgA, Map<String,Object> pkgB) {

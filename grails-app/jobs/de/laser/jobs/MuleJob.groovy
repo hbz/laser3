@@ -1,7 +1,7 @@
 package de.laser.jobs
 
 import de.laser.SystemService
-import de.laser.WekbStatsService
+import de.laser.WekbNewsService
 import de.laser.base.AbstractJob
 import de.laser.config.ConfigMapper
 import de.laser.system.SystemEvent
@@ -16,7 +16,7 @@ import java.time.LocalTime
 class MuleJob extends AbstractJob {
 
     SystemService systemService
-    WekbStatsService wekbStatsService
+    WekbNewsService wekbNewsService
 
     static triggers = {
         cron name: 'muleTrigger', startDelay:10000, cronExpression: "0 0/15 6-21 * * ?"
@@ -41,7 +41,7 @@ class MuleJob extends AbstractJob {
             SystemEvent sysEvent = SystemEvent.createEvent('MULE_START')
             long start_time = System.currentTimeMillis()
 
-            wekbStatsService.updateCache()
+            wekbNewsService.updateCache()
 
             // only once per day ..
 
