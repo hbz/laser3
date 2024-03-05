@@ -30,7 +30,7 @@ class SubscriptionsQueryService {
      *     <li>filterSet the flag for the export whether a filter has been applied</li>
      * </ol>
      */
-    List myInstitutionCurrentSubscriptionsBaseQuery(params, String joinQuery = "", Org contextOrg = null) {
+    List myInstitutionCurrentSubscriptionsBaseQuery(Map params, String joinQuery = "", Org contextOrg = null) {
         contextOrg = contextOrg ?: contextService.getOrg()
 
         def date_restriction
@@ -256,11 +256,11 @@ class SubscriptionsQueryService {
                 needs to be dealt separately, must not be and-linked
                 */
                 if (params.hasPerpetualAccess) {
-                    if(params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) {
+                    if (Long.valueOf(params.hasPerpetualAccess) == RDStore.YN_YES.id) {
                         base_qry += "or s.hasPerpetualAccess = :hasPerpetualAccess) "
                         qry_params.put('hasPerpetualAccess', true)
                     }
-                    else if(params.hasPerpetualAccess == RDStore.YN_NO.id.toString()) {
+                    else if (Long.valueOf(params.hasPerpetualAccess) == RDStore.YN_NO.id) {
                         base_qry += "and s.hasPerpetualAccess = :hasPerpetualAccess) "
                         qry_params.put('hasPerpetualAccess', false)
                     }
@@ -272,7 +272,7 @@ class SubscriptionsQueryService {
         }
         if (!(RDStore.SUBSCRIPTION_CURRENT.id.toString() in params.status) && params.hasPerpetualAccess) {
             base_qry += " and s.hasPerpetualAccess = :hasPerpetualAccess "
-            qry_params.put('hasPerpetualAccess', (params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) ? true : false)
+            qry_params.put('hasPerpetualAccess', (Long.valueOf(params.hasPerpetualAccess) == RDStore.YN_YES.id))
             filterSet = true
         }
 

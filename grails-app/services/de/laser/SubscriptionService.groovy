@@ -394,7 +394,7 @@ class SubscriptionService {
         }
         else if (params.hasPerpetualAccess) {
             query += " and subT.hasPerpetualAccess = :hasPerpetualAccess "
-            qarams.put('hasPerpetualAccess', (params.hasPerpetualAccess == RDStore.YN_YES.id.toString()))
+            qarams.put('hasPerpetualAccess', (params.long('hasPerpetualAccess') == RDStore.YN_YES.id))
         }
         query += statusQuery
 

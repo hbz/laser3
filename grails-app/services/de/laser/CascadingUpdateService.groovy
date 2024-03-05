@@ -41,9 +41,6 @@ class CascadingUpdateService {
         if (obj.org) { update(obj.org, luc) }
         if (obj.pkg) { update(obj.pkg, luc) }
         if (obj.sub) { update(obj.sub, luc) }
-        //if (obj.ti)  { update(obj.ti,  luc) }
-
-        //        tipp:   TitleInstancePackagePlatform
     }
 
     /**
@@ -59,9 +56,6 @@ class CascadingUpdateService {
         ])
 
         if (obj.pkg) { update(obj.pkg, luc) }
-        //if (obj.ti)  { update(obj.ti,  luc) }
-
-        //        tipp:   TitleInstancePackagePlatform
     }
 
     /**
@@ -77,9 +71,6 @@ class CascadingUpdateService {
         ])
 
         if (obj.pkg) { update(obj.pkg, luc) }
-        //if (obj.ti)  { update(obj.ti,  luc) }
-
-        //        tipp:   TitleInstancePackagePlatform
     }
 
     /**
@@ -95,7 +86,6 @@ class CascadingUpdateService {
         ])
 
         if (obj.pkg)      { update(obj.pkg, luc) }
-      //if (obj.tipp)     { update(obj.tipp, luc) }
         if (obj.platform) { update(obj.platform, luc) }
         if (obj.org)      { update(obj.org, luc) }
     }
@@ -205,13 +195,6 @@ class CascadingUpdateService {
                 luc: luc, obj: obj
         ])
     }
-
-    /*void update(TitleInstancePackagePlatform obj, Date luc) {
-        log(obj, luc)
-        TitleInstancePackagePlatform.executeUpdate("update TitleInstancePackagePlatform tipp set tipp.lastUpdatedCascading = :luc where tipp = :obj", [
-                luc: luc, obj: obj
-        ])
-    }*/
 
     /**
      * Logs the timestamp update
