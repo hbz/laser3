@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      05.03.2024  rc-3.3  3.3.7       Andreas Bug         Dropdown-Filter erweitert
+
 --      01.03.2024  rc-3.3  3.3.7       Andreas Feature     Erweiterungen der Titelbereinigung
 
 5595    26.02.2024  rc-3.3  3.3.7       Andreas Bug         BudgetCodes wurden im Export nicht aufgelöst
