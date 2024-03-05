@@ -1,6 +1,6 @@
 package de.laser.jobs
 
-import de.laser.WekbStatsService
+import de.laser.WekbNewsService
 import de.laser.annotations.UnstableFeature
 import de.laser.config.ConfigMapper
 import de.laser.system.SystemActivityProfiler
@@ -16,7 +16,7 @@ import groovy.util.logging.Slf4j
 class HeartbeatJob extends AbstractJob {
 
 //    SystemService systemService
-    WekbStatsService wekbStatsService
+    WekbNewsService wekbNewsService
 //    SimpMessagingTemplate brokerMessagingTemplate
 
     static final int HEARTBEAT_IN_SECONDS = 5 * 60

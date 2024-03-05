@@ -55,6 +55,6 @@ class UrlMappings {
         "404"       (controller: 'serverCodes', action: 'notFound')
         "405"       (controller: 'serverCodes', action: 'error')
 
-        "/**"       (controller: 'serverCodes', action: 'fallback')
+        //        "/**"       (controller: 'serverCodes', action: 'fallback')
     }
 }

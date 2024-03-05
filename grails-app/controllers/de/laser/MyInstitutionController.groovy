@@ -2889,7 +2889,7 @@ class MyInstitutionController  {
             params.order = "asc"
         }
         if ( ! params.ctrlFilterSend) {
-            params.taskStatus = RDStore.TASK_STATUS_OPEN.id as String
+            params.taskStatus = RDStore.TASK_STATUS_OPEN.id
         }
         SimpleDateFormat sdFormat = DateUtils.getLocalizedSDF_noTime()
         FilterService.Result fsr = filterService.getTaskQuery(params, sdFormat)

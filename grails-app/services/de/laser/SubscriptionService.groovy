@@ -160,12 +160,7 @@ class SubscriptionService {
         result.date_restriction = date_restriction
         prf.setBenchmark('get properties')
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextOrg)
-        /* deactivated as statistics key is submitted nowhere, as of July 16th, '20
-        if (OrgSetting.get(contextOrg, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSetting){
-            result.statsWibid = contextOrg.getIdentifierByType('wibid')?.value
-            result.usageMode = contextService.getOrg().isCustomerType_Consortium() ? 'package' : 'institution'
-        }
-         */
+
         prf.setBenchmark('end properties')
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
         prf.setBenchmark('fetch licenses')
@@ -394,7 +389,7 @@ class SubscriptionService {
         }
         else if (params.hasPerpetualAccess) {
             query += " and subT.hasPerpetualAccess = :hasPerpetualAccess "
-            qarams.put('hasPerpetualAccess', (params.hasPerpetualAccess == RDStore.YN_YES.id.toString()))
+            qarams.put('hasPerpetualAccess', (params.long('hasPerpetualAccess') == RDStore.YN_YES.id))
         }
         query += statusQuery
 

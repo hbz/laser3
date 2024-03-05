@@ -1211,7 +1211,7 @@ class FilterService {
             //may become a performance bottleneck; keep under observation!
             String permanentTitleQuery = "select pt from PermanentTitle pt where pt.tipp = ie.tipp and pt.owner in (:subscribers)"
             qry_params.subscribers = subscriptions.collect { Subscription s -> s.getSubscriber() }
-            if(params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) {
+            if (params.long('hasPerpetualAccess') == RDStore.YN_YES.id) {
                 base_qry += "and exists(${permanentTitleQuery}) "
             }else{
                 base_qry += "and not exists(${permanentTitleQuery}) "
@@ -1220,7 +1220,7 @@ class FilterService {
         }
 
         if (params.hasPerpetualAccess && params.hasPerpetualAccessBySubs) {
-            if(params.hasPerpetualAccess == RDStore.YN_NO.id.toString()) {
+            if (params.long('hasPerpetualAccess') == RDStore.YN_NO.id) {
                 base_qry += "and ie.tipp.hostPlatformURL not in (select ie2.tipp.hostPlatformURL from IssueEntitlement as ie2 where ie2.perpetualAccessBySub in (:subs)) "
                 qry_params.subs = listReaderWrapper(params, 'hasPerpetualAccessBySubs')
             }else {

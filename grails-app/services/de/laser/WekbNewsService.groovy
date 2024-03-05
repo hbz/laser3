@@ -17,14 +17,14 @@ import java.time.ZoneId
  * using the {@link ApiSource} to fetch the data which is then being cached
  */
 @Transactional
-class WekbStatsService {
+class WekbNewsService {
 
     CacheService cacheService
     ContextService contextService
     GokbService gokbService
     MarkerService markerService
 
-    static final String CACHE_KEY = 'WekbStatsService'
+    static final String CACHE_KEY = 'WekbNewsService'
 
     /**
      * Gets the current changes from the cache and assembles them in a map of counts being recently performed. Also the count
@@ -40,7 +40,7 @@ class WekbStatsService {
      * objects. The following objects are being traced: {@link Org} (provider), {@link de.laser.Package} and {@link Platform}
      * @return a {@link Map} containing the counts: [all: all, inLaser: in LAS:eR, my: subscribed, marker: bookmarked, created: newly created, updated: updated objects]
      */
-    Map getCurrentChanges() {
+    Map getCurrentNews() {
         EhcacheWrapper ttl1800 = cacheService.getTTL1800Cache(CACHE_KEY)
 
         if (! ttl1800.get('wekbNews')) {
@@ -87,7 +87,7 @@ class WekbStatsService {
             result.counts.deleted   = result.org.deleted.size() + result.platform.deleted.size()    + result.package.deleted.size()
         }
         catch (Exception e) {
-            log.error 'failed getCurrentChanges() -> ' + e.getMessage()
+            log.error 'failed getCurrentNews() -> ' + e.getMessage()
 
             // debug
             println " count             ${result.org.count} - ${result.platform.count} - ${result.package.count}"
@@ -133,7 +133,7 @@ class WekbStatsService {
      * @return a {@link Map} containing the counts of objects
      */
     Map<String, Object> processData(int days = 14) {
-        log.debug('WekbStatsService.processData(' + days + ' days)')
+        log.debug('WekbNewsService.processData(' + days + ' days)')
         Map<String, Object> result = [:]
 
         Date frame = Date.from(LocalDate.now().minusDays(days).atStartOfDay(ZoneId.systemDefault()).toInstant())
@@ -141,7 +141,7 @@ class WekbStatsService {
 
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         String apiUrl = apiSource.baseUrl + apiSource.fixToken + '/searchApi'
-        //log.debug('WekbStatsService.getCurrent() > ' + cs)
+        //log.debug('WekbNewsService.getCurrent() > ' + cs)
 
         Map base = [changedSince: cs, sort: 'lastUpdatedDisplay', order: 'desc', stubOnly: true, max: 10000]
 

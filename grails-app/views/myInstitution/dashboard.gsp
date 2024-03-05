@@ -117,8 +117,8 @@
 
         <ui:messages data="${flash}" />
 
-        <g:if test="${wekbChanges}">
-            <laser:render template="wekbChanges" model="${[wekbChanges: wekbChanges, tmplView: 'info']}"/>
+        <g:if test="${wekbNews}">
+            <laser:render template="wekbNews" model="${[wekbNews: wekbNews, tmplView: 'info']}"/>
         </g:if>
 
     <%

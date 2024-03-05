@@ -140,17 +140,6 @@
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                         <i class="trash alternate outline icon"></i>
                                     </g:link>
-                                    %{--<g:form controller="person" action="delete" data-confirm-id="${person.id.toString()+ '_form'}">--}%
-                                        %{--<g:hiddenField name="id" value="${person.id}" />--}%
-                                        %{--<div class="ui icon negative button js-open-confirm-modal"--}%
-                                             %{--data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact", args: [person.toString()])}"--}%
-                                             %{--data-confirm-term-how="delete"--}%
-                                             %{--data-confirm-id="${person.id}" --}%
-                                            %{--role="button"--}%
-                                            %{--aria-label="${message(code: 'ariaLabel.delete.universal')}"> --}%
-                                            %{--<i class="unlink icon"></i>--}%
-                                        %{--</div>--}%
-                                    %{--</g:form>--}%
                                 </g:else>
                             </g:if>
                         </div>

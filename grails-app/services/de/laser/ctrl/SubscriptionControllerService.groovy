@@ -1900,7 +1900,7 @@ class SubscriptionControllerService {
                     Map query = [:]
                     if (subscriptions) {
                         parameterMap.status = [RDStore.TIPP_STATUS_CURRENT.id]
-                        parameterMap.hasPerpetualAccess = RDStore.YN_YES.id.toString()
+                        parameterMap.hasPerpetualAccess = RDStore.YN_YES.id
                         query = filterService.getIssueEntitlementQuery(parameterMap, subscriptions)
                         //List<Long> previousIes = previousSubscription ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
                         sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
