@@ -116,6 +116,7 @@ class ServerCodesController {
      * Fallback for every other failure showing status 404
      */
     def fallback() {
+        // UrlMappings -> "/**"
         log.debug 'ServerCodesController.fallback: ' + request.getRequestURL()
 
         Map<String, Object> result = [
