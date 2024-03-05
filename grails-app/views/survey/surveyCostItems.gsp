@@ -51,24 +51,6 @@
 
 <g:if test="${surveyConfigs}">
     <div class="ui grid">
-        %{--<div class="four wide column">
-            <div class="ui vertical fluid menu">
-        <g:each in="${surveyConfigs.sort { it.configOrder }}" var="config" status="i">
-
-        <g:link class="item ${params.surveyConfigID == config?.id.toString() ? 'active' : ''}"
-                style="${config?.costItemsFinish ? 'background-color: Lime' : ''}"
-                controller="survey" action="surveyCostItems"
-                id="${config?.surveyInfo.id}" params="[surveyConfigID: config?.id]">
-
-            <h5 class="ui header">${config?.getConfigNameShort()}</h5>
-            ${SurveyConfig.getLocalizedValue(config?.type)}
-
-
-            <div class="ui floating circular label">${config?.orgs?.size() ?: 0}</div>
-        </g:link>
-        </g:each>
-        </div>
-        </div>--}%
 
         <div class="sixteen wide stretched column">
             <div class="ui top attached stackable tabular la-tab-with-js menu">
