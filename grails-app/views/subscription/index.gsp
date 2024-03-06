@@ -205,7 +205,7 @@
 
 <div class="ui bottom attached tab active segment">
 
-    <laser:render template="/templates/filter/tipp_ieFilter"/>
+    <laser:render template="/templates/filter/tipp_ieFilter" model="[forTitles: tab]"/>
 
 <div id="downloadWrapper"></div>
 
