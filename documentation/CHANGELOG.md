@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5605    06.03.2024  rc-3.3  3.3.7       Andreas Feature     Abschaltung der Dokumententeilungseinstellung "Nur für Teilnehmer des Konsortiums"
+
 5604    06.03.2024  rc-3.3  3.3.7       Andreas Bug         diverse Datenbankfehler behoben
 
 --      05.03.2024  rc-3.3  3.3.7       Andreas Bug         Dropdown-Filter erweitert
