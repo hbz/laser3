@@ -85,7 +85,7 @@
                             <ui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                         </g:elseif>
                         <g:elseif test="${prop.type.isURLType()}">
-                            <ui:xEditable owner="${prop}" type="url" field="urlValue" overwriteEditable="${overwriteEditable}" class="la-overflow la-ellipsis" />
+                            <ui:xEditable owner="${prop}" type="url" field="urlValue" validation="maxlength" maxlength="255" overwriteEditable="${overwriteEditable}" class="la-overflow la-ellipsis" />
                             <g:if test="${prop.value}">
                                 <ui:linkWithIcon href="${prop.value}" />
                             </g:if>

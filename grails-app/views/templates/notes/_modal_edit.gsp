@@ -12,6 +12,22 @@
 
                 <laser:script file="${this.getGroovyPageFileName()}">
                     wysiwyg.initEditor('#modalEditNote #content');
+
+                    $('#edit_note').form({
+                        on: 'blur',
+                        inline: true,
+                        fields: {
+                            title: {
+                                identifier: 'title',
+                                rules: [
+                                    {
+                                        type: 'maxLength[255]',
+                                        prompt: '<g:message code="validation.maxLength" args="[255]" />'
+                                    }
+                                ]
+                            }
+                        }
+                    });
                 </laser:script>
             </div>
         </div>
