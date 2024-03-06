@@ -487,7 +487,7 @@ r2d2 = {
                     }
                     if (dVal.includes('maxlength')) {
                         if(value.length > $(this).attr("data-maxlength")) {
-                            return "Der eingegebene Wert ist zu lang!";
+                            return "Der eingegebene Wert ist zu lang! Es dürfen maximal "+$(this).attr("data-maxlength")+" Zeichen eingegeben werden.";
                         }
                     }
                 }

@@ -350,14 +350,18 @@ class ApiCollectionReader {
         )
         */
         Map<String, Object> subParams = [subId: subPkg.subscription.id], pkgParams = [pkgId: subPkg.pkg.id], ieParams = [sub: subPkg.subscription.id, pkg: subPkg.pkg.id]
-        List<GroovyRowResult> ieRows = sql.rows("select ie_id, ie_guid, ie_access_start_date, ie_access_end_date, ie_last_updated, (select rdv_value from refdata_value where rdv_id = tipp_medium_rv_fk) as tipp_medium, ie_perpetual_access_by_sub_fk, " +
-                "tipp_guid, tipp_name, tipp_host_platform_url, tipp_gokb_id, tipp_pkg_fk, tipp_date_first_in_print, tipp_date_first_online, tipp_first_author, tipp_first_editor, " +
-                "tipp_publisher_name, tipp_imprint, tipp_volume, tipp_edition_number, tipp_last_updated, tipp_series_name, tipp_subject_reference, (select rdv_value from refdata_value where rdv_id = tipp_access_type_rv_fk) as tipp_access_type, (select rdv_value from refdata_value where rdv_id = tipp_open_access_rv_fk) as tipp_open_access, " +
-                "tipp_last_updated, tipp_id, (select rdv_value from refdata_value where rdv_id = tipp_status_rv_fk) as tipp_status, " +
-                "case tipp_title_type when 'Journal' then 'serial' when 'Book' then 'monograph' when 'Database' then 'database' else 'other' end as title_type " +
-                "from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id " +
-                "where ie_subscription_fk = :sub and tipp_pkg_fk = :pkg order by tipp_sort_name",
-                ieParams)
+        int limit = 50000, ieCount = sql.rows("select count(*) from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :sub and tipp_pkg_fk = :pkg", ieParams)[0]["count"]
+        List<GroovyRowResult> ieRows = []
+        for(int i = 0; i < ieCount; i += limit) {
+            ieRows.addAll(sql.rows("select ie_id, ie_guid, ie_access_start_date, ie_access_end_date, ie_last_updated, (select rdv_value from refdata_value where rdv_id = tipp_medium_rv_fk) as tipp_medium, ie_perpetual_access_by_sub_fk, " +
+                    "tipp_guid, tipp_name, tipp_host_platform_url, tipp_gokb_id, tipp_pkg_fk, tipp_date_first_in_print, tipp_date_first_online, tipp_first_author, tipp_first_editor, " +
+                    "tipp_publisher_name, tipp_imprint, tipp_volume, tipp_edition_number, tipp_last_updated, tipp_series_name, tipp_subject_reference, (select rdv_value from refdata_value where rdv_id = tipp_access_type_rv_fk) as tipp_access_type, (select rdv_value from refdata_value where rdv_id = tipp_open_access_rv_fk) as tipp_open_access, " +
+                    "tipp_last_updated, tipp_id, (select rdv_value from refdata_value where rdv_id = tipp_status_rv_fk) as tipp_status, " +
+                    "case tipp_title_type when 'Journal' then 'serial' when 'Book' then 'monograph' when 'Database' then 'database' else 'other' end as title_type " +
+                    "from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id " +
+                    "where ie_subscription_fk = :sub and tipp_pkg_fk = :pkg order by tipp_sort_name limit :limit offset :offset",
+                    ieParams+[limit: limit, offset: i]))
+        }
         JsonSlurper slurper = new JsonSlurper()
         log.debug("now fetching additional params ...")
         List<GroovyRowResult> priceItemRows = sql.rows("select pi_tipp_fk, json_agg(json_build_object('listCurrency', (select rdv_value from refdata_value where rdv_id = pi_list_currency_rv_fk), 'listPrice', pi_list_price, 'localCurrency', (select rdv_value from refdata_value where rdv_id = pi_local_currency_rv_fk), 'localPrice', pi_local_price)) as price_items from price_item join title_instance_package_platform on pi_tipp_fk = tipp_id join issue_entitlement on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId group by pi_tipp_fk", subParams),

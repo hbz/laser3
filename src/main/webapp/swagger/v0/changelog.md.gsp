@@ -2,6 +2,10 @@
 
 Source: ${de.laser.config.ConfigMapper.getGrailsServerURL()} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 2.10
+
+- internal refactoring
+
 #### 2.9
 
 - /ezb/subscriptions: 404 handling fixed
