@@ -1,7 +1,8 @@
 <%@ page import="de.laser.helper.Params; de.laser.TitleInstancePackagePlatform; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.base.AbstractReport" %>
 <laser:serviceInjection />
 <g:set var="action" value="${action ?: actionName}"/>
-
+<g:set var="forTitles" value="${forTitles ?: actionName}"/>
+<g:set var="configMap" value="${configMap ?: params}"/>
 <g:set var="availableStatus" value="${RefdataCategory.getAllRefdataValues(RDConstants.TIPP_STATUS)-RDStore.TIPP_STATUS_REMOVED}" />
 <g:set var="disableFilter" value="${(allTippsCounts && allTippsCounts > 100000) || (allTippCounts && allTippCounts > 100000)}" />
 
@@ -375,7 +376,7 @@
 
         selector.dropdown('destroy').dropdown({
             apiSettings: {
-                url: url + '&by=' + by + '&obj=' + obj + '&forTitles=${action}&query={query}',
+                url: url + '&by=' + by + '&obj=' + obj + '&forTitles=${forTitles}&query={query}',
                 cache: false
             },
             clearable: true,
@@ -389,13 +390,13 @@
         }
     }
 
-    JSPC.app.ajaxDropdown($('#series_names'),       '<g:createLink controller="ajaxJson" action="getAllPossibleSeries" params="${params}"/>', '${params.series_names}');
-    JSPC.app.ajaxDropdown($('#subject_references'), '<g:createLink controller="ajaxJson" action="getAllPossibleSubjects" params="${params}"/>', '${params.subject_references}');
-    JSPC.app.ajaxDropdown($('#ddcs'),               '<g:createLink controller="ajaxJson" action="getAllPossibleDdcs" params="${params}"/>', '${params.ddcs}');
-    JSPC.app.ajaxDropdown($('#languages'),          '<g:createLink controller="ajaxJson" action="getAllPossibleLanguages" params="${params}"/>', '${params.languages}');
-    JSPC.app.ajaxDropdown($('#yearsFirstOnline'),   '<g:createLink controller="ajaxJson" action="getAllPossibleDateFirstOnlineYears" params="${params}"/>', '${params.yearsFirstOnline}');
-    JSPC.app.ajaxDropdown($('#medium'),             '<g:createLink controller="ajaxJson" action="getAllPossibleMediumTypes" params="${params}"/>', '${params.medium}');
-    JSPC.app.ajaxDropdown($('#title_types'),        '<g:createLink controller="ajaxJson" action="getAllPossibleTitleTypes" params="${params}"/>', '${params.title_types}');
-    JSPC.app.ajaxDropdown($('#publishers'),         '<g:createLink controller="ajaxJson" action="getAllPossiblePublishers" params="${params}"/>', '${params.publishers}');
-    JSPC.app.ajaxDropdown($('#coverageDepth'),      '<g:createLink controller="ajaxJson" action="getAllPossibleCoverageDepths" params="${params}"/>', '${params.coverageDepth}');
+    JSPC.app.ajaxDropdown($('#series_names'),       '<g:createLink controller="ajaxJson" action="getAllPossibleSeries" params="${configMap}"/>', '${params.series_names}');
+    JSPC.app.ajaxDropdown($('#subject_references'), '<g:createLink controller="ajaxJson" action="getAllPossibleSubjects" params="${configMap}"/>', '${params.subject_references}');
+    JSPC.app.ajaxDropdown($('#ddcs'),               '<g:createLink controller="ajaxJson" action="getAllPossibleDdcs" params="${configMap}"/>', '${params.ddcs}');
+    JSPC.app.ajaxDropdown($('#languages'),          '<g:createLink controller="ajaxJson" action="getAllPossibleLanguages" params="${configMap}"/>', '${params.languages}');
+    JSPC.app.ajaxDropdown($('#yearsFirstOnline'),   '<g:createLink controller="ajaxJson" action="getAllPossibleDateFirstOnlineYears" params="${configMap}"/>', '${params.yearsFirstOnline}');
+    JSPC.app.ajaxDropdown($('#medium'),             '<g:createLink controller="ajaxJson" action="getAllPossibleMediumTypes" params="${configMap}"/>', '${params.medium}');
+    JSPC.app.ajaxDropdown($('#title_types'),        '<g:createLink controller="ajaxJson" action="getAllPossibleTitleTypes" params="${configMap}"/>', '${params.title_types}');
+    JSPC.app.ajaxDropdown($('#publishers'),         '<g:createLink controller="ajaxJson" action="getAllPossiblePublishers" params="${configMap}"/>', '${params.publishers}');
+    JSPC.app.ajaxDropdown($('#coverageDepth'),      '<g:createLink controller="ajaxJson" action="getAllPossibleCoverageDepths" params="${configMap}"/>', '${params.coverageDepth}');
 </laser:script>

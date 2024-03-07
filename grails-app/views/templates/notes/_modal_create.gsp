@@ -20,6 +20,22 @@
                     $('#modalCreateNote #noteTitle').val('');
                     wysiwyg.resetContent ('#modalCreateNote #noteContent');
                 };
+
+                $('#create_note').form({
+                    on: 'blur',
+                    inline: true,
+                    fields: {
+                        noteTitle: {
+                            identifier: 'noteTitle',
+                            rules: [
+                                {
+                                    type: 'maxLength[255]',
+                                    prompt: '<g:message code="validation.maxLength" args="[255]" />'
+                                }
+                            ]
+                        }
+                    }
+                });
             </laser:script>
         </div>
     </g:form>

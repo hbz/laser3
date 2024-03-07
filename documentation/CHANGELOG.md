@@ -7,6 +7,24 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5609    07.03.2024  rc-3.3  3.3.7       Andreas Bug         inkorrekte Fehlerbehandlung, wenn der we:kb-Server nicht erreichbar ist
+
+5605    06.03.2024  rc-3.3  3.3.7       Andreas Feature     Abschaltung der Dokumententeilungseinstellung "Nur für Teilnehmer des Konsortiums"
+
+5604    06.03.2024  rc-3.3  3.3.7       Andreas Bug         diverse Datenbankfehler behoben
+
+--      05.03.2024  rc-3.3  3.3.7       Andreas Bug         Dropdown-Filter erweitert
+
+--      01.03.2024  rc-3.3  3.3.7       Andreas Feature     Erweiterungen der Titelbereinigung
+
+5595    26.02.2024  rc-3.3  3.3.7       Andreas Bug         BudgetCodes wurden im Export nicht aufgelöst
+
+5993    26.02.2024  rc-3.3  3.3.7       Andreas Bug         Neuer Versuch zur Behebung des Session-Mismatches
+
+5592    26.02.2024  rc-3.3  3.3.7       Andreas Bug         falsche Ausgabe bei EZB-Lizenzschnittstelle behoben
+
+5591    26.02.2024  rc-3.3  3.3.7       Andreas Bug         unnötige OID-Auflösung behoben
+
 5579    20.02.2024  rc-3.3  3.3.6       Andreas Feature     SUSHI-Konfiguration um Plattformnamen/filter erweiter
 
 --      20.02.2024  rc-3.3  3.3.6       Andreas Bug         Abfrageargumente bei Titelumfrage korrigiert
