@@ -10,7 +10,7 @@ import de.laser.DocContext
 import de.laser.GenericOIDService
 import de.laser.PendingChangeService
 import de.laser.AddressbookService
-import de.laser.WekbStatsService
+import de.laser.WekbNewsService
 import de.laser.WorkflowService
 import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigDefaults
@@ -101,7 +101,7 @@ class AjaxHtmlController {
     SubscriptionService subscriptionService
     SubscriptionControllerService subscriptionControllerService
     TaskService taskService
-    WekbStatsService wekbStatsService
+    WekbNewsService wekbNewsService
     WorkflowService workflowService
 
     /**
@@ -217,14 +217,14 @@ class AjaxHtmlController {
      * @return the template fragment for the changes
      */
     @Secured(['ROLE_USER'])
-    def wekbChangesFlyout() {
-        log.debug('ajaxHtmlController.wekbChangesFlyout ' + params)
+    def wekbNewsFlyout() {
+        log.debug('ajaxHtmlController.wekbNewsFlyout ' + params)
 
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(null, params)
-        result.wekbChanges = wekbStatsService.getCurrentChanges()
+        result.wekbNews = wekbNewsService.getCurrentNews()
         result.tmplView = 'details'
 
-        render template: '/myInstitution/wekbChanges', model: result
+        render template: '/myInstitution/wekbNews', model: result
     }
 
     //-------------------------------------------------- subscription/show ---------------------------------------------
@@ -1265,7 +1265,7 @@ class AjaxHtmlController {
                             if ( docCtx.shareConf == RDStore.SHARE_CONF_UPLOADER_AND_TARGET ) {
                                 check = (doc.owner.id == ctxOrgId) || (docCtx.targetOrg.id == ctxOrgId)
                             }
-                            if ( docCtx.shareConf == RDStore.SHARE_CONF_CONSORTIUM || docCtx.shareConf == RDStore.SHARE_CONF_ALL ) {
+                            if ( docCtx.shareConf == RDStore.SHARE_CONF_ALL ) {
                                 // context based restrictions must be applied
                                 check = true
                             }

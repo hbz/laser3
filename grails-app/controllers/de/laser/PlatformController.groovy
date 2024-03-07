@@ -103,6 +103,8 @@ class PlatformController  {
 
         // overridden pagination - all uuids are required
         Map wekbResultMap = gokbService.doQuery(result, [offset:0, max:1000, status: params.status], queryParams)
+        if(!wekbResultMap)
+            result.error = message(code: 'wekb.error.404') as String
 
         // ? --- copied from myInstitutionController.currentPlatforms()
         String instanceFilter = ""
@@ -225,7 +227,7 @@ class PlatformController  {
         result.flagContentGokb = true // gokbService.executeQuery
         result.platformInstanceRecord = [:]
         Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
-        if (queryResult.error && queryResult.error == 404) {
+        if ((queryResult.error && queryResult.error == 404) || !queryResult) {
             flash.error = message(code:'wekb.error.404') as String
         }
         else if (queryResult) {

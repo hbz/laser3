@@ -85,7 +85,7 @@ class YodaController {
     SubscriptionService subscriptionService
     SurveyUpdateService surveyUpdateService
     YodaService yodaService
-    WekbStatsService wekbStatsService
+    WekbNewsService wekbNewsService
 
     /**
      * Shows the Yoda-dashboard
@@ -610,7 +610,7 @@ class YodaController {
         log.debug("match package holdings to issue entitlement holdings ...")
         flash.message = "Bestände werden korrigiert ..."
         yodaService.matchPackageHoldings(params.long('pkgId'))
-        redirect controller: 'package', action: 'index'
+        redirect(url: request.getHeader('referer'))
     }
 
     @Deprecated
@@ -867,7 +867,7 @@ class YodaController {
         else {
             log.debug("process running, lock is set!")
         }
-        redirect controller: 'package'
+        redirect(url: request.getHeader('referer'))
     }
 
     /**
@@ -888,7 +888,7 @@ class YodaController {
         }
         flash.message = "Pakete werden nachgehalten ..."
 
-        redirect controller: 'package'
+        redirect(url: request.getHeader('referer'))
     }
 
     /**
@@ -964,9 +964,9 @@ class YodaController {
      * @return redirects back to the dashboard
      */
     @Secured(['ROLE_YODA'])
-    def reloadWekbChanges() {
-        log.info('--> reloadWekbChanges')
-        wekbStatsService.updateCache()
+    def reloadwekbNews() {
+        log.info('--> reloadwekbNews')
+        wekbNewsService.updateCache()
         redirect controller: 'myInstitution', action: 'dashboard'
     }
 

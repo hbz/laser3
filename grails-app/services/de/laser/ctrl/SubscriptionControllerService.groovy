@@ -1900,7 +1900,7 @@ class SubscriptionControllerService {
                     Map query = [:]
                     if (subscriptions) {
                         parameterMap.status = [RDStore.TIPP_STATUS_CURRENT.id]
-                        parameterMap.hasPerpetualAccess = RDStore.YN_YES.id.toString()
+                        parameterMap.hasPerpetualAccess = RDStore.YN_YES.id
                         query = filterService.getIssueEntitlementQuery(parameterMap, subscriptions)
                         //List<Long> previousIes = previousSubscription ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
                         sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
@@ -2093,6 +2093,10 @@ class SubscriptionControllerService {
                     }
                     else if(queryResult.code == "error") {
                         result.error = messageSource.getMessage('wekb.error.500', [queryResult.message].toArray(), locale)
+                        [result: result, status: STATUS_ERROR]
+                    }
+                    else {
+                        result.error = messageSource.getMessage('wekb.error.404', null, LocaleUtils.getCurrentLocale())
                         [result: result, status: STATUS_ERROR]
                     }
                 }

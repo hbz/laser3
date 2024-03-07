@@ -474,9 +474,6 @@ class DataloadService {
                             result.members.add([dbId: org.id, name: org.name, sortname: org.sortname])
                         }
                         break
-                        /*              case CalculatedType.TYPE_ADMINISTRATIVE:
-                                  result.availableToOrgs = sub.orgRelations.findAll {it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
-                                  break*/
                     case CalculatedType.TYPE_LOCAL:
                         result.availableToOrgs = sub.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIBER.value] }?.org?.id
                         break

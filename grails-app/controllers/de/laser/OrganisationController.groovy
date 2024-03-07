@@ -201,7 +201,6 @@ class OrganisationController  {
         }
         */
 
-//        result.allPlatforms = Platform.executeQuery('select p from Platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name')
         result
     }
 
@@ -490,6 +489,7 @@ class OrganisationController  {
                 List recordsCuratoryGroups = queryCuratoryGroups.result
                 result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
             }
+            else result.curatoryGroups = []
         }
         /*
         we:kb implementation missing but currently not needed anyway; see _orgFilter
