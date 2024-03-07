@@ -489,6 +489,7 @@ class OrganisationController  {
                 List recordsCuratoryGroups = queryCuratoryGroups.result
                 result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
             }
+            else result.curatoryGroups = []
         }
         /*
         we:kb implementation missing but currently not needed anyway; see _orgFilter

@@ -1265,7 +1265,7 @@ class AjaxHtmlController {
                             if ( docCtx.shareConf == RDStore.SHARE_CONF_UPLOADER_AND_TARGET ) {
                                 check = (doc.owner.id == ctxOrgId) || (docCtx.targetOrg.id == ctxOrgId)
                             }
-                            if ( docCtx.shareConf == RDStore.SHARE_CONF_CONSORTIUM || docCtx.shareConf == RDStore.SHARE_CONF_ALL ) {
+                            if ( docCtx.shareConf == RDStore.SHARE_CONF_ALL ) {
                                 // context based restrictions must be applied
                                 check = true
                             }
