@@ -37,8 +37,11 @@ class GokbService {
             result.records = records
         }
         else {
-            if(queryResult.warning.code == "error")
-                result.error = messageSource.getMessage('wekb.error.500', [queryResult.warning.message] as Object[], LocaleUtils.getCurrentLocale())
+            if(queryResult) {
+                if(queryResult.warning.code == "error")
+                    result.error = messageSource.getMessage('wekb.error.500', [queryResult.warning.message] as Object[], LocaleUtils.getCurrentLocale())
+            }
+            else result.error = messageSource.getMessage('wekb.error.404', null, LocaleUtils.getCurrentLocale())
             result.recordsCount = 0
             result.records = records
         }
