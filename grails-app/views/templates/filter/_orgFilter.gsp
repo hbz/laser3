@@ -336,14 +336,13 @@
             <g:if test="${field.equalsIgnoreCase('subStatus')}">
                 <div class="field">
                     <label for="subStatus">${message(code:'subscription.status.label')}</label>
-                    <ui:select id="subStatus" name="subStatus"
-                                  from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  value="${params.subStatus}"
-                                  class="ui dropdown"
-                                  noSelection="${['':message(code:'default.select.choose.label')]}"
-                    />
+                    <select id="subStatus" name="subStatus" multiple="" class="ui selection fluid dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <option value="${RDStore.GENERIC_NULL_VALUE.id}" <%=Params.getLongList(params, 'subStatus').contains(RDStore.GENERIC_NULL_VALUE.id) ? 'selected="selected"' : '' %>>${message(code:'subscription.status.noSubscription')}</option>
+                        <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" var="subStatus">
+                            <option <%=Params.getLongList(params, 'subStatus').contains(subStatus.id) ? 'selected="selected"' : '' %> value="${subStatus.id}">${subStatus.getI10n('value')}</option>
+                        </g:each>
+                    </select>
                 </div>
             </g:if>
             <g:if test="${field.equalsIgnoreCase('subValidOn')}">
