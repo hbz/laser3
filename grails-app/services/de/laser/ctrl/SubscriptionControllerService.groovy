@@ -1466,32 +1466,34 @@ class SubscriptionControllerService {
                     Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscription.id, excludes)
                     List<Long> memberSubs = []
                     //needed for that the subscriptions are present in the moment of the parallel process
-                    Subscription.withNewSession { Session sess ->
+                    List<Subscription> subscriptions = [result.subscription]
+                    //Subscription.withNewSession { Session sess ->
+                    subscriptions.each { Subscription currParent ->
                         //very dirty and uglymost solution, if it works ...
                         members.each { Org cm ->
                             log.debug("Generating separate slaved instances for members")
                             Date startDate = params.valid_from ? DateUtils.parseDateGeneric(params.valid_from) : null
                             Date endDate = params.valid_to ? DateUtils.parseDateGeneric(params.valid_to) : null
                             Subscription memberSub = new Subscription(
-                                    type: result.subscription.type ?: null,
-                                    kind: result.subscription.kind ?: null,
+                                    type: currParent.type ?: null,
+                                    kind: currParent.kind ?: null,
                                     status: subStatus,
-                                    name: result.subscription.name,
+                                    name: currParent.name,
                                     //name: result.subscription.name + " (" + (cm.get(0).sortname ?: cm.get(0).name) + ")",
                                     startDate: startDate,
                                     endDate: endDate,
-                                    administrative: result.subscription._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE,
-                                    manualRenewalDate: result.subscription.manualRenewalDate,
+                                    administrative: currParent._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE,
+                                    manualRenewalDate: currParent.manualRenewalDate,
                                     /* manualCancellationDate: result.subscription.manualCancellationDate, */
                                     identifier: UUID.randomUUID().toString(),
-                                    instanceOf: result.subscription,
+                                    instanceOf: currParent,
                                     isSlaved: true,
-                                    resource: result.subscription.resource ?: null,
-                                    form: result.subscription.form ?: null,
+                                    resource: currParent.resource ?: null,
+                                    form: currParent.form ?: null,
                                     isMultiYear: params.checkSubRunTimeMultiYear ?: false
                             )
                             inheritedAttributes.each { attr ->
-                                memberSub[attr.referenceField] = result.subscription[attr.referenceField]
+                                memberSub[attr.referenceField] = currParent[attr.referenceField]
                             }
                             if (!memberSub.save()) {
                                 memberSub.errors.each { e ->
@@ -1500,7 +1502,7 @@ class SubscriptionControllerService {
                                 result.error = memberSub.errors
                             }
                             if (memberSub) {
-                                if(result.subscription._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE) {
+                                if(currParent._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE) {
                                     new OrgRole(org: cm, sub: memberSub, roleType: RDStore.OR_SUBSCRIBER_CONS_HIDDEN).save()
                                 }
                                 else {
@@ -1508,7 +1510,7 @@ class SubscriptionControllerService {
                                 }
                                 new OrgRole(org: result.institution, sub: memberSub, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).save()
                                 synShareTargetList.add(memberSub)
-                                SubscriptionProperty.findAllByOwner(result.subscription).each { SubscriptionProperty sp ->
+                                SubscriptionProperty.findAllByOwner(currParent).each { SubscriptionProperty sp ->
                                     AuditConfig ac = AuditConfig.getConfig(sp)
                                     if (ac) {
                                         // multi occurrence props; add one additional with backref
@@ -1527,7 +1529,7 @@ class SubscriptionControllerService {
                                         }
                                     }
                                 }
-                                Identifier.findAllBySub(result.subscription).each { Identifier id ->
+                                Identifier.findAllBySub(currParent).each { Identifier id ->
                                     AuditConfig ac = AuditConfig.getConfig(id)
                                     if(ac) {
                                         Identifier.constructWithFactoryResult([value: id.value, parent: id, reference: memberSub, namespace: id.ns])
@@ -1559,16 +1561,21 @@ class SubscriptionControllerService {
                             //}
                         }
 
-                        result.subscription.syncAllShares(synShareTargetList)
-                        sess.flush()
+                        currParent.syncAllShares(synShareTargetList)
+                        //sess.flush()
+                        globalService.cleanUpGorm()
                     }
+
+                    //}
                     if(packagesToProcess) {
-                            List<Subscription> updatedSubList = Subscription.findAllByIdInList(memberSubs)
-                            executorService.execute({
-                                Thread.currentThread().setName("PackageTransfer_"+result.subscription.id)
+                        executorService.execute({
+                            Thread.currentThread().setName("PackageTransfer_"+subscriptions[0].id)
+                            Thread.sleep(1000) //to be sure ... wait until GORM has finished its work
+                            subscriptions.each { Subscription currParent ->
+                                List<Subscription> updatedSubList = Subscription.findAllByInstanceOf(currParent)
                                 packagesToProcess.each { Package pkg ->
-                                    subscriptionService.cachePackageName("PackageTransfer_"+result.subscription.id, pkg.name)
-                                    subscriptionService.addToMemberSubscription(result.subscription, updatedSubList, pkg, params.linkWithEntitlements == 'on')
+                                    subscriptionService.cachePackageName("PackageTransfer_"+subscriptions[0].id, pkg.name)
+                                    subscriptionService.addToMemberSubscription(currParent, updatedSubList, pkg, params.linkWithEntitlements == 'on')
                                     /*
                                         if()
                                             subscriptionService.addToSubscriptionCurrentStock(memberSub, result.subscription, pkg)
@@ -1576,7 +1583,8 @@ class SubscriptionControllerService {
                                             subscriptionService.addToSubscription(memberSub, pkg, false)
                                     */
                                 }
-                            })
+                            }
+                        })
                     }
                 } else {
                     [result:result,status:STATUS_ERROR]
