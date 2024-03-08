@@ -264,6 +264,7 @@ class FilterService {
             }
             else
                 queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg()]
+            String subQueryBase = subQuery
             if (params.subStatus) {
                 subQuery +=  " and (sub.status in (:subStatus)" // ( closed in line 273; needed to prevent consortia members without any subscriptions because or would lift up the other restrictions)
                 subStatus = Params.getRefdataList(params, "subStatus")
@@ -282,10 +283,11 @@ class FilterService {
                     queryParams << [validOn: DateUtils.parseDateGeneric(params.subValidOn)]
                 }
             }
-            query << subQuery+")" //opened in line 260
+            subQuery+=")" //opened in line 260
             if(subStatus && RDStore.GENERIC_NULL_VALUE in subStatus) {
-
+                subQuery = "(${subQuery} or not (${subQueryBase})))"
             }
+            query << subQuery
         }
 
         if(params.sub && (params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription)) {
