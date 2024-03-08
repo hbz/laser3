@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5609    07.03.2024  rc-3.3  3.3.7       Andreas Bug         inkorrekte Fehlerbehandlung, wenn der we:kb-Server nicht erreichbar ist
+
+5605    06.03.2024  rc-3.3  3.3.7       Andreas Feature     Abschaltung der Dokumententeilungseinstellung "Nur für Teilnehmer des Konsortiums"
+
+5604    06.03.2024  rc-3.3  3.3.7       Andreas Bug         diverse Datenbankfehler behoben
+
+--      05.03.2024  rc-3.3  3.3.7       Andreas Bug         Dropdown-Filter erweitert
+
 --      01.03.2024  rc-3.3  3.3.7       Andreas Feature     Erweiterungen der Titelbereinigung
 
 5575    27.02.2024  dev     3.4         Andreas Feature     Erweiterung der Paketverknüpfungsmeldung

@@ -851,7 +851,7 @@ class AjaxJsonController {
                 break
             case 'status': result.results = controlledListService.getAllPossibleSeriesByStatus(params)
                 break
-            case 'sub': result.results = controlledListService.getAllPossibleSeriesBySub(genericOIDService.resolveOID(params.obj), params.query)
+            case 'sub': result.results = controlledListService.getAllPossibleSeriesBySub(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
                 break
         }
         render result as JSON
@@ -868,7 +868,7 @@ class AjaxJsonController {
                 break
             case 'status': result.results = controlledListService.getAllPossibleSubjectsByStatus(params)
                 break
-            case 'sub': result.results = controlledListService.getAllPossibleSubjectsBySub(genericOIDService.resolveOID(params.obj), params.query)
+            case 'sub': result.results = controlledListService.getAllPossibleSubjectsBySub(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
                 break
         }
         render result as JSON
@@ -885,7 +885,7 @@ class AjaxJsonController {
                 break
             case 'status': result.results = controlledListService.getAllPossibleDdcsByStatus(params)
                 break
-            case 'sub': result.results = controlledListService.getAllPossibleDdcsBySub(genericOIDService.resolveOID(params.obj), params.query)
+            case 'sub': result.results = controlledListService.getAllPossibleDdcsBySub(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
                 break
         }
         render result as JSON
@@ -902,7 +902,7 @@ class AjaxJsonController {
                 break
             case 'status': result.results = controlledListService.getAllPossibleLanguagesByStatus(params)
                 break
-            case 'sub': result.results = controlledListService.getAllPossibleLanguagesBySub(genericOIDService.resolveOID(params.obj), params.query)
+            case 'sub': result.results = controlledListService.getAllPossibleLanguagesBySub(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
                 break
         }
         render result as JSON
@@ -919,7 +919,7 @@ class AjaxJsonController {
                 break
             case 'status': result.results = controlledListService.getAllPossibleDateFirstOnlineYearByStatus(params)
                 break
-            case 'sub': result.results = controlledListService.getAllPossibleDateFirstOnlineYearBySub(genericOIDService.resolveOID(params.obj), params.query)
+            case 'sub': result.results = controlledListService.getAllPossibleDateFirstOnlineYearBySub(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
                 break
         }
         render result as JSON
@@ -936,7 +936,7 @@ class AjaxJsonController {
                 break
             case 'status': result.results = controlledListService.getAllPossibleMediumTypesByStatus(params)
                 break
-            case 'sub': result.results = controlledListService.getAllPossibleMediumTypesBySub(genericOIDService.resolveOID(params.obj), params.query)
+            case 'sub': result.results = controlledListService.getAllPossibleMediumTypesBySub(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
                 break
         }
         render result as JSON
@@ -953,7 +953,7 @@ class AjaxJsonController {
                 break
             case 'status': result.results = controlledListService.getAllPossibleTitleTypesByStatus(params)
                 break
-            case 'sub': result.results = controlledListService.getAllPossibleTitleTypesBySub(genericOIDService.resolveOID(params.obj), params.query)
+            case 'sub': result.results = controlledListService.getAllPossibleTitleTypesBySub(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
                 break
         }
         render result as JSON
@@ -970,7 +970,7 @@ class AjaxJsonController {
                 break
             case 'status': result.results = controlledListService.getAllPossiblePublisherByStatus(params)
                 break
-            case 'sub': result.results = controlledListService.getAllPossiblePublisherBySub(genericOIDService.resolveOID(params.obj), params.query)
+            case 'sub': result.results = controlledListService.getAllPossiblePublisherBySub(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
                 break
         }
         render result as JSON
@@ -987,7 +987,7 @@ class AjaxJsonController {
                 break
             case 'status': result.results = controlledListService.getAllPossibleCoverageDepthsByStatus(params)
                 break
-            case 'sub': result.results = controlledListService.getAllPossibleCoverageDepthsBySub(genericOIDService.resolveOID(params.obj), params.query)
+            case 'sub': result.results = controlledListService.getAllPossibleCoverageDepthsBySub(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
                 break
         }
         render result as JSON

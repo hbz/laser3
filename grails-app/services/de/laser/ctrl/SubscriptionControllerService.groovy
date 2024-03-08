@@ -2095,6 +2095,10 @@ class SubscriptionControllerService {
                         result.error = messageSource.getMessage('wekb.error.500', [queryResult.message].toArray(), locale)
                         [result: result, status: STATUS_ERROR]
                     }
+                    else {
+                        result.error = messageSource.getMessage('wekb.error.404', null, LocaleUtils.getCurrentLocale())
+                        [result: result, status: STATUS_ERROR]
+                    }
                 }
             }
         }
