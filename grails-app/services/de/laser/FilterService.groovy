@@ -256,6 +256,7 @@ class FilterService {
         }
 
         if (params.subStatus || params.subValidOn || params.subPerpetual) {
+            List<RefdataValue> subStatus
             String subQuery = "exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType"
             if(params.invertDirection) {
                 subQuery = "exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org = :context and oo.roleType in (:subscrRoles) and ooCons.org.id = o.id and ooCons.roleType = :consType"
@@ -264,10 +265,10 @@ class FilterService {
             else
                 queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg()]
             if (params.subStatus) {
-                subQuery +=  " and (sub.status = :subStatus" // ( closed in line 213; needed to prevent consortia members without any subscriptions because or would lift up the other restrictions)
-                RefdataValue subStatus = RefdataValue.get(params.subStatus)
+                subQuery +=  " and (sub.status in (:subStatus)" // ( closed in line 273; needed to prevent consortia members without any subscriptions because or would lift up the other restrictions)
+                subStatus = Params.getRefdataList(params, "subStatus")
                 queryParams << [subStatus: subStatus]
-                if (!params.subValidOn && params.subPerpetual && subStatus == RDStore.SUBSCRIPTION_CURRENT)
+                if (!params.subValidOn && params.subPerpetual && RDStore.SUBSCRIPTION_CURRENT in subStatus)
                     subQuery += " or sub.hasPerpetualAccess = true"
                 subQuery += ")"
             }
@@ -281,7 +282,10 @@ class FilterService {
                     queryParams << [validOn: DateUtils.parseDateGeneric(params.subValidOn)]
                 }
             }
-            query << subQuery+")"
+            query << subQuery+")" //opened in line 260
+            if(subStatus && RDStore.GENERIC_NULL_VALUE in subStatus) {
+
+            }
         }
 
         if(params.sub && (params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription)) {
