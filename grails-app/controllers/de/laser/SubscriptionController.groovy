@@ -7,7 +7,6 @@ import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.exceptions.EntitlementCreationException
-import de.laser.exceptions.FinancialDataException
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
@@ -17,6 +16,7 @@ import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.utils.DateUtils
 import de.laser.utils.PdfUtils
+import de.laser.utils.LocaleUtils
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.sql.Sql

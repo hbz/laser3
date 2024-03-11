@@ -3237,7 +3237,7 @@ class MyInstitutionController  {
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
         if(!params.subStatus) {
             if(!params.filterSet) {
-                params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id
+                params.subStatus = [RDStore.SUBSCRIPTION_CURRENT.id, RDStore.GENERIC_NULL_VALUE.id]
                 result.filterSet = true
             }
         }
