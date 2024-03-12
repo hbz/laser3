@@ -101,7 +101,7 @@
       border: 1px solid transparent;
     }
     .stats-content .secondary.menu .item.active {
-      border-color: #004678;
+      border-color: #dedede;
     }
     .stats-content tr.sub {
       background-color: rgba(0,0,0, 0.03)
