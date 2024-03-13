@@ -3084,7 +3084,7 @@ class ExportClickMeService {
         }
 
         if(surveyConfig.subscription) {
-            CostItem.executeQuery('from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg as surOrg where surveyConfig = :surveyConfig)', [status: RDStore.COST_ITEM_DELETED, surveyConfig: surveyConfig]).groupBy {it.costItemElement.id}.each {
+            CostItem.executeQuery('from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg as surOrg where surveyConfig = :surveyConfig) and ct.costItemElement is not null', [status: RDStore.COST_ITEM_DELETED, surveyConfig: surveyConfig]).groupBy {it.costItemElement.id}.each {
                 exportFields.put("costItemsElementSurveyCostItem.${it.key}", [field: null, label: RefdataValue.get(it.key).getI10n('value')])
             }
 
@@ -3161,7 +3161,7 @@ class ExportClickMeService {
         fields.participantSurveySubCostItems.fields.costItemsElements.clear()
 
         if(surveyConfig.subscription) {
-            CostItem.executeQuery('from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg as surOrg where surveyConfig = :surveyConfig)', [status: RDStore.COST_ITEM_DELETED, surveyConfig: surveyConfig]).groupBy {it.costItemElement.id}.each {
+            CostItem.executeQuery('from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg as surOrg where surveyConfig = :surveyConfig) and ct.costItemElement is not null', [status: RDStore.COST_ITEM_DELETED, surveyConfig: surveyConfig]).groupBy {it.costItemElement.id}.each {
                 fields.participantSurveyCostItems.fields.costItemsElements << ["costItemsElementSurveyCostItem.${it.key}": [field: null, label: RefdataValue.get(it.key).getI10n('value')]]
             }
 
