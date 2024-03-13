@@ -4,10 +4,14 @@
 <ui:modal id="transferParticipantsModal" message="surveyInfo.transferParticipants"
              msgSave="${message(code: 'surveyInfo.transferParticipants.button')}">
 
+    <h1 class="ui header">
+        ${parentSuccessorSubscription.dropdownNamingConvention()}
+    </h1>
+
     <h3 class="ui header"><g:message code="surveyInfo.transferParticipants.option"/>:</h3>
 
     <g:form class="ui form"
-            url="[controller: 'survey', action: 'processTransferParticipantsByRenewal', params: [id: params.id, surveyConfigID: surveyConfig.id]]">
+            url="[controller: 'survey', action: 'processTransferParticipantsByRenewal', params: [id: params.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id]]">
         <div class="field">
             <g:set var="properties" value="${de.laser.AuditConfig.getConfigs(parentSuccessorSubscription)}"></g:set>
             <g:if test="${properties}">

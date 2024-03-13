@@ -2989,4 +2989,8 @@ join sub.orgRelations or_sub where
         }
     }
 
+    int countMultiYearSubInParentSub(Subscription subscription){
+        return Subscription.executeQuery('select count(*) from Subscription s where s.instanceOf = :sub and s.isMultiYear = true', [sub: subscription])[0]
+    }
+
 }
