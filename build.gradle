@@ -1,6 +1,6 @@
 import java.text.SimpleDateFormat
 
-version '3.3.7'
+version '3.3.9'
 group 'de.laser'
 
 // ---[ build script ]---
@@ -68,15 +68,16 @@ configurations {
 
 dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    developmentOnly 'org.springframework.boot:spring-boot-starter-tomcat'    // implementation
+    developmentOnly 'org.springframework.boot:spring-boot-starter-tomcat'
 
     compileOnly 'io.micronaut:micronaut-inject-groovy'
     console 'org.grails:grails-console'
 
     implementation 'org.springframework.boot:spring-boot-autoconfigure'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-logging'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+//    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
     implementation 'org.grails:grails-core'
     implementation 'org.grails:grails-web-boot'
     implementation 'org.grails:grails-logging'
@@ -94,10 +95,6 @@ dependencies {
     implementation 'org.grails.plugins:gsp'
 
     implementation 'io.micronaut:micronaut-http-client'
-//    implementation 'org.springframework:spring-websocket'     // tmp deactivated
-//    implementation 'org.springframework:spring-messaging'     // tmp deactivated
-
-    profile 'org.grails.profiles:web'
 
     // --------------------------------------------------
 
@@ -226,7 +223,7 @@ assets {
             // vendor/*
             'crypto-js-4.1.1/**',
             'echarts/**',
-            // 'spring-websocket/**', // tmp deactivated
+            'spring-websocket/**', // tmp deactivated
             'swagger-ui/**',
     ]
 }

@@ -11,6 +11,9 @@
             <th></th>
             <th>${message(code:'org.sortname.label')}</th>
             %{-- TODO --}%<th>${labels.first().trim() in ['Verteilung', 'Distribution'] ? 'Name' : labels.first().trim()}</th>%{-- TODO --}%
+%{--            <g:if test="${query == 'org-country'}">--}%
+%{--                <th>${message(code:'org.region.label')}</th>--}%
+%{--            </g:if>--}%
             <g:if test="${query == 'org-x-property'}">
                 <th>${message(code:'reporting.details.property.value')}</th>
             </g:if>
@@ -32,6 +35,11 @@
                     <td>
                         <g:link controller="organisation" action="show" id="${org.id}" target="_blank">${org.name}</g:link>
                     </td>
+%{--                    <g:if test="${query == 'org-country'}">--}%
+%{--                        <td>--}%
+%{--                            ${org.region?.getI10n('value')}--}%
+%{--                        </td>--}%
+%{--                    </g:if>--}%
                     <g:if test="${query == 'org-x-property'}">
                         <td>
                             <uiReporting:objectProperties owner="${org}" tenant="${contextService.getOrg()}" propDefId="${id}" />
