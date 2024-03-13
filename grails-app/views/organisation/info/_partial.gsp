@@ -89,6 +89,9 @@
       display: none;
     }
 
+    .stats-content .form.segment {
+        box-shadow: none;
+    }
     .stats-content .secondary.menu .year {
       float: right;
       margin-left: auto;
@@ -121,6 +124,6 @@
     .chartWrapper {
       width: 100%;
       min-height: 350px;
-      margin-bottom: 35px;
+      margin: 3em 0;
     }
 </style>
