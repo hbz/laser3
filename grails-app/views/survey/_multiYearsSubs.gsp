@@ -61,7 +61,7 @@
                     <g:else>
                         <g:if test="${(i == 0) || (nextSubs && nextSubs[i - 1])}">
                         <g:link controller="survey" action="renewSubscriptionConsortiaWithSurvey" id="${surveyInfo.id}"
-                                params="${[surveyConfig: surveyConfig.id, oldSub: ((nextSubs && i > 0) ? nextSubs[i - 1].id : parentSubscription.id), parentSub: parentSubscription.id]}"
+                                params="${[surveyConfig: surveyConfig.id, oldSub: ((nextSubs && i > 0) ? nextSubs[i - 1].id : parentSubscription.id)]}"
                                 class="ui button ">
                             <g:message code="renewalEvaluation.newSub"/>
                         </g:link>
@@ -82,7 +82,7 @@
             <h3 class="ui header">
                 <g:message code="renewalEvaluation.parentSuccessorSubscription"/>:
                 <g:link controller="survey" action="renewSubscriptionConsortiaWithSurvey" id="${surveyInfo.id}"
-                        params="[surveyConfig: surveyConfig.id, parentSub: parentSubscription.id]"
+                        params="[surveyConfig: surveyConfig.id]"
                         class="ui button ">
                     <g:message code="renewalEvaluation.newSub"/>
                 </g:link>

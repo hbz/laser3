@@ -92,13 +92,6 @@
                             </g:if>
                             <g:else>
                                 <g:message code="renewalEvaluation.noParentSuccessorSubscription"/>
-                            %{--<br />
-                            <g:link controller="survey" action="renewSubscriptionConsortiaWithSurvey"
-                                    id="${surveyInfo.id}"
-                                    params="[surveyConfig: surveyConfig.id, parentSub: parentSubscription.id]"
-                                    class="ui button ">
-                                <g:message code="renewalEvaluation.newSub"/>
-                            </g:link>--}%
                             </g:else>
                         </h3>
                     </div>

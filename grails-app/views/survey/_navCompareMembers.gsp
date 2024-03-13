@@ -15,7 +15,7 @@
             </div>
         </div>
 
-        <g:if test="${transferWorkflow && transferWorkflow.transferMembers == 'true'}">
+        <g:if test="${transferWorkflow && Boolean.valueOf(transferWorkflow.transferMembers)}">
             <g:link controller="survey" action="setSurveyTransferConfig"
                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferMembers: false]">
                 <i class="check bordered large green icon"></i>
@@ -46,7 +46,7 @@
                 </div>
             </div>
         &nbsp;&nbsp;
-            <g:if test="${transferWorkflow && transferWorkflow.transferSubPackagesAndIes == 'true'}">
+            <g:if test="${transferWorkflow && Boolean.valueOf(transferWorkflow.transferSubPackagesAndIes)}">
                 <g:link controller="survey" action="setSurveyTransferConfig"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferSubPackagesAndIes: false]">
                     <i class="check bordered large green icon"></i>
@@ -78,7 +78,7 @@
             </div>
         </div>
 
-        <g:if test="${transferWorkflow && transferWorkflow.transferSurveyProperties == 'true'}">
+        <g:if test="${transferWorkflow && Boolean.valueOf(transferWorkflow.transferSurveyProperties)}">
             <g:link controller="survey" action="setSurveyTransferConfig"
                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferSurveyProperties: false]">
                 <i class="check bordered large green icon"></i>
@@ -107,7 +107,7 @@
             </div>
         </div>
 
-        <g:if test="${transferWorkflow && transferWorkflow.transferCustomProperties == 'true'}">
+        <g:if test="${transferWorkflow && Boolean.valueOf(transferWorkflow.transferCustomProperties)}">
             <g:link controller="survey" action="setSurveyTransferConfig"
                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferCustomProperties: false]">
                 <i class="check bordered large green icon"></i>
@@ -137,7 +137,7 @@
             </div>
         </div>
 
-        <g:if test="${transferWorkflow && transferWorkflow.transferPrivateProperties == 'true'}">
+        <g:if test="${transferWorkflow && Boolean.valueOf(transferWorkflow.transferPrivateProperties)}">
             <g:link controller="survey" action="setSurveyTransferConfig"
                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferPrivateProperties: false]">
                 <i class="check bordered large green icon"></i>
@@ -168,7 +168,7 @@
                 </div>
             </div>
 
-            <g:if test="${transferWorkflow && transferWorkflow.transferSurveyCostItems == 'true'}">
+            <g:if test="${transferWorkflow && Boolean.valueOf(transferWorkflow.transferSurveyCostItems)}">
                 <g:link controller="survey" action="setSurveyTransferConfig"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferSurveyCostItems: false]">
                     <i class="check bordered large green icon"></i>

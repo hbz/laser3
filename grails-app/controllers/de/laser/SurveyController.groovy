@@ -3487,7 +3487,7 @@ class SurveyController {
         ]
 
         result.subscription = subscription
-        result.parentSub = Subscription.get(params.parentSub ?: null)
+        result.parentSub = result.surveyConfig.subscription
         result
     }
 
