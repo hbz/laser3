@@ -31,6 +31,8 @@
             <div id="stats_subscription" class="stats-content">
                 <div class="chartWrapper" id="cw-subscription"></div>
 
+                <div class="ui form segment">
+
                 <div class="ui secondary la-tab-with-js menu">
                     <div class="item black">${message(code: 'subscription.periodOfValidity.label')}:</div>
                     <g:each in="${subscriptionTimelineMap.keySet()}" var="year">
@@ -46,6 +48,8 @@
                             ${subStatus.getI10n('value')} <span class="ui blue circular label">${subList.size()}</span>
                         </a>
                     </g:each>
+                </div>
+
                 </div>
 
                 <g:each in="${subscriptionMap}" var="subStatusId,subList">
@@ -119,6 +123,8 @@
             <div id="stats_license" class="stats-content">
                 <div class="chartWrapper" id="cw-license"></div>
 
+                <div class="ui form segment">
+
                 <div class="ui secondary la-tab-with-js menu">
                     <div class="item black">${message(code: 'subscription.periodOfValidity.label')}:</div>
                     <g:each in="${licenseTimelineMap.keySet()}" var="year">
@@ -134,6 +140,8 @@
                             ${licStatusRdv.getI10n('value')} <span class="ui blue circular label">${licList.size()}</span>
                         </a>
                     </g:each>
+                </div>
+
                 </div>
 
                 <g:each in="${licenseMap}" var="licStatus,licList">
@@ -184,6 +192,8 @@
             <div id="stats_provider" class="stats-content">
                 <div class="chartWrapper" id="cw-provider"></div>
 
+                <div class="ui form segment">
+
                 <div class="ui secondary la-tab-with-js menu">
                     <div class="item black">${message(code: 'subscription.periodOfValidity.label')}:</div>
                     <g:each in="${providerTimelineMap.keySet()}" var="year">
@@ -201,7 +211,7 @@
                     </g:each>
                 </div>
 
-                <br />
+                </div>
 
                 <g:each in="${providerMap}" var="prov,subList">
                     <g:set var="provider" value="${Org.get(prov)}" />
@@ -272,6 +282,8 @@
             <div id="stats_survey" class="stats-content">
                 <div class="chartWrapper" id="cw-survey"></div>
 
+                <div class="ui form segment">
+
                 <div class="ui secondary la-tab-with-js menu">
                     <div class="item black">${message(code: 'subscription.periodOfValidity.label')}:</div>
                     <g:each in="${surveyTimelineMap.keySet()}" var="year">
@@ -289,6 +301,7 @@
                         </a>
                     </g:each>
                 </div>
+
                 <div>
                     <span class="ui checkbox">
                         <label for="survey-toggle-subscriptions">Lizenzen anzeigen</label>
@@ -296,7 +309,7 @@
                     </span>
                 </div>
 
-                <br />
+                </div>
 
                 <g:each in="${surveyMap}" var="surveyStatus,surveyData">
                     <div class="ui tab segment ${surveyStatus == 'open' ? 'active' : ''}" data-tab="survey-${surveyStatus}">
