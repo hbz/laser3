@@ -189,6 +189,7 @@
 
                 <ui:actionsDropdownItem controller="survey" action="addSubtoIssueEntitlementsSurvey"
                                            params="${[sub:params.id]}" text="${message(code:'createIssueEntitlementsSurvey.label')}" />
+                <div class="divider"></div>
             </g:if>
             <g:elseif test="${contextService.getOrg().isCustomerType_Consortium() && showConsortiaFunctions && subscription.instanceOf == null }">
                 <ui:actionsDropdownItemDisabled controller="survey" action="addSubtoSubscriptionSurvey" params="${[sub:params.id]}" text="${message(code:'createSubscriptionSurvey.label')}"
@@ -196,6 +197,7 @@
 
                 <ui:actionsDropdownItemDisabled controller="survey" action="addSubtoIssueEntitlementsSurvey" params="${[sub:params.id]}" text="${message(code:'createIssueEntitlementsSurvey.label')}"
                                                 tooltip="${message(code: 'tooltip.onlyFullMembership')}" message="createIssueEntitlementsSurvey.label"/>
+                <div class="divider"></div>
             </g:elseif>
 
             <g:if test="${showConsortiaFunctions || subscription.administrative}">

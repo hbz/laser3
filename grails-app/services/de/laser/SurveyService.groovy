@@ -1973,4 +1973,26 @@ class SurveyService {
         groovyPageRenderer.render view: '/mailTemplates/text/notificationSurveys', model: [language: language, surveys: surveys, reminder: reminder]
     }
 
+    int countMultiYearResult(SurveyConfig surveyConfig, int multiYear){
+        int countListMuliYearResult = 0
+        String query = 'select count(*) from SurveyResult where surveyConfig = :surveyConfig and type in (:type) and refValue = :yes and (exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = :surveyConfig and surResult.type = :participation and refValue = :yes))'
+        if(multiYear == 1){
+            countListMuliYearResult =  SurveyResult.executeQuery( query, [participation: PropertyStore.SURVEY_PROPERTY_PARTICIPATION, type: [PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2, PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3, PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4, PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5], surveyConfig: surveyConfig, yes: RDStore.YN_YES] )[0]
+        } else if(multiYear == 2){
+            countListMuliYearResult =  SurveyResult.executeQuery( query, [participation: PropertyStore.SURVEY_PROPERTY_PARTICIPATION, type: [PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2, PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3, PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4, PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5], surveyConfig: surveyConfig, yes: RDStore.YN_YES] )[0]
+        } else if(multiYear == 3){
+            countListMuliYearResult =  SurveyResult.executeQuery( query, [participation: PropertyStore.SURVEY_PROPERTY_PARTICIPATION, type: [PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3, PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4, PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5], surveyConfig: surveyConfig, yes: RDStore.YN_YES] )[0]
+        }else if(multiYear == 4){
+            countListMuliYearResult =  SurveyResult.executeQuery( query, [participation: PropertyStore.SURVEY_PROPERTY_PARTICIPATION, type: [PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4, PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5], surveyConfig: surveyConfig, yes: RDStore.YN_YES] )[0]
+        }else if(multiYear == 5){
+            countListMuliYearResult =  SurveyResult.executeQuery( query, [participation: PropertyStore.SURVEY_PROPERTY_PARTICIPATION, type: [PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5], surveyConfig: surveyConfig, yes: RDStore.YN_YES] )[0]
+        }
+
+        return countListMuliYearResult
+    }
+
+    List<PropertyDefinition> getMultiYearResultProperties(SurveyConfig surveyConfig, Org org){
+        return SurveyResult.executeQuery( 'select surResult.type from SurveyResult as surResult where surResult.surveyConfig = :surveyConfig and surResult.type in (:type) and surResult.refValue = :yes and surResult.participant = :participant', [participant: org, type: [PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2, PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3, PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4, PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5], surveyConfig: surveyConfig, yes: RDStore.YN_YES] )
+    }
+
 }

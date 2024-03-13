@@ -3,6 +3,7 @@ package de.laser
 
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.Params
+import de.laser.storage.PropertyStore
 import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
@@ -1004,6 +1005,12 @@ class FilterService {
                     }
                 }
                 base_qry += ')'
+        }
+
+        if (params.filterPropDefAllMultiYear) {
+            base_qry += ' and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and participant = surveyOrg.org and surResult.type in (:propDef) and surResult.refValue = :refValue) '
+            queryParams.put('propDef', [PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2, PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3, PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4, PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5])
+            queryParams.put('refValue', RDStore.YN_YES)
         }
 
         if((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription)) {

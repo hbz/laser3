@@ -22,8 +22,19 @@
                         <g:else>
                             <g:set var="subscriptionHeader" value="${message(code: 'subscription')}"/>
                         </g:else>
+                        <th class="center aligned"  rowspan="2" scope="col">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                  data-content="${message(code: 'default.previous.label')}">
+                                <i class="arrow left icon"></i>
+                            </span>
+                        </th>
                         <g:sortableColumn params="${params}" property="s.name" title="${subscriptionHeader}" rowspan="2" scope="col" />
-
+                        <th class="center aligned" rowspan="2" scope="col">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                  data-content="${message(code: 'default.next.label')}">
+                                <i class="arrow right icon"></i>
+                            </span>
+                        </th>
                         <g:if test="${'showPackages' in tableConfig}">
                             <th rowspan="2" scope="col">
                                 ${message(code: 'license.details.linked_pkg')}
@@ -73,6 +84,16 @@
                         <td class="center aligned">
                             ${ (params.int('offset') ?: 0)  + i + 1 }
                         </td>
+                        <%
+                            LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(s,false)
+                            Long navPrevSub = (links?.prevLink && links?.prevLink?.size() > 0) ? links?.prevLink[0] : null
+                            Long navNextSub = (links?.nextLink && links?.nextLink?.size() > 0) ? links?.nextLink[0] : null
+                        %>
+                        <td class="center aligned">
+                            <g:if test="${navPrevSub}">
+                                <g:link controller="subscription" action="show" id="${navPrevSub}"><i class="arrow left icon"></i></g:link>
+                            </g:if>
+                        </td>
                         <th scope="row" class="la-th-column">
                             <g:link controller="subscription" class="la-main-object" action="show" id="${s.id}">
                                 <g:if test="${s.name}">
@@ -107,6 +128,11 @@
                                 </g:each>
                             </g:if>
                         </th>
+                        <td class="center aligned">
+                            <g:if test="${navNextSub}">
+                                <g:link controller="subscription" action="show" id="${navNextSub}"><i class="arrow right icon"></i></g:link>
+                            </g:if>
+                        </td>
                         <g:if test="${'showPackages' in tableConfig}">
                         <td>
                         <!-- packages -->

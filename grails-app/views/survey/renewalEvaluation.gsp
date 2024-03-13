@@ -58,39 +58,6 @@
 
     <ui:greySegment>
 
-        %{--<h3 class="ui header">
-        <g:message code="renewalEvaluation.parentSubscription"/>:
-        <g:if test="${parentSubscription}">
-            <g:link controller="subscription" action="show"
-                    id="${parentSubscription.id}">${parentSubscription.dropdownNamingConvention()}</g:link>
-        </g:if>
-
-        <br/>
-        <br/>
-        <g:message code="renewalEvaluation.parentSuccessorSubscription"/>:
-        <g:if test="${parentSuccessorSubscription}">
-            <g:link controller="subscription" action="show"
-                    id="${parentSuccessorSubscription.id}">${parentSuccessorSubscription.dropdownNamingConvention()}</g:link>
-
-            <g:if test="${parentSuccessorSubscription.getSubscriber().size() > 0}">
-                <g:link controller="subscription" action="copyElementsIntoSubscription" id="${parentSubscription.id}"
-                        params="[sourceObjectId: genericOIDService.getOID(parentSubscription), targetObjectId: genericOIDService.getOID(parentSuccessorSubscription), isRenewSub: true, fromSurvey: true]"
-                        class="ui button ">
-                    <g:message code="renewalEvaluation.newSub.change"/>
-                </g:link>
-            </g:if>
-
-        </g:if>
-        <g:else>
-            <g:link controller="survey" action="renewSubscriptionConsortiaWithSurvey" id="${surveyInfo.id}"
-                    params="[surveyConfig: surveyConfig.id, parentSub: parentSubscription.id]"
-                    class="ui button ">
-                <g:message code="renewalEvaluation.newSub"/>
-            </g:link>
-        </g:else>
-        <br />
-        </h3>--}%
-
         <g:set var="countParticipants" value="${surveyConfig.countParticipants()}"/>
         <div class="ui horizontal segments">
             <div class="ui segment center aligned">

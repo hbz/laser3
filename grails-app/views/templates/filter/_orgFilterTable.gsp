@@ -165,7 +165,7 @@
                     </g:if>
 
                     <g:set var="costItemElements"
-                           value="${CostItem.executeQuery('from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg as surOrg where surveyConfig = :surveyConfig)', [status: RDStore.COST_ITEM_DELETED, surveyConfig: surveyConfig]).groupBy {it.costItemElement}.collect {RefdataValue.findByValueAndOwner(it.key, RefdataCategory.findByDesc(RDConstants.COST_ITEM_ELEMENT))}}"/>
+                           value="${CostItem.executeQuery('from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg as surOrg where surveyConfig = :surveyConfig) and ct.costItemElement is not null', [status: RDStore.COST_ITEM_DELETED, surveyConfig: surveyConfig]).groupBy {it.costItemElement}.collect {RefdataValue.findByValueAndOwner(it.key, RefdataCategory.findByDesc(RDConstants.COST_ITEM_ELEMENT))}}"/>
 
                         <ui:select name="selectedCostItemElement"
                                       from="${costItemElements}"

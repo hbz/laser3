@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.AuditConfig;de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.AuditConfig;de.laser.storage.RDConstants; de.laser.storage.RDStore;" %>
 <laser:htmlStart message="surveyInfo.renewal" />
 
 <ui:breadcrumbs>
@@ -39,7 +39,7 @@
 
 
 <g:form action="processRenewalWithSurvey" method="post" enctype="multipart/form-data" params="${params}">
-    <input type="hidden" name="subscription.old_subid" value="${permissionInfo.sub_id}"/>
+    <input type="hidden" name="parentSub" value="${parentSub.id}"/>
 
         <table class="ui celled la-js-responsive-table la-table table">
             <thead>

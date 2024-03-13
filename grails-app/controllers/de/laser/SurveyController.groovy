@@ -3455,7 +3455,7 @@ class SurveyController {
             response.sendError(401); return
         }
 
-        Subscription subscription = Subscription.get(params.parentSub ?: null)
+        Subscription subscription = Subscription.get(params.oldSub ?: null)
 
         SimpleDateFormat sdf = DateUtils.getSDF_ddMMyyyy()
 
@@ -3487,6 +3487,7 @@ class SurveyController {
         ]
 
         result.subscription = subscription
+        result.parentSub = result.surveyConfig.subscription
         result
     }
 
@@ -3509,7 +3510,7 @@ class SurveyController {
             }
         }
 
-        Subscription baseSub = Subscription.get(params.parentSub ?: null)
+        Subscription baseSub = Subscription.get(params.oldSub ?: null)
 
         ArrayList<Links> previousSubscriptions = Links.findAllByDestinationSubscriptionAndLinkType(baseSub, RDStore.LINKTYPE_FOLLOWS)
         if (previousSubscriptions.size() > 0) {
@@ -3527,7 +3528,6 @@ class SurveyController {
             boolean sub_hasPublishComponent = params.long('subHasPublishComponent') == RDStore.YN_YES.id
             boolean sub_isPublicForApi      = params.long('subIsPublicForApi') == RDStore.YN_YES.id
             def sub_holdingSelection = params.subHoldingSelection
-            def old_subOID = params.subscription.old_subid
             def new_subname = params.subscription.name
             def manualCancellationDate = null
 
@@ -3590,7 +3590,7 @@ class SurveyController {
                     if (params.targetObjectId == "null") params.remove("targetObjectId")
                     result.isRenewSub = true
 
-                    redirect controller: 'subscription', action: 'copyElementsIntoSubscription', params: [sourceObjectId: genericOIDService.getOID(Subscription.get(old_subOID)), targetObjectId: genericOIDService.getOID(newSub), isRenewSub: true, fromSurvey: true]
+                    redirect controller: 'subscription', action: 'copyElementsIntoSubscription', params: [sourceObjectId: genericOIDService.getOID(Subscription.get(params.parentSub)), targetObjectId: genericOIDService.getOID(newSub), isRenewSub: true, fromSurvey: true]
                     return
 
                 }
@@ -3932,9 +3932,54 @@ class SurveyController {
 
         result.parentSubscription = result.surveyConfig.subscription
         result.parentSubChilds = subscriptionService.getValidSubChilds(result.parentSubscription)
-        if(result.surveyConfig.subSurveyUseForTransfer){
-            result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
-        }else{
+
+        if(result.surveyConfig.subSurveyUseForTransfer) {
+            List listMuliYearsSub = []
+            int multiYears = 0
+            List <PropertyDefinition> surProperties = result.surveyConfig.surveyProperties.surveyProperty
+            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2.id in surProperties.id){
+                multiYears = 2
+            }
+            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3.id in surProperties.id){
+                multiYears = 3
+            }
+            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4.id in surProperties.id){
+                multiYears = 4
+            }
+            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5.id in surProperties.id){
+                multiYears = 5
+            }
+
+            Date startDate = result.parentSubscription.startDate
+            Date endDate = result.parentSubscription.endDate
+            for(int i = 0; i < multiYears; i++ ){
+                int newYear = i+1
+                Map mulitYearMap = [:]
+                use(TimeCategory) {
+                    startDate = endDate ? (endDate + 1.day) : null
+                    endDate = result.parentSubscription.endDate ? (result.parentSubscription.endDate + newYear.year) : null
+                }
+                mulitYearMap.startDate = startDate
+                mulitYearMap.endDate = endDate
+
+                listMuliYearsSub << mulitYearMap
+            }
+
+            result.nextSubs = linksGenerationService.getSuccessionChain(result.parentSubscription, 'destinationSubscription')
+            result.listMuliYearsSub = listMuliYearsSub
+
+            Subscription targetSubscription
+            if(params.targetSubscriptionId){
+                targetSubscription = Subscription.get(params.targetSubscriptionId)
+            }
+
+            if(targetSubscription && result.nextSubs.size() > 0 && (targetSubscription in result.nextSubs)){
+                result.parentSuccessorSubscription = targetSubscription
+            }else{
+                result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
+            }
+
+        } else{
             result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
         }
         result.targetSubscription =  result.parentSuccessorSubscription
@@ -4000,8 +4045,55 @@ class SurveyController {
         }
 
         result.parentSubscription = result.surveyConfig.subscription
-        result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
+        if(result.surveyConfig.subSurveyUseForTransfer) {
+            List listMuliYearsSub = []
+            int multiYears = 0
+            List <PropertyDefinition> surProperties = result.surveyConfig.surveyProperties.surveyProperty
+            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2.id in surProperties.id){
+                multiYears = 2
+            }
+            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3.id in surProperties.id){
+                multiYears = 3
+            }
+            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4.id in surProperties.id){
+                multiYears = 4
+            }
+            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5.id in surProperties.id){
+                multiYears = 5
+            }
 
+            Date startDate = result.parentSubscription.startDate
+            Date endDate = result.parentSubscription.endDate
+            for(int i = 0; i < multiYears; i++ ){
+                int newYear = i+1
+                Map mulitYearMap = [:]
+                use(TimeCategory) {
+                    startDate = endDate ? (endDate + 1.day) : null
+                    endDate = result.parentSubscription.endDate ? (result.parentSubscription.endDate + newYear.year) : null
+                }
+                mulitYearMap.startDate = startDate
+                mulitYearMap.endDate = endDate
+
+                listMuliYearsSub << mulitYearMap
+            }
+
+            result.nextSubs = linksGenerationService.getSuccessionChain(result.parentSubscription, 'destinationSubscription')
+            result.listMuliYearsSub = listMuliYearsSub
+
+            Subscription targetSubscription
+            if(params.targetSubscriptionId){
+                targetSubscription = Subscription.get(params.targetSubscriptionId)
+            }
+
+            if(targetSubscription && result.nextSubs.size() > 0 && (targetSubscription in result.nextSubs)){
+                result.parentSuccessorSubscription = targetSubscription
+            }else{
+                result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
+            }
+
+        } else{
+            result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+        }
         result.targetSubscription =  result.parentSuccessorSubscription
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
@@ -4114,11 +4206,54 @@ class SurveyController {
         }
 
         result.parentSubscription = result.surveyConfig.subscription
-        if(result.surveyConfig.subSurveyUseForTransfer){
-            result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
-        }else{
-            result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+        if(result.surveyConfig.subSurveyUseForTransfer) {
+            List listMuliYearsSub = []
+            int multiYears = 0
+            List <PropertyDefinition> surProperties = result.surveyConfig.surveyProperties.surveyProperty
+            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2.id in surProperties.id){
+                multiYears = 2
+            }
+            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3.id in surProperties.id){
+                multiYears = 3
+            }
+            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4.id in surProperties.id){
+                multiYears = 4
+            }
+            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5.id in surProperties.id){
+                multiYears = 5
+            }
 
+            Date startDate = result.parentSubscription.startDate
+            Date endDate = result.parentSubscription.endDate
+            for(int i = 0; i < multiYears; i++ ){
+                int newYear = i+1
+                Map mulitYearMap = [:]
+                use(TimeCategory) {
+                    startDate = endDate ? (endDate + 1.day) : null
+                    endDate = result.parentSubscription.endDate ? (result.parentSubscription.endDate + newYear.year) : null
+                }
+                mulitYearMap.startDate = startDate
+                mulitYearMap.endDate = endDate
+
+                listMuliYearsSub << mulitYearMap
+            }
+
+            result.nextSubs = linksGenerationService.getSuccessionChain(result.parentSubscription, 'destinationSubscription')
+            result.listMuliYearsSub = listMuliYearsSub
+
+            Subscription targetSubscription
+            if(params.targetSubscriptionId){
+                targetSubscription = Subscription.get(params.targetSubscriptionId)
+            }
+
+            if(targetSubscription && result.nextSubs.size() > 0 && (targetSubscription in result.nextSubs)){
+                result.parentSuccessorSubscription = targetSubscription
+            }else{
+                result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
+            }
+
+        } else{
+            result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
         }
         result.targetSubscription =  result.parentSuccessorSubscription
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
@@ -4173,14 +4308,24 @@ class SurveyController {
             response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
-        if(result.surveyConfig.subSurveyUseForTransfer){
-            result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
-        }else{
+        if(result.surveyConfig.subSurveyUseForTransfer) {
+            result.nextSubs = linksGenerationService.getSuccessionChain(result.parentSubscription, 'destinationSubscription')
+
+            Subscription targetSubscription
+            if(params.targetSubscriptionId){
+                targetSubscription = Subscription.get(params.targetSubscriptionId)
+            }
+
+            if(targetSubscription && result.nextSubs.size() > 0 && (targetSubscription in result.nextSubs)){
+                result.parentSuccessorSubscription = targetSubscription
+            }else{
+                result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
+            }
+
+        } else{
             result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
         }
-
         result.targetSubscription =  result.parentSuccessorSubscription
-
         Integer countNewCostItems = 0
         //RefdataValue costElement = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE
         CostItem.withTransaction { TransactionStatus ts ->
@@ -4405,16 +4550,55 @@ class SurveyController {
         params.tab = params.tab ?: 'surveyProperties'
 
         result.parentSubscription = result.surveyConfig.subscription
-        if(result.surveyConfig.subSurveyUseForTransfer){
-            result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
-        }else{
+        if(result.surveyConfig.subSurveyUseForTransfer) {
+            List listMuliYearsSub = []
+            int multiYears = 0
+            List <PropertyDefinition> surProperties = result.surveyConfig.surveyProperties.surveyProperty
+            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2.id in surProperties.id){
+                multiYears = 2
+            }
+            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3.id in surProperties.id){
+                multiYears = 3
+            }
+            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4.id in surProperties.id){
+                multiYears = 4
+            }
+            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5.id in surProperties.id){
+                multiYears = 5
+            }
+
+            Date startDate = result.parentSubscription.startDate
+            Date endDate = result.parentSubscription.endDate
+            for(int i = 0; i < multiYears; i++ ){
+                int newYear = i+1
+                Map mulitYearMap = [:]
+                use(TimeCategory) {
+                    startDate = endDate ? (endDate + 1.day) : null
+                    endDate = result.parentSubscription.endDate ? (result.parentSubscription.endDate + newYear.year) : null
+                }
+                mulitYearMap.startDate = startDate
+                mulitYearMap.endDate = endDate
+
+                listMuliYearsSub << mulitYearMap
+            }
+
+            result.nextSubs = linksGenerationService.getSuccessionChain(result.parentSubscription, 'destinationSubscription')
+            result.listMuliYearsSub = listMuliYearsSub
+
+            Subscription targetSubscription
+            if(params.targetSubscriptionId){
+                targetSubscription = Subscription.get(params.targetSubscriptionId)
+            }
+
+            if(targetSubscription && result.nextSubs.size() > 0 && (targetSubscription in result.nextSubs)){
+                result.parentSuccessorSubscription = targetSubscription
+            }else{
+                result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
+            }
+
+        } else{
             result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
         }
-
-        if(!result.parentSubscription){
-            result.parentSubscription = result.parentSuccessorSubscription
-        }
-
         result.targetSubscription =  result.parentSuccessorSubscription
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
@@ -4514,9 +4698,21 @@ class SurveyController {
             response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
-        if(result.surveyConfig.subSurveyUseForTransfer){
-            result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
-        }else{
+        if(result.surveyConfig.subSurveyUseForTransfer) {
+            result.nextSubs = linksGenerationService.getSuccessionChain(result.parentSubscription, 'destinationSubscription')
+
+            Subscription targetSubscription
+            if(params.targetSubscriptionId){
+                targetSubscription = Subscription.get(params.targetSubscriptionId)
+            }
+
+            if(targetSubscription && result.nextSubs.size() > 0 && (targetSubscription in result.nextSubs)){
+                result.parentSuccessorSubscription = targetSubscription
+            }else{
+                result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
+            }
+
+        } else{
             result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
         }
         result.targetSubscription =  result.parentSuccessorSubscription
@@ -4679,7 +4875,20 @@ class SurveyController {
 
         result.parentSubscription = result.surveyConfig.subscription
         result.parentSubChilds = subscriptionService.getValidSubChilds(result.parentSubscription)
-        result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
+
+        result.nextSubs = linksGenerationService.getSuccessionChain(result.parentSubscription, 'destinationSubscription')
+
+        Subscription targetSubscription
+        if (params.targetSubscriptionId) {
+            targetSubscription = Subscription.get(params.targetSubscriptionId)
+        }
+
+        if (targetSubscription && result.nextSubs.size() > 0 && (targetSubscription in result.nextSubs)) {
+            result.parentSuccessorSubscription = targetSubscription
+        } else {
+            result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
+        }
+
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
         result.participationProperty = PropertyStore.SURVEY_PROPERTY_PARTICIPATION
@@ -4722,7 +4931,23 @@ class SurveyController {
 
         }
 
+        boolean addMembersOnlyToSuccesorSub = false
+        Set<Subscription> successorSubs = result.parentSubscription._getCalculatedSuccessor()
+        successorSubs.each { Subscription sub ->
+            if (sub == result.parentSuccessorSubscription) {
+                addMembersOnlyToSuccesorSub = true
+            }
+        }
+
+
         result.newSubs = []
+
+        int selectedMultiYearCount = 0
+        result.nextSubs.eachWithIndex { Subscription subscription, int i ->
+            if (subscription == result.parentSuccessorSubscription) {
+                selectedMultiYearCount = i+1
+            }
+        }
 
         Integer countNewSubs = 0
 
@@ -4758,7 +4983,7 @@ class SurveyController {
                 //Umfrage-Merkmal MJL5
                 SurveyResult participantPropertyFive = result.multiYearTermFiveSurvey ? SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermFiveSurvey) : null
 
-                if (participantPropertyTwo && participantPropertyTwo.refValue?.id == RDStore.YN_YES.id) {
+                if (selectedMultiYearCount in [1, 2] && participantPropertyTwo && participantPropertyTwo.refValue?.id == RDStore.YN_YES.id) {
                     use(TimeCategory) {
                         newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
                         newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 2.year) : null
@@ -4766,7 +4991,7 @@ class SurveyController {
                     countNewSubs++
                     result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
 
-                } else if (participantPropertyThree && participantPropertyThree.refValue?.id == RDStore.YN_YES.id) {
+                } else if (selectedMultiYearCount in [1, 2, 3] && participantPropertyThree && participantPropertyThree.refValue?.id == RDStore.YN_YES.id) {
                     use(TimeCategory) {
                         newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
                         newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 3.year) : null
@@ -4774,7 +4999,7 @@ class SurveyController {
                     countNewSubs++
                     result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
 
-                } else if (participantPropertyFour && participantPropertyFour.refValue?.id == RDStore.YN_YES.id) {
+                } else if (selectedMultiYearCount in [1, 2, 3, 4] && participantPropertyFour && participantPropertyFour.refValue?.id == RDStore.YN_YES.id) {
                     use(TimeCategory) {
                         newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
                         newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 4.year) : null
@@ -4782,7 +5007,7 @@ class SurveyController {
                     countNewSubs++
                     result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
 
-                } else if (participantPropertyFive && participantPropertyFive.refValue?.id == RDStore.YN_YES.id) {
+                } else if (selectedMultiYearCount in [1, 2, 3, 4, 5] && participantPropertyFive && participantPropertyFive.refValue?.id == RDStore.YN_YES.id) {
                     use(TimeCategory) {
                         newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
                         newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 5.year) : null
@@ -4791,12 +5016,14 @@ class SurveyController {
                     result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
 
                 } else {
-                    use(TimeCategory) {
-                        newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
-                        newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 1.year) : null
+                    if(addMembersOnlyToSuccesorSub) {
+                        use(TimeCategory) {
+                            newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
+                            newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 1.year) : null
+                        }
+                        countNewSubs++
+                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
                     }
-                    countNewSubs++
-                    result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
                 }
             }
         }
@@ -4806,7 +5033,6 @@ class SurveyController {
             if (sub.isCurrentMultiYearSubscriptionToParentSub()){
                 Org org = sub.getSubscriber()
                     if (!(result.parentSuccessortParticipantsList && org.id in result.parentSuccessortParticipantsList.id)) {
-
                         countNewSubs++
                         result.newSubs.addAll(_processAddMember(sub, result.parentSuccessorSubscription, org, sub.startDate, sub.endDate, true, params))
                     }
@@ -4880,7 +5106,7 @@ class SurveyController {
         Org institution = contextService.getOrg()
         Subscription memberSub
 
-        if (contextService.getOrg().isCustomerType_Consortium_Pro()) {
+        if (contextService.getOrg().isCustomerType_Consortium_Pro() && !newParentSub.getDerivedSubscriptionBySubscribers(org)) {
 
                 License licenseCopy
 
@@ -5499,5 +5725,56 @@ class SurveyController {
         result.contactSwitch = contactSwitch
 
         render(template: templateName, model: result)
+    }
+
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+    })
+    Map<String,Object> openTransferParticipantsModal() {
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        if(result.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!result.result) {
+                response.sendError(401)
+                return
+            }
+        }
+
+        if (!result.editable) {
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
+        }
+
+        result.parentSubscription = result.surveyConfig.subscription
+
+        if(result.surveyConfig.subSurveyUseForTransfer) {
+            result.nextSubs = linksGenerationService.getSuccessionChain(result.parentSubscription, 'destinationSubscription')
+
+            Subscription targetSubscription
+            if(params.targetSubscriptionId){
+                targetSubscription = Subscription.get(params.targetSubscriptionId)
+            }
+
+            if(targetSubscription && result.nextSubs.size() > 0 && (targetSubscription in result.nextSubs)){
+                result.parentSuccessorSubscription = targetSubscription
+            }else{
+                result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
+            }
+
+        } else{
+            result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+        }
+        result.targetSubscription =  result.parentSuccessorSubscription
+
+        result.superOrgType = []
+        if(contextService.getOrg().isCustomerType_Consortium_Pro()) {
+            result.superOrgType << message(code:'consortium.superOrgType')
+        }
+
+        if(result.surveyConfig.subSurveyUseForTransfer && result.parentSuccessorSubscription) {
+            String query = "select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType"
+            result.memberLicenses = License.executeQuery(query, [subscription: result.parentSuccessorSubscription, linkType: RDStore.LINKTYPE_LICENSE])
+        }
+
+        render(template: 'transferParticipantsModal', model: result)
     }
 }
