@@ -1300,7 +1300,7 @@ class SubscriptionControllerService {
         result.filteredSubChilds = getFilteredSubscribers(params,result.subscription)
         result.filterSet = params.filterSet ? true : false
 
-        result.selectedCostItemElementID = params.selectedCostItemElementID ? params.selectedCostItemElementID : RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+        result.selectedCostItemElementID = params.selectedCostItemElementID ?: RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
 
         result.selectedCostItemElement = RefdataValue.get(result.selectedCostItemElementID)
 
@@ -1536,25 +1536,28 @@ class SubscriptionControllerService {
                                     }
                                 }
 
-                                licensesToProcess.each { License lic ->
-                                    subscriptionService.setOrgLicRole(memberSub,lic,false)
-                                }
-                                params.list('propRow').each { String rowKey ->
-                                    if(params.containsKey('propValue'+rowKey) && params["propValue${rowKey}"] != "") {
-                                        PropertyDefinition propDef = PropertyDefinition.get(params["propId${rowKey}"])
-                                        String propValue = params["propValue${rowKey}"] as String
-                                        if(propDef.isRefdataValueType())
-                                            propValue = RefdataValue.class.name+':'+propValue
-                                        subscriptionService.createProperty(propDef, memberSub, (Org) result.institution, propValue, params["propNote${rowKey}"] as String)
+                                    licensesToProcess.each { License lic ->
+                                        subscriptionService.setOrgLicRole(memberSub, lic, false)
                                     }
-                                }
-                                if(params.customerIdentifier || params.requestorKey) {
-                                    result.subscription.packages.each { SubscriptionPackage sp ->
-                                        CustomerIdentifier ci = new CustomerIdentifier(customer: cm, type: RDStore.CUSTOMER_IDENTIFIER_TYPE_DEFAULT, value: params.customerIdentifier, requestorKey: params.requestorKey, platform: sp.pkg.nominalPlatform, owner: result.institution, isPublic: true)
-                                        if(!ci.save())
-                                            log.error(ci.errors.getAllErrors().toListString())
+
+                                    if (c == 0) {
+                                        params.list('propRow').each { String rowKey ->
+                                            if (params.containsKey('propValue' + rowKey) && params["propValue${rowKey}"] != "") {
+                                                PropertyDefinition propDef = PropertyDefinition.get(params["propId${rowKey}"])
+                                                String propValue = params["propValue${rowKey}"] as String
+                                                if (propDef.isRefdataValueType())
+                                                    propValue = RefdataValue.class.name + ':' + propValue
+                                                subscriptionService.createProperty(propDef, memberSub, (Org) result.institution, propValue, params["propNote${rowKey}"] as String)
+                                            }
+                                        }
+                                        if (params.customerIdentifier || params.requestorKey) {
+                                            result.subscription.packages.each { SubscriptionPackage sp ->
+                                                CustomerIdentifier ci = new CustomerIdentifier(customer: cm, type: RDStore.CUSTOMER_IDENTIFIER_TYPE_DEFAULT, value: params.customerIdentifier, requestorKey: params.requestorKey, platform: sp.pkg.nominalPlatform, owner: result.institution, isPublic: true)
+                                                if (!ci.save())
+                                                    log.error(ci.errors.getAllErrors().toListString())
+                                            }
+                                        }
                                     }
-                                }
 
                                 memberSubs << memberSub.id
                             }

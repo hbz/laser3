@@ -1025,7 +1025,7 @@ class SurveyController {
         result.selectedParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsr.query, fsr.queryParams, params)
         result.selectedSubParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsr.query, fsr.queryParams, params)
 
-        result.selectedCostItemElementID = params.selectedCostItemElementID ? params.selectedCostItemElementID : RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+        result.selectedCostItemElementID = params.selectedCostItemElementID ?: RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
 
         if(result.selectedSubParticipants && (params.sortOnCostItemsDown || params.sortOnCostItemsUp) && !params.sort){
             List<Subscription> orgSubscriptions = result.surveyConfig.orgSubscriptions()
@@ -4261,7 +4261,7 @@ class SurveyController {
         result.targetSubscription =  result.parentSuccessorSubscription
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
-        result.selectedCostItemElementID = params.selectedCostItemElementID ? params.selectedCostItemElementID : RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+        result.selectedCostItemElementID = params.selectedCostItemElementID ?: RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
 
         result.selectedCostItemElement = RefdataValue.get(result.selectedCostItemElementID)
 
@@ -4427,7 +4427,7 @@ class SurveyController {
 
         result.participantsList = []
 
-        result.selectedCostItemElementID = params.selectedCostItemElementID ? params.selectedCostItemElementID : RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+        result.selectedCostItemElementID = params.selectedCostItemElementID ?: RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
 
         result.selectedCostItemElement = RefdataValue.get(result.selectedCostItemElementID)
 
