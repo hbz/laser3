@@ -245,7 +245,7 @@
     });
 
         $('#selectedCostItemElementID').on('change', function() {
-        var selectedCostItemElementID = $("#selectedCostItemElementID").val()
+        var selectedCostItemElementID = $(this).val()
         var url = "<g:createLink controller="survey" action="$actionName" params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID]}"/>&selectedCostItemElementID="+selectedCostItemElementID;
             location.href = url;
          });

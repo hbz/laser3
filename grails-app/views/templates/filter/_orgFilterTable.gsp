@@ -1057,7 +1057,7 @@
 <g:if test="${tmplConfigShow?.contains('surveySubCostItem') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
     <laser:script file="${this.getGroovyPageFileName()}">
         $('#selectedCostItemElementID').on('change', function() {
-            var selectedCostItemElementID = $("#selectedCostItemElementID").val()
+            var selectedCostItemElementID = $(this).val()
             var url = "<g:createLink controller="survey" action="surveyCostItems" params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]}"/>&selectedCostItemElementID="+selectedCostItemElementID;
             location.href = url;
          });

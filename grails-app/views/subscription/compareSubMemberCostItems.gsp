@@ -519,7 +519,7 @@
                 });
 
          $('#selectedCostItemElementID').on('change', function() {
-            var selectedCostItemElementID = $("#selectedCostItemElementID").val()
+            var selectedCostItemElementID = $(this).val()
             var url = "<g:createLink controller="${controllerName}" action="${actionName}" id="${params.id}"/>?selectedCostItemElementID="+selectedCostItemElementID;
             location.href = url;
          });
