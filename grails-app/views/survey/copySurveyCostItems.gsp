@@ -43,6 +43,8 @@
         ${message(code: 'surveyInfo.copySurveyCostItems')}
     </h2>
 
+    <g:render template="costItemsByCostItemElementTabelle"/>
+
 
     <ui:greySegment>
         <div class="ui grid">
@@ -117,15 +119,15 @@
                     <th>${message(code: 'copySurveyCostItems.oldCostItem')}</th>
                     <th>${message(code: 'copySurveyCostItems.surveyCostItem')}<br>
                         <g:set var="costItemElements"
-                               value="${CostItem.executeQuery('from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg as surOrg where surveyConfig = :surveyConfig) and ct.costItemElement is not null', [status: RDStore.COST_ITEM_DELETED, surveyConfig: surveyConfig]).groupBy {it.costItemElement}.collect {RefdataValue.findByValueAndOwner(it.key, RefdataCategory.findByDesc(RDConstants.COST_ITEM_ELEMENT))}}"/>
+                               value="${costItemsByCostItemElement.collect {RefdataValue.findByValueAndOwner(it.key, RefdataCategory.findByDesc(RDConstants.COST_ITEM_ELEMENT))}}"/>
 
-                        <ui:select name="selectedCostItemElement"
+                        <ui:select name="selectedCostItemElementID"
                                    from="${costItemElements}"
                                    optionKey="id"
                                    optionValue="value"
                                    value="${selectedCostItemElementID}"
                                    class="ui dropdown"
-                                   id="selectedCostItemElement"/>
+                                   id="selectedCostItemElementID"/>
                     </th>
                     <th>${message(code: 'copySurveyCostItems.newCostItem')}</th>
                     <th></th>
@@ -411,9 +413,9 @@
 
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    $('#selectedCostItemElement').on('change', function() {
-        var selectedCostItemElement = $("#selectedCostItemElement").val()
-        var url = "<g:createLink controller="survey" action="$actionName" params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID]}"/>&selectedCostItemElement="+selectedCostItemElement;
+    $('#selectedCostItemElementID').on('change', function() {
+        var selectedCostItemElementID = $("#selectedCostItemElementID").val()
+        var url = "<g:createLink controller="survey" action="$actionName" params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID]}"/>&selectedCostItemElementID="+selectedCostItemElementID;
             location.href = url;
          });
 </laser:script>

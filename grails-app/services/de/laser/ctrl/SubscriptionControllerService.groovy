@@ -1300,9 +1300,9 @@ class SubscriptionControllerService {
         result.filteredSubChilds = getFilteredSubscribers(params,result.subscription)
         result.filterSet = params.filterSet ? true : false
 
-        result.selectedCostItemElementID = params.selectedCostItemElement ? params.selectedCostItemElement.toString() : RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id.toString()
+        result.selectedCostItemElementID = params.selectedCostItemElementID ? params.selectedCostItemElementID : RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
 
-        result.selectedCostItemElement = RefdataValue.get(Long.parseLong(result.selectedCostItemElementID))
+        result.selectedCostItemElement = RefdataValue.get(result.selectedCostItemElementID)
 
         result.showBulkCostItems = params.showBulkCostItems ? params.showBulkCostItems : null
 
