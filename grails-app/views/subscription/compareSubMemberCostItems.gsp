@@ -155,13 +155,13 @@
             <th rowspan="3" class="center aligned la-no-uppercase">
                 <ui:multiYearIcon isConsortial="true"/>
             </th>
-            <th colspan="10" class="center aligned"><ui:select name="selectedCostItemElement"
+            <th colspan="10" class="center aligned"><ui:select name="selectedCostItemElementID"
                                                               from="${costItemElements}"
                                                               optionKey="id"
                                                               optionValue="value"
                                                               value="${selectedCostItemElementID}"
                                                               class="ui dropdown"
-                                                              id="selectedCostItemElement"/>
+                                                              id="selectedCostItemElementID"/>
             </th>
             <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
                 <th class="la-action-info" scope="col" rowspan="3"><g:message code="default.actions.label"/></th>
@@ -518,9 +518,9 @@
                     })
                 });
 
-         $('#selectedCostItemElement').on('change', function() {
-            var selectedCostItemElement = $("#selectedCostItemElement").val()
-            var url = "<g:createLink controller="${controllerName}" action="${actionName}" id="${params.id}"/>?selectedCostItemElement="+selectedCostItemElement;
+         $('#selectedCostItemElementID').on('change', function() {
+            var selectedCostItemElementID = $(this).val()
+            var url = "<g:createLink controller="${controllerName}" action="${actionName}" id="${params.id}"/>?selectedCostItemElementID="+selectedCostItemElementID;
             location.href = url;
          });
     </laser:script>

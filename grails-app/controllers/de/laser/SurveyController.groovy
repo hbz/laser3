@@ -1025,7 +1025,7 @@ class SurveyController {
         result.selectedParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsr.query, fsr.queryParams, params)
         result.selectedSubParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsr.query, fsr.queryParams, params)
 
-        result.selectedCostItemElement = params.selectedCostItemElement ? params.selectedCostItemElement : RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+        result.selectedCostItemElementID = params.selectedCostItemElementID ?: RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
 
         if(result.selectedSubParticipants && (params.sortOnCostItemsDown || params.sortOnCostItemsUp) && !params.sort){
             List<Subscription> orgSubscriptions = result.surveyConfig.orgSubscriptions()
@@ -1044,7 +1044,7 @@ class SurveyController {
 
             String query = "select c.sub from CostItem as c where c.sub in (:subList) and c.owner = :owner and c.costItemStatus != :status and c.costItemElement.id = :costItemElement " + orderByQuery
 
-            List<Subscription> subscriptionList =  CostItem.executeQuery(query, [subList: orgSubscriptions, owner: result.surveyInfo.owner, status: RDStore.COST_ITEM_DELETED, costItemElement: Long.valueOf(result.selectedCostItemElement)])
+            List<Subscription> subscriptionList =  CostItem.executeQuery(query, [subList: orgSubscriptions, owner: result.surveyInfo.owner, status: RDStore.COST_ITEM_DELETED, costItemElement: Long.valueOf(result.selectedCostItemElementID)])
 
             subscriptionList.each { Subscription sub ->
                 Org org = sub.getSubscriber()
@@ -1053,15 +1053,13 @@ class SurveyController {
             }
         }
 
-        if (params.selectedCostItemElement) {
-            params.remove('selectedCostItemElement')
+        if (params.selectedCostItemElementID) {
+            params.remove('selectedCostItemElementID')
         }
 
         result.idSuffix ="surveyCostItemsBulk"
 
-        result.costItemsByCostItemElement = []
-
-        String query = 'from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.org.id in (:orgIds) and surOrg.surveyConfig = :surConfig)'
+        String query = 'from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.org.id in (:orgIds) and surOrg.surveyConfig = :surConfig) and ct.costItemElement is not null'
         Set<Long> orgsId = surveyOrgs.orgsWithoutSubIDs
 
         if(params.tab == 'selectedSubParticipants') {
@@ -2887,14 +2885,14 @@ class SurveyController {
         }
 
         result.orgConfigurations = orgConfigurations as JSON
-        //result.selectedCostItemElement = params.selectedCostItemElement ?: RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+        //result.selectedCostItemElementID = params.selectedCostItemElementID ?: RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
 
         result.participant = Org.get(params.participant)
         result.surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, result.participant)
 
 
         result.mode = result.costItem ? "edit" : ""
-        result.selectedCostItemElement = params.selectedCostItemElement ?: null
+        result.selectedCostItemElementID = params.selectedCostItemElementID
         result.taxKey = result.costItem ? result.costItem.taxKey : null
         result.idSuffix = "edit_${result.costItem ? result.costItem.id : result.participant.id}"
         render(template: "/survey/costItemModal", model: result)
@@ -2928,7 +2926,7 @@ class SurveyController {
         }
 
         result.orgConfigurations = orgConfigurations as JSON
-        //result.selectedCostItemElement = params.selectedCostItemElement ?: RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+        //result.selectedCostItemElementID = params.selectedCostItemElementID ?: RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
 
         result.setting = 'bulkForAll'
 
@@ -3931,7 +3929,7 @@ class SurveyController {
         }
 
         result.parentSubscription = result.surveyConfig.subscription
-        result.parentSubChilds = subscriptionService.getValidSubChilds(result.parentSubscription)
+
 
         if(result.surveyConfig.subSurveyUseForTransfer) {
             List listMuliYearsSub = []
@@ -3975,6 +3973,10 @@ class SurveyController {
 
             if(targetSubscription && result.nextSubs.size() > 0 && (targetSubscription in result.nextSubs)){
                 result.parentSuccessorSubscription = targetSubscription
+                Subscription previousSub = targetSubscription._getCalculatedPreviousForSurvey()
+
+                if(previousSub)
+                result.parentSubscription = previousSub
             }else{
                 result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
             }
@@ -3984,6 +3986,7 @@ class SurveyController {
         }
         result.targetSubscription =  result.parentSuccessorSubscription
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
+        result.parentSubChilds = subscriptionService.getValidSubChilds(result.parentSubscription)
 
         result.superOrgType = []
         if(contextService.getOrg().isCustomerType_Consortium_Pro()) {
@@ -4258,7 +4261,7 @@ class SurveyController {
         result.targetSubscription =  result.parentSuccessorSubscription
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
-        result.selectedCostItemElementID = params.selectedCostItemElement ? params.selectedCostItemElement : RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+        result.selectedCostItemElementID = params.selectedCostItemElementID ?: RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
 
         result.selectedCostItemElement = RefdataValue.get(result.selectedCostItemElementID)
 
@@ -4283,6 +4286,10 @@ class SurveyController {
         }
 
         result.participantsList = result.participantsList.sort{it.sortname}
+
+        String query = 'from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ct.costItemElement is not null'
+
+        result.costItemsByCostItemElement = CostItem.executeQuery(query, [status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig]).groupBy {it.costItemElement}
 
         result
 
@@ -4420,7 +4427,7 @@ class SurveyController {
 
         result.participantsList = []
 
-        result.selectedCostItemElementID = params.selectedCostItemElement ? params.selectedCostItemElement : RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+        result.selectedCostItemElementID = params.selectedCostItemElementID ?: RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
 
         result.selectedCostItemElement = RefdataValue.get(result.selectedCostItemElementID)
 
@@ -4440,6 +4447,10 @@ class SurveyController {
         }
 
         result.participantsList = result.participantsList.sort{it.sortname}
+
+        String query = 'from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ct.costItemElement is not null'
+
+        result.costItemsByCostItemElement = CostItem.executeQuery(query, [status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig]).groupBy {it.costItemElement}
 
         result
 

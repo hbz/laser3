@@ -80,29 +80,23 @@
     </div>
 </g:if>
 <div class="ui grid">
-
-    <div class="row">
-        <div class="column">
-
-            <g:if test="${entitlements && entitlements.size() > 0}">
-
-                <g:if test="${subscription.packages.size() > 1}">
-                    <a class="ui right floated button" data-href="#showPackagesModal" data-ui="modal"><g:message
-                            code="subscription.details.details.package.label"/></a>
-                </g:if>
-
-                <g:if test="${subscription.packages.size() == 1}">
-                    <g:link class="ui right floated button" controller="package" action="show"
-                            id="${subscription.packages[0].pkg.id}"><g:message
-                            code="subscription.details.details.package.label"/></g:link>
-                </g:if>
-            </g:if>
-            <g:else>
-                ${message(code: 'subscription.details.no_ents')}
-            </g:else>
-
+    <g:if test="${subscription.packages}">
+        <div class="sixteen wide column">
+            <div class="la-inline-lists">
+                <div id="packages" class="la-padding-top-1em"></div>
+            </div>
         </div>
-    </div><!--.row-->
+    </g:if>
+
+
+    <g:if test="${entitlements && entitlements.size() == 0}">
+        <div class="row">
+            <div class="column">
+                ${message(code: 'subscription.details.no_ents')}
+            </div>
+        </div><!--.row-->
+    </g:if>
+
 </div><!--.grid-->
     <g:if test="${issueEntitlementEnrichment}">
         <div class="ui grid">
@@ -721,22 +715,6 @@
 
 <laser:render template="export/individuallyExportIEsModal" model="[modalID: 'individuallyExportIEsModal']"/>
 
-<ui:modal id="showPackagesModal" message="subscription.packages.label" hideSubmitButton="true">
-    <div class="ui ordered list">
-        <g:each in="${subscription.packages.sort { it.pkg.name.toLowerCase() }}" var="subPkg">
-            <div class="item">
-                ${subPkg.pkg.name}
-                <g:if test="${subPkg.pkg.contentProvider}">
-                    (${subPkg.pkg.contentProvider.name})
-                </g:if>:
-                <g:link controller="package" action="show" id="${subPkg.pkg.id}"><g:message
-                        code="subscription.details.details.package.label"/></g:link>
-            </div>
-        </g:each>
-    </div>
-
-</ui:modal>
-
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.hideModal = function () {
@@ -866,5 +844,19 @@
 
     JSPC.app.loadFilter();
     --%>
+
+    JSPC.app.loadPackages = function () {
+    $.ajax({
+        url: "<g:createLink controller="ajaxHtml" action="getPackageData"/>",
+                  data: {
+                      subscription: "${subscription.id}"
+                  }
+              }).done(function(response){
+                  $("#packages").html(response);
+                  r2d2.initDynamicUiStuff("#packages");
+              })
+          }
+
+    JSPC.app.loadPackages();
 </laser:script>
 <laser:htmlEnd/>

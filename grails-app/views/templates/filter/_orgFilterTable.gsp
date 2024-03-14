@@ -165,15 +165,15 @@
                     </g:if>
 
                     <g:set var="costItemElements"
-                           value="${CostItem.executeQuery('from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg as surOrg where surveyConfig = :surveyConfig) and ct.costItemElement is not null', [status: RDStore.COST_ITEM_DELETED, surveyConfig: surveyConfig]).groupBy {it.costItemElement}.collect {RefdataValue.findByValueAndOwner(it.key, RefdataCategory.findByDesc(RDConstants.COST_ITEM_ELEMENT))}}"/>
+                           value="${costItemsByCostItemElement.collect {RefdataValue.findByValueAndOwner(it.key, RefdataCategory.findByDesc(RDConstants.COST_ITEM_ELEMENT))}}"/>
 
-                        <ui:select name="selectedCostItemElement"
+                        <ui:select name="selectedCostItemElementID"
                                       from="${costItemElements}"
                                       optionKey="id"
                                       optionValue="value"
-                                      value="${selectedCostItemElement}"
+                                      value="${selectedCostItemElementID}"
                                       class="ui dropdown"
-                                      id="selectedCostItemElement"/>
+                                      id="selectedCostItemElementID"/>
                 </th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
@@ -771,7 +771,7 @@
                     <g:else>
                         <table class="ui very basic compact table">
                             <tbody>
-                            <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemStatusNotEqualAndCostItemElement(orgSub, institution, RDStore.COST_ITEM_DELETED, RefdataValue.get(selectedCostItemElement instanceof String ? Long.parseLong(selectedCostItemElement) : selectedCostItemElement))}"
+                            <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemStatusNotEqualAndCostItemElement(orgSub, institution, RDStore.COST_ITEM_DELETED, RefdataValue.get(Long.valueOf(selectedCostItemElementID)))}"
                                     var="costItem">
                                 <g:set var="sumOldCostItem"
                                        value="${sumOldCostItem + costItem.costInBillingCurrency ?: 0}"/>
@@ -817,7 +817,7 @@
                     <g:else>
 
                         <g:set var="costItems" scope="request"
-                               value="${CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndCostItemElement(surveyOrg, RDStore.COST_ITEM_DELETED, RefdataValue.get(selectedCostItemElement instanceof String ? Long.parseLong(selectedCostItemElement) : selectedCostItemElement))}"/>
+                               value="${CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndCostItemElement(surveyOrg, RDStore.COST_ITEM_DELETED, RefdataValue.get(Long.valueOf(selectedCostItemElementID)))}"/>
 
                         <g:if test="${costItems}">
                             <table class="ui very basic compact table">
@@ -1030,7 +1030,7 @@
                                     surveyConfigID: surveyConfigID,
                                     participant: participant,
                                     costItem: costItem,
-                                    selectedCostItemElement: "${selectedCostItemElement}"
+                                    selectedCostItemElementID: "${selectedCostItemElementID}"
                                 }
             }).done( function(data) {
                 $('.ui.dimmer.modals > #modalSurveyCostItem').remove();
@@ -1056,9 +1056,9 @@
 </g:if>
 <g:if test="${tmplConfigShow?.contains('surveySubCostItem') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
     <laser:script file="${this.getGroovyPageFileName()}">
-        $('#selectedCostItemElement').on('change', function() {
-            var selectedCostItemElement = $("#selectedCostItemElement").val()
-            var url = "<g:createLink controller="survey" action="surveyCostItems" params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]}"/>&selectedCostItemElement="+selectedCostItemElement;
+        $('#selectedCostItemElementID').on('change', function() {
+            var selectedCostItemElementID = $(this).val()
+            var url = "<g:createLink controller="survey" action="surveyCostItems" params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]}"/>&selectedCostItemElementID="+selectedCostItemElementID;
             location.href = url;
          });
     </laser:script>
