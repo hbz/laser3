@@ -41,6 +41,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.grails.web.json.JSONObject
 import org.springframework.transaction.TransactionStatus
 import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.web.multipart.MultipartFile
@@ -81,7 +82,7 @@ class MyInstitutionController  {
     MyInstitutionControllerService myInstitutionControllerService
     OrganisationService organisationService
     OrgTypeService orgTypeService
-    PendingChangeService pendingChangeService
+    PackageService packageService
     PropertyService propertyService
     ReportingGlobalService reportingGlobalService
     SubscriptionsQueryService subscriptionsQueryService
@@ -1785,16 +1786,10 @@ class MyInstitutionController  {
     })
     def currentPackages() {
 
-        Map<String, Object> result = [:]
+        Map<String, Object> wekbQryParams = params.clone(), result = [:]
         result.user = contextService.getUser()
         result.contextOrg = contextService.getOrg()
-        result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
-        result.languages = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)
         SwissKnife.setPaginationParams(result, params, (User) result.user)
-
-        List currentSubIds = []
-        List idsCategory1  = []
-        List idsCategory2  = []
 
         if (! params.status) {
             if (params.isSiteReloaded != "yes") {
@@ -1805,64 +1800,88 @@ class MyInstitutionController  {
                 params.status = 'FETCH_ALL'
             }
         }
+        Map<String, Object> subQryParams = params.clone() //with default status
+        subQryParams.remove('sort')
 
-        List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params)
+        List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(subQryParams)
         result.filterSet = tmpQ[2]
-        currentSubIds = Subscription.executeQuery( "select s.id " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
+        List currentSubIds = Subscription.executeQuery( "select s.id " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
 
-        idsCategory1 = OrgRole.executeQuery("select distinct (sub.id) from OrgRole where org=:org and roleType in (:roleTypes)", [
+        List idsCategory1 = OrgRole.executeQuery("select distinct (sub.id) from OrgRole where org=:org and roleType in (:roleTypes)", [
                 org: contextService.getOrg(), roleTypes: [
                 RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS
         ]
         ])
-        idsCategory2 = OrgRole.executeQuery("select distinct (sub.id) from OrgRole where org=:org and roleType in (:roleTypes)", [
+        List idsCategory2 = OrgRole.executeQuery("select distinct (sub.id) from OrgRole where org=:org and roleType in (:roleTypes)", [
                 org: contextService.getOrg(), roleTypes: [
                 RDStore.OR_SUBSCRIPTION_CONSORTIA
         ]
         ])
 
         result.subscriptionMap = [:]
-        result.packageList = []
+        result.records = []
         result.packageListTotal = 0
 
         if(currentSubIds) {
             long start = System.currentTimeMillis()
-            String qry3 = "select distinct pkg, s from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg " +
+            String qry3 = "select distinct pkg.gokbId, s, pkg.name, (select o.name from OrgRole oo join oo.org o where oo.pkg = pkg) as provider, pkg.nominalPlatform.name as nominalPlatform, (select count(*) from TitleInstancePackagePlatform tipp where tipp.pkg = pkg and tipp.status = :current) as tippCount from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg " +
                     "where s.id in (:currentSubIds) "
 
             qry3 += " and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
 
             Map qryParams3 = [
                     currentSubIds  : currentSubIds,
+                    current: RDStore.TIPP_STATUS_CURRENT,
                     pkgDeleted     : RDStore.PACKAGE_STATUS_DELETED
             ]
 
-            if (params.pkg_q?.length() > 0) {
-                qry3 += " and ("
-                qry3 += "   genfunc_filter_matcher(pkg.name, :query) = true"
-                qry3 += ")"
-                qryParams3.put('query', "${params.pkg_q}")
+            qry3 += " group by pkg, s, provider, pkg.nominalPlatform.name"
+            String sort
+            switch(params.sort) {
+                case [null, 'name']: sort = "pkg.name"
+                    break
+                case "currentTippCount": sort = "tippCount"
+                    break
+                case "nominalPlatform.name": sort = "nominalPlatform"
+                    break
+                case "provider.name": sort = "provider"
+                    break
+                default: sort = params.sort
+                    break
             }
-
-            if (params.ddc && params.list('ddc').size() > 0) {
-                qry3 += " and ((exists (select ddc.id from DeweyDecimalClassification ddc where ddc.ddc.id in (:ddcs) and ddc.tipp.pkg = pkg)) or (exists (select ddc.id from DeweyDecimalClassification ddc where ddc.ddc.id in (:ddcs) and ddc.pkg = pkg)))"
-                qryParams3.put('ddcs', Params.getLongList(params, 'ddc'))
-            }
-
-            qry3 += " group by pkg, s"
-            qry3 += " order by pkg.name " + (params.order ?: 'asc')
-            log.debug("before query: ${System.currentTimeMillis()-start}")
+            qry3 += " order by ${sort} " + (params.order ?: 'asc') + ", pkg.name asc"
             List packageSubscriptionList = Subscription.executeQuery(qry3, qryParams3)
             /*, [max:result.max, offset:result.offset])) */
-            log.debug("after query: ${System.currentTimeMillis()-start}")
+            Set<String> currentPackageUuids = packageSubscriptionList.collect { entry -> entry[0] }
+            wekbQryParams.uuids = currentPackageUuids
+            wekbQryParams.max = currentPackageUuids.size()
+            wekbQryParams.offset = 0
+            Map<String, Object> remote = packageService.getWekbPackages(wekbQryParams)
+            result.curatoryGroupTypes = remote.curatoryGroupTypes
+            result.automaticUpdates = remote.automaticUpdates
+            result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
+            result.languages = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)
+            Set tmp = []
             packageSubscriptionList.eachWithIndex { entry, int i ->
-                // log.debug("processing entry ${i} at: ${System.currentTimeMillis()-start}")
-                String key = 'package_' + entry[0].id
+                String key = 'package_' + entry[0]
 
                 if (! result.subscriptionMap.containsKey(key)) {
                     result.subscriptionMap.put(key, [])
                 }
-                if (entry[1].status?.value == RDStore.SUBSCRIPTION_CURRENT.value) {
+                boolean display
+                switch(params.status) {
+                    case RDStore.SUBSCRIPTION_EXPIRED.id: display = entry[1].status?.id == RDStore.SUBSCRIPTION_EXPIRED.id && (entry[1].hasPerpetualAccess || result.subscriptionMap.get(key).size() < 5)
+                        break
+                    case "FETCH_ALL":
+                        if(entry[1].status?.id == RDStore.SUBSCRIPTION_EXPIRED.id) {
+                            display = (entry[1].hasPerpetualAccess || result.subscriptionMap.get(key).size() < 5)
+                        }
+                        else display = true
+                        break
+                    default: display = entry[1].status?.id == params.status
+                        break
+                }
+                if (display) {
 
                     if (idsCategory1.contains(entry[1].id)) {
                         result.subscriptionMap.get(key).add(entry[1])
@@ -1871,12 +1890,18 @@ class MyInstitutionController  {
                         result.subscriptionMap.get(key).add(entry[1])
                     }
                 }
+                Map<String, Object> definiteRec = [:], wekbRec = remote.records.find { Map remoteRec -> remoteRec.uuid == entry[0] }
+                if(wekbRec)
+                    definiteRec.putAll(wekbRec)
+                else if(!params.containsKey('curatoryGroup') &&!params.containsKey('curatoryGroupType') && !params.containsKey('automaticUpdates')) {
+                    definiteRec.put('uuid', entry[0])
+                }
+                if(definiteRec.size() > 0)
+                    tmp << definiteRec
             }
-            log.debug("after collect: ${System.currentTimeMillis()-start}")
-            List tmp = (packageSubscriptionList.collect { it[0] }).unique()
-            log.debug("after filter: ${System.currentTimeMillis()-start}")
             result.packageListTotal = tmp.size()
-            result.packageList = tmp.drop(result.offset).take(result.max)
+            //there are records among them which are already purged ...
+            result.records = tmp.drop(result.offset).take(result.max)
         }
 
         result
