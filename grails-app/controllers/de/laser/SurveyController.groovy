@@ -3928,65 +3928,7 @@ class SurveyController {
             response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
-        result.parentSubscription = result.surveyConfig.subscription
-
-
-        if(result.surveyConfig.subSurveyUseForTransfer) {
-            List listMuliYearsSub = []
-            int multiYears = 0
-            List <PropertyDefinition> surProperties = result.surveyConfig.surveyProperties.surveyProperty
-            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2.id in surProperties.id){
-                multiYears = 2
-            }
-            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3.id in surProperties.id){
-                multiYears = 3
-            }
-            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4.id in surProperties.id){
-                multiYears = 4
-            }
-            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5.id in surProperties.id){
-                multiYears = 5
-            }
-
-            Date startDate = result.parentSubscription.startDate
-            Date endDate = result.parentSubscription.endDate
-            for(int i = 0; i < multiYears; i++ ){
-                int newYear = i+1
-                Map mulitYearMap = [:]
-                use(TimeCategory) {
-                    startDate = endDate ? (endDate + 1.day) : null
-                    endDate = result.parentSubscription.endDate ? (result.parentSubscription.endDate + newYear.year) : null
-                }
-                mulitYearMap.startDate = startDate
-                mulitYearMap.endDate = endDate
-
-                listMuliYearsSub << mulitYearMap
-            }
-
-            result.nextSubs = linksGenerationService.getSuccessionChain(result.parentSubscription, 'destinationSubscription')
-            result.listMuliYearsSub = listMuliYearsSub
-
-            Subscription targetSubscription
-            if(params.targetSubscriptionId){
-                targetSubscription = Subscription.get(params.targetSubscriptionId)
-            }
-
-            if(targetSubscription && result.nextSubs.size() > 0 && (targetSubscription in result.nextSubs)){
-                result.parentSuccessorSubscription = targetSubscription
-                Subscription previousSub = targetSubscription._getCalculatedPreviousForSurvey()
-
-                if(previousSub)
-                result.parentSubscription = previousSub
-            }else{
-                result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
-            }
-
-        } else{
-            result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
-        }
-        result.targetSubscription =  result.parentSuccessorSubscription
-        result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
-        result.parentSubChilds = subscriptionService.getValidSubChilds(result.parentSubscription)
+       result = surveyControllerService.getSubResultForTranfser(result, params)
 
         result.superOrgType = []
         if(contextService.getOrg().isCustomerType_Consortium_Pro()) {
@@ -4047,58 +3989,7 @@ class SurveyController {
             response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
-        result.parentSubscription = result.surveyConfig.subscription
-        if(result.surveyConfig.subSurveyUseForTransfer) {
-            List listMuliYearsSub = []
-            int multiYears = 0
-            List <PropertyDefinition> surProperties = result.surveyConfig.surveyProperties.surveyProperty
-            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2.id in surProperties.id){
-                multiYears = 2
-            }
-            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3.id in surProperties.id){
-                multiYears = 3
-            }
-            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4.id in surProperties.id){
-                multiYears = 4
-            }
-            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5.id in surProperties.id){
-                multiYears = 5
-            }
-
-            Date startDate = result.parentSubscription.startDate
-            Date endDate = result.parentSubscription.endDate
-            for(int i = 0; i < multiYears; i++ ){
-                int newYear = i+1
-                Map mulitYearMap = [:]
-                use(TimeCategory) {
-                    startDate = endDate ? (endDate + 1.day) : null
-                    endDate = result.parentSubscription.endDate ? (result.parentSubscription.endDate + newYear.year) : null
-                }
-                mulitYearMap.startDate = startDate
-                mulitYearMap.endDate = endDate
-
-                listMuliYearsSub << mulitYearMap
-            }
-
-            result.nextSubs = linksGenerationService.getSuccessionChain(result.parentSubscription, 'destinationSubscription')
-            result.listMuliYearsSub = listMuliYearsSub
-
-            Subscription targetSubscription
-            if(params.targetSubscriptionId){
-                targetSubscription = Subscription.get(params.targetSubscriptionId)
-            }
-
-            if(targetSubscription && result.nextSubs.size() > 0 && (targetSubscription in result.nextSubs)){
-                result.parentSuccessorSubscription = targetSubscription
-            }else{
-                result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
-            }
-
-        } else{
-            result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
-        }
-        result.targetSubscription =  result.parentSuccessorSubscription
-        result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
+        result = surveyControllerService.getSubResultForTranfser(result, params)
 
         result.participantsList = []
 
@@ -4137,11 +4028,7 @@ class SurveyController {
             response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
-        result.parentSubscription = result.surveyConfig.subscription
-        result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
-
-        result.targetSubscription = result.parentSuccessorSubscription
-        result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
+        result = surveyControllerService.getSubResultForTranfser(result, params)
 
         if(!subscriptionService.checkThreadRunning('PackageTransfer_'+result.parentSuccessorSubscription.id)) {
             String processOption = params.processOption
@@ -4208,58 +4095,7 @@ class SurveyController {
             response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
-        result.parentSubscription = result.surveyConfig.subscription
-        if(result.surveyConfig.subSurveyUseForTransfer) {
-            List listMuliYearsSub = []
-            int multiYears = 0
-            List <PropertyDefinition> surProperties = result.surveyConfig.surveyProperties.surveyProperty
-            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2.id in surProperties.id){
-                multiYears = 2
-            }
-            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3.id in surProperties.id){
-                multiYears = 3
-            }
-            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4.id in surProperties.id){
-                multiYears = 4
-            }
-            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5.id in surProperties.id){
-                multiYears = 5
-            }
-
-            Date startDate = result.parentSubscription.startDate
-            Date endDate = result.parentSubscription.endDate
-            for(int i = 0; i < multiYears; i++ ){
-                int newYear = i+1
-                Map mulitYearMap = [:]
-                use(TimeCategory) {
-                    startDate = endDate ? (endDate + 1.day) : null
-                    endDate = result.parentSubscription.endDate ? (result.parentSubscription.endDate + newYear.year) : null
-                }
-                mulitYearMap.startDate = startDate
-                mulitYearMap.endDate = endDate
-
-                listMuliYearsSub << mulitYearMap
-            }
-
-            result.nextSubs = linksGenerationService.getSuccessionChain(result.parentSubscription, 'destinationSubscription')
-            result.listMuliYearsSub = listMuliYearsSub
-
-            Subscription targetSubscription
-            if(params.targetSubscriptionId){
-                targetSubscription = Subscription.get(params.targetSubscriptionId)
-            }
-
-            if(targetSubscription && result.nextSubs.size() > 0 && (targetSubscription in result.nextSubs)){
-                result.parentSuccessorSubscription = targetSubscription
-            }else{
-                result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
-            }
-
-        } else{
-            result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
-        }
-        result.targetSubscription =  result.parentSuccessorSubscription
-        result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
+        result = surveyControllerService.getSubResultForTranfser(result, params)
 
         result.selectedCostItemElementID = params.selectedCostItemElementID ?: RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
 
@@ -4315,24 +4151,8 @@ class SurveyController {
             response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
-        if(result.surveyConfig.subSurveyUseForTransfer) {
-            result.nextSubs = linksGenerationService.getSuccessionChain(result.parentSubscription, 'destinationSubscription')
+        result = surveyControllerService.getSubResultForTranfser(result, params)
 
-            Subscription targetSubscription
-            if(params.targetSubscriptionId){
-                targetSubscription = Subscription.get(params.targetSubscriptionId)
-            }
-
-            if(targetSubscription && result.nextSubs.size() > 0 && (targetSubscription in result.nextSubs)){
-                result.parentSuccessorSubscription = targetSubscription
-            }else{
-                result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
-            }
-
-        } else{
-            result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
-        }
-        result.targetSubscription =  result.parentSuccessorSubscription
         Integer countNewCostItems = 0
         //RefdataValue costElement = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE
         CostItem.withTransaction { TransactionStatus ts ->
@@ -4560,58 +4380,7 @@ class SurveyController {
 
         params.tab = params.tab ?: 'surveyProperties'
 
-        result.parentSubscription = result.surveyConfig.subscription
-        if(result.surveyConfig.subSurveyUseForTransfer) {
-            List listMuliYearsSub = []
-            int multiYears = 0
-            List <PropertyDefinition> surProperties = result.surveyConfig.surveyProperties.surveyProperty
-            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2.id in surProperties.id){
-                multiYears = 2
-            }
-            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3.id in surProperties.id){
-                multiYears = 3
-            }
-            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4.id in surProperties.id){
-                multiYears = 4
-            }
-            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5.id in surProperties.id){
-                multiYears = 5
-            }
-
-            Date startDate = result.parentSubscription.startDate
-            Date endDate = result.parentSubscription.endDate
-            for(int i = 0; i < multiYears; i++ ){
-                int newYear = i+1
-                Map mulitYearMap = [:]
-                use(TimeCategory) {
-                    startDate = endDate ? (endDate + 1.day) : null
-                    endDate = result.parentSubscription.endDate ? (result.parentSubscription.endDate + newYear.year) : null
-                }
-                mulitYearMap.startDate = startDate
-                mulitYearMap.endDate = endDate
-
-                listMuliYearsSub << mulitYearMap
-            }
-
-            result.nextSubs = linksGenerationService.getSuccessionChain(result.parentSubscription, 'destinationSubscription')
-            result.listMuliYearsSub = listMuliYearsSub
-
-            Subscription targetSubscription
-            if(params.targetSubscriptionId){
-                targetSubscription = Subscription.get(params.targetSubscriptionId)
-            }
-
-            if(targetSubscription && result.nextSubs.size() > 0 && (targetSubscription in result.nextSubs)){
-                result.parentSuccessorSubscription = targetSubscription
-            }else{
-                result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
-            }
-
-        } else{
-            result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
-        }
-        result.targetSubscription =  result.parentSuccessorSubscription
-        result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
+        result = surveyControllerService.getSubResultForTranfser(result, params)
 
         result.selectedProperty
         result.properties
@@ -4709,25 +4478,7 @@ class SurveyController {
             response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
-        if(result.surveyConfig.subSurveyUseForTransfer) {
-            result.nextSubs = linksGenerationService.getSuccessionChain(result.parentSubscription, 'destinationSubscription')
-
-            Subscription targetSubscription
-            if(params.targetSubscriptionId){
-                targetSubscription = Subscription.get(params.targetSubscriptionId)
-            }
-
-            if(targetSubscription && result.nextSubs.size() > 0 && (targetSubscription in result.nextSubs)){
-                result.parentSuccessorSubscription = targetSubscription
-            }else{
-                result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
-            }
-
-        } else{
-            result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
-        }
-        result.targetSubscription =  result.parentSuccessorSubscription
-        result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
+        result = surveyControllerService.getSubResultForTranfser(result, params)
 
         if(params.list('selectedSub')) {
             result.selectedProperty
@@ -4884,23 +4635,7 @@ class SurveyController {
             response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
-        result.parentSubscription = result.surveyConfig.subscription
-        result.parentSubChilds = subscriptionService.getValidSubChilds(result.parentSubscription)
-
-        result.nextSubs = linksGenerationService.getSuccessionChain(result.parentSubscription, 'destinationSubscription')
-
-        Subscription targetSubscription
-        if (params.targetSubscriptionId) {
-            targetSubscription = Subscription.get(params.targetSubscriptionId)
-        }
-
-        if (targetSubscription && result.nextSubs.size() > 0 && (targetSubscription in result.nextSubs)) {
-            result.parentSuccessorSubscription = targetSubscription
-        } else {
-            result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
-        }
-
-        result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
+        result = surveyControllerService.getSubResultForTranfser(result, params)
 
         result.participationProperty = PropertyStore.SURVEY_PROPERTY_PARTICIPATION
 
@@ -5755,26 +5490,7 @@ class SurveyController {
             response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
-        result.parentSubscription = result.surveyConfig.subscription
-
-        if(result.surveyConfig.subSurveyUseForTransfer) {
-            result.nextSubs = linksGenerationService.getSuccessionChain(result.parentSubscription, 'destinationSubscription')
-
-            Subscription targetSubscription
-            if(params.targetSubscriptionId){
-                targetSubscription = Subscription.get(params.targetSubscriptionId)
-            }
-
-            if(targetSubscription && result.nextSubs.size() > 0 && (targetSubscription in result.nextSubs)){
-                result.parentSuccessorSubscription = targetSubscription
-            }else{
-                result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
-            }
-
-        } else{
-            result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
-        }
-        result.targetSubscription =  result.parentSuccessorSubscription
+        result = surveyControllerService.getSubResultForTranfser(result, params)
 
         result.superOrgType = []
         if(contextService.getOrg().isCustomerType_Consortium_Pro()) {

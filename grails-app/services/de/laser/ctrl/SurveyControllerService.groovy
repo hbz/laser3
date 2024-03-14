@@ -4,6 +4,7 @@ import de.laser.AccessService
 import de.laser.ContextService
 import de.laser.DocstoreService
 import de.laser.License
+import de.laser.LinksGenerationService
 import de.laser.Org
 import de.laser.Subscription
 import de.laser.SubscriptionService
@@ -37,6 +38,7 @@ class SurveyControllerService {
     DocstoreService docstoreService
     SubscriptionService subscriptionService
     TaskService taskService
+    LinksGenerationService linksGenerationService
 
     //--------------------------------------------- helper section -------------------------------------------------
 
@@ -537,6 +539,70 @@ class SurveyControllerService {
         }
         [result:result,status:STATUS_OK]
 
+    }
+
+    Map getSubResultForTranfser(Map result, GrailsParameterMap parameterMap){
+        result.parentSubscription = result.surveyConfig.subscription
+
+
+        if(result.surveyConfig.subSurveyUseForTransfer) {
+            List listMuliYearsSub = []
+            int multiYears = 0
+            List <PropertyDefinition> surProperties = result.surveyConfig.surveyProperties.surveyProperty
+            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2.id in surProperties.id){
+                multiYears = 2
+            }
+            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3.id in surProperties.id){
+                multiYears = 3
+            }
+            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4.id in surProperties.id){
+                multiYears = 4
+            }
+            if(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5.id in surProperties.id){
+                multiYears = 5
+            }
+
+            Date startDate = result.parentSubscription.startDate
+            Date endDate = result.parentSubscription.endDate
+            for(int i = 0; i < multiYears; i++ ){
+                int newYear = i+1
+                Map mulitYearMap = [:]
+                use(TimeCategory) {
+                    startDate = endDate ? (endDate + 1.day) : null
+                    endDate = result.parentSubscription.endDate ? (result.parentSubscription.endDate + newYear.year) : null
+                }
+                mulitYearMap.startDate = startDate
+                mulitYearMap.endDate = endDate
+
+                listMuliYearsSub << mulitYearMap
+            }
+
+            result.nextSubs = linksGenerationService.getSuccessionChain(result.parentSubscription, 'destinationSubscription')
+            result.listMuliYearsSub = listMuliYearsSub
+
+            Subscription targetSubscription
+            if(parameterMap.targetSubscriptionId){
+                targetSubscription = Subscription.get(parameterMap.targetSubscriptionId)
+            }
+
+            if(targetSubscription && result.nextSubs.size() > 0 && (targetSubscription in result.nextSubs)){
+                result.parentSuccessorSubscription = targetSubscription
+                Subscription previousSub = targetSubscription._getCalculatedPreviousForSurvey()
+
+                if(previousSub)
+                    result.parentSubscription = previousSub
+            }else{
+                result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
+            }
+
+        } else{
+            result.parentSuccessorSubscription = parameterMap.targetSubscriptionId ? Subscription.get(parameterMap.targetSubscriptionId) : null
+        }
+        result.targetSubscription =  result.parentSuccessorSubscription
+        result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
+        result.parentSubChilds = subscriptionService.getValidSubChilds(result.parentSubscription)
+
+        result
     }
 
 }
