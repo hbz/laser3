@@ -5,7 +5,6 @@ import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.convenience.Marker
 import de.laser.interfaces.MarkerSupport
-import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils

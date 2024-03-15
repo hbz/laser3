@@ -1,16 +1,11 @@
 package de.laser.properties
 
 import de.laser.Org
-import de.laser.PendingChangeService
-import de.laser.Subscription
-import de.laser.PendingChange
 import de.laser.RefdataValue
+import de.laser.Subscription
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.storage.BeanStore
-import de.laser.utils.LocaleUtils
-import grails.converters.JSON
 import grails.plugins.orm.auditable.Auditable
-import org.grails.web.json.JSONElement
 
 /**
  * The class's name is what it does: a property (general / custom or private) to a {@link Subscription}.

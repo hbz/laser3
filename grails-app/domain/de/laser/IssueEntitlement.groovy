@@ -4,15 +4,12 @@ import de.laser.annotations.RefdataInfo
 import de.laser.base.AbstractBase
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.finance.PriceItem
-import de.laser.stats.Counter4Report
-import de.laser.stats.Counter5Report
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import groovy.util.logging.Slf4j
 
 import javax.persistence.Transient
-import java.text.Normalizer
 
 /**
  * A title record within a local holding. Technically a {@link TitleInstancePackagePlatform} record entry with a {@link Subscription} foreign key. But there are a few more things to note:
