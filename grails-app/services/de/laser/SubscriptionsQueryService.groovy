@@ -266,9 +266,9 @@ class SubscriptionsQueryService {
                     }
                     filterSet = true
                 }
-                else base_qry += ")" //opened in line 268 or 272
+                else base_qry += ")" //opened in line 245 or 249
             }
-            else if(params.status != 'FETCH_ALL') base_qry += ")" //opened in line 268 or 272
+            else if(params.status != 'FETCH_ALL') base_qry += ")" //opened in line 245 or 249
         }
         if (!(RDStore.SUBSCRIPTION_CURRENT.id.toString() in params.status) && params.hasPerpetualAccess) {
             base_qry += " and s.hasPerpetualAccess = :hasPerpetualAccess "

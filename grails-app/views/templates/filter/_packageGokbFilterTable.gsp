@@ -16,6 +16,14 @@
                 <g:if test="${tmplConfigItem == 'titleCount'}">
                     <g:sortableColumn property="currentTippCount" title="${message(code: 'package.compare.overview.tipps')}" params="${params}"/>
                 </g:if>
+                <g:if test="${tmplConfigItem == 'counts'}">
+                    <th>Laser <br>${message(code: 'package.show.nav.current')}</th>
+                    <th>Wekb <br>${message(code: 'package.show.nav.current')}</th>
+                    <th>Laser <br>${message(code: 'package.show.nav.planned')}</th>
+                    <th>Wekb <br>${message(code: 'package.show.nav.planned')}</th>
+                    <th>Laser <br>${message(code: 'package.show.nav.expired')}</th>
+                    <th>Wekb <br>${message(code: 'package.show.nav.expired')}</th>
+                </g:if>
                 <g:if test="${tmplConfigItem == 'provider'}">
                     <g:sortableColumn property="provider.name" title="${message(code: 'default.provider.label')}" params="${params}"/>
                 </g:if>
@@ -41,6 +49,9 @@
                 </g:if>
                 <g:if test="${tmplConfigItem == 'marker'}">
                     <th class="center aligned"><ui:markerIcon type="WEKB_CHANGES" /></th>
+                </g:if>
+                <g:if test="${tmplConfigItem == 'linkPackage'}">
+                    <th class="center aligned">${message(code: 'default.actions.label')}</th>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'yodaActions'}">
                     <th class="x center aligned">
@@ -107,12 +118,48 @@
                     </g:if>
                     <g:if test="${tmplConfigItem == 'titleCount'}">
                         <td>
-                            <g:if test="${record.currentTippCount}">
-                                ${record.currentTippCount}
+                            <g:if test="${record.containsKey('currentTippCount')}">
+                                <g:if test="${record.currentTippCount}">
+                                    ${record.currentTippCount}
+                                </g:if>
+                                <g:else>
+                                    0
+                                </g:else>
                             </g:if>
                             <g:elseif test="${pkg}">
                                 ${pkg.getCurrentTippsCount()}
                             </g:elseif>
+                        </td>
+                    </g:if>
+                    <g:if test="${tmplConfigItem == 'counts'}">
+                        <g:set var="laserCurrentTitles" value="${pkg ? pkg.getCurrentTippsCount() : 0}"/>
+                        <g:set var="laserRetiredTitles" value="${pkg ? pkg.getRetiredTippsCount() : 0}"/>
+                        <g:set var="laserExpectedTitles" value="${pkg ? pkg.getExpectedTippsCount() : 0}"/>
+                        <g:set var="wekbCurrentTitles" value="${record.currentTippCount ?: 0}"/>
+                        <g:set var="wekbRetiredTitles" value="${record.retiredTippCount ?: 0}"/>
+                        <g:set var="wekbExpectedTitles" value="${record.expectedTippCount ?: 0}"/>
+                        <td class=" ${pkg && wekbCurrentTitles != laserCurrentTitles ? 'negative' : ''}">
+                            <g:formatNumber number="${laserCurrentTitles}"/>
+                        </td>
+
+                        <td>
+                            <g:formatNumber number="${wekbCurrentTitles}"/>
+                        </td>
+
+                        <td class=" ${pkg && wekbExpectedTitles != laserExpectedTitles ? 'negative' : ''}">
+                            <g:formatNumber number="${laserExpectedTitles}"/>
+                        </td>
+
+                        <td>
+                            <g:formatNumber number="${wekbExpectedTitles}"/>
+                        </td>
+
+                        <td class=" ${pkg && wekbRetiredTitles != laserRetiredTitles ? 'negative' : ''}">
+                            <g:formatNumber number="${laserRetiredTitles}"/>
+                        </td>
+
+                        <td>
+                            <g:formatNumber number="${wekbRetiredTitles}"/>
                         </td>
                     </g:if>
                     <g:if test="${tmplConfigItem == 'provider'}">
@@ -202,6 +249,21 @@
                         <td class="center aligned">
                             <g:if test="${pkg && pkg.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
                                 <ui:markerIcon type="WEKB_CHANGES" color="purple" />
+                            </g:if>
+                        </td>
+                    </g:if>
+                    <g:if test="${tmplConfigItem == 'linkPackage'}">
+                        <td class="right aligned">
+                            <g:if test="${editable && (!pkgs || !(record.uuid in pkgs))}">
+                                <g:set var="disabled" value="${bulkProcessRunning ? 'disabled' : ''}" />
+                                <button type="button" class="ui icon button la-popup-tooltip la-delay ${disabled}"
+                                        data-addUUID="${record.uuid}"
+                                        data-packageName="${record.name}"
+                                        data-ui="modal"
+                                        data-href="#linkPackageModal"
+                                        data-content="${message(code: 'subscription.details.linkPackage.button', args: [record.name])}"><g:message
+                                        code="subscription.details.linkPackage.label"/></button>
+
                             </g:if>
                         </td>
                     </g:if>
