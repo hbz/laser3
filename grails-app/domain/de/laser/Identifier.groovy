@@ -3,7 +3,6 @@ package de.laser
 import de.laser.helper.FactoryResult
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.storage.BeanStore
-
 import grails.plugins.orm.auditable.Auditable
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.util.logging.Slf4j

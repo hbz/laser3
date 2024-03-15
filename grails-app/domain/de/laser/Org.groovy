@@ -1,7 +1,8 @@
 package de.laser
 
 import de.laser.annotations.RefdataInfo
-import de.laser.auth.*
+import de.laser.auth.Role
+import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.convenience.Marker
 import de.laser.finance.CostItem
