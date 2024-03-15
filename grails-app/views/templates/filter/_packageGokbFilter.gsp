@@ -65,6 +65,17 @@
                         </select>
                     </div>
                 </g:if>
+                <g:if test="${field == 'hasPerpetualAccess'}">
+                    <div class="field">
+                        <label>${message(code:'subscription.hasPerpetualAccess.label')}</label>
+                        <ui:select class="ui fluid dropdown" name="hasPerpetualAccess"
+                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                                   optionKey="id"
+                                   optionValue="value"
+                                   value="${params.hasPerpetualAccess}"
+                                   noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+                    </div>
+                </g:if>
                 <g:if test="${field == 'provider'}">
                     <div class="field">
                         <label for="provider">${message(code: 'default.provider.label')}</label>
