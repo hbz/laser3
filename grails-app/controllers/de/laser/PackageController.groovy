@@ -12,6 +12,7 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.SwissKnife
 import grails.converters.JSON
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.http.HttpStatus
@@ -68,91 +69,22 @@ class PackageController {
         ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
     def index() {
-
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        if (!apiSource) {
-            redirect controller: 'package', action: 'list'
-            return
-        }
-        Map<String, Object> result = [
-                flagContentGokb : true // gokbService.executeQuery
-        ]
+        Map<String, Object> result = [:]
         result.user = contextService.getUser()
         SwissKnife.setPaginationParams(result, params, result.user)
-
-        result.editUrl = apiSource.editUrl
-
-        Map<String, Object> queryParams = [componentType: "Package"]
-        if (params.q) {
-            result.filterSet = true
-            queryParams.name = params.q
-            queryParams.ids = ["Anbieter_Produkt_ID,${params.q}", "isil,${params.q}"]
+        result.putAll(packageService.getWekbPackages(params.clone()))
+        result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
+        result.languages = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)
+        Set<Set<String>> filterConfig = [['q', 'status'],
+                                    ['provider', 'ddc', 'curatoryGroup'],
+                                    ['curatoryGroupType', 'automaticUpdates']]
+        Set<String> tableConfig = ['lineNumber', 'name', 'pkgStatus', 'titleCount', 'provider', 'platform', 'curatoryGroup', 'automaticUpdates', 'lasUpdatedDisplay', 'my', 'marker']
+        if(SpringSecurityUtils.ifAnyGranted('ROLE_YODA')) {
+            tableConfig << 'yodaActions'
         }
-
-        if(params.status) {
-            result.filterSet = true
-        }
-        else if(!params.status) {
-            params.status = ['Current', 'Expected', 'Retired', 'Deleted']
-        }
-        queryParams.status = params.status
-
-        if (params.provider) {
-            result.filterSet = true
-            queryParams.provider = params.provider
-        }
-
-        if (params.curatoryGroup) {
-            result.filterSet = true
-            queryParams.curatoryGroupExact = params.curatoryGroup
-        }
-
-        if (params.ddc) {
-            result.filterSet = true
-            Set<String> selDDC = []
-            params.list("ddc").each { String key ->
-                selDDC << RefdataValue.get(key).value
-            }
-            queryParams.ddc = selDDC
-        }
-
-        if (params.curatoryGroupType) {
-            result.filterSet = true
-            queryParams.curatoryGroupType = params.curatoryGroupType
-        }
-
-        if(params.automaticUpdates) {
-            result.filterSet = true
-            queryParams.automaticUpdates = params.automaticUpdates
-        }
-
-        result.curatoryGroupTypes = [
-                [value: 'Provider', name: message(code: 'package.curatoryGroup.provider')],
-                [value: 'Vendor', name: message(code: 'package.curatoryGroup.vendor')],
-                [value: 'Other', name: message(code: 'package.curatoryGroup.other')]
-        ]
-
-        result.automaticUpdates = [
-                [value: 'true', name: message(code: 'package.index.result.automaticUpdates')],
-                [value: 'false', name: message(code: 'package.index.result.noAutomaticUpdates')]
-        ]
-
-        Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
-        if(!params.sort)
-            params.sort = 'name'
-        if(queryCuratoryGroups.code == 404) {
-            result.error = message(code:'wekb.error.'+queryCuratoryGroups.error) as String
-        }
-        else {
-            if (queryCuratoryGroups) {
-                List recordsCuratoryGroups = queryCuratoryGroups.result
-                result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
-            }
-            result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
-            result.currentPackageIdList = SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp where sp.subscription in (select oo.sub from OrgRole oo join oo.sub sub where oo.org = :context and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true)))', [context: contextService.getOrg(), current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED]).toSet()
-            result.putAll(gokbService.doQuery(result, params.clone(), queryParams))
-        }
-
+        result.currentPackageIdSet = SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp where sp.subscription in (select oo.sub from OrgRole oo join oo.sub sub where oo.org = :context and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true)))', [context: contextService.getOrg(), current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED]).toSet()
+        result.filterConfig = filterConfig
+        result.tableConfig = tableConfig
         result
     }
 
