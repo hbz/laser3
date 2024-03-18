@@ -487,6 +487,7 @@ join sub.orgRelations or_sub where
 
             result.providers = Org.executeQuery(queryProviders + " and sub in (:subs)", queryParamsProviders+[subs: costs.sub])
             result.totalCount = costs.size()
+            result.totalSubsCount = costs.sub.unique().size()
             result.totalMembers = new TreeSet<Org>()
             costs.each { row ->
                 result.totalMembers << row.orgs
