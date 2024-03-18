@@ -30,7 +30,6 @@ class ShareService {
                 owner:          share.owner ,
                 license:        (target instanceof License) ? target : share.license,
                 subscription:   (target instanceof Subscription) ? target : share.subscription,
-                pkg:            (target instanceof Package) ? target : share.pkg,
                 link:           (target instanceof Links) ? target : share.link,
                 domain:         share.domain,
                 globannounce:   share.globannounce,
@@ -74,9 +73,8 @@ class ShareService {
         String tp =
                 (target instanceof License) ? 'license' :
                         (target instanceof Subscription) ? 'subscription' :
-                                (target instanceof Package) ? 'pkg' :
-                                        (target instanceof Links) ? 'link' :
-                                                null
+                                (target instanceof Links) ? 'link' :
+                                        null
 
         if (tp) {
             DocContext.executeUpdate('delete from DocContext dc where dc.sharedFrom = :sf and ' + tp + ' = :target', [sf: this, target: target])

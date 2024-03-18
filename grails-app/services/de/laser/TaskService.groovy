@@ -83,9 +83,6 @@ class TaskService {
             case 'Org':
                 tasks.addAll(Task.findAllByOrg(obj as Org, pparams))
                 break
-            case 'Package':
-                tasks.addAll(Task.findAllByPkg(obj as Package, pparams))
-                break
             case 'Subscription':
                 tasks.addAll(Task.findAllBySubscription(obj as Subscription, pparams))
                 break
@@ -137,16 +134,6 @@ class TaskService {
      */
     List<Task> getTasksByCreatorAndObject(User user, Org obj) {
         (user && obj) ?  Task.findAllByCreatorAndOrg(user, obj) : []
-    }
-
-    /**
-     * Retrieves all tasks the given user created for the given package
-     * @param user the user whose tasks should be retrieved
-     * @param obj the package to which the tasks are attached
-     * @return a complete list of tasks
-     */
-    List<Task> getTasksByCreatorAndObject(User user, Package obj) {
-        (user && obj) ?  Task.findAllByCreatorAndPkg(user, obj) : []
     }
 
     /**
@@ -247,9 +234,6 @@ class TaskService {
                 case 'Org':
                     tableName = 'org'
                     break
-                case 'Package':
-                    tableName = 'pkg'
-                    break
                 case 'Subscription':
                     tableName = 'subscription'
                     break
@@ -273,21 +257,11 @@ class TaskService {
 
         result.validResponsibleOrgs         = contextOrg ? [contextOrg] : []
         result.validResponsibleUsers        = getUserDropdown(contextOrg)
-        result.validPackages                = _getPackagesDropdown()
         result.validOrgsDropdown            = _getOrgsDropdown(contextOrg)
         result.validSubscriptionsDropdown   = _getSubscriptionsDropdown(contextOrg, false)
         result.validLicensesDropdown        = _getLicensesDropdown(contextOrg, false)
 
         result
-    }
-
-    /**
-     * Gets a list of all packages for dropdown output
-     * @return a list of packages
-     */
-    private List<Package> _getPackagesDropdown() {
-        List<Package> validPackages        = Package.findAll("from Package p where p.name != '' and p.name != null order by lower(p.sortname) asc") // TODO
-        validPackages
     }
 
     /**

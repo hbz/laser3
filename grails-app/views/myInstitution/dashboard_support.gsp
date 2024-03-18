@@ -190,16 +190,6 @@
 
         <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Tasks' ? 'active':''}" data-tab="tasks">
 
-%{--            <g:if test="${editable}">--}%
-%{--                <div class="ui right aligned grid">--}%
-%{--                    <div class="right floated right aligned sixteen wide column">--}%
-%{--                        <a onclick="JSPC.app.createTask();" class="ui button">--}%
-%{--                            ${message(code:'task.create.new')}--}%
-%{--                        </a>--}%
-%{--                    </div>--}%
-%{--                </div>--}%
-%{--            </g:if>--}%
-
             <div class="ui cards">
                 <g:each in="${tasks}" var="tsk">
                     <div class="ui card">
@@ -401,7 +391,5 @@
             };
 
         JSPC.app.dashboard.initWorkflows()
-
-    %{--        JSPC.app.createTask = bb8.ajax4SimpleModalFunction("#modalCreateTask", "<g:createLink controller="ajaxHtml" action="createTask"/>", true);--}%
     </laser:script>
 <laser:htmlEnd />

@@ -18,7 +18,6 @@ class DocContext implements ShareableTrait, Comparable {
         owner:          Doc,
         license:        License,
         subscription:   Subscription,
-        pkg:            Package,
         link:           Links,
         org:            Org,
         surveyConfig:   SurveyConfig
@@ -47,7 +46,6 @@ class DocContext implements ShareableTrait, Comparable {
            domain column:'dc_domain'
           license column:'dc_lic_fk', index:'doc_lic_idx'
      subscription column:'dc_sub_fk', index:'doc_sub_idx'
-              pkg column:'dc_pkg_fk'
               org column:'dc_org_fk', index:'doc_org_idx'
              link column:'dc_link_fk'
      globannounce column:'dc_is_global'
@@ -66,7 +64,6 @@ class DocContext implements ShareableTrait, Comparable {
     static constraints = {
         license     (nullable:true)
         subscription(nullable:true)
-        pkg         (nullable:true)
         org         (nullable:true)
         link        (nullable:true)
         domain      (nullable:true, blank:false)
