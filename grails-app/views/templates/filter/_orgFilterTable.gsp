@@ -517,11 +517,11 @@
 
                         if(params.filterPvd && params.filterPvd != "" && params.list('filterPvd')){
                             (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(
-                                    [org: org, actionName: actionName, status: RDStore.SUBSCRIPTION_CURRENT.id, hasPerpetualAccess: RDStore.YN_YES.id, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null, count: true, providers: params.list('filterPvd')]
+                                    [org: org, actionName: actionName, status: RDStore.SUBSCRIPTION_CURRENT.id, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null, count: true, providers: params.list('filterPvd')]
                             )
                         }else {
                             (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(
-                                    [org: org, actionName: actionName, status: RDStore.SUBSCRIPTION_CURRENT.id, hasPerpetualAccess: RDStore.YN_YES.id, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null, count: true]
+                                    [org: org, actionName: actionName, status: RDStore.SUBSCRIPTION_CURRENT.id, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null, count: true]
                             )
                         }
                         int numberOfSubscriptions = Subscription.executeQuery("select count(*) " + base_qry, qry_params)[0]
@@ -532,7 +532,7 @@
                         %>
                         <g:if test="${actionName == 'manageMembers'}">
                             <g:link controller="myInstitution" action="manageConsortiaSubscriptions"
-                                    params="${[member: org.id, status: RDStore.SUBSCRIPTION_CURRENT.id, hasPerpetualAccess: RDStore.YN_YES.id, validOn: params.subValidOn, filterSet: true, filterPvd: params.list('filterPvd')]}">
+                                    params="${[member: org.id, status: RDStore.SUBSCRIPTION_CURRENT.id, validOn: params.subValidOn, filterSet: true, filterPvd: params.list('filterPvd')]}">
                                 <div class="ui blue circular label">
                                     ${numberOfSubscriptions}
                                 </div>
@@ -540,7 +540,7 @@
                         </g:if>
                         <g:elseif test="${actionName == 'currentConsortia'}">
                             <g:link controller="myInstitution" action="currentSubscriptions"
-                                    params="${[consortia: genericOIDService.getOID(org), status: RDStore.SUBSCRIPTION_CURRENT.id, hasPerpetualAccess: RDStore.YN_YES.id, validOn: params.subValidOn, filterSet: true]}"
+                                    params="${[consortia: genericOIDService.getOID(org), status: RDStore.SUBSCRIPTION_CURRENT.id, validOn: params.subValidOn, filterSet: true]}"
                                     title="${message(code: 'org.subscriptions.tooltip', args: [org.name])}">
                                 <div class="ui blue circular label">
                                     ${numberOfSubscriptions}
@@ -549,7 +549,7 @@
                         </g:elseif>
                         <g:elseif test="${actionName == 'currentProviders'}">
                             <g:link controller="myInstitution" action="currentSubscriptions"
-                                    params="${[identifier: org.globalUID, status: RDStore.SUBSCRIPTION_CURRENT.id, hasPerpetualAccess: RDStore.YN_YES.id, isSiteReloaded: 'yes']}"
+                                    params="${[identifier: org.globalUID, status: RDStore.SUBSCRIPTION_CURRENT.id, isSiteReloaded: 'yes']}"
                                     title="${message(code: 'org.subscriptions.tooltip', args: [org.name])}">
                                 <div class="ui blue circular label">
                                     ${numberOfSubscriptions}
