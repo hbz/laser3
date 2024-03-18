@@ -20,7 +20,6 @@
                 <ui:datepicker label="package.compare.filter.coverage_endsAfter" id="endsAfter" name="endsAfter" value="${params.endsAfter}" />
             </div>
             <div class="field">
-
             </div>
         </div>
         <div class="three fields">
@@ -31,7 +30,6 @@
                 <ui:datepicker label="package.compare.filter.accessEndDate" id="accessEndDate" name="accessEndDate" value="${params.accessEndDate}" />
             </div>
             <div class="field la-field-right-aligned">
-
                 <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
                 <input type="submit" class="ui primary button" value="${message(code:'package.compare.filter.submit.label')}" />
             </div>

@@ -5,23 +5,11 @@
 <g:set var="org" value="${contextService.getOrg()}"/>
 
 <ui:actionsDropdown>
-%{--    <g:if test="${(editable || contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC)) && ! ['list'].contains(actionName)}">
-        <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
-        <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />
-    </g:if>
-    <g:if test="${userService.hasFormalAffiliation(user,org,'INST_EDITOR') && ! ['list'].contains(actionName)}">
-        <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
-    </g:if>
-    <g:if test="${(editable || contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC)) && ! ['list'].contains(actionName)}">
-        <div class="divider"></div>
-    </g:if>--}%
-
     <g:if test="${(editable || contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)) && !['list'].contains(actionName) && packageInstance}">
         <ui:actionsDropdownItem message="package.show.linkToSub" data-ui="modal" href="#linkToSubModal"/>
     </g:if>
 
 %{--    <ui:actionsDropdownItemDisabled controller="package" action="compare" message="menu.public.comp_pkg"/>--}%
-
 </ui:actionsDropdown>
 
 <g:if test="${(editable || contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)) && !['list'].contains(actionName) && packageInstance}">
@@ -260,12 +248,3 @@
 
     </ui:modal>
 </g:if>
-
-%{--
-<g:if test="${(editable && contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)) && ! ['list'].contains(actionName)}">
-    <laser:render template="/templates/documents/modal" model="${[ownobj: packageInstance, institution: contextService.getOrg(), owntp: 'pkg']}"/>
-    <laser:render template="/templates/tasks/modal_create" model="${[ownobj:packageInstance, owntp:'pkg']}"/>
-</g:if>
-<g:if test="${userService.hasFormalAffiliation(user,org,'INST_EDITOR') && ! ['list'].contains(actionName)}">
-    <laser:render template="/templates/notes/modal_create" model="${[ownobj: packageInstance, owntp: 'pkg']}"/>
-</g:if>--}%
