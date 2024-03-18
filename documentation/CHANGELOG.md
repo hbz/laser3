@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5616    18.03.2024  dev     3.4         Andreas Feature     Umstellung des Entknüpfungsprozesses auf natives SQL
+
 5610    08.03.2024  dev     3.4         Andreas Feature     Erweiterung des Filters in "Meine Einrichtungen"
 
 5609    07.03.2024  rc-3.3  3.3.7       Andreas Bug         inkorrekte Fehlerbehandlung, wenn der we:kb-Server nicht erreichbar ist
