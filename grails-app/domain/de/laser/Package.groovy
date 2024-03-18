@@ -68,7 +68,6 @@ class Package extends AbstractBaseWithCalculatedLastUpdated implements MarkerSup
 static hasMany = [  tipps:     TitleInstancePackagePlatform,
                     orgs:      OrgRole,
                     prsLinks:  PersonRole,
-                    documents: DocContext,
                     subscriptions:  SubscriptionPackage,
                     pendingChanges: PendingChange,
                     ids: Identifier,
@@ -79,7 +78,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   static mappedBy = [tipps:     'pkg',
                      orgs:      'pkg',
                      prsLinks:  'pkg',
-                     documents: 'pkg',
                      subscriptions: 'pkg',
                      pendingChanges: 'pkg',
                      ids:       'pkg',
@@ -117,7 +115,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
             orgs            batchSize: 10
             prsLinks        batchSize: 10
-            documents       batchSize: 10
             subscriptions   batchSize: 10
             ids             sort: 'ns', batchSize: 10
             ddcs            batchSize: 10
