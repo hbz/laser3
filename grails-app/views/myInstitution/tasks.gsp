@@ -11,10 +11,6 @@
 
         <ui:h1HeaderWithIcon message="menu.my.tasks" type="task" floated="true" total="${taskCount}/${myTaskCount}" />
 
-        <%--<g:if test="${editable}">
-            <input type="submit" class="ui left floated  button la-clear-before" value="${message(code:'task.create.new')}" data-ui="modal" data-href="#modalCreateTask" />
-        </g:if>--%>
-
         <ui:filter>
             <form class="ui form">
                 <div class="four fields">
