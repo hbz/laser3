@@ -1262,6 +1262,12 @@ SELECT * FROM (
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
         SwissKnife.setPaginationParams(result, params, result.user)
+        result.filterConfig = [['q', 'pkgStatus'],
+                               ['provider', 'ddc', 'curatoryGroup'],
+                               ['curatoryGroupType', 'automaticUpdates']]
+        result.tableConfig = ['lineNumber', 'name', 'status', 'counts', 'curatoryGroup', 'automaticUpdates', 'lastUpdatedDisplay']
+        if(SpringSecurityUtils.ifAnyGranted('ROLE_YODA'))
+            result.tableConfig << 'yodaActions'
         result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
         result.languages = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)
         result.putAll(packageService.getWekbPackages(params.clone()))

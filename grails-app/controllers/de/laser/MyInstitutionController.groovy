@@ -1869,17 +1869,24 @@ class MyInstitutionController  {
                     result.subscriptionMap.put(key, [])
                 }
                 boolean display
-                switch(params.status) {
-                    case RDStore.SUBSCRIPTION_EXPIRED.id: display = entry[1].status?.id == RDStore.SUBSCRIPTION_EXPIRED.id && (entry[1].hasPerpetualAccess || result.subscriptionMap.get(key).size() < 5)
-                        break
-                    case "FETCH_ALL":
-                        if(entry[1].status?.id == RDStore.SUBSCRIPTION_EXPIRED.id) {
-                            display = (entry[1].hasPerpetualAccess || result.subscriptionMap.get(key).size() < 5)
-                        }
-                        else display = true
-                        break
-                    default: display = entry[1].status?.id == params.status
-                        break
+
+                if(params.status == "FETCH_ALL") {
+                    if(entry[1].status?.id == RDStore.SUBSCRIPTION_EXPIRED.id) {
+                        display = (entry[1].hasPerpetualAccess || result.subscriptionMap.get(key).size() < 5)
+                    }
+                    else display = true
+                }
+                else if(RDStore.SUBSCRIPTION_CURRENT.id in Params.getLongList(params, "status")) {
+                    if(entry[1].status?.id == RDStore.SUBSCRIPTION_EXPIRED.id) {
+                        display = (entry[1].hasPerpetualAccess || result.subscriptionMap.get(key).size() < 5)
+                    }
+                    else display = entry[1].status?.id == RDStore.SUBSCRIPTION_CURRENT.id
+                }
+                else if(RDStore.SUBSCRIPTION_EXPIRED.id in Params.getLongList(params, "status")) {
+                    display = (entry[1].hasPerpetualAccess || result.subscriptionMap.get(key).size() < 5)
+                }
+                else {
+                    display = entry[1].status?.id == params.long("status")
                 }
                 if (display) {
 
@@ -1893,7 +1900,7 @@ class MyInstitutionController  {
                 Map<String, Object> definiteRec = [:], wekbRec = remote.records.find { Map remoteRec -> remoteRec.uuid == entry[0] }
                 if(wekbRec)
                     definiteRec.putAll(wekbRec)
-                else if(!params.containsKey('curatoryGroup') &&!params.containsKey('curatoryGroupType') && !params.containsKey('automaticUpdates')) {
+                else if(!params.containsKey('curatoryGroup') && !params.containsKey('curatoryGroupType') && !params.containsKey('automaticUpdates')) {
                     definiteRec.put('uuid', entry[0])
                 }
                 if(definiteRec.size() > 0)

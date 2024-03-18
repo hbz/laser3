@@ -2966,19 +2966,39 @@ join sub.orgRelations or_sub where
                 executorService.execute({
                     long start = System.currentTimeSeconds()
                     Thread.currentThread().setName('permanentTilesProcess_' + subscription.id)
-                    int countIeIDs = IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is not null', [sub: subscription])[0]
-                    log.debug("removePermanentTitlesBySubscription -> set perpetualAccessBySub of ${countIeIDs} IssueEntitlements to null: " + subscription.id)
-                    IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.perpetualAccessBySub = null where ie.subscription = :sub and ie.perpetualAccessBySub is not null", [sub: subscription])
-                    PermanentTitle.executeUpdate("delete PermanentTitle pt where pt.issueEntitlement.id in (select ie.id from IssueEntitlement ie where ie.subscription = :sub)", [sub: subscription])
+                    Sql sql = GlobalService.obtainSqlConnection()
+                    String ieQuery = 'select ie_id from issue_entitlement where ie_subscription_fk = :sub and ie_perpetual_access_by_sub_fk is not null',
+                    countIeQuery = 'select count(*) from issue_entitlement where ie_subscription_fk = :sub and ie_perpetual_access_by_sub_fk is not null',
+                    permQuery = 'select pt_id from permanent_title where pt_subscription_fk = :sub',
+                    countPermQuery = 'select count(*) from permanent_title where pt_subscription_fk = :sub'
+                    int parentIeCount = sql.rows(countIeQuery, [sub: subscription.id])[0]["count"],
+                    parentPermCount = sql.rows(countPermQuery, [sub: subscription.id])[0]["count"]
+                    log.debug("removePermanentTitlesBySubscription -> set perpetualAccessBySub of ${parentIeCount} IssueEntitlements to null: " + subscription.id)
+                    int limit = 5000
+                    for(int i = 0; i < parentIeCount; i += limit) {
+                        String updateQuery = "update issue_entitlement set ie_perpetual_access_by_sub_fk = null where ie_id in (${ieQuery} limit ${limit})"
+                        sql.executeUpdate(updateQuery, [sub: subscription.id])
+                    }
+                    for(int i = 0; i < parentPermCount; i += limit) {
+                        String deleteQuery = "delete from permanent_title where pt_id in (${permQuery} limit ${limit})"
+                        sql.executeUpdate(deleteQuery, [sub: subscription.id])
+                    }
+
 
                     if (subscription.instanceOf == null && auditService.getAuditConfig(subscription, 'hasPerpetualAccess')) {
-                        Set depending = Subscription.findAllByInstanceOf(subscription)
-                        depending.eachWithIndex { dependingObj, i->
-                            countIeIDs = IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is not null', [sub: dependingObj])[0]
-                            log.debug("removePermanentTitlesBySubscription (${i+1}/${depending.size()}) -> set perpetualAccessBySub of ${countIeIDs} IssueEntitlements to null: " + dependingObj.id)
-                            IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.perpetualAccessBySub = null where ie.subscription = :sub and ie.perpetualAccessBySub is not null", [sub: dependingObj])
-                            PermanentTitle.executeUpdate("delete PermanentTitle pt where pt.issueEntitlement.id in (select ie.id from IssueEntitlement ie where ie.subscription = :sub)", [sub: dependingObj])
-
+                        Set<Subscription> depending = Subscription.findAllByInstanceOf(subscription)
+                        depending.eachWithIndex { Subscription dependingObj, int i->
+                            int dependingIeCount = sql.rows(countIeQuery, [sub: dependingObj.id])[0]["count"],
+                            dependingPermCount = sql.rows(countPermQuery, [sub: dependingObj.id])[0]["count"]
+                            log.debug("removePermanentTitlesBySubscription (${i+1}/${depending.size()}) -> set perpetualAccessBySub of ${dependingIeCount} IssueEntitlements to null: " + dependingObj.id)
+                            for(int j = 0; j < dependingIeCount; j += limit) {
+                                String updateQuery = "update issue_entitlement set ie_perpetual_access_by_sub_fk = null where ie_id in (${ieQuery} limit ${limit})"
+                                sql.executeUpdate(updateQuery, [sub: dependingObj.id])
+                            }
+                            for(int j = 0; j < dependingPermCount; j += limit) {
+                                String deleteQuery = "delete from permanent_title where pt_id in (${permQuery} limit ${limit})"
+                                sql.executeUpdate(deleteQuery, [sub: dependingObj.id])
+                            }
                         }
                     }
                     if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {

@@ -113,7 +113,7 @@ class PackageService {
             result.filterSet = true
         }
         else if(!params.pkgStatus) {
-            params.pkgStatus = [RDStore.TIPP_STATUS_CURRENT.value, RDStore.TIPP_STATUS_EXPECTED.value, RDStore.TIPP_STATUS_REMOVED.value, RDStore.TIPP_STATUS_DELETED.value]
+            params.pkgStatus = [RDStore.TIPP_STATUS_CURRENT.value, RDStore.TIPP_STATUS_EXPECTED.value, RDStore.TIPP_STATUS_RETIRED.value, RDStore.TIPP_STATUS_DELETED.value]
         }
         queryParams.status = params.pkgStatus
 
@@ -130,6 +130,11 @@ class PackageService {
         if (params.curatoryGroupType) {
             result.filterSet = true
             queryParams.curatoryGroupType = params.curatoryGroupType
+        }
+
+        if (params.automaticUpdates) {
+            result.filterSet = true
+            queryParams.automaticUpdates = params.automaticUpdates
         }
 
         if (params.ddc) {
