@@ -4,12 +4,14 @@ package de.laser
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.base.AbstractReport
 import de.laser.cache.EhcacheWrapper
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
 import de.laser.helper.*
+import de.laser.http.BasicHttpClient
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
@@ -18,6 +20,7 @@ import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
+import de.laser.system.SystemEvent
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
@@ -27,6 +30,10 @@ import groovy.sql.BatchingPreparedStatementWrapper
 import groovy.sql.BatchingStatementWrapper
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
+import groovy.xml.XmlSlurper
+import groovy.xml.slurpersupport.GPathResult
+import io.micronaut.http.client.DefaultHttpClientConfiguration
+import io.micronaut.http.client.HttpClientConfiguration
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
 import org.springframework.web.multipart.MultipartFile
@@ -34,6 +41,7 @@ import org.springframework.web.multipart.MultipartFile
 import java.sql.Connection
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
+import java.time.Duration
 import java.time.Year
 import java.util.concurrent.ExecutorService
 
@@ -47,6 +55,7 @@ class SubscriptionService {
     ContextService contextService
     EscapeService escapeService
     ExecutorService executorService
+    ExportService exportService
     FilterService filterService
     GenericOIDService genericOIDService
     GlobalService globalService
@@ -55,6 +64,7 @@ class SubscriptionService {
     MessageSource messageSource
     PropertyService propertyService
     RefdataService refdataService
+    StatsSyncService statsSyncService
     SubscriptionsQueryService subscriptionsQueryService
     SurveyService surveyService
     UserService userService
@@ -1612,6 +1622,81 @@ join sub.orgRelations or_sub where
             }
         }
         result
+    }
+
+    /**
+     * currently unused, may become obsolete later
+     * @param ci
+     * @return
+     */
+    Map<String, Object> prepareSUSHIConnectionCheck(CustomerIdentifier ci) {
+        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        Map<String, Object> queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/sushiSources", [:])
+        Map platformRecord
+        if (queryResult) {
+            Map<String, Object> records = queryResult
+            /* COUNTER 4 SUSHI does not provide such an endpoint
+            if(records.counter4ApiSources.containsKey(platform.gokbId)) {
+                platformRecord = records.counter4ApiSources.get(platform.gokbId)
+            }
+            */
+            if(records.counter5ApiSources.containsKey(ci.platform.gokbId)) {
+                platformRecord = records.counter5ApiSources.get(ci.platform.gokbId)
+            }
+        }
+        if(platformRecord) {
+            Map<String, String> sushiConfig = exportService.prepareSushiCall(platformRecord, 'status')
+            if(ci.value) {
+                checkSUSHIConnection(sushiConfig.statsUrl, exportService.buildQueryArguments(sushiConfig, platformRecord, ci), sushiConfig.revision)
+            }
+        }
+        else [success: false, code: -1]
+    }
+
+    Map<String, Object> checkSUSHIConnection(String statsUrl, String queryArguments, String revision) {
+        Map<String, Object> connSuccessful = [:]
+        if(revision == AbstractReport.COUNTER_5) {
+            String url = statsUrl+queryArguments
+            try {
+                Closure success = { resp, json ->
+                    if(resp.code() == 200) {
+                        connSuccessful = [success: true]
+                    }
+                    else {
+                        log.error("server response: ${resp.status()}")
+                        connSuccessful = [success: false, code: resp.status()]
+                    }
+                }
+                Closure failure = { resp, reader ->
+                    if(reader?.containsKey("Code"))
+                        connSuccessful = [success: false, code: reader.Code, message: reader.Message]
+                    else {
+                        log.error("server response: ${resp?.status()} - ${reader}")
+                        connSuccessful = [success: false, code: 0]
+                    }
+                    Map sysEventPayload = [url: url]
+                    SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
+                }
+                HttpClientConfiguration config = new DefaultHttpClientConfiguration()
+                config.readTimeout = Duration.ofMinutes(5)
+                BasicHttpClient http = new BasicHttpClient(url, config)
+                http.get(BasicHttpClient.ResponseType.JSON, success, failure)
+                http.close()
+            }
+            catch (Exception e) {
+                connSuccessful = [success:false, code: 0, message: "invalid response returned for ${url} - ${e.getMessage()}!"]
+                log.error("stack trace: ", e)
+                Map sysEventPayload = [url: url]
+                SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
+            }
+        }
+        else if(revision == AbstractReport.COUNTER_4) {
+            Map<String, Object> result = statsSyncService.fetchXMLData(statsUrl, queryArguments)
+            if(result.code == 200)
+                connSuccessful = [success: true]
+            else connSuccessful = [success: false, code: result.code, message: result.error]
+        }
+        connSuccessful
     }
 
     /**

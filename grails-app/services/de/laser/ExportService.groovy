@@ -828,9 +828,12 @@ class ExportService {
 		if(params.revision == AbstractReport.COUNTER_4) {
 			userCache.put('label', 'Hole Daten vom Anbieter ...')
 			prf.setBenchmark('before SUSHI call')
-			Map<String, Object> queryParams = [reportType: reportType, customer: customer, platform: platform]
+			Map<String, Object> queryParams = [reportType: reportType, customer: customer, platform: platform, revision: AbstractReport.COUNTER_4]
 			if(params.metricType) {
 				queryParams.metricTypes = params.list('metricType')
+			}
+			else {
+				metricTypes.addAll(Counter4Report.METRIC_TYPES.valueOf(reportType).metricTypes)
 			}
 			queryParams.startDate = dateRangeParams.startDate
 			queryParams.endDate = dateRangeParams.endDate
@@ -1246,7 +1249,7 @@ class ExportService {
 				}
 			}
 			else {
-				userCache.put('progress', 0)
+				userCache.put('progress', 100)
 				requestResponse
 			}
 		}
@@ -1254,7 +1257,7 @@ class ExportService {
 		else if(params.revision == AbstractReport.COUNTER_5) {
 			userCache.put('label', 'Hole Daten vom Anbieter ...')
 			prf.setBenchmark('before SUSHI call')
-			Map<String, Object> queryParams = [reportType: reportType, customer: customer, platform: platform]
+			Map<String, Object> queryParams = [reportType: reportType, customer: customer, platform: platform, revision: AbstractReport.COUNTER_5]
 			if(params.metricType) {
 				queryParams.metricTypes = params.list('metricType').join('%7C')
 			}
@@ -2177,7 +2180,7 @@ class ExportService {
 	 * @param platformRecord the we:kb platform record map containing the SUSHI API data
 	 * @return a {@link Map} containing the revision (either counter4 or counter5) and statsUrl wth the URL to call
 	 */
-	Map<String, String> prepareSushiCall(Map platformRecord) {
+	Map<String, String> prepareSushiCall(Map platformRecord, String connectionMethod = 'reports') {
 		String revision = null, statsUrl = null, sushiApiAuthenticationMethod = null
 		if(platformRecord.counterRegistryApiUuid) {
 			String url = "${ConfigMapper.getSushiCounterRegistryUrl()}/${platformRecord.counterRegistryApiUuid}${ConfigMapper.getSushiCounterRegistryDataSuffix()}"
@@ -2190,10 +2193,10 @@ class ExportService {
 							if(sushiConfig.counter_release in ['5', '5.1'])
 								revision = "counter5"
 							statsUrl = sushiConfig.url
-							if (!sushiConfig.url.contains('reports')) {
+							if (!sushiConfig.url.contains(connectionMethod)) {
 								if (sushiConfig.url.endsWith('/'))
-									statsUrl = sushiConfig.url + 'reports'
-								else statsUrl = sushiConfig.url + '/reports'
+									statsUrl = sushiConfig.url + connectionMethod
+								else statsUrl = sushiConfig.url + '/'+connectionMethod
 							}
 							boolean withRequestorId = Boolean.valueOf(sushiConfig.requestor_id_required), withApiKey = Boolean.valueOf(sushiConfig.api_key_required), withIpWhitelisting = Boolean.valueOf(sushiConfig.ip_address_authorization)
 							if(withRequestorId) {
@@ -2255,6 +2258,86 @@ class ExportService {
 			}
 		}
 		[revision: revision, statsUrl: statsUrl, sushiApiAuthenticationMethod: sushiApiAuthenticationMethod]
+	}
+
+	String buildQueryArguments(Map configMap, Map platformRecord, CustomerIdentifier ci) {
+		String queryArguments = null
+		if(configMap.revision == AbstractReport.COUNTER_5) {
+			String apiKey = platformRecord.centralApiKey ?: ci.requestorKey
+			queryArguments = "?customer_id=${ci.value}"
+			switch(configMap.sushiApiAuthenticationMethod) {
+				case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR:
+					if(ci.requestorKey) {
+						queryArguments += "&requestor_id=${ci.requestorKey}"
+					}
+					break
+				case AbstractReport.API_AUTH_CUSTOMER_API:
+				case AbstractReport.API_AUTH_REQUESTOR_API:
+					if(ci.requestorKey) {
+						queryArguments += "&api_key=${ci.requestorKey}"
+					}
+					break
+				case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR_API:
+					if(ci.requestorKey && platformRecord.centralApiKey) {
+						queryArguments += "&requestor_id=${ci.requestorKey}&api_key=${platformRecord.centralApiKey}"
+					}
+					else if(ci.requestorKey && !platformRecord.centralApiKey) {
+						//the next fancy solution ... this time: Statista!
+						queryArguments += "&requestor_id=${ci.value}&api_key=${ci.requestorKey}"
+					}
+					break
+				case AbstractReport.API_IP_WHITELISTING:
+					break
+				default:
+					if(ci.requestorKey || apiKey) {
+						queryArguments += "&requestor_id=${ci.requestorKey}&api_key=${apiKey}"
+					}
+					break
+			}
+			if(platformRecord.counterR5SushiPlatform)
+				queryArguments += "&platform=${platformRecord.counterR5SushiPlatform}"
+		}
+		else if(configMap.revision == AbstractReport.COUNTER_4) {
+			StreamingMarkupBuilder requestBuilder = new StreamingMarkupBuilder()
+			Date now = new Date()
+			//building up fake request in order to check availability
+			def requestBody = requestBuilder.bind {
+				mkp.xmlDeclaration()
+				mkp.declareNamespace(x: "http://schemas.xmlsoap.org/soap/envelope/")
+				mkp.declareNamespace(cou: "http://www.niso.org/schemas/sushi/counter")
+				mkp.declareNamespace(sus: "http://www.niso.org/schemas/sushi")
+				x.Envelope {
+					x.Header {}
+					x.Body {
+						cou.ReportRequest(Created: DateUtils.getSDF_yyyyMMddTHHmmss().format(now), ID: '?') {
+							sus.Requestor {
+								sus.ID(ci.requestorKey)
+								sus.Name('?')
+								sus.Email('?')
+							}
+							sus.CustomerReference {
+								sus.ID(ci.value)
+								sus.Name('?')
+							}
+							sus.ReportDefinition(Name: 'PR1', Release: 4) {
+								sus.Filters {
+									sus.UsageDateRange {
+										sus.Begin('2021-01-01')
+										//if (currentYearEnd.before(calendarConfig.now))
+										sus.End('2021-01-31')
+										/*else {
+                                            sus.End(calendarConfig.now.format("yyyy-MM-dd"))
+                                        }*/
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			queryArguments = requestBody.toString()
+		}
+		queryArguments
 	}
 
 	/**
@@ -2323,36 +2406,7 @@ class ExportService {
 				}
 				else if(statsSource.revision == 'counter5') {
 					String url = statsSource.statsUrl + "/${configMap.reportType}"
-					url += "?customer_id=${customerId.value}"
-					switch(statsSource.sushiApiAuthenticationMethod) {
-						case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR:
-							if(customerId.requestorKey) {
-								url += "&requestor_id=${customerId.requestorKey}"
-							}
-							break
-						case [AbstractReport.API_AUTH_CUSTOMER_API, AbstractReport.API_AUTH_REQUESTOR_API]:
-							if(customerId.requestorKey) {
-								url += "&api_key=${customerId.requestorKey}"
-							}
-							break
-						case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR_API:
-							if(customerId.requestorKey && platformRecord.centralApiKey) {
-								url += "&requestor_id=${customerId.requestorKey}&api_key=${platformRecord.centralApiKey}"
-							}
-							else if(customerId.requestorKey && !platformRecord.centralApiKey) {
-								//the next fancy solution ... this time: Statista!
-								url += "&requestor_id=${customerId.value}&api_key=${customerId.requestorKey}"
-							}
-							break
-						case AbstractReport.API_IP_WHITELISTING:
-							break
-						default:
-							String apiKey = platformRecord.centralApiKey ?: customerId.requestorKey
-							if(customerId.requestorKey || apiKey) {
-								url += "&requestor_id=${customerId.requestorKey}&api_key=${apiKey}"
-							}
-							break
-					}
+					url += buildQueryArguments(configMap, platformRecord, customerId)
 					if(platformRecord.counterR5SushiPlatform)
 						url += "&platform=${platformRecord.counterR5SushiPlatform}"
 					url += configMap.metricTypes ? "&metric_type=${configMap.metricTypes}" : ""

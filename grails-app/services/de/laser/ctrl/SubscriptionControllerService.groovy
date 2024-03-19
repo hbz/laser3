@@ -921,12 +921,12 @@ class SubscriptionControllerService {
      * returned. In order to determine the COUNTER revision supported and the SUSHI API URL, the we:kb is being queried
      * to fetch the SUSHI configuration data
      * @param configMap the request parameter map
-     * @return a {@link SortedSet} of supported reports
+     * @return a {@link Set} of supported reports
      * @see Subscription
      * @see Platform
      */
-    SortedSet getAvailableReports(Map<String, Object> configMap, boolean withPlatformReports = true) {
-        SortedSet<String> allAvailableReports = new TreeSet<String>()
+    Set getAvailableReports(Map<String, Object> configMap, boolean withPlatformReports = true) {
+        Set<String> allAvailableReports
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         Set<Package> subscribedPackages = configMap.subscription.packages.pkg
         Map<RefdataValue, String> contentTypes = RefdataCategory.getAllRefdataValues([RDConstants.PACKAGE_CONTENT_TYPE, RDConstants.TITLE_MEDIUM]).collectEntries { RefdataValue rdv -> [rdv, rdv.value] }
@@ -954,39 +954,8 @@ class SubscriptionControllerService {
                 configMap.putAll(exportService.prepareSushiCall(platformRecord))
                 if(configMap.revision && configMap.statsUrl && ci.value) {
                     if(configMap.revision == AbstractReport.COUNTER_5) {
-                        String apiKey = platformRecord.centralApiKey ?: ci.requestorKey
-                        String queryArguments = "?customer_id=${ci.value}"
-                        switch(configMap.sushiApiAuthenticationMethod) {
-                            case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR:
-                                if(ci.requestorKey) {
-                                    queryArguments += "&requestor_id=${ci.requestorKey}"
-                                }
-                                break
-                            case AbstractReport.API_AUTH_CUSTOMER_API:
-                            case AbstractReport.API_AUTH_REQUESTOR_API:
-                                if(ci.requestorKey) {
-                                    queryArguments += "&api_key=${ci.requestorKey}"
-                                }
-                                break
-                            case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR_API:
-                                if(ci.requestorKey && platformRecord.centralApiKey) {
-                                    queryArguments += "&requestor_id=${ci.requestorKey}&api_key=${platformRecord.centralApiKey}"
-                                }
-                                else if(ci.requestorKey && !platformRecord.centralApiKey) {
-                                    //the next fancy solution ... this time: Statista!
-                                    queryArguments += "&requestor_id=${ci.value}&api_key=${ci.requestorKey}"
-                                }
-                                break
-                            case AbstractReport.API_IP_WHITELISTING:
-                                break
-                            default:
-                                if(ci.requestorKey || apiKey) {
-                                    queryArguments += "&requestor_id=${ci.requestorKey}&api_key=${apiKey}"
-                                }
-                                break
-                        }
-                        if(platformRecord.counterR5SushiPlatform)
-                            queryArguments += "&platform=${platformRecord.counterR5SushiPlatform}"
+                        allAvailableReports = new TreeSet<String>()
+                        String queryArguments = exportService.buildQueryArguments(configMap, platformRecord, ci)
                         Map<String, Object> availableReports = statsSyncService.fetchJSONData(configMap.statsUrl + queryArguments, true)
                         if(availableReports && availableReports.list) {
                             availableReports.list.each { listEntry ->
@@ -1011,7 +980,12 @@ class SubscriptionControllerService {
                         }
                     }
                     else if(configMap.revision == AbstractReport.COUNTER_4) {
+                        allAvailableReports = []
                         //unfortunately! I need to alert that there is no possibility to check whether the API supports the report!
+                        if(withPlatformReports) {
+                            allAvailableReports.addAll(Counter4Report.COUNTER_4_PLATFORM_REPORTS)
+                            allAvailableReports.addAll(Counter4Report.COUNTER_4_DATABASE_REPORTS)
+                        }
                         switch(contentTypes.get(contentType)) {
                             case 'Book': allAvailableReports.addAll(Counter4Report.COUNTER_4_BOOK_REPORTS)
                                 break
@@ -1019,10 +993,6 @@ class SubscriptionControllerService {
                                 break
                             default: allAvailableReports.addAll(Counter4Report.COUNTER_4_TITLE_REPORTS)
                                 break
-                        }
-                        if(withPlatformReports) {
-                            allAvailableReports.addAll(Counter4Report.COUNTER_4_PLATFORM_REPORTS)
-                            allAvailableReports.addAll(Counter4Report.COUNTER_4_DATABASE_REPORTS)
                         }
                     }
                 }

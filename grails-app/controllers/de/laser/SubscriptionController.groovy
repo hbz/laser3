@@ -244,7 +244,7 @@ class SubscriptionController {
                 result.reportTypes = []
                 CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriber(), platformInstance)
                 if(ci?.value) {
-                    SortedSet allAvailableReports = subscriptionControllerService.getAvailableReports(result)
+                    Set allAvailableReports = subscriptionControllerService.getAvailableReports(result)
                     if(allAvailableReports)
                         result.reportTypes.addAll(allAvailableReports)
                     else {
