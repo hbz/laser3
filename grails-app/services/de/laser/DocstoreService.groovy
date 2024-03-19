@@ -144,8 +144,6 @@ class DocstoreService {
             instanceClause = 'dc.license = :instance'
         else if(instance instanceof Subscription)
             instanceClause = 'dc.subscription = :instance'
-        else if(instance instanceof Package)
-            instanceClause = 'dc.pkg = :instance'
         else if(instance instanceof Links)
             instanceClause = 'dc.link = :instance'
         else if(instance instanceof Org)

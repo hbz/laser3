@@ -22,7 +22,6 @@ class Task {
 
     License         license
     Org             org
-    Package         pkg
     Subscription    subscription
     SurveyConfig    surveyConfig
 
@@ -46,7 +45,6 @@ class Task {
     static constraints = {
         license         (nullable:true)
         org             (nullable:true)
-        pkg             (nullable:true)
         subscription    (nullable:true)
         surveyConfig    (nullable:true)
         title           (blank:false)
@@ -64,7 +62,6 @@ class Task {
 
         license         column:'tsk_lic_fk'
         org             column:'tsk_org_fk'
-        pkg             column:'tsk_pkg_fk'
         subscription    column:'tsk_sub_fk'
         surveyConfig    column:'tsk_sur_config_fk'
 
@@ -100,8 +97,6 @@ class Task {
             result << [controller: 'license', object: license]
         if (org)
             result << [controller: 'organisation', object: org]
-        if (pkg)
-            result << [controller: 'package', object: pkg]
         if (subscription)
             result << [controller: 'subscription', object: subscription]
         if (surveyConfig)
@@ -123,10 +118,6 @@ class Task {
         else if (org) {
             displayArgs.controller = 'organisation'
             displayArgs.id = org.id
-        }
-        else if (pkg) {
-            displayArgs.controller = 'package'
-            displayArgs.id = pkg.id
         }
         else if (subscription) {
             displayArgs.controller = 'subscription'
@@ -162,9 +153,6 @@ class Task {
         }
         else if (org) {
             name = org.name
-        }
-        else if (pkg) {
-            name = pkg.name
         }
         else if (subscription) {
             name = subscription.name

@@ -16,6 +16,7 @@ import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
+import de.laser.properties.SubscriptionProperty
 import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -3097,5 +3098,26 @@ join sub.orgRelations or_sub where
     int countMultiYearSubInParentSub(Subscription subscription){
         return Subscription.executeQuery('select count(*) from Subscription s where s.instanceOf = :sub and s.isMultiYear = true', [sub: subscription])[0]
     }
+
+    int countCustomSubscriptionPropertiesOfSub(Org contextOrg, Subscription subscription){
+        return SubscriptionProperty.executeQuery('select count(*) from SubscriptionProperty where owner = :sub AND ((tenant = :contextOrg OR tenant is null) OR (tenant != :contextOrg AND isPublic = true)) AND type.tenant is null', [contextOrg: contextOrg, sub: subscription])[0]
+    }
+
+    int countPrivateSubscriptionPropertiesOfSub(Org contextOrg, Subscription subscription) {
+        return SubscriptionProperty.executeQuery('select count(*) from SubscriptionProperty where owner = :sub AND (type.tenant = :contextOrg AND tenant = :contextOrg)', [contextOrg: contextOrg, sub: subscription])[0]
+    }
+
+    int countCustomSubscriptionPropertiesOfMembersByParentSub(Org contextOrg, Subscription subscription){
+        return SubscriptionProperty.executeQuery('select count(*) from SubscriptionProperty as sp where sp.owner.instanceOf = :sub AND ((sp.tenant = :contextOrg OR sp.tenant is null) OR (sp.tenant != :contextOrg AND sp.isPublic = true)) AND sp.type.tenant is null', [contextOrg: contextOrg, sub: subscription])[0]
+    }
+
+    int countCustomSubscriptionPropertyOfMembersByParentSub(Org contextOrg, Subscription subscription, PropertyDefinition propertyDefinition){
+        return SubscriptionProperty.executeQuery('select count(*) from SubscriptionProperty as sp where sp.owner.instanceOf = :sub AND sp.type = :type AND ((sp.tenant = :contextOrg OR sp.tenant is null) OR (sp.tenant != :contextOrg AND sp.isPublic = true)) AND sp.type.tenant is null', [contextOrg: contextOrg, sub: subscription, type: propertyDefinition])[0]
+    }
+
+    int countPrivateSubscriptionPropertiesOfMembersByParentSub(Org contextOrg, Subscription subscription) {
+        return SubscriptionProperty.executeQuery('select count(*) from SubscriptionProperty as sp where sp.owner.instanceOf = :sub AND (sp.type.tenant = :contextOrg AND sp.tenant = :contextOrg)', [contextOrg: contextOrg, sub: subscription])[0]
+    }
+
 
 }

@@ -53,19 +53,6 @@
                               value="${['':'']}"/>
             </div>
 
-            <%-- <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
-                <div class="field">
-                    <label>${message(code:'myinst.emptySubscription.create_as')}</label>
-
-                    <select id="asOrgType" name="asOrgType" class="ui dropdown">
-                        <g:each in="${RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.value in (:wl) and rdv.owner.desc = :ot', [wl:['Consortium', 'Institution'], ot: RDConstants.ORG_TYPE])}" var="opt">
-                            <option value="${opt.id}" data-value="${opt.value}">${opt.getI10n('value')}</option>
-                        </g:each>
-                    </select>
-
-                </div>
-            </g:if> --%>
-
         <div class="field">
             <br />
             <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label')}"/>

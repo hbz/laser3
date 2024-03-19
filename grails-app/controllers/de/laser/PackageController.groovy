@@ -193,12 +193,6 @@ class PackageController {
         result.contextOrg = contextService.getOrg()
         result.contextCustomerType = result.contextOrg.getCustomerType()
 
-        // tasks
-        /*
-        result.tasks = taskService.getTasksByResponsiblesAndObject(contextService.getUser(), result.contextOrg, packageInstance)
-        Map<String,Object> preCon = taskService.getPreconditionsWithoutTargets(result.contextOrg)
-        result << preCon*/
-
         result.modalPrsLinkRole = RDStore.PRS_RESP_SPEC_PKG_EDITOR
         result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(result.contextOrg)
 
