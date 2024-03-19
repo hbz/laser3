@@ -43,7 +43,7 @@
         ${message(code: 'surveyInfo.copySurveyCostItems')}
     </h2>
 
-    <g:render template="costItemsByCostItemElementTabelle"/>
+    <g:render template="costItemsByCostItemElementTable"/>
 
 
     <ui:greySegment>
