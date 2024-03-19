@@ -879,7 +879,7 @@ class OrganisationController  {
             redirect(url: request.getHeader('referer'))
             return
         }
-        List<Platform> allPlatforms = organisationService.getAllPlatforms()
+        List<Platform> allPlatforms = organisationService.getAllPlatformsForContextOrg(contextService.getOrg())
 
         render template: '/templates/customerIdentifier/modal_create', model: [orgInstance: org, allPlatforms: allPlatforms]
     }
@@ -1236,9 +1236,9 @@ class OrganisationController  {
             // adding default settings
             organisationService.initMandatorySettings(result.orgInstance)
             if(params.tab == 'customerIdentifiers') {
-                result.allPlatforms = organisationService.getAllPlatforms()
-                Map<String, Object> queryParams = [customer: result.orgInstance]
-                String query = "select ci from CustomerIdentifier ci join ci.platform platform where ci.customer = :customer"
+                result.allPlatforms = organisationService.getAllPlatformsForContextOrg(result.institution)
+                Map<String, Object> queryParams = [customer: result.orgInstance, context: result.institution]
+                String query = "select ci from CustomerIdentifier ci join ci.platform platform where ci.customer = :customer and platform in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription in (select oo.sub from OrgRole oo where oo.org = :context))"
                 if(params.customerIdentifier) {
                     query += " and ci.value like (:customerIdentifier)"
                     queryParams.customerIdentifier = "%${params.customerIdentifier.toLowerCase()}%"
