@@ -113,6 +113,62 @@
     </div>
 </div>--}%
 
+    <g:if test="${properties}">
+        <div class="ui segment">
+            <h3>
+                <g:message code="propertyDefinition.plural"/>
+            </h3>
+            <table class="ui sortable celled la-js-responsive-table la-table table">
+                <thead>
+                <tr>
+                    <th>${message(code: 'sidewide.number')}</th>
+                    <th>${message(code: 'propertyDefinition.label')}</th>
+                    <g:if test="${params.tab == 'surveyProperties'}">
+                        <th><g:if test="${surveyConfig.subSurveyUseForTransfer}">
+                            ${message(code: 'default.count.label')} <g:message code="renewalEvaluation.parentSubscription"/>
+                        </g:if><g:else>
+                            ${message(code: 'default.count.label')} <g:message code="copyElementsIntoObject.sourceObject.name"
+                                                                               args="[message(code: 'subscription.label')]"/>
+                        </g:else></th>
+                        <th>${message(code: 'default.count.label')}</th>
+                    </g:if>
+                    <g:else>
+                        <th><g:if test="${surveyConfig.subSurveyUseForTransfer}">
+                        ${message(code: 'default.count.label')} <g:message code="renewalEvaluation.parentSubscription"/>
+                    </g:if><g:else>
+                        ${message(code: 'default.count.label')} <g:message code="copyElementsIntoObject.sourceObject.name"
+                                                                           args="[message(code: 'subscription.label')]"/>
+                    </g:else>
+                        ${message(code: 'default.count.label')}
+                    </g:else>
+                    <th><g:if test="${surveyConfig.subSurveyUseForTransfer}">
+                        ${message(code: 'default.count.label')} <g:message code="renewalEvaluation.parentSuccessorSubscription"/>
+                    </g:if><g:else>
+                        ${message(code: 'default.count.label')} <g:message code="copyElementsIntoObject.targetObject.name"
+                                                                           args="[message(code: 'subscription.label')]"/>
+                    </g:else></th>
+                </tr>
+                </thead>
+                <tbody>
+                <g:each in="${properties.sort { it.getI10n('name') }}" var="property" status="i">
+
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td><g:link controller="survey" action=" $actionName"
+                                    params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, selectedProperty: property.id]}">${property.getI10n('name')}</g:link></td>
+                        <td>${subscriptionService.countCustomSubscriptionPropertyOfMembersByParentSub(contextOrg, parentSubscription, property)}</td>
+                        <g:if test="${params.tab == 'surveyProperties'}">
+                            <td>${participantsList ? surveyService.countSurveyPropertyWithValueByMembers(surveyConfig, property, participantsList.org) : 0}</td>
+                        </g:if>
+                        <td>${subscriptionService.countCustomSubscriptionPropertyOfMembersByParentSub(contextOrg, parentSuccessorSubscription, property)}</td>
+                    </tr>
+                </g:each>
+                </tbody>
+            </table>
+        </div>
+    </g:if>
+
+
     <ui:greySegment>
         <g:if test="${properties}">
 

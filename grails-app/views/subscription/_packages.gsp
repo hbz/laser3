@@ -177,6 +177,17 @@
                                         </div>
                                     </g:else>
                                 </g:if>
+
+                                <g:if test="${subscription.packages.size() > 1}">
+                                    <a class="ui right floated button" data-href="#showPackagesModal" data-ui="modal"><g:message
+                                            code="subscription.details.details.package.label"/></a>
+                                </g:if>
+
+                                <g:if test="${subscription.packages.size() == 1}">
+                                    <g:link class="ui right floated button" controller="package" action="show"
+                                            id="${subscription.packages[0].pkg.id}"><g:message
+                                            code="subscription.details.details.package.label"/></g:link>
+                                </g:if>
                             </div>
                         </div>
                     </g:else>
@@ -553,4 +564,20 @@
             </g:each>
         </div>
     </div><!-- .content -->
+
+    <ui:modal id="showPackagesModal" message="subscription.packages.label" hideSubmitButton="true">
+        <div class="ui ordered list">
+            <g:each in="${subscription.packages.sort { it.pkg.name.toLowerCase() }}" var="subPkg">
+                <div class="item">
+                    ${subPkg.pkg.name}
+                    <g:if test="${subPkg.pkg.contentProvider}">
+                        (${subPkg.pkg.contentProvider.name})
+                    </g:if>:
+                    <g:link controller="package" action="show" id="${subPkg.pkg.id}"><g:message
+                            code="subscription.details.details.package.label"/></g:link>
+                </div>
+            </g:each>
+        </div>
+
+    </ui:modal>
 </div>
