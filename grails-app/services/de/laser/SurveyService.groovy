@@ -1995,4 +1995,14 @@ class SurveyService {
         return SurveyResult.executeQuery( 'select surResult.type from SurveyResult as surResult where surResult.surveyConfig = :surveyConfig and surResult.type in (:type) and surResult.refValue = :yes and surResult.participant = :participant', [participant: org, type: [PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2, PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3, PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4, PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5], surveyConfig: surveyConfig, yes: RDStore.YN_YES] )
     }
 
+    int countSurveyPropertyWithValueByMembers(SurveyConfig surveyConfig, PropertyDefinition propertyDefinition, List<Org> orgs){
+        return SurveyResult.executeQuery('select count(*) from SurveyResult as sr where sr.surveyConfig = :surveyConfig AND sr.type = :type AND sr.participant in (:orgs) AND ' +
+                '(stringValue is not null ' +
+                'OR intValue is not null ' +
+                'OR decValue is not null ' +
+                'OR refValue is not null ' +
+                'OR urlValue is not null ' +
+                'OR dateValue is not null)', [surveyConfig: surveyConfig, type: propertyDefinition, orgs: orgs])[0]
+    }
+
 }

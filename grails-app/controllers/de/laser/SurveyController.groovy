@@ -4484,6 +4484,7 @@ class SurveyController {
                 Map newMap = [:]
                 Org org = sub.getSubscriber()
                 newMap.id = org.id
+                newMap.org = org
                 newMap.sortname = org.sortname
                 newMap.name = org.name
                 newMap.newSub = sub
