@@ -182,8 +182,10 @@ class InfoService {
         result.surveyMap = [:]
         ['notFinish', 'finish', 'open', 'termination'].sort().each{
             surveyParams.tab = it
-            Map<String, Object> fsq = filterService.getParticipantSurveyQuery_New(surveyParams, sdf, member)
-            List sr = SurveyResult.executeQuery(fsq.query, fsq.queryParams)
+            FilterService.Result fsr = filterService.getParticipantSurveyQuery_New(surveyParams, sdf, member)
+            if (fsr.isFilterSet) { surveyParams.filterSet = true }
+
+            List sr = SurveyResult.executeQuery(fsr.query, fsr.queryParams)
             if (sr /*|| it == 'open' */) {
                 result.surveyMap[it] = sr
             }
@@ -321,8 +323,10 @@ class InfoService {
         result.surveyMap = [:]
         ['notFinish', 'finish', 'open', 'termination'].sort().each{
             surveyParams.tab = it
-            Map<String, Object> fsq = filterService.getParticipantSurveyQuery_New(surveyParams, sdf, institution)
-            List sr = SurveyResult.executeQuery(fsq.query, fsq.queryParams)
+            FilterService.Result fsr = filterService.getParticipantSurveyQuery_New(surveyParams, sdf, institution)
+            if (fsr.isFilterSet) { surveyParams.filterSet = true }
+
+            List sr = SurveyResult.executeQuery(fsr.query, fsr.queryParams)
             if (sr /*|| it == 'open' */) {
                 result.surveyMap[it] = sr
             }

@@ -2188,10 +2188,10 @@ class MyInstitutionController  {
 
         SimpleDateFormat sdFormat = DateUtils.getLocalizedSDF_noTime()
 
+        FilterService.Result fsr = filterService.getParticipantSurveyQuery_New(params, sdFormat, result.institution as Org)
+        if (fsr.isFilterSet) { params.filterSet = true }
 
-        def fsq = filterService.getParticipantSurveyQuery_New(params, sdFormat, result.institution)
-
-        result.surveyResults = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
+        result.surveyResults = SurveyResult.executeQuery(fsr.query, fsr.queryParams, params)
 
         if ( params.exportXLSX ) {
 
@@ -3914,9 +3914,10 @@ join sub.orgRelations or_sub where
 
         params.consortiaOrg = result.institution
 
-        Map<String, Object> fsq = filterService.getParticipantSurveyQuery_New(params, sdFormat, result.participant)
+        FilterService.Result fsr = filterService.getParticipantSurveyQuery_New(params, sdFormat, result.participant as Org)
+        if (fsr.isFilterSet) { params.filterSet = true }
 
-        result.surveyResults = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
+        result.surveyResults = SurveyResult.executeQuery(fsr.query, fsr.queryParams, params)
 
         if ( params.exportXLSX ) {
 
