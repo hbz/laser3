@@ -267,13 +267,13 @@
         <g:if test="${'withCostItems' in tableConfig}">
             <tfoot>
             <tr>
-                <th class="control-label" colspan="9">
+                <th class="control-label" colspan="11">
                     ${message(code:'financials.totalCostOnPage')}
                 </th>
             </tr>
             <g:each in="${finances}" var="entry">
                 <tr>
-                    <td colspan="${3 + tableConfig.size()}">
+                    <td colspan="${5 + tableConfig.size()}">
                         ${message(code:'financials.sum.billing')} ${entry.key}<br />
                     </td>
                     <td class="la-exposed-bg">
