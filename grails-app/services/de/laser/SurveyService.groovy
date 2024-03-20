@@ -918,17 +918,17 @@ class SurveyService {
      */
     private Map _setSurveyConfigCounts(Map result, String tab, GrailsParameterMap parameterMap, Org owner){
         SimpleDateFormat sdFormat = DateUtils.getLocalizedSDF_noTime()
-        Map<String,Object> fsq = [:]
-
-        def cloneParameterMap = parameterMap.clone()
+        GrailsParameterMap cloneParameterMap = parameterMap.clone() as GrailsParameterMap
 
         cloneParameterMap.tab = tab
         cloneParameterMap.remove('max')
         cloneParameterMap.remove('offset')
 
-        fsq = filterService.getSurveyConfigQueryConsortia(cloneParameterMap, sdFormat, owner)
-        String queryWithoutOrderBy = fsq.query.split('order by')[0]
-        result."${tab}" =  SurveyInfo.executeQuery("select count(*) "+queryWithoutOrderBy, fsq.queryParams, cloneParameterMap)[0]
+        FilterService.Result fsr = filterService.getSurveyConfigQueryConsortia(cloneParameterMap, sdFormat, owner)
+        if (fsr.isFilterSet) { cloneParameterMap.filterSet = true }
+
+        String queryWithoutOrderBy = fsr.query.split('order by')[0]
+        result."${tab}" = SurveyInfo.executeQuery("select count(*) "+queryWithoutOrderBy, fsr.queryParams, cloneParameterMap)[0]
 
         return result
     }
