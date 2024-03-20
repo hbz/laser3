@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.utils.CodeUtils
+import de.laser.utils.SwissKnife
 import grails.gorm.transactions.Transactional
 import org.grails.core.artefact.DomainClassArtefactHandler
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -19,6 +20,16 @@ class GenericOIDService {
   String getOID(def object) {
     object = GrailsHibernateUtil.unwrapIfProxy(object)
     (object && DomainClassArtefactHandler.isDomainClass(object.class)) ? "${object.class.name}:${object.id}" : null
+  }
+
+  /**
+   * Gets the OID representation of the given object, compatible for usage as selector
+   * @param object the object whose OID should be generated
+   * @return the OID key of the object
+   */
+  String getHtmlOID(def object) {
+    object = GrailsHibernateUtil.unwrapIfProxy(object)
+    (object && DomainClassArtefactHandler.isDomainClass(object.class)) ? "${SwissKnife.toCamelCase(object.class.name.replace('.', '_'), false)}_${object.id}" : null
   }
 
   /**

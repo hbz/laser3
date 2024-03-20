@@ -1193,15 +1193,20 @@ class StatsSyncService {
                                           ns1       : "http://www.niso.org/schemas/sushi",
                                           ns2       : "http://www.niso.org/schemas/counter",
                                           ns3       : "http://www.niso.org/schemas/sushi/counter"])
-                    if (['3000', '3020'].any { String errorCode -> errorCode == xml.'SOAP-ENV:Body'.'ReportResponse'?.'ns1:Exception'?.'ns1:Number'?.text() }) {
-                        log.warn(xml.'SOAP-ENV:Body'.'ReportResponse'.'ns1:Exception'.'ns1:Message'.text())
-                        log.debug(requestBody.toString())
-                        [error: xml.'SOAP-ENV:Body'.'ReportResponse'?.'ns1:Exception'?.'ns1:Number'?.text()]
+                    if (xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Number'?.text() == '2010') {
+                        log.warn("wrong key pair")
+                        //StatsMissingPeriod.construct([from: startTime.getTime(), to: currentYearEnd.getTime(), cursor: lsc])
+                        result = [error: xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Message'?.text(), code: 401]
                     }
-                    else if (xml.'SOAP-ENV:Body'.'ReportResponse'?.'ns1:Exception'?.'ns1:Number'?.text() == '3030') {
+                    else if (['3000', '3020'].any { String errorCode -> errorCode == xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Number'?.text() }) {
+                        log.warn(xml.'SOAP-ENV:Body'.'ReportResponse'.'Exception'.'Message'.text())
+                        log.debug(requestBody.toString())
+                        result = [error: xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Number'?.text(), code: resp.code()]
+                    }
+                    else if (xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Number'?.text() == '3030') {
                         log.info("no data for given period")
                         //StatsMissingPeriod.construct([from: startTime.getTime(), to: currentYearEnd.getTime(), cursor: lsc])
-                        [error: xml.'SOAP-ENV:Body'.'ReportResponse'?.'ns1:Exception'?.'ns1:Number'?.text()]
+                        result = [error: xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Number'?.text(), code: resp.code()]
                     }
                     else {
                         GPathResult reportData = xml.'SOAP-ENV:Body'.'ns3:ReportResponse'.'ns3:Report'
@@ -1209,22 +1214,22 @@ class StatsSyncService {
                         //if(wasMissing)
                         //lsc.missingPeriods.remove(wasMissing)
                         GPathResult reportItems = reportData.'ns2:Report'.'ns2:Customer'.'ns2:ReportItems'
-                        result = [reports: reportItems, reportName: reportData.'ns2:Report'.'@Name'.text()]
+                        result = [reports: reportItems, reportName: reportData.'ns2:Report'.'@Name'.text(), code: resp.code()]
                     }
                 }
                 else {
                     log.error("server response: ${resp.status()}")
-                    result = [error: resp.status()]
+                    result = [error: resp.status(), code: resp.code()]
                 }
             }
             Closure failure = { resp, reader ->
                 if(resp) {
                     log.error("server response: ${resp.status()} - ${reader}")
-                    result = [error: resp.status()]
+                    result = [error: resp.status(), code: resp.code()]
                 }
                 else {
                     log.error("unknown error or server not reachable: ${resp}")
-                    result = [error: 'unknownError']
+                    result = [error: 'unknownError', code: 0]
                 }
             }
             http.post(["Accept": "application/soap+xml; charset=utf-8"], BasicHttpClient.ResponseType.XML, BasicHttpClient.PostType.SOAP, requestBody.toString(), success, failure)

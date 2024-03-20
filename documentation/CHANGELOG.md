@@ -9,6 +9,8 @@
 
 5618    19.03.2024  dev     3.4         Andreas Feature     Beifang von Plattformen bei der Kundennummerverwaltung entfernt
 
+5613    19.03.2024  dev     3.4         Andreas Feature     diverse Erweiterungen der Nutzungsstatistiken
+
 5620    18.03.2024  dev     3.4         Andreas Feature     Vertragsname kann jetzt vererbt werden
 
 5616    18.03.2024  dev     3.4         Andreas Feature     Umstellung des Entknüpfungsprozesses auf natives SQL
