@@ -65,5 +65,5 @@
 </g:if>
 
 <g:if test="${contextService.isInstEditor_or_ROLEADMIN()}">
-    <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: license, owntp: 'license']]}" />
+    <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: license, owntp: 'license', inContextOrg: inContextOrg]]}" />
 </g:if>

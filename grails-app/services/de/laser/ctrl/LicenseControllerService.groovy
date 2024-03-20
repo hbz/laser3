@@ -82,6 +82,7 @@ class LicenseControllerService {
         result.contextCustomerType = result.institution.getCustomerType()
         result.license         = License.get(params.id)
         result.licenseInstance = result.license
+        result.inContextOrg = (result.institution.id in result.license.getAllLicensee().id || (!result.license.instanceOf && result.institution.id == result.license.getLicensingConsortium()?.id))
 
         if(result.license.instanceOf)
             result.auditConfigs = auditService.getAllAuditConfigs(result.license.instanceOf)
