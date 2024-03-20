@@ -64,7 +64,7 @@
     </ui:actionsDropdown>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon message="menu.my.consortiaSubscriptions" total="${totalCount}" floated="true" />
+<ui:h1HeaderWithIcon message="menu.my.consortiaSubscriptions" total="${totalSubsCount}" floated="true" />
 
 <ui:messages data="${flash}"/>
 
