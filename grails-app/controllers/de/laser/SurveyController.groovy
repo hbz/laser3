@@ -150,9 +150,11 @@ class SurveyController {
         result.subscriptions = Subscription.executeQuery("select DISTINCT s.name from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                 " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIA, 'activeInst': result.institution])
         prf.setBenchmark("after subscriptions and before survey config query")
-        Map<String,Object> fsq = filterService.getSurveyConfigQueryConsortia(params, DateUtils.getLocalizedSDF_noTime(), (Org) result.institution)
+        FilterService.Result fsr = filterService.getSurveyConfigQueryConsortia(params, DateUtils.getLocalizedSDF_noTime(), (Org) result.institution)
+        if (fsr.isFilterSet) { params.filterSet = true }
+
         prf.setBenchmark("after query, before survey config execution")
-        result.surveys = SurveyInfo.executeQuery(fsq.query, fsq.queryParams, params)
+        result.surveys = SurveyInfo.executeQuery(fsr.query, fsr.queryParams, params)
         prf.setBenchmark("after survey config execute")
         if ( params.exportXLSX ) {
 
@@ -183,7 +185,7 @@ class SurveyController {
 
         }else {
             prf.setBenchmark("before surveysCount")
-            result.surveysCount = SurveyInfo.executeQuery(fsq.query, fsq.queryParams).size()
+            result.surveysCount = SurveyInfo.executeQuery(fsr.query, fsr.queryParams).size()
             result.filterSet = params.filterSet ? true : false
             prf.setBenchmark("output")
             result.benchMark = prf.stopBenchmark()
@@ -234,9 +236,10 @@ class SurveyController {
 
 
         DateFormat sdFormat = DateUtils.getLocalizedSDF_noTime()
-        Map<String,Object> fsq = filterService.getSurveyConfigQueryConsortia(params, sdFormat, result.institution)
+        FilterService.Result fsr = filterService.getSurveyConfigQueryConsortia(params, sdFormat, result.institution as Org)
+        if (fsr.isFilterSet) { params.filterSet = true }
 
-        result.surveys = SurveyInfo.executeQuery(fsq.query, fsq.queryParams, params)
+        result.surveys = SurveyInfo.executeQuery(fsr.query, fsr.queryParams, params)
 
         if ( params.exportXLSX ) {
             SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
@@ -253,7 +256,7 @@ class SurveyController {
             return
 
         }else {
-            result.surveysCount = SurveyInfo.executeQuery(fsq.query, fsq.queryParams).size()
+            result.surveysCount = SurveyInfo.executeQuery(fsr.query, fsr.queryParams).size()
             result.countSurveyConfigs = surveyService.getSurveyConfigCounts(params)
 
             result.filterSet = params.filterSet ? true : false

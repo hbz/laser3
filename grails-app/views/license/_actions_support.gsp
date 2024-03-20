@@ -49,9 +49,6 @@
                 <div class="divider"></div>
                 <g:link class="item" action="delete" id="${params.id}"><i class="trash alternate outline icon"></i> ${message(code:'deletion.license')}</g:link>
             </g:if>
-%{--            <g:else>--}%
-%{--                <a class="item disabled" href="#"><i class="trash alternate outline icon"></i> ${message(code:'deletion.license')}</a>--}%
-%{--            </g:else>--}%
         </g:if>
 
         <g:if test="${editable && actionName == 'linkedSubs'}">

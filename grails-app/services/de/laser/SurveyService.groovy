@@ -918,17 +918,17 @@ class SurveyService {
      */
     private Map _setSurveyConfigCounts(Map result, String tab, GrailsParameterMap parameterMap, Org owner){
         SimpleDateFormat sdFormat = DateUtils.getLocalizedSDF_noTime()
-        Map<String,Object> fsq = [:]
-
-        def cloneParameterMap = parameterMap.clone()
+        GrailsParameterMap cloneParameterMap = parameterMap.clone() as GrailsParameterMap
 
         cloneParameterMap.tab = tab
         cloneParameterMap.remove('max')
         cloneParameterMap.remove('offset')
 
-        fsq = filterService.getSurveyConfigQueryConsortia(cloneParameterMap, sdFormat, owner)
-        String queryWithoutOrderBy = fsq.query.split('order by')[0]
-        result."${tab}" =  SurveyInfo.executeQuery("select count(*) "+queryWithoutOrderBy, fsq.queryParams, cloneParameterMap)[0]
+        FilterService.Result fsr = filterService.getSurveyConfigQueryConsortia(cloneParameterMap, sdFormat, owner)
+        if (fsr.isFilterSet) { cloneParameterMap.filterSet = true }
+
+        String queryWithoutOrderBy = fsr.query.split('order by')[0]
+        result."${tab}" = SurveyInfo.executeQuery("select count(*) "+queryWithoutOrderBy, fsr.queryParams, cloneParameterMap)[0]
 
         return result
     }
@@ -1185,9 +1185,8 @@ class SurveyService {
      */
     private Map _setSurveyParticipantCounts(Map result, String tab, GrailsParameterMap parameterMap, Org participant, Org owner = null){
         SimpleDateFormat sdFormat = DateUtils.getLocalizedSDF_noTime()
-        Map fsq = [:]
 
-        def cloneParameterMap = parameterMap.clone()
+        GrailsParameterMap cloneParameterMap = parameterMap.clone() as GrailsParameterMap
 
         if(owner){
             cloneParameterMap.owner = owner
@@ -1196,8 +1195,10 @@ class SurveyService {
         cloneParameterMap.tab = tab
         cloneParameterMap.remove('max')
 
-        fsq = filterService.getParticipantSurveyQuery_New(cloneParameterMap, sdFormat, participant)
-        result."${tab}" = SurveyResult.executeQuery(fsq.query, fsq.queryParams, cloneParameterMap).groupBy { it.id[1] }.size()
+        FilterService.Result fsr = filterService.getParticipantSurveyQuery_New(cloneParameterMap, sdFormat, participant)
+        if (fsr.isFilterSet) { cloneParameterMap.filterSet = true }
+
+        result."${tab}" = SurveyResult.executeQuery(fsr.query, fsr.queryParams, cloneParameterMap).groupBy { it.id[1] }.size()
 
         return result
 

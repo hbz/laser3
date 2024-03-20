@@ -8,9 +8,6 @@
 
 <ui:h1HeaderWithIcon message="menu.yoda.systemQuartz" type="yoda" />
 
-%{--${ConfigMapper.setConfig( ConfigMapper.QUARTZ_HEARTBEAT, new Date())} ##--}%
-%{--${ConfigMapper.getQuartzHeartbeat()} ##--}%
-
 <ui:msg class="info" noClose="true">
     <i class="check icon"></i> Job is active <br />
     <i class="stop icon"></i> Job is NOT active <br />

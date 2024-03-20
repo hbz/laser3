@@ -30,6 +30,9 @@ class FilterService {
     GenericOIDService genericOIDService
     PropertyService propertyService
 
+    // FilterService.Result fsr = filterService.getXQuery(paramsClone, ..)
+    // if (fsr.isFilterSet) { paramsClone.filterSet = true }
+
     /**
      * Subclass for generic parameter containing:
      * <ul>
@@ -204,10 +207,10 @@ class FilterService {
      */
     Result getOrgComboQuery(GrailsParameterMap params, Org org) {
         int hashCode = params.hashCode()
+        boolean isFilterSet = false
 
         ArrayList<String> query = ["(o.status is null or o.status != :orgStatus)"]
         Map<String, Object> queryParams = ["orgStatus" : RDStore.ORG_STATUS_DELETED]
-        boolean isFilterSet = false
 
         if (params.orgNameContains?.length() > 0) {
             query << "(genfunc_filter_matcher(o.name, :orgNameContains1) = true or genfunc_filter_matcher(o.sortname, :orgNameContains2) = true) "
@@ -216,11 +219,11 @@ class FilterService {
         }
         if (params.orgType) {
             query << "exists (select roletype from o.orgType as roletype where roletype.id in (:orgType) )"
-             queryParams << [orgType : Params.getLongList(params, 'orgType')]
+            queryParams << [orgType : Params.getLongList(params, 'orgType')]
         }
         if (params.orgSector) {
             query << "o.sector.id in (:orgSector)"
-             queryParams << [orgSector : Params.getLongList(params, 'orgSector')]
+            queryParams << [orgSector : Params.getLongList(params, 'orgSector')]
         }
         if (params.region) {
             query << "o.region.id in (:region)"
@@ -514,10 +517,10 @@ class FilterService {
      * @param contextOrg the context institution whose perspective should be taken
      * @return the map containing the query and the prepared query parameters
      */
-    Map<String,Object> getSurveyConfigQueryConsortia(GrailsParameterMap params, DateFormat sdFormat, Org contextOrg) {
+    Result getSurveyConfigQueryConsortia(GrailsParameterMap params, DateFormat sdFormat, Org contextOrg) {
         int hashCode = params.hashCode()
+        boolean isFilterSet = false
 
-        Map<String, Object> result = [:]
         Map<String,Object> queryParams = [:]
         String query
 
@@ -534,45 +537,45 @@ class FilterService {
         if (date_restriction) {
             query += " and surInfo.startDate <= :date_restr and (surInfo.endDate >= :date_restr or surInfo.endDate is null)"
             queryParams.put('date_restr', date_restriction)
-            params.filterSet = true
+            isFilterSet = true
         }
 
         if (params.validOnYear) {
                 if('all' in params.list('validOnYear')) {
-                    params.filterSet = true
+                    isFilterSet = true
                     params.validOnYear = ['all']
                 }else{
                     query += " and Year(surInfo.startDate) in (:validOnYear) "
                     queryParams << [validOnYear : Params.getLongList(params, 'validOnYear').collect{ Integer.valueOf(it.toString()) }]
-                    params.filterSet = true
+                    isFilterSet = true
                 }
         }
 
         if(params.name) {
             query += " and (genfunc_filter_matcher(surInfo.name, :name) = true or exists ( select surC from SurveyConfig as surC where surC.surveyInfo = surC and (genfunc_filter_matcher(surC.subscription.name, :name) = true))) "
             queryParams << [name:"${params.name}"]
-            params.filterSet = true
+            isFilterSet = true
         }
 
         if(params.status) {
             query += " and surInfo.status = :status"
             queryParams << [status: RefdataValue.get(params.status)]
-            params.filterSet = true
+            isFilterSet = true
         }
         if(params.type) {
             query += " and surInfo.type = :type"
             queryParams << [type: RefdataValue.get(params.type)]
-            params.filterSet = true
+            isFilterSet = true
         }
         if (params.startDate && sdFormat) {
             query += " and surInfo.startDate >= :startDate"
             queryParams << [startDate : sdFormat.parse(params.startDate)]
-            params.filterSet = true
+            isFilterSet = true
         }
         if (params.endDate && sdFormat) {
             query += " and surInfo.endDate <= :endDate"
             queryParams << [endDate : sdFormat.parse(params.endDate)]
-            params.filterSet = true
+            isFilterSet = true
         }
 
         if (params.mandatory || params.noMandatory) {
@@ -584,43 +587,43 @@ class FilterService {
                 query += " and surInfo.isMandatory = :mandatory"
                 queryParams << [mandatory: false]
             }
-            params.filterSet = true
+            isFilterSet = true
         }
 
         if(params.ids) {
             query += " and surInfo.id in (:ids)"
             queryParams << [ids: Params.getLongList(params, 'ids')]
-            params.filterSet = true
+            isFilterSet = true
         }
 
         if(params.checkSubSurveyUseForTransfer) {
             query += " and surConfig.subSurveyUseForTransfer = :checkSubSurveyUseForTransfer"
             queryParams << [checkSubSurveyUseForTransfer: true]
-            params.filterSet = true
+            isFilterSet = true
         }
 
         if (params.provider) {
             query += " and exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org = :provider)"
             queryParams << [provider : Org.get(params.provider)]
-            params.filterSet = true
+            isFilterSet = true
         }
 
         if (params.list('filterSub')) {
             query += " and surConfig.subscription.name in (:subs) "
             queryParams << [subs : params.list('filterSub')]
-            params.filterSet = true
+            isFilterSet = true
         }
 
         if (params.filterStatus && params.filterStatus != "" && params.list('filterStatus')) {
             query += " and surInfo.status.id in (:filterStatus) "
             queryParams << [filterStatus : Params.getLongList(params, 'filterStatus')]
-            params.filterSet = true
+            isFilterSet = true
         }
 
         if (params.filterPvd) {
             query += " and exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org.id in (:filterPvd))"
             queryParams << [filterPvd : Params.getLongList(params, 'filterPvd')]
-            params.filterSet = true
+            isFilterSet = true
         }
 
         if (params.participant) {
@@ -632,7 +635,7 @@ class FilterService {
             def psq = propertyService.evalFilterQuery(params, query, 'surConfig', queryParams)
             query = psq.query
             queryParams = psq.queryParams
-            params.filterSet = true
+            isFilterSet = true
         }
 
         if(params.tab == "created"){
@@ -666,13 +669,11 @@ class FilterService {
             query += " order by surInfo.endDate ASC, LOWER(surInfo.name) "
         }
 
-        result.query = query
-        result.queryParams = queryParams
-
         if (params.hashCode() != hashCode) {
             log.debug 'GrailsParameterMap was modified @ getSurveyConfigQueryConsortia()'
         }
-        result
+
+        new Result( query, queryParams, isFilterSet )
     }
 
     /**
@@ -682,8 +683,9 @@ class FilterService {
      * @param org the context institution
      * @return the map containing the query and the prepared query parameters
      */
-    Map<String,Object> getParticipantSurveyQuery_New(GrailsParameterMap params, DateFormat sdFormat, Org org) {
+    Result getParticipantSurveyQuery_New(GrailsParameterMap params, DateFormat sdFormat, Org org) {
         int hashCode = params.hashCode()
+        boolean isFilterSet = false
 
         Map<String, Object> result = [:]
         List query = []
@@ -699,17 +701,17 @@ class FilterService {
         if (date_restriction) {
             query += " surInfo.startDate <= :date_restr and (surInfo.endDate >= :date_restr or surInfo.endDate is null)"
             queryParams.put('date_restr', date_restriction)
-            params.filterSet = true
+            isFilterSet = true
         }
 
         if (params.validOnYear) {
                 if('all' in params.list('validOnYear')) {
-                    params.filterSet = true
+                    isFilterSet = true
                     params.validOnYear = ['all']
                 }else{
                     query += " Year(surInfo.startDate) in (:validOnYear) "
                     queryParams << [validOnYear : Params.getLongList(params, 'validOnYear').collect{ Integer.valueOf(it.toString()) }]
-                    params.filterSet = true
+                    isFilterSet = true
                 }
         }
 
@@ -740,25 +742,25 @@ class FilterService {
                 query << "surInfo.isMandatory = :mandatory"
                 queryParams << [mandatory: false]
             }
-            params.filterSet = true
+            isFilterSet = true
         }
 
         if(params.checkSubSurveyUseForTransfer) {
             query << "surConfig.subSurveyUseForTransfer = :checkSubSurveyUseForTransfer"
             queryParams << [checkSubSurveyUseForTransfer: true]
-            params.filterSet = true
+            isFilterSet = true
         }
 
         if (params.list('filterSub')) {
             query << " surConfig.subscription.name in (:subs) "
             queryParams << [subs : params.list('filterSub')]
-            params.filterSet = true
+            isFilterSet = true
         }
 
         if (params.filterPvd) {
             query << "exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org.id in (:filterPvd))"
             queryParams << [filterPvd: Params.getLongList(params, 'filterPvd')]
-            params.filterSet = true
+            isFilterSet = true
         }
 
         if (params.currentDate) {
@@ -846,15 +848,14 @@ class FilterService {
             def psq = propertyService.evalFilterQuery(params, result.query, 'surConfig', queryParams)
             result.query = psq.query
             queryParams = psq.queryParams
-            params.filterSet = true
+            isFilterSet = true
         }
-
-        result.queryParams = queryParams
 
         if (params.hashCode() != hashCode) {
             log.debug 'GrailsParameterMap was modified @ getParticipantSurveyQuery_New()'
         }
-        result
+
+        new Result(result.query as String, queryParams, isFilterSet )
     }
 
     /**

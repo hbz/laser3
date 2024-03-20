@@ -1,15 +1,5 @@
 <%@ page import="de.laser.survey.SurveyConfig;" %>
 <br />
-%{--<g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
-    <h3 class="ui icon header"><ui:headerIcon/>
-    <g:link controller="subscription" action="show" id="${surveyConfig.subscription.id}">
-        ${surveyConfig.getConfigNameShort()}
-    </g:link>
-    </h3>
-</g:if>
-<g:else>
-<h3 class="ui left aligned">${surveyConfig.getConfigNameShort()}</h3>
-</g:else>--}%
 
 <div class="four wide column">
 
