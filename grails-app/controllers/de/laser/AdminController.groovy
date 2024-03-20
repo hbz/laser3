@@ -1025,20 +1025,6 @@ SELECT * FROM (
                 else if (rdvTo && rdvTo.owner == rdvFrom.owner) {
                     check = true
                 }
-//                else if (! rdvTo && params.xcgRdvGlobalTo) {
-//
-//                    List<String> pParts = params.xcgRdvGlobalTo.split(':')
-//                    if (pParts.size() == 2) {
-//                        RefdataCategory rdvToCat = RefdataCategory.getByDesc(pParts[0].trim())
-//                        RefdataValue rdvToRdv = RefdataValue.getByValueAndCategory(pParts[1].trim(), pParts[0].trim())
-//
-//                        if (rdvToRdv && rdvToRdv.owner == rdvToCat ) {
-//                            rdvTo = rdvToRdv
-//                            check = true
-//                        }
-//                    }
-//                }
-
                 if (check) {
                     try {
                         int count = refdataService.replaceRefdataValues(rdvFrom, rdvTo)

@@ -119,14 +119,6 @@
                                         <dt class="control-label">${message(code:'license.linktoLicense')}</dt>
                                         <g:link controller="license" action="show" id="${license.instanceOf.id}">${license.instanceOf}</g:link>
                                     </dl>
-                                    <%--<dl>
-                                        <dt class="control-label">
-                                            ${message(code:'license.details.linktoLicense.pendingChange')}
-                                        </dt>
-                                        <dd>
-                                            <ui:xEditableBoolean owner="${license}" field="isSlaved" />
-                                        </dd>
-                                    </dl>--%>
                                 </g:if>
 
                                 <g:if test="${!contextService.getOrg().isCustomerType_Support()}">

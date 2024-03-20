@@ -78,13 +78,6 @@
                                         <g:message code="tipp.price.localPrice"/>: <ui:xEditable field="localPrice"
                                                                                                     owner="${priceItem}"/> <ui:xEditableRefData
                                                 field="localCurrency" owner="${priceItem}" config="Currency"/>
-                                        <%--<br/>
-                                        (<g:message code="tipp.price.startDate"/> <ui:xEditable field="startDate"
-                                                                                                  type="date"
-                                                                                                  owner="${priceItem}"/>-
-                                        <g:message code="tipp.price.endDate"/> <ui:xEditable field="endDate"
-                                                                                               type="date"
-                                                                                               owner="${priceItem}"/>)--%>
                                     </div>
                                 </div>
                             </div>
@@ -174,14 +167,6 @@
                                             config="Currency"
                                             overwriteEditable="false"/>
                                     <br />
-                                    <%--(<g:message code="tipp.price.startDate"/> <ui:xEditable field="startDate"
-                                                                                              type="date"
-                                                                                              owner="${priceItem}"
-                                                                                              overwriteEditable="false"/>-
-                                    <g:message code="tipp.price.endDate"/> <ui:xEditable field="endDate"
-                                                                                           type="date"
-                                                                                           owner="${priceItem}"
-                                                                                           overwriteEditable="false"/>)--%>
                                 </div>
                             </div>
                         </div>

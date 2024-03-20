@@ -229,9 +229,6 @@
                     <div class="divider"></div>
                     <g:link class="item" action="delete" id="${params.id}"><i class="trash alternate outline icon"></i> ${message(code:'deletion.subscription')}</g:link>
                 </g:if>
-%{--                <g:else>--}%
-%{--                    <a class="item disabled" href="#"><i class="trash alternate outline icon"></i> ${message(code:'deletion.subscription')}</a>--}%
-%{--                </g:else>--}%
             </g:elseif>
         </g:if>
     </ui:actionsDropdown>
