@@ -199,7 +199,7 @@
                 <br>
                 <br>
 
-                <g:render template="costItemsByCostItemElementTabelle"/>
+                <g:render template="costItemsByCostItemElementTable"/>
 
 
 

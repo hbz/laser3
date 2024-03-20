@@ -608,12 +608,6 @@ class ControlledListService {
                 result.results.add([name:"(${messageSource.getMessage('default.subscription.label',null, locale)}) ${subscription.dropdownNamingConvention()}",value:genericOIDService.getOID(it[0])])
             }
         }
-        if(params.package == "true") {
-            List allPackages = DocContext.executeQuery('select distinct dc.pkg,dc.pkg.name from DocContext dc where dc.owner.owner = :ctxOrg and dc.pkg != null and genfunc_filter_matcher(dc.pkg.name,:query) = true order by dc.pkg.name asc', [ctxOrg: org, query: params.query])
-            allPackages.each { DocContext it ->
-                result.results.add([name: "(${messageSource.getMessage('spotlight.package', null, locale)}) ${it[1]}", value: genericOIDService.getOID(it[0])])
-            }
-        }
         result
     }
 

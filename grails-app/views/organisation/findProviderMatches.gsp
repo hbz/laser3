@@ -28,7 +28,6 @@
 			</div>
 		</ui:searchSegment>
 
-
 				<g:if test="${providerMatches != null}">
 					<g:if test="${providerMatches.size()>0}">
 						<table class="ui celled la-js-responsive-table la-table table">
@@ -65,6 +64,5 @@
 						<g:link controller="organisation" action="createProvider" class="ui positive button" params="${[provider:params.proposedProvider]}">${message(code:'org.findProviderMatches.no_matches.create', args: [params.proposedProvider])}</g:link>
 					</g:else>
 				</g:if>
-
 
 <laser:htmlEnd />

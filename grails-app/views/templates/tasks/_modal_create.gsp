@@ -40,13 +40,6 @@
                         </label>
                     </div>
                     &nbsp; &nbsp;
-                    %{--<div class="ui radio checkbox">
-                        <input id="pkgradio" type="radio" value="pkg" name="linkto" tabindex="0" class="hidden">
-                        <label for="pkgradio">
-                            <g:message code="package.label" />
-                        </label>
-                    </div>
-                    &nbsp; &nbsp;--}%
                     <div class="ui radio checkbox">
                         <input id="subscriptionradio" type="radio" value="subscription" name="linkto" tabindex="0" class="hidden">
                         <label for="subscriptionradio">
@@ -90,17 +83,6 @@
                           optionValue="${{it.optionValue}}"
                           value="${ownobj?.id}"
                           class="ui dropdown search many-to-one"
-                          noSelection="${['' : message(code:'default.select.choose.label')]}"
-                />
-            </div>
-
-            <div id="pkgdiv" class="field ${hasErrors(bean: taskInstance, field: 'pkg', 'error')} required">
-                <label for="pkg">
-                    <g:message code="task.linkto" /><g:message code="package.label" /> <g:message code="messageRequiredField" />
-                </label>
-                <g:select id="pkg" name="pkg" from="${validPackages}" optionKey="id" value="${ownobj?.id}"
-                          class="ui dropdown search many-to-one"
-                          required=""
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                 />
             </div>
@@ -189,10 +171,10 @@
     <g:if test="${controllerName == 'myInstitution' || controllerName == 'ajaxHtml'}">
         <laser:script file="${this.getGroovyPageFileName()}">
             $("#generalradio").prop( "checked", true );
-            $("#licensediv, #orgdiv, #pkgdiv, #subscriptiondiv").hide();
+            $("#licensediv, #orgdiv, #subscriptiondiv").hide();
 
             JSPC.app.showHideRequire = function (taskType) {
-                var arr = [ 'license', 'org', 'pkg', 'subscription' ];
+                var arr = [ 'license', 'org', 'subscription' ];
                 $('#'+ taskType +'radio').change(function () {
 
                     var hideArray = arr.filter(function(val, index, arr) {
@@ -210,7 +192,6 @@
 
             JSPC.app.showHideRequire ( 'general' );
             JSPC.app.showHideRequire ( 'license' );
-            JSPC.app.showHideRequire ( 'pkg' );
             JSPC.app.showHideRequire ( 'subscription' );
             JSPC.app.showHideRequire ( 'org' );
         </laser:script>
@@ -226,7 +207,7 @@
 
             // myInstitution
             $('#generalradio').prop ('checked', true);
-            $("#licensediv, #orgdiv, #pkgdiv, #subscriptiondiv").hide();
+            $("#licensediv, #orgdiv, #subscriptiondiv").hide();
         };
 
         $("#radioresponsibleOrg").change(function () { JSPC.app.toggleResponsibleUser() });

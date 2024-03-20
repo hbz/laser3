@@ -155,7 +155,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
     @Override
     Collection<String> getLogIncluded() {
-        [ 'startDate', 'endDate', 'licenseUrl', 'licenseCategory', 'status', 'openEnded', 'isPublicForApi' ]
+        [ 'reference', 'startDate', 'endDate', 'licenseUrl', 'licenseCategory', 'status', 'openEnded', 'isPublicForApi' ]
     }
     @Override
     Collection<String> getLogExcluded() {

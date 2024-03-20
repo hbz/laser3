@@ -595,6 +595,13 @@ class SurveyControllerService {
                 result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
             }
 
+            if(result.transferWorkflow && result.transferWorkflow.containsKey('transferWorkflowForMultiYear_'+ result.parentSuccessorSubscription.id)){
+                result.transferWorkflow = result.transferWorkflow['transferWorkflowForMultiYear_'+ result.parentSuccessorSubscription.id]
+            }else if (result.parentSuccessorSubscription != result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()){
+                result.transferWorkflow = [:]
+            }
+
+
         } else{
             result.parentSuccessorSubscription = parameterMap.targetSubscriptionId ? Subscription.get(parameterMap.targetSubscriptionId) : null
         }

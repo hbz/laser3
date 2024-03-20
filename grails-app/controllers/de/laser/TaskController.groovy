@@ -64,9 +64,6 @@ class TaskController  {
 				if (params.linkto == "license" && params.license && params.license != 'null') {
 					taskInstance.license = License.get(params.license) ?: null
 				}
-				else if (params.linkto == "pkg" && params.pkg && params.pkg != 'null') {
-					taskInstance.pkg = Package.get(params.pkg) ?: null
-				}
 				else if (params.linkto == "subscription" && params.subscription && params.subscription != 'null') {
 					taskInstance.subscription = Subscription.get(params.subscription) ?: null
 				}

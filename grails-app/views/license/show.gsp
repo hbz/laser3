@@ -28,6 +28,9 @@
         <ui:h1HeaderWithIcon visibleOrgRelations="${visibleOrgRelations}">
             <ui:xEditable owner="${license}" field="reference" id="reference"/>
         </ui:h1HeaderWithIcon>
+        <g:if test="${editable}">
+            <ui:auditButton class="la-auditButton-header" auditable="[license, 'reference']" auditConfigs="${auditConfigs}" withoutOptions="true"/>
+        </g:if>
 
         <ui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
