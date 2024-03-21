@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5606    20.03.2024  dev     3.4         Andreas Feature     Sichtbarkeitseinstellung auf weitere Dokumententypen erweitert
+
 5516    20.03.2024  dev     3.4         David   Feature     FilterService: Manipulation der GrailsParameterMap unterbinden
 
 5618    19.03.2024  dev     3.4         Andreas Feature     Beifang von Plattformen bei der Kundennummerverwaltung entfernt
