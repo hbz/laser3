@@ -2,6 +2,10 @@
 
 Source: ${de.laser.config.ConfigMapper.getGrailsServerURL()} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 2.11
+
+- internal refactoring
+
 #### 2.10
 
 - internal refactoring
