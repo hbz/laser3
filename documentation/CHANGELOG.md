@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5623    21.03.2024  rc-3.3  3.3.9       Andreas Feature     kleinere Ausbesserungen am Sync, besseres Debugging
+
+--      21.03.2024  rc-3.3  3.3.9       Andreas Feature     Verbesserungen in der Performance an der API-OA-Schnittstelle
+
 5609    07.03.2024  rc-3.3  3.3.7       Andreas Bug         inkorrekte Fehlerbehandlung, wenn der we:kb-Server nicht erreichbar ist
 
 5605    06.03.2024  rc-3.3  3.3.7       Andreas Feature     Abschaltung der Dokumententeilungseinstellung "Nur für Teilnehmer des Konsortiums"
