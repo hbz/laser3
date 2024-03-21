@@ -261,7 +261,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                     Package pkg = Package.findByGokbId(packageUUID)
                     if(pkg) {
-                        permanentlyDeletedTitles.collate(65000).each { subSet ->
+                        permanentlyDeletedTitles.collate(5000).each { subSet ->
                             Set<TitleInstancePackagePlatform> delTippsInPackage = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.gokbId in (:delUUIDs) and tipp.pkg = :pkg and tipp.status != :removed', [delUUIDs: subSet, pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED])
                             delTippsInPackage.each { TitleInstancePackagePlatform tipp ->
                                 tipp.status = RDStore.TIPP_STATUS_REMOVED
@@ -274,7 +274,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         orphanedTippUUIDs.removeAll(wekbTippUUIDs)
                         if(orphanedTippUUIDs) {
                             log.info("located ${orphanedTippUUIDs.size()} without connection")
-                            orphanedTippUUIDs.collate(65000).each { subSet ->
+                            orphanedTippUUIDs.collate(5000).each { subSet ->
                                 Set<TitleInstancePackagePlatform> orphanedTipps = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.gokbId in (:delUUIDs) and tipp.pkg = :pkg and tipp.status != :removed', [delUUIDs: subSet, pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED])
                                 orphanedTipps.each { TitleInstancePackagePlatform tipp ->
                                     tipp.status = RDStore.TIPP_STATUS_REMOVED
@@ -1734,7 +1734,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 throw new SyncException("Error on updating base title data: ${tippA.getErrors().getAllErrors().toListString()}")
             //these queries have to be observed very closely. They may first cause an extreme bottleneck (the underlying query may have many Sequence Scans), then they direct the issue holdings
             if(oldStatus != newStatus) {
-                int updateCount = IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :newStatus where ie.tipp = :tipp and ie.status != :newStatus and ie.status != :removed', [tipp: tippA, newStatus: newStatus, removed: RDStore.TIPP_STATUS_REMOVED])
+                int updateCount = IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :newStatus, ie.lastUpdated = :now where ie.tipp = :tipp and ie.status != :newStatus and ie.status != :removed', [now: new Date(), tipp: tippA, newStatus: newStatus, removed: RDStore.TIPP_STATUS_REMOVED])
                 log.debug("status updated for ${tippA.gokbId}: ${oldStatus} to ${newStatus}, concerned are ${updateCount} entitlements")
                 if(newStatus == RDStore.TIPP_STATUS_CURRENT) {
                     IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription s where ie.tipp = :title and ie.status in (:considered) and s.hasPerpetualAccess = true', [title: tippA, considered: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED]]).each { IssueEntitlement ie ->

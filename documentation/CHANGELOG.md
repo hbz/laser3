@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5623    21.03.2024  rc-3.3  3.3.9       Andreas Feature     kleinere Ausbesserungen am Sync, besseres Debugging
+
+--      21.03.2024  rc-3.3  3.3.9       Andreas Feature     Verbesserungen in der Performance an der API-OA-Schnittstelle
+
 5606    20.03.2024  dev     3.4         Andreas Feature     Sichtbarkeitseinstellung auf weitere Dokumententypen erweitert
 
 5516    20.03.2024  dev     3.4         David   Feature     FilterService: Manipulation der GrailsParameterMap unterbinden
