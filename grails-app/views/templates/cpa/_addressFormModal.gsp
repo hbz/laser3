@@ -205,7 +205,7 @@
             var selectedRegions = ${raw(params.list('region') as String)};
 
             dropdownRegion.empty();
-            dropdownRegion.append('<option selected="true" disabled>${message(code: 'default.select.choose.label')}</option>');
+            dropdownRegion.append('<option selected="selected" disabled>${message(code: 'default.select.choose.label')}</option>');
             dropdownRegion.prop('selectedIndex', 0);
 
             $.ajax({
