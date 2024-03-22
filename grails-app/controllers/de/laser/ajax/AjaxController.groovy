@@ -1866,7 +1866,13 @@ class AjaxController {
                         }
 
                         if(target_object instanceof Subscription && params.name == 'hasPerpetualAccess'){
-                            if(!subscriptionService.checkThreadRunning('permanentTilesProcess_'+target_object.id)) {
+                            boolean packageProcess = false
+                            for(SubscriptionPackage sp: target_object.packages) {
+                                packageProcess = subscriptionService.checkThreadRunning('permanentTitlesProcess_' + sp.pkg.id + '_' + contextService.getOrg().id)
+                                if(packageProcess)
+                                    break
+                            }
+                            if(!subscriptionService.checkThreadRunning('permanentTitlesProcess_'+target_object.id) && !packageProcess) {
                                 if (params.value == true && target_object.hasPerpetualAccess != params.value) {
                                     subscriptionService.setPermanentTitlesBySubscription(target_object)
                                 }
@@ -1884,7 +1890,7 @@ class AjaxController {
                                     result = target_object."${params.name}"
                                 }
                             }else {
-                                result = [status: 'error', msg: "${message(code: 'subscription.details.permanentTilesProcessRunning.info')}"]
+                                result = [status: 'error', msg: "${message(code: 'subscription.details.permanentTitlesProcessRunning.info')}"]
                                 render result as JSON
                                 return
                             }
