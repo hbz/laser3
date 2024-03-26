@@ -252,7 +252,7 @@
 </g:elseif>
 
 <g:if test="${contextService.isInstEditor_or_ROLEADMIN()}">
-    <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: subscription, owntp: 'subscription']]}" />
+    <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: subscription, owntp: 'subscription', inContextOrg: inContextOrg]]}" />
     <laser:render template="financeImportTemplate" />
 </g:if>
 

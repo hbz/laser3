@@ -1447,6 +1447,30 @@ class SubscriptionController {
         redirect(url: request.getHeader("referer"))
     }
 
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
+    })
+    def setPermanentTitlesByPackage() {
+        Package pkg = Package.get(params.pkg)
+        if(pkg) {
+            subscriptionService.setPermanentTitlesByPackage(pkg)
+        }
+        redirect(url: request.getHeader("referer"))
+    }
+
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
+    })
+    def removePermanentTitlesByPackage() {
+        Package pkg = Package.get(params.pkg)
+        if(pkg) {
+            subscriptionService.removePermanentTitlesByPackage(pkg)
+        }
+        redirect(url: request.getHeader("referer"))
+    }
+
     /**
      * Call to trigger the revertion of holding status to the end of the subscription's year ring
      * @return a redirect to the referer

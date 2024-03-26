@@ -312,12 +312,17 @@ class ApiOAMonitor {
             result << pkg
             JsonSlurper slurper = new JsonSlurper()
             List tmp = []
-            List<GroovyRowResult> tiRows = sql.rows("select tipp_id, tipp_guid as globalUID, tipp_gokb_id as gokbId, tipp_name as name, tipp_norm_name as normName, (select rdv_value from refdata_value where rdv_id = tipp_medium_rv_fk) as medium from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :sub and tipp_pkg_fk = :pkg", qryParams),
-            idRows = sql.rows("select id_tipp_fk, json_agg(json_build_object('namespace', idns_ns, 'value', id_value)) as identifiers from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join issue_entitlement on ie_tipp_fk = tipp_id where id_value != '' and id_value != 'Unknown' and ie_subscription_fk = :sub and tipp_pkg_fk = :pkg group by id_tipp_fk", qryParams)
-            Map<String, Map> idMap = idRows.collectEntries { GroovyRowResult row -> [row['id_tipp_fk'], slurper.parseText(row['identifiers'].toString())] }
-            tiRows.each { GroovyRowResult tiRow ->
-                tiRow.put('identifiers', idMap.get(tiRow['tipp_id']))
-                tmp << tiRow
+            int total = sql.rows('select count(*) from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :sub and tipp_pkg_fk = :pkg', qryParams)[0]['count'],
+            limit = 50000
+            for(int i = 0; i < total; i += limit) {
+                List<GroovyRowResult> tiRows = sql.rows("select tipp_id, tipp_guid as globalUID, tipp_gokb_id as gokbId, tipp_name as name, tipp_norm_name as normName, (select rdv_value from refdata_value where rdv_id = tipp_medium_rv_fk) as medium from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :sub and tipp_pkg_fk = :pkg limit ${limit} offset ${i}", qryParams)
+                Set<Long> idSubSet = tiRows.tipp_id.toSet()
+                List<GroovyRowResult> idRows = sql.rows("select id_tipp_fk, json_agg(json_build_object('namespace', idns_ns, 'value', id_value)) as identifiers from identifier join identifier_namespace on id_ns_fk = idns_id where id_value != '' and id_value != 'Unknown' and id_tipp_fk = any(:idSubSet) group by id_tipp_fk", [idSubSet: sql.getDataSource().getConnection().createArrayOf('bigint', idSubSet as Object[])])
+                Map<String, Map> idMap = idRows.collectEntries { GroovyRowResult row -> [row['id_tipp_fk'], slurper.parseText(row['identifiers'].toString())] }
+                tiRows.each { GroovyRowResult tiRow ->
+                    tiRow.put('identifiers', idMap.get(tiRow['tipp_id']))
+                    tmp << tiRow
+                }
             }
             // move to sql
             /*
