@@ -1,5 +1,6 @@
 <%@ page import="de.laser.utils.DateUtils;" %>
 <div class="ui segment" id="costPerUse">
+    <%--
     <g:each in="${costPerUse}" var="costPerMetric">
         <table class="ui compact celled table">
             <thead>
@@ -44,6 +45,7 @@
             </tbody>
         </table>
     </g:each>
+    --%>
     <table class="ui compact celled table">
         <thead>
         <tr>
@@ -58,50 +60,45 @@
         </tr>
         </thead>
         <tbody>
-        <g:each in="${metricTypes}" var="metricType">
-            <tr>
-                <td>${params.reportType.toUpperCase()}</td>
-                <td>
-                    ${metricType}
-                </td>
-                <td>
-                    ${sums.containsKey(metricType) ? sums.get(metricType).total : 0}
-                </td>
-                <g:each in="${datePoints}" var="datePoint">
-                    <td>
-                        <g:if test="${sums.get(metricType).containsKey(datePoint)}">
-                            ${sums.get(metricType).get(datePoint)}
-                        </g:if>
-                        <g:else>
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-tooltip="${message(code: 'default.usage.missingUsageInfo')}"><i class="exclamation triangle icon la-popup small"></i></span>
-                        </g:else>
-                    </td>
-                </g:each>
-            </tr>
-        </g:each>
-        </tbody>
-    </table>
-    <table class="ui compact celled table">
-        <thead>
-        <tr>
-            <th><g:message code="default.usage.reportType"/></th>
-            <th><g:message code="default.usage.metricType"/></th>
-            <g:each in="${allYears}" var="year">
-                <th>${year}</th>
-            </g:each>
-        </tr>
-        </thead>
-        <tbody>
-            <g:each in="${metricTypes}" var="metricType">
-                <tr>
-                    <td>${params.reportType.toUpperCase()}</td>
-                    <td>${metricType}</td>
-                    <g:each in="${allYears}" var="year">
+            <g:each in="${costPerUse}" var="institutionalUsage">
+                <g:each in="${institutionalUsage.getValue()}" var="costPerMetric">
+                    <%
+                        String costString, metricType = costPerMetric.getKey()
+                        if((metricType.contains('ft_') || metricType in ['sectioned_html', 'toc', 'abstract', 'reference', 'data_set', 'audio', 'video', 'image', 'podcast']) || metricType.matches('\\w+_Requests')) {
+                            costString = message(code: 'default.usage.pricePerDownload')
+                        }
+                        else if(metricType in ['search_reg', 'search_fed'] || metricType.contains('Searches')) {
+                            costString = message(code: 'default.usage.pricePerSearch')
+                        }
+                        else if(metricType == 'result_click') {
+                            costString = message(code: 'default.usage.pricePerClick')
+                        }
+                        else if(metricType == 'record_view' || metricType.matches('\\w+_Investigations')) {
+                            costString = message(code: 'default.usage.pricePerView')
+                        }
+                    %>
+                    <g:set var="costs" value="${costPerMetric.getValue()}"/>
+                    <tr>
+                        <td>${params.reportType.toUpperCase()}</td>
                         <td>
-                            ${allYearSums.get(metricType).get(year)}
+                            ${costString} (${metricType})
                         </td>
-                    </g:each>
-                </tr>
+                        <td>
+                            <g:message code="default.usage.costPerUse.result" args="${[formatNumber(number: costs.get('total'), type: "currency", currencySymbol:"EUR"), sums.get(metricType).total]}"/>
+
+                        </td>
+                        <g:each in="${datePoints}" var="datePoint">
+                            <td>
+                                <g:if test="${costs.containsKey(datePoint)}">
+                                    <g:message code="default.usage.costPerUse.result" args="${[formatNumber(number: costs.get(datePoint), type:"currency", currencySymbol:"EUR"), sums.(metricType).get(datePoint)]}"/>
+                                </g:if>
+                                <g:else>
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-tooltip="${message(code: 'default.usage.missingUsageInfo')}"><i class="exclamation triangle icon la-popup small"></i></span>
+                                </g:else>
+                            </td>
+                        </g:each>
+                    </tr>
+                </g:each>
             </g:each>
         </tbody>
     </table>
