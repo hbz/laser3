@@ -2261,7 +2261,7 @@ class MyInstitutionController  {
 
         result.ownerId = result.surveyInfo.owner?.id
 
-        if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
+        if(result.surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
             result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.institution)
             result.formalOrg = result.user.formalOrg as Org
             // restrict visible for templates/links/orgLinksAsList

@@ -825,5 +825,9 @@ class SurveyConfig {
         return countOrgsWithTermination
     }
 
+    boolean isTypeSubscriptionOrIssueEntitlement() {
+        return type in [SURVEY_CONFIG_TYPE_SUBSCRIPTION, SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]
+    }
+
 
 }

@@ -193,7 +193,7 @@
 
             <br />
             <g:if test="${surveyConfig}">
-                <g:if test="${surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]}">
+                <g:if test="${surveyConfig.isTypeSubscriptionOrIssueEntitlement()}">
 
                     <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig: surveyConfig,
                                                                 costItemSums: costItemSums,
@@ -221,8 +221,8 @@
         <br />
         <br />
 
-        <g:form action="setSurveyConfigFinish" method="post" class="ui form"
-                params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
+        <g:form action="setSurveyWorkFlowInfos" method="post" class="ui form"
+                params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, setSurveyWorkFlowInfo: 'setSurveyConfigFinish']">
 
             <div class="ui right floated compact segment">
                 <div class="ui checkbox">

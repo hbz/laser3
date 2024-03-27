@@ -22,9 +22,9 @@
     </h3>
 
     <br/><br/>
-    <g:form action="deleteSurveyParticipants" data-confirm-id="deleteSurveyParticipants_form" controller="survey"
+    <g:form action="actionSurveyParticipants" data-confirm-id="deleteSurveyParticipants_form" controller="survey"
             method="post" class="ui form"
-            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
+            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab, actionSurveyParticipants: 'deleteSurveyParticipants']">
 
         <h3 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h3>
 
