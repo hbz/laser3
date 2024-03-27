@@ -1,4 +1,4 @@
-<%@ page import="java.text.SimpleDateFormat; grails.converters.JSON; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.Subscription; de.laser.Platform; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report; de.laser.interfaces.CalculatedType; de.laser.base.AbstractReport" %>
+<%@ page import="java.text.SimpleDateFormat; grails.converters.JSON; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.Subscription; de.laser.Platform; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report; de.laser.interfaces.CalculatedType; de.laser.base.AbstractReport; de.laser.finance.CostItem" %>
 <laser:htmlStart message="subscription.details.stats.label" serviceInjection="true"/>
 
         <ui:debugInfo>
@@ -301,25 +301,18 @@
                             </div>
                         </div>
 
-                        <div class="four fields">
-                            <div class="field"></div>
-
-                            <div class="field"></div>
-
-                            <div class="field la-field-right-aligned">
-                                <%-- deactivated as of ERMS-3996; concept needs to be clarified
-                                <input id="generateCostPerUse" type="button" class="ui secondary button" value="${message(code: 'default.stats.generateCostPerUse')}"/>--%>
-                                <g:link action="stats" id="${subscription.id}"
-                                        class="ui button secondary">${message(code: 'default.button.reset.label')}</g:link>
-                            </div>
-
-                            <div class="field la-field-right-aligned">
-                                <input id="generateReport" type="button" class="ui primary button" disabled="disabled"
-                                       value="${message(code: 'default.stats.generateReport')}"/>
-                            </div>
+                        <div class="field la-field-right-aligned">
+                            <input id="generateReport" type="button" class="ui primary button" disabled="disabled"
+                                   value="${message(code: 'default.stats.generateReport')}"/>
+                            <g:if test="${CostItem.findBySubAndCostItemElementConfiguration(subscription, RDStore.CIEC_POSITIVE)}">
+                                <input id="generateCostPerUse" type="button" class="ui secondary button" disabled="disabled"
+                                       value="${message(code: 'default.stats.generateCostPerUse')}"/>
+                            </g:if>
+                            <g:link action="stats" id="${subscription.id}"
+                                    class="ui button secondary">${message(code: 'default.button.reset.label')}</g:link>
                         </div>
                     </g:form>
-                    <div class="ui teal progress" id="progressIndicator" hidden>
+                    <div class="ui teal progress" id="progressIndicator" hidden="hidden">
                         <div class="bar">
                             <div class="progress"></div>
                         </div>
@@ -482,7 +475,7 @@
                 }).done(function(response) {
                     $('.dynFilter').remove();
                     $('#filterDropdownWrapper').append(response);
-                    $('#generateReport').removeAttr('disabled');
+                    $('#generateReport, #generateCostPerUse').removeAttr('disabled');
                     r2d2.initDynamicUiStuff('#filterDropdownWrapper');
                 });
             });
