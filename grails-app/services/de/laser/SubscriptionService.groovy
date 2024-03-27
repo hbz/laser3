@@ -36,6 +36,7 @@ import groovy.xml.slurpersupport.GPathResult
 import io.micronaut.http.client.DefaultHttpClientConfiguration
 import io.micronaut.http.client.HttpClientConfiguration
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.grails.web.json.JSONObject
 import org.springframework.context.MessageSource
 import org.springframework.web.multipart.MultipartFile
 
@@ -1662,7 +1663,11 @@ join sub.orgRelations or_sub where
             try {
                 Closure success = { resp, json ->
                     if(resp.code() == 200) {
-                        connSuccessful = [success: true]
+                        if(json instanceof JSONObject && json.containsKey("Code")) {
+                            connSuccessful = [success: false, code: json.Code, message: json.Message]
+                        }
+                        else
+                            connSuccessful = [success: true]
                     }
                     else {
                         log.error("server response: ${resp.status()}")
