@@ -23,14 +23,14 @@
     <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_SURVEY_STARTED.id]}">
         <ui:actionsDropdown>
             <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
-                <ui:actionsDropdownItem controller="survey" action="openSurveyAgainForParticipant"
-                                               params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
+                <ui:actionsDropdownItem controller="survey" action="actionsForParticipant"
+                                               params="[surveyConfigID: surveyConfig.id, participant: participant.id, actionForParticipant: 'openSurveyAgainForParticipant']"
                                                message="openSurveyAgainForParticipant.button"/>
 
             </g:if>
             <g:if test="${!surveyConfig.isResultsSetFinishByOrg(participant)}">
-                <ui:actionsDropdownItem controller="survey" action="finishSurveyForParticipant"
-                                               params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
+                <ui:actionsDropdownItem controller="survey" action="actionsForParticipant"
+                                               params="[surveyConfigID: surveyConfig.id, participant: participant.id, actionForParticipant: 'finishSurveyForParticipant']"
                                                message="finishSurveyForParticipant.button"/>
 
             </g:if>

@@ -13,7 +13,7 @@
 
 <div class="four wide column">
 
-        <g:link action="addSubMembersToSurvey" params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]"
+        <g:link action="actionSurveyParticipants" params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab, actionSurveyParticipants: addSubMembersToSurvey]"
                 class="ui icon button right floated">
             <g:message code="surveyParticipants.addSubMembersToSurvey"/>
         </g:link>
@@ -45,9 +45,9 @@
 
     <br/><br/>
 
-    <g:form action="deleteSurveyParticipants" data-confirm-id="deleteSurveyParticipants_form" controller="survey"
+    <g:form action="actionSurveyParticipants" data-confirm-id="deleteSurveyParticipants_form" controller="survey"
             method="post" class="ui form"
-            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
+            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab, actionSurveyParticipants: 'deleteSurveyParticipants']">
 
         <h3 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h3>
 

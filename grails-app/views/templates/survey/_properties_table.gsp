@@ -62,8 +62,8 @@
                     <g:set var="surveyPropertyMandatoryEditable"
                            value="${(editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
                                    (surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL || (surveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL && surveyPropertyConfig.surveyProperty != PropertyStore.SURVEY_PROPERTY_PARTICIPATION)))}"/>
-                    <g:form action="setSurveyPropertyMandatory" method="post" class="ui form"
-                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, surveyConfigProperties: surveyPropertyConfig.id]">
+                    <g:form action="actionsForSurveyProperty" method="post" class="ui form"
+                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, surveyConfigProperties: surveyPropertyConfig.id, actionForSurveyProperty: 'setSurveyPropertyMandatory']">
 
                         <div class="ui checkbox">
                             <input type="checkbox"
@@ -79,8 +79,9 @@
                         <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyElements", args: [surveyPropertyConfig.surveyProperty.getI10n('name')])}"
                                 data-confirm-term-how="delete"
-                                controller="survey" action="deleteSurveyPropFromConfig"
+                                controller="survey" action="actionsForSurveyProperty"
                                 id="${surveyPropertyConfig.id}"
+                                params="[actionForSurveyProperty: 'deleteSurveyPropFromConfig']"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
                             <i class="trash alternate outline icon"></i>
@@ -96,9 +97,10 @@
             <tfoot>
             <tr>
                 <td colspan="6">
-                    <g:form action="addSurveyPropToConfig" controller="survey" method="post" class="ui form">
+                    <g:form action="actionsForSurveyProperty" controller="survey" method="post" class="ui form">
                         <g:hiddenField name="id" value="${surveyInfo.id}"/>
                         <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
+                        <g:hiddenField name="actionForSurveyProperty" value="addSurveyPropToConfig"/>
                         <div class="two fields" style="margin-bottom:0">
                             <div class="field" style="margin-bottom:0">
                                 <ui:dropdown name="selectedProperty"
