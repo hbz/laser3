@@ -237,7 +237,7 @@ class SurveyController {
             return
 
         }else {
-            result.surveysCount = SurveyInfo.executeQuery(fsq.query, fsq.queryParams).size()
+            result.surveysCount = SurveyInfo.executeQuery(fsr.query, fsr.queryParams).size()
             result.countSurveyConfigs = surveyService.getSurveyConfigCounts(params)
 
             result.filterSet = params.filterSet ? true : false
