@@ -35,6 +35,7 @@ import groovy.xml.XmlSlurper
 import groovy.xml.slurpersupport.GPathResult
 import io.micronaut.http.client.DefaultHttpClientConfiguration
 import io.micronaut.http.client.HttpClientConfiguration
+import org.apache.lucene.index.DocIDMerger.Sub
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.web.json.JSONObject
 import org.springframework.context.MessageSource
@@ -3014,10 +3015,10 @@ join sub.orgRelations or_sub where
 
     void setPermanentTitlesBySubscription(Subscription subscription) {
         if (subscription._getCalculatedType() in [CalculatedType.TYPE_LOCAL, CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_CONSORTIAL]) {
-            if(!checkThreadRunning('permanentTilesProcess_' + subscription.id)) {
+            if(!checkThreadRunning('permanentTitlesProcess_' + subscription.id)) {
                 Long userId = contextService.getUser().id
                 executorService.execute({
-                    Thread.currentThread().setName('permanentTilesProcess_' + subscription.id)
+                    Thread.currentThread().setName('permanentTitlesProcess_' + subscription.id)
                     Long ownerId = subscription.subscriber.id, subId = subscription.id, start = System.currentTimeSeconds()
                     Sql sql = GlobalService.obtainSqlConnection()
                     Connection connection = sql.dataSource.getConnection()
@@ -3044,20 +3045,60 @@ join sub.orgRelations or_sub where
                     }
                     sql.close()
                     if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
-                        globalService.notifyBackgroundProcessFinish(userId, 'permanentTilesProcess_' + subscription.id, messageSource.getMessage('subscription.details.unmarkPermanentTitles.completed' ,[subscription.name] as Object[], LocaleUtils.getCurrentLocale()))
+                        globalService.notifyBackgroundProcessFinish(userId, 'permanentTitlesProcess_' + subscription.id, messageSource.getMessage('subscription.details.unmarkPermanentTitles.completed' ,[subscription.name] as Object[], LocaleUtils.getCurrentLocale()))
                     }
                 })
             }
         }
     }
 
+    void setPermanentTitlesByPackage(Package pkg) {
+        Org context = contextService.getOrg()
+        if(!checkThreadRunning('permanentTitlesProcess_' + pkg.id + '_' + context.id)) {
+            Set<Subscription> orgSubs = Subscription.executeQuery('select s from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where s.instanceOf = null and oo.org = :ctx and sp.pkg = :pkg', [ctx: context, pkg: pkg])
+            orgSubs.each { Subscription s ->
+                s.hasPerpetualAccess = true
+                s.save()
+            }
+            executorService.execute({
+                Thread.currentThread().setName('permanentTitlesProcess_' + pkg.id + '_' + context.id)
+                Sql sql = GlobalService.obtainSqlConnection()
+                Connection connection = sql.dataSource.getConnection()
+                orgSubs.eachWithIndex { Subscription subscription, int s ->
+                    Long ownerId = subscription.subscriber.id, subId = subscription.id
+
+                    List<Long> status = [RDStore.TIPP_STATUS_CURRENT.id, RDStore.TIPP_STATUS_RETIRED.id, RDStore.TIPP_STATUS_DELETED.id]
+                    int countIeIDs = IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is null and ie.status.id in (:status)', [sub: subscription, status: status])[0]
+                    log.debug("setPermanentTitlesBySubscription -> set perpetualAccessBySub of ${countIeIDs} IssueEntitlements to sub: " + subscription.id)
+
+                    sql.executeUpdate('update issue_entitlement set ie_perpetual_access_by_sub_fk = :subId where ie_perpetual_access_by_sub_fk is null and ie_subscription_fk = :subId and ie_status_rv_fk = any(:idSet)', [idSet: connection.createArrayOf('bigint', [RDStore.TIPP_STATUS_CURRENT.id, RDStore.TIPP_STATUS_RETIRED.id, RDStore.TIPP_STATUS_DELETED.id].toArray()), subId: subId])
+                    sql.executeInsert("insert into permanent_title (pt_version, pt_ie_fk, pt_date_created, pt_subscription_fk, pt_last_updated, pt_tipp_fk, pt_owner_fk) select 0, ie_id, now(), " + subId + ", now(), ie_tipp_fk, " + ownerId + " from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_status_rv_fk != :removed and ie_status_rv_fk = tipp_status_rv_fk and ie_subscription_fk = :subId and not exists(select pt_id from permanent_title where pt_tipp_fk = tipp_id and pt_owner_fk = :ownerId)", [subId: subId, removed: RDStore.TIPP_STATUS_REMOVED.id, ownerId: ownerId])
+
+                    if (subscription.instanceOf == null && auditService.getAuditConfig(subscription, 'hasPerpetualAccess')) {
+                        Set depending = Subscription.findAllByInstanceOf(subscription)
+                        depending.eachWithIndex { dependingObj, int i ->
+                            ownerId = dependingObj.subscriber.id
+                            countIeIDs = IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is null and ie.status.id in (:status)', [sub: dependingObj, status: status])[0]
+                            log.debug("setPermanentTitlesBySubscription (${i + 1}/${depending.size()} at subscription ${s+1}/${orgSubs.size()}) -> set perpetualAccessBySub of ${countIeIDs} IssueEntitlements to sub: " + dependingObj.id)
+
+                            sql.executeUpdate('update issue_entitlement set ie_perpetual_access_by_sub_fk = :subId where ie_perpetual_access_by_sub_fk is null and ie_subscription_fk = :subId and ie_status_rv_fk = any(:idSet)', [idSet: connection.createArrayOf('bigint', [RDStore.TIPP_STATUS_CURRENT.id, RDStore.TIPP_STATUS_RETIRED.id, RDStore.TIPP_STATUS_DELETED.id].toArray()), subId: dependingObj.id])
+                            sql.executeInsert("insert into permanent_title (pt_version, pt_ie_fk, pt_date_created, pt_subscription_fk, pt_last_updated, pt_tipp_fk, pt_owner_fk) select 0, ie_id, now(), " + dependingObj.id + ", now(), ie_tipp_fk, " + ownerId + " from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_status_rv_fk != :removed and ie_status_rv_fk = tipp_status_rv_fk and ie_subscription_fk = :subId and not exists(select pt_id from permanent_title where pt_tipp_fk = tipp_id and pt_owner_fk = :ownerId)", [subId: dependingObj.id, removed: RDStore.TIPP_STATUS_REMOVED.id, ownerId: ownerId])
+
+                        }
+                    }
+                    sql.close()
+                }
+            })
+        }
+    }
+
     void removePermanentTitlesBySubscription(Subscription subscription) {
         if (subscription._getCalculatedType() in [CalculatedType.TYPE_LOCAL, CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_CONSORTIAL]) {
-            if(!checkThreadRunning('permanentTilesProcess_' + subscription.id)) {
+            if(!checkThreadRunning('permanentTitlesProcess_' + subscription.id)) {
                 long userId = contextService.getUser().id
                 executorService.execute({
                     long start = System.currentTimeSeconds()
-                    Thread.currentThread().setName('permanentTilesProcess_' + subscription.id)
+                    Thread.currentThread().setName('permanentTitlesProcess_' + subscription.id)
                     Sql sql = GlobalService.obtainSqlConnection()
                     String ieQuery = 'select ie_id from issue_entitlement where ie_subscription_fk = :sub and ie_perpetual_access_by_sub_fk is not null',
                     countIeQuery = 'select count(*) from issue_entitlement where ie_subscription_fk = :sub and ie_perpetual_access_by_sub_fk is not null',
@@ -3094,11 +3135,83 @@ join sub.orgRelations or_sub where
                         }
                     }
                     if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
-                        globalService.notifyBackgroundProcessFinish(userId, 'permanentTilesProcess_' + subscription.id, messageSource.getMessage('subscription.details.unmarkPermanentTitles.completed' ,[subscription.name] as Object[], LocaleUtils.getCurrentLocale()))
+                        globalService.notifyBackgroundProcessFinish(userId, 'permanentTitlesProcess_' + subscription.id, messageSource.getMessage('subscription.details.unmarkPermanentTitles.completed' ,[subscription.name] as Object[], LocaleUtils.getCurrentLocale()))
                     }
                 })
             }
         }
+    }
+
+    void removePermanentTitlesByPackage(Package pkg) {
+        Org context = contextService.getOrg()
+        if(!checkThreadRunning('permanentTitlesProcess_' + pkg.id + '_' + context.id)) {
+            Set<Subscription> orgSubs = Subscription.executeQuery('select s from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where s.instanceOf = null and oo.org = :ctx and sp.pkg = :pkg', [ctx: context, pkg: pkg])
+            orgSubs.each { Subscription s ->
+                s.hasPerpetualAccess = false
+                s.save()
+            }
+            executorService.execute({
+                Thread.currentThread().setName('permanentTitlesProcess_' + pkg.id + '_' + context.id)
+                Sql sql = GlobalService.obtainSqlConnection()
+                orgSubs.eachWithIndex { Subscription subscription, int s ->
+                    String ieQuery = 'select ie_id from issue_entitlement where ie_subscription_fk = :sub and ie_perpetual_access_by_sub_fk is not null',
+                           countIeQuery = 'select count(*) from issue_entitlement where ie_subscription_fk = :sub and ie_perpetual_access_by_sub_fk is not null',
+                           permQuery = 'select pt_id from permanent_title where pt_subscription_fk = :sub',
+                           countPermQuery = 'select count(*) from permanent_title where pt_subscription_fk = :sub'
+                    int parentIeCount = sql.rows(countIeQuery, [sub: subscription.id])[0]["count"],
+                        parentPermCount = sql.rows(countPermQuery, [sub: subscription.id])[0]["count"]
+                    log.debug("removePermanentTitlesBySubscription -> set perpetualAccessBySub of ${parentIeCount} IssueEntitlements to null: " + subscription.id)
+                    int limit = 5000
+                    for(int i = 0; i < parentIeCount; i += limit) {
+                        String updateQuery = "update issue_entitlement set ie_perpetual_access_by_sub_fk = null where ie_id in (${ieQuery} limit ${limit})"
+                        sql.executeUpdate(updateQuery, [sub: subscription.id])
+                    }
+                    for(int i = 0; i < parentPermCount; i += limit) {
+                        String deleteQuery = "delete from permanent_title where pt_id in (${permQuery} limit ${limit})"
+                        sql.executeUpdate(deleteQuery, [sub: subscription.id])
+                    }
+
+
+                    if (subscription.instanceOf == null && auditService.getAuditConfig(subscription, 'hasPerpetualAccess')) {
+                        Set<Subscription> depending = Subscription.findAllByInstanceOf(subscription)
+                        depending.eachWithIndex { Subscription dependingObj, int i->
+                            int dependingIeCount = sql.rows(countIeQuery, [sub: dependingObj.id])[0]["count"],
+                                dependingPermCount = sql.rows(countPermQuery, [sub: dependingObj.id])[0]["count"]
+                            log.debug("removePermanentTitlesByPackage (${i+1}/${depending.size()} at subscription ${s+1}/${orgSubs.size()}) -> set perpetualAccessBySub of ${dependingIeCount} IssueEntitlements to null: " + dependingObj.id)
+                            for(int j = 0; j < dependingIeCount; j += limit) {
+                                String updateQuery = "update issue_entitlement set ie_perpetual_access_by_sub_fk = null where ie_id in (${ieQuery} limit ${limit})"
+                                sql.executeUpdate(updateQuery, [sub: dependingObj.id])
+                            }
+                            for(int j = 0; j < dependingPermCount; j += limit) {
+                                String deleteQuery = "delete from permanent_title where pt_id in (${permQuery} limit ${limit})"
+                                sql.executeUpdate(deleteQuery, [sub: dependingObj.id])
+                            }
+                        }
+                    }
+                }
+            })
+        }
+    }
+
+    boolean checkPermanentTitleProcessRunning(Subscription subscription, Org context) {
+        boolean permanentTitleProcessRunning, packageWide = false
+        if(subscription.instanceOf) {
+            for(SubscriptionPackage sp: subscription.instanceOf.packages) {
+                packageWide = checkThreadRunning('permanentTitlesProcess_'+sp.pkg.id+'_'+context.id)
+                if(packageWide)
+                    break
+            }
+            permanentTitleProcessRunning = checkThreadRunning('permanentTitlesProcess_'+subscription.instanceOf.id) || packageWide
+        }
+        else {
+            for(SubscriptionPackage sp: subscription.packages) {
+                packageWide = checkThreadRunning('permanentTitlesProcess_'+sp.pkg.id+'_'+context.id)
+                if(packageWide)
+                    break
+            }
+            permanentTitleProcessRunning = checkThreadRunning('permanentTitlesProcess_'+subscription.id) || packageWide
+        }
+        permanentTitleProcessRunning
     }
 
     int countMultiYearSubInParentSub(Subscription subscription){

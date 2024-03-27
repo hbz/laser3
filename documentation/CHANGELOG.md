@@ -9,6 +9,8 @@
 
 3996    27.03.2024  dev     3.4         Andreas Feature     Cost per Use-Erstaufschlag implementiert
 
+5622    22.03.2024  dev     3.4         Andreas Feature     paketweite Erzeugung und Entfernung von dauerhaften Titel
+
 5623    21.03.2024  rc-3.3  3.3.9       Andreas Feature     kleinere Ausbesserungen am Sync, besseres Debugging
 
 --      21.03.2024  rc-3.3  3.3.9       Andreas Feature     Verbesserungen in der Performance an der API-OA-Schnittstelle
