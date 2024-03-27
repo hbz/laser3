@@ -95,22 +95,11 @@ class MyInstitutionControllerService {
         prf.setBenchmark('tasks')
         result.tasks = taskService.getTasksByResponsibles(result.user as User, result.institution as Org, [query: fsr.query, queryParams: fsr.queryParams])
         result.tasksCount    = result.tasks.size()
-        result.enableMyInstFormFields = true // enable special form fields
 
-
-        /*def announcement_type = RDStore.DOC_TYPE_ANNOUNCEMENT
-        result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: result.max,offset:result.announcementOffset, sort: 'dateCreated', order: 'desc'])
-        result.recentAnnouncementsCount = Doc.findAllByType(announcement_type).size()*/
         prf.setBenchmark('due dates')
         result.dueDates = dashboardDueDatesService.getDashboardDueDates( result.user, result.institution, false, false, result.max, result.dashboardDueDatesOffset)
         result.dueDatesCount = dashboardDueDatesService.countDashboardDueDates( result.user, result.institution, false, false)
-        /* -> to AJAX
-        pu.setBenchmark('surveys')
-        List activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null AND surConfig.surveyInfo.status = :status) " +
-                " order by surConfig.surveyInfo.endDate",
-                [org: result.institution,
-                 status: RDStore.SURVEY_SURVEY_STARTED])
-        */
+
         prf.setBenchmark('workflows')
         if (workflowService.hasUserPerm_edit()) {
             if (params.cmd) {
@@ -136,10 +125,7 @@ class MyInstitutionControllerService {
             result.allChecklistsCount = workflows.size()
             result.allChecklists = workflows.take(contextService.getUser().getPageSizeOrDefault())
         }
-        /*
-        result.surveys = activeSurveyConfigs.groupBy {it?.id}
-        result.countSurvey = result.surveys.size()
-        */
+
         prf.setBenchmark('wekbNews')
         result.wekbNews = wekbNewsService.getCurrentNews()
 

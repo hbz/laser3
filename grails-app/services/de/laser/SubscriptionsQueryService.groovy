@@ -266,11 +266,11 @@ class SubscriptionsQueryService {
                     }
                     filterSet = true
                 }
-                else base_qry += ")" //opened in line 268 or 272
+                else base_qry += ")" //opened in line 245 or 249
             }
-            else if(params.status != 'FETCH_ALL') base_qry += ")" //opened in line 268 or 272
+            else if(params.status != 'FETCH_ALL') base_qry += ")" //opened in line 245 or 249
         }
-        if (!(RDStore.SUBSCRIPTION_CURRENT.id.toString() in params.status) && params.hasPerpetualAccess) {
+        if (!(RDStore.SUBSCRIPTION_CURRENT.id in Params.getLongList(params,'status')) && params.hasPerpetualAccess) {
             base_qry += " and s.hasPerpetualAccess = :hasPerpetualAccess "
             qry_params.put('hasPerpetualAccess', (Long.valueOf(params.hasPerpetualAccess) == RDStore.YN_YES.id))
             filterSet = true
@@ -332,13 +332,13 @@ class SubscriptionsQueryService {
         if ((params.sort != null) && (params.sort.length() > 0)) {
             if(params.sort != "providerAgency")
                 base_qry += (params.sort=="s.name") ? " order by LOWER(${params.sort}) ${params.order}":" order by ${params.sort} ${params.order}"
-        } else {
+        } else if(!params.containsKey('count')) {
             base_qry += " order by lower(trim(s.name)) asc, s.startDate, s.endDate, s.instanceOf desc"
             if(joinQuery)
                 base_qry += ", so.org.sortname asc"
         }
 
-        //log.debug("query: ${base_qry} && params: ${qry_params}")
+        log.debug("query: ${base_qry} && params: ${qry_params}")
 
         return [base_qry, qry_params, filterSet]
     }

@@ -1,4 +1,4 @@
-<%@ page import="java.text.SimpleDateFormat; grails.converters.JSON; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.Subscription; de.laser.Platform; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report; de.laser.interfaces.CalculatedType; de.laser.base.AbstractReport" %>
+<%@ page import="java.text.SimpleDateFormat; grails.converters.JSON; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.Subscription; de.laser.Platform; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report; de.laser.interfaces.CalculatedType; de.laser.base.AbstractReport; de.laser.finance.CostItem" %>
 <laser:htmlStart message="subscription.details.stats.label" serviceInjection="true"/>
 
         <ui:debugInfo>
@@ -146,22 +146,42 @@
             </g:each>
         </g:else>
         <g:if test="${showConsortiaFunctions && !subscription.instanceOf}">
-            <g:if test="${platformInstanceRecords.values().statisticsFormat.contains('COUNTER')}">
-                <div class="ui segment">
-                    <table class="ui celled table">
-                        <tr>
-                            <th><g:message code="default.usage.consortiaTableHeader"/></th>
-                        </tr>
-                        <g:each in="${Subscription.executeQuery('select new map(sub.id as memberSubId, org.sortname as memberName, org.id as memberId) from OrgRole oo join oo.org org join oo.sub sub where sub.instanceOf = :parent and oo.roleType in (:subscrRoles) and exists (select sp.id from SubscriptionPackage sp where sp.subscription = sub) order by org.sortname asc', [parent: subscription, subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])}" var="row">
+            <g:each in="${platformInstanceRecords.values()}" var="platform">
+                <g:if test="${platform.statisticsFormat.contains('COUNTER')}">
+                    <%
+                        Map<String, Object> platformSushiConfig = exportService.prepareSushiCall(platform, 'stats')
+                    %>
+                    <div class="ui segment">
+                        <table class="ui celled table">
                             <tr>
-                                <td>
-                                    <g:link action="stats" id="${row.memberSubId}">${row.memberName}</g:link>
-                                </td>
+                                <th><g:message code="default.usage.consortiaTableHeader"/></th>
+                                <th>Customer ID</th>
+                                <th>Requestor ID/API-Key</th>
+                                <th>Abruf o.k.?</th>
                             </tr>
-                        </g:each>
-                    </table>
-                </div>
-            </g:if>
+                            <g:each in="${Subscription.executeQuery('select new map(sub.id as memberSubId, org.sortname as memberName, org.id as memberId, ci as customerIdentifier) from CustomerIdentifier ci, OrgRole oo join oo.org org join oo.sub sub where ci.customer = org and sub.instanceOf = :parent and oo.roleType in (:subscrRoles) and ci.platform.gokbId = :platform order by ci.customer.sortname asc', [parent: subscription, platform: platform.uuid, subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])}" var="row">
+                                <%
+                                    String queryArguments = exportService.buildQueryArguments(platformSushiConfig, platform, row.customerIdentifier)
+                                %>
+                                <tr>
+                                    <td>
+                                        <g:link action="stats" id="${row.memberSubId}">${row.memberName}</g:link>
+                                    </td>
+                                    <td>
+                                        <ui:xEditable owner="${row.customerIdentifier}" field="value"/>
+                                    </td>
+                                    <td>
+                                        <ui:xEditable owner="${row.customerIdentifier}" field="requestorKey"/>
+                                    </td>
+                                    <td id="${genericOIDService.getHtmlOID(row.customerIdentifier)}" class="sushiConnectionCheck" data-revision="${platformSushiConfig.revision}" data-statsUrl="${platformSushiConfig.statsUrl}" data-queryArguments="${queryArguments}">
+
+                                    </td>
+                                </tr>
+                            </g:each>
+                        </table>
+                    </div>
+                </g:if>
+            </g:each>
         </g:if>
         <g:else>
             <g:if test="${platformInstanceRecords.values().statisticsFormat.contains('COUNTER')}">
@@ -224,9 +244,19 @@
 
                 <g:if test="${reportTypes}">
                     <g:if test="${revision == AbstractReport.COUNTER_4}">
-                        <ui:msg icon="ui info icon" class="info"
+                        <%-- taglib not displaying properly
+                        <ui:msg icon="ui info" class="info"
                                 header="${message(code: 'default.usage.counter4reportInfo.header')}"
                                 message="default.usage.counter4reportInfo.text" noClose="true"/>
+                        --%>
+                        <div class="ui icon info message">
+                            <i class="info icon"></i>
+                            <div class="content">
+                                <div class="header">${message(code: 'default.usage.counter4reportInfo.header')}</div>
+
+                                <p>${message(code: 'default.usage.counter4reportInfo.text')}</p>
+                            </div>
+                        </div>
                     </g:if>
                     <g:form action="generateReport" name="stats" class="ui form" method="get">
                         <g:hiddenField name="id" value="${subscription.id}"/>
@@ -271,25 +301,18 @@
                             </div>
                         </div>
 
-                        <div class="four fields">
-                            <div class="field"></div>
-
-                            <div class="field"></div>
-
-                            <div class="field la-field-right-aligned">
-                                <%-- deactivated as of ERMS-3996; concept needs to be clarified
-                                <input id="generateCostPerUse" type="button" class="ui secondary button" value="${message(code: 'default.stats.generateCostPerUse')}"/>--%>
-                                <g:link action="stats" id="${subscription.id}"
-                                        class="ui button secondary">${message(code: 'default.button.reset.label')}</g:link>
-                            </div>
-
-                            <div class="field la-field-right-aligned">
-                                <input id="generateReport" type="button" class="ui primary button" disabled="disabled"
-                                       value="${message(code: 'default.stats.generateReport')}"/>
-                            </div>
+                        <div class="field la-field-right-aligned">
+                            <input id="generateReport" type="button" class="ui primary button" disabled="disabled"
+                                   value="${message(code: 'default.stats.generateReport')}"/>
+                            <g:if test="${CostItem.findBySubAndCostItemElementConfiguration(subscription, RDStore.CIEC_POSITIVE)}">
+                                <input id="generateCostPerUse" type="button" class="ui secondary button" disabled="disabled"
+                                       value="${message(code: 'default.stats.generateCostPerUse')}"/>
+                            </g:if>
+                            <g:link action="stats" id="${subscription.id}"
+                                    class="ui button secondary">${message(code: 'default.button.reset.label')}</g:link>
                         </div>
                     </g:form>
-                    <div class="ui teal progress" id="progressIndicator" hidden>
+                    <div class="ui teal progress" id="progressIndicator" hidden="hidden">
                         <div class="bar">
                             <div class="progress"></div>
                         </div>
@@ -321,7 +344,7 @@
         </g:else>
         <laser:script file="${this.getGroovyPageFileName()}">
             JSPC.app.stats_slider_date_format = function (value, variant) {
-                let date = new Date(value.split('-')[0], value.split('-')[1])
+                let date = new Date(value.split('-')[0], value.split('-')[1]-1) //correction by -1 because Date() month counting is zero-based
                 return date.toLocaleDateString('de-DE', {year: 'numeric', month: variant})
             }
             JSPC.app.stats_slider_color = function (start, end) {
@@ -415,6 +438,28 @@
                 }
             }).slider('set value', null);
 
+            $(".sushiConnectionCheck").each(function(i) {
+                let cell = $(this);
+                let data = {
+                    statsUrl: cell.attr("data-statsUrl"),
+                    queryArguments: $(this).attr("data-queryArguments"),
+                    revision: cell.attr("data-revision")
+                };
+                setTimeout(function(){
+                    $.ajax({
+                        url: "<g:createLink controller="ajaxJson" action="checkSUSHIConnection"/>",
+                        data: data
+                    }).done(function(response) {
+                        if(response.success === true) {
+                            cell.html('<i class="ui circular inverted icon green check"></i>');
+                        }
+                        else {
+                            cell.html('<span class="la-popup-tooltip" data-content="'+response.message+'"><i class="ui circular inverted icon red times"></i></span>');
+                            r2d2.initDynamicUiStuff('#'+cell.attr('id'));
+                        }
+                    });
+                }, 200 * i);
+            });
             $("#reportType").on('change', function() {
                 <g:applyCodec encodeAs="none">
                     let platforms = ${platformsJSON};
@@ -430,7 +475,7 @@
                 }).done(function(response) {
                     $('.dynFilter').remove();
                     $('#filterDropdownWrapper').append(response);
-                    $('#generateReport').removeAttr('disabled');
+                    $('#generateReport, #generateCostPerUse').removeAttr('disabled');
                     r2d2.initDynamicUiStuff('#filterDropdownWrapper');
                 });
             });

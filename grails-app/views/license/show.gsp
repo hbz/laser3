@@ -28,6 +28,9 @@
         <ui:h1HeaderWithIcon visibleOrgRelations="${visibleOrgRelations}">
             <ui:xEditable owner="${license}" field="reference" id="reference"/>
         </ui:h1HeaderWithIcon>
+        <g:if test="${editable}">
+            <ui:auditButton class="la-auditButton-header" auditable="[license, 'reference']" auditConfigs="${auditConfigs}" withoutOptions="true"/>
+        </g:if>
 
         <ui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
@@ -116,14 +119,6 @@
                                         <dt class="control-label">${message(code:'license.linktoLicense')}</dt>
                                         <g:link controller="license" action="show" id="${license.instanceOf.id}">${license.instanceOf}</g:link>
                                     </dl>
-                                    <%--<dl>
-                                        <dt class="control-label">
-                                            ${message(code:'license.details.linktoLicense.pendingChange')}
-                                        </dt>
-                                        <dd>
-                                            <ui:xEditableBoolean owner="${license}" field="isSlaved" />
-                                        </dd>
-                                    </dl>--%>
                                 </g:if>
 
                                 <g:if test="${!contextService.getOrg().isCustomerType_Support()}">

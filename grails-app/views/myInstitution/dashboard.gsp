@@ -176,7 +176,6 @@
         <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
             <a class="${us_dashboard_tab.value == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
                 <i class="tasks icon large"></i>
-%{--                ${myWorkflowsCount + allWorkflowsCount} ${message(code:'workflow.plural')}--}%
                 ${allChecklistsCount} ${message(code:'workflow.plural')}
             </a>
         </g:if>
@@ -236,16 +235,6 @@
 
         <g:if test="${contextService.getOrg().isCustomerType_Pro()}">
         <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Tasks' ? 'active':''}" data-tab="tasks">
-
-%{--            <g:if test="${editable}">--}%
-%{--                <div class="ui right aligned grid">--}%
-%{--                    <div class="right floated right aligned sixteen wide column">--}%
-%{--                        <a onclick="JSPC.app.createTask();" class="ui button">--}%
-%{--                            ${message(code:'task.create.new')}--}%
-%{--                        </a>--}%
-%{--                    </div>--}%
-%{--                </div>--}%
-%{--            </g:if>--}%
 
             <div class="ui cards">
                 <g:each in="${tasks}" var="tsk">
@@ -495,8 +484,6 @@
         JSPC.app.dashboard.loadChanges()
         JSPC.app.dashboard.loadSurveys()
         JSPC.app.dashboard.initWorkflows()
-
-    %{--        JSPC.app.createTask = bb8.ajax4SimpleModalFunction("#modalCreateTask", "<g:createLink controller="ajaxHtml" action="createTask"/>", true);--}%
     </laser:script>
 
     <ui:debugInfo>

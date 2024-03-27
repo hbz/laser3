@@ -244,7 +244,7 @@ class SubscriptionController {
                 result.reportTypes = []
                 CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriber(), platformInstance)
                 if(ci?.value) {
-                    SortedSet allAvailableReports = subscriptionControllerService.getAvailableReports(result)
+                    Set allAvailableReports = subscriptionControllerService.getAvailableReports(result)
                     if(allAvailableReports)
                         result.reportTypes.addAll(allAvailableReports)
                     else {
@@ -1444,6 +1444,30 @@ class SubscriptionController {
         }
 
 
+        redirect(url: request.getHeader("referer"))
+    }
+
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
+    })
+    def setPermanentTitlesByPackage() {
+        Package pkg = Package.get(params.pkg)
+        if(pkg) {
+            subscriptionService.setPermanentTitlesByPackage(pkg)
+        }
+        redirect(url: request.getHeader("referer"))
+    }
+
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
+    })
+    def removePermanentTitlesByPackage() {
+        Package pkg = Package.get(params.pkg)
+        if(pkg) {
+            subscriptionService.removePermanentTitlesByPackage(pkg)
+        }
         redirect(url: request.getHeader("referer"))
     }
 

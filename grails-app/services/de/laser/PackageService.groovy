@@ -2,12 +2,14 @@ package de.laser
 
 import de.laser.finance.CostItem
 import de.laser.oap.OrgAccessPointLink
+import de.laser.remote.ApiSource
+import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
+import de.laser.utils.SwissKnife
 import grails.gorm.transactions.Transactional
 import grails.web.mapping.LinkGenerator
 import grails.web.servlet.mvc.GrailsParameterMap
-import groovy.sql.Sql
 import org.springframework.context.MessageSource
 
 /**
@@ -19,6 +21,7 @@ class PackageService {
     BatchUpdateService batchUpdateService
     ContextService contextService
     DeletionService deletionService
+    GokbService gokbService
     LinkGenerator grailsLinkGenerator
     MessageSource messageSource
 
@@ -76,6 +79,92 @@ class PackageService {
             }
         }
         conflicts_list
+    }
+
+    def getWekbPackages(GrailsParameterMap params) {
+        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        if (!apiSource) {
+            return null
+        }
+        Locale locale = LocaleUtils.getCurrentLocale()
+        Map<String, Object> result = [
+                flagContentGokb : true // gokbService.executeQuery
+        ]
+        result.curatoryGroupTypes = [
+                [value: 'Provider', name: messageSource.getMessage('package.curatoryGroup.provider', null, locale)],
+                [value: 'Vendor', name: messageSource.getMessage('package.curatoryGroup.vendor', null, locale)],
+                [value: 'Other', name: messageSource.getMessage('package.curatoryGroup.other', null, locale)]
+        ]
+        result.automaticUpdates = [
+                [value: 'true', name: messageSource.getMessage('package.index.result.automaticUpdates', null, locale)],
+                [value: 'false', name: messageSource.getMessage('package.index.result.noAutomaticUpdates', null, locale)]
+        ]
+
+        result.editUrl = apiSource.editUrl
+
+        Map<String, Object> queryParams = [componentType: "Package"]
+        if (params.q) {
+            result.filterSet = true
+            queryParams.name = params.q
+            queryParams.ids = ["Anbieter_Produkt_ID,${params.q}", "isil,${params.q}"]
+        }
+
+        if(params.pkgStatus) {
+            result.filterSet = true
+        }
+        else if(!params.pkgStatus) {
+            params.pkgStatus = [RDStore.TIPP_STATUS_CURRENT.value, RDStore.TIPP_STATUS_EXPECTED.value, RDStore.TIPP_STATUS_RETIRED.value, RDStore.TIPP_STATUS_DELETED.value]
+        }
+        queryParams.status = params.pkgStatus
+
+        if (params.provider) {
+            result.filterSet = true
+            queryParams.provider = params.provider
+        }
+
+        if (params.curatoryGroup) {
+            result.filterSet = true
+            queryParams.curatoryGroupExact = params.curatoryGroup
+        }
+
+        if (params.curatoryGroupType) {
+            result.filterSet = true
+            queryParams.curatoryGroupType = params.curatoryGroupType
+        }
+
+        if (params.automaticUpdates) {
+            result.filterSet = true
+            queryParams.automaticUpdates = params.automaticUpdates
+        }
+
+        if (params.ddc) {
+            result.filterSet = true
+            Set<String> selDDC = []
+            params.list("ddc").each { String key ->
+                selDDC << RefdataValue.get(key).value
+            }
+            queryParams.ddc = selDDC
+        }
+
+        if(params.stubOnly)
+            queryParams.stubOnly = params.stubOnly
+        if(params.uuids)
+            queryParams.uuids = params.uuids
+
+        Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
+        if(!params.sort)
+            params.sort = 'name'
+        if(queryCuratoryGroups.code == 404) {
+            result.error = messageSource.getMessage('wekb.error.'+queryCuratoryGroups.error, null, locale) as String
+        }
+        else {
+            if (queryCuratoryGroups) {
+                List recordsCuratoryGroups = queryCuratoryGroups.result
+                result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
+            }
+            result.putAll(gokbService.doQuery(result, params, queryParams))
+        }
+        result
     }
 
     /**

@@ -38,13 +38,13 @@
 
 <laser:render template="${customerTypeService.getNavTemplatePath()}"/>
 
-<g:if test="${permanentTilesProcessRunning}">
+<g:if test="${permanentTitlesProcessRunning}">
     <div class="ui icon warning message">
         <i class="info icon"></i>
         <div class="content">
             <div class="header">Info</div>
 
-            <p>${message(code: 'subscription.details.permanentTilesProcessRunning.info')}</p>
+            <p>${message(code: 'subscription.details.permanentTitlesProcessRunning.info')}</p>
         </div>
     </div>
 </g:if>

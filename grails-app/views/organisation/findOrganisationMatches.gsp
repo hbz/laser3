@@ -34,8 +34,6 @@
 			</div>
 		</ui:searchSegment>
 
-
-
 				<g:if test="${organisationMatches != null}">
 					<g:if test="${organisationMatches.size()>0}">
 						<table class="ui celled la-js-responsive-table la-table table">
@@ -127,6 +125,5 @@
 						<ui:msg class="warning" message="org.findInstitutionMatches.no_id_match" args="[params.proposedOrganisationID]" />
 					</g:elseif>
 				</g:if>
-
 
 <laser:htmlEnd />

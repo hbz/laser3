@@ -180,13 +180,6 @@
                                                         field="localPrice"
                                                         owner="${priceItem}"/> <ui:xEditableRefData
                                                         field="localCurrency" owner="${priceItem}" config="Currency"/>
-                                                <%--<br/>
-                                                (<g:message code="tipp.price.startDate"/> <ui:xEditable field="startDate"
-                                                                                                          type="date"
-                                                                                                          owner="${priceItem}"/>-
-                                                <g:message code="tipp.price.endDate"/> <ui:xEditable field="endDate"
-                                                                                                       type="date"
-                                                                                                       owner="${priceItem}"/>)--%>
                                             </div>
                                         </div>
                                     </div>

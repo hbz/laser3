@@ -24,36 +24,39 @@
 
     documentSet.sort{it.owner?.title}.each{ it ->
         boolean visible = false //is the document visible?
-        boolean inOwnerOrg = false //are we owners of the document?
+        boolean inOwnerOrg = it.owner.owner?.id == contextOrg.id //are we owners of the document?
         boolean inTargetOrg = false //are we in the org to which a document is attached?
 
-        if(it.owner.owner?.id == contextOrg.id){
-            inOwnerOrg = true
+        if(it.targetOrg) {
+            inTargetOrg = contextOrg.id == it.targetOrg.id
         }
-        if(contextOrg.id == it.targetOrg?.id) {
-            inTargetOrg = true
+        else if(it.subscription) {
+            inTargetOrg = contextOrg.id == it.subscription.getSubscriber().id
+        }
+        else if(it.license) {
+            inTargetOrg = contextOrg.id in it.license.getAllLicensee().id
         }
 
-        if(it.org) {
-            switch(it.shareConf) {
-                case RDStore.SHARE_CONF_UPLOADER_ORG: if(inOwnerOrg) visible = true //visible only for thes users of org which uploaded the document
-                    break
-                case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(inOwnerOrg || inTargetOrg) visible = true //the owner org and the target org may see the document i.e. the document has been shared with the target org
-                    break
-                case RDStore.SHARE_CONF_ALL: visible = true //definition says that everyone with "access" to target org. How are such access roles defined and where?
-                    break
-                default:
+        switch(it.shareConf) {
+            case RDStore.SHARE_CONF_UPLOADER_ORG: if(inOwnerOrg) visible = true //visible only for thes users of org which uploaded the document
+                break
+            case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(inOwnerOrg || inTargetOrg) visible = true //the owner org and the target org may see the document i.e. the document has been shared with the target org
+                break
+            case RDStore.SHARE_CONF_ALL: visible = true //definition says that everyone with "access" to target org
+                break
+            default:
+                if(it.org) {
                     //fallback: documents are visible if share configuration is missing or obsolete
                     if (!it.shareConf) {
                         visible = it.org == null
                     }
-                    break
-            }
+                }
+                else if(inOwnerOrg || it.sharedFrom)
+                    //other owner objects than orgs - in particular licenses and subscriptions: visibility is set if the owner org visits the owner object or sharing is activated
+                    visible = true
+                break
         }
-        else if(inOwnerOrg || it.sharedFrom)
-            //other owner objects than orgs - in particular licenses and subscriptions: visibility is set if the owner org visits the owner object or sharing is activated
-            visible = true
-        if ((it.sharedFrom || inTargetOrg) && visible) {
+        if ((it.sharedFrom || (ownobj instanceof Org && inTargetOrg)) && visible) {
             //a shared item; assign it to the shared docs section
             sharedItems << it
         }
@@ -102,6 +105,10 @@
                                     <i class="pencil icon"></i>
                                 </button>
                             </g:if>
+                            <g:elseif test="${docctx.shareConf == RDStore.SHARE_CONF_UPLOADER_AND_TARGET}">
+                                <%-- 1 --%>
+                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button la-js-dont-hide-button" target="_blank"><i class="download icon"></i></g:link>
+                            </g:elseif>
 
                             <%-- 3 --%>
                             <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton() && userService.hasFormalAffiliation(contextService.getUser(), docctx.owner.owner, 'INST_EDITOR')}">
@@ -146,11 +153,11 @@
                                     <i class="trash alternate outline icon"></i>
                                 </g:link>
                             </g:if>
-                            <g:else>
+                            <g:elseif test="${docctx.shareConf != RDStore.SHARE_CONF_UPLOADER_AND_TARGET}">
                                 <div class="ui icon button la-hidden">
                                     <i class="fake icon"></i><%-- Hidden Fake Button --%>
                                 </div>
-                            </g:else>
+                            </g:elseif>
                         </g:else>%{-- (editable || editable2) --}%
                         </div>
 

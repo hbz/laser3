@@ -5,7 +5,6 @@ import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.convenience.Marker
 import de.laser.interfaces.MarkerSupport
-import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
@@ -69,7 +68,6 @@ class Package extends AbstractBaseWithCalculatedLastUpdated implements MarkerSup
 static hasMany = [  tipps:     TitleInstancePackagePlatform,
                     orgs:      OrgRole,
                     prsLinks:  PersonRole,
-                    documents: DocContext,
                     subscriptions:  SubscriptionPackage,
                     pendingChanges: PendingChange,
                     ids: Identifier,
@@ -80,7 +78,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   static mappedBy = [tipps:     'pkg',
                      orgs:      'pkg',
                      prsLinks:  'pkg',
-                     documents: 'pkg',
                      subscriptions: 'pkg',
                      pendingChanges: 'pkg',
                      ids:       'pkg',
@@ -118,7 +115,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
             orgs            batchSize: 10
             prsLinks        batchSize: 10
-            documents       batchSize: 10
             subscriptions   batchSize: 10
             ids             sort: 'ns', batchSize: 10
             ddcs            batchSize: 10

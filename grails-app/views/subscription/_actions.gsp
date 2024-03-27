@@ -229,9 +229,6 @@
                     <div class="divider"></div>
                     <g:link class="item" action="delete" id="${params.id}"><i class="trash alternate outline icon"></i> ${message(code:'deletion.subscription')}</g:link>
                 </g:if>
-%{--                <g:else>--}%
-%{--                    <a class="item disabled" href="#"><i class="trash alternate outline icon"></i> ${message(code:'deletion.subscription')}</a>--}%
-%{--                </g:else>--}%
             </g:elseif>
         </g:if>
     </ui:actionsDropdown>
@@ -255,7 +252,7 @@
 </g:elseif>
 
 <g:if test="${contextService.isInstEditor_or_ROLEADMIN()}">
-    <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: subscription, owntp: 'subscription']]}" />
+    <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: subscription, owntp: 'subscription', inContextOrg: inContextOrg]]}" />
     <laser:render template="financeImportTemplate" />
 </g:if>
 

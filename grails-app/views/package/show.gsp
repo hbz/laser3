@@ -567,10 +567,6 @@ making obsolete package/actions
             </div>
         </aside>
 
-    %{-- <aside class="four wide column la-sidekick">
-         <laser:render template="/templates/sidebar/aside" model="${[ownobj:packageInstance, owntp:'pkg']}" />
-     </aside><!-- .four -->--}%
-
     </div><!-- .grid -->
 </g:if>
 
