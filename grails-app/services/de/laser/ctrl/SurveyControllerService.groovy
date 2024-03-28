@@ -112,7 +112,7 @@ class SurveyControllerService {
      * @return the survey details view
      */
     Map<String, Object> show(GrailsParameterMap params) {
-        Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
+        Map<String, Object> result = getResultGenericsAndCheckAccess(params)
         if (!result) {
             [result: null, status: STATUS_ERROR]
         } else {
