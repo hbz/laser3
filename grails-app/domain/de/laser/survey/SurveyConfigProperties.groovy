@@ -12,6 +12,7 @@ class SurveyConfigProperties {
     SurveyConfig surveyConfig
     PropertyDefinition surveyProperty
     boolean mandatoryProperty = false
+    int propertyOrder
 
     Date dateCreated
     Date lastUpdated
@@ -19,6 +20,7 @@ class SurveyConfigProperties {
     static constraints = {
 
     }
+
     static mapping = {
         id column: 'surconpro_id'
         version column: 'surconpro_version'
@@ -30,5 +32,6 @@ class SurveyConfigProperties {
 
         surveyConfig column: 'surconpro_survey_config_fk', index: 'surconpro_survey_config_idx'
         surveyProperty column: 'surconpro_survey_property_fk', index: 'surconpro_survey_property_idx'
+        propertyOrder column: 'surconpro_property_order'
     }
 }

@@ -1573,7 +1573,7 @@ class SurveyControllerService {
 
             result.surveyResults = []
 
-            result.surveyConfig.getSortedSurveyProperties().each { PropertyDefinition propertyDefinition ->
+            result.surveyConfig.getSortedProperties().each { PropertyDefinition propertyDefinition ->
                 result.surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(result.participant, result.surveyConfig, propertyDefinition)
             }
 

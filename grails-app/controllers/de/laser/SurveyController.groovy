@@ -603,7 +603,8 @@ class SurveyController {
                     SurveyConfigProperties configProperty = new SurveyConfigProperties(
                             surveyProperty: PropertyStore.SURVEY_PROPERTY_PARTICIPATION,
                             surveyConfig: surveyConfig,
-                            mandatoryProperty: true)
+                            mandatoryProperty: true,
+                            propertyOrder: 1)
 
                     /*SurveyConfigProperties configProperty2 = new SurveyConfigProperties(
                             surveyProperty: PropertyStore.SURVEY_PROPERTY_ORDER_NUMBER,
@@ -623,7 +624,8 @@ class SurveyController {
                     SurveyConfigProperties configProperty = new SurveyConfigProperties(
                             surveyProperty: PropertyStore.SURVEY_PROPERTY_PARTICIPATION,
                             surveyConfig: surveyConfig,
-                            mandatoryProperty: true)
+                            mandatoryProperty: true,
+                            propertyOrder: 1)
 
                     if (configProperty.save()) {
                         surveyService.addSubMembers(surveyConfig)
@@ -1152,7 +1154,7 @@ class SurveyController {
 
         result.surveyResults = []
 
-        result.surveyConfig.getSortedSurveyProperties().each{ PropertyDefinition propertyDefinition ->
+        result.surveyConfig.getSortedProperties().each{ PropertyDefinition propertyDefinition ->
             result.surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(result.participant, result.surveyConfig, propertyDefinition)
         }
 

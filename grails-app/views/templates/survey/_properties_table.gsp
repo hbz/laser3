@@ -11,6 +11,7 @@
             <th>${message(code: 'surveyProperty.expl.label')}</th>
             <th>${message(code: 'default.type.label')}</th>
             <th>${message(code: 'surveyProperty.mandatoryProperty')}</th>
+            <th>${message(code: 'surveyProperty.propertyOrder')}</th>
             <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING && surveyProperties}">
                 <th>${message(code: 'default.actions.label')}</th>
             </g:if>
@@ -71,6 +72,9 @@
                                    name="mandatoryProperty" ${surveyPropertyConfig.mandatoryProperty ? 'checked' : ''}>
                         </div>
                     </g:form>
+                </td>
+                <td>
+                    <ui:xEditable owner="${surveyPropertyConfig}" field="propertyOrder"/>
                 </td>
                 <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
                         SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyPropertyConfig.surveyProperty)
