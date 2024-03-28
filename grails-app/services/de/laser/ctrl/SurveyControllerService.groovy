@@ -61,14 +61,12 @@ import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.time.TimeCategory
-import org.apache.http.HttpStatus
-import org.apache.poi.xssf.streaming.SXSSFWorkbook
+
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
 import org.springframework.dao.DataIntegrityViolationException
-import org.springframework.transaction.TransactionStatus
 
-import javax.servlet.ServletOutputStream
+
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.Year
@@ -101,8 +99,6 @@ class SurveyControllerService {
     SurveyControllerService surveyControllerService
     SurveyService surveyService
     TaskService taskService
-    UserService userService
-    CustomWkhtmltoxService wkhtmltoxService
 
     MessageSource messageSource
 
@@ -179,9 +175,9 @@ class SurveyControllerService {
 
             }
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.surveyConfig)
-
+            [result: result, status: STATUS_OK]
         }
-        result
+
     }
 
     /**
@@ -210,7 +206,7 @@ class SurveyControllerService {
                 result.titlesList = []
                 result.num_tipp_rows = 0
             }
-            result
+            [result: result, status: STATUS_OK]
         }
 
     }
@@ -287,7 +283,7 @@ class SurveyControllerService {
 
             params.tab = params.tab ?: (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY ? 'selectedParticipants' : ((result.selectedSubParticipantsCount == 0) ? 'selectedParticipants' : 'selectedSubParticipants'))
 
-            result
+            [result: result, status: STATUS_OK]
         }
 
     }
@@ -386,7 +382,7 @@ class SurveyControllerService {
             result.costItemsByCostItemElement = CostItem.executeQuery(query, [status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig, orgIds: orgsId]).groupBy { it.costItemElement }
 
 
-            result
+            [result: result, status: STATUS_OK]
         }
 
     }
@@ -552,7 +548,7 @@ class SurveyControllerService {
             params.remove('percentOnSurveyPrice')
             params.remove('ciec')
 
-            result
+            [result: result, status: STATUS_OK]
         }
     }
 
@@ -1213,107 +1209,60 @@ class SurveyControllerService {
 
             params.tab = params.tab ?: 'participantsViewAllFinish'
 
-            String message = messageSource.getMessage('renewalexport.renewals', null, result.locale)
-            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-            String datetoday = sdf.format(new Date())
-
-            String filename
-            Map<String, Object> selectedFields = [:]
-            Set<String> contactSwitch = []
-            if (params.filename) {
-                filename = params.filename
-            } else {
-                filename = message + "_" + result.surveyConfig.getSurveyName() + "_${datetoday}"
+            if (params.tab == 'participantsViewAllNotFinish') {
+                params.participantsNotFinish = true
+            } else if (params.tab == 'participantsViewAllFinish') {
+                params.participantsFinish = true
             }
-            if (params.fileformat) {
-                Map<String, Object> selectedFieldsRaw = params.findAll { it -> it.toString().startsWith('iex:') }
-                selectedFieldsRaw.each { it -> selectedFields.put(it.key.replaceFirst('iex:', ''), it.value) }
+            result.participantsNotFinishTotal = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig).size()
+            result.participantsFinishTotal = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig).size()
+            result.participantsTotal = result.surveyConfig.orgs.size()
 
-                contactSwitch.addAll(params.list("contactSwitch"))
-                contactSwitch.addAll(params.list("addressSwitch"))
-            }
-            if (params.fileformat == 'xlsx') {
-                try {
-                    SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSurveyEvaluation(result, selectedFields, contactSwitch, ExportClickMeService.FORMAT.XLS)
-                    // Write the output to a file
+            Map<String, Object> fsq = filterService.getSurveyOrgQuery(params, result.surveyConfig)
 
-                    response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-                    response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                    wb.write(response.outputStream)
-                    response.outputStream.flush()
-                    response.outputStream.close()
-                    wb.dispose()
-                    return
-                }
-                catch (Exception e) {
-                    log.error("Problem", e);
-                    response.sendError(HttpStatus.SC_INTERNAL_SERVER_ERROR)
-                    return
-                }
-            } else if (params.fileformat == 'csv') {
-                response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
-                response.contentType = "text/csv"
-                ServletOutputStream out = response.outputStream
-                out.withWriter { writer ->
-                    writer.write((String) exportClickMeService.exportSurveyEvaluation(result, selectedFields, contactSwitch, ExportClickMeService.FORMAT.CSV))
-                }
-                out.close()
-            } else {
-                if (params.tab == 'participantsViewAllNotFinish') {
-                    params.participantsNotFinish = true
-                } else if (params.tab == 'participantsViewAllFinish') {
-                    params.participantsFinish = true
-                }
-                result.participantsNotFinishTotal = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig).size()
-                result.participantsFinishTotal = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig).size()
-                result.participantsTotal = result.surveyConfig.orgs.size()
-
-                Map<String, Object> fsq = filterService.getSurveyOrgQuery(params, result.surveyConfig)
-
-                result.participants = SurveyOrg.executeQuery(fsq.query, fsq.queryParams, params)
+            result.participants = SurveyOrg.executeQuery(fsq.query, fsq.queryParams, params)
 
 
-                result.propList = result.surveyConfig.surveyProperties.surveyProperty
+            result.propList = result.surveyConfig.surveyProperties.surveyProperty
 
-                if (result.surveyInfo.type.id in [RDStore.SURVEY_TYPE_SUBSCRIPTION.id, RDStore.SURVEY_TYPE_RENEWAL.id]) {
-                    result.propertiesChanged = [:]
-                    result.propertiesChangedByParticipant = []
-                    result.propList.sort { it.getI10n('name') }.each { PropertyDefinition propertyDefinition ->
+            if (result.surveyInfo.type.id in [RDStore.SURVEY_TYPE_SUBSCRIPTION.id, RDStore.SURVEY_TYPE_RENEWAL.id]) {
+                result.propertiesChanged = [:]
+                result.propertiesChangedByParticipant = []
+                result.propList.sort { it.getI10n('name') }.each { PropertyDefinition propertyDefinition ->
 
-                        PropertyDefinition subPropDef = PropertyDefinition.getByNameAndDescr(propertyDefinition.name, PropertyDefinition.SUB_PROP)
-                        if (subPropDef) {
-                            result.participants.each { SurveyOrg surveyOrg ->
-                                Subscription subscription = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
-                                        [parentSub  : result.surveyConfig.subscription,
-                                         participant: surveyOrg.org
-                                        ])[0]
-                                SurveyResult surveyResult = SurveyResult.findByParticipantAndTypeAndSurveyConfigAndOwner(surveyOrg.org, propertyDefinition, result.surveyConfig, result.contextOrg)
-                                SubscriptionProperty subscriptionProperty = SubscriptionProperty.findByTypeAndOwnerAndTenant(subPropDef, subscription, result.contextOrg)
+                    PropertyDefinition subPropDef = PropertyDefinition.getByNameAndDescr(propertyDefinition.name, PropertyDefinition.SUB_PROP)
+                    if (subPropDef) {
+                        result.participants.each { SurveyOrg surveyOrg ->
+                            Subscription subscription = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
+                                    [parentSub  : result.surveyConfig.subscription,
+                                     participant: surveyOrg.org
+                                    ])[0]
+                            SurveyResult surveyResult = SurveyResult.findByParticipantAndTypeAndSurveyConfigAndOwner(surveyOrg.org, propertyDefinition, result.surveyConfig, result.contextOrg)
+                            SubscriptionProperty subscriptionProperty = SubscriptionProperty.findByTypeAndOwnerAndTenant(subPropDef, subscription, result.contextOrg)
 
-                                if (surveyResult && subscriptionProperty) {
-                                    String surveyValue = surveyResult.getValue()
-                                    String subValue = subscriptionProperty.getValue()
-                                    if (surveyValue && surveyValue != subValue) {
-                                        Map changedMap = [:]
-                                        changedMap.participant = surveyOrg.org
+                            if (surveyResult && subscriptionProperty) {
+                                String surveyValue = surveyResult.getValue()
+                                String subValue = subscriptionProperty.getValue()
+                                if (surveyValue && surveyValue != subValue) {
+                                    Map changedMap = [:]
+                                    changedMap.participant = surveyOrg.org
 
-                                        result.propertiesChanged."${propertyDefinition.id}" = result.propertiesChanged."${propertyDefinition.id}" ?: []
-                                        result.propertiesChanged."${propertyDefinition.id}" << changedMap
+                                    result.propertiesChanged."${propertyDefinition.id}" = result.propertiesChanged."${propertyDefinition.id}" ?: []
+                                    result.propertiesChanged."${propertyDefinition.id}" << changedMap
 
-                                        result.propertiesChangedByParticipant << surveyOrg.org
-                                    }
+                                    result.propertiesChangedByParticipant << surveyOrg.org
                                 }
-
                             }
 
                         }
+
                     }
                 }
-
-                result.participants = result.participants.sort { it.org.sortname }
-
-                result
             }
+
+            result.participants = result.participants.sort { it.org.sortname }
+
+            [result: result, status: STATUS_OK]
         }
     }
 
