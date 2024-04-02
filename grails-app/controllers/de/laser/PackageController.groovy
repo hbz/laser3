@@ -75,7 +75,7 @@ class PackageController {
         result.putAll(packageService.getWekbPackages(params.clone()))
         result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
         result.languages = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)
-        Set<Set<String>> filterConfig = [['q', 'status'],
+        Set<Set<String>> filterConfig = [['q', 'pkgStatus'],
                                     ['provider', 'ddc', 'curatoryGroup'],
                                     ['curatoryGroupType', 'automaticUpdates']]
         Set<String> tableConfig = ['lineNumber', 'name', 'pkgStatus', 'titleCount', 'provider', 'platform', 'curatoryGroup', 'automaticUpdates', 'lasUpdatedDisplay', 'my', 'marker']

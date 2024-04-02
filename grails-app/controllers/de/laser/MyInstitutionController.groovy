@@ -2,11 +2,13 @@ package de.laser
 
 
 import de.laser.annotations.DebugInfo
+import de.laser.base.AbstractReport
 import de.laser.cache.EhcacheWrapper
 import de.laser.cache.SessionCacheWrapper
 import de.laser.convenience.Marker
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.UserControllerService
+import de.laser.remote.ApiSource
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.auth.Role
@@ -181,100 +183,145 @@ class MyInstitutionController  {
         result.contextOrg = contextService.getOrg()
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        String instanceFilter = "", perpetualFilter = ""
-        boolean withPerpetualAccess = params.long('hasPerpetualAccess') == RDStore.YN_YES.id
-        if(withPerpetualAccess)
-            perpetualFilter = " or s2.hasPerpetualAccess = true "
+        Map<String, Object> subscriptionParams = [contextOrg:result.contextOrg, roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA]]
 
-        Map<String, Object> subscriptionParams = [contextOrg:result.contextOrg, roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA], current:RDStore.SUBSCRIPTION_CURRENT]
+        String instanceFilter = "", subFilter = ""
+        if (! params.status) {
+            if (params.isSiteReloaded != "yes") {
+                params.status = RDStore.SUBSCRIPTION_CURRENT.id
+                result.defaultSet = true
+            }
+            else {
+                params.status = 'FETCH_ALL'
+            }
+        }
+        boolean withPerpetualAccess = params.long('hasPerpetualAccess') == RDStore.YN_YES.id
+        if(params.status != 'FETCH_ALL') {
+            subFilter += "s2.status.id in (:status)"
+            subscriptionParams.status = Params.getLongList(params, 'status')
+            if(withPerpetualAccess) {
+                if(RDStore.SUBSCRIPTION_CURRENT.id in subscriptionParams.status) {
+                    subscriptionParams.expired = RDStore.SUBSCRIPTION_EXPIRED.id
+                    subFilter += " or (s2.status.id = :expired and s2.hasPerpetualAccess = true) "
+                }
+                else subFilter += " and s2.hasPerpetualAccess = true "
+            }
+            else if(params.long('hasPerpetualAccess') == RDStore.YN_NO.id) {
+                subFilter += " and s2.hasPerpetualAccess = false "
+            }
+        }
+
+
         if(result.contextOrg.isCustomerType_Consortium())
             instanceFilter += " and s2.instanceOf = null "
-        String subscriptionQuery = 'select s2 from OrgRole oo join oo.sub s2 where oo.org = :contextOrg and oo.roleType in (:roleTypes) and (s2.status = :current'+perpetualFilter+')'+instanceFilter
+        String subscriptionQuery = 'select s2 from OrgRole oo join oo.sub s2 where oo.org = :contextOrg and oo.roleType in (:roleTypes) and ('+subFilter+')'+instanceFilter
 
         result.subscriptionMap = [:]
         result.platformInstanceList = []
 
         //if (subscriptionQuery) {
-            String qry3 = "select distinct p, s, ${params.sort ?: 'p.normname'} from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg " +
-                    "join pkg.nominalPlatform p left join p.org o " +
-                    "where s in (${subscriptionQuery}) and p.gokbId in (:wekbIds) and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
+        String qry3 = "select distinct p, s, ${params.sort ?: 'p.name'} from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg " +
+                "join pkg.nominalPlatform p left join p.org o " +
+                "where s in (${subscriptionQuery}) and p.gokbId in (:wekbIds) and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
 
-            Map qryParams3 = [
-                    pkgDeleted     : RDStore.PACKAGE_STATUS_DELETED
-            ]
-            qryParams3.putAll(subscriptionParams)
+        Map qryParams3 = [
+                pkgDeleted     : RDStore.PACKAGE_STATUS_DELETED
+        ]
+        qryParams3.putAll(subscriptionParams)
 
-            Map<String, Object> queryParams = [componentType: "Platform"]
+        Map<String, Object> queryParams = [componentType: "Platform"]
 
-            if (params.q?.length() > 0) {
-                result.filterSet = true
-                queryParams.q = params.q
-                qry3 += "and ("
-                qry3 += "   genfunc_filter_matcher(o.name, :query) = true"
-                qry3 += "   or genfunc_filter_matcher(o.sortname, :query) = true"
-                qry3 += ")"
-                qryParams3.put('query', "${params.q}")
+        if (params.q?.length() > 0) {
+            result.filterSet = true
+            queryParams.q = params.q
+            qry3 += "and ("
+            qry3 += "   genfunc_filter_matcher(o.name, :query) = true"
+            qry3 += "   or genfunc_filter_matcher(o.sortname, :query) = true"
+            qry3 += ")"
+            qryParams3.put('query', "${params.q}")
+        }
+
+        if(params.provider) {
+            result.filterSet = true
+            queryParams.provider = params.provider
+        }
+
+        if(Params.getLongList(params, 'platStatus')) {
+            result.filterSet = true
+            queryParams.status = RefdataValue.findAllByIdInList(Params.getLongList(params, 'platStatus')).value
+        }
+        else if(!params.filterSet) {
+            result.filterSet = true
+            queryParams.status = "Current"
+            params.platStatus = RDStore.PLATFORM_STATUS_CURRENT.id
+        }
+
+        if(params.ipSupport) {
+            result.filterSet = true
+            queryParams.ipAuthentication = Params.getRefdataList(params, 'ipSupport').collect{ it.value }
+        }
+        if(params.shibbolethSupport) {
+            result.filterSet = true
+            queryParams.shibbolethAuthentication = Params.getRefdataList(params, 'shibbolethSupport').collect{ (it == RDStore.GENERIC_NULL_VALUE) ? 'null' : it.value }
+        }
+        if(params.counterCertified) {
+            result.filterSet = true
+            queryParams.counterCertified = Params.getRefdataList(params, 'counterCertified').collect{ (it == RDStore.GENERIC_NULL_VALUE) ? 'null' : it.value }
+        }
+        if(params.counterSushiSupport) {
+            result.filterSet = true
+            queryParams.counterSushiSupport = params.list('counterSushiSupport') //ask David about proper convention
+        }
+        List wekbIds = []
+        Map<String, Object> wekbParams = params.clone()
+        if(!wekbParams.containsKey('sort'))
+            wekbParams.sort = 'name'
+        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
+        if(queryCuratoryGroups.code == 404) {
+            result.error = message(code: 'wekb.error.'+queryCuratoryGroups.error) as String
+        }
+        else {
+            if (queryCuratoryGroups) {
+                List recordsCuratoryGroups = queryCuratoryGroups.result
+                result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
+            }
+            wekbIds.addAll(gokbService.doQuery([max:10000, offset:0], wekbParams, queryParams).records.collect { Map hit -> hit.uuid })
+        }
+        result.curatoryGroupTypes = [
+                [value: 'Provider', name: message(code: 'package.curatoryGroup.provider')],
+                [value: 'Vendor', name: message(code: 'package.curatoryGroup.vendor')],
+                [value: 'Other', name: message(code: 'package.curatoryGroup.other')]
+        ]
+        qryParams3.wekbIds = wekbIds
+
+        qry3 += " group by p, s"
+        if(params.sort)
+            qry3 += " order by ${params.sort} ${params.order}"
+        else qry3 += " order by p.name, s.name, s.startDate desc"
+
+        List platformSubscriptionList = []
+        if(wekbIds)
+            platformSubscriptionList.addAll(Platform.executeQuery(qry3, qryParams3))
+
+        log.debug("found ${platformSubscriptionList.size()} in list ..")
+        /*, [max:result.max, offset:result.offset])) */
+
+        platformSubscriptionList.each { entry ->
+            Platform pl = (Platform) entry[0]
+            Subscription s = (Subscription) entry[1]
+
+            String key = 'platform_' + pl.id
+
+            if (! result.subscriptionMap.containsKey(key)) {
+                result.subscriptionMap.put(key, [])
+                result.platformInstanceList.add(pl)
             }
 
-            if(params.provider) {
-                result.filterSet = true
-                queryParams.provider = params.provider
+            if (s.status.value == RDStore.SUBSCRIPTION_CURRENT.value || (withPerpetualAccess && s.hasPerpetualAccess && result.subscriptionMap.get(key).size() < 5)) {
+                result.subscriptionMap.get(key).add(s)
             }
-
-            if(params.status) {
-                result.filterSet = true
-                queryParams.status = RefdataValue.get(params.status).value
-            }
-            else if(!params.filterSet) {
-                result.filterSet = true
-                queryParams.status = "Current"
-                params.status = RDStore.PLATFORM_STATUS_CURRENT.id
-            }
-
-            if(params.ipSupport) {
-                result.filterSet = true
-                queryParams.ipAuthentication = Params.getRefdataList(params, 'ipSupport').collect{ it.value }
-            }
-            if(params.shibbolethSupport) {
-                result.filterSet = true
-                queryParams.shibbolethAuthentication = Params.getRefdataList(params, 'shibbolethSupport').collect{ (it == RDStore.GENERIC_NULL_VALUE) ? 'null' : it.value }
-            }
-            if(params.counterCertified) {
-                result.filterSet = true
-                queryParams.counterCertified = Params.getRefdataList(params, 'counterCertified').collect{ (it == RDStore.GENERIC_NULL_VALUE) ? 'null' : it.value }
-            }
-
-            List wekbIds = gokbService.doQuery([max:10000, offset:0], params.clone(), queryParams).records.collect { Map hit -> hit.uuid }
-
-            qryParams3.wekbIds = wekbIds
-
-            qry3 += " group by p, s"
-            if(params.sort)
-                qry3 += " order by ${params.sort} ${params.order}"
-            else qry3 += " order by p.normname asc"
-
-            List platformSubscriptionList = []
-            if(wekbIds)
-                platformSubscriptionList.addAll(Platform.executeQuery(qry3, qryParams3))
-
-            log.debug("found ${platformSubscriptionList.size()} in list ..")
-            /*, [max:result.max, offset:result.offset])) */
-
-            platformSubscriptionList.each { entry ->
-                Platform pl = (Platform) entry[0]
-                Subscription s = (Subscription) entry[1]
-
-                String key = 'platform_' + pl.id
-
-                if (! result.subscriptionMap.containsKey(key)) {
-                    result.subscriptionMap.put(key, [])
-                    result.platformInstanceList.add(pl)
-                }
-
-                if (s.status.value == RDStore.SUBSCRIPTION_CURRENT.value || (withPerpetualAccess && s.hasPerpetualAccess)) {
-                    result.subscriptionMap.get(key).add(s)
-                }
-            }
+        }
         //}
 
         if (params.isMyX) {
