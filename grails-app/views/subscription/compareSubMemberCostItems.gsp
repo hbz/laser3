@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.CustomerTypeService; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.storage.RDConstants; de.laser.utils.DateUtils; de.laser.CustomerTypeService; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
 <laser:htmlStart message="subscription.details.compareSubMemberCostItems.label"/>
 
 <laser:serviceInjection/>
@@ -129,8 +129,7 @@
     <g:set var="oldCostItemAfterTax" value="${0.0}"/>
 
     <g:set var="costItemElements"
-           value="${RefdataValue.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org', [org: institution])}"/>
-
+           value="${costItemsByCostItemElement.collect {RefdataValue.findByValueAndOwner(it.key, RefdataCategory.findByDesc(RDConstants.COST_ITEM_ELEMENT))}}"/>
 
 
 

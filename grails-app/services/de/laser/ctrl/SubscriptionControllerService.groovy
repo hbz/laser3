@@ -1314,6 +1314,11 @@ class SubscriptionControllerService {
 
         result.showBulkCostItems = params.showBulkCostItems ? params.showBulkCostItems : null
 
+        String query = 'from CostItem ct where ct.costItemStatus != :status and ct.sub in (select sub from Subscription sub where sub.instanceOf = :parentSub) and ct.costItemElement is not null'
+
+        result.costItemsByCostItemElement = CostItem.executeQuery(query, [status: RDStore.COST_ITEM_DELETED, parentSub: result.subscription]).groupBy { it.costItemElement }
+
+
         if (params.processBulkCostItems) {
             List<Long> selectedSubs = []
             params.list("selectedSubs").each { id ->
