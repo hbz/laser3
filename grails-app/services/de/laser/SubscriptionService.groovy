@@ -3240,7 +3240,8 @@ join sub.orgRelations or_sub where
 
     Map selectSubMembersWithImport(InputStream stream) {
 
-        Integer count = 0
+        Integer processCount = 0
+        Integer processRow = 0
 
         List orgList = []
 
@@ -3278,6 +3279,7 @@ join sub.orgRelations or_sub where
             }
         }
         rows.eachWithIndex { row, int i ->
+            processRow++
             log.debug("now processing rows ${i}")
             ArrayList<String> cols = row.split('\t', -1)
             if(cols.size() == titleRow.size()) {
@@ -3304,7 +3306,7 @@ join sub.orgRelations or_sub where
                 }
 
                 if (match) {
-                        count++
+                    processCount++
                         Map orgMap = [orgId: match.id]
                         colMap.each { String colName, int colNo ->
                             if (colNo > -1 && cols[colNo]) {
@@ -3320,14 +3322,14 @@ join sub.orgRelations or_sub where
                     orgList << orgMap
 
                 } else {
-                    wrongOrgs << row
+                    wrongOrgs << i+2
                 }
             }else{
-
+                truncatedRows << i+2
             }
         }
 
-        return [orgList: orgList, processCount: count, wrongOrg: wrongOrgs, truncatedRows: truncatedRows.join(', ')]
+        return [orgList: orgList, processCount: processCount, processRow: processRow, wrongOrgs: wrongOrgs.join(', '), truncatedRows: truncatedRows.join(', ')]
     }
 
 }
