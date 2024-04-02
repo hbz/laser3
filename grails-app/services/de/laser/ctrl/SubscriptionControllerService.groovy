@@ -1604,6 +1604,10 @@ class SubscriptionControllerService {
                                             subscriptionService.setOrgLicRole(memberSub, lic, false)
                                         }
 
+                                        if (cm.isCustomerType_Inst_Pro()) {
+                                            PendingChange.construct([target: memberSub, oid: "${memberSub.getClass().getName()}:${memberSub.id}", msgToken: "pendingChange.message_SU_NEW_03", status: RDStore.PENDING_CHANGE_PENDING, owner: cm])
+                                        }
+
                                         if (c == 0) {
                                             params.list('propRow').each { String rowKey ->
                                                 if (params.containsKey('propValue' + rowKey) && params["propValue${rowKey}"] != "") {
