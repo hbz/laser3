@@ -1430,10 +1430,31 @@ class SubscriptionControllerService {
 
                 if (result.editable) {
                     List<Org> members = []
-                    //License licenseCopy
-                    params.list('selectedOrgs').each { it ->
-                        members << Org.findById(Long.valueOf(it))
+                    Map startEndDates = [:]
+
+                    if(params.selectSubMembersWithImport){
+
+                        MultipartFile importFile = params.selectSubMembersWithImport
+                        InputStream stream = importFile.getInputStream()
+
+                        result.selectSubMembersWithImport = subscriptionService.selectSubMembersWithImport(stream)
+
+                        if(result.selectSubMembersWithImport.orgList){
+                            result.selectSubMembersWithImport.orgList.each { it ->
+                                members << Org.findById(Long.valueOf(it.orgId))
+                                startEndDates.put("${it.orgId}", [startDate: it.startDate, endDate: it.endDate])
+                            }
+                        }
+
+
+                    }else {
+                        params.list('selectedOrgs').each { it ->
+                            members << Org.findById(Long.valueOf(it))
+                        }
                     }
+
+
+
                     /*
                     List<Subscription> synShareTargetList = []
                     List<License> licensesToProcess = []
@@ -1511,6 +1532,14 @@ class SubscriptionControllerService {
                                 if (existSubForOrg == 0) {
                                     Date startDate = params.valid_from ? DateUtils.parseDateGeneric(params.valid_from) : null
                                     Date endDate = params.valid_to ? DateUtils.parseDateGeneric(params.valid_to) : null
+
+                                    if(startEndDates){
+                                        Map startAndEndDate = startEndDates.get("${cm.id}")
+                                        if(startAndEndDate) {
+                                            startDate = startAndEndDate.startDate ?: startDate
+                                            endDate = startAndEndDate.endDate ?: endDate
+                                        }
+                                    }
                                     Subscription memberSub = new Subscription(
                                             type: currParent.type ?: null,
                                             kind: currParent.kind ?: null,

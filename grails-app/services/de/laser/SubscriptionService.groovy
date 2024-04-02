@@ -3238,5 +3238,96 @@ join sub.orgRelations or_sub where
         return SubscriptionProperty.executeQuery('select count(*) from SubscriptionProperty as sp where sp.owner.instanceOf = :sub AND (sp.type.tenant = :contextOrg AND sp.tenant = :contextOrg)', [contextOrg: contextOrg, sub: subscription])[0]
     }
 
+    Map selectSubMembersWithImport(InputStream stream) {
+
+        Integer count = 0
+
+        List orgList = []
+
+        //now, assemble the identifiers available to highlight
+        Map<String, IdentifierNamespace> namespaces = [gnd  : IdentifierNamespace.findByNsAndNsType('gnd_org_nr', Org.class.name),
+                                                       isil: IdentifierNamespace.findByNsAndNsType('ISIL', Org.class.name),
+                                                       ror: IdentifierNamespace.findByNsAndNsType('ROR ID',Org.class.name),
+                                                       wib : IdentifierNamespace.findByNsAndNsType('wibid', Org.class.name)]
+
+        ArrayList<String> rows = stream.text.split('\n')
+        Map<String, Integer> colMap = [gndCol: -1, isilCol: -1, rorCol: -1, wibCol: -1,
+                                       startDateCol: -1, endDateCol: -1, ]
+
+        //read off first line of KBART file
+        List titleRow = rows.remove(0).split('\t'), wrongOrgs = [], truncatedRows = []
+        titleRow.eachWithIndex { headerCol, int c ->
+            switch (headerCol.toLowerCase().trim()) {
+                case "gnd-nr": colMap.gndCol = c
+                    break
+                case "isil": colMap.isilCol = c
+                    break
+                case "ror-id": colMap.rorCol = c
+                    break
+                case "wib-id": colMap.wibCol = c
+                    break
+                case "start date":
+                case "laufzeit-beginn":
+                case "startdatum":
+                case "runtime (start)": colMap.startDateCol = c
+                    break
+                case "end date":
+                case "laufzeit-ende":
+                case "enddatum":
+                case "runtime (end)": colMap.endDateCol = c
+            }
+        }
+        rows.eachWithIndex { row, int i ->
+            log.debug("now processing rows ${i}")
+            ArrayList<String> cols = row.split('\t', -1)
+            if(cols.size() == titleRow.size()) {
+                Org match = null
+                if (colMap.wibCol >= 0 && cols[colMap.wibCol] != null && !cols[colMap.wibCol].trim().isEmpty()) {
+                    List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.status != :removed', [value: cols[colMap.wibCol].trim(), ns: namespaces.wib, removed: RDStore.TIPP_STATUS_REMOVED])
+                    if (matchList.size() == 1)
+                        match = matchList[0] as Org
+                }
+                if (!match && colMap.isilCol >= 0 && cols[colMap.isilCol] != null && !cols[colMap.isilCol].trim().isEmpty()) {
+                    List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.status != :removed', [value: cols[colMap.isilCol].trim(), ns: namespaces.isil, removed: RDStore.TIPP_STATUS_REMOVED])
+                    if (matchList.size() == 1)
+                        match = matchList[0] as Org
+                }
+                if (!match && colMap.gndCol >= 0 && cols[colMap.gndCol] != null && !cols[colMap.gndCol].trim().isEmpty()) {
+                    List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.status != :removed', [value: cols[colMap.gndCol].trim(), ns: namespaces.gnd, removed: RDStore.TIPP_STATUS_REMOVED])
+                    if (matchList.size() == 1)
+                        match = matchList[0] as Org
+                }
+                if (!match && colMap.rorCol >= 0 && cols[colMap.rorCol] != null && !cols[colMap.rorCol].trim().isEmpty()) {
+                    List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.status != :removed', [value: cols[colMap.rorCol].trim(), ns: namespaces.ror, removed: RDStore.TIPP_STATUS_REMOVED])
+                    if (matchList.size() == 1)
+                        match = matchList[0] as Org
+                }
+
+                if (match) {
+                        count++
+                        Map orgMap = [orgId: match.id]
+                        colMap.each { String colName, int colNo ->
+                            if (colNo > -1 && cols[colNo]) {
+                                String cellEntry = cols[colNo].trim()
+                                    switch (colName) {
+                                        case "startDateCol": orgMap.startDate = cellEntry ? DateUtils.parseDateGeneric(cellEntry) : null
+                                            break
+                                        case "endDateCol": orgMap.endDate = cellEntry ? DateUtils.parseDateGeneric(cellEntry) : null
+                                            break
+                                }
+                            }
+                        }
+                    orgList << orgMap
+
+                } else {
+                    wrongOrgs << row
+                }
+            }else{
+
+            }
+        }
+
+        return [orgList: orgList, processCount: count, wrongOrg: wrongOrgs, truncatedRows: truncatedRows.join(', ')]
+    }
 
 }

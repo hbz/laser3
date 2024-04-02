@@ -36,7 +36,7 @@
         </g:form>
     </ui:filter>
 
-    <g:form action="processAddMembers" params="${[id: params.id]}" controller="subscription" method="post" class="ui form addMembers">
+    <g:form action="processAddMembers" params="${[id: params.id]}" controller="subscription" method="post" enctype="multipart/form-data" class="ui form addMembers">
 
         <laser:render template="/templates/filter/orgFilterTable"
                   model="[propList         : propList,
@@ -349,6 +349,25 @@
         </g:if>
 
         <br />
+
+        <div class="ui divider"></div>
+
+        <ui:msg header="${message(code: 'subscription.details.addMembers.option.selectMembersWithFile.info')}" noClose="true">
+
+            ${message(code: 'subscription.details.addMembers.option.selectMembersWithFile.text')}
+
+            <div class="ui action input">
+                <input type="text" readonly="readonly"
+                       placeholder="${message(code: 'template.addDocument.selectFile')}">
+                <input type="file" name="selectSubMembersWithImport" accept="text/tab-separated-values"
+                       style="display: none;">
+                <div class="ui icon button">
+                    <i class="attach icon"></i>
+                </div>
+            </div>
+        </ui:msg>
+
+
         <g:if test="${members}">
             <div class="field la-field-right-aligned">
                 <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label')}"/>
@@ -367,37 +386,46 @@
 </g:if>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    $.fn.form.settings.rules.memberAssignal = function() {
-        let isUnique = false;
-        if($("[name='selectedOrgs']:checked").length > 1) {
-            if($(".memberProperty").length > 0) {
-                $(".memberProperty").each( function(i) {
-                    isUnique = $(this).val().length === 0;
-                    if(!isUnique) {
-                        return;
-                    }
-                });
-                if(!isUnique)
-                    return false;
-            }
-            if($(".memberPropertyDropdown").length) {
-                $(".memberPropertyDropdown").each( function(i) {
-                    isUnique = $(this).dropdown('get value').length === 0;
-                    if(!isUnique) {
-                        return;
-                    }
-                });
-                if(!isUnique)
-                    return false;
-            }
-            return $('#customerIdentifier').val().length === 0 && $('#requestorId').val().length === 0
-        }
-        else return true;
-    }
-    $('.addMembers').form({
-        on: 'blur',
-        inline: true,
-        fields: {
+    $('.action .icon.button').click(function () {
+         $(this).parent('.action').find('input:file').click();
+     });
+
+     $('input:file', '.ui.action.input').on('change', function (e) {
+         var name = e.target.files[0].name;
+         $('input:text', $(e.target).parent()).val(name);
+     });
+
+ $.fn.form.settings.rules.memberAssignal = function() {
+     let isUnique = false;
+     if($("[name='selectedOrgs']:checked").length > 1) {
+         if($(".memberProperty").length > 0) {
+             $(".memberProperty").each( function(i) {
+                 isUnique = $(this).val().length === 0;
+                 if(!isUnique) {
+                     return;
+                 }
+             });
+             if(!isUnique)
+                 return false;
+         }
+         if($(".memberPropertyDropdown").length) {
+             $(".memberPropertyDropdown").each( function(i) {
+                 isUnique = $(this).dropdown('get value').length === 0;
+                 if(!isUnique) {
+                     return;
+                 }
+             });
+             if(!isUnique)
+                 return false;
+         }
+         return $('#customerIdentifier').val().length === 0 && $('#requestorId').val().length === 0
+     }
+     else return true;
+ }
+ $('.addMembers').form({
+     on: 'blur',
+     inline: true,
+     fields: {
             <g:each in="${memberProperties}" var="prop" status="i">
                 propValue${i}: {
                     identifier: 'propValue${i}',
