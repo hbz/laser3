@@ -32,7 +32,7 @@
 <br />
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">
-    <g:if test="${surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]}">
+    <g:if test="${surveyConfig.isTypeSubscriptionOrIssueEntitlement()}">
         <i class="icon clipboard outline la-list-icon"></i>
         <g:link controller="subscription" action="show" id="${surveyConfig.subscription.id}">
             ${surveyConfig.getConfigNameShort()}
@@ -51,7 +51,7 @@
         <div class="sixteen wide stretched column">
             <div class="ui top attached stackable tabular la-tab-with-js menu">
 
-                <g:if test="${surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]}">
+                <g:if test="${surveyConfig.isTypeSubscriptionOrIssueEntitlement()}">
                     <g:link class="item ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"
                             controller="survey" action="surveyParticipants"
                             id="${surveyConfig.surveyInfo.id}"

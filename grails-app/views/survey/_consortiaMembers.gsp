@@ -22,8 +22,8 @@
     </h3>
 
     <br/><br/>
-    <g:form action="addSurveyParticipants" controller="survey" method="post" class="ui form"
-            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
+    <g:form action="actionSurveyParticipants" controller="survey" method="post" class="ui form"
+            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab, actionSurveyParticipants: addSurveyParticipants]">
 
         <laser:render template="/templates/filter/orgFilterTable"
                       model="[orgList          : consortiaMembers,

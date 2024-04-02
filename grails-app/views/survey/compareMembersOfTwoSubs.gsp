@@ -272,8 +272,8 @@
             });
         </laser:script>
 
-        <g:form action="setSurveyCompleted" method="post" class="ui form"
-                params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
+        <g:form action="setStatus" method="post" class="ui form"
+                params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, newStatus: 'setSurveyCompleted']">
 
             <div class="ui right floated compact segment">
                 <div class="ui checkbox">
