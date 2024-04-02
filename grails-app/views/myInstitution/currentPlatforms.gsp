@@ -20,7 +20,7 @@
             <g:sortableColumn property="p.normname" title="${message(code: 'default.name.label')}" />
             <th>${message(code:'default.url.label')}</th>
             <th>${message(code:'default.provider.label')}</th>
-            <th>${message(code:'accessPoint.plural')}</th>
+            <%--<th>${message(code:'accessPoint.plural')}</th>--%>
             <th>${message(code:'myinst.currentPlatforms.assignedSubscriptions')}</th>
             <th class="center aligned"><ui:markerIcon type="WEKB_CHANGES" /></th>
             <th>${message(code:'org.isWekbCurated.label')}</th>
@@ -48,18 +48,23 @@
                         <g:link controller="organisation" action="show" id="${platformInstance.org.id}">${platformInstance.org.getDesignation()}</g:link>
                     </g:if>
                 </td>
-                <td>
+                <%--<td>
                     <g:each in="${platformInstance.getContextOrgAccessPoints(contextOrg)}" var="oap" >
                         <g:link controller="accessPoint" action="edit_${oap.accessMethod.value.toLowerCase()}" id="${oap.id}">${oap.name} (${oap.accessMethod.getI10n('value')})</g:link> <br />
                     </g:each>
-                </td>
+                </td>--%>
                 <td>
                     <g:if test="${subscriptionMap.get('platform_' + platformInstance.id)}">
                         <ul class="la-simpleList">
                             <g:each in="${subscriptionMap.get('platform_' + platformInstance.id)}" var="sub">
                                 <li>
-                                    <g:link controller="subscription" action="show" id="${sub.id}">${sub}<br /></g:link>
-
+                                    <%
+                                        String period = sub.startDate ? g.formatDate(date: sub.startDate, format: message(code: 'default.date.format.notime'))  : ''
+                                        period = sub.endDate ? period + ' - ' + g.formatDate(date: sub.endDate, format: message(code: 'default.date.format.notime'))  : ''
+                                        period = period ? '('+period+')' : ''
+                                    %>
+                                    <g:link controller="subscription" action="show" id="${sub.id}">${sub} ${period}</g:link>
+                                    <%--
                                     <g:if test="${sub.packages}">
                                         <g:each in="${sub.deduplicatedAccessPointsForOrgAndPlatform(contextOrg, platformInstance)}" var="orgap">
                                             <div class="la-flexbox">
@@ -71,6 +76,7 @@
                                             </div>
                                         </g:each>
                                     </g:if>
+                                    --%>
                                 </li>
                             </g:each>
                         </ul>
