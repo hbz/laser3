@@ -12,7 +12,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "djebeniani (generated)", id: "1711553228628-2") {
+    changeSet(author: "djebeniani (hand-coded)", id: "1711553228628-2") {
         grailsChange {
             change {
                 sql.execute("update survey_config_properties set surconpro_property_order = 0")
@@ -21,7 +21,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "djebeniani (modified)", id: "1711553228628-3") {
+    changeSet(author: "djebeniani (hand-coded)", id: "1711553228628-3") {
         grailsChange {
             change {
                 SurveyConfig.withTransaction {

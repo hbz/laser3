@@ -497,7 +497,7 @@ class SurveyConfig {
     }
 
     /**
-     * Gets a sorted list of properties. Sorting is done by the propertyOrder and the {@link #surveyProperty} ({@link PropertyDefinition}) name
+     * Gets a sorted list of properties. Sorting is done by the {@link SurveyConfigProperties#propertyOrder}
      * @return the list of {@link PropertyDefinition} or an empty list, if none are available
      */
     List<PropertyDefinition> getSortedProperties() {
@@ -506,7 +506,7 @@ class SurveyConfig {
     }
 
    /**
-     * Gets a sorted list of survey config properties. Sorting is done by the propertyOrder and the {@link #surveyProperty} ({@link PropertyDefinition}) name
+     * Gets a sorted list of survey config properties. Sorting is done by the {@link SurveyConfigProperties#propertyOrder}
      * @return the list of {@link SurveyConfigProperties} or an empty list, if none are available
      */
     List<SurveyConfigProperties> getSortedSurveyConfigProperties() {
