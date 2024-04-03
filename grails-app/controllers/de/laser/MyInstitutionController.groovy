@@ -2299,7 +2299,7 @@ class MyInstitutionController  {
         result.surveyResults = []
         result.minimalInput = false
 
-        result.surveyConfig.getSortedSurveyProperties().each{ PropertyDefinition propertyDefinition ->
+        result.surveyConfig.getSortedProperties().each{ PropertyDefinition propertyDefinition ->
             SurveyResult surre = SurveyResult.findByParticipantAndSurveyConfigAndType(result.institution, result.surveyConfig, propertyDefinition)
             if(surre.getValue() != null)
                 result.minimalInput = true

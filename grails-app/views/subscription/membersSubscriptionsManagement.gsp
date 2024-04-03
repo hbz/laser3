@@ -24,6 +24,16 @@
 
 <ui:messages data="${flash}"/>
 
+<ui:filter>
+    <g:form action="membersSubscriptionsManagement" controller="subscription" params="${[id:params.id, tab: params.tab]}" method="get" class="ui form">
+        <laser:render template="/templates/filter/orgFilter"
+                      model="[
+                              tmplConfigShow: [['name', 'identifier', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['discoverySystemsFrontend', 'discoverySystemsIndex'], ['subRunTimeMultiYear']],
+                              tmplConfigFormFilter: true
+                      ]"/>
+    </g:form>
+</ui:filter>
+
 <g:if test="${params.tab == 'linkLicense'}">
     <laser:render template="/templates/management/linkLicense"/>
 </g:if>

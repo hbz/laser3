@@ -688,6 +688,15 @@ class SubscriptionController {
             }
         }
         else {
+
+            if(ctrlResult.result.selectSubMembersWithImport){
+                if(ctrlResult.result.selectSubMembersWithImport.truncatedRows){
+                    flash.message = message(code: 'subscription.details.addMembers.option.selectMembersWithFile.selectProcess.truncatedRows', [ctrlResult.result.selectSubMembersWithImport.processCount, ctrlResult.result.selectSubMembersWithImport.processRow, ctrlResult.result.selectSubMembersWithImport.wrongOrgs, ctrlResult.result.selectSubMembersWithImport.truncatedRows])
+                }else {
+                    flash.message = message(code: 'subscription.details.addMembers.option.selectMembersWithFile.selectProcess', [ctrlResult.result.selectSubMembersWithImport.processCount, ctrlResult.result.selectSubMembersWithImport.processRow, ctrlResult.result.selectSubMembersWithImport.wrongOrgs])
+                }
+            }
+
             redirect controller: 'subscription', action: 'members', params: [id: ctrlResult.result.subscription.id]
             return
         }

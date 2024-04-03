@@ -184,7 +184,7 @@
                 </g:if>
 
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
-                    <g:each in="${surveyConfig.getSortedSurveyProperties()}" var="surveyProperty">
+                    <g:each in="${surveyConfig.getSortedProperties()}" var="surveyProperty">
                         <th>${surveyProperty.getI10n('name')}
                             <g:if test="${surveyProperty.getI10n('expl')}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
@@ -247,7 +247,7 @@
             <g:set var="participant"
                    value="${surveyOrg.org}"/>
             <g:set var="surResults" value="[]"/>
-            <g:each in="${surveyConfig.getSortedSurveyProperties()}" var="surveyProperty">
+            <g:each in="${surveyConfig.getSortedProperties()}" var="surveyProperty">
                 <% surResults << SurveyResult.findByParticipantAndSurveyConfigAndType(participant, surveyConfig, surveyProperty) %>
             </g:each>
             <tr>
@@ -725,7 +725,7 @@
                 </g:if>
 
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
-                    <g:each in="${surveyConfig.getSortedSurveyProperties()}" var="surveyProperty">
+                    <g:each in="${surveyConfig.getSortedProperties()}" var="surveyProperty">
                         <th>${surveyProperty.getI10n('name')}
                             <g:if test="${surveyProperty.getI10n('expl')}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
@@ -790,7 +790,7 @@
                    value="${surveyOrg.org}"/>
 
             <g:set var="surResults" value="[]"/>
-            <g:each in="${surveyConfig.getSortedSurveyProperties()}" var="surveyProperty">
+            <g:each in="${surveyConfig.getSortedProperties()}" var="surveyProperty">
                 <% surResults << SurveyResult.findByParticipantAndSurveyConfigAndType(participant, surveyConfig, surveyProperty) %>
             </g:each>
 

@@ -1314,6 +1314,11 @@ class SubscriptionControllerService {
 
         result.showBulkCostItems = params.showBulkCostItems ? params.showBulkCostItems : null
 
+        String query = 'from CostItem ct where ct.costItemStatus != :status and ct.sub in (select sub from Subscription sub where sub.instanceOf = :parentSub) and ct.costItemElement is not null'
+
+        result.costItemsByCostItemElement = CostItem.executeQuery(query, [status: RDStore.COST_ITEM_DELETED, parentSub: result.subscription]).groupBy { it.costItemElement }
+
+
         if (params.processBulkCostItems) {
             List<Long> selectedSubs = []
             params.list("selectedSubs").each { id ->
@@ -1430,10 +1435,31 @@ class SubscriptionControllerService {
 
                 if (result.editable) {
                     List<Org> members = []
-                    //License licenseCopy
-                    params.list('selectedOrgs').each { it ->
-                        members << Org.findById(Long.valueOf(it))
+                    Map startEndDates = [:]
+
+                    if(params.selectSubMembersWithImport){
+
+                        MultipartFile importFile = params.selectSubMembersWithImport
+                        InputStream stream = importFile.getInputStream()
+
+                        result.selectSubMembersWithImport = subscriptionService.selectSubMembersWithImport(stream)
+
+                        if(result.selectSubMembersWithImport.orgList){
+                            result.selectSubMembersWithImport.orgList.each { it ->
+                                members << Org.findById(Long.valueOf(it.orgId))
+                                startEndDates.put("${it.orgId}", [startDate: it.startDate, endDate: it.endDate])
+                            }
+                        }
+
+
+                    }else {
+                        params.list('selectedOrgs').each { it ->
+                            members << Org.findById(Long.valueOf(it))
+                        }
                     }
+
+
+
                     /*
                     List<Subscription> synShareTargetList = []
                     List<License> licensesToProcess = []
@@ -1511,6 +1537,14 @@ class SubscriptionControllerService {
                                 if (existSubForOrg == 0) {
                                     Date startDate = params.valid_from ? DateUtils.parseDateGeneric(params.valid_from) : null
                                     Date endDate = params.valid_to ? DateUtils.parseDateGeneric(params.valid_to) : null
+
+                                    if(startEndDates){
+                                        Map startAndEndDate = startEndDates.get("${cm.id}")
+                                        if(startAndEndDate) {
+                                            startDate = startAndEndDate.startDate ?: startDate
+                                            endDate = startAndEndDate.endDate ?: endDate
+                                        }
+                                    }
                                     Subscription memberSub = new Subscription(
                                             type: currParent.type ?: null,
                                             kind: currParent.kind ?: null,
@@ -1573,6 +1607,10 @@ class SubscriptionControllerService {
                                         memberSub = memberSub.refresh()
                                         licensesToProcess.each { License lic ->
                                             subscriptionService.setOrgLicRole(memberSub, lic, false)
+                                        }
+
+                                        if (cm.isCustomerType_Inst_Pro()) {
+                                            PendingChange.construct([target: memberSub, oid: "${memberSub.getClass().getName()}:${memberSub.id}", msgToken: "pendingChange.message_SU_NEW_03", status: RDStore.PENDING_CHANGE_PENDING, owner: cm])
                                         }
 
                                         if (c == 0) {

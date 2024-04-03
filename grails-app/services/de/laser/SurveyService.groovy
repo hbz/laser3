@@ -225,7 +225,7 @@ class SurveyService {
                     }
                 }
 
-                surveyConfig.surveyProperties.sort { it.surveyProperty.getI10n('name') }.each {
+                surveyConfig.surveyProperties.sort { it.propertyOrder }.each {
                     titles.addAll([messageSource.getMessage('surveyProperty.label', null, locale),
                                    messageSource.getMessage('default.type.label', null, locale),
                                    messageSource.getMessage('surveyResult.result', null, locale),
@@ -964,6 +964,13 @@ class SurveyService {
 
         if (!SurveyConfigProperties.findAllBySurveyPropertyAndSurveyConfig(surveyProperty, surveyConfig) && surveyProperty && surveyConfig) {
             SurveyConfigProperties propertytoSub = new SurveyConfigProperties(surveyConfig: surveyConfig, surveyProperty: surveyProperty)
+
+            if(surveyConfig.subSurveyUseForTransfer && surveyProperty == PropertyStore.SURVEY_PROPERTY_PARTICIPATION){
+                propertytoSub.propertyOrder = 1
+            }else {
+                propertytoSub.propertyOrder = surveyConfig.surveyProperties.size() + 1
+            }
+
             if(propertytoSub.save()){
                 return true
             }else {
@@ -1121,7 +1128,8 @@ class SurveyService {
             oldSurveyConfig.surveyProperties.each { SurveyConfigProperties surveyConfigProperty ->
                 new SurveyConfigProperties(
                         surveyProperty: surveyConfigProperty.surveyProperty,
-                        surveyConfig: newSurveyConfig).save()
+                        surveyConfig: newSurveyConfig,
+                        propertyOrder: surveyConfigProperty.propertyOrder).save()
             }
         }
     }

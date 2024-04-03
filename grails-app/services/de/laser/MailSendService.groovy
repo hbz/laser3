@@ -508,7 +508,7 @@ class MailSendService {
 
                             List surveyResults = []
 
-                            surveyInfo.surveyConfigs[0].getSortedSurveyProperties().each { PropertyDefinition propertyDefinition ->
+                            surveyInfo.surveyConfigs[0].getSortedProperties().each { PropertyDefinition propertyDefinition ->
                                 surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(participationFinish, surveyInfo.surveyConfigs[0], propertyDefinition)
                             }
 
@@ -557,7 +557,7 @@ class MailSendService {
         if (surveyInfo.owner) {
             List surveyResults = []
 
-            surveyInfo.surveyConfigs[0].getSortedSurveyProperties().each { PropertyDefinition propertyDefinition ->
+            surveyInfo.surveyConfigs[0].getSortedProperties().each { PropertyDefinition propertyDefinition ->
                 surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(participationFinish, surveyInfo.surveyConfigs[0], propertyDefinition)
             }
 
