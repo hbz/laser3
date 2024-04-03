@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.config.ConfigMapper; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.storage.RDConstants" %>
 <g:if test="${wekbServerUnavailable}">
     <div class="ui icon error message">
         <i class="exclamation icon"></i>
@@ -63,7 +63,7 @@
         <dl>
             <dt><g:message code="platform.stats.counter.registryUUID"/></dt>
             <dd>
-                ${platformInstanceRecord.counterRegistryApiUuid} <ui:linkWithIcon href="${}"/>
+                ${platformInstanceRecord.counterRegistryApiUuid} <ui:linkWithIcon href="${ConfigMapper.getSushiCounterRegistryUrl()}${platformInstanceRecord.counterRegistryApiUuid}"/>
             </dd>
         </dl>
     </g:if>
