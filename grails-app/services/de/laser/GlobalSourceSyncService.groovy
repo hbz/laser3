@@ -777,8 +777,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
         Map<String,TitleInstancePackagePlatform> tippsInLaser = [:]
         //collect existing TIPPs and purge deleted ones
         if(tippUUIDs) {
-            TitleInstancePackagePlatform.findAllByGokbIdInList(tippUUIDs.toList()).each { TitleInstancePackagePlatform tipp ->
-                tippsInLaser.put(tipp.gokbId, tipp)
+            tippUUIDs.collate(5000).each { List<String> subList ->
+                TitleInstancePackagePlatform.findAllByGokbIdInList(subList).each { TitleInstancePackagePlatform tipp ->
+                    tippsInLaser.put(tipp.gokbId, tipp)
+                }
             }
         }
         //create or update platforms
