@@ -1,6 +1,9 @@
 <%@ page import="de.laser.remote.ApiSource; de.laser.storage.RDConstants; de.laser.Platform; de.laser.RefdataValue; de.laser.utils.DateUtils;" %>
 <laser:htmlStart message="platform.details" />
 
+%{-- help sidebar --}%
+<laser:render template="/templates/help/dateCreatedLastUpdated" model="[obj: platformInstance]"/>
+
     <g:set var="entityName" value="${message(code: 'platform.label')}"/>
 
 <ui:modeSwitch controller="platform" action="show" params="${params}"/>

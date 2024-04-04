@@ -659,6 +659,24 @@ class AjaxHtmlController {
         }
     }
 
+    /**
+     * Opens the modal for selection title with kbart upload
+     */
+    @Secured(['ROLE_USER'])
+    def kbartSelectionUpload() {
+        log.debug('ajaxHtmlController.kbartSelectionUpload ' + params)
+        Map<String,Object> result = [subscription:Subscription.get(params.id)]
+        Org contextOrg = contextService.getOrg()
+        result.institution = contextOrg
+        result.tab = params.tab
+
+        if(params.surveyConfigID){
+            result.surveyConfig = SurveyConfig.findById(params.surveyConfigID)
+        }
+
+        render template: '/subscription/KBARTSelectionUploadFormModal', model: result
+    }
+
     // ----- surveyInfos -----
 
     /**

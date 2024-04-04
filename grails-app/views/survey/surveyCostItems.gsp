@@ -49,7 +49,7 @@
 
 <br />
 
-<g:if test="${surveyConfigs}">
+<g:if test="${surveyConfig}">
     <div class="ui grid">
 
         <div class="sixteen wide stretched column">

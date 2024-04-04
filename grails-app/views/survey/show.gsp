@@ -1,6 +1,9 @@
 <%@ page import="de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.survey.SurveyResult" %>
 <laser:htmlStart message="surveyShow.label" serviceInjection="true"/>
 
+%{-- help sidebar --}%
+<laser:render template="/templates/help/dateCreatedLastUpdated" model="[obj: surveyInfo]"/>
+
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
 <ui:controlButtons>
