@@ -3858,7 +3858,15 @@ class SubscriptionControllerService {
         fsr.query = fsr.query.replaceFirst("select o from ", "select o.id from ")
         List<Long> filteredOrgIds = Org.executeQuery(fsr.query, fsr.queryParams, orgParams+[id:parentSub.id])
 
-        Set rows = Subscription.executeQuery("select sub,o from OrgRole oo join oo.sub sub join oo.org o where sub.instanceOf = :parent"+sort,[parent:parentSub])
+        Set parentSubs = []
+        if(params.showMembersSubWithMultiYear){
+            params.subRunTimeMultiYear = true
+            parentSubs = linksGenerationService.getSuccessionChain(parentSub, 'destinationSubscription')
+            sort = " order by o.sortname, sub.referenceYear "
+        }
+        parentSubs << parentSub
+
+        Set rows = Subscription.executeQuery("select sub,o from OrgRole oo join oo.sub sub join oo.org o where sub.instanceOf in (:parents) "+sort,[parents:parentSubs])
         List<Map> filteredSubChilds = []
         rows.each { row ->
             Org subscriber = row[1]
