@@ -25,7 +25,7 @@
     <ui:messages data="${flash}" />
 
     <ui:filter>
-        <g:form action="currentProviders" method="get" class="ui form">
+        <g:form action="currentVendors" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[
                               tmplConfigShow: [['name', 'venStatus', 'subStatus', 'subPerpetualAccess'], ['supportedLibrarySystems', 'electronicBillings', 'invoiceDispatchs'], ['curatoryGroup', 'curatoryGroupType', 'privateContacts']],
