@@ -175,6 +175,7 @@ class RDStore {
     public final static RefdataValue PRS_FUNC_FC_POSTAL_ADDRESS         = getRefdataValue('Functional Contact Postal Address', RDConstants.PERSON_FUNCTION)
     public final static RefdataValue PRS_FUNC_GASCO_CONTACT             = getRefdataValue('GASCO-Contact', RDConstants.PERSON_FUNCTION)
     public final static RefdataValue PRS_FUNC_GENERAL_CONTACT_PRS       = getRefdataValue('General contact person', RDConstants.PERSON_FUNCTION)
+    public final static RefdataValue PRS_FUNC_INVOICING_CONTACT         = getRefdataValue('Invoicing Contact', RDConstants.PERSON_FUNCTION)
     public final static RefdataValue PRS_FUNC_RESPONSIBLE_ADMIN         = getRefdataValue('Responsible Admin', RDConstants.PERSON_FUNCTION)
     public final static RefdataValue PRS_FUNC_SERVICE_SUPPORT           = getRefdataValue('Service Support', RDConstants.PERSON_FUNCTION)
     public final static RefdataValue PRS_FUNC_TECHNICAL_SUPPORT         = getRefdataValue('Technical Support', RDConstants.PERSON_FUNCTION)
@@ -280,6 +281,11 @@ class RDStore {
 
     public final static RefdataValue US_DASHBOARD_TAB_DUE_DATES = getRefdataValue('Due Dates', RDConstants.USER_SETTING_DASHBOARD_TAB)
     public final static RefdataValue US_DASHBOARD_TAB_SURVEYS = getRefdataValue('Surveys', RDConstants.USER_SETTING_DASHBOARD_TAB)
+
+    public final static RefdataValue VENDOR_STATUS_CURRENT     = getRefdataValue('Current', RDConstants.VENDOR_STATUS)
+    public final static RefdataValue VENDOR_STATUS_DELETED     = getRefdataValue('Deleted', RDConstants.VENDOR_STATUS)
+    public final static RefdataValue VENDOR_STATUS_REMOVED     = getRefdataValue('Removed', RDConstants.VENDOR_STATUS)
+    public final static RefdataValue VENDOR_STATUS_RETIRED     = getRefdataValue('Retired', RDConstants.VENDOR_STATUS)
 
     //public final static RefdataValue WF_CONDITION_STATUS_OPEN    = getRefdataValue('open', RDConstants.WF_CONDITION_STATUS)
     //public final static RefdataValue WF_CONDITION_STATUS_DONE    = getRefdataValue('done', RDConstants.WF_CONDITION_STATUS)

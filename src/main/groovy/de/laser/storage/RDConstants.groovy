@@ -184,6 +184,12 @@ class RDConstants {
     public static final String USER_SETTING_DASHBOARD_TAB = 'user.setting.dashboard.tab'
     public static final String USER_SETTING_THEME         = 'user.setting.theme'
 
+    public static final String VENDOR_STATUS                    = 'vendor.status'
+    public static final String VENDOR_SUPPORTED_LIBRARY_SYSTEM  = 'vendor.ordering.supported.library.system'
+    public static final String VENDOR_ELECTRONIC_DELIVERY_DELAY = 'vendor.ordering.electronic.delivery.delay'
+    public static final String VENDOR_INVOICING_FORMAT          = 'vendor.invoicing.format'
+    public static final String VENDOR_INVOICING_DISPATCH        = 'vendor.invoicing.dispatch'
+
     public static final String WF_WORKFLOW_TARGET_ROLE  = 'workflow.workflow.target.role'
     public static final String WF_WORKFLOW_TARGET_TYPE  = 'workflow.workflow.target.type'
     public static final String WF_WORKFLOW_STATE        = 'workflow.workflow.state'

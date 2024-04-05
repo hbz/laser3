@@ -93,6 +93,7 @@ class MyInstitutionController  {
     TaskService taskService
     UserControllerService userControllerService
     UserService userService
+    VendorService vendorService
     WorkflowService workflowService
     MailSendService mailSendService
 
@@ -988,6 +989,167 @@ class MyInstitutionController  {
                     return
             }
         }
+        result
+    }
+
+    /**
+     * Opens a list of all {@link Vendor}s which are linked by {@link VendorRole} to any subscription.
+     * The list results may be filtered with filter parameters
+     * @return a list of matching {@link Vendor} records, as html or as export pipe (Excel / CSV)
+     */
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
+    def currentVendors() {
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+        Profiler prf = new Profiler()
+        prf.setBenchmark('init')
+
+        /*
+        EhcacheWrapper cache = contextService.getOrgCache('MyInstitutionController/currentProviders')
+        List<Long> orgIds = []
+
+        if (cache.get('orgIds')) {
+            orgIds = cache.get('orgIds')
+            log.debug('orgIds from cache')
+        }
+        else {
+            orgIds = (orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( result.institution )).toList()
+            cache.put('orgIds', orgIds)
+        }
+         */
+
+        //result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(result.institution)
+
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+
+        result.filterSet = params.filterSet ? true : false
+        /*
+        if (params.filterPropDef) {
+            Map<String, Object> efq = propertyService.evalFilterQuery(tmpParams, fsr.query, 'o', fsr.queryParams)
+            fsr.query = efq.query
+            fsr.queryParams = efq.queryParams as Map<String, Object>
+        }
+        */
+        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
+        if(queryCuratoryGroups.code == 404) {
+            result.error = message(code: 'wekb.error.'+queryCuratoryGroups.error) as String
+        }
+        else {
+            if (queryCuratoryGroups) {
+                List recordsCuratoryGroups = queryCuratoryGroups.result
+                result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
+            }
+            result.wekbRecords = vendorService.getWekbVendorRecords(params, result)
+        }
+        result.curatoryGroupTypes = [
+                [value: 'Provider', name: message(code: 'package.curatoryGroup.provider')],
+                [value: 'Vendor', name: message(code: 'package.curatoryGroup.vendor')],
+                [value: 'Other', name: message(code: 'package.curatoryGroup.other')]
+        ]
+
+        result.flagContentGokb = true // vendorService.getWekbVendorRecords()
+        String query = 'select v from VendorRole vr join vr.vendor v, OrgRole oo join oo.sub s where v.gokbId in (:wekbUuids) and vr.subscription = s and oo.org = :contextOrg'
+        Map<String, Object> queryParams = [wekbUuids: result.wekbRecords.keySet(), contextOrg: result.institution]
+
+        if(params.containsKey('subStatus')) {
+            query += ' and (s.status in (:status) '
+            queryParams.status = Params.getRefdataList(params, 'subStatus')
+        }
+        else {
+            query += ' and (s.status = :status '
+            queryParams.status = RDStore.SUBSCRIPTION_CURRENT
+        }
+
+        if(params.containsKey('subPerpetualAccess')) {
+            boolean withPerpetualAccess = params.subPerpetualAccess == RDStore.YN_YES
+            if(withPerpetualAccess) {
+                if(queryParams.status?.contains(RDStore.SUBSCRIPTION_CURRENT)) {
+                    query += ' or (s.status = :expired and s.hasPerpetualAccess = true) '
+                    queryParams.expired = RDStore.SUBSCRIPTION_EXPIRED
+                }
+                else query += ' and s.hasPerpetualAccess = true '
+            }
+            query += ')' //opened in line 1041 or 1045
+            if(params.subPerpetualAccess == RDStore.YN_NO)
+                query += ' and s.hasPerpetualAccess = false '
+        }
+        else query += ')' //opened in line 1041 or 1045
+
+        String consortiumFilter = ''
+        if(result.showConsortiaFunctions)
+            consortiumFilter = 'and s.instanceOf = null'
+
+        String currentSubQuery = "select vr from OrgRole oo join oo.sub s, VendorRole vr where vr.subscription = s and s.status = :current and oo.org = :contextOrg and vr.vendor.gokbId in (:wekbUuids) ${consortiumFilter} order by s.name, s.startDate desc"
+        Map<String, Object> currentSubParams = [current: RDStore.SUBSCRIPTION_CURRENT, contextOrg: result.institution, wekbUuids: result.wekbRecords.keySet()]
+        List<VendorRole> vendorRoleRows = VendorRole.executeQuery(currentSubQuery, currentSubParams)
+        result.currentSubscriptions = [:]
+        vendorRoleRows.each { VendorRole vr ->
+            Set<Subscription> currentSubscriptions = result.currentSubscriptions.containsKey(vr.vendor.id) ? result.currentSubscriptions.get(vr.vendor.id) : []
+            currentSubscriptions << vr.subscription
+            result.currentSubscriptions.put(vr.vendor.id, currentSubscriptions)
+        }
+
+        Set<Vendor> vendorsTotal = Vendor.executeQuery(query, queryParams)
+        result.vendorListTotal = vendorsTotal.size()
+        result.vendorList = vendorsTotal.drop(result.offset).take(result.max)
+
+        String message = message(code: 'export.my.currentVendors') as String
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+        String datetoday = sdf.format(new Date())
+        String filename = message+"_${datetoday}"
+
+        //result.cachedContent = true
+
+        List bm = prf.stopBenchmark()
+        result.benchMark = bm
+
+        Map<String, Object> selectedFields = [:]
+        Set<String> contactSwitch = []
+
+        /*
+        to be implemented
+        if(params.fileformat) {
+            if (params.filename) {
+                filename = params.filename
+            }
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+            contactSwitch.addAll(params.list("contactSwitch"))
+            contactSwitch.addAll(params.list("addressSwitch"))
+            switch(params.fileformat) {
+                case 'xlsx':
+                    SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(vendorListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.XLS, contactSwitch)
+
+                    response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                    response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    wb.write(response.outputStream)
+                    response.outputStream.flush()
+                    response.outputStream.close()
+                    wb.dispose()
+                    return
+                case 'csv':
+                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+                    response.contentType = "text/csv"
+                    ServletOutputStream out = response.outputStream
+                    out.withWriter { writer ->
+                        writer.write((String) exportClickMeService.exportOrgs(vendorListTotal,selectedFields, 'provider',ExportClickMeService.FORMAT.CSV,contactSwitch))
+                    }
+                    out.close()
+                    return
+                case 'pdf':
+                    Map<String, Object> pdfOutput = exportClickMeService.exportOrgs(vendorListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.PDF, contactSwitch)
+
+                    byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
+                    response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
+                    response.setContentType('application/pdf')
+                    response.outputStream.withStream { it << pdf }
+                    return
+            }
+        }
+        */
         result
     }
 

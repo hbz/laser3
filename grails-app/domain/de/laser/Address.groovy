@@ -40,7 +40,8 @@ class Address {
     String additionSecond
 
     //Person prs              // person related contact; exclusive with org, deprecated and to be removed as of ERMS-4492
-    Org    org              // org related contact; exclusive with prs
+    Org    org              // org related contact; exclusive with vendor
+    Vendor vendor           // vendor related contact; exclusive with org
     Org    tenant           // enables private contacts
 
     @RefdataInfo(cat = RDConstants.ADDRESS_TYPE)
@@ -65,6 +66,7 @@ class Address {
         additionSecond  column:'adr_addition_second'
         //prs      column:'adr_prs_fk', index: 'adr_prs_idx'
         org      column:'adr_org_fk', index: 'adr_org_idx'
+        vendor   column:'adr_vendor_fk', index: 'adr_vendor_idx'
         tenant   column:'adr_tenant_fk', index: 'adr_tenant_idx'
 
         lastUpdated     column: 'adr_last_updated'
@@ -92,6 +94,7 @@ class Address {
         additionSecond  (nullable:true,  blank:false)
         //prs      (nullable:true)
         org      (nullable:true)
+        vendor   (nullable:true)
         tenant   (nullable:true)
         lastUpdated (nullable: true)
     }

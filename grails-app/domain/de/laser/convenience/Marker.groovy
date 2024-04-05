@@ -3,6 +3,7 @@ package de.laser.convenience
 import de.laser.Org
 import de.laser.Package
 import de.laser.Platform
+import de.laser.Vendor
 import de.laser.auth.User
 
 /**
@@ -41,6 +42,7 @@ class Marker {
             org:    Org,
             pkg:    Package,
             plt:    Platform,
+            ven:    Vendor,
             user:   User
     ]
 
@@ -51,6 +53,7 @@ class Marker {
         org         column:'mkr_org_fk'
         pkg         column:'mkr_pkg_fk'
         plt         column:'mkr_plt_fk'
+        ven         column:'mkr_ven_fk'
 
         user        column:'mkr_user_fk', index: 'mkr_user_idx'
         type        column:'mkr_type_enum'
@@ -63,5 +66,6 @@ class Marker {
         org         (nullable:true)
         pkg         (nullable:true)
         plt         (nullable:true)
+        ven         (nullable:true)
     }
 }

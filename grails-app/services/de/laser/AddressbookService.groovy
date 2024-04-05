@@ -95,17 +95,29 @@ class AddressbookService {
                 break
         }
 
-        if (params.prs) {
+        if (params.containsKey('prs')) {
             qParts << "( genfunc_filter_matcher(p.last_name, :prsName) = true OR genfunc_filter_matcher(p.middle_name, :prsName) = true OR genfunc_filter_matcher(p.first_name, :prsName) = true )"
             qParams << [prsName: "${params.prs}"]
         }
-        if (params.org && params.org instanceof Org) {
-            qParts << "pr.org = :org"
-            qParams << [org: params.org]
+        if (params.containsKey('org')) {
+            if (params.org instanceof Org) {
+                qParts << "pr.org = :org"
+                qParams << [org: params.org]
+            }
+            else if(params.org instanceof String) {
+                qParts << "( genfunc_filter_matcher(pr.org.name, :name) = true or genfunc_filter_matcher(pr.org.sortname, :name) = true )"
+                qParams << [name: "${params.org}"]
+            }
         }
-        else if(params.org && params.org instanceof String) {
-            qParts << "( genfunc_filter_matcher(pr.org.name, :name) = true or genfunc_filter_matcher(pr.org.sortname, :name) = true )"
-            qParams << [name: "${params.org}"]
+        else if(params.containsKey('vendor')) {
+            if (params.vendor instanceof Vendor) {
+                qParts << "pr.vendor = :vendor"
+                qParams << [vendor: params.vendor]
+            }
+            else if(params.vendor instanceof String) {
+                qParts << "( genfunc_filter_matcher(pr.vendor.name, :name) = true or genfunc_filter_matcher(pr.vendor.sortname, :name) = true )"
+                qParams << [name: "${params.vendor}"]
+            }
         }
 
         if (params.function || params.position) {
@@ -210,7 +222,7 @@ class AddressbookService {
             qParams << [instSector: RDStore.O_SECTOR_HIGHER_EDU.id, instType: RDStore.OT_INSTITUTION.id]
         }
 
-        if (params.showOnlyContactPersonForProviderAgency || params.exportOnlyContactPersonForProviderAgency){
+        if (params.showOnlyContactPersonForProvider || params.exportOnlyContactPersonForProvider){
             qParts << "(exists (select roletype from a.org.orgType as roletype where roletype.id in (:orgType)) and a.org.sector.id = :orgSector )"
             qParams << [orgSector: RDStore.O_SECTOR_PUBLISHER.id, orgType: [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]]
         }

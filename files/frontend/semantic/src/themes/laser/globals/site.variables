@@ -86,6 +86,7 @@
 @o-lila: #582BA0;
 @o-light-turquoise: #4192B0;
 @o-dark-turquoise: #0D5363;
+@o-brown: #b54800;
 
 @subscription     :    @orange; /* hbz-orange */
 @package          :    @violet; /*@violet */
@@ -93,7 +94,7 @@
 @license          :    #008C25; /* Dark Green */
 @organisation      :   @teal; /* bluegreen */
 @platform      :    @o-yellow;
-
+@vendor           : @o-brown;
 
 /*---  Colors for Site Elements---*/
 

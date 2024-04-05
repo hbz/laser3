@@ -67,6 +67,7 @@ class Package extends AbstractBaseWithCalculatedLastUpdated implements MarkerSup
 
 static hasMany = [  tipps:     TitleInstancePackagePlatform,
                     orgs:      OrgRole,
+                    vendors:   PackageVendor,
                     prsLinks:  PersonRole,
                     subscriptions:  SubscriptionPackage,
                     pendingChanges: PendingChange,

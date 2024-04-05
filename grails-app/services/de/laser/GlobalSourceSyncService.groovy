@@ -375,7 +375,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             List<String> triggeredTypes
             int max
             switch(dataToLoad) {
-                case "identifier": triggeredTypes = ['Package','Org','Vendor','TitleInstancePackagePlatform']
+                case "identifier": triggeredTypes = ['Package','Org','TitleInstancePackagePlatform']
                     max = 100
                     break
                 case "abbreviatedName": triggeredTypes = ['Org', 'Vendor']
@@ -457,8 +457,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                 platform.save()
                                             }
                                             break
-                                        case ['Org', 'Vendor']: List<Org> orgs = Org.findAllByGokbIdInList(wekbRecords.keySet().toList())
-                                            log.debug("from current page, ${orgs.size()} providers / agencies exist in LAS:eR")
+                                        case 'Org': List<Org> orgs = Org.findAllByGokbIdInList(wekbRecords.keySet().toList())
+                                            log.debug("from current page, ${orgs.size()} providers exist in LAS:eR")
                                             orgs.eachWithIndex { Org provider, int idx ->
                                                 log.debug("now processing org ${idx} with uuid ${provider.gokbId}, total entry: ${offset+idx}")
                                                 switch(dataToLoad) {
@@ -560,6 +560,18 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                             log.debug("interim flush at end of load: ${offset}")
                                             sess.flush()
                                             break
+                                        case 'Vendor': List<Vendor> vendors = Vendor.findAllByGokbIdInList(wekbRecords.keySet().toList())
+                                            log.debug("from current page, ${vendors.size()} agencies exist in LAS:eR")
+                                            vendors.eachWithIndex { Vendor vendor, int idx ->
+                                                log.debug("now processing vendor ${idx} with uuid ${vendor.gokbId}, total entry: ${offset+idx}")
+                                                //switch kept for possible extension
+                                                switch(dataToLoad) {
+                                                    case "abbreviatedName": vendor.sortname = wekbRecords.get(vendor.gokbId).abbreviatedName
+                                                        vendor.save()
+                                                        break
+                                                }
+                                            }
+                                            break
                                     }
                                     more = result.currentPage < result.lastPage
                                     if(more) {
@@ -613,7 +625,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     log.debug("-------------- processing page ${result.currentPage} out of ${result.lastPage} ------------------")
                     if(result.count > 0) {
                         switch (source.rectype) {
-                            case [RECTYPE_ORG, RECTYPE_VENDOR]:
+                            case RECTYPE_ORG:
                                 result.records.each { record ->
                                     record.platforms.each { Map platformData ->
                                         try {
@@ -669,6 +681,20 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                     updateRecords(result.records, offset, permanentlyDeletedTitles)
                                 else updateRecords(result.records, offset)
                                 break
+                            case RECTYPE_VENDOR:
+                                result.records.each { record ->
+                                    record.packages.each { Map packageData ->
+                                        try {
+                                            createOrUpdatePackage(packageData.packageUuid)
+                                        }
+                                        catch (SyncException e) {
+                                            log.error("Error on updating package ${packageData.uuid}: ",e)
+                                            SystemEvent.createEvent("GSSS_JSON_WARNING",[packageRecordKey:packageData.uuid])
+                                        }
+                                    }
+                                    createOrUpdateVendor(record)
+                                }
+                                break
                         }
                         if(result.currentPage < result.lastPage) {
                             //scrollId = result.scrollId
@@ -688,7 +714,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         else if(result.count > 0 && result.count < MAX_TIPP_COUNT_PER_PAGE) {
             switch (source.rectype) {
-                case [RECTYPE_ORG, RECTYPE_VENDOR]:
+                case RECTYPE_ORG:
                     result.records.each { record ->
                         record.platforms.each { Map platformData ->
                             try {
@@ -745,6 +771,20 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     break
                 case RECTYPE_TIPP: wekbTippUUIDs.addAll( result.records.collect { tipp -> tipp.uuid } )
                     updateRecords(result.records, 0, permanentlyDeletedTitles)
+                    break
+                case RECTYPE_VENDOR:
+                    result.records.each { record ->
+                        record.packages.each { Map packageData ->
+                            try {
+                                createOrUpdatePackage(packageData.packageUuid)
+                            }
+                            catch (SyncException e) {
+                                log.error("Error on updating package ${packageData.uuid}: ",e)
+                                SystemEvent.createEvent("GSSS_JSON_WARNING",[packageRecordKey:packageData.uuid])
+                            }
+                        }
+                        createOrUpdateVendor(record)
+                    }
                     break
             }
         }
@@ -1210,7 +1250,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 Map<String, Object> providerRecord = fetchRecordJSON(false,[uuid:packageRecord.providerUuid])
                                 if(providerRecord && !providerRecord.error) {
                                     Org provider = createOrUpdateOrg(providerRecord)
-                                    createOrUpdatePackageProviderAgency(provider,result,RDStore.OT_PROVIDER)
+                                    setupOrgRole([org: provider,pkg: result, roleTypeCheckup: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER], definiteRoleType: RDStore.OR_PROVIDER])
                                 }
                                 else if(providerRecord && providerRecord.error == 404) {
                                     log.error("we:kb server is down")
@@ -1225,18 +1265,18 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         }
                         if(packageRecord.vendors) {
                             try {
-                                packageRecord.vendors.each { Map vendor ->
-                                    Map<String, Object> agencyRecord = fetchRecordJSON(false,[uuid:vendor.vendorUuid])
-                                    if(agencyRecord && !agencyRecord.error) {
-                                        Org agency = createOrUpdateOrg(agencyRecord)
-                                        createOrUpdatePackageProviderAgency(agency,result,RDStore.OT_AGENCY)
+                                packageRecord.vendors.each { Map vendorData ->
+                                    Map<String, Object> vendorRecord = fetchRecordJSON(false,[uuid:vendorData.vendorUuid])
+                                    if(vendorRecord && !vendorRecord.error) {
+                                        Vendor vendor = createOrUpdateVendor(vendorRecord)
+                                        setupPkgVendor(vendor, result)
                                     }
-                                    else if(agencyRecord && agencyRecord.error == 404) {
+                                    else if(vendorRecord && vendorRecord.error == 404) {
                                         log.error("we:kb server is down")
                                         throw new SyncException("we:kb server is unvailable")
                                     }
                                     else
-                                        throw new SyncException("Provider loading failed for UUID ${vendor.vendorUuid}!")
+                                        throw new SyncException("Provider loading failed for UUID ${vendorData.vendorUuid}!")
                                 }
                             }
                             catch (SyncException e) {
@@ -1338,14 +1378,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
             if(!org.sector)
                 org.sector = RDStore.O_SECTOR_PUBLISHER
             if(org.save()) {
-                if(orgRecord.componentType == ORG_TYPE_PROVIDER) {
-                    if(!org.getAllOrgTypeIds().contains(RDStore.OT_PROVIDER.id))
-                        org.addToOrgType(RDStore.OT_PROVIDER)
-                }
-                else if(orgRecord.componentType == ORG_TYPE_VENDOR) {
-                    if(!org.getAllOrgTypeIds().contains(RDStore.OT_AGENCY.id))
-                        org.addToOrgType(RDStore.OT_AGENCY)
-                }
+                if(!org.getAllOrgTypeIds().contains(RDStore.OT_PROVIDER.id))
+                    org.addToOrgType(RDStore.OT_PROVIDER)
                 if(orgRecord.contacts) {
                     List<String> typeNames = contactTypes.values().collect { RefdataValue cct -> cct.getI10n("value") }
                     typeNames.addAll(contactTypes.keySet())
@@ -1399,12 +1433,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 orgRecord.packages.each { Map packageData ->
                     Package pkg = Package.findByGokbId(packageData.packageUuid)
                     if(pkg) {
-                        if(orgRecord.componentType == ORG_TYPE_PROVIDER) {
-                            createOrUpdatePackageProviderAgency(org, pkg, RDStore.OT_PROVIDER)
-                        }
-                        else if(orgRecord.componentType == ORG_TYPE_VENDOR) {
-                            createOrUpdatePackageProviderAgency(org, pkg, RDStore.OT_AGENCY)
-                        }
+                        setupOrgRole([org: org, pkg: pkg, roleTypeCheckup: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER], definiteRoleType: RDStore.OR_PROVIDER])
                     }
                 }
                 if(orgRecord.identifiers) {
@@ -1417,7 +1446,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         }
                     }
                 }
-                if(source.rectype in [RECTYPE_ORG, RECTYPE_VENDOR]) {
+                if(source.rectype == RECTYPE_ORG) {
                     Date lastUpdatedTime = DateUtils.parseDateGeneric(orgRecord.lastUpdatedDisplay)
                     if(lastUpdatedTime.getTime() > maxTimestamp) {
                         maxTimestamp = lastUpdatedTime.getTime()
@@ -1426,6 +1455,108 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 org
             }
             else throw new SyncException(org.errors)
+        }
+
+    }
+
+    /**
+     * Checks for a given UUID if the vendor / agency exists, otherwise, it will be created
+     * @param vendorJSON the JSON record of the given {@link Vendor}
+     * @return the updated vendor record
+     * @throws SyncException
+     */
+    Vendor createOrUpdateVendor(Map<String,Object> vendorJSON) throws SyncException {
+        Map vendorRecord
+        if(vendorJSON.records)
+            vendorRecord = vendorJSON.records[0]
+        else vendorRecord = vendorJSON
+        log.info("vendor record loaded, reconciling vendor record for UUID ${vendorRecord.uuid}")
+        //first attempt
+        Vendor vendor = Vendor.findByGokbId(vendorRecord.uuid)
+        //attempt succeeded
+        if(vendor) {
+            vendor.name = vendorRecord.name
+        }
+        //second attempt
+        else if(!vendor) {
+            vendor = Vendor.findByNameAndGokbIdIsNull(vendorRecord.name)
+            //second attempt succeeded - map gokbId to provider who already exists
+            if(vendor)
+                vendor.gokbId = vendorRecord.uuid
+        }
+        //second attempt failed - create new vendor if record is not deleted
+        if(!vendor) {
+            if(!(vendorRecord.status in [Constants.PERMANENTLY_DELETED, 'Removed'])) {
+                vendor = new Vendor(
+                        name: vendorRecord.name,
+                        gokbId: vendorRecord.uuid
+                )
+                vendor.setGlobalUID() //needed because beforeInsertHandler() is being executed after validation only!
+            }
+        }
+        //avoid creating new deleted entries
+        if(vendor) {
+            vendor.sortname = vendorRecord.abbreviatedName
+            /*
+            if((vendor.status == RDStore.ORG_STATUS_CURRENT || !vendor.status) && vendorRecord.status == RDStore.ORG_STATUS_RETIRED.value) {
+                //value is not implemented in we:kb yet
+                if(vendorRecord.retirementDate) {
+                    vendor.retirementDate = DateUtils.parseDateGeneric(vendorRecord.retirementDate)
+                }
+                else vendor.retirementDate = new Date()
+            }
+            */
+            vendor.status = RefdataValue.getByValueAndCategory(vendorRecord.status, RDConstants.VENDOR_STATUS)
+            if(vendor.save()) {
+                if(vendorRecord.contacts) {
+                    List<String> typeNames = contactTypes.values().collect { RefdataValue cct -> cct.getI10n("value") }
+                    typeNames.addAll(contactTypes.keySet())
+                    List<Person> oldPersons = Person.executeQuery('select p from PersonRole pr join pr.prs p where pr.vendor = :vendor and p.tenant = null and p.isPublic = true and p.last_name in (:contactTypes)', [vendor: vendor, contactTypes: typeNames])
+                    List<Long> funcTypes = contactTypes.values().collect { RefdataValue cct -> cct.id }
+                    oldPersons.each { Person old ->
+                        PersonRole.executeUpdate('delete from PersonRole pr where pr.vendor = :vendor and pr.prs = :oldPerson and pr.functionType.id in (:funcTypes)', [vendor: vendor, oldPerson: old, funcTypes: funcTypes])
+                        Contact.executeUpdate('delete from Contact c where c.prs = :oldPerson', [oldPerson: old])
+                        if (PersonRole.executeQuery('select count(pr) from PersonRole pr where pr.prs = :oldPerson and pr.vendor = :vendor and (pr.functionType.id not in (:funcTypes) or pr.functionType = null)', [vendor: vendor, oldPerson: old, funcTypes: funcTypes])[0] == 0) {
+                            Person.executeUpdate('delete from Person p where p = :oldPerson', [oldPerson: old])
+                        }
+                    }
+                    vendorRecord.contacts.findAll { Map<String, String> cParams -> cParams.content != null }.each { contact ->
+                        switch (contact.type) {
+                            case "Invoicing Contact":
+                                contact.rdType = RDStore.PRS_FUNC_INVOICING_CONTACT
+                                break
+                            case "Metadata Contact":
+                                contact.rdType = RDStore.PRS_FUNC_METADATA
+                                break
+                            case "Service Support":
+                                contact.rdType = RDStore.PRS_FUNC_SERVICE_SUPPORT
+                                break
+                            case "Technical Support":
+                                contact.rdType = RDStore.PRS_FUNC_TECHNICAL_SUPPORT
+                                break
+                            default: log.warn("unhandled additional property type for ${vendor.gokbId}: ${contact.name}")
+                                break
+                        }
+                        if (contact.rdType && contact.contentType != null) {
+                            createOrUpdateSupport(vendor, contact)
+                        } else log.warn("contact submitted without content type, rejecting contact")
+                    }
+                }
+                vendorRecord.packages.each { Map packageData ->
+                    Package pkg = Package.findByGokbId(packageData.packageUuid)
+                    if(pkg) {
+                        setupPkgVendor(vendor, pkg)
+                    }
+                }
+                if(source.rectype == RECTYPE_VENDOR) {
+                    Date lastUpdatedTime = DateUtils.parseDateGeneric(vendorRecord.lastUpdatedDisplay)
+                    if(lastUpdatedTime.getTime() > maxTimestamp) {
+                        maxTimestamp = lastUpdatedTime.getTime()
+                    }
+                }
+                vendor
+            }
+            else throw new SyncException(vendor.errors)
         }
 
     }
@@ -1452,18 +1583,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
         else {
             throw new SyncException("Org submitted without UUID! No checking possible!")
         }
-    }
-
-    /**
-     * Checks for a given provider/agency uuid if there is a link with the package for the given uuid
-     * @param org the provider or agency {@link Org}
-     * @param pkg the {@link de.laser.Package} to check against
-     */
-    void createOrUpdatePackageProviderAgency(Org org, Package pkg, RefdataValue orgType) {
-        if(orgType == RDStore.OT_PROVIDER)
-            setupOrgRole([org: org, pkg: pkg, roleTypeCheckup: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER], definiteRoleType: RDStore.OR_PROVIDER])
-        else if(orgType == RDStore.OT_AGENCY)
-            setupOrgRole([org: org, pkg: pkg, roleTypeCheckup: [RDStore.OR_AGENCY], definiteRoleType: RDStore.OR_AGENCY])
     }
 
     /**
@@ -1497,8 +1616,17 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
     }
 
+    void setupPkgVendor(Vendor vendor, Package pkg) throws SyncException {
+        PackageVendor pv = PackageVendor.findByVendorAndPkg(vendor, pkg)
+        if(!pv) {
+            pv = new PackageVendor(vendor: vendor, pkg: pkg)
+            if(!pv.save())
+                throw new SyncException("Error on saving vendor-package link: ${pv.getErrors().getAllErrors().toListString()}")
+        }
+    }
+
     /**
-     * Updates a technical or service support for a given provider or agency {@link Org}; overrides an eventually created one and creates if it does not exist
+     * Updates a technical or service support for a given provider {@link Org}; overrides an eventually created one and creates if it does not exist
      * @param org the provider/agency {@link Org} to which the given support address should be created/updated
      * @param supportProps the configuration {@link Map} containing the support address properties
      * @throws SyncException
@@ -1508,14 +1636,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
         if(!personInstance) {
             personInstance = new Person(tenant: org, isPublic: true, last_name: supportProps.rdType.getI10n("value"))
             if(!personInstance.save()) {
-                throw new SyncException("Error on setting up technical support for ${org}, concerning person instance: ${personInstance.getErrors().getAllErrors().toListString()}")
+                throw new SyncException("Error on setting up contact for ${org}, concerning person instance: ${personInstance.getErrors().getAllErrors().toListString()}")
             }
         }
         PersonRole personRole = PersonRole.findByPrsAndOrgAndFunctionType(personInstance, org, supportProps.rdType)
         if(!personRole) {
             personRole = new PersonRole(prs: personInstance, org: org, functionType: supportProps.rdType)
             if(!personRole.save()) {
-                throw new SyncException("Error on setting technical support for ${org}, concerning person role: ${personRole.getErrors().getAllErrors().toListString()}")
+                throw new SyncException("Error on setting contact for ${org}, concerning person role: ${personRole.getErrors().getAllErrors().toListString()}")
             }
         }
         RefdataValue contentType = RefdataValue.getByValueAndCategory(supportProps.contentType, RDConstants.CONTACT_CONTENT_TYPE)
@@ -1529,7 +1657,43 @@ class GlobalSourceSyncService extends AbstractLockableService {
             contact.contentType = contentType
         contact.content = supportProps.content
         if(!contact.save()) {
-            throw new SyncException("Error on setting technical support for ${org}, concerning contact: ${contact.getErrors().getAllErrors().toListString()}")
+            throw new SyncException("Error on setting contact for ${org}, concerning contact: ${contact.getErrors().getAllErrors().toListString()}")
+        }
+    }
+
+    /**
+     * Updates a contact for a given {@link Vendor}; overrides an eventually created one and creates if it does not exist
+     * @param org the {@link Vendor} to which the given support address should be created/updated
+     * @param contactProps the configuration {@link Map} containing the address properties
+     * @throws SyncException
+     */
+    void createOrUpdateSupport(Vendor vendor, Map<String, String> contactProps) throws SyncException {
+        Person personInstance = Person.executeQuery('select p from PersonRole pr join pr.prs p where p.tenant = null and pr.vendor = :vendor and p.isPublic = true and p.last_name = :type', [vendor: vendor, type: contactProps.rdType.getI10n("value")])[0]
+        if(!personInstance) {
+            personInstance = new Person(isPublic: true, last_name: contactProps.rdType.getI10n("value"))
+            if(!personInstance.save()) {
+                throw new SyncException("Error on setting up contact for ${vendor}, concerning person instance: ${personInstance.getErrors().getAllErrors().toListString()}")
+            }
+        }
+        PersonRole personRole = PersonRole.findByPrsAndVendorAndFunctionType(personInstance, vendor, contactProps.rdType)
+        if(!personRole) {
+            personRole = new PersonRole(prs: personInstance, vendor: vendor, functionType: contactProps.rdType)
+            if(!personRole.save()) {
+                throw new SyncException("Error on setting contact for ${vendor}, concerning person role: ${personRole.getErrors().getAllErrors().toListString()}")
+            }
+        }
+        RefdataValue contentType = RefdataValue.getByValueAndCategory(contactProps.contentType, RDConstants.CONTACT_CONTENT_TYPE)
+        Contact contact = new Contact(prs: personInstance, type: RDStore.CONTACT_TYPE_JOBRELATED)
+        if(contactProps.language)
+            contact.language = RefdataValue.getByValueAndCategory(contactProps.language, RDConstants.LANGUAGE_ISO) ?: null
+        if(!contentType) {
+            log.error("Invalid contact type submitted: ${contactProps.contentType}")
+        }
+        else
+            contact.contentType = contentType
+        contact.content = contactProps.content
+        if(!contact.save()) {
+            throw new SyncException("Error on setting contact for ${vendor}, concerning contact: ${contact.getErrors().getAllErrors().toListString()}")
         }
     }
 

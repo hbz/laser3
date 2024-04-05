@@ -197,6 +197,19 @@ class CascadingUpdateService {
     }
 
     /**
+     * Updates the given vendor timestamp
+     * @param obj the updated vendor
+     * @param luc the timestamp of update
+     */
+    void update(Vendor obj, Date luc) {
+        _log(obj, luc)
+
+        Vendor.executeUpdate("update Vendor v set v.lastUpdatedCascading = :luc where v = :obj", [
+                luc: luc, obj: obj
+        ])
+    }
+
+    /**
      * Logs the timestamp update
      * @param obj the object which has been updated
      * @param luc the timestamp of update
