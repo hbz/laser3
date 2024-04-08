@@ -30,6 +30,8 @@ class VendorRole implements ShareableTrait {
 
     static constraints = {
         sharedFrom (nullable: true)
+        license (nullable: true)
+        subscription (nullable: true)
     }
 
     void beforeDelete(PostUpdateEvent event) {

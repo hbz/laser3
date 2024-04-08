@@ -255,23 +255,28 @@
                     <div class="la-flexbox">
                         <g:if test="${org instanceof Org}">
                             <ui:customerTypeProIcon org="${org}" cssClass="la-list-icon" />
-                        </g:if>
 
-                        <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
-                            ${fieldValue(bean: org, field: "name")}
+                            <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
+                                ${fieldValue(bean: org, field: "name")}
+                            </g:if>
+                            <g:else>
+                                <g:link controller="organisation" action="show" id="${org.id}">
+                                    ${fieldValue(bean: org, field: "name")}
+                                </g:link>
+                            </g:else>
+
+                            <g:if test="${surveyOrg && surveyOrg.orgInsertedItself}">
+                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                      data-content="${message(code: 'surveyLinks.newParticipate')}">
+                                    <i class="paper plane outline large icon"></i>
+                                </span>
+                            </g:if>
                         </g:if>
-                        <g:else>
-                            <g:link controller="organisation" action="show" id="${org.id}">
+                        <g:elseif test="${org instanceof Vendor}">
+                            <g:link controller="vendor" action="show" id="${org.id}">
                                 ${fieldValue(bean: org, field: "name")}
                             </g:link>
-                        </g:else>
-
-                        <g:if test="${surveyOrg && surveyOrg.orgInsertedItself}">
-                            <span data-position="top right" class="la-popup-tooltip la-delay"
-                                  data-content="${message(code: 'surveyLinks.newParticipate')}">
-                                <i class="paper plane outline large icon"></i>
-                            </span>
-                        </g:if>
+                        </g:elseif>
                     </div>
                 </th>
             </g:if>

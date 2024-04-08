@@ -117,22 +117,33 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
 
     /**
      * Retrieves all public persons attached to the given organisation and of the given function type
-     * @param org the organisation whose contacts should be retrieved
+     * @param target the organisation or vendor whose contacts should be retrieved
      * @param func the function type string to get
      * @param tenant the tenant organisation whose maintains
      * @return a {@link List} of persons matching to the given function type and attached to the given {@link Org}
      */
-    static List<Person> getPublicByOrgAndFunc(Org org, String func, Org tenant = null) {
-        String tenantFilter = ''
-        Map<String, Object> params = [org: org, functionType: func]
+    static List<Person> getPublicByOrgAndFunc(target, String func, Org tenant = null) {
+        String instanceFilter, tenantFilter = ''
+        Map<String, Object> params = [functionType: func]
+        if(target instanceof Org) {
+            params.org = target
+            instanceFilter = 'pr.org = :org'
+        }
+        else if(target instanceof Vendor) {
+            params.vendor = target
+            instanceFilter = 'pr.vendor = :vendor'
+        }
         if(tenant) {
             tenantFilter = 'and p.tenant = :tenant'
             params.tenant = tenant
         }
-        Person.executeQuery(
-                "select p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org = :org "+tenantFilter+" and pr.functionType.value = :functionType",
-                params
-        )
+        if(instanceFilter) {
+            Person.executeQuery(
+                    'select p from Person as p inner join p.roleLinks pr where p.isPublic = true and '+instanceFilter+' '+tenantFilter+' and pr.functionType.value = :functionType',
+                    params
+            )
+        }
+        else []
     }
 
     /**
@@ -164,11 +175,15 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
             if(p.isPublic) {
                 p.contacts.each { Contact c ->
                     if(c.contentType == RDStore.CCT_EMAIL) {
-                        if(publicContactMap[pr.org])
+                        if(pr.org) {
+                            if(!publicContactMap.containsKey(pr.org))
+                                publicContactMap[pr.org] = new HashSet()
                             publicContactMap[pr.org].add(c.content)
-                        else {
-                            publicContactMap[pr.org] = new HashSet()
-                            publicContactMap[pr.org].add(c.content)
+                        }
+                        else if(pr.vendor) {
+                            if(!publicContactMap.containsKey(pr.vendor))
+                                publicContactMap[pr.vendor] = new HashSet()
+                            publicContactMap[pr.vendor].add(c.content)
                         }
                     }
                 }
@@ -176,11 +191,15 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
             else {
                 p.contacts.each { Contact c ->
                     if(c.contentType == RDStore.CCT_EMAIL && p.tenant == contextOrg) {
-                        if(privateContactMap[pr.org])
+                        if(pr.org) {
+                            if(!privateContactMap.containsKey(pr.org))
+                                privateContactMap[pr.org] = new HashSet()
                             privateContactMap[pr.org].add(c.content)
-                        else {
-                            privateContactMap[pr.org] = new HashSet()
-                            privateContactMap[pr.org].add(c.content)
+                        }
+                        else if(pr.vendor) {
+                            if(!privateContactMap.containsKey(pr.vendor))
+                                privateContactMap[pr.vendor] = new HashSet()
+                            privateContactMap[pr.vendor].add(c.content)
                         }
                     }
                 }
@@ -192,14 +211,24 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
     /**
      * Gets all public contacts attached to the given organisation and object, matching to the given responsibility.
      * If org is null, this method gets ALL public responsibilities attached to the given object; if the object is missing, too, get all public responsibilities
-     * @param org the {@link Org} to which the contacts are attached to
+     * @param target the {@link Org} to which the contacts are attached to
      * @param obj the object (one of {@link License}, {@link Package} or {@link Subscription}) for which the requested persons are responsible
      * @param resp the responsibility of the persons requested
      * @return a {@link List} of persons attached to the given organisation and object and matching to the given responsibility
      */
-    static List<Person> getPublicByOrgAndObjectResp(Org org, def obj, String resp) {
-        String q = ''
-        Map<String, Object> p = org ? ['org': org, 'resp': resp] : ['resp': resp]
+    static List<Person> getPublicByOrgAndObjectResp(def target, def obj, String resp) {
+        String q = '', targetClause = ''
+        Map<String, Object> p = ['resp': resp]
+        if(target) {
+            if(target instanceof Org) {
+                p.org = target
+                targetClause = 'and pr.org = :org '
+            }
+            else if(target instanceof Vendor) {
+                p.vendor = target
+                targetClause = 'and pr.vendor = :vendor '
+            }
+        }
 
         if (obj instanceof License) {
             q = ' and pr.lic = :obj '
@@ -216,7 +245,7 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
 
         List<Person> result = Person.executeQuery(
                 "select p from Person as p inner join p.roleLinks pr where p.isPublic = true " +
-                        (org ? "and pr.org = :org " : "" ) +
+                        targetClause +
                         "and pr.responsibilityType.value = :resp " + q,
                 p
         )
@@ -224,31 +253,49 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
     }
 
     /**
-     * Gets the private contact points attached to the given organisation, maintained by the given tenant institution and matching to the given function type
-     * @param org the {@link Org} to which the contacts are attached to
+     * Gets the private contact points attached to the given organisation/vendor, maintained by the given tenant institution and matching to the given function type
+     * @param target the {@link Org} or {@link Vendor} to which the contacts are attached to
      * @param func the function type of the contacts to be retrieved (one of Functional Contact or Personal Contact)
      * @param tenant the tenant institution ({@link Org}) whose contacts should be retrieved
      * @return a {@link List} of persons of the given function type, attached to the given organisation and maintained by the given tenant
      */
-    static List<Person> getPrivateByOrgAndFuncFromAddressbook(Org org, String func, Org tenant) {
-        List<Person> result = Person.executeQuery(
-                "select p from Person as p inner join p.roleLinks pr where p.isPublic = false and pr.org = :org and pr.functionType.value = :functionType and p.tenant = :tenant",
-                [org: org, functionType: func, tenant: tenant]
-        )
+    static List<Person> getPrivateByOrgAndFuncFromAddressbook(target, String func, Org tenant) {
+        String targetClause
+        List<Person> result
+        if(target instanceof Org)
+            targetClause = 'pr.org = :org'
+        else if(target instanceof Vendor)
+            targetClause = 'pr.vendor = :vendor'
+        if (targetClause) {
+            result = Person.executeQuery(
+                    'select p from Person as p inner join p.roleLinks pr where p.isPublic = false and '+targetClause+' and pr.functionType.value = :functionType and p.tenant = :tenant',
+                    [org: target, functionType: func, tenant: tenant]
+            )
+        }
+        else result = []
         result
     }
 
     /**
-     * Gets all private contacts attached to the given organisation and object, matching to the given responsibility and maintained by the given tenant institution
-     * @param org the {@link Org} to which the persons are attached to
+     * Gets all private contacts attached to the given organisation/vendor and object, matching to the given responsibility and maintained by the given tenant institution
+     * @param target the {@link Org} or {@link Vendor} to which the persons are attached to
      * @param obj the object (one of {@link License}, {@link Package} or {@link Subscription}) for which the requested persons are responsible
      * @param resp the responsibility which the requested persons have
      * @param tenant the tenant institution ({@link Org}) whose private contacts (= private addressbook) should be consulted
      * @return a {@link List} of persons matching to the given responsibility, attached to the given organisation and object and maintained by the given tenant institution
      */
-    static List<Person> getPrivateByOrgAndObjectRespFromAddressbook(Org org, def obj, String resp, Org tenant) {
-        String q = ''
-        Map<String, Object> p = ['org': org, 'resp': resp, 'tnt': tenant]
+    static List<Person> getPrivateByOrgAndObjectRespFromAddressbook(target, def obj, String resp, Org tenant) {
+        String q = '', targetClause
+        Map<String, Object> p = ['resp': resp, 'tnt': tenant]
+
+        if (target instanceof Org) {
+            p << ['org': target]
+            targetClause = 'and pr.org = :org'
+        }
+        else if (target instanceof Vendor) {
+            p << ['vendor': target]
+            targetClause = 'and pr.vendor = :vendor'
+        }
 
         if (obj instanceof License) {
             q = ' and pr.lic = :obj '
@@ -263,11 +310,14 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
             p << ['obj': obj]
         }
 
-        List<Person> result = Person.executeQuery(
-                "select p from Person as p inner join p.roleLinks pr where p.isPublic = false and pr.org = :org and pr.responsibilityType.value = :resp and p.tenant = :tnt " + q,
-                p
-        )
-        result
+        if(targetClause) {
+            List<Person> result = Person.executeQuery(
+                    'select p from Person as p inner join p.roleLinks pr where p.isPublic = false '+targetClause+' and pr.responsibilityType.value = :resp and p.tenant = :tnt ' + q,
+                    p
+            )
+            result
+        }
+        else []
     }
 
     /**
@@ -277,6 +327,15 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
      */
     LinkedHashSet<PersonRole> getPersonRoleByOrg(Org org) {
         return roleLinks.findAll {it.org?.id == org.id}
+    }
+
+    /**
+     * Retrieves all person-vendor links which point to the given vendor
+     * @param vendor the {@link Vendor} to which the persons are linked to
+     * @return a {@link Set} of {@link PersonRole} links pointing to the given {@link Vendor}
+     */
+    LinkedHashSet<PersonRole> getPersonRoleByVendor(Vendor vendor) {
+        return roleLinks.findAll {it.vendor?.id == vendor.id}
     }
 
     @Override

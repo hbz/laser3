@@ -364,11 +364,25 @@ class AjaxHtmlController {
      * @return the result of {@link de.laser.ControlledListService#getProvidersAgencies(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
-    def lookupProvidersAgencies() {
+    def lookupProviders() {
         Map<String, Object> model = [:], result = controlledListService.getProvidersAgencies(params)
         model.orgList = result.results
         model.tmplShowCheckbox = true
         model.tmplConfigShow = ['sortname', 'name', 'altname', 'isWekbCurated']
+        model.fixedHeader = 'la-ignore-fixed'
+        render template: "/templates/filter/orgFilterTable", model: model
+    }
+
+    /**
+     * Retrieves a list of provider and agency {@link Org}s for table view
+     * @return the result of {@link de.laser.ControlledListService#getVendors(grails.web.servlet.mvc.GrailsParameterMap)}
+     */
+    @Secured(['ROLE_USER'])
+    def lookupVendors() {
+        Map<String, Object> model = [:], result = controlledListService.getVendors(params)
+        model.orgList = result.results
+        model.tmplShowCheckbox = true
+        model.tmplConfigShow = ['sortname', 'name', 'isWekbCurated']
         model.fixedHeader = 'la-ignore-fixed'
         render template: "/templates/filter/orgFilterTable", model: model
     }
