@@ -15,7 +15,8 @@ aggr_es_indices = [
     "SurveyConfig" : "laser3_survey_configs",
     "SurveyOrg" : "laser3_survey_orgs",
     "Task" : "laser3_tasks",
-    "TitleInstancePackagePlatform" : "laser3_tipps"
+    "TitleInstancePackagePlatform" : "laser3_tipps",
+    "Vendor" : "laser3_vendors"
 ]
 
 dataSource.url      = 'jdbc:postgresql://localhost:5432/laser'

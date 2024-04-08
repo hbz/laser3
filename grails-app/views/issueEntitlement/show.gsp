@@ -3,6 +3,8 @@
 <g:set var="entityName" value="${message(code: 'issueEntitlement.label')}"/>
 <laser:htmlStart text="${message(code:"default.show.label", args:[entityName])}" />
 
+%{-- help sidebar --}%
+<laser:render template="/templates/help/dateCreatedLastUpdated" model="[obj: issueEntitlementInstance]"/>
 <ui:debugInfo>
     <div style="padding: 1em 0;">
         <p>issueEntitlementInstance.dateCreated: ${issueEntitlementInstance.dateCreated}</p>

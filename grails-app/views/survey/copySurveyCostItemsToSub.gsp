@@ -13,8 +13,7 @@
 
 %{--<ui:controlButtons>
     <ui:actionsDropdown>
-        <ui:actionsDropdownItem controller="survey" action="setCompleted"
-                                   params="[id: params.id, surveyConfigID: surveyConfig.id]"
+        <ui:actionsDropdownItem controller="survey" action="setStatus" params="[id: params.id, newStatus: 'setCompleted']"
                                    message="surveyInfo.completed.action"/>
     </ui:actionsDropdown>
 </ui:controlButtons>--}%

@@ -1,6 +1,6 @@
-<%@ page import="java.text.SimpleDateFormat; grails.converters.JSON; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.Subscription; de.laser.Platform; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report; de.laser.interfaces.CalculatedType; de.laser.base.AbstractReport" %>
+<%@ page import="java.text.SimpleDateFormat; grails.converters.JSON; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.Subscription; de.laser.Platform; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report; de.laser.interfaces.CalculatedType; de.laser.base.AbstractReport; de.laser.finance.CostItem" %>
 <laser:htmlStart message="subscription.details.stats.label" serviceInjection="true"/>
-
+    <laser:javascript src="echarts.js"/>
         <ui:debugInfo>
             <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
         </ui:debugInfo>
@@ -21,130 +21,6 @@
         <laser:render template="message" />
         <ui:messages data="${flash}" />
 
-        <g:if test="${wekbServerUnavailable}">
-            <div class="ui icon error message">
-                <i class="exclamation icon"></i>
-                ${wekbServerUnavailable}
-            </div>
-        </g:if>
-        <g:else>
-            <g:each in="${platformInstanceRecords.values()}" var="platformInstanceRecord">
-                <div class="ui two doubling stackable cards">
-                    <div class="ui card">
-                        <div class="content">
-                            <dl>
-                                <dt><g:message code="platform.name"/></dt>
-                                <dd>${platformInstanceRecord.name} <g:link url="${platformInstanceRecord.wekbUrl}" target="_blank" class="la-popup-tooltip la-delay" data-content="we:kb Link"><i class="ui icon la-gokb"></i></g:link></dd>
-                            </dl>
-                            <g:if test="${platformInstanceRecord.statisticsFormat}">
-                                <dl>
-                                    <dt><g:message code="platform.stats.format"/></dt>
-                                    <dd>${RefdataValue.getByValueAndCategory(platformInstanceRecord.statisticsFormat, RDConstants.PLATFORM_STATISTICS_FORMAT).getI10n("value")}</dd>
-                                </dl>
-                            </g:if>
-                            <g:if test="${platformInstanceRecord.statisticsUpdate}">
-                                <dl>
-                                    <dt><g:message code="platform.stats.update"/></dt>
-                                    <dd>${RefdataValue.getByValueAndCategory(platformInstanceRecord.statisticsUpdate, RDConstants.PLATFORM_STATISTICS_FREQUENCY).getI10n("value")}</dd>
-                                </dl>
-                            </g:if>
-                            <g:if test="${platformInstanceRecord.statisticsAdminPortalUrl}">
-                                <dl>
-                                    <dt><g:message code="platform.stats.adminURL"/></dt>
-                                    <dd>
-                                        <g:if test="${platformInstanceRecord.statisticsAdminPortalUrl.startsWith('http')}">
-                                            ${platformInstanceRecord.statisticsAdminPortalUrl} <ui:linkWithIcon href="${platformInstanceRecord.statisticsAdminPortalUrl}"/>
-                                        </g:if>
-                                        <g:else>
-                                            <g:message code="default.url.invalid"/>
-                                        </g:else>
-                                    </dd>
-                                </dl>
-                            </g:if>
-                            <g:if test="${platformInstanceRecord.counterCertified}">
-                                <dl>
-                                    <dt><g:message code="platform.stats.counter.certified"/></dt>
-                                    <dd>${RefdataValue.getByValueAndCategory(platformInstanceRecord.counterCertified, RDConstants.Y_N).getI10n("value")}</dd>
-                                </dl>
-                            </g:if>
-                            <g:if test="${platformInstanceRecord.lastAuditDate}">
-                                <dl>
-                                    <dt><g:message code="platform.stats.counter.lastAudit"/></dt>
-                                    <dd>${formatDate(date: DateUtils.parseDateGeneric(platformInstanceRecord.lastAuditDate), format: message(code: 'default.date.format.notime'))}</dd>
-                                </dl>
-                            </g:if>
-                            <g:if test="${platformInstanceRecord.counterRegistryUrl}">
-                                <dl>
-                                    <dt><g:message code="platform.stats.counter.registryURL"/></dt>
-                                    <dd>
-                                        <g:if test="${platformInstanceRecord.counterRegistryUrl.startsWith('http')}">
-                                            ${platformInstanceRecord.counterRegistryUrl} <ui:linkWithIcon href="${platformInstanceRecord.counterRegistryUrl}"/>
-                                        </g:if>
-                                        <g:else>
-                                            <g:message code="default.url.invalid"/>
-                                        </g:else>
-                                    </dd>
-                                </dl>
-                            </g:if>
-                        </div>
-                    </div>
-                    <div class="ui card">
-                        <div class="content">
-                            <g:if test="${platformInstanceRecord.counterR4Supported}">
-                                <dl>
-                                    <dt><g:message code="platform.stats.counter.r4supported"/></dt>
-                                    <dd>${RefdataValue.getByValueAndCategory(platformInstanceRecord.counterR4Supported, RDConstants.Y_N).getI10n("value")}</dd>
-                                </dl>
-                            </g:if>
-                            <g:if test="${platformInstanceRecord.counterR5Supported}">
-                                <dl>
-                                    <dt><g:message code="platform.stats.counter.r5supported"/></dt>
-                                    <dd>${RefdataValue.getByValueAndCategory(platformInstanceRecord.counterR5Supported, RDConstants.Y_N).getI10n("value")}</dd>
-                                </dl>
-                            </g:if>
-                            <g:if test="${platformInstanceRecord.counterR4SushiApiSupported}">
-                                <dl>
-                                    <dt><g:message code="platform.stats.counter.r4sushi"/></dt>
-                                    <dd>${RefdataValue.getByValueAndCategory(platformInstanceRecord.counterR4SushiApiSupported, RDConstants.Y_N).getI10n("value")}</dd>
-                                </dl>
-                            </g:if>
-                            <g:if test="${platformInstanceRecord.counterR5SushiApiSupported}">
-                                <dl>
-                                    <dt><g:message code="platform.stats.counter.r5sushi"/></dt>
-                                    <dd>${RefdataValue.getByValueAndCategory(platformInstanceRecord.counterR5SushiApiSupported, RDConstants.Y_N).getI10n("value")}</dd>
-                                </dl>
-                            </g:if>
-                            <g:if test="${platformInstanceRecord.counterR4SushiServerUrl}">
-                                <dl>
-                                    <dt><g:message code="platform.stats.counter.r4serverURL"/></dt>
-                                    <dd>
-                                        <g:if test="${platformInstanceRecord.counterR4SushiServerUrl.startsWith('http')}">
-                                            ${platformInstanceRecord.counterR4SushiServerUrl} <ui:linkWithIcon href="${platformInstanceRecord.counterR4SushiServerUrl}"/>
-                                        </g:if>
-                                        <g:else>
-                                            ${platformInstanceRecord.counterR4SushiServerUrl}
-                                        </g:else>
-                                    </dd>
-                                </dl>
-                            </g:if>
-                            <g:if test="${platformInstanceRecord.counterR5SushiServerUrl}">
-                                <dl>
-                                    <dt><g:message code="platform.stats.counter.r5serverURL"/></dt>
-                                    <dd>
-                                        <g:if test="${platformInstanceRecord.counterR5SushiServerUrl.startsWith('http')}">
-                                            ${platformInstanceRecord.counterR5SushiServerUrl} <ui:linkWithIcon href="${platformInstanceRecord.counterR5SushiServerUrl}"/>
-                                        </g:if>
-                                        <g:else>
-                                            ${platformInstanceRecord.counterR5SushiServerUrl}
-                                        </g:else>
-                                    </dd>
-                                </dl>
-                            </g:if>
-                        </div>
-                    </div>
-                </div>
-            </g:each>
-        </g:else>
         <g:if test="${showConsortiaFunctions && !subscription.instanceOf}">
             <g:each in="${platformInstanceRecords.values()}" var="platform">
                 <g:if test="${platform.statisticsFormat.contains('COUNTER')}">
@@ -152,6 +28,7 @@
                         Map<String, Object> platformSushiConfig = exportService.prepareSushiCall(platform, 'stats')
                     %>
                     <div class="ui segment">
+                        <laser:render template="/platform/platformStatsDetails" model="[wekbServerUnavailable: wekbServerUnavailable, platformInstanceRecord: platform]"/>
                         <table class="ui celled table">
                             <tr>
                                 <th><g:message code="default.usage.consortiaTableHeader"/></th>
@@ -191,56 +68,58 @@
                                      params="${params + [tab: platform.id]}" text="${platform.name}"/>
                     </g:each>
                 </ui:tabs>
-                <div class="ui bottom attached tab active segment" id="customerIdWrapper">
-                    <table class="ui la-js-responsive-table la-table table">
-                        <thead>
-                        <tr>
-                            <th class="three wide">${message(code: 'consortium.member')}</th>
-                            <th class="four wide">${message(code: 'default.provider.label')} : ${message(code: 'platform.label')}</th>
-                            <th class="three wide">${message(code: 'org.customerIdentifier')}</th>
-                            <th class="three wide">${message(code: 'org.requestorKey')}</th>
-                            <th class="two wide">${message(code: 'default.note.label')}</th>
-                            <th class="one wide">${message(code: 'default.actions')}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <g:each in="${keyPairs}" var="pair" status="rowno">
-                        %{-- TODO: erms-5495 --}%
-                        %{--                <g:set var="overwriteEditable_ci" value="${editable}" />--}%
-                            <%
-                                boolean overwriteEditable_ci = contextService.getUser().isAdmin() ||
-                                        userService.hasFormalAffiliation(contextService.getUser(), pair.owner, 'INST_EDITOR') ||
-                                        userService.hasFormalAffiliation(contextService.getUser(), pair.customer, 'INST_EDITOR')
-                            %>
-                            <tr>
-                                <td>${pair.customer.sortname ?: pair.customer.name}</td>
-                                <td>${pair.getProvider()} : ${pair.platform.name}</td>
-                                <td><ui:xEditable owner="${pair}" field="value"
-                                                  overwriteEditable="${overwriteEditable_ci}"/></td>
-                                <td><ui:xEditable owner="${pair}" field="requestorKey"
-                                                  overwriteEditable="${overwriteEditable_ci}"/></td>
-                                <td><ui:xEditable owner="${pair}" field="note"
-                                                  overwriteEditable="${overwriteEditable_ci}"/></td>
-                                <td>
-                                    <g:if test="${overwriteEditable_ci}">
-                                        <g:link controller="subscription"
-                                                action="unsetCustomerIdentifier"
-                                                id="${subscription.id}"
-                                                params="${[deleteCI: pair.id]}"
-                                                class="ui button icon red la-modern-button js-open-confirm-modal"
-                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.unset.customeridentifier", args: ["" + pair.getProvider() + " : " + (pair.platform ?: '') + " " + (pair.value ?: '')])}"
-                                                data-confirm-term-how="unset"
-                                                role="button"
-                                                aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                            <i class="eraser icon"></i>
-                                        </g:link>
-                                    </g:if>
-                                </td>
-                            </tr>
-                        </g:each>
-                        </tbody>
-                    </table>
-                </div>
+                <g:each in="${platformInstanceRecords.values()}" var="platform">
+                    <div class="ui bottom attached tab active segment" id="customerIdWrapper">
+                        <laser:render template="/platform/platformStatsDetails" model="[wekbServerUnavailable: wekbServerUnavailable, platformInstanceRecord: platform]"/>
+                        <table class="ui la-js-responsive-table la-table table">
+                            <thead>
+                                <tr>
+                                    <th class="three wide">${message(code: 'consortium.member')}</th>
+                                    <th class="four wide">${message(code: 'default.provider.label')} : ${message(code: 'platform.label')}</th>
+                                    <th class="three wide">${message(code: 'org.customerIdentifier')}</th>
+                                    <th class="three wide">${message(code: 'org.requestorKey')}</th>
+                                    <th class="two wide">${message(code: 'default.note.label')}</th>
+                                    <th class="one wide">${message(code: 'default.actions')}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <g:set var="pair" value="${keyPairs.get(platform.uuid)}"/>
+                            %{-- TODO: erms-5495 --}%
+                            %{--                <g:set var="overwriteEditable_ci" value="${editable}" />--}%
+                                <%
+                                    boolean overwriteEditable_ci = contextService.getUser().isAdmin() ||
+                                            userService.hasFormalAffiliation(contextService.getUser(), pair.owner, 'INST_EDITOR') ||
+                                            userService.hasFormalAffiliation(contextService.getUser(), pair.customer, 'INST_EDITOR')
+                                %>
+                                <tr>
+                                    <td>${pair.customer.sortname ?: pair.customer.name}</td>
+                                    <td>${pair.getProvider()} : ${pair.platform.name}</td>
+                                    <td><ui:xEditable owner="${pair}" field="value"
+                                                      overwriteEditable="${overwriteEditable_ci}"/></td>
+                                    <td><ui:xEditable owner="${pair}" field="requestorKey"
+                                                      overwriteEditable="${overwriteEditable_ci}"/></td>
+                                    <td><ui:xEditable owner="${pair}" field="note"
+                                                      overwriteEditable="${overwriteEditable_ci}"/></td>
+                                    <td>
+                                        <g:if test="${overwriteEditable_ci}">
+                                            <g:link controller="subscription"
+                                                    action="unsetCustomerIdentifier"
+                                                    id="${subscription.id}"
+                                                    params="${[deleteCI: pair.id]}"
+                                                    class="ui button icon red la-modern-button js-open-confirm-modal"
+                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.unset.customeridentifier", args: ["" + pair.getProvider() + " : " + (pair.platform ?: '') + " " + (pair.value ?: '')])}"
+                                                    data-confirm-term-how="unset"
+                                                    role="button"
+                                                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                                <i class="eraser icon"></i>
+                                            </g:link>
+                                        </g:if>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </g:each>
 
                 <g:if test="${reportTypes}">
                     <g:if test="${revision == AbstractReport.COUNTER_4}">
@@ -301,25 +180,18 @@
                             </div>
                         </div>
 
-                        <div class="four fields">
-                            <div class="field"></div>
-
-                            <div class="field"></div>
-
-                            <div class="field la-field-right-aligned">
-                                <%-- deactivated as of ERMS-3996; concept needs to be clarified
-                                <input id="generateCostPerUse" type="button" class="ui secondary button" value="${message(code: 'default.stats.generateCostPerUse')}"/>--%>
-                                <g:link action="stats" id="${subscription.id}"
-                                        class="ui button secondary">${message(code: 'default.button.reset.label')}</g:link>
-                            </div>
-
-                            <div class="field la-field-right-aligned">
-                                <input id="generateReport" type="button" class="ui primary button" disabled="disabled"
-                                       value="${message(code: 'default.stats.generateReport')}"/>
-                            </div>
+                        <div class="field la-field-right-aligned">
+                            <input id="generateReport" type="button" class="ui primary button" disabled="disabled"
+                                   value="${message(code: 'default.stats.generateReport')}"/>
+                            <g:if test="${CostItem.findBySubAndCostItemElementConfiguration(subscription, RDStore.CIEC_POSITIVE)}">
+                                <input id="generateCostPerUse" type="button" class="ui primary button" disabled="disabled"
+                                       value="${message(code: 'default.stats.generateCostPerUse')}"/>
+                            </g:if>
+                            <g:link action="stats" id="${subscription.id}"
+                                    class="ui button secondary">${message(code: 'default.button.reset.label')}</g:link>
                         </div>
                     </g:form>
-                    <div class="ui teal progress" id="progressIndicator" hidden>
+                    <div class="ui teal progress" id="progressIndicator" hidden="hidden">
                         <div class="bar">
                             <div class="progress"></div>
                         </div>
@@ -465,7 +337,7 @@
                             r2d2.initDynamicUiStuff('#'+cell.attr('id'));
                         }
                     });
-                }, 200 * i);
+                }, 1000 * i);
             });
             $("#reportType").on('change', function() {
                 <g:applyCodec encodeAs="none">
@@ -482,7 +354,7 @@
                 }).done(function(response) {
                     $('.dynFilter').remove();
                     $('#filterDropdownWrapper').append(response);
-                    $('#generateReport').removeAttr('disabled');
+                    $('#generateReport, #generateCostPerUse').removeAttr('disabled');
                     r2d2.initDynamicUiStuff('#filterDropdownWrapper');
                 });
             });

@@ -191,7 +191,7 @@ class SubscriptionController {
         result.platformInstanceRecords = [:]
         result.platforms = subscribedPlatforms
         result.platformsJSON = subscribedPlatforms.globalUID as JSON
-        result.keyPairs = []
+        result.keyPairs = [:]
         if(!params.containsKey('tab'))
             params.tab = subscribedPlatforms[0].id.toString()
         result.subscription.packages.each { SubscriptionPackage sp ->
@@ -209,7 +209,7 @@ class SubscriptionController {
                         log.warn(keyPair.errors.getAllErrors().toListString())
                     }
                 }
-                result.keyPairs << keyPair
+                result.keyPairs.put(platformInstance.gokbId, keyPair)
             }
             Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
             if (queryResult.error && queryResult.error == 404) {
@@ -688,6 +688,15 @@ class SubscriptionController {
             }
         }
         else {
+
+            if(ctrlResult.result.selectSubMembersWithImport){
+                if(ctrlResult.result.selectSubMembersWithImport.truncatedRows){
+                    flash.message = message(code: 'subscription.details.addMembers.option.selectMembersWithFile.selectProcess.truncatedRows', [ctrlResult.result.selectSubMembersWithImport.processCount, ctrlResult.result.selectSubMembersWithImport.processRow, ctrlResult.result.selectSubMembersWithImport.wrongOrgs, ctrlResult.result.selectSubMembersWithImport.truncatedRows])
+                }else {
+                    flash.message = message(code: 'subscription.details.addMembers.option.selectMembersWithFile.selectProcess', [ctrlResult.result.selectSubMembersWithImport.processCount, ctrlResult.result.selectSubMembersWithImport.processRow, ctrlResult.result.selectSubMembersWithImport.wrongOrgs])
+                }
+            }
+
             redirect controller: 'subscription', action: 'members', params: [id: ctrlResult.result.subscription.id]
             return
         }

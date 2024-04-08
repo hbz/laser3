@@ -181,6 +181,11 @@ transform.format,Transform Format,Transform Format
 transform.type,Transform Type,Transform Type
 user.setting.dashboard.tab,Dashbord Tab,Dashboard Tab
 user.setting.theme,Theme,Theme
+vendor.status,Lieferant-Status,Vendor Status
+vendor.ordering.supported.library.system,Unterstützte Bibliothekssysteme,Supported Library Systems
+vendor.ordering.electronic.delivery.delay,elektronischer Benachrichtigungskanal,Electronic notification channel
+vendor.invoicing.format,Elektronisches Rechnungsformat,Electronic invoice format
+vendor.invoicing.dispatch,Rechnungsübermittlungsweg,Invoice dispatch
 workflow.condition.type,Typ,Type
 workflow.task.priority,Priorität,Priority
 workflow.task.status,Status,Status

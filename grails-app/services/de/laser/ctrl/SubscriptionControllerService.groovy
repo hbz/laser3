@@ -316,19 +316,6 @@ class SubscriptionControllerService {
             result.dateRun = new Date()
             SimpleDateFormat yearFormat = DateUtils.getSDF_yyyy(), monthFormat = DateUtils.getSDF_yyyyMM()
             result.revision = params.revision
-            /*
-            prf.setBenchmark('before subscribed platforms')
-            Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: result.subscription])
-            if(!subscribedPlatforms) {
-                subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription", [subscription: result.subscription])
-            }
-            result.platforms = subscribedPlatforms
-            propIdNamespaces = []
-            if(subscribedPlatforms.titleNamespace) {
-                propIdNamespaces.addAll(IdentifierNamespace.findAllByNsInList(subscribedPlatforms.titleNamespace))
-                namespaces.addAll(propIdNamespaces)
-            }
-            */
             //at this point, we should be sure that at least the parent subscription has a holding!
             Platform platform = Platform.get(params.platform)
             Set<IdentifierNamespace> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name)] as Set<IdentifierNamespace>
@@ -340,25 +327,19 @@ class SubscriptionControllerService {
                 refSub = result.subscription
             }
             else refSub = result.subscription.instanceOf
-            Map<String, Object> c4counts = [:], c4allYearCounts = [:], c5counts = [:], c5allYearCounts = [:], countSumsPerYear = [:]
+            Map<String, Object> c4counts = [:], c4allYearCounts = [:], c5counts = [:]//, c5allYearCounts = [:], countSumsPerYear = [:]
             SortedSet datePoints = new TreeSet(), allYears = new TreeSet()
             String sort, groupKey
             Org customer = result.subscription.getSubscriber()
             result.customer = customer
             if(platform && refSub) {
-                Map<String, Map<String, TitleInstancePackagePlatform>> titles = [:] //structure: namespace -> value -> tipp
+                CostItem refCostItem = CostItem.findBySubAndCostItemElementConfiguration(result.subscription, RDStore.CIEC_POSITIVE)
+                Map<String, Object> titles = [:] //structure: namespace -> value -> tipp
                 //Set<TitleInstancePackagePlatform> titlesSorted = [] //fallback structure to preserve sorting
                 if(params.reportType in Counter4Report.COUNTER_4_TITLE_REPORTS || params.reportType in Counter5Report.COUNTER_5_TITLE_REPORTS) {
-                    fetchTitles(params, refSub, namespaces).each { Map titleMap ->
-                        //titlesSorted << titleMap.tipp
-                        Map<String, TitleInstancePackagePlatform> innerMap = titles.get(titleMap.namespace)
-                        if(!innerMap)
-                            innerMap = [:]
-                        innerMap.put(titleMap.value, GrailsHibernateUtil.unwrapIfProxy(titleMap.tipp))
-                        titles.put(titleMap.namespace, innerMap)
-                    }
+                    titles = fetchTitles(refSub)
                 }
-                Map<String, Object> dateRanges = getDateRange(params, result.subscription)
+                Map<String, Object> dateRanges = getDateRange(params, refCostItem)
                 if(dateRanges.containsKey('startDate') && dateRanges.containsKey('endDate')) {
                     result.startDate = dateRanges.startDate
                     result.endDate = dateRanges.endDate
@@ -367,7 +348,7 @@ class SubscriptionControllerService {
                     }
                 }
                 //Counter5Report.withTransaction {
-                Map<String, Object> queryParams = [reportType: params.reportType, customer: customer, platform: platform, metricTypes: params.list('metricType'), startDate: dateRanges.startDate, endDate: dateRanges.endDate]
+                Map<String, Object> queryParams = [revision: params.revision, reportType: params.reportType, customer: customer, platform: platform, metricTypes: params.list('metricType'), startDate: dateRanges.startDate, endDate: dateRanges.endDate]
                 if(params.revision == AbstractReport.COUNTER_5) {
                     Set<String> metricTypes = []
                     if(params.metricType) {
@@ -387,7 +368,7 @@ class SubscriptionControllerService {
                         //c5usages.addAll(Counter5Report.executeQuery('select r from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) '+filter+' order by r.metricType, r.reportFrom', queryParams))
                         /*
                         structure:
-                        (reportType is fixed, metricType is not)
+                        (reportType is fixed, metricType as well)
                         {
                             metric: [
                                 month1: sum1, month2: sum2, ..., monthn: sumn
@@ -401,12 +382,12 @@ class SubscriptionControllerService {
                             if(titleMatch) {
                                 for(Map performance: reportItem.Performance) {
                                     Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
-                                    String year = yearFormat.format(reportFrom)
+                                    //String year = yearFormat.format(reportFrom)
                                     for(Map instance: performance.Instance) {
                                         String metricType = instance.Metric_Type
                                         metricTypes << metricType
-                                        Map<String, Object> metricDatePointSums = c5counts.containsKey(metricType) ? c5counts.get(metricType) : [total: 0], metricYearSums = c5allYearCounts.containsKey(metricType) ? c5allYearCounts.get(metricType): [:]
-                                        if((!dateRanges.startDate || reportFrom >= dateRanges.startDate) && (!dateRanges.endDate || reportFrom <= dateRanges.endDate)) {
+                                        Map<String, Object> metricDatePointSums = c5counts.containsKey(metricType) ? c5counts.get(metricType) : [total: 0]
+                                        //if((!dateRanges.startDate || reportFrom >= dateRanges.startDate) && (!dateRanges.endDate || reportFrom <= dateRanges.endDate)) {
                                             String datePoint
                                             if(params.reportType == Counter5Report.JOURNAL_REQUESTS_BY_YOP) {
                                                 datePoint = "YOP ${performance.YOP}"
@@ -420,24 +401,23 @@ class SubscriptionControllerService {
                                             monthCount += instance.Count
                                             metricDatePointSums.put(datePoint, monthCount)
                                             c5counts.put(instance.Metric_Type, metricDatePointSums)
-                                        }
-                                        int yearCount = metricYearSums.containsKey(year) ? metricYearSums.get(year) : 0,
-                                        totalCount = countSumsPerYear.containsKey(year) ? countSumsPerYear.get(year) : 0
-                                        yearCount += instance.Count
-                                        totalCount += instance.Count
-                                        metricYearSums.put(year, yearCount)
-                                        countSumsPerYear.put(year, totalCount)
-                                        c5allYearCounts.put(metricType, metricYearSums)
-                                        allYears << year
+                                        //}
+                                        //int yearCount = metricYearSums.containsKey(year) ? metricYearSums.get(year) : 0
+                                        //totalCount = countSumsPerYear.containsKey(year) ? countSumsPerYear.get(year) : 0
+                                        //yearCount += instance.Count
+                                        //totalCount += instance.Count
+                                        //metricYearSums.put(year, yearCount)
+                                        //countSumsPerYear.put(year, totalCount)
+                                        //c5allYearCounts.put(metricType, metricYearSums)
+                                        //allYears << year
                                     }
                                 }
                             }
                         }
-                        result.allYearSums = c5allYearCounts
-                        result.allYears = allYears
+                        //result.allYearSums = c5allYearCounts
+                        //result.allYears = allYears
                         result.sums = c5counts
                         result.datePoints = datePoints
-                        result.metricTypes = metricTypes
                     }
                     else if(requestResponse.containsKey('error')) {
                         result.error = requestResponse.error
@@ -472,12 +452,12 @@ class SubscriptionControllerService {
                             if(titleMatch) {
                                 for(GPathResult performance: reportItem.'ns2:ItemPerformance') {
                                     Date reportFrom = DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:Begin'.text())
-                                    String year = yearFormat.format(reportFrom)
+                                    //String year = yearFormat.format(reportFrom)
                                     for(GPathResult instance: performance.'ns2:Instance') {
                                         String metricType = instance.'ns2:Metric_Type'.text()
                                         Integer count = Integer.parseInt(instance.'ns2:Count'.text())
                                         Map<String, Object> metricDatePointSums = c4counts.get(metricType) ?: [total: 0], metricYearSums = c4allYearCounts.get(metricType) ?: [:]
-                                        if((!dateRanges.startDate || reportFrom >= dateRanges.startDate) && (!dateRanges.endDate || reportFrom <= dateRanges.endDate)) {
+                                        //if((!dateRanges.startDate || reportFrom >= dateRanges.startDate) && (!dateRanges.endDate || reportFrom <= dateRanges.endDate)) {
                                             String datePoint
                                             if(params.reportType == Counter4Report.JOURNAL_REPORT_5) {
                                                 datePoint = "YOP ${performance.'@PubYr'.text()}"
@@ -491,22 +471,22 @@ class SubscriptionControllerService {
                                             monthCount += count
                                             metricDatePointSums.put(datePoint, monthCount)
                                             c4counts.put(metricType, metricDatePointSums)
-                                        }
-                                        int yearCount = metricYearSums.containsKey(year) ? metricYearSums.get(year) : 0,
-                                            totalCount = countSumsPerYear.containsKey(year) ? countSumsPerYear.get(year) : 0
-                                        yearCount += count
-                                        totalCount += count
-                                        metricYearSums.put(year, yearCount)
-                                        countSumsPerYear.put(year, totalCount)
-                                        c4allYearCounts.put(metricType, metricYearSums)
-                                        allYears << year
+                                        //}
+                                        //int yearCount = metricYearSums.containsKey(year) ? metricYearSums.get(year) : 0//
+                                            //totalCount = countSumsPerYear.containsKey(year) ? countSumsPerYear.get(year) : 0
+                                        //yearCount += count
+                                        //totalCount += count
+                                        //metricYearSums.put(year, yearCount)
+                                        //countSumsPerYear.put(year, totalCount
+                                        //c4allYearCounts.put(metricType, metricYearSums)
+                                        //allYears << year
                                     }
                                 }
                             }
                         }
                         //}
-                        result.allYearSums = c4allYearCounts
-                        result.allYears = allYears
+                        //result.allYearSums = c4allYearCounts
+                        //result.allYears = allYears
                         result.sums = c4counts
                         result.datePoints = datePoints
                     }
@@ -522,7 +502,7 @@ class SubscriptionControllerService {
                 result.datePoints = []
                 result.platforms = [] as JSON
             }
-            result.countSumsPerYear = countSumsPerYear
+            //result.countSumsPerYear = countSumsPerYear
             [result: result, status: STATUS_OK]
         }
     }
@@ -549,74 +529,66 @@ class SubscriptionControllerService {
      * @return a {@link Map} containing the sum for each metric and cost considered for the calculation
      */
     Map<String, Object> calculateCostPerUse(Map<String, Object> statsData, String config) {
-        Map<String, BigDecimal> costPerMetric = [:]
-        Set<CostItem> costItems = []
+        Map<String, Map<String, BigDecimal>> costPerMetric = [:]
+        Set<CostItem> allCostItems = [], filteredCostItems = []
         if(config == "own") {
-            Set<RefdataValue> elementsToUse = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :institution and ciec.useForCostPerUse = true', [institution: statsData.contextOrg])
-            costItems = CostItem.executeQuery('select ci from CostItem ci where ci.costItemElement in (:elementsToUse) and ci.owner = :ctx and ci.sub = :sub', [elementsToUse: elementsToUse, ctx: statsData.contextOrg, sub: statsData.subscription])
+            //Set<RefdataValue> elementsToUse = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :institution and ciec.useForCostPerUse = true', [institution: statsData.contextOrg])
+            allCostItems = CostItem.executeQuery('select ci from CostItem ci where ci.owner = :ctx and ci.sub = :sub', [ctx: statsData.contextOrg, sub: statsData.subscription])
         }
         else if(config == "consortial") {
             Org consortium = statsData.subscription.getConsortia()
-            Set<RefdataValue> elementsToUse = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :institution and ciec.useForCostPerUse = true', [institution: consortium])
-            costItems = CostItem.executeQuery('select ci from CostItem ci where ci.costItemElement in (:elementsToUse) and ci.owner = :consortium and ci.sub = :sub and ci.isVisibleForSubscriber = true', [elementsToUse: elementsToUse, consortium: consortium, sub: statsData.subscription])
+            //Set<RefdataValue> elementsToUse = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :institution and ciec.useForCostPerUse = true', [institution: consortium])
+            allCostItems = CostItem.executeQuery('select ci from CostItem ci where ci.owner = :consortium and ci.sub = :sub and ci.isVisibleForSubscriber = true', [consortium: consortium, sub: statsData.subscription])
         }
+        //determine unambiguity
+        Map<String, Calendar> timespan = [:]
+        allCostItems.each { CostItem ci ->
+            /*
+             * acceptable cases:
+             * one start and one end date
+             * if one start date has been set: a subsequent cost with the same start date must also match the end date
+             */
+            //use return of Map.put: the previously stored value under that key
+            Calendar stCal = GregorianCalendar.getInstance(), endCal = GregorianCalendar.getInstance()
+            stCal.setTime(ci.startDate)
+            endCal.setTime(ci.endDate)
+            Calendar start = timespan.put('start', stCal)
+            Calendar end = timespan.put('end', endCal)
+            if(start && start == stCal && end && end == endCal) {
+                filteredCostItems << ci
+            }
+            else if(!start && !end)
+                filteredCostItems << ci
+        }
+        int monthsCount = timespan.end.get(Calendar.MONTH) - timespan.start.get(Calendar.MONTH)
         //calculate 100%
-        Map<String, BigDecimal> allCostSums = [:]
-        Calendar cal = GregorianCalendar.getInstance(), endTime = GregorianCalendar.getInstance()
-        costItems.each { CostItem ci ->
-            cal.setTime(ci.startDate ?: ci.sub.startDate)
-            BigDecimal costForYear = allCostSums.get(cal.get(Calendar.YEAR).toString()) ?: 0.0
+        BigDecimal costForYear = 0.0
+        filteredCostItems.each { CostItem ci ->
             switch(ci.costItemElementConfiguration) {
                 case RDStore.CIEC_POSITIVE: costForYear += ci.costInBillingCurrencyAfterTax
                     break
                 case RDStore.CIEC_NEGATIVE: costForYear -= ci.costInBillingCurrencyAfterTax
                     break
             }
-            allCostSums.put(cal.get(Calendar.YEAR).toString(), costForYear)
         }
-        if(statsData.subscription.startDate && costItems) {
-            List<String> reportYears = []
-            if(statsData.subscription.isMultiYear) {
-                cal.setTime(statsData.subscription.startDate)
-                if(statsData.subscription.endDate)
-                    endTime.setTime(statsData.subscription.endDate)
-                else {
-                    endTime.set(Calendar.MONTH, Calendar.DECEMBER)
-                    endTime.set(Calendar.DAY_OF_MONTH, 31)
-                }
-                while(cal.before(endTime)) {
-                    reportYears << cal.get(Calendar.YEAR).toString()
-                    cal.add(Calendar.YEAR, 1)
-                }
-            }
-            else
-                reportYears << DateUtils.getSDF_yyyy().format(statsData.subscription.startDate)
-            //loop 1: subscription year rings
-            reportYears.each { String reportYear ->
-                //attempt; check data type of year
-                Integer totalClicksInYear = statsData.countSumsPerYear.get(reportYear)
-                //loop 2: metrics
-                statsData.allYearSums.each { String metricType, Map<String, Object> reportYearMetrics ->
-                    //loop 3: metrics in report year
-                    reportYearMetrics.each { String year, Integer count ->
-                        BigDecimal totalSum = allCostSums.get(reportYear)
-                        if(totalSum) {
-                            BigDecimal partOfTotalSum
-                            /*
-                            I am unsure whether I have indeed to calculate from percentage ...
-                            if(count != totalClicksInYear) {
-                                BigDecimal percentage = count / totalClicksInYear
-                                log.debug("percentage: ${percentage*100} % for ${metricType}")
-                                partOfTotalSum = totalSum * percentage
-                            }
-                            else partOfTotalSum = totalSum
-                            */
-                            BigDecimal metricSum = costPerMetric.get(metricType) ?: 0.0
-                            metricSum += (totalSum / count).setScale(2, RoundingMode.HALF_UP)
-                            costPerMetric.put(metricType, metricSum)
-                        }
+        BigDecimal partialCostForYear = costForYear / monthsCount
+        if(filteredCostItems) {
+            //loop 1: metrics
+            statsData.sums.each { String metricType, Map<String, Object> reportYearMetrics ->
+                //loop 2: metrics in report year
+                Map<String, BigDecimal> metricSums = costPerMetric.containsKey(metricType) ? costPerMetric.get(metricType) : [:]
+                reportYearMetrics.each { String date, Integer count ->
+                    BigDecimal metricSum = 0.0
+                    if(date == 'total') {
+                        metricSum = (costForYear / count).setScale(2, RoundingMode.HALF_UP)
                     }
+                    else {
+
+                        metricSum = (partialCostForYear / count).setScale(2, RoundingMode.HALF_UP)
+                    }
+                    metricSums.put(date, metricSum)
                 }
+                costPerMetric.put(metricType, metricSums)
             }
         }
         costPerMetric
@@ -723,6 +695,72 @@ class SubscriptionControllerService {
         }
 
         //titles have to be pre-fetched, title filter thus moved
+        dateRangeParams+[monthsInRing: monthsInRing]
+    }
+
+    Map<String, Object> getDateRange(GrailsParameterMap params, CostItem costItem) {
+        //String dateRange
+        SortedSet<Date> monthsInRing = new TreeSet<Date>()
+        Map<String, Object> dateRangeParams = [:]
+        LocalDate startTime, endTime = LocalDate.now(), now = LocalDate.now()
+        if(params.containsKey('startDate') && params.containsKey('endDate')) {
+            if(params.containsKey('startDate')) {
+                startTime = LocalDate.parse(params.startDate+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
+                dateRangeParams.startDate = Date.from(startTime.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+            }
+            if(params.containsKey('endDate')) {
+                endTime = LocalDate.parse(params.endDate+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
+                dateRangeParams.endDate = Date.from(endTime.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+            }
+        }
+        else {
+            if(costItem.startDate && costItem.endDate) {
+                //dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
+                if(!params.containsKey('tabStat') || params.tabStat == 'total') {
+                    if(costItem.startDate > new Date()) {
+                        LocalDate lastMonth = LocalDate.now()
+                        lastMonth.minusMonths(1)
+                        dateRangeParams.startDate = Date.from(lastMonth.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+                    }
+                    else dateRangeParams.startDate = costItem.startDate
+                    if(costItem.endDate <= Date.from(now.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                        dateRangeParams.endDate = costItem.endDate
+                    else dateRangeParams.endDate = Date.from(now.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+                }
+                else {
+                    LocalDate filterDate = LocalDate.parse(params.tabStat+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
+                    dateRangeParams.startDate = Date.from(filterDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
+                    dateRangeParams.endDate = Date.from(filterDate.withDayOfMonth(filterDate.getMonth().length(filterDate.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+                }
+                startTime = costItem.startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                //is completely meaningless, but causes 500 if not dealt ...
+                if(costItem.endDate < new Date() || costItem.startDate > new Date())
+                    endTime = costItem.endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+            }
+            else if(costItem.startDate) {
+                //dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
+                dateRangeParams.startDate = costItem.startDate
+                dateRangeParams.endDate = new Date()
+                startTime = costItem.startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                endTime = LocalDate.now()
+            }
+            else {
+                LocalDate lastYear = LocalDate.now().minus(1, ChronoUnit.YEARS)
+                startTime = lastYear.with(TemporalAdjusters.firstDayOfYear())
+                endTime = lastYear.with(TemporalAdjusters.lastDayOfYear())
+                dateRangeParams.startDate = Date.from(startTime.atStartOfDay(ZoneId.systemDefault()).toInstant())
+                dateRangeParams.endDate = Date.from(endTime.atStartOfDay(ZoneId.systemDefault()).toInstant())
+            }
+        }
+
+        endTime = endTime.with(TemporalAdjusters.lastDayOfMonth())
+        if(startTime) {
+            while(startTime.isBefore(endTime)) {
+                monthsInRing << Date.from(startTime.atStartOfDay(ZoneId.systemDefault()).toInstant())
+                startTime = startTime.plusMonths(1)
+            }
+        }
+
         dateRangeParams+[monthsInRing: monthsInRing]
     }
 
@@ -1276,6 +1314,11 @@ class SubscriptionControllerService {
 
         result.showBulkCostItems = params.showBulkCostItems ? params.showBulkCostItems : null
 
+        String query = 'from CostItem ct where ct.costItemStatus != :status and ct.sub in (select sub from Subscription sub where sub.instanceOf = :parentSub) and ct.costItemElement is not null'
+
+        result.costItemsByCostItemElement = CostItem.executeQuery(query, [status: RDStore.COST_ITEM_DELETED, parentSub: result.subscription]).groupBy { it.costItemElement }
+
+
         if (params.processBulkCostItems) {
             List<Long> selectedSubs = []
             params.list("selectedSubs").each { id ->
@@ -1392,10 +1435,31 @@ class SubscriptionControllerService {
 
                 if (result.editable) {
                     List<Org> members = []
-                    //License licenseCopy
-                    params.list('selectedOrgs').each { it ->
-                        members << Org.findById(Long.valueOf(it))
+                    Map startEndDates = [:]
+
+                    if(params.selectSubMembersWithImport){
+
+                        MultipartFile importFile = params.selectSubMembersWithImport
+                        InputStream stream = importFile.getInputStream()
+
+                        result.selectSubMembersWithImport = subscriptionService.selectSubMembersWithImport(stream)
+
+                        if(result.selectSubMembersWithImport.orgList){
+                            result.selectSubMembersWithImport.orgList.each { it ->
+                                members << Org.findById(Long.valueOf(it.orgId))
+                                startEndDates.put("${it.orgId}", [startDate: it.startDate, endDate: it.endDate])
+                            }
+                        }
+
+
+                    }else {
+                        params.list('selectedOrgs').each { it ->
+                            members << Org.findById(Long.valueOf(it))
+                        }
                     }
+
+
+
                     /*
                     List<Subscription> synShareTargetList = []
                     List<License> licensesToProcess = []
@@ -1473,6 +1537,14 @@ class SubscriptionControllerService {
                                 if (existSubForOrg == 0) {
                                     Date startDate = params.valid_from ? DateUtils.parseDateGeneric(params.valid_from) : null
                                     Date endDate = params.valid_to ? DateUtils.parseDateGeneric(params.valid_to) : null
+
+                                    if(startEndDates){
+                                        Map startAndEndDate = startEndDates.get("${cm.id}")
+                                        if(startAndEndDate) {
+                                            startDate = startAndEndDate.startDate ?: startDate
+                                            endDate = startAndEndDate.endDate ?: endDate
+                                        }
+                                    }
                                     Subscription memberSub = new Subscription(
                                             type: currParent.type ?: null,
                                             kind: currParent.kind ?: null,
@@ -1535,6 +1607,10 @@ class SubscriptionControllerService {
                                         memberSub = memberSub.refresh()
                                         licensesToProcess.each { License lic ->
                                             subscriptionService.setOrgLicRole(memberSub, lic, false)
+                                        }
+
+                                        if (cm.isCustomerType_Inst_Pro()) {
+                                            PendingChange.construct([target: memberSub, oid: "${memberSub.getClass().getName()}:${memberSub.id}", msgToken: "pendingChange.message_SU_NEW_03", status: RDStore.PENDING_CHANGE_PENDING, owner: cm])
                                         }
 
                                         if (c == 0) {
@@ -3782,7 +3858,15 @@ class SubscriptionControllerService {
         fsr.query = fsr.query.replaceFirst("select o from ", "select o.id from ")
         List<Long> filteredOrgIds = Org.executeQuery(fsr.query, fsr.queryParams, orgParams+[id:parentSub.id])
 
-        Set rows = Subscription.executeQuery("select sub,o from OrgRole oo join oo.sub sub join oo.org o where sub.instanceOf = :parent"+sort,[parent:parentSub])
+        Set parentSubs = []
+        if(params.showMembersSubWithMultiYear){
+            params.subRunTimeMultiYear = true
+            parentSubs = linksGenerationService.getSuccessionChain(parentSub, 'destinationSubscription')
+            sort = " order by o.sortname, sub.referenceYear "
+        }
+        parentSubs << parentSub
+
+        Set rows = Subscription.executeQuery("select sub,o from OrgRole oo join oo.sub sub join oo.org o where sub.instanceOf in (:parents) "+sort,[parents:parentSubs])
         List<Map> filteredSubChilds = []
         rows.each { row ->
             Org subscriber = row[1]

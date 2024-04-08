@@ -916,7 +916,7 @@ class YodaController {
     }
 
     /**
-     * Call to reload all provider / agency data from the specified we:kb instance.
+     * Call to reload all provider data from the specified we:kb instance.
      * Note that the organisations whose data should be updated need a we:kb ID for match;
      * if no match is being found for the given we:kb ID, a new record will be created!
      */
@@ -924,18 +924,37 @@ class YodaController {
     def reloadWekbOrg() {
         if(!globalSourceSyncService.running) {
             log.debug("start reloading ...")
-            if(params.containsKey('componentType')) {
-                executorService.execute({
-                    Thread.currentThread().setName("GlobalDataUpdate_Org")
-                    globalSourceSyncService.reloadData(params.componentType)
-                    yodaService.expungeRemovedComponents(params.componentType)
-                })
-            }
+            executorService.execute({
+                Thread.currentThread().setName("GlobalDataUpdate_Org")
+                globalSourceSyncService.reloadData('Org')
+                yodaService.expungeRemovedComponents(Org.class.name)
+            })
         }
         else {
             log.debug("process running, lock is set!")
         }
         redirect controller: 'organisation', action: 'listProvider'
+    }
+
+    /**
+     * Call to reload all vendor (agency) data from the specified we:kb instance.
+     * Note that the vendors whose data should be updated need a we:kb ID for match;
+     * if no match is being found for the given we:kb ID, a new record will be created!
+     */
+    @Secured(['ROLE_YODA'])
+    def reloadWekbVendor() {
+        if(!globalSourceSyncService.running) {
+            log.debug("start reloading ...")
+            executorService.execute({
+                Thread.currentThread().setName("GlobalDataUpdate_Vendor")
+                globalSourceSyncService.reloadData('Vendor')
+                yodaService.expungeRemovedComponents(Vendor.class.name)
+            })
+        }
+        else {
+            log.debug("process running, lock is set!")
+        }
+        redirect controller: 'vendor', action: 'index'
     }
 
     /**

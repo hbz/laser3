@@ -128,9 +128,13 @@
                 <ui:actionsDropdownItem controller="subscription" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
                 <g:if test="${subscription.packages}">
                     <ui:actionsDropdownItem controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
-                    <g:if test="${actionName == 'addEntitlements'}">
-                        <ui:actionsDropdownItem data-ui="modal" id="selectEntitlementsWithKBART" href="#KBARTUploadForm" message="subscription.details.addEntitlements.menu"/>
+                    <g:if test="${actionName == 'renewEntitlementsWithSurvey'}">
+                        <ui:actionsDropdownItem id="selectEntitlementsWithKBART" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: params.tab)}" message="subscription.details.addEntitlements.menu"/>
                     </g:if>
+                    <g:else>
+                        <ui:actionsDropdownItem id="selectEntitlementsWithKBART" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscription.id)}" message="subscription.details.addEntitlements.menu"/>
+                    </g:else>
+
                     <ui:actionsDropdownItem controller="subscription" action="manageEntitlementGroup" params="${[id:params.id]}" message="subscription.details.manageEntitlementGroup.label" />
                     <ui:actionsDropdownItem controller="subscription" action="index" notActive="true" params="${[id:params.id, issueEntitlementEnrichment: true]}" message="subscription.details.issueEntitlementEnrichment.label" />
                 </g:if>
@@ -261,5 +265,34 @@
     <g:set var="successor" value="${subscription._getCalculatedSuccessor()}"/>
     <laser:render template="subscriptionTransferInfo" model="${[calculatedSubList: successor + [subscription] + previous]}"/>
 </g:if>
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('#selectEntitlementsWithKBART').on('click', function(e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: $(this).attr('href')
+            }).done( function (data) {
+                $('.ui.dimmer.modals > #KBARTUploadForm').remove();
+                $('#dynamicModalContainer').empty().html(data);
+
+                $('#dynamicModalContainer .ui.modal').modal({
+                   onShow: function () {
+                        r2d2.initDynamicUiStuff('#KBARTUploadForm');
+                        r2d2.initDynamicXEditableStuff('#KBARTUploadForm');
+                        $("html").css("cursor", "auto");
+                    },
+                    detachable: true,
+                    autofocus: false,
+                    closable: false,
+                    transition: 'scale',
+                    onApprove : function() {
+                        $(this).find('.ui.form').submit();
+                        return false;
+                    }
+                }).modal('show');
+            })
+        })
+</laser:script>
 
 

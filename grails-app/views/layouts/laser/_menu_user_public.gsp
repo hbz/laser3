@@ -20,6 +20,7 @@
         </g:elseif>
 
         <ui:link addItemAttributes="true" controller="organisation" action="listProvider">${message(code:'menu.public.all_providers')}</ui:link>
+        <ui:link addItemAttributes="true" controller="vendor" action="list">${message(code:'menu.public.all_vendors')}</ui:link>
         <ui:link addItemAttributes="true" controller="platform" action="list">${message(code:'menu.public.all_platforms')}</ui:link>
 
         <ui:link addItemAttributes="true" controller="package" action="index">${message(code:'menu.public.all_pkg')}</ui:link>

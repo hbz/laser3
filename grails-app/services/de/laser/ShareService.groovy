@@ -121,6 +121,38 @@ class ShareService {
     }
 
     /**
+     * Adds a share flag to the given vendor relation so that the vendor may be accessed from member objects as well
+     * @param share the role to be shared
+     * @param target the share flag
+     * @return true if the setting was successful, false otherwise
+     */
+    boolean addVendorRoleShareForTarget(VendorRole share, ShareSupport target) {
+
+        if (share.sharedFrom) {
+            return false
+        }
+        // todo check existence
+
+        VendorRole clonedShare = new VendorRole(
+                vendor:         share.vendor ,
+                license:        (target instanceof License) ? target : share.license,
+                subscription:   (target instanceof Subscription) ? target : share.subscription,
+                sharedFrom:     share,
+                isShared:       false
+        )
+
+        if (clonedShare.save()) {
+            if (! share.isShared) {
+                share.isShared = true
+                if (share.save()) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    /**
      * Removes the given share flag
      * @param share unused
      * @param target the share flag to unset
@@ -137,6 +169,25 @@ class ShareService {
 
         if (tp) {
             OrgRole.executeUpdate('delete from OrgRole oorr where oorr.sharedFrom = :sf and ' + tp + ' = :target', [sf: this, target: target])
+            return true
+        }
+        return false
+    }
+
+    /**
+     * Removes the given share flag
+     * @param target the share flag to unset
+     * @return true if the flag could be removed successfully, false otherwise
+     */
+    boolean deleteVendorRoleShareForTarget(ShareSupport target) {
+
+        String tp =
+                (target instanceof License) ? 'lic' :
+                        (target instanceof Subscription) ? 'sub' :
+                                null
+
+        if (tp) {
+            VendorRole.executeUpdate('delete from VendorRole vr where vr.sharedFrom = :sf and ' + tp + ' = :target', [sf: this, target: target])
             return true
         }
         return false

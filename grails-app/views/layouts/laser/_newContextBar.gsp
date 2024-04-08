@@ -60,6 +60,14 @@
                 <ui:cbItemInfo display="${message(code: 'statusbar.flagContentElasticsearch.tooltip')}" icon="cloud" color="blue" />
             </g:if>
 
+            %{-- dateCreated & lastUpdated panel --}%
+
+            <g:if test="${(actionName=='show')}">
+                <div class="item la-cb-action">
+                    <button class="ui icon button la-toggle-ui" id="dateCreatedLastUpdated-toggle"><i class="calendar alternative icon"></i></button>
+                </div>
+            </g:if>
+
             %{-- help panel --}%
 
             <g:if test="${(controllerName=='subscription' && actionName=='show') || (controllerName=='myInstitution' && actionName=='financeImport') || (controllerName=='myInstitution' && actionName=='subscriptionImport') || (controllerName=='dev' && actionName=='frontend')}">
@@ -319,6 +327,10 @@
 
             $('#help-toggle').on('click', function() {
                 $('#help-content').flyout('toggle');
+            });
+
+            $('#dateCreatedLastUpdated-toggle').on('click', function() {
+                $('#dateCreatedLastUpdated-content').flyout('toggle');
             });
 
             $('#subscriptionTransfer-toggle').on('click', function() {

@@ -137,6 +137,7 @@ class DataloadService {
      * Currently supported by this implementation are:
      * <ul>
      *     <li>{@link Org}</li>
+     *     <li>{@link Vendor}</li>
      *     <li>{@link TitleInstancePackagePlatform}</li>
      *     <li>{@link de.laser.Package}</li>
      *     <li>{@link Platform}</li>
@@ -210,6 +211,46 @@ class DataloadService {
 
                 result.dateCreated = org.dateCreated
                 result.lastUpdated = org.lastUpdated
+
+                result
+            }
+        }
+
+        if (!domainClass || domainClass == Vendor.class) {
+
+            _updateES(Vendor.class, BULK_SIZE_MEDIUM) { Vendor vendor ->
+                Map result = [:]
+
+                result._id = vendor.globalUID
+                if (!result._id) {
+                    return result
+                }
+
+                result.priority = 30
+                result.dbId = vendor.id
+
+                result.gokbId = vendor.gokbId
+                result.guid = vendor.globalUID ?: ''
+
+                result.name = vendor.name
+
+                result.status = vendor.status.getMapForES()
+                result.visible = 'Public'
+                result.rectype = vendor.getClass().getSimpleName()
+
+                result.sortname = vendor.sortname
+
+                result.packages = []
+                vendor.packages.each { PackageVendor pv ->
+                    try {
+                        result.packages.add([dbId: pv.pkg.id, name: pv.pkg.name])
+                    } catch (Exception e) {
+                        log.error( e.toString() )
+                    }
+                }
+
+                result.dateCreated = vendor.dateCreated
+                result.lastUpdated = vendor.lastUpdated
 
                 result
             }

@@ -10,7 +10,7 @@
         <div class="ui segment">
             <div class="ui two column very relaxed grid">
                 <div class="column">
-                        <g:form action="${actionName}" method="post" class="ui form" id="${params.id}" params="[tab: params.tab]">
+                        <g:form action="${actionName}" method="post" class="ui form" id="${params.id}" params="[tab: params.tab, showMembersSubWithMultiYear: params.showMembersSubWithMultiYear]">
                             <div class="fields" style="margin-bottom: 0">
 
                                 <laser:render template="/templates/properties/genericFilter"
@@ -25,7 +25,7 @@
                 </div>
                 <div class="column">
                         <g:form action="${actionName}" method="post" class="ui form" id="${params.id}"
-                                params="[tab: params.tab]">
+                                params="[tab: params.tab, showMembersSubWithMultiYear: params.showMembersSubWithMultiYear]">
                             <div class="fields" style="margin-bottom: 0">
                                 <laser:render template="/templates/properties/genericFilter"
                                           model="[propList: allProperties, hideFilterProp: true, newfilterPropDefName: 'propertiesFilterPropDef',label:message(code: 'subscriptionsManagement.allProperties')]"/>
