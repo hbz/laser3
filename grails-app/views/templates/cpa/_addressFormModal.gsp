@@ -165,38 +165,44 @@
 
     <g:set var="languageSuffix" value="${LocaleUtils.getCurrentLang()}"/>
     <laser:script file="${this.getGroovyPageFileName()}">
-        $("#addressFormModal").form({
-          inline: true,
-          on: "blur",
-          fields: {
-            address1: {
-              identifier: "address1",
-              rules: [
-                {
-                  type: "empty",
-                  prompt: "Bitte füllen Sie die Adresse 1 aus"
+        
+$('#create_address').form(
+    %{--            let addressElements = [$('#type'), $('#name'), $('#additionFirst'), $('#additionSecond'), $('#street_1'), $('#street_2'), $('#zipcode'), $('#city'), $('#pob'), $('#pobZipcode'), $('#pobCity'), $('#country'), $('#region')];
+                if(!JSPC.app.areElementsFilledOut(addressElements)) {
+                    $('#create_address .ui.info.message').show();
+                }--}%
+        {
+        on: 'blur',
+        inline: true,
+        fields: {
+            org: {
+                identifier  : 'org',
+                rules: [
+                    {
+                        type   : 'empty',
+                        prompt : '{name} <g:message code="validation.needsToBeFilledOut"/>'
+                        }
+                    ]
+                },
+                additionFirst: {
+                    identifier: 'additionFirst',
+                    rules: [
+                        {
+                            type   : 'empty',
+                            prompt : '{name} <g:message code="validation.needsToBeFilledOut"/>'
+                        }
+                    ]
+                },
+                additionSecond: {
+                    identifier  : 'additionSecond',
+                    rules: [
+                        {
+                            type   : 'empty',
+                            prompt : '{name} <g:message code="validation.needsToBeFilledOut"/>'
+                        }
+                    ]
                 }
-              ]
-            },
-            address2: {
-              identifier: "address2",
-              rules: [
-                {
-                  type: "empty",
-                  prompt: "Bitte füllen Sie die Adresse 2 aus"
-                }
-              ]
-            },
-            address3: {
-              identifier: "address3",
-              rules: [
-                {
-                  type: "empty",
-                  prompt: "Bitte füllen Sie die Adresse 3 aus"
-                }
-              ]
             }
-          }
         });
 
         JSPC.app.updateDropdown = function() {
