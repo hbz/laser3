@@ -34,7 +34,7 @@
 <br />
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">
-    <g:if test="${surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]}">
+    <g:if test="${surveyConfig.isTypeSubscriptionOrIssueEntitlement()}">
         <i class="icon clipboard outline la-list-icon"></i>
         <g:link controller="subscription" action="show" id="${surveyConfig.subscription.id}">
             ${surveyConfig.getConfigNameShort()}
@@ -49,7 +49,7 @@
 
 <br />
 
-<g:if test="${surveyConfigs}">
+<g:if test="${surveyConfig}">
     <div class="ui grid">
 
         <div class="sixteen wide stretched column">
@@ -326,8 +326,8 @@
             <br />
             <br />
 
-            <g:form action="workflowCostItemsFinish" method="post" class="ui form"
-                    params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
+            <g:form action="setSurveyWorkFlowInfos" method="post" class="ui form"
+                    params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, setSurveyWorkFlowInfo: 'workflowCostItemsFinish']">
 
                 <div class="ui right floated compact segment">
                     <div class="ui checkbox">

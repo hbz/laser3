@@ -56,7 +56,7 @@ class SubNavTagLib {
             linkBody = '<div class="la-popup-tooltip la-delay" data-content="' + tooltip + '">' + linkBody + '</div>'
         }
 
-        if (attrs.counts) {
+        if ((attrs.counts instanceof String && !attrs.counts.isEmpty()) || (attrs.counts instanceof Integer && attrs.counts >= 0) || (attrs.counts instanceof Long && attrs.counts >= 0)) {
             linkBody = linkBody + '<span class="ui floating blue circular label">' + attrs.counts + '</span>'
         }
 

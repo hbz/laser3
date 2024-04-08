@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyInfo; de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.remote.ApiSource; de.laser.AlternativeName; de.laser.RefdataCategory;" %>
+<%@ page import="de.laser.survey.SurveyInfo; de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.Vendor; de.laser.remote.ApiSource; de.laser.AlternativeName; de.laser.RefdataCategory;" %>
 <laser:serviceInjection/>
 <g:if test="${'surveySubCostItem' in tmplConfigShow}">
     <g:set var="oldCostItem" value="${0.0}"/>
@@ -139,46 +139,51 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubCostItem')}">
                 <th>
-                    <g:if test="${actionName == 'surveyCostItems'}">
-                        <%
-                            def tmpParams = params.clone()
-                            tmpParams.remove("sort")
-                        %>
-                        <g:if test="${sortOnCostItemsUp}">
-                            <g:link action="surveyCostItems" class="ui icon"
-                                    params="${tmpParams + [sortOnCostItemsDown: true]}"><span
-                                    class="la-popup-tooltip la-delay"
-                                    data-position="top right"
-                                    data-content="${message(code: 'surveyCostItems.sortOnPrice')}">
-                                <i class="arrow down circle icon blue"></i>
-                            </span></g:link>
-                        </g:if>
-                        <g:else>
-                            <g:link action="surveyCostItems" class="ui icon"
-                                    params="${tmpParams + [sortOnCostItemsUp: true]}"><span
-                                    class="la-popup-tooltip la-delay"
-                                    data-position="top right"
-                                    data-content="${message(code: 'surveyCostItems.sortOnPrice')}">
-                                <i class="arrow up circle icon blue"></i>
-                            </span></g:link>
-                        </g:else>
-                    </g:if>
-
-                    <g:set var="costItemElements"
-                           value="${costItemsByCostItemElement.collect {RefdataValue.findByValueAndOwner(it.key, RefdataCategory.findByDesc(RDConstants.COST_ITEM_ELEMENT))}}"/>
-
-                        <ui:select name="selectedCostItemElementID"
-                                      from="${costItemElements}"
-                                      optionKey="id"
-                                      optionValue="value"
-                                      value="${selectedCostItemElementID}"
-                                      class="ui dropdown"
-                                      id="selectedCostItemElementID"/>
+                    ${message(code: 'exportClickMe.subscription.costItems')}
                 </th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
                 <th>
                     ${message(code: 'surveyCostItems.label')}
+
+                    <g:set var="costItemElements"
+                           value="${costItemsByCostItemElement.collect { RefdataValue.findByValueAndOwner(it.key, RefdataCategory.findByDesc(RDConstants.COST_ITEM_ELEMENT)) }}"/>
+
+                    <g:if test="${costItemElements}">
+                        <g:if test="${actionName == 'surveyCostItems'}">
+                            <%
+                                def tmpParams = params.clone()
+                                tmpParams.remove("sort")
+                            %>
+                            <g:if test="${sortOnCostItemsUp}">
+                                <g:link action="surveyCostItems" class="ui icon"
+                                        params="${tmpParams + [sortOnCostItemsDown: true]}"><span
+                                        class="la-popup-tooltip la-delay"
+                                        data-position="top right"
+                                        data-content="${message(code: 'surveyCostItems.sortOnPrice')}">
+                                    <i class="arrow down circle icon blue"></i>
+                                </span></g:link>
+                            </g:if>
+                            <g:else>
+                                <g:link action="surveyCostItems" class="ui icon"
+                                        params="${tmpParams + [sortOnCostItemsUp: true]}"><span
+                                        class="la-popup-tooltip la-delay"
+                                        data-position="top right"
+                                        data-content="${message(code: 'surveyCostItems.sortOnPrice')}">
+                                    <i class="arrow up circle icon blue"></i>
+                                </span></g:link>
+                            </g:else>
+                        </g:if>
+
+
+                        <ui:select name="selectedCostItemElementID"
+                                   from="${costItemElements}"
+                                   optionKey="id"
+                                   optionValue="value"
+                                   value="${selectedCostItemElementID}"
+                                   class="ui dropdown"
+                                   id="selectedCostItemElementID"/>
+                    </g:if>
                 </th>
             </g:if>
 
@@ -253,7 +258,9 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
                 <th scope="row" class="la-th-column la-main-object">
                     <div class="la-flexbox">
-                        <ui:customerTypeProIcon org="${org}" cssClass="la-list-icon" />
+                        <g:if test="${org instanceof Org}">
+                            <ui:customerTypeProIcon org="${org}" cssClass="la-list-icon" />
+                        </g:if>
 
                         <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
                             ${fieldValue(bean: org, field: "name")}
@@ -359,9 +366,12 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('isWekbCurated')}">
                 <td class="center aligned">
-                    <g:if test="${org.gokbId != null && org.getAllOrgTypeIds().any { ot -> [RDStore.OT_AGENCY.id, RDStore.OT_PROVIDER.id].contains(ot) }}">
+                    <g:if test="${org instanceof Org && org.gokbId != null && org.getAllOrgTypeIds().any { ot -> [RDStore.OT_AGENCY.id, RDStore.OT_PROVIDER.id].contains(ot) }}">
                         <ui:wekbButtonLink type="org" gokbId="${org.gokbId}" />
                     </g:if>
+                    <g:elseif test="${org instanceof Vendor && org.gokbId != null}">
+                        <ui:wekbButtonLink type="vendor" gokbId="${org.gokbId}" />
+                    </g:elseif>
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('status')}">
@@ -591,6 +601,15 @@
                             </ul>
                         </g:if>
                     </g:if>
+                    <g:elseif test="${actionName == 'currentVendors'}">
+                        <g:if test="${currentSubscriptions}">
+                            <ul class="la-simpleList">
+                                <g:each in="${currentSubscriptions}" var="sub">
+                                    <li><g:link controller="subscription" action="show" id="${sub.id}">${sub}</g:link></li>
+                                </g:each>
+                            </ul>
+                        </g:if>
+                    </g:elseif>
                 </td>
             </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSurveys')}">
@@ -649,13 +668,18 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('platform')}">
                 <td>
-                    <g:each in="${org.platforms}" var="platform">
-                        <g:if test="${platform.gokbId != null}">
-                            <ui:wekbIconLink type="platform" gokbId="${platform.gokbId}" />
-                        </g:if>
-                        <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
-                        <br />
-                    </g:each>
+                    <g:if test="${org instanceof Org}">
+                        <g:each in="${org.platforms}" var="platform">
+                            <g:if test="${platform.gokbId != null}">
+                                <ui:wekbIconLink type="platform" gokbId="${platform.gokbId}" />
+                            </g:if>
+                            <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
+                            <br />
+                        </g:each>
+                    </g:if>
+                    <g:elseif test="${org instanceof Vendor}">
+                        to be implemented
+                    </g:elseif>
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('type')}">
@@ -792,6 +816,7 @@
                                         <g:if test="${costItem.startDate || costItem.endDate}">
                                             ${costItem.startDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.startDate) : ''} - ${costItem.endDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.endDate) : ''}
                                         </g:if>
+                                        <g:link class="ui blue right right floated mini button" controller="finance" action="showCostItem" id="${costItem.id}" params="[sub: costItem.sub?.id]" target="_blank"><g:message code="default.show.label" args="[g.message(code: 'costItem.label')]"/></g:link>
                                     </td>
                                 </tr>
                             </g:each>

@@ -53,6 +53,9 @@
                 <g:if test="${tmplConfigItem == 'linkPackage'}">
                     <th class="center aligned">${message(code: 'default.actions.label')}</th>
                 </g:if>
+                <g:if test="${tmplConfigItem == 'markPerpetualAccess'}">
+                    <th class="x center aligned">${message(code: 'subscription.hasPerpetualAccess.label')}</th>
+                </g:if>
                 <g:if test="${tmplConfigItem == 'yodaActions'}">
                     <th class="x center aligned">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="left center" data-content="${message(code: 'menu.yoda.reloadPackages')}">
@@ -88,6 +91,7 @@
                     plat = Platform.findByGokbId(record.nominalPlatformUuid)
                 else
                     plat = pkg.nominalPlatform
+                boolean perpetuallySubscribed = false
             %>
             <tr>
                 <g:each in="${tmplConfigShow}" var="tmplConfigItem">
@@ -228,6 +232,7 @@
                                         String period = sub.startDate ? g.formatDate(date: sub.startDate, format: message(code: 'default.date.format.notime'))  : ''
                                         period = sub.endDate ? period + ' - ' + g.formatDate(date: sub.endDate, format: message(code: 'default.date.format.notime'))  : ''
                                         period = period ? '('+period+')' : ''
+                                        perpetuallySubscribed = sub.hasPerpetualAccess
                                     %>
                                     <li>
                                         <g:link controller="subscription" action="show" id="${sub.id}">${sub.name + ' ' +period}</g:link>
@@ -264,6 +269,35 @@
                                         data-content="${message(code: 'subscription.details.linkPackage.button', args: [record.name])}"><g:message
                                         code="subscription.details.linkPackage.label"/></button>
 
+                            </g:if>
+                        </td>
+                    </g:if>
+                    <g:if test="${tmplConfigItem == 'markPerpetualAccess'}">
+                        <td class="x">
+                            <g:if test="${pkg}">
+                                <g:if test="${perpetuallySubscribed}">
+                                    <g:if test="${editable}">
+                                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'subscription.unmarkPerpetualAccess')}">
+                                            <g:link controller="subscription" action="removePermanentTitlesByPackage" params="${[pkg: pkg.id]}" class="ui icon negative button">
+                                                <i class="flag outline icon"></i>
+                                            </g:link>
+                                        </span>
+                                    </g:if>
+                                    <g:else>
+                                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'subscription.perpetuallySubscribed')}">
+                                            <i class="flag outline icon"></i>
+                                        </span>
+                                    </g:else>
+                                </g:if>
+                                <g:else>
+                                    <g:if test="${editable}">
+                                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'subscription.markPerpetualAccess')}">
+                                            <g:link controller="subscription" action="setPermanentTitlesByPackage" params="${[pkg: pkg.id]}" class="ui icon positive button">
+                                                <i class="flag icon"></i>
+                                            </g:link>
+                                        </span>
+                                    </g:if>
+                                </g:else>
                             </g:if>
                         </td>
                     </g:if>

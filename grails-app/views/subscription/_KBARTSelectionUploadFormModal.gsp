@@ -2,13 +2,10 @@
     <ui:msg header="${message(code:"message.attention")}" message="subscription.details.addEntitlements.warning" />
 
     <g:form class="ui form" method="post" enctype="multipart/form-data">
-        <g:if test="${actionName == 'addEntitlements'}">
-            <g:hiddenField name="id" value="${subscription.id}"/>
-        </g:if>
-        <g:if test="${actionName == 'renewEntitlementsWithSurvey'}">
-            <g:hiddenField name="id" value="${subscriberSub.id}"/>
+        <g:hiddenField name="id" value="${subscription.id}"/>
+        <g:if test="${surveyConfig}">
             <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
-            <g:hiddenField name="tab" value="${params.tab}"/>
+            <g:hiddenField name="tab" value="${tab}"/>
         </g:if>
         <div class="field">
             <div class="ui action input">
@@ -73,7 +70,7 @@
             let formData = new FormData(this);
             //formData.append('kbartFile', kbart);
             $.ajax({
-                url: '<g:createLink controller="${controllerName}" action="${actionName == 'addEntitlements' ? 'selectEntitlementsWithKBART' : actionName == 'renewEntitlementsWithSurvey' ? 'selectEntitlementsWithKBARTForSurvey' : actionName}"/>',
+                url: '<g:createLink controller="subscription" action="${surveyConfig ? 'selectEntitlementsWithKBARTForSurvey' : 'selectEntitlementsWithKBART'}"/>',
                 cache: false,
                 contentType: false,
                 processData: false,

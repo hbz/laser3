@@ -100,9 +100,13 @@ class PlatformController  {
             result.filterSet = true
             queryParams.counterCertified = Params.getRefdataList(params, 'counterCertified').collect{ (it == RDStore.GENERIC_NULL_VALUE) ? 'null' : it.value }
         }
+        if(params.counterSushiSupport) {
+            result.filterSet = true
+            queryParams.counterSushiSupport = params.list('counterSushiSupport') //ask David about proper convention
+        }
 
         // overridden pagination - all uuids are required
-        Map wekbResultMap = gokbService.doQuery(result, [offset:0, max:1000, status: params.status], queryParams)
+        Map wekbResultMap = gokbService.doQuery(result, [offset:0, max:10000, status: params.status], queryParams)
         if(!wekbResultMap)
             result.error = message(code: 'wekb.error.404') as String
 

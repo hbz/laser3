@@ -456,7 +456,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
         matches.each { it ->
             if (params.tenant.equals(it.getTenant()?.id?.toString())) {
-                result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
+                result.add([id: "${it.id}", text: "${it.getI10n('name')}", icon: it.multipleOccurrence ? 'redo icon orange' : ''])
             }
         }
 

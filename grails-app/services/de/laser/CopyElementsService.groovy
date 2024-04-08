@@ -1312,7 +1312,7 @@ class CopyElementsService {
             SurveyConfigProperties sourceSurveyConfigProperty = SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(sourceObject, prop)
             SurveyConfigProperties targetSurveyConfigProperty = SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(targetObject, prop)
             if (sourceSurveyConfigProperty && !targetSurveyConfigProperty) {
-                new SurveyConfigProperties(surveyConfig: targetObject, surveyProperty: prop).save()
+                new SurveyConfigProperties(surveyConfig: targetObject, surveyProperty: prop, propertyOrder: sourceSurveyConfigProperty.propertyOrder).save()
             }
         }
     }

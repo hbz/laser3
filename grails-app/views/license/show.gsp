@@ -1,6 +1,8 @@
 <%@ page import="de.laser.Subscription;de.laser.License;de.laser.OrgRole;de.laser.DocContext;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.properties.PropertyDefinition;de.laser.interfaces.CalculatedType" %>
 <laser:htmlStart message="license.details.label" serviceInjection="true"/>
 
+%{-- help sidebar --}%
+<laser:render template="/templates/help/dateCreatedLastUpdated" model="[obj: license]"/>
         <ui:debugInfo>
             <div style="padding: 1em 0;">
                 <p>lic.licenseCategory: ${license.licenseCategory}</p>

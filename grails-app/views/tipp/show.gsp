@@ -2,6 +2,9 @@
 
 <laser:htmlStart text="${message(code:"tipp.show.label", args:[tipp.name, tipp.pkg.name, tipp.platform.name])}" />
 
+%{-- help sidebar --}%
+<laser:render template="/templates/help/dateCreatedLastUpdated" model="[obj: tipp]"/>
+
 <ui:breadcrumbs>
     <ui:crumb controller="package" action="show" id="${tipp.pkg.id}"
                  text="${tipp.pkg.name} [${message(code: 'package.label')}]"/>

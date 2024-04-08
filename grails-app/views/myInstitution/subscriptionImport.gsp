@@ -29,15 +29,12 @@
                 </div>
             </div>
 
-
-            <div class="ui card">
+            <div class="ui flyout" id="help-content" style="padding:50px 0 10px 0;overflow:scroll">
+                <h1 class="ui header">
+                    <g:message code="myinst.subscriptionImport.template.description"/>
+                </h1>
                 <div class="content">
-                    <div class="header">${message(code: 'myinst.subscriptionImport.template.description')}</div>
-                </div>
-
-                <div class="content">
-
-                    <table class="ui celled striped table la-js-responsive-table la-table">
+                    <table class="ui la-ignore-fixed compact table">
                         <thead>
                         <tr>
                             <th><g:message code="myinst.subscriptionImport.tsvColumnName"/></th>

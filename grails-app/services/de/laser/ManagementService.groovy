@@ -528,7 +528,9 @@ class ManagementService {
             params.remove('propertiesFilterPropDef')
 
             if(controller instanceof SubscriptionController) {
-                Set<Subscription> validSubChildren = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent and oo.roleType = :roleType order by oo.org.sortname asc", [parent: result.subscription, roleType: RDStore.OR_SUBSCRIBER_CONS])
+
+                Set<Subscription> validSubChildren = subscriptionControllerService.getFilteredSubscribers(params,result.subscription)?.sub
+                //Set<Subscription> validSubChildren = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent and oo.roleType = :roleType order by oo.org.sortname asc", [parent: result.subscription, roleType: RDStore.OR_SUBSCRIBER_CONS])
                 if (validSubChildren) {
                     String localizedName = LocaleUtils.getLocalizedAttributeName('name')
                     String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :ctx and sp.instanceOf = null order by sp.type.${localizedName}"
