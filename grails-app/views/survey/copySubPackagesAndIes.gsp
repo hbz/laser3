@@ -74,7 +74,7 @@
                             <br/>
                             <g:link controller="subscription" action="members"
                                     id="${parentSubscription.id}">${message(code: 'renewalEvaluation.orgsInSub')}</g:link>
-                            <ui:totalNumber total="${parentSubscription.getDerivedSubscribers().size()}"/>
+                            <ui:totalNumber total="${parentSubscription.getDerivedNonHiddenSubscribers().size()}"/>
 
                             <br>
 
@@ -109,7 +109,7 @@
                             <g:link controller="subscription" action="members"
                                     id="${parentSuccessorSubscription.id}">${message(code: 'renewalEvaluation.orgsInSub')}</g:link>
                             <ui:totalNumber
-                                    total="${parentSuccessorSubscription.getDerivedSubscribers().size()}"/>
+                                    total="${parentSuccessorSubscription.getDerivedNonHiddenSubscribers().size()}"/>
                             <br>
 
                             <div class="ui middle aligned selection list">

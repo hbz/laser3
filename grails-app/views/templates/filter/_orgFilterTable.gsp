@@ -212,7 +212,7 @@
             <g:set var="surveyOrg" value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org)}"/>
 
             <g:set var="existSubforOrg"
-                   value="${Subscription.get(surveyConfig.subscription?.id)?.getDerivedSubscribers()?.id?.contains(org?.id)}"/>
+                   value="${Subscription.get(surveyConfig.subscription?.id)?.getDerivedNonHiddenSubscribers()?.id?.contains(org?.id)}"/>
 
             <g:set var="orgSub" value="${surveyConfig.subscription?.getDerivedSubscriptionForNonHiddenSubscriber(org)}"/>
         </g:if>
