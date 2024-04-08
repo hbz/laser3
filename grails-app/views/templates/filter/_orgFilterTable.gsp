@@ -214,7 +214,7 @@
             <g:set var="existSubforOrg"
                    value="${Subscription.get(surveyConfig.subscription?.id)?.getDerivedSubscribers()?.id?.contains(org?.id)}"/>
 
-            <g:set var="orgSub" value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(org)}"/>
+            <g:set var="orgSub" value="${surveyConfig.subscription?.getDerivedSubscriptionForNonHiddenSubscriber(org)}"/>
         </g:if>
 
         <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">

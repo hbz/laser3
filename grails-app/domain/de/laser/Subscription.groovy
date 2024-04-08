@@ -905,7 +905,7 @@ select distinct oap from OrgAccessPoint oap
      * @param org the member {@link Org} whose subscription should be retrieved
      * @return the member subscription of the subscriber
      */
-    Subscription getDerivedSubscriptionBySubscribers(Org org) {
+    Subscription getDerivedSubscriptionForNonHiddenSubscriber(Org org) {
         Subscription result
 
         Subscription.findAllByInstanceOf(this).each { s ->

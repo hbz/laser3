@@ -2471,7 +2471,7 @@ class MyInstitutionController  {
         result.ownerId = result.surveyInfo.owner?.id
 
         if(result.surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
-            result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.institution)
+            result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(result.institution)
             result.formalOrg = result.user.formalOrg as Org
             // restrict visible for templates/links/orgLinksAsList
             result.costItemSums = [:]
@@ -2684,7 +2684,7 @@ class MyInstitutionController  {
                     boolean existsMultiYearTerm = false
                     Subscription sub = surveyConfig.subscription
                     if (sub && !surveyConfig.pickAndChoose && surveyConfig.subSurveyUseForTransfer) {
-                        Subscription subChild = sub.getDerivedSubscriptionBySubscribers(org)
+                        Subscription subChild = sub.getDerivedSubscriptionForNonHiddenSubscriber(org)
 
                         if (subChild && subChild.isCurrentMultiYearSubscriptionNew()) {
                             existsMultiYearTerm = true

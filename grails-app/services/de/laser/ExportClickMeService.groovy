@@ -4225,7 +4225,7 @@ class ExportClickMeService {
 
             participantResult.sub = [:]
             if(result.surveyConfig.subscription) {
-                participantResult.sub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(surveyOrg.org)
+                participantResult.sub = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(surveyOrg.org)
             }
 
             participantResult.participant = surveyOrg.org
@@ -4254,7 +4254,7 @@ class ExportClickMeService {
 
             participantResult.sub = [:]
             if(result.surveyConfig.subscription) {
-                participantResult.sub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(surveyOrg.org)
+                participantResult.sub = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(surveyOrg.org)
             }
 
             participantResult.participant = surveyOrg.org
@@ -4281,7 +4281,7 @@ class ExportClickMeService {
 
             participantResult.sub = [:]
             if(result.surveyConfig.subscription) {
-                participantResult.sub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(surveyOrg.org)
+                participantResult.sub = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(surveyOrg.org)
             }
 
             participantResult.participant = surveyOrg.org

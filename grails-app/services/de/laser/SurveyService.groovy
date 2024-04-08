@@ -377,7 +377,7 @@ class SurveyService {
                         row.add([field: surveyUrl.urlComment ?: '', style: null])
                     }
 
-                    subscription = surveyConfig.subscription.getDerivedSubscriptionBySubscribers(contextOrg) ?: null
+                    subscription = surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(contextOrg) ?: null
                     row.add([field: surveyConfig.getConfigNameShort() ?: "", style: null])
                     row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
                     row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
@@ -619,7 +619,7 @@ class SurveyService {
                 row.add([field: surveyConfig.surveyInfo.type?.getI10n('value') ?: '', style: null])
 
                 if (surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
-                    subscription = surveyConfig.subscription.getDerivedSubscriptionBySubscribers(contextOrg) ?: null
+                    subscription = surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(contextOrg) ?: null
                     row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
                     row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
 
