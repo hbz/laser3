@@ -4,9 +4,6 @@
 %{-- flyouts --}%
 <laser:render template="/templates/help/subscription_show"/>
 <laser:render template="/templates/flyouts/dateCreatedLastUpdated" model="[obj: subscription]"/>
-<g:if test="${editable && subscription.getConsortia() && ((subscription.getConsortia()?.id == contextService.getOrg().id) || contextService.getUser().isYoda())}">
-    <laser:render template="/templates/flyouts/subscriptionMembers" model="[subscription: subscription]"/>
-</g:if>
 
 <ui:debugInfo>
     <div style="padding: 1em 0;">
