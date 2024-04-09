@@ -94,7 +94,7 @@
             %{-- subscription members --}%
 
             <g:if test="${controllerName == 'subscription' && subscriptionViewRestriction}">
-                <g:if test="${editable && subscription && subscription.getConsortia()?.id == contextService.getOrg().id}">
+                <g:if test="${editable && subscription && contextService.getOrg().isCustomerType_Consortium() && subscription.getConsortia()?.id == contextService.getOrg().id}">
                     <div class="item la-cb-action">
                         <button class="ui icon button la-toggle-ui la-popup-tooltip la-delay" id="subscriptionMembers-toggle"
                                 data-content="${message(code:'consortium.member.plural')} ${message(code:'default.and')} ${message(code:'subscription.member.plural')}" data-position="bottom left">
@@ -175,6 +175,12 @@
                         <div class="ui simple dropdown button la-js-dont-hide-button icon">
                             <i class="linkify icon"></i>
                             <div class="menu">
+                                <g:if test="${subscription.instanceOf}">
+                                    <g:link controller="subscription" action="show" id="${subscription.instanceOf.id}" class="item">
+                                        <i class="icon arrow up la-list-icon"></i>
+                                        ${subscription} [${message(code:'consortium.superSubscriptionType')}]
+                                    </g:link>
+                                </g:if>
                                 <g:each in="${linkifyMap}" var="linkifyCat">
                                     <g:each in="${linkifyCat.getValue()}" var="link">
                                         <g:set var="linkTarget" value="${link.determineSource() == subscription ? link.determineDestination() : link.determineSource()}" />
@@ -190,7 +196,7 @@
                                                 </g:else>
                                                 ${linkTarget}
                                                 (<g:formatDate formatName="default.date.format.notime" date="${linkTarget.startDate}"/>-<g:formatDate formatName="default.date.format.notime" date="${linkTarget.endDate}"/>)
-                                            [${linkType}]
+                                                [${linkType}]
                                             </g:link>
                                         </g:if>
                                         <g:elseif test="${linkTarget instanceof de.laser.License}">
@@ -199,7 +205,7 @@
                                                 <i class="icon scale balance la-list-icon"></i>
                                                 ${linkTarget}
                                                 (<g:formatDate formatName="default.date.format.notime" date="${linkTarget.startDate}"/>-<g:formatDate formatName="default.date.format.notime" date="${linkTarget.endDate}"/>)
-                                            [${linkType}]
+                                                [${linkType}]
                                             </g:link>
                                         </g:elseif>
                                     </g:each>
@@ -217,6 +223,12 @@
                         <div class="ui simple dropdown button la-js-dont-hide-button icon">
                             <i class="linkify icon"></i>
                             <div class="menu">
+                                <g:if test="${license.instanceOf}">
+                                    <g:link controller="license" action="show" id="${license.instanceOf.id}" class="item">
+                                        <i class="icon arrow up la-list-icon"></i>
+                                        ${license} [${message(code:'consortium.superLicenseType')}]
+                                    </g:link>
+                                </g:if>
                                 <g:each in="${linkifyMap}" var="linkifyCat">
                                     <g:each in="${linkifyCat.getValue()}" var="link">
                                         <g:set var="linkTarget" value="${link.determineSource() == license ? link.determineDestination() : link.determineSource()}" />
@@ -227,7 +239,7 @@
                                                 <i class="icon clipboard la-list-icon"></i>
                                                 ${linkTarget}
                                                 (<g:formatDate formatName="default.date.format.notime" date="${linkTarget.startDate}"/>-<g:formatDate formatName="default.date.format.notime" date="${linkTarget.endDate}"/>)
-                                            [${linkType}]
+                                                [${linkType}]
                                             </g:link>
                                         </g:if>
                                         <g:elseif test="${linkTarget instanceof de.laser.License}">
@@ -241,7 +253,7 @@
                                                 </g:else>
                                                 ${linkTarget}
                                                 (<g:formatDate formatName="default.date.format.notime" date="${linkTarget.startDate}"/>-<g:formatDate formatName="default.date.format.notime" date="${linkTarget.endDate}"/>)
-                                            [${linkType}]
+                                                [${linkType}]
                                             </g:link>
                                         </g:elseif>
                                     </g:each>

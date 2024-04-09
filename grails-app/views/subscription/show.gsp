@@ -2,7 +2,7 @@
 <laser:htmlStart message="subscription.details.label" serviceInjection="true"/>
 
 %{-- flyouts --}%
-<laser:render template="/templates/help/subscription_show"/>
+<laser:render template="/templates/flyouts/help/subscription_show"/>
 <laser:render template="/templates/flyouts/dateCreatedLastUpdated" model="[obj: subscription]"/>
 
 <ui:debugInfo>

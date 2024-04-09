@@ -19,26 +19,26 @@
         <table class="ui la-ignore-fixed compact selectable table">
             <thead>
                 <tr>
-                    <th>${message(code: 'sidewide.number')}</th>
+                    <th>${message(code:'sidewide.number')}</th>
                     <th>${message(code:'consortium.member')}</th>
                     <th>${message(code:'subscription.member')}</th>
                 </tr>
             </thead>
             <tbody>
-                <g:each in="${memberSubs}" var="ms" status="i">
-                    <g:set var="msInst" value="${ms.getSubscriber()}" />
-                    <tr <%= ms.id == subscription.id ? 'class="warning"' : '' %>>
+                <g:each in="${memberSubs}" var="sub" status="i">
+                    <g:set var="subInst" value="${sub.getSubscriber()}" />
+                    <tr <%= sub.id == subscription.id ? 'class="warning"' : '' %>>
                         <td> ${i+1} </td>
                         <td>
-                            <g:link controller="org" action="show" id="${msInst.id}" class="item">
+                            <g:link controller="org" action="show" id="${subInst.id}" class="item">
                                 <i class="icon university la-list-icon"></i>
-                                ${msInst.sortname ?: msInst.name}
+                                ${subInst.sortname ?: subInst.name}
                             </g:link>
                         </td>
                         <td>
-                            <g:link controller="subscription" action="show" id="${ms.id}" class="item">
+                            <g:link controller="subscription" action="show" id="${sub.id}" class="item">
                                 <i class="icon clipboard la-list-icon"></i>
-                                ${ms}
+                                ${sub}
                             </g:link>
                         </td>
                     </tr>
