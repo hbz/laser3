@@ -60,14 +60,6 @@
                 <ui:cbItemInfo display="${message(code: 'statusbar.flagContentElasticsearch.tooltip')}" icon="cloud" color="blue" />
             </g:if>
 
-            %{-- dateCreated & lastUpdated panel --}%
-
-            <g:if test="${(actionName=='show')}">
-                <div class="item la-cb-action">
-                    <button class="ui icon button la-toggle-ui" id="dateCreatedLastUpdated-toggle"><i class="calendar alternative icon"></i></button>
-                </div>
-            </g:if>
-
             %{-- help panel --}%
 
             <g:if test="${(controllerName=='subscription' && actionName=='show') || (controllerName=='myInstitution' && actionName=='financeImport') || (controllerName=='myInstitution' && actionName=='subscriptionImport') || (controllerName=='dev' && actionName=='frontend')}">
@@ -76,7 +68,15 @@
                 </div>
             </g:if>
 
-            %{-- subscription transfer  --}%
+            %{-- dateCreated & lastUpdated panel --}%
+
+            <g:if test="${(actionName=='show')}">
+                <div class="item la-cb-action">
+                    <button class="ui icon button la-toggle-ui" id="dateCreatedLastUpdated-toggle"><i class="calendar alternative icon"></i></button>
+                </div>
+            </g:if>
+
+            %{-- subscription transfer --}%
 
             <g:if test="${controllerName=='subscription' && (!actionName.startsWith('copy') && actionName != 'renewEntitlementsWithSurvey' && actionName != 'renewSubscription' && actionName != 'emptySubscription')
             && (editable && contextService.getOrg().isCustomerType_Consortium())}">
@@ -151,7 +151,7 @@
                 </g:if>
             </g:elseif>
 
-        %{-- linkify --}%
+            %{-- linkify --}%
 
             <g:if test="${controllerName == 'subscription' && subscription}">
                 <g:set var="linkifyMap" value="${linksGenerationService.getSourcesAndDestinations(subscription, contextUser, RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE))}" />

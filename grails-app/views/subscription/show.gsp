@@ -3,7 +3,7 @@
 
 %{-- help sidebar --}%
 <laser:render template="/templates/help/subscription_show"/>
-<laser:render template="/templates/help/dateCreatedLastUpdated" model="[obj: subscription]"/>
+<laser:render template="/templates/flyouts/dateCreatedLastUpdated" model="[obj: subscription]"/>
 <ui:debugInfo>
     <div style="padding: 1em 0;">
         <p>sub.type: ${subscription.type}</p>
