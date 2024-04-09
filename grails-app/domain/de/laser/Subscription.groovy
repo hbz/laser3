@@ -385,6 +385,28 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                 sharedObject.deleteShare_trait()
             }
         }
+        if (sharedObject instanceof VendorRole) {
+            if (sharedObject.isShared) {
+                List<Subscription> newTargets = Subscription.findAllByInstanceOf(this)
+                log.debug('found targets: ' + newTargets)
+
+                newTargets.each{ sub ->
+                    log.debug('adding for: ' + sub)
+
+                    List<VendorRole> existingVendorRoles = VendorRole.findAll{
+                        subscription == sub && vendor == sharedObject.vendor
+                    }
+                    if (existingVendorRoles) {
+                        log.debug('found existing vendorRoles, deleting: ' + existingVendorRoles)
+                        existingVendorRoles.each{ VendorRole tmp -> tmp.delete() }
+                    }
+                    sharedObject.addShareForTarget_trait(sub)
+                }
+            }
+            else {
+                sharedObject.deleteShare_trait()
+            }
+        }
     }
 
     /**

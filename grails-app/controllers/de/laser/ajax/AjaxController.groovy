@@ -640,6 +640,66 @@ class AjaxController {
     }
 
     /**
+     * Adds a relation link from a given object to a {@link Vendor}
+     */
+    @Secured(['ROLE_USER'])
+    @Transactional
+    def addVendorRole() {
+        def owner  = genericOIDService.resolveOID(params.parent)
+
+        Set<Vendor> vendors = Vendor.findAllByIdInList(params.list('selectedOrgs')) //because of reuse of orgFilterTable
+        vendors.each{ vendorToLink ->
+            boolean duplicateVendorRole = false
+
+            if(params.recip_prop == 'subscription') {
+                duplicateVendorRole = VendorRole.findAllBySubscriptionAndVendor(owner, vendorToLink) ? true : false
+            }
+            else if(params.recip_prop == 'license') {
+                duplicateVendorRole = VendorRole.findAllByLicenseAndVendor(owner, vendorToLink) ? true : false
+            }
+
+            if(! duplicateVendorRole) {
+                VendorRole new_link = new VendorRole(vendor: vendorToLink)
+                new_link[params.recip_prop] = owner
+
+                if (new_link.save()) {
+                    // log.debug("Org link added")
+                    if (owner instanceof ShareSupport && owner.checkSharePreconditions(new_link)) {
+                        new_link.isShared = true
+                        new_link.save()
+
+                        owner.updateShare(new_link)
+                    }
+                } else {
+                    log.error("Problem saving new vendor link ..")
+                    new_link.errors.each { e ->
+                        log.error( e.toString() )
+                    }
+                }
+            }
+        }
+        redirect(url: request.getHeader('referer'))
+    }
+
+    /**
+     * Deletes the given relation link between a {@link Vendor} its target
+     */
+    @Secured(['ROLE_USER'])
+    @Transactional
+    def delVendorRole() {
+        VendorRole vr = VendorRole.get(params.id)
+
+        def owner = vr.getOwner()
+        if (owner instanceof ShareSupport && vr.isShared) {
+            vr.isShared = false
+            owner.updateShare(vr)
+        }
+        vr.delete()
+
+        redirect(url: request.getHeader('referer'))
+    }
+
+    /**
      * Adds a relation link from a given object to a {@link Person}
      */
     @Secured(['ROLE_USER'])
