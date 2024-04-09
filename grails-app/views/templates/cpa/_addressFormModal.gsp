@@ -165,6 +165,39 @@
 
     <g:set var="languageSuffix" value="${LocaleUtils.getCurrentLang()}"/>
     <laser:script file="${this.getGroovyPageFileName()}">
+        $("#addressFormModal").form({
+          inline: true,
+          on: "blur",
+          fields: {
+            address1: {
+              identifier: "address1",
+              rules: [
+                {
+                  type: "empty",
+                  prompt: "Bitte füllen Sie die Adresse 1 aus"
+                }
+              ]
+            },
+            address2: {
+              identifier: "address2",
+              rules: [
+                {
+                  type: "empty",
+                  prompt: "Bitte füllen Sie die Adresse 2 aus"
+                }
+              ]
+            },
+            address3: {
+              identifier: "address3",
+              rules: [
+                {
+                  type: "empty",
+                  prompt: "Bitte füllen Sie die Adresse 3 aus"
+                }
+              ]
+            }
+          }
+        });
 
         JSPC.app.updateDropdown = function() {
             var dropdownRegion = $('#region');
@@ -172,7 +205,7 @@
             var selectedRegions = ${raw(params.list('region') as String)};
 
             dropdownRegion.empty();
-            dropdownRegion.append('<option selected="true" disabled>${message(code: 'default.select.choose.label')}</option>');
+            dropdownRegion.append('<option selected="selected" disabled>${message(code: 'default.select.choose.label')}</option>');
             dropdownRegion.prop('selectedIndex', 0);
 
             $.ajax({
@@ -194,7 +227,7 @@
 
         $("#country").change(function() { JSPC.app.updateDropdown(); });
 
-        $("#create_address").submit(function (e) {
+%{--        $("#create_address").submit(function (e) {
             e.preventDefault();
             let addressElements = [$('#type'), $('#name'), $('#additionFirst'), $('#additionSecond'), $('#street_1'), $('#street_2'), $('#zipcode'), $('#city'), $('#pob'), $('#pobZipcode'), $('#pobCity'), $('#country'), $('#region')];
             if(!JSPC.app.areElementsFilledOut(addressElements)) {
@@ -203,7 +236,7 @@
                 }
             }
             else $('#create_address').unbind('submit').submit();
-        });
+        });--}%
 
         JSPC.app.areElementsFilledOut = function (elems) {
             let filledOut = false;

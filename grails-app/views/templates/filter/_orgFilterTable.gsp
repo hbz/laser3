@@ -139,46 +139,51 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubCostItem')}">
                 <th>
-                    <g:if test="${actionName == 'surveyCostItems'}">
-                        <%
-                            def tmpParams = params.clone()
-                            tmpParams.remove("sort")
-                        %>
-                        <g:if test="${sortOnCostItemsUp}">
-                            <g:link action="surveyCostItems" class="ui icon"
-                                    params="${tmpParams + [sortOnCostItemsDown: true]}"><span
-                                    class="la-popup-tooltip la-delay"
-                                    data-position="top right"
-                                    data-content="${message(code: 'surveyCostItems.sortOnPrice')}">
-                                <i class="arrow down circle icon blue"></i>
-                            </span></g:link>
-                        </g:if>
-                        <g:else>
-                            <g:link action="surveyCostItems" class="ui icon"
-                                    params="${tmpParams + [sortOnCostItemsUp: true]}"><span
-                                    class="la-popup-tooltip la-delay"
-                                    data-position="top right"
-                                    data-content="${message(code: 'surveyCostItems.sortOnPrice')}">
-                                <i class="arrow up circle icon blue"></i>
-                            </span></g:link>
-                        </g:else>
-                    </g:if>
-
-                    <g:set var="costItemElements"
-                           value="${costItemsByCostItemElement.collect {RefdataValue.findByValueAndOwner(it.key, RefdataCategory.findByDesc(RDConstants.COST_ITEM_ELEMENT))}}"/>
-
-                        <ui:select name="selectedCostItemElementID"
-                                      from="${costItemElements}"
-                                      optionKey="id"
-                                      optionValue="value"
-                                      value="${selectedCostItemElementID}"
-                                      class="ui dropdown"
-                                      id="selectedCostItemElementID"/>
+                    ${message(code: 'exportClickMe.subscription.costItems')}
                 </th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
                 <th>
                     ${message(code: 'surveyCostItems.label')}
+
+                    <g:set var="costItemElements"
+                           value="${costItemsByCostItemElement.collect { RefdataValue.findByValueAndOwner(it.key, RefdataCategory.findByDesc(RDConstants.COST_ITEM_ELEMENT)) }}"/>
+
+                    <g:if test="${costItemElements}">
+                        <g:if test="${actionName == 'surveyCostItems'}">
+                            <%
+                                def tmpParams = params.clone()
+                                tmpParams.remove("sort")
+                            %>
+                            <g:if test="${sortOnCostItemsUp}">
+                                <g:link action="surveyCostItems" class="ui icon"
+                                        params="${tmpParams + [sortOnCostItemsDown: true]}"><span
+                                        class="la-popup-tooltip la-delay"
+                                        data-position="top right"
+                                        data-content="${message(code: 'surveyCostItems.sortOnPrice')}">
+                                    <i class="arrow down circle icon blue"></i>
+                                </span></g:link>
+                            </g:if>
+                            <g:else>
+                                <g:link action="surveyCostItems" class="ui icon"
+                                        params="${tmpParams + [sortOnCostItemsUp: true]}"><span
+                                        class="la-popup-tooltip la-delay"
+                                        data-position="top right"
+                                        data-content="${message(code: 'surveyCostItems.sortOnPrice')}">
+                                    <i class="arrow up circle icon blue"></i>
+                                </span></g:link>
+                            </g:else>
+                        </g:if>
+
+
+                        <ui:select name="selectedCostItemElementID"
+                                   from="${costItemElements}"
+                                   optionKey="id"
+                                   optionValue="value"
+                                   value="${selectedCostItemElementID}"
+                                   class="ui dropdown"
+                                   id="selectedCostItemElementID"/>
+                    </g:if>
                 </th>
             </g:if>
 
@@ -811,6 +816,7 @@
                                         <g:if test="${costItem.startDate || costItem.endDate}">
                                             ${costItem.startDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.startDate) : ''} - ${costItem.endDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.endDate) : ''}
                                         </g:if>
+                                        <g:link class="ui blue right right floated mini button" controller="finance" action="showCostItem" id="${costItem.id}" params="[sub: costItem.sub?.id]" target="_blank"><g:message code="default.show.label" args="[g.message(code: 'costItem.label')]"/></g:link>
                                     </td>
                                 </tr>
                             </g:each>
