@@ -1,9 +1,13 @@
 <%@ page import="de.laser.config.ConfigMapper; de.laser.Person; de.laser.PersonRole; de.laser.Subscription; de.laser.Links; java.text.SimpleDateFormat;de.laser.properties.PropertyDefinition; de.laser.OrgRole; de.laser.License;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.interfaces.CalculatedType" %>
 <laser:htmlStart message="subscription.details.label" serviceInjection="true"/>
 
-%{-- help sidebar --}%
+%{-- flyouts --}%
 <laser:render template="/templates/help/subscription_show"/>
 <laser:render template="/templates/flyouts/dateCreatedLastUpdated" model="[obj: subscription]"/>
+<g:if test="${editable && subscription.getConsortia() && ((subscription.getConsortia()?.id == contextService.getOrg().id) || contextService.getUser().isYoda())}">
+    <laser:render template="/templates/flyouts/subscriptionMembers" model="[subscription: subscription]"/>
+</g:if>
+
 <ui:debugInfo>
     <div style="padding: 1em 0;">
         <p>sub.type: ${subscription.type}</p>

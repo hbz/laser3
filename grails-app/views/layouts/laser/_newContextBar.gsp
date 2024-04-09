@@ -37,13 +37,13 @@
             %{-- child indicator --}%
 
             <g:if test="${controllerName == 'subscription' && subscription && !surveyConfig}">
-                <g:if test="${subscription.instanceOf && contextService.getOrg().id == subscription.getConsortia()?.id}">
+                <g:if test="${subscription.instanceOf && ((contextService.getOrg().id == subscription.getConsortia()?.id) || contextService.getUser().isYoda())}">
                     <ui:cbItemInfo display="Sie sehen eine Kindlizenz" icon="child" color="orange" />
                 </g:if>
             </g:if>
 
             <g:if test="${controllerName == 'license' && license}">
-                <g:if test="${license.instanceOf && contextService.getOrg().id == license.getLicensingConsortium()?.id}">
+                <g:if test="${license.instanceOf && ((contextService.getOrg().id == license.getLicensingConsortium()?.id) || contextService.getUser().isYoda())}">
                     <ui:cbItemInfo display="Sie sehen einen Einrichtungsvertrag" icon="child" color="green" />
                 </g:if>
             </g:if>
@@ -85,6 +85,19 @@
                         <button class="ui icon button la-toggle-ui la-popup-tooltip la-delay" id="subscriptionTransfer-toggle"
                                 data-content="${message(code:'statusbar.showSubscriptionTransfer.tooltip')}" data-position="bottom left">
                             <i class="clipboard icon"></i>
+                        </button>
+                    </div>
+                </g:if>
+            </g:if>
+
+            %{-- subscription members --}%
+
+            <g:if test="${controllerName == 'subscription' && actionName == 'show' && subscription}">
+                <g:if test="${editable && subscription.getConsortia() && ((subscription.getConsortia()?.id == contextService.getOrg().id) || contextService.getUser().isYoda())}">
+                    <div class="item la-cb-action">
+                        <button class="ui icon button la-toggle-ui la-popup-tooltip la-delay" id="subscriptionMembers-toggle"
+                                data-content="${message(code:'consortium.member.plural')} ${message(code:'default.and')} ${message(code:'subscription.member.plural')}" data-position="bottom left">
+                            <i class="university icon"></i>
                         </button>
                     </div>
                 </g:if>
@@ -331,6 +344,10 @@
 
             $('#dateCreatedLastUpdated-toggle').on('click', function() {
                 $('#dateCreatedLastUpdated-content').flyout('toggle');
+            });
+
+            $('#subscriptionMembers-toggle').on('click', function() {
+                $('#subscriptionMembers-content').flyout('toggle');
             });
 
             $('#subscriptionTransfer-toggle').on('click', function() {
