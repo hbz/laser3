@@ -1633,8 +1633,8 @@ class SubscriptionControllerService {
                                         }
 
                                         LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(currParent)
-                                        Subscription prevMemberSub = (links.prevLink && links.prevLink.size() > 0) ? links.prevLink[0].getDerivedSubscriptionBySubscribers(cm) : null
-                                        Subscription nextMemberSub = (links.nextLink && links.nextLink.size() > 0) ? links.nextLink[0].getDerivedSubscriptionBySubscribers(cm) : null
+                                        Subscription prevMemberSub = (links.prevLink && links.prevLink.size() > 0) ? links.prevLink[0].getDerivedSubscriptionForNonHiddenSubscriber(cm) : null
+                                        Subscription nextMemberSub = (links.nextLink && links.nextLink.size() > 0) ? links.nextLink[0].getDerivedSubscriptionForNonHiddenSubscriber(cm) : null
                                         try {
                                             if (prevMemberSub) {
                                                 Links.construct([source: memberSub, destination: prevMemberSub, linkType: RDStore.LINKTYPE_FOLLOWS, owner: result.contextOrg])
@@ -1737,8 +1737,8 @@ class SubscriptionControllerService {
         else {
             Subscription memberSub = Subscription.get(params.long('memberSubID'))
             Org org = Org.get(params.long('memberOrg'))
-            Subscription prevMemberSub = (result.navPrevSubscription.size() > 0) ? result.navPrevSubscription[0].getDerivedSubscriptionBySubscribers(org) : null
-            Subscription nextMemberSub = (result.navNextSubscription.size() > 0) ? result.navNextSubscription[0].getDerivedSubscriptionBySubscribers(org) : null
+            Subscription prevMemberSub = (result.navPrevSubscription.size() > 0) ? result.navPrevSubscription[0].getDerivedSubscriptionForNonHiddenSubscriber(org) : null
+            Subscription nextMemberSub = (result.navNextSubscription.size() > 0) ? result.navNextSubscription[0].getDerivedSubscriptionForNonHiddenSubscriber(org) : null
             try {
                 Links link
                 if(params.prev && prevMemberSub) {

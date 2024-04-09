@@ -36,7 +36,7 @@ ${message(code: 'email.text.title', locale: language)} ${userName},
     ${message(code: 'email.survey.participation.finish.text', locale: language, args: [survey.name])}
     <br />
     <g:if test="${survey.surveyConfigs[0].pickAndChoose}">
-        <g:set var="subscriberSub" value="${survey.surveyConfigs[0].subscription.getDerivedSubscriptionBySubscribers(org)}"/>
+        <g:set var="subscriberSub" value="${survey.surveyConfigs[0].subscription.getDerivedSubscriptionForNonHiddenSubscriber(org)}"/>
         <g:set var="sumListPriceSelectedIEsEUR" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subscriberSub, survey.surveyConfigs[0], RDStore.CURRENCY_EUR)}"/>
         <g:set var="sumListPriceSelectedIEsUSD" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subscriberSub, survey.surveyConfigs[0], RDStore.CURRENCY_USD)}"/>
         <g:set var="sumListPriceSelectedIEsGBP" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subscriberSub, survey.surveyConfigs[0], RDStore.CURRENCY_GBP)}"/>

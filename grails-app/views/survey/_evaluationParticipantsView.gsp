@@ -355,7 +355,7 @@
 
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyTitlesCount')}">
                             <g:set var="subParticipant"
-                                value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
+                                value="${surveyConfig.subscription?.getDerivedSubscriptionForNonHiddenSubscriber(participant)}"/>
 
                         <g:set var="diffEUR" value="${0}"/>
                         <g:set var="diffUSD" value="${0}"/>
@@ -564,7 +564,7 @@
                     </g:link>
 
                     <g:if test="${surveyConfig.subscription}">
-                        <g:set var="participantSub" value="${surveyConfig.subscription.getDerivedSubscriptionBySubscribers(participant)}"/>
+                        <g:set var="participantSub" value="${surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(participant)}"/>
                             <g:if test="${participantSub}">
                                 <br/>
                                 <g:link controller="subscription" action="show" id="${participantSub.id}"
@@ -899,7 +899,7 @@
 
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyTitlesCount')}">
                         <g:set var="subParticipant"
-                               value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
+                               value="${surveyConfig.subscription?.getDerivedSubscriptionForNonHiddenSubscriber(participant)}"/>
 
                         <g:set var="diffEUR" value="${0}"/>
                         <g:set var="diffUSD" value="${0}"/>
@@ -1109,7 +1109,7 @@
                     </g:link>
 
                     <g:if test="${surveyConfig.subscription}">
-                        <g:set var="participantSub" value="${surveyConfig.subscription.getDerivedSubscriptionBySubscribers(participant)}"/>
+                        <g:set var="participantSub" value="${surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(participant)}"/>
                         <g:if test="${participantSub}">
                             <br/>
                             <g:link controller="subscription" action="show" id="${participantSub.id}"

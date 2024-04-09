@@ -475,7 +475,7 @@ class SurveyControllerService {
                         } else {
                             if (params.percentOnOldPrice) {
                                 Double percentOnOldPrice = params.double('percentOnOldPrice', 0.00)
-                                Subscription orgSub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(surveyCostItem.surveyOrg.org)
+                                Subscription orgSub = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(surveyCostItem.surveyOrg.org)
                                 CostItem costItem = CostItem.findBySubAndOwnerAndCostItemStatusNotEqualAndCostItemElement(orgSub, surveyCostItem.owner, RDStore.COST_ITEM_DELETED, RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE)
                                 surveyCostItem.costInBillingCurrency = costItem ? (costItem.costInBillingCurrency * (1 + (percentOnOldPrice / 100))).round(2) : surveyCostItem.costInBillingCurrency
 
@@ -952,7 +952,7 @@ class SurveyControllerService {
 
                     newSurveyResult.sub = surveyResult.participantSubscription
 
-                    //newSurveyResult.sub = result.parentSubscription.getDerivedSubscriptionBySubscribers(surveyResult.participant)
+                    //newSurveyResult.sub = result.parentSubscription.getDerivedSubscriptionForNonHiddenSubscriber(surveyResult.participant)
 
                     if (result.multiYearTermTwoSurvey) {
 
@@ -1112,7 +1112,7 @@ class SurveyControllerService {
 
                 if (surveyResult.participant.id in currentParticipantIDs) {
                     newSurveyResult.sub = surveyResult.participantSubscription
-                    //newSurveyResult.sub = result.parentSubscription.getDerivedSubscriptionBySubscribers(surveyResult.participant)
+                    //newSurveyResult.sub = result.parentSubscription.getDerivedSubscriptionForNonHiddenSubscriber(surveyResult.participant)
                 } else {
                     newSurveyResult.sub = null
                 }
@@ -1581,7 +1581,7 @@ class SurveyControllerService {
             result.ownerId = result.surveyInfo.owner.id
 
             if (result.surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
-                result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant)
+                result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(result.participant)
                 // restrict visible for templates/links/orgLinksAsList
                 result.visibleOrgRelations = []
                 result.costItemSums = [:]
@@ -1651,7 +1651,7 @@ class SurveyControllerService {
                 if (result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION]) {
                     if (!result.subscription) {
                         result.successorSubscriptionParent = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
-                        result.successorSubscription = result.successorSubscriptionParent ? result.successorSubscriptionParent.getDerivedSubscriptionBySubscribers(result.participant) : null
+                        result.successorSubscription = result.successorSubscriptionParent ? result.successorSubscriptionParent.getDerivedSubscriptionForNonHiddenSubscriber(result.participant) : null
                     } else {
                         result.successorSubscription = result.subscription._getCalculatedSuccessorForSurvey()
                     }
@@ -1811,7 +1811,7 @@ class SurveyControllerService {
                             boolean existsMultiYearTerm = false
                             Subscription sub = result.surveyConfig.subscription
                             if (sub && !result.surveyConfig.pickAndChoose && result.surveyConfig.subSurveyUseForTransfer) {
-                                Subscription subChild = sub.getDerivedSubscriptionBySubscribers(org)
+                                Subscription subChild = sub.getDerivedSubscriptionForNonHiddenSubscriber(org)
 
                                 if (subChild && subChild.isCurrentMultiYearSubscriptionNew()) {
                                     existsMultiYearTerm = true
@@ -2002,7 +2002,7 @@ class SurveyControllerService {
                     result.surveyConfigs.each { config ->
                         config.orgs.org.each { org ->
                             if (result.surveyInfo.type == RDStore.SURVEY_TYPE_TITLE_SELECTION) {
-                                Subscription subscription = config.subscription.getDerivedSubscriptionBySubscribers(org)
+                                Subscription subscription = config.subscription.getDerivedSubscriptionForNonHiddenSubscriber(org)
 
                                 if (subscription.packages.size() == 0) {
                                     openFailByTitleSelection = true
@@ -2856,7 +2856,7 @@ class SurveyControllerService {
                 params.list('selectedSurveyCostItem').each { costItemId ->
 
                     CostItem costItem = CostItem.get(costItemId)
-                    Subscription participantSub = result.parentSuccessorSubscription?.getDerivedSubscriptionBySubscribers(costItem.surveyOrg.org)
+                    Subscription participantSub = result.parentSuccessorSubscription?.getDerivedSubscriptionForNonHiddenSubscriber(costItem.surveyOrg.org)
                     List participantSubCostItem = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participantSub, result.institution, costItem.costItemElement, RDStore.COST_ITEM_DELETED)
                     if (costItem && participantSub && !participantSubCostItem) {
 
@@ -2990,7 +2990,7 @@ class SurveyControllerService {
                 params.list('selectedSurveyCostItem').each { costItemId ->
 
                     CostItem costItem = CostItem.get(costItemId)
-                    Subscription participantSub = result.parentSubscription?.getDerivedSubscriptionBySubscribers(costItem.surveyOrg.org)
+                    Subscription participantSub = result.parentSubscription?.getDerivedSubscriptionForNonHiddenSubscriber(costItem.surveyOrg.org)
                     List participantSubCostItem = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participantSub, result.institution, costItem.costItemElement, RDStore.COST_ITEM_DELETED)
                     if (costItem && participantSub && !participantSubCostItem) {
 
@@ -3093,7 +3093,7 @@ class SurveyControllerService {
                     newMap.sortname = org.sortname
                     newMap.name = org.name
                     newMap.newSub = sub
-                    newMap.oldSub = result.surveyConfig.subSurveyUseForTransfer ? sub._getCalculatedPreviousForSurvey() : result.parentSubscription.getDerivedSubscriptionBySubscribers(org)
+                    newMap.oldSub = result.surveyConfig.subSurveyUseForTransfer ? sub._getCalculatedPreviousForSurvey() : result.parentSubscription.getDerivedSubscriptionForNonHiddenSubscriber(org)
 
                     //println("new: ${newMap.newSub}, old: ${newMap.oldSub}")
 
@@ -3798,7 +3798,7 @@ class SurveyControllerService {
         Org institution = contextService.getOrg()
         Subscription memberSub
 
-        if (institution.isCustomerType_Consortium_Pro() && !newParentSub.getDerivedSubscriptionBySubscribers(org)) {
+        if (institution.isCustomerType_Consortium_Pro() && !newParentSub.getDerivedSubscriptionForNonHiddenSubscriber(org)) {
 
             log.debug("Generating seperate slaved instances for members")
                 Date startDate = newStartDate ?: null

@@ -558,7 +558,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * Gets all members of this consortial subscription
      * @return a {@link List} of {@link Org}s which are linked to child instances of this subscription by 'Subscriber' or 'Subscriber_Consortial'
      */
-    List<Org> getDerivedSubscribers() {
+    List<Org> getDerivedNonHiddenSubscribers() {
         List<Subscription> subs = Subscription.findAllByInstanceOf(this)
         //OR_SUBSCRIBER is legacy; the org role types are distinct!
         subs.isEmpty() ? [] : OrgRole.findAllBySubInListAndRoleTypeInList(subs, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS], [sort: 'org.name']).collect{it.org}
@@ -905,7 +905,7 @@ select distinct oap from OrgAccessPoint oap
      * @param org the member {@link Org} whose subscription should be retrieved
      * @return the member subscription of the subscriber
      */
-    Subscription getDerivedSubscriptionBySubscribers(Org org) {
+    Subscription getDerivedSubscriptionForNonHiddenSubscriber(Org org) {
         Subscription result
 
         Subscription.findAllByInstanceOf(this).each { s ->
