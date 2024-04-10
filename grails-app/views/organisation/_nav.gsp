@@ -5,6 +5,11 @@
         Map<String, Object> breadcrumbParams = [id: orgInstance.id]
     %>
 
+    <g:if test="${contextService.getUser().isYoda() && orgInstance.isCustomerType_Inst() && (contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().id == orgInstance.id) }">
+    %{--        <ui:subNavItem controller="organisation" action="info" params="${breadcrumbParams}" message="org.nav.info"/>--}%
+        <g:link controller="org" action="info" params="${breadcrumbParams}" class="item ${actionName == 'info' ? 'active' : ''}" role="tab"><i class="chartline icon" style="margin:0"></i></g:link>
+    </g:if>
+
     <ui:subNavItem controller="organisation" action="show" params="${breadcrumbParams}" message="org.nav.details"/>
     <ui:subNavItem controller="organisation" action="ids" params="${breadcrumbParams}" message="${isProviderOrAgency ? 'org.nav.ids' : 'org.nav.idsCids.shy'}"/>
     <g:if test="${inContextOrg}">

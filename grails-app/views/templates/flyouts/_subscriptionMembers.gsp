@@ -1,6 +1,6 @@
 <%@ page import="de.laser.Subscription;"%>
 
-<div class="ui six wide flyout" id="subscriptionMembers-content" style="padding:50px 0 10px 0;overflow:scroll">
+<div class="ui eight wide flyout" id="subscriptionMembers-content" style="padding:50px 0 10px 0;overflow:scroll">
 
     <h1 class="ui header">
 %{--        <i class="icon university la-list-icon"></i>--}%

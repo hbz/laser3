@@ -66,13 +66,6 @@
         <div class="la-inline-lists">
             <div class="ui card" id="js-confirmationCard">
                 <div class="content">
-
-                    <g:if test="${contextService.getUser().isYoda() && contextService.getOrg().isCustomerType_Consortium() && orgInstance.isCustomerType_Inst()}">
-                        <div class="ui top right attached label">
-                            <g:link controller="org" action="info" params="[id: orgInstance.id]" style="color:#004678;text-decoration:underline">${message(code:'menu.institutions.org.info')}</g:link>
-                        </div>
-                    </g:if>
-
                     <dl>
                         <dt><g:message code="default.name.label" /></dt>
                         <dd>

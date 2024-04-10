@@ -25,7 +25,6 @@
 
             <laser:render template="info/partial" model="${[context: 'inst']}"/>
 
-            <h2 class="ui header"><span style="color:#fff;background-color:red;padding:0.5em 1em;margin:3em 0">DEMO</span></h2>
             <g:set var="areStatsAvailableCache" value="[:]" />
 
             <div id="stats_subscription" class="stats-content">

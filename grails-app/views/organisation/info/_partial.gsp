@@ -1,29 +1,55 @@
 <%@ page import="de.laser.storage.RDStore" %>
 
-<div class="ui ${context == 'consAtInst' ? 'five' : 'four'} statistics">
-    <div class="statistic stats-toggle" data-target="stats_subscription">
-        <span class="value"> ${subscriptionMap.get(RDStore.SUBSCRIPTION_CURRENT.id)?.size() ?: 0} </span>
-        <span class="label"> ${message(code: 'subscription.plural.current')} </span>
-    </div>
-    <div class="statistic stats-toggle" data-target="stats_license">
-        <span class="value"> ${licenseMap.get(RDStore.LICENSE_CURRENT.id)?.size() ?: 0} </span>
-        <span class="label"> ${message(code: 'license.plural.current')} </span>
-    </div>
-    <div class="statistic stats-toggle" data-target="stats_provider">
-        <span class="value"> ${providerMap?.size() ?: 0} </span>
-        <span class="label"> ${message(code:'default.provider.label')} </span>
-    </div>
-    <div class="statistic stats-toggle" data-target="stats_survey">
-        <span class="value"> ${surveyMap.get('open')?.size() ?: 0} </span>
-        <span class="label"> Offene Umfragen </span>
-    </div>
+<div class="ui vertical secondary fluid menu">
+    <a class="ui item stats-toggle" data-target="stats_subscription">
+        <span class=""> ${message(code: 'subscription.plural.current')} </span>
+        <span class="ui ${subscriptionMap.get(RDStore.SUBSCRIPTION_CURRENT.id)?.size() ? 'primary' : ''} label"> ${subscriptionMap.get(RDStore.SUBSCRIPTION_CURRENT.id)?.size() ?: 0} </span>
+    </a>
+    <a class="ui item stats-toggle" data-target="stats_license">
+        <span class=""> ${message(code: 'license.plural.current')} </span>
+        <span class="ui ${licenseMap.get(RDStore.LICENSE_CURRENT.id)?.size() ? 'primary' : ''} label"> ${licenseMap.get(RDStore.LICENSE_CURRENT.id)?.size() ?: 0} </span>
+    </a>
+    <a class="ui item stats-toggle" data-target="stats_provider">
+        <span class=""> ${message(code:'default.provider.label')} </span>
+        <span class="ui ${providerMap?.size() ? 'primary' : ''} label"> ${providerMap?.size() ?: 0} </span>
+    </a>
+    <a class="ui item stats-toggle" data-target="stats_survey">
+        <span class=""> Offene Umfragen </span>
+        <span class="ui ${surveyMap.get('open')?.size() ? 'primary' : ''} label"> ${surveyMap.get('open')?.size() ?: 0} </span>
+    </a>
     <g:if test="${context == 'consAtInst'}">
-        <div class="statistic stats-toggle" data-target="stats_cost">
-            <span class="value"> ${costs.costItems?.size() ?: 0} </span>
-            <span class="label"> Kosten (${message(code: 'subscription.plural.current')}) </span>
-        </div>
+        <a class="ui item stats-toggle" data-target="stats_cost">
+            <span class=""> Kosten (${message(code: 'subscription.plural.current')}) </span>
+            <span class="ui ${costs.costItems?.size() ? 'primary' : ''} label"> ${costs.costItems?.size() ?: 0} </span>
+        </a>
     </g:if>
 </div>
+
+%{--    <div class="ui ${context == 'consAtInst' ? 'five' : 'four'} statistics">--}%
+%{--    <div class="ui horizontal statistics">--}%
+%{--        <div class="statistic stats-toggle" data-target="stats_subscription">--}%
+%{--            <span class="value"> ${subscriptionMap.get(RDStore.SUBSCRIPTION_CURRENT.id)?.size() ?: 0} </span>--}%
+%{--            <span class="label"> ${message(code: 'subscription.plural.current')} </span>--}%
+%{--        </div>--}%
+%{--        <div class="statistic stats-toggle" data-target="stats_license">--}%
+%{--            <span class="value"> ${licenseMap.get(RDStore.LICENSE_CURRENT.id)?.size() ?: 0} </span>--}%
+%{--            <span class="label"> ${message(code: 'license.plural.current')} </span>--}%
+%{--        </div>--}%
+%{--        <div class="statistic stats-toggle" data-target="stats_provider">--}%
+%{--            <span class="value"> ${providerMap?.size() ?: 0} </span>--}%
+%{--            <span class="label"> ${message(code:'default.provider.label')} </span>--}%
+%{--        </div>--}%
+%{--        <div class="statistic stats-toggle" data-target="stats_survey">--}%
+%{--            <span class="value"> ${surveyMap.get('open')?.size() ?: 0} </span>--}%
+%{--            <span class="label"> Offene Umfragen </span>--}%
+%{--        </div>--}%
+%{--        <g:if test="${context == 'consAtInst'}">--}%
+%{--            <div class="statistic stats-toggle" data-target="stats_cost">--}%
+%{--                <span class="value"> ${costs.costItems?.size() ?: 0} </span>--}%
+%{--                <span class="label"> Kosten (${message(code: 'subscription.plural.current')}) </span>--}%
+%{--            </div>--}%
+%{--        </g:if>--}%
+%{--    </div>--}%
 
 <laser:script file="${this.getGroovyPageFileName()}">
 
@@ -67,23 +93,29 @@
 </laser:script>
 
 <style>
-    .statistics > .stats-toggle.active {
-      background-color: rgba(0,0,0, 0.045);
-    }
-    .statistics > .stats-toggle.active > span {
-      color: #1b1c1d !important;
-    }
+    /*.statistics > .stats-toggle.active {*/
+    /*  background-color: rgba(0,0,0, 0.045);*/
+    /*}*/
+    /*.statistics > .stats-toggle.active > span {*/
+    /*  color: #1b1c1d !important;*/
+    /*}*/
 
-    .statistics > .statistic:hover {
-      cursor: pointer;
-      background-color: rgba(0,0,0, 0.1);
-    }
-    .statistics > .statistic > span {
-      color: #015591 !important;
-    }
-    .statistics > .statistic:hover > span {
-      color: #1b1c1d !important;
-    }
+    /*.statistics > .statistic {*/
+    /*    display: block;*/
+    /*    width: 100%;*/
+    /*    margin: 0 !important;*/
+    /*    padding: 0.5em 1em;*/
+    /*}*/
+    /*.statistics > .statistic:hover {*/
+    /*  cursor: pointer;*/
+    /*  background-color: rgba(0,0,0, 0.1);*/
+    /*}*/
+    /*.statistics > .statistic > span {*/
+    /*  color: #015591 !important;*/
+    /*}*/
+    /*.statistics > .statistic:hover > span {*/
+    /*  color: #1b1c1d !important;*/
+    /*}*/
 
     .stats-content {
       display: none;
