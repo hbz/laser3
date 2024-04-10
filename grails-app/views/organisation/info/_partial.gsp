@@ -13,11 +13,11 @@
         <span class=""> ${message(code:'default.provider.label')} </span>
         <span class="ui ${providerMap?.size() ? 'primary' : ''} label"> ${providerMap?.size() ?: 0} </span>
     </a>
-    <a class="ui item stats-toggle" data-target="stats_survey">
-        <span class=""> Offene Umfragen </span>
-        <span class="ui ${surveyMap.get('open')?.size() ? 'primary' : ''} label"> ${surveyMap.get('open')?.size() ?: 0} </span>
-    </a>
     <g:if test="${context == 'consAtInst'}">
+        <a class="ui item stats-toggle" data-target="stats_survey">
+            <span class=""> Offene Umfragen </span>
+            <span class="ui ${surveyMap.get('open')?.size() ? 'primary' : ''} label"> ${surveyMap.get('open')?.size() ?: 0} </span>
+        </a>
         <a class="ui item stats-toggle" data-target="stats_cost">
             <span class=""> Kosten (${message(code: 'subscription.plural.current')}) </span>
             <span class="ui ${costs.costItems?.size() ? 'primary' : ''} label"> ${costs.costItems?.size() ?: 0} </span>

@@ -84,32 +84,32 @@
                 </div>
             </div>
 
-            <div class="stats_survey stats-menu">
-                <div class="ui tiny header">${message(code: 'subscription.periodOfValidity.label')}</div>
-                <div class="ui secondary wrapping menu">
-                    <g:each in="${surveyTimelineMap.keySet()}" var="year">
-                        <a href="#" class="item" data-tab="year-${year}"> ${year} </a>
-                    %{--                        <a href="#" class="item ${year == Year.now().toString() ? 'active' : ''}" data-tab="year-${year}"> ${year} </a>--}%
-                    </g:each>
-                </div>
+%{--            <div class="stats_survey stats-menu">--}%
+%{--                <div class="ui tiny header">${message(code: 'subscription.periodOfValidity.label')}</div>--}%
+%{--                <div class="ui secondary wrapping menu">--}%
+%{--                    <g:each in="${surveyTimelineMap.keySet()}" var="year">--}%
+%{--                        <a href="#" class="item" data-tab="year-${year}"> ${year} </a>--}%
+%{--                    --}%%{--                        <a href="#" class="item ${year == Year.now().toString() ? 'active' : ''}" data-tab="year-${year}"> ${year} </a>--}%
+%{--                    </g:each>--}%
+%{--                </div>--}%
 
-                <div class="ui tiny header">${message(code: 'default.status.label')}</div>
-                <div class="ui secondary wrapping menu la-tab-with-js">
-                    <g:each in="${surveyMap}" var="surveyStatus,surveyData">
-                        <a href="#" class="item ${surveyStatus == 'open' ? 'active' : ''}" data-tab="survey-${surveyStatus}">
-                            <uiSurvey:virtualState status="${surveyStatus}" />
-                            <span class="ui blue circular tiny label">${surveyData.size()}</span>
-                        </a>
-                    </g:each>
-                </div>
+%{--                <div class="ui tiny header">${message(code: 'default.status.label')}</div>--}%
+%{--                <div class="ui secondary wrapping menu la-tab-with-js">--}%
+%{--                    <g:each in="${surveyMap}" var="surveyStatus,surveyData">--}%
+%{--                        <a href="#" class="item ${surveyStatus == 'open' ? 'active' : ''}" data-tab="survey-${surveyStatus}">--}%
+%{--                            <uiSurvey:virtualState status="${surveyStatus}" />--}%
+%{--                            <span class="ui blue circular tiny label">${surveyData.size()}</span>--}%
+%{--                        </a>--}%
+%{--                    </g:each>--}%
+%{--                </div>--}%
 
-                <div>
-                    <span class="ui checkbox">
-                        <label for="survey-toggle-subscriptions">Lizenzen anzeigen</label>
-                        <input type="checkbox" id="survey-toggle-subscriptions">
-                    </span>
-                </div>
-            </div>
+%{--                <div>--}%
+%{--                    <span class="ui checkbox">--}%
+%{--                        <label for="survey-toggle-subscriptions">Lizenzen anzeigen</label>--}%
+%{--                        <input type="checkbox" id="survey-toggle-subscriptions">--}%
+%{--                    </span>--}%
+%{--                </div>--}%
+%{--            </div>--}%
         </div>
         <div class="twelve wide column">
 
@@ -587,6 +587,7 @@
                             name    : '${RefdataValue.get(status).getI10n('value')}',
                             type    : 'bar',
                             stack   : 'total',
+                            animation : false,
                             data    : [${subscriptionTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
                             raw     : [${subscriptionTimelineMap.values().collect{ it[status] ?: [] }.join(', ')}],
                             color   : <%
@@ -608,6 +609,7 @@
                             type    : 'line',
                             smooth  : true,
                             lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,
+                            animation : false,
                             data    : [<%
                                         List<Long> subsPerYear = subscriptionTimelineMap.values().collect{ it.values().flatten() }
                                         print subsPerYear.collect {
@@ -621,6 +623,7 @@
                             type    : 'line',
                             smooth  : true,
                             lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,
+                            animation : false,
                             data    : [<%
                                 print subsPerYear.collect {
                                     it.collect{ Subscription.get(it).type == RDStore.SUBSCRIPTION_TYPE_LOCAL ? 1 : 0 }.sum() ?: 0
@@ -649,6 +652,7 @@
                             name    : '${RefdataValue.get(status).getI10n('value')}',
                             type    : 'bar',
                             stack   : 'total',
+                            animation : false,
                             data    : [${licenseTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
                             raw     : [${licenseTimelineMap.values().collect{ it[status] ?: [] }.join(', ')}],
                             color   : <%
@@ -668,6 +672,7 @@
                             type    : 'line',
                             smooth  : true,
                             lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,
+                            animation : false,
                             data    : [<%
                                         List<Long> licsPerYear = licenseTimelineMap.values().collect{ it.values().flatten() }
                                         print licsPerYear.collect {
@@ -697,6 +702,7 @@
                         name    : '<% print Org.get(provider).name %>',
                         type    : 'bar',
                         stack   : 'total',
+                        animation : false,
                         data    : [${providerTimelineMap.values().collect{ it[provider] ? it[provider].size() : 0 }.join(', ')}],
                         raw     : [${providerTimelineMap.values().collect{ it[provider] ?: [] }.join(', ')}]
                     },
@@ -713,76 +719,77 @@
                 },
                 grid:   { left: '0.5%', right: '0.5%', top: '5%', bottom: '20%' },
             },
-            survey: {
-                tooltip: {
-                    trigger: 'axis',
-                    axisPointer: { type: 'shadow' },
-                    formatter: JSPC.app.info.chart_config_helper.tooltip_formatter_notNull
-                },
-                series: [
-                    <g:each in="${surveyTimelineMap.values().collect{ it.keySet() }.flatten().unique()}" var="status"> %{-- sort --}%
-                        {
-                            name    : '<uiSurvey:virtualState status="${status}" />',
-                            type    : 'bar',
-                            stack   : 'total',
-                            data    : [${surveyTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
-                            raw     : [${surveyTimelineMap.values().collect{ it[status] ? it[status].collect{ it[0].id } : [] }.join(', ')}],
-                            color   : <%
-                                color = 'JSPC.colors.hex.pink'
-                                switch (status) {
-                                    case 'open':        color = 'JSPC.colors.hex.orange'; break;
-                                    case 'finish':      color = 'JSPC.colors.hex.green'; break;
-                                    case 'termination': color = 'JSPC.colors.hex.red'; break;
-                                    case 'notFinish':   color = 'JSPC.colors.hex.blue'; break;
-                                }
-                                println color
-                            %>
-                        },
-                    </g:each>
-                    <g:set var="surveyTypeTimeline" value="${surveyTimelineMap.values().collect{ it.values().collect{ it.collect{ it[0].type }}.flatten()}}" />
-                    <g:each in="${surveyTypeTimeline.flatten().unique()}" var="type">
-                        {
-                            name    : '${type.getI10n('value')}',
-                            type    : 'line',
-                            smooth  : true,
-                            lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,
-                            data    : ${surveyTypeTimeline.collect{ it.findAll{ it2 -> it2 == type }.size() }},
-                            color   : "<%
-                                color = 'JSPC.colors.hex.grey'
-                                switch (type) {
-                                    case RDStore.SURVEY_TYPE_INTEREST:          color = '#ff9688'; break;
-                                    case RDStore.SURVEY_TYPE_RENEWAL:           color = '#ebff82'; break;
-                                    case RDStore.SURVEY_TYPE_SUBSCRIPTION:      color = '#fee8d2'; break;
-                                    case RDStore.SURVEY_TYPE_TITLE_SELECTION:   color = '#45b2ff'; break;
-                                }
-                                print color
-                            %>"
-                        },
-                    </g:each>
-                ],
-                xAxis: {
-                    type: 'category',
-                    data: [${surveyTimelineMap.keySet().join(', ')}]
-                },
-                yAxis:  { type: 'value' },
-                legend: { bottom: 0 },
-                grid:   { left: '0.5%', right: '0.5%', top: '5%', bottom: '20%' },
-            },
+%{--            survey: {--}%
+%{--                tooltip: {--}%
+%{--                    trigger: 'axis',--}%
+%{--                    axisPointer: { type: 'shadow' },--}%
+%{--                    formatter: JSPC.app.info.chart_config_helper.tooltip_formatter_notNull--}%
+%{--                },--}%
+%{--                series: [--}%
+%{--                    <g:each in="${surveyTimelineMap.values().collect{ it.keySet() }.flatten().unique()}" var="status"> --}%%{-- sort --}%
+%{--                        {--}%
+%{--                            name    : '<uiSurvey:virtualState status="${status}" />',--}%
+%{--                            type    : 'bar',--}%
+%{--                            stack   : 'total',--}%
+%{--                            data    : [${surveyTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],--}%
+%{--                            raw     : [${surveyTimelineMap.values().collect{ it[status] ? it[status].collect{ it[0].id } : [] }.join(', ')}],--}%
+%{--                            color   : <%--}%
+%{--                                color = 'JSPC.colors.hex.pink'--}%
+%{--                                switch (status) {--}%
+%{--                                    case 'open':        color = 'JSPC.colors.hex.orange'; break;--}%
+%{--                                    case 'finish':      color = 'JSPC.colors.hex.green'; break;--}%
+%{--                                    case 'termination': color = 'JSPC.colors.hex.red'; break;--}%
+%{--                                    case 'notFinish':   color = 'JSPC.colors.hex.blue'; break;--}%
+%{--                                }--}%
+%{--                                println color--}%
+%{--                            %>--}%
+%{--                        },--}%
+%{--                    </g:each>--}%
+%{--                    <g:set var="surveyTypeTimeline" value="${surveyTimelineMap.values().collect{ it.values().collect{ it.collect{ it[0].type }}.flatten()}}" />--}%
+%{--                    <g:each in="${surveyTypeTimeline.flatten().unique()}" var="type">--}%
+%{--                        {--}%
+%{--                            name    : '${type.getI10n('value')}',--}%
+%{--                            type    : 'line',--}%
+%{--                            smooth  : true,--}%
+%{--                            lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,--}%
+%{--                            data    : ${surveyTypeTimeline.collect{ it.findAll{ it2 -> it2 == type }.size() }},--}%
+%{--                            color   : "<%--}%
+%{--                                color = 'JSPC.colors.hex.grey'--}%
+%{--                                switch (type) {--}%
+%{--                                    case RDStore.SURVEY_TYPE_INTEREST:          color = '#ff9688'; break;--}%
+%{--                                    case RDStore.SURVEY_TYPE_RENEWAL:           color = '#ebff82'; break;--}%
+%{--                                    case RDStore.SURVEY_TYPE_SUBSCRIPTION:      color = '#fee8d2'; break;--}%
+%{--                                    case RDStore.SURVEY_TYPE_TITLE_SELECTION:   color = '#45b2ff'; break;--}%
+%{--                                }--}%
+%{--                                print color--}%
+%{--                            %>"--}%
+%{--                        },--}%
+%{--                    </g:each>--}%
+%{--                ],--}%
+%{--                xAxis: {--}%
+%{--                    type: 'category',--}%
+%{--                    data: [${surveyTimelineMap.keySet().join(', ')}]--}%
+%{--                },--}%
+%{--                yAxis:  { type: 'value' },--}%
+%{--                legend: { bottom: 0 },--}%
+%{--                grid:   { left: '0.5%', right: '0.5%', top: '5%', bottom: '20%' },--}%
+%{--            },--}%
         };
 
         JSPC.app.info.charts = {
             subscription :  echarts.init ($('#cw-subscription')[0]),
             license :       echarts.init ($('#cw-license')[0]),
             provider :      echarts.init ($('#cw-provider')[0]),
-            survey :        echarts.init ($('#cw-survey')[0])
+%{--            survey :        echarts.init ($('#cw-survey')[0])--}%
         }
 
         JSPC.app.info.charts.subscription.setOption (JSPC.app.info.chart_config.subscription);
         JSPC.app.info.charts.license.setOption (JSPC.app.info.chart_config.license);
         JSPC.app.info.charts.provider.setOption (JSPC.app.info.chart_config.provider);
-        JSPC.app.info.charts.survey.setOption (JSPC.app.info.chart_config.survey);
+%{--        JSPC.app.info.charts.survey.setOption (JSPC.app.info.chart_config.survey);--}%
 
-        $( ['subscription', 'license', 'provider', 'survey'] ).each( function(i) {
+%{--        $( ['subscription', 'license', 'provider', 'survey'] ).each( function(i) {--}%
+        $( ['subscription', 'license', 'provider'] ).each( function(i) {
             let statsId     = '.stats_' + this
             let chart       = JSPC.app.info.charts[this]
             let chartConfig = JSPC.app.info.chart_config[this]
@@ -821,7 +828,8 @@
 
         });
 
-        $( ['subscription', 'license', 'provider', 'survey'] ).each( function(i) {
+%{--        $( ['subscription', 'license', 'provider', 'survey'] ).each( function(i) {--}%
+        $( ['subscription', 'license', 'provider'] ).each( function(i) {
             let statsId = '.stats_' + this
             let chart   = JSPC.app.info.charts[this]
 
@@ -829,7 +837,7 @@
 
             let $years = $(statsId + ' .menu .item[data-tab^=year-]')
             $years.on ('click', function() {
-                console.log(this)
+%{--                console.log(this)--}%
                 $years.removeClass('active')
                 $(this).addClass('active')
 
@@ -842,13 +850,13 @@
             });
         });
 
-        $('#survey-toggle-subscriptions').on('change', function() {
-            if ($(this).prop('checked')) {
-                $('table *[data-ctype=survey-subsciption]').removeClass('hidden')
-            } else {
-                $('table *[data-ctype=survey-subsciption]').addClass('hidden')
-            }
-        })
+%{--        $('#survey-toggle-subscriptions').on('change', function() {--}%
+%{--            if ($(this).prop('checked')) {--}%
+%{--                $('table *[data-ctype=survey-subsciption]').removeClass('hidden')--}%
+%{--            } else {--}%
+%{--                $('table *[data-ctype=survey-subsciption]').addClass('hidden')--}%
+%{--            }--}%
+%{--        })--}%
 
     </laser:script>
 

@@ -556,6 +556,7 @@
                             type    : 'bar',
                             stack   : 'total',
     %{--                        emphasis: { focus: 'series' },--}%
+                            animation : false,
                             data    : [${subscriptionTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
                             raw     : [${subscriptionTimelineMap.values().collect{ it[status] ?: [] }.join(', ')}],
                             color   : <%
@@ -579,6 +580,7 @@
                             lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,
 %{--                            areaStyle: {},--}%
     %{--                        emphasis: { focus: 'series' },--}%
+                            animation : false,
                             data    : [<%
                                         List<Long> subsPerYear = subscriptionTimelineMap.values().collect{ it.values().flatten() }
                                         print subsPerYear.collect {
@@ -609,6 +611,7 @@
                             type    : 'bar',
                             stack   : 'total',
     %{--                        emphasis: { focus: 'series' },--}%
+                            animation : false,
                             data    : [${licenseTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
                             raw     : [${licenseTimelineMap.values().collect{ it[status] ?: [] }.join(', ')}],
                             color   : <%
@@ -630,6 +633,7 @@
                             lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,
 %{--                            areaStyle: {},--}%
     %{--                        emphasis: { focus: 'series' },--}%
+                            animation : false,
                             data    : [<%
                                         List<Long> licsPerYear = licenseTimelineMap.values().collect{ it.values().flatten() }
                                         print licsPerYear.collect {
@@ -662,6 +666,7 @@
 %{--                        areaStyle : {},--}%
 %{--                        smooth  : true,--}%
                 %{--                        emphasis: { focus: 'series' },--}%
+                        animation : false,
                         data    : [${providerTimelineMap.values().collect{ it[provider] ? it[provider].size() : 0 }.join(', ')}],
                         raw     : [${providerTimelineMap.values().collect{ it[provider] ?: [] }.join(', ')}]
                     },
@@ -691,6 +696,7 @@
                             type    : 'bar',
                             stack   : 'total',
                     %{--                        emphasis: { focus: 'series' },--}%
+                            animation : false,
                             data    : [${surveyTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
                             raw     : [${surveyTimelineMap.values().collect{ it[status] ? it[status].collect{ it[0].id } : [] }.join(', ')}],
                             color   : <%
@@ -715,6 +721,7 @@
                             lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,
 %{--                            areaStyle: {},--}%
 %{--                emphasis: { focus: 'series' },--}%
+                            animation : false,
                             data    : ${surveyTypeTimeline.collect{ it.findAll{ it2 -> it2 == type }.size() }},
                             color   : "<%
                                 color = 'JSPC.colors.hex.grey'
@@ -798,7 +805,7 @@
 
             let $years = $(statsId + ' .menu .item[data-tab^=year-]')
             $years.on ('click', function() {
-                console.log(this)
+%{--                console.log(this)--}%
                 $years.removeClass('active')
                 $(this).addClass('active')
 
