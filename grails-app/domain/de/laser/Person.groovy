@@ -261,15 +261,20 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
      */
     static List<Person> getPrivateByOrgAndFuncFromAddressbook(target, String func, Org tenant) {
         String targetClause
+        Map<String, Object> queryParams = [functionType: func, tenant: tenant]
         List<Person> result
-        if(target instanceof Org)
+        if(target instanceof Org) {
             targetClause = 'pr.org = :org'
-        else if(target instanceof Vendor)
+            queryParams.org = target
+        }
+        else if(target instanceof Vendor) {
             targetClause = 'pr.vendor = :vendor'
+            queryParams.vendor = target
+        }
         if (targetClause) {
             result = Person.executeQuery(
                     'select p from Person as p inner join p.roleLinks pr where p.isPublic = false and '+targetClause+' and pr.functionType.value = :functionType and p.tenant = :tenant',
-                    [org: target, functionType: func, tenant: tenant]
+                    queryParams
             )
         }
         else result = []

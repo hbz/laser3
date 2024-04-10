@@ -98,6 +98,11 @@ class LicenseControllerService {
                 [license:result.license,context:result.institution,roleTypes:[RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS]]
         )
 
+        result.visibleVendors = OrgRole.executeQuery(
+                "select vr from VendorRole vr join vr.vendor v where vr.license = :license order by v.sortname",
+                [license:result.license]
+        )
+
         result.showConsortiaFunctions = showConsortiaFunctions(result.license)
 
         int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.license).size()

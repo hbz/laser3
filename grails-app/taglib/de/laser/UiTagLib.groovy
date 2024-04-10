@@ -47,7 +47,10 @@ class UiTagLib {
         if (attrs.visibleOrgRelations && attrs.visibleOrgRelations instanceof Collection) {
             attrs.visibleOrgRelations = attrs.visibleOrgRelations.findAll{ it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA }.sort{ it.org.sortname }.collect{ it.org }.join(' – ')
         }
-        if ( (attrs.referenceYear) || (attrs.visibleOrgRelations) ){
+        if (attrs.visibleVendors && attrs.visibleVendors instanceof Collection) {
+            attrs.visibleVendors = attrs.visibleVendors.collect{ it.org }.join(' – ')
+        }
+        if ( (attrs.referenceYear) || (attrs.visibleOrgRelations) || (attrs.visibleVendors) ){
             out << '<div class="la-subPlusYear">'
         }
         if (attrs.type) {
@@ -55,7 +58,7 @@ class UiTagLib {
         } else {
             out << ui.headerIcon()
         }
-        if ( (attrs.referenceYear)|| (attrs.visibleOrgRelations) ) {
+        if ( (attrs.referenceYear) || (attrs.visibleOrgRelations) || (attrs.visibleVendors) ) {
             out << '<div class="la-subPlusYear-texts">'
         }
         if (attrs.text) {

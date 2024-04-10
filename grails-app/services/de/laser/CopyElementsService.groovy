@@ -138,6 +138,8 @@ class CopyElementsService {
             // restrict visible for templates/links/orgLinksAsList
             result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(sourceObject)
             result.target_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(targetObject)
+            result.source_visibleVendors = subscriptionService.getVisibleVendors(sourceObject)
+            result.target_visibleVendors = subscriptionService.getVisibleVendors(targetObject)
 
             Set<RefdataValue> excludes = [RDStore.LINKTYPE_LICENSE]
             if(params.isRenewSub)
@@ -152,6 +154,8 @@ class CopyElementsService {
             // restrict visible for templates/links/orgLinksAsList
             result.source_visibleOrgRelations = licenseService.getVisibleOrgRelations(sourceObject)
             result.target_visibleOrgRelations = licenseService.getVisibleOrgRelations(targetObject)
+            result.source_visibleVendors = licenseService.getVisibleVendors(sourceObject)
+            result.target_visibleVendors = licenseService.getVisibleVendors(targetObject)
 
             Set<RefdataValue> excludes = [RDStore.LINKTYPE_LICENSE]
             result.sourceLinks = Links.executeQuery("select li from Links li where :lic in (li.sourceLicense,li.destinationLicense) and li.linkType not in (:linkTypes) and owner = :context", [lic: sourceObject, linkTypes: excludes, context: contextOrg])

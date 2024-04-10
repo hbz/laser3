@@ -9,6 +9,9 @@
                 <span class="la-flexbox la-minor-object">
                     <i class="la-list-icon la-popup-tooltip la-delay shipping fast icon" data-content="${message(code:'default.agency.label')}"></i>
                 </span>
+                <g:link controller="vendor" action="show" id="${role.vendor.id}">
+                    ${role.vendor.name}
+                </g:link>
             </td>
 
             <td class="right aligned eight wide column">
@@ -121,9 +124,9 @@
                                             boolean contactsExWekb = false
                                             if(role.vendor.gokbId) {
                                                 contactsExWekb = true
-                                                techSupports.addAll(Person.getPublicByOrgAndFunc(role.vendor, 'Technical Support', role.vendor))
-                                                serviceSupports.addAll(Person.getPublicByOrgAndFunc(role.vendor, 'Service Support', role.vendor))
-                                                metadataContacts.addAll(Person.getPublicByOrgAndFunc(role.vendor, 'Metadata Contact', role.vendor))
+                                                techSupports.addAll(Person.getPublicByOrgAndFunc(role.vendor, 'Technical Support'))
+                                                serviceSupports.addAll(Person.getPublicByOrgAndFunc(role.vendor, 'Service Support'))
+                                                metadataContacts.addAll(Person.getPublicByOrgAndFunc(role.vendor, 'Metadata Contact'))
                                             }
                                             else {
                                                 techSupports.addAll(Person.getPublicByOrgAndFunc(role.vendor, 'Technical Support'))

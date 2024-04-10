@@ -383,7 +383,7 @@
                 </div>
             </g:if>
             --}%
-            %{--
+
             <div class="ui card">
                 <div class="content">
                     <div class="ui accordion">
@@ -426,10 +426,10 @@
                             <p class="ui header"><g:message code="package.plural" /></p>
 
                             <div class="ui divided middle aligned selection list la-flex-list">
-                                <g:each in="${vendor.packages}" var="pkg">
+                                <g:each in="${vendor.packages}" var="vp">
                                     <div class="ui item">
                                         <div class="content la-space-right">
-                                            <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link>
+                                            <g:link controller="package" action="show" id="${vp.pkg.id}">${vp.pkg.name}</g:link>
                                         </div>
                                     </div>
                                 </g:each>
@@ -461,7 +461,7 @@
                             <div class="ui divided middle aligned selection list la-flex-list">
                                 <div class="ui item">
                                     <div class="content la-space-right">
-                                        <g:link controller="myInstitution" action="currentLicenses" params="[licensor: vendor.id, status: RDStore.LICENSE_CURRENT.id, subStatus: RDStore.SUBSCRIPTION_CURRENT.id, filterSubmit: 'Filtern']">
+                                        <g:link controller="myInstitution" action="currentLicenses" params="[vendor: vendor.id, status: RDStore.LICENSE_CURRENT.id, subStatus: RDStore.SUBSCRIPTION_CURRENT.id, filterSubmit: 'Filtern']">
                                             <i class="icon filter"></i> <g:message code="license.plural.current" />
                                             &nbsp;<div class="ui blue circular label">${currentLicensesCount}</div>
                                         </g:link>
@@ -469,7 +469,7 @@
                                 </div>
                                 <div class="ui item">
                                     <div class="content la-space-right">
-                                        <g:link controller="myInstitution" action="currentLicenses" params="[licensor: vendor.id, filterSubmit: 'Filtern']">
+                                        <g:link controller="myInstitution" action="currentLicenses" params="[vendor: vendor.id, filterSubmit: 'Filtern']">
                                             <i class="icon filter"></i> <g:message code="license.plural.total" />
                                             &nbsp;<div class="ui blue circular label">${licLinks.size()}</div>
                                         </g:link>
@@ -480,7 +480,7 @@
                     </div>
                 </div>
             </div>
-            --}%
+
             %{--
             <g:if test="${institution.isCustomerType_Consortium() || institution.isCustomerType_Support() || institution.isCustomerType_Inst_Pro()}">
                 <div id="new-dynamic-properties-block">

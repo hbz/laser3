@@ -27,7 +27,7 @@
 <g:if test="${!error}">
     <laser:render template="/templates/filter/packageGokbFilter" model="[tmplConfigShow: [
             ['q', 'pkgStatus'],
-            ['provider', 'ddc', 'curatoryGroup'],
+            ['provider', 'vendor', 'ddc', 'curatoryGroup'],
             ['curatoryGroupType', 'automaticUpdates']
     ]]"/>
 </g:if>
@@ -51,7 +51,7 @@
 <g:if test="${records}">
     <laser:render template="/templates/filter/packageGokbFilterTable"
                   model="[
-                          tmplConfigShow: ['lineNumber', 'name', 'status', 'titleCount', 'provider', 'platform', 'curatoryGroup', 'automaticUpdates', 'lastUpdatesDisplay', 'linkPackage'],
+                          tmplConfigShow: ['lineNumber', 'name', 'status', 'titleCount', 'provider', 'vendor', 'platform', 'curatoryGroup', 'automaticUpdates', 'lastUpdatesDisplay', 'linkPackage'],
                           pkgs: pkgs,
                           bulkProcessRunning: bulkProcessRunning
                   ]"
