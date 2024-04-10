@@ -1,6 +1,6 @@
 <%@ page import="de.laser.storage.RDStore" %>
 
-<div class="ui vertical secondary fluid menu">
+<div class="ui vertical secondary fluid menu" style="margin-bottom:2em">
     <a class="ui item stats-toggle" data-target="stats_subscription">
         <span class=""> ${message(code: 'subscription.plural.current')} </span>
         <span class="ui ${subscriptionMap.get(RDStore.SUBSCRIPTION_CURRENT.id)?.size() ? 'primary' : ''} label"> ${subscriptionMap.get(RDStore.SUBSCRIPTION_CURRENT.id)?.size() ?: 0} </span>
@@ -77,11 +77,11 @@
     let $statsToggle = $('.stats-toggle')
 
     $statsToggle.on('click', function() {
-        $('.stats-content').hide()
+        $('.stats-content, .stats-menu').hide()
         $statsToggle.removeClass('active')
 
         $(this).addClass('active')
-        $('#' + $(this).attr('data-target')).show()
+        $('.' + $(this).attr('data-target')).show()
 
         if (JSPC.app.info && JSPC.app.info.charts) {
             $.each(JSPC.app.info.charts, function(i, e) { e.resize() })
@@ -117,35 +117,35 @@
     /*  color: #1b1c1d !important;*/
     /*}*/
 
-    .stats-content {
+    .stats-content, .stats-menu {
       display: none;
     }
 
-    .stats-content .form.segment {
-        box-shadow: none;
-    }
-    .stats-content .secondary.menu .year {
-      float: right;
-      margin-left: auto;
-      font-size: 120%;
-      font-weight: bold;
-      color: #222;
-    }
-    .stats-content .secondary.menu .item {
-      padding: 0.6em 0.9em;
-      border: 1px solid transparent;
-    }
-    .stats-content .secondary.menu .item.active {
-      border-color: #dedede;
-    }
+    /*.stats-content .form.segment {*/
+    /*    box-shadow: none;*/
+    /*}*/
+    /*.stats-content .secondary.menu .year {*/
+    /*  float: right;*/
+    /*  margin-left: auto;*/
+    /*  font-size: 120%;*/
+    /*  font-weight: bold;*/
+    /*  color: #222;*/
+    /*}*/
+    /*.stats-content .secondary.menu .item {*/
+    /*  padding: 0.6em 0.9em;*/
+    /*  border: 1px solid transparent;*/
+    /*}*/
+    /*.stats-content .secondary.menu .item.active {*/
+    /*  border-color: #dedede;*/
+    /*}*/
     .stats-content tr.sub {
       background-color: rgba(0,0,0, 0.03)
     }
 
-    .menu > .item.black {
-      color: #1b1b1b;
-      font-weight: bold;
-    }
+    /*.menu > .item.black {*/
+    /*  color: #1b1b1b;*/
+    /*  font-weight: bold;*/
+    /*}*/
     h3.header > i.icon {
       vertical-align: baseline !important;
     }
