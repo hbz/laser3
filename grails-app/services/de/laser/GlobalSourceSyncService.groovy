@@ -1668,13 +1668,15 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @throws SyncException
      */
     void createOrUpdateSupport(Vendor vendor, Map<String, String> contactProps) throws SyncException {
-        Person personInstance = Person.executeQuery('select p from PersonRole pr join pr.prs p where p.tenant = null and pr.vendor = :vendor and p.isPublic = true and p.last_name = :type', [vendor: vendor, type: contactProps.rdType.getI10n("value")])[0]
-        if(!personInstance) {
+        List<Person> personCheck = Person.executeQuery('select p from PersonRole pr join pr.prs p where p.tenant = null and pr.vendor = :vendor and p.isPublic = true and p.last_name = :type', [vendor: vendor, type: contactProps.rdType.getI10n("value")])
+        Person personInstance
+        if(!personCheck) {
             personInstance = new Person(isPublic: true, last_name: contactProps.rdType.getI10n("value"))
             if(!personInstance.save()) {
                 throw new SyncException("Error on setting up contact for ${vendor}, concerning person instance: ${personInstance.getErrors().getAllErrors().toListString()}")
             }
         }
+        else personInstance = personCheck[0]
         PersonRole personRole = PersonRole.findByPrsAndVendorAndFunctionType(personInstance, vendor, contactProps.rdType)
         if(!personRole) {
             personRole = new PersonRole(prs: personInstance, vendor: vendor, functionType: contactProps.rdType)
@@ -1695,6 +1697,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         if(!contact.save()) {
             throw new SyncException("Error on setting contact for ${vendor}, concerning contact: ${contact.getErrors().getAllErrors().toListString()}")
         }
+        log.debug(contact.getProperties().toMapString())
     }
 
     /**
@@ -2578,6 +2581,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         tippStatus.put(RDStore.TIPP_STATUS_RETIRED.value,RDStore.TIPP_STATUS_RETIRED)
         tippStatus.put(RDStore.TIPP_STATUS_EXPECTED.value,RDStore.TIPP_STATUS_EXPECTED)
         tippStatus.put(RDStore.TIPP_STATUS_REMOVED.value,RDStore.TIPP_STATUS_REMOVED)
+        contactTypes.put(RDStore.PRS_FUNC_INVOICING_CONTACT.value,RDStore.PRS_FUNC_INVOICING_CONTACT)
         contactTypes.put(RDStore.PRS_FUNC_TECHNICAL_SUPPORT.value,RDStore.PRS_FUNC_TECHNICAL_SUPPORT)
         contactTypes.put(RDStore.PRS_FUNC_SERVICE_SUPPORT.value,RDStore.PRS_FUNC_SERVICE_SUPPORT)
         contactTypes.put(RDStore.PRS_FUNC_METADATA.value,RDStore.PRS_FUNC_METADATA)
