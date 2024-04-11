@@ -2,7 +2,7 @@
 <laser:htmlStart message="license.details.label" serviceInjection="true"/>
 
 %{-- help sidebar --}%
-<laser:render template="/templates/help/dateCreatedLastUpdated" model="[obj: license]"/>
+<laser:render template="/templates/flyouts/dateCreatedLastUpdated" model="[obj: license]"/>
         <ui:debugInfo>
             <div style="padding: 1em 0;">
                 <p>lic.licenseCategory: ${license.licenseCategory}</p>

@@ -2,7 +2,7 @@
 <laser:htmlStart message="package.details" serviceInjection="true"/>
 
 %{-- help sidebar --}%
-<laser:render template="/templates/help/dateCreatedLastUpdated" model="[obj: packageInstance]"/>
+<laser:render template="/templates/flyouts/dateCreatedLastUpdated" model="[obj: packageInstance]"/>
 
 <g:set var="locale" value="${RequestContextUtils.getLocale(request)}"/>
 

@@ -770,7 +770,7 @@ join sub.orgRelations or_sub where
      * @param subscription the subscription whose members should be queried
      * @return a list of member subscriptions
      */
-    List getValidSubChilds(Subscription subscription) {
+    List<Subscription> getValidSubChilds(Subscription subscription) {
         List<Subscription> validSubChildren = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.sub.instanceOf = :sub and oo.roleType in (:subRoleTypes) order by oo.org.sortname asc, oo.org.name asc',[sub:subscription,subRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
         validSubChildren
     }
