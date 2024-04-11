@@ -30,6 +30,12 @@
                                 <g:link controller="myInstitution" action="currentProviders">${message(code:'menu.my.providers')}</g:link>
                             </div>
                         </div>
+%{--                        <div class="item">--}%
+%{--                            <i class="shipping fast icon la-list-icon"></i>--}%
+%{--                            <div class="content">--}%
+%{--                                <g:link controller="myInstitution" action="currentVendors">${message(code:'menu.my.vendors')}</g:link>--}%
+%{--                            </div>--}%
+%{--                        </div>--}%
                     </div>
                 </div>
                 <div class="column">
@@ -40,6 +46,12 @@
                                 <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="tasks" message="menu.my.tasks" />
                             </div>
                         </div>
+%{--                        <div class="item">--}%
+%{--                            <i class="file alternate icon la-list-icon"></i>--}%
+%{--                            <div class="content">--}%
+%{--                                <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="documents" message="menu.my.documents" />--}%
+%{--                            </div>--}%
+%{--                        </div>--}%
                         <div class="item">
                             <i class="chart pie icon la-list-icon"></i>
                             <div class="content">

@@ -33,6 +33,7 @@
                     <g:each in="${subscriptionTimelineMap.keySet()}" var="year">
                         <a href="#" class="item" data-tab="year-${year}"> ${year} </a>
                     </g:each>
+%{--                    <a href="#" class="item" data-tab="year-*"> Alle </a>--}%
                 </div>
 
                 <div class="ui tiny header">${message(code: 'subscription.status.label')}</div>
@@ -832,7 +833,6 @@
         $( ['subscription', 'license', 'provider'] ).each( function(i) {
             let statsId = '.stats_' + this
             let chart   = JSPC.app.info.charts[this]
-
 %{--            console.log( statsId + ' ' + chart )--}%
 
             let $years = $(statsId + ' .menu .item[data-tab^=year-]')
@@ -842,11 +842,14 @@
                 $(this).addClass('active')
 
                 let y = $(this).attr('data-tab')
-                $years.each( function(i, e) {
-                    if ($(e).attr('data-tab') == y) {
-                        chart.trigger('click', {type: 'click', name: y.replace('year-', ''), dataIndex: i})
-                    }
-                })
+%{--                if (y == 'year-*') { $(statsId + ' tr[data-id]').show() }--}%
+%{--                else {--}%
+                    $years.each( function(i, e) {
+                        if ($(e).attr('data-tab') == y) {
+                            chart.trigger('click', {type: 'click', name: y.replace('year-', ''), dataIndex: i})
+                        }
+                    })
+%{--                }--}%
             });
         });
 

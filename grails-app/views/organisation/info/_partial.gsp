@@ -1,5 +1,7 @@
 <%@ page import="de.laser.storage.RDStore" %>
 
+<h2 class="ui small header" style="display:inline-block;background-color:red;color:white;padding:0.5em 1em">DEMO</h2>
+
 <div class="ui vertical secondary fluid menu" style="margin-bottom:2em">
     <a class="ui item stats-toggle" data-target="stats_subscription">
         <span class=""> ${message(code: 'subscription.plural.current')} </span>
