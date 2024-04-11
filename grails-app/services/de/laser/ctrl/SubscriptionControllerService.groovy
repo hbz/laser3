@@ -1437,7 +1437,7 @@ class SubscriptionControllerService {
                     List<Org> members = []
                     Map startEndDates = [:]
 
-                    if(params.selectSubMembersWithImport){
+                    if(params.selectSubMembersWithImport?.filename){
 
                         MultipartFile importFile = params.selectSubMembersWithImport
                         InputStream stream = importFile.getInputStream()
@@ -4027,6 +4027,7 @@ class SubscriptionControllerService {
             if(result.institution.isCustomerType_Consortium())
                 excludes << RDStore.OR_SUBSCRIPTION_CONSORTIA.id
             result.visibleOrgRelations = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType.id in excludes) }.sort { OrgRole oo -> oo.org.sortname }
+            result.vendorRoles = subscriptionService.getVisibleVendors(result.subscription)
         }
         else {
             if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {

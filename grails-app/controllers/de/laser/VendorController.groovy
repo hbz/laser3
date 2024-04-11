@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
+import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -61,6 +62,16 @@ class VendorController {
             result.editable = false //hard set until it is not decided how to deal with current agencies
             result.subEditable = userService.hasFormalAffiliation_or_ROLEADMIN(result.user, result.institution, 'INST_EDITOR')
             result.isMyVendor = vendorService.isMyVendor(vendor, result.institution)
+            result.platforms = vendor.packages.pkg.nominalPlatform
+            String subscriptionConsortiumFilter = '', licenseConsortiumFilter = ''
+            if(result.institution.isCustomerType_Consortium()) {
+                subscriptionConsortiumFilter = 'and s.instanceOf = null'
+                licenseConsortiumFilter = 'and l.instanceOf = null'
+            }
+            result.subLinks = VendorRole.executeQuery('select vr from VendorRole vr join vr.subscription s join s.orgRelations oo where vr.vendor = :vendor and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution])
+            result.licLinks = VendorRole.executeQuery('select vr from VendorRole vr join vr.license l join l.orgRelations oo where vr.vendor = :vendor and l.status = :current and oo.org = :context '+licenseConsortiumFilter, [vendor: vendor, current: RDStore.LICENSE_CURRENT, context: result.institution])
+            result.currentSubscriptionsCount = VendorRole.executeQuery('select count(vr) from VendorRole vr join vr.subscription s join s.orgRelations oo where vr.vendor = :vendor and oo.org = :context '+subscriptionConsortiumFilter, [vendor: vendor, context: result.institution])[0]
+            result.currentLicensesCount = VendorRole.executeQuery('select count(vr) from VendorRole vr join vr.license l join l.orgRelations oo where vr.vendor = :vendor and oo.org = :context '+licenseConsortiumFilter, [vendor: vendor, context: result.institution])[0]
             Map queryResult = gokbService.executeQuery(result.wekbApi.baseUrl + result.wekbApi.fixToken + "/searchApi", [uuid: vendor.gokbId])
             if (queryResult.error && queryResult.error == 404) {
                 result.error = message(code: 'wekb.error.404')

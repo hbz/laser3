@@ -47,7 +47,10 @@
                             <th rowspan="2">${message(code:'org.institution.label')}</th>
                         </g:elseif>
                         <g:if test="${'showProviders' in tableConfig}">
-                            <g:sortableColumn scope="col" params="${params}" property="providerAgency" title="${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}" rowspan="2" />
+                            <g:sortableColumn scope="col" params="${params}" property="provider" title="${message(code: 'default.provider.label')}" rowspan="2" />
+                        </g:if>
+                        <g:if test="${'showVendors' in tableConfig}">
+                            <g:sortableColumn scope="col" params="${params}" property="vendor" title="${message(code: 'default.agency.label')}" rowspan="2" />
                         </g:if>
                         <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label.shy')}"/>
                         <g:if test="${params.orgRole in ['Subscription Consortia']}">
@@ -173,24 +176,28 @@
                             </td>
                         </g:if>
                         <g:if test="${'showProviders' in tableConfig}">
-                        <td>
-                            <%-- as of ERMS-584, these queries have to be deployed onto server side to make them sortable --%>
-                            <g:each in="${s.providers}" var="org">
-                                <g:link controller="organisation" action="show" id="${org.id}">${fieldValue(bean: org, field: "name")}
-                                    <g:if test="${org.sortname}">
-                                        <br /> (${fieldValue(bean: org, field: "sortname")})
-                                    </g:if>
-                                </g:link><br />
-                            </g:each>
-                            <g:each in="${s.agencies}" var="org">
-                                <g:link controller="organisation" action="show" id="${org.id}">
-                                    ${fieldValue(bean: org, field: "name")}
-                                    <g:if test="${org.sortname}">
-                                        <br /> (${fieldValue(bean: org, field: "sortname")})
-                                    </g:if> (${message(code: 'default.agency.label')})
-                                </g:link><br />
-                            </g:each>
-                        </td>
+                            <td>
+                                <%-- as of ERMS-584, these queries have to be deployed onto server side to make them sortable --%>
+                                <g:each in="${s.providers}" var="org">
+                                    <g:link controller="organisation" action="show" id="${org.id}">${fieldValue(bean: org, field: "name")}
+                                        <g:if test="${org.sortname}">
+                                            <br /> (${fieldValue(bean: org, field: "sortname")})
+                                        </g:if>
+                                    </g:link><br />
+                                </g:each>
+                            </td>
+                        </g:if>
+                        <g:if test="${'showVendors' in tableConfig}">
+                            <td>
+                                <g:each in="${s.vendors}" var="vendor">
+                                    <g:link controller="vendor" action="show" id="${vendor.id}">
+                                        ${fieldValue(bean: vendor, field: "name")}
+                                        <g:if test="${vendor.sortname}">
+                                            <br /> (${fieldValue(bean: vendor, field: "sortname")})
+                                        </g:if>
+                                    </g:link><br />
+                                </g:each>
+                            </td>
                         </g:if>
                         <%--
                             <td>

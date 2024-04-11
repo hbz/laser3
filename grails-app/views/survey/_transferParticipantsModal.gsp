@@ -92,9 +92,9 @@
             <g:if test="${!auditConfigProvidersAgencies}">
                 <div class="field">
                     <g:set var="providers" value="${parentSuccessorSubscription.getProviders()?.sort { it.name }}"/>
-                    <g:set var="agencies" value="${parentSuccessorSubscription.getAgencies()?.sort { it.name }}"/>
+                    <g:set var="vendors" value="${parentSuccessorSubscription.getVendors()?.sort { it.name }}"/>
 
-                    <g:if test="${(providers || agencies)}">
+                    <g:if test="${(providers || vendors)}">
                         <label><g:message code="surveyInfo.transferParticipants.moreOption"/></label>
 
                         <div class="ui checkbox">
@@ -120,14 +120,14 @@
                         </div>
 
                         <div class="field">
-                            <g:set var="agencies"
-                                   value="${parentSuccessorSubscription.getAgencies()?.sort { it.name }}"/>
-                            <g:if test="${agencies}">
+                            <g:set var="vendors"
+                                   value="${parentSuccessorSubscription.getVendors()?.sort { it.name }}"/>
+                            <g:if test="${vendors}">
                                 <label><g:message code="surveyInfo.transferParticipants.transferAgency"
                                                   args="${superOrgType}"/>:</label>
                                 <g:select class="ui search multiple dropdown"
                                           optionKey="id" optionValue="name"
-                                          from="${agencies}" name="agenciesSelection" value=""
+                                          from="${vendors}" name="vendorsSelection" value=""
                                           noSelection='["": "${message(code: 'surveyInfo.transferParticipants.noSelectionTransferAgency')}"]'/>
                             </g:if>
                         </div>

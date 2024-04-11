@@ -400,7 +400,8 @@ class MyInstitutionController  {
 
         Set<String> licenseFilterTable = []
         if (! contextService.getOrg().isCustomerType_Support()) {
-            licenseFilterTable << "providerAgency"
+            licenseFilterTable << "provider"
+            licenseFilterTable << "vendor"
         }
 
         if (contextService.getOrg().isCustomerType_Inst_Pro()) {
@@ -453,9 +454,15 @@ class MyInstitutionController  {
         }
 
         if (params.licensor) {
-            base_qry += " and ( exists ( select o from l.orgRelations as o where o.roleType in (:licAgncy) and o.org.id in (:licensors) ) ) "
+            base_qry += " and ( exists ( select o from l.orgRelations as o where o.roleType = :licAgncy and o.org.id in (:licensors) ) ) "
             List<Long> licensors = Params.getLongList(params, 'licensor')
-            qry_params += [licAgncy:[RDStore.OR_LICENSOR, RDStore.OR_AGENCY], licensors:licensors]
+            qry_params += [licAgncy:RDStore.OR_LICENSOR, licensors:licensors]
+        }
+
+        if (params.vendor) {
+            base_qry += " and ( exists ( select vr from VendorRole as vr where vr.license = l and vr.vendor.id in (:vendors) ) ) "
+            List<Long> vendors = Params.getLongList(params, 'vendor')
+            qry_params += [vendors: vendors]
         }
 
         if (params.categorisation) {
@@ -555,6 +562,7 @@ class MyInstitutionController  {
         Set<Org> licensors = orgTypeService.getOrgsForTypeLicensor()
         Map<String,Set<Org>> orgs = [consortia:consortia,licensors:licensors]
         result.orgs = orgs
+        result.vendors = Vendor.findAll([sort: 'sortname'])
 
 		List bm = prf.stopBenchmark()
 		result.benchMark = bm
@@ -1169,6 +1177,7 @@ class MyInstitutionController  {
         if (! contextService.getOrg().isCustomerType_Support()) {
             result.tableConfig << "showPackages"
             result.tableConfig << "showProviders"
+            result.tableConfig << "showVendors"
         }
 
         result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
@@ -3646,6 +3655,7 @@ join sub.orgRelations or_sub where
         if (! contextService.getOrg().isCustomerType_Support()) {
             result.tableConfig << "showPackages"
             result.tableConfig << "showProviders"
+            result.tableConfig << "showVendors"
         }
 
         result.putAll(subscriptionService.getMySubscriptionsForConsortia(params,result.user,result.institution,result.tableConfig))

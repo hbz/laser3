@@ -166,19 +166,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   }
 
     /**
-     * Gets the agencies / vendors of this package
-     * @return the {@link Set} of {@link Org}s linked to this package by {@link OrgRole} of type Agency
-     */
-  @Transient
-  Set<Org> getAgencies() {
-    Set<Org> result = []
-    result.addAll(orgs.findAll { OrgRole or ->
-      or.roleType == RDStore.OR_AGENCY
-    }.org)
-    result
-  }
-
-    /**
      * Outputs this package's name and core data for labelling
      * @return the concatenated label of this package
      */

@@ -144,4 +144,15 @@ class LicenseService {
         visibleOrgRelations.sort { it.org?.name?.toLowerCase() }
     }
 
+    /**
+     * Retrieves all visible vendor links for the given license
+     * @param license the license to retrieve the relations from
+     * @return a sorted set of visible relations
+     */
+    SortedSet<VendorRole> getVisibleVendors(License license) {
+        SortedSet<VendorRole> visibleVendorRelations = new TreeSet<VendorRole>()
+        visibleVendorRelations.addAll(VendorRole.executeQuery('select vr from VendorRole vr join vr.vendor v where vr.license = :license order by v.sortname', [license: license]))
+        visibleVendorRelations
+    }
+
 }

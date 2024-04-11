@@ -3,7 +3,7 @@ package de.laser
 import de.laser.traits.ShareableTrait
 import org.grails.datastore.mapping.engine.event.PostUpdateEvent
 
-class VendorRole implements ShareableTrait {
+class VendorRole implements ShareableTrait, Comparable<VendorRole> {
 
     Date dateCreated
     Date lastUpdated
@@ -36,5 +36,17 @@ class VendorRole implements ShareableTrait {
 
     void beforeDelete(PostUpdateEvent event) {
         deleteShare_trait()
+    }
+
+    @Override
+    int compareTo(VendorRole v) {
+        int result = vendor.sortname <=> v.vendor.sortname
+        if(!result && subscription && v.subscription)
+            result = subscription.name <=> v.subscription.name
+        else if(!result && license && v.license)
+            result = license.reference <=> v.license.reference
+        if(!result)
+            id <=> v.id
+        result
     }
 }

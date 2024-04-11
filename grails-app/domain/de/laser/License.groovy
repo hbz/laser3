@@ -72,7 +72,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     SortedSet ids
 
     static transients = [
-            'referenceConcatenated', 'licensingConsortium', 'licensor', 'licensee', 'providers', 'agencies',
+            'referenceConcatenated', 'licensingConsortium', 'licensor', 'licensee', 'providers', 'vendors',
             'calculatedPropDefGroups', 'genericLabel', 'nonDeletedDerivedLicenses'
     ] // mark read-only accessor methods
 
@@ -224,13 +224,13 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
-     * Toggles the sharing of a {@link DocContext} or {@link OrgRole}
+     * Toggles the sharing of a {@link DocContext}, {@link OrgRole} or {@link VendorRole}
      * @param sharedObject the object which should be shared or not
      */
     void updateShare(ShareableTrait sharedObject) {
         log.debug('updateShare: ' + sharedObject)
 
-        if (sharedObject instanceof DocContext || sharedObject instanceof OrgRole) {
+        if (sharedObject instanceof DocContext || sharedObject instanceof OrgRole || sharedObject instanceof VendorRole) {
             if (sharedObject.isShared) {
                 List<License> newTargets = License.findAllByInstanceOf(this)
                 log.debug('found targets: ' + newTargets)
@@ -266,10 +266,22 @@ class License extends AbstractBaseWithCalculatedLastUpdated
             }
         }
         orgRelations.each{ sharedObject ->
-            targets.each{ sub ->
+            targets.each{ lic ->
                 if (sharedObject.isShared) {
-                    log.debug('adding for: ' + sub)
-                    sharedObject.addShareForTarget_trait(sub)
+                    log.debug('adding for: ' + lic)
+                    sharedObject.addShareForTarget_trait(lic)
+                }
+                else {
+                    log.debug('deleting all shares')
+                    sharedObject.deleteShare_trait()
+                }
+            }
+        }
+        VendorRole.findAllBySubscription(this).each { sharedObject ->
+            targets.each { lic ->
+                if (sharedObject.isShared) {
+                    log.debug('adding for: ' + lic)
+                    sharedObject.addShareForTarget_trait(lic)
                 }
                 else {
                     log.debug('deleting all shares')
@@ -301,17 +313,17 @@ class License extends AbstractBaseWithCalculatedLastUpdated
      * @return a {@link List} of {@link Org}s linked as provider
      */
     List<Org> getProviders() {
-        Org.executeQuery("select og.org from OrgRole og where og.lic =:lic and og.roleType in (:provider)",
+        Org.executeQuery("select og.org from OrgRole og where og.lic =:lic and og.roleType in (:provider) order by og.org.sortname",
                 [lic: this, provider: [RDStore.OR_PROVIDER, RDStore.OR_LICENSOR]])
     }
 
     /**
-     * Retrieves all organisation linked as agencies to this license
-     * @return a {@link List} of {@link Org}s linked as agency
+     * Retrieves all vendors linked to this license
+     * @return a {@link List} of linked {@link Vendor}s
      */
-    List<Org> getAgencies() {
-        Org.executeQuery("select og.org from OrgRole og where og.lic =:lic and og.roleType = :agency",
-                [lic: this, agency: RDStore.OR_AGENCY])
+    List<Vendor> getVendors() {
+        Vendor.executeQuery("select vr.vendor from VendorRole vr where vr.license = :lic order by vr.vendor.sortname",
+                [lic: this])
     }
 
     /**
