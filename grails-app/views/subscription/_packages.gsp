@@ -32,12 +32,12 @@
                                         <g:if test="${sp.pkg.contentProvider.gokbId}"><ui:wekbIconLink type="org" gokbId="${sp.pkg.contentProvider.gokbId}"/></g:if>
                                     </g:if>
                                 </div>
-                                <g:each in="${sp.pkg.agencies}" var="agency">
+                                <g:each in="${sp.pkg.vendors}" var="vendor">
                                     <div>
                                         <i aria-hidden="true" class="shipping fast grey icon la-popup-tooltip la-delay" data-content="${message(code: 'default.agency.label')}"></i>
-                                        <g:link controller="org" action="show" id="${agency.id}">${agency.name}</g:link>
-                                        <g:if test="${agency.url}"><ui:linkWithIcon href="${agency.url.startsWith('http') ? agency.url : 'http://' + agency.url}"/></g:if>
-                                        <g:if test="${agency.gokbId}"><ui:wekbIconLink type="vendor" gokbId="${agency.gokbId}"/></g:if>
+                                        <g:link controller="vendor" action="show" id="${vendor.id}">${vendor.name}</g:link>
+                                        <g:if test="${vendor.url}"><ui:linkWithIcon href="${vendor.url.startsWith('http') ? vendor.url : 'http://' + vendor.url}"/></g:if>
+                                        <g:if test="${vendor.gokbId}"><ui:wekbIconLink type="vendor" gokbId="${vendor.gokbId}"/></g:if>
                                     </div>
                                 </g:each>
                             </div>
