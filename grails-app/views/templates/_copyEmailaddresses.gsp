@@ -105,7 +105,9 @@
                     //$("#emailAddressesTextArea").val(data.join('; '));
                     $.each(data, function (i, e) {
                         $("#"+i+" span.address").text(e.join('; '));
+                        $("#"+i).show();
                     });
+                    $("span.address:empty").parents("tr").hide();
                 }
             });
         }

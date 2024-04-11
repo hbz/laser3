@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5638    11.04.2024  dev     3.4         Andreas Bug         Beifang von leeren Adresszeilen entfernt
+
 5639    10.04.2024  dev     3.4         Andreas Bug         Argumentfehler in Abfrage behoben
 
 5636    10.04.2024  dev     3.4         Andreas Bug         if-Abfrage zum Abfangen ungültiger Sortierparameter korrigiert
