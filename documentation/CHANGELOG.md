@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5639    10.04.2024  dev     3.4         Andreas Bug         Argumentfehler in Abfrage behoben
+
+5636    10.04.2024  dev     3.4         Andreas Bug         if-Abfrage zum Abfangen ungültiger Sortierparameter korrigiert
+
 5619    02.04.2024  dev     3.4         Andreas Feature     Plattform-Filter erweitert
 
 3996    27.03.2024  dev     3.4         Andreas Feature     Cost per Use-Erstaufschlag implementiert

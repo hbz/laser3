@@ -185,7 +185,7 @@ class AddressbookService {
             sort = 'a.org.sortname'
         else if(params.sort.contains('pr.org'))
             sort = params.sort.replaceAll('pr.org', 'a.org')
-        else if(params.sort == 'p.last_name, p.first_name')
+        else if(params.sort.contains('_name'))
             sort = 'a.name'
         switch(fromSite) {
             case "addressbook":
