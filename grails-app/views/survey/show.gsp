@@ -2,7 +2,7 @@
 <laser:htmlStart message="surveyShow.label" serviceInjection="true"/>
 
 %{-- help sidebar --}%
-<laser:render template="/templates/help/dateCreatedLastUpdated" model="[obj: surveyInfo]"/>
+<laser:render template="/templates/flyouts/dateCreatedLastUpdated" model="[obj: surveyInfo]"/>
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 

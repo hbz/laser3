@@ -266,6 +266,12 @@
     <laser:render template="subscriptionTransferInfo" model="${[calculatedSubList: successor + [subscription] + previous]}"/>
 </g:if>
 
+<g:if test="${editable && subscription.getConsortia()?.id == contextService.getOrg().id}">
+    <g:if test="${!(actionName.startsWith('copy') || actionName in ['renewEntitlementsWithSurvey', 'renewSubscription', 'emptySubscription'])}">
+        <laser:render template="/templates/flyouts/subscriptionMembers" model="[subscription: subscription]"/>
+    </g:if>
+</g:if>
+
 <laser:script file="${this.getGroovyPageFileName()}">
     $('#selectEntitlementsWithKBART').on('click', function(e) {
             e.preventDefault();
