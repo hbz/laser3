@@ -609,7 +609,7 @@
                     <g:elseif test="${actionName == 'currentVendors'}">
                         <g:if test="${currentSubscriptions}">
                             <ul class="la-simpleList">
-                                <g:each in="${currentSubscriptions}" var="sub">
+                                <g:each in="${currentSubscriptions.get(org.id)}" var="sub">
                                     <li><g:link controller="subscription" action="show" id="${sub.id}">${sub}</g:link></li>
                                 </g:each>
                             </ul>
@@ -683,7 +683,13 @@
                         </g:each>
                     </g:if>
                     <g:elseif test="${org instanceof Vendor}">
-                        to be implemented
+                        <g:each in="${vendorService.getSubscribedPlatforms(org, institution)}" var="platform">
+                            <g:if test="${platform.gokbId != null}">
+                                <ui:wekbIconLink type="platform" gokbId="${platform.gokbId}" />
+                            </g:if>
+                            <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
+                            <br />
+                        </g:each>
                     </g:elseif>
                 </td>
             </g:if>
