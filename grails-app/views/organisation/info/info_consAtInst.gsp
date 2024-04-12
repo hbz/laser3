@@ -150,6 +150,12 @@
                                             <div class="la-flexbox la-minor-object">
                                                 <i class="icon clipboard la-list-icon"></i>
                                                 <g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link>
+
+                                                <g:if test="${OrgRole.findBySubAndOrgAndRoleType(sub, orgInstance, RDStore.OR_SUBSCRIBER_CONS_HIDDEN)}">
+                                                    <span class="ui icon la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.hiddenForSubscriber')}" style="margin-left:1em">
+                                                        <i class="ui icon eye slash orange"></i>
+                                                    </span>
+                                                </g:if>
                                             </div>
                                         </td>
                                         <g:if test="${subStatus == RDStore.SUBSCRIPTION_CURRENT}">
