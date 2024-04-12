@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription;"%>
+<%@ page import="de.laser.storage.RDStore; de.laser.Subscription;de.laser.OrgRole"%>
 
 <div class="ui eight wide flyout" id="subscriptionMembers-content" style="padding:50px 0 10px 0;overflow:scroll">
 
@@ -21,6 +21,7 @@
                 <tr>
                     <th>${message(code:'sidewide.number')}</th>
                     <th>${message(code:'consortium.member')}</th>
+                    <th></th>
                     <th>${message(code:'subscription.member')}</th>
                 </tr>
             </thead>
@@ -28,7 +29,9 @@
                 <g:each in="${memberSubs}" var="sub" status="i">
                     <g:set var="subInst" value="${sub.getSubscriber()}" />
                     <tr <%= sub.id == subscription.id ? 'class="warning"' : '' %>>
-                        <td> ${i+1} </td>
+                        <td>
+                            ${i+1}
+                        </td>
                         <td>
                             <g:link controller="org" action="show" id="${subInst.id}" class="item">
                                 <i class="icon university la-list-icon"></i>
@@ -36,9 +39,19 @@
                             </g:link>
                         </td>
                         <td>
+                            <g:if test="${OrgRole.findBySubAndOrgAndRoleType(sub, subInst, RDStore.OR_SUBSCRIBER_CONS_HIDDEN)}">
+                                <span class="ui icon la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.hiddenForSubscriber')}">
+                                    <i class="ui icon eye slash orange"></i>
+                                </span>
+                            </g:if>
+                        </td>
+                        <td>
                             <g:link controller="subscription" action="show" id="${sub.id}" class="item">
                                 <i class="icon clipboard la-list-icon"></i>
                                 ${sub}
+                                <span style="margin-left:0.5em">
+                                    (<g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/> - <g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/>)
+                                </span>
                             </g:link>
                         </td>
                     </tr>
