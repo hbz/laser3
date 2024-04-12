@@ -94,6 +94,13 @@ class VendorService {
         count > 0
     }
 
+    Set<Platform> getSubscribedPlatforms(Vendor vendor, Org contextOrg) {
+        String instanceFilter = ''
+        if(contextOrg.isCustomerType_Consortium())
+            instanceFilter = 'and s.instanceOf = null'
+        Platform.executeQuery('select pkg.nominalPlatform from PackageVendor pv, VendorRole vr, OrgRole oo join oo.sub s join pv.pkg pkg where pv.vendor = :vendor and pv.vendor = vr.vendor and vr.subscription = s and s.status = :current and oo.org = :contextOrg '+instanceFilter, [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, contextOrg: contextOrg])
+    }
+
     Map<String, Object> getResultGenerics(GrailsParameterMap params) {
         Org contextOrg = contextService.getOrg()
         User contextUser = contextService.getUser()
