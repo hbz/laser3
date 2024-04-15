@@ -44,7 +44,7 @@
                         </g:else>
                 </td>
                 <td>
-                    <g:if test="${modifyAccountEnability}">
+                    <g:if test="${contextService.getUser().isYoda()}">
                         <ui:xEditableBoolean owner="${us}" field="enabled"/>
                     </g:if>
                     <g:else>

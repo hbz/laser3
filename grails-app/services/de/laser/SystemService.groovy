@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.auth.User
 import de.laser.config.ConfigMapper
 import de.laser.remote.ApiSource
 import de.laser.remote.GlobalRecordSource
@@ -14,6 +15,7 @@ import groovy.json.JsonOutput
 import org.springframework.mail.MailMessage
 
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 
 /**
  * This service checks the system health
@@ -175,6 +177,27 @@ class SystemService {
             }
 
             se.changeTo(seMap.status == 'ok' ? 'SYSTEM_INSIGHT_MAILS_COMPLETE' : 'SYSTEM_INSIGHT_MAILS_ERROR', seMap)
+        }
+    }
+
+    void flagExpiredUserAccounts() {
+        log.info "--> flagExpiredUserAccounts"
+
+        List expiredAccounts = []
+        LocalDate now = LocalDate.now()
+
+        User.executeQuery("select u from User u where u.accountExpired != true and u.username != 'anonymous' order by u.username").each{ User usr ->
+            LocalDate lastLogin = usr.lastLogin ? DateUtils.dateToLocalDate(usr.lastLogin) : DateUtils.dateToLocalDate(usr.dateCreated)
+            if (lastLogin.isBefore(now.minusMonths(6))) {
+                usr.accountExpired = true
+                usr.save()
+
+                expiredAccounts.add([usr.id, usr.username, usr.lastLogin])
+            }
+        }
+
+        if (expiredAccounts) {
+            SystemEvent.createEvent('SYSTEM_FLAG_EXPIRED_ACCOUNTS', [expiredAccounts: expiredAccounts])
         }
     }
 }

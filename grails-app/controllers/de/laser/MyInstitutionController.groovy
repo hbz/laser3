@@ -2789,8 +2789,7 @@ class MyInstitutionController  {
                 editLink: 'editUser',
                 deleteLink: 'deleteUser',
                 users: result.users,
-                showAllAffiliations: false,
-                modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA')
+                showAllAffiliations: false
         ]
 
         render view: '/user/global/list', model: result

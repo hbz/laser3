@@ -235,4 +235,20 @@ databaseChangeLog = {
     changeSet(author: "galffy (generated)", id: "1712929543410-28") {
         addForeignKeyConstraint(baseColumnNames: "eddn_vendor_fk", baseTableName: "electronic_delivery_delay_notification", constraintName: "FKt6o3vmvc2qhedtcjd0cnkt9v9", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "ven_id", referencedTableName: "vendor", validate: "true")
     }
+
+    changeSet(author: "klober (generated)", id: "1712918403913-29") {
+        addColumn(tableName: "user") {
+            column(name: "usr_last_login", type: "timestamp")
+        }
+    }
+
+//    changeSet(author: "klober (modified)", id: "1712918403913-30") {
+//        grailsChange {
+//            change {
+//                java.sql.Date now = new java.sql.Date(System.currentTimeMillis())
+//                sql.execute('update "user" set usr_last_login = :now', [now: now])
+//            }
+//            rollback {}
+//        }
+//    }
 }

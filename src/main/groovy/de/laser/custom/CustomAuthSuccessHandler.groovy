@@ -41,6 +41,9 @@ class CustomAuthSuccessHandler extends CustomAjaxAwareAuthenticationSuccessHandl
 
         if (! SpringSecurityUtils.isAjax(request)) {
             User user = springSecurityService.getCurrentUser()
+            user.lastLogin = new Date()
+            user.save()
+
             userService.initMandatorySettings(user)
         }
 

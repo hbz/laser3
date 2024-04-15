@@ -84,6 +84,7 @@ class SystemEvent {
             'SUS_SEND_MAIL_ERROR'           : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
             'SYSANN_SENDING_OK'             : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
             'SYSANN_SENDING_ERROR'          : [category: CATEGORY.OTHER, relevance: RELEVANCE.ERROR],
+            'SYSTEM_FLAG_EXPIRED_ACCOUNTS'  : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'SYSTEM_INFO_JOB_START'         : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'SYSTEM_INFO_JOB_STOP'          : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'SYSTEM_INSIGHT_MAILS_START'    : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],

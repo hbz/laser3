@@ -47,8 +47,8 @@ class MuleJob extends AbstractJob {
 
             if (Math.abs(LocalTime.parse('06:45').toSecondOfDay() - LocalTime.now().toSecondOfDay()) < 300) {
                 systemService.sendSystemInsightMails()
+//                systemService.flagExpiredUserAccounts()
             }
-
             double elapsed = ((System.currentTimeMillis() - start_time) / 1000).round(2)
             sysEvent.changeTo('MULE_COMPLETE', [s: elapsed])
 
