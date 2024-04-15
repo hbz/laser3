@@ -139,16 +139,6 @@ class VendorController {
             result.licLinks = VendorRole.executeQuery('select vr from VendorRole vr join vr.license l join l.orgRelations oo where vr.vendor = :vendor and l.status = :current and oo.org = :context '+licenseConsortiumFilter, [vendor: vendor, current: RDStore.LICENSE_CURRENT, context: result.institution])
             result.currentSubscriptionsCount = VendorRole.executeQuery('select count(vr) from VendorRole vr join vr.subscription s join s.orgRelations oo where vr.vendor = :vendor and oo.org = :context '+subscriptionConsortiumFilter, [vendor: vendor, context: result.institution])[0]
             result.currentLicensesCount = VendorRole.executeQuery('select count(vr) from VendorRole vr join vr.license l join l.orgRelations oo where vr.vendor = :vendor and oo.org = :context '+licenseConsortiumFilter, [vendor: vendor, context: result.institution])[0]
-            Map queryResult = gokbService.executeQuery(result.wekbApi.baseUrl + result.wekbApi.fixToken + "/searchApi", [uuid: vendor.gokbId])
-            if (queryResult.error && queryResult.error == 404) {
-                result.error = message(code: 'wekb.error.404')
-            }
-            else if (queryResult) {
-                List records = queryResult.result
-                if(records) {
-                    result.vendorWekbData = records[0]
-                }
-            }
             result
         }
         else {
