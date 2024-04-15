@@ -1037,27 +1037,34 @@ class OrganisationController  {
         result
     }
 
-    @Secured(['ROLE_YODA'])
     @UnstableFeature
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_PRO )
+    })
     @Check404(domain=Org)
     def info() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         Map<String,Object> info = [:]
         String view = ''
 
+        if (! result) {
+            response.sendError(401); return
+        }
+
         Org ctxOrg = contextService.getOrg()
         Org org    = result.orgInstance as Org
 
-        if (ctxOrg.isCustomerType_Inst() && ctxOrg == org) {
-            info = infoService.getInfo_Inst(ctxOrg)
-            view = 'info/info_inst'
+        if (! org.isInfoAccessibleFor(ctxOrg)) {
+            response.sendError(401); return
         }
         else if (ctxOrg.isCustomerType_Consortium() && org.isCustomerType_Inst()) {
             info = infoService.getInfo_ConsAtInst(ctxOrg, org)
             view = 'info/info_consAtInst'
         }
-        else {
-            response.sendError(401); return
+        else if (ctxOrg.isCustomerType_Inst() && ctxOrg == org) {
+            info = infoService.getInfo_Inst(ctxOrg)
+            view = 'info/info_inst'
         }
 
         result.subscriptionMap          = info.subscriptionMap

@@ -24,19 +24,50 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
     @RefdataInfo(cat = RDConstants.VENDOR_STATUS)
     RefdataValue status
 
+    String homepage
+    boolean webShopOrders = false
+    boolean xmlOrders = false
+    boolean ediOrders = false
+    boolean paperInvoice = false
+    boolean managementOfCredits = false
+    boolean processingOfCompensationPayments = false
+    boolean individualInvoiceDesign = false
+    boolean technicalSupport = false
+    boolean shippingMetadata = false
+    boolean forwardingUsageStatisticsFromPublisher = false
+    boolean activationForNewReleases = false
+    boolean exchangeOfIndividualTitles = false
+    String researchPlatformForEbooks
+    boolean prequalificationVOL = false
+    String prequalificationVOLInfo
+
     Date dateCreated
     Date lastUpdated
     Date lastUpdatedCascading
 
+    SortedSet supportedLibrarySystems
+    SortedSet electronicBillings
+    SortedSet invoiceDispatchs
+    SortedSet electronicDeliveryDelays
+
     static mappedBy = [
             contacts: 'vendor',
-            addresses: 'vendor'
+            addresses: 'vendor',
+            packages: 'vendor',
+            supportedLibrarySystems: 'vendor',
+            electronicBillings: 'vendor',
+            invoiceDispatchs: 'vendor',
+            electronicDeliveryDelays: 'vendor',
     ]
 
     static hasMany = [
             contacts: Contact,
             addresses: Address,
-            packages: PackageVendor
+            packages: PackageVendor,
+            supportedLibrarySystems: LibrarySystem,
+            electronicBillings: ElectronicBilling,
+            invoiceDispatchs: InvoiceDispatch,
+            electronicDeliveryDelays: ElectronicDeliveryDelayNotification
     ]
 
     static mapping = {
@@ -47,41 +78,37 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         globalUID column: 'ven_guid'
         name column: 'ven_name'
         sortname column: 'ven_sortname'
-
+        status column: 'ven_status_rv_fk'
+        homepage column: 'ven_homepage'
+        webShopOrders column: 'ven_web_shop_orders'
+        xmlOrders column: 'ven_xml_orders'
+        ediOrders column: 'vel_edi_orders'
+        paperInvoice column: 'ven_paper_invoice'
+        managementOfCredits column: 'ven_management_of_credits'
+        processingOfCompensationPayments column: 'ven_processing_of_compensation_payments'
+        individualInvoiceDesign column: 'ven_individual_invoice_design'
+        technicalSupport column: 'ven_technical_support'
+        shippingMetadata column: 'ven_shipping_metadata'
+        forwardingUsageStatisticsFromPublisher column: 'ven_forwarding_usage_statistics_from_publisher'
+        activationForNewReleases column: 'ven_activation_new_releases'
+        exchangeOfIndividualTitles column: 'ven_exchange_individual_titles'
+        researchPlatformForEbooks column: 'ven_research_platform_ebooks'
+        prequalificationVOL column: 'ven_prequalification_vol'
+        prequalificationVOLInfo column: 'ven_prequalification_vol_info'
         dateCreated column: 'ven_date_created'
         lastUpdated column: 'ven_last_updated'
         lastUpdatedCascading column: 'ven_last_updated_cascading'
-
-        status column: 'ven_status_rv_fk'
     }
 
     static constraints = {
-        gokbId                   (unique: true)
-        globalUID                (unique: true)
-        sortname                 (nullable: true)
-        lastUpdatedCascading     (nullable: true)
+        gokbId                      (unique: true)
+        globalUID                   (unique: true)
+        sortname                    (nullable: true)
+        homepage                    (nullable: true)
+        researchPlatformForEbooks   (nullable: true)
+        prequalificationVOLInfo     (nullable: true)
+        lastUpdatedCascading        (nullable: true)
     }
-
-    static final Set<String> WEKB_PROPERTIES = ['homepage',
-                                                'webShopOrders',
-                                                'xmlOrders',
-                                                'ediOrders',
-                                                'paperInvoice',
-                                                'managementOfCredits',
-                                                'processingOfCompensationPayments',
-                                                'individualInvoiceDesign',
-                                                'technicalSupport',
-                                                'shippingMetadata',
-                                                'forwardingUsageStatisticsFromPublisher',
-                                                'activationForNewReleases',
-                                                'exchangeOfIndividualTitles',
-                                                'researchPlatformForEbooks',
-                                                'prequalificationVOL',
-                                                'prequalificationVOLInfo',
-                                                'supportedLibrarySystems',
-                                                'electronicBillings',
-                                                'invoiceDispatchs',
-                                                'electronicDeliveryDelays']
 
     @Transient
     int getProvidersCount(){

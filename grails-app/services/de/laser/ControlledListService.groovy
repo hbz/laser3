@@ -1466,4 +1466,27 @@ class ControlledListService {
         String qryString = "select new map(concat('${Org.class.name}:',org.id) as value,org.name as name) from SubscriptionPackage sp join sp.pkg pkg join pkg.orgs oo join oo.org org where sp.subscription in (select sub from OrgRole os join os.sub sub where os.org = :context ${consortiumFilter}) ${orgNameFilter} group by org.id order by org.sortname asc"
         [results: Org.executeQuery(qryString, qryParams)]
     }
+
+    /**
+     * Retrieves a list of {@link Vendor}s matching the given request parameters
+     * @param params the request parameter map
+     * @return a map containing vendors, an empty one if no providers match the filter
+     */
+    Map getVendors(GrailsParameterMap params) {
+        Org institution = contextService.getOrg()
+        String consortiumFilter = "", vendorNameFilter = "", qryString
+        Map qryParams = [context: institution]
+        if(institution.isCustomerType_Consortium())
+            consortiumFilter = "and sub.instanceOf is null"
+        if (params.query) {
+            vendorNameFilter = " and (genfunc_filter_matcher(vendor.name, :query) = true or genfunc_filter_matcher(vendor.sortname, :query) = true) "
+            qryParams.query = params.query
+        }
+        if(params.tableView) {
+            qryString = "select vendor from PackageVendor pv join pv.vendor vendor, SubscriptionPackage sp join sp.pkg pkg where sp.pkg = pv.pkg and sp.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context ${consortiumFilter}) ${vendorNameFilter} group by vendor.id order by vendor.sortname asc"
+        }
+        else
+            qryString = "select new map(concat('${Vendor.class.name}:',vendor.id) as value,vendor.name as name) from PackageVendor pv join pv.vendor vendor, SubscriptionPackage sp join sp.pkg pkg where sp.pkg = pv.pkg and sp.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context ${consortiumFilter}) ${vendorNameFilter} group by vendor.id order by vendor.sortname asc"
+        [results: Vendor.executeQuery(qryString, qryParams)]
+    }
 }

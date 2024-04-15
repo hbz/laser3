@@ -81,7 +81,7 @@
                                         SurveyConfig targetSurveyConfig = surveyLink.targetSurvey.surveyConfigs[0]
                                         Subscription sub = targetSurveyConfig.subscription
                                         if (sub && !targetSurveyConfig.pickAndChoose && targetSurveyConfig.subSurveyUseForTransfer) {
-                                            Subscription subChild = sub.getDerivedSubscriptionBySubscribers(institution)
+                                            Subscription subChild = sub.getDerivedSubscriptionForNonHiddenSubscriber(institution)
 
                                             if (subChild && subChild.isCurrentMultiYearSubscriptionNew()) {
                                                 existsMultiYearTerm = true

@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.base.AbstractI10n
+import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -251,6 +252,13 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
             semesterKey = "s${sdf.format(now.getTime())}"
         }
         RefdataValue.getByValue(semesterKey)
+    }
+
+    static String displayBoolean(boolean val) {
+        if(val)
+            RDStore.YN_YES.getI10n('value')
+        else
+            RDStore.YN_NO.getI10n('value')
     }
 
     /**

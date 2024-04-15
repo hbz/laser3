@@ -92,7 +92,7 @@
                     <dl>
                         <dt><g:message code="vendor.homepage.label"/></dt>
                         <dd>
-                            ${vendorWekbData.homepage}
+                            ${vendor.homepage}
                             <%--
                             <ui:xEditable
                                     data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
@@ -122,9 +122,7 @@
                             <g:message code="vendor.ordering.webshop.label" />
                         </dt>
                         <dd>
-                            <g:if test="${vendorWekbData.webShopOrders}">
-                                ${RefdataValue.getByValueAndCategory(vendorWekbData.webShopOrders, RDConstants.Y_N).getI10n('value')}
-                            </g:if>
+                            ${RefdataValue.displayBoolean(vendor.webShopOrders)}
                         </dd>
                     </dl>
                     <dl>
@@ -132,9 +130,7 @@
                             <g:message code="vendor.ordering.xml.label" />
                         </dt>
                         <dd>
-                            <g:if test="${vendorWekbData.xmlOrders}">
-                                ${RefdataValue.getByValueAndCategory(vendorWekbData.xmlOrders, RDConstants.Y_N).getI10n('value')}
-                            </g:if>
+                            ${RefdataValue.displayBoolean(vendor.xmlOrders)}
                         </dd>
                     </dl>
                     <dl>
@@ -142,9 +138,7 @@
                             <g:message code="vendor.ordering.edi.label" />
                         </dt>
                         <dd>
-                            <g:if test="${vendorWekbData.ediOrders}">
-                                ${RefdataValue.getByValueAndCategory(vendorWekbData.ediOrders, RDConstants.Y_N).getI10n('value')}
-                            </g:if>
+                            ${RefdataValue.displayBoolean(vendor.ediOrders)}
                         </dd>
                     </dl>
                     <dl>
@@ -153,8 +147,8 @@
                         </dt>
                         <dd>
                             <ul>
-                                <g:each in="${vendorWekbData.supportedLibrarySystems}" var="row">
-                                    <li>${RefdataValue.getByValueAndCategory(row.supportedLibrarySystem, RDConstants.VENDOR_SUPPORTED_LIBRARY_SYSTEM).getI10n('value')}</li>
+                                <g:each in="${vendor.supportedLibrarySystems}" var="row">
+                                    <li>${row.librarySystem.getI10n('value')}</li>
                                 </g:each>
                             </ul>
                         </dd>
@@ -165,8 +159,8 @@
                         </dt>
                         <dd>
                             <ul>
-                                <g:each in="${vendorWekbData.electronicDeliveryDelays}" var="row">
-                                    <li>${RefdataValue.getByValueAndCategory(row.electronicDeliveryDelay, RDConstants.VENDOR_ELECTRONIC_DELIVERY_DELAY).getI10n('value')}</li>
+                                <g:each in="${vendor.electronicDeliveryDelays}" var="row">
+                                    <li>${row.delayNotification.getI10n('value')}</li>
                                 </g:each>
                             </ul>
                         </dd>
@@ -183,8 +177,8 @@
                         </dt>
                         <dd>
                             <ul>
-                                <g:each in="${vendorWekbData.electronicBillings}" var="row">
-                                    <li>${RefdataValue.getByValueAndCategory(row.electronicBilling, RDConstants.VENDOR_INVOICING_FORMAT).getI10n('value')}</li>
+                                <g:each in="${vendor.electronicBillings}" var="row">
+                                    <li>${row.invoicingFormat.getI10n('value')}</li>
                                 </g:each>
                             </ul>
                         </dd>
@@ -195,8 +189,8 @@
                         </dt>
                         <dd>
                             <ul>
-                                <g:each in="${vendorWekbData.invoiceDispatchs}" var="row">
-                                    <li>${RefdataValue.getByValueAndCategory(row.invoiceDispatch, RDConstants.VENDOR_INVOICING_DISPATCH).getI10n('value')}</li>
+                                <g:each in="${vendor.invoiceDispatchs}" var="row">
+                                    <li>${row.invoiceDispatch.getI10n('value')}</li>
                                 </g:each>
                             </ul>
                         </dd>
@@ -206,9 +200,7 @@
                             <g:message code="vendor.invoicing.paperInvoice.label" />
                         </dt>
                         <dd>
-                            <g:if test="${vendorWekbData.paperInvoice}">
-                                ${RefdataValue.getByValueAndCategory(vendorWekbData.paperInvoice, RDConstants.Y_N).getI10n('value')}
-                            </g:if>
+                            ${RefdataValue.displayBoolean(vendor.paperInvoice)}
                         </dd>
                     </dl>
                     <dl>
@@ -216,9 +208,7 @@
                             <g:message code="vendor.invoicing.managementOfCredits.label" />
                         </dt>
                         <dd>
-                            <g:if test="${vendorWekbData.managementOfCredits}">
-                                ${RefdataValue.getByValueAndCategory(vendorWekbData.managementOfCredits, RDConstants.Y_N).getI10n('value')}
-                            </g:if>
+                            ${RefdataValue.displayBoolean(vendor.managementOfCredits)}
                         </dd>
                     </dl>
                     <dl>
@@ -226,9 +216,7 @@
                             <g:message code="vendor.invoicing.compensationPayments.label" />
                         </dt>
                         <dd>
-                            <g:if test="${vendorWekbData.processingOfCompensationPayments}">
-                                ${RefdataValue.getByValueAndCategory(vendorWekbData.processingOfCompensationPayments, RDConstants.Y_N).getI10n('value')}
-                            </g:if>
+                            ${RefdataValue.displayBoolean(vendor.processingOfCompensationPayments)}
                         </dd>
                     </dl>
                     <dl>
@@ -236,9 +224,7 @@
                             <g:message code="vendor.invoicing.individualInvoiceDesign.label" />
                         </dt>
                         <dd>
-                            <g:if test="${vendorWekbData.individualInvoiceDesign}">
-                                ${RefdataValue.getByValueAndCategory(vendorWekbData.individualInvoiceDesign, RDConstants.Y_N).getI10n('value')}
-                            </g:if>
+                            ${RefdataValue.displayBoolean(vendor.individualInvoiceDesign)}
                         </dd>
                     </dl>
                 </div>
@@ -252,9 +238,7 @@
                             <g:message code="vendor.general.technicalSupport.label" />
                         </dt>
                         <dd>
-                            <g:if test="${vendorWekbData.technicalSupport}">
-                                ${RefdataValue.getByValueAndCategory(vendorWekbData.technicalSupport, RDConstants.Y_N).getI10n('value')}
-                            </g:if>
+                            ${RefdataValue.displayBoolean(vendor.technicalSupport)}
                         </dd>
                     </dl>
                     <dl>
@@ -262,9 +246,7 @@
                             <g:message code="vendor.general.metadata.label" />
                         </dt>
                         <dd>
-                            <g:if test="${vendorWekbData.shippingMetadata}">
-                                ${RefdataValue.getByValueAndCategory(vendorWekbData.shippingMetadata, RDConstants.Y_N).getI10n('value')}
-                            </g:if>
+                            ${RefdataValue.displayBoolean(vendor.shippingMetadata)}
                         </dd>
                     </dl>
                     <dl>
@@ -272,9 +254,7 @@
                             <g:message code="vendor.general.usageStats.label" />
                         </dt>
                         <dd>
-                            <g:if test="${vendorWekbData.forwardingUsageStatisticsFromPublisher}">
-                                ${RefdataValue.getByValueAndCategory(vendorWekbData.forwardingUsageStatisticsFromPublisher, RDConstants.Y_N).getI10n('value')}
-                            </g:if>
+                            ${RefdataValue.displayBoolean(vendor.forwardingUsageStatisticsFromPublisher)}
                         </dd>
                     </dl>
                     <dl>
@@ -282,9 +262,7 @@
                             <g:message code="vendor.general.newReleaseInformation.label" />
                         </dt>
                         <dd>
-                            <g:if test="${vendorWekbData.activationForNewReleases}">
-                                ${RefdataValue.getByValueAndCategory(vendorWekbData.activationForNewReleases, RDConstants.Y_N).getI10n('value')}
-                            </g:if>
+                            ${RefdataValue.displayBoolean(vendor.activationForNewReleases)}
                         </dd>
                     </dl>
                     <dl>
@@ -292,9 +270,7 @@
                             <g:message code="vendor.general.exchangeIndividualTitles.label" />
                         </dt>
                         <dd>
-                            <g:if test="${vendorWekbData.exchangeOfIndividualTitles}">
-                                ${RefdataValue.getByValueAndCategory(vendorWekbData.exchangeOfIndividualTitles, RDConstants.Y_N).getI10n('value')}
-                            </g:if>
+                            ${RefdataValue.displayBoolean(vendor.exchangeOfIndividualTitles)}
                         </dd>
                     </dl>
                     <dl>
@@ -302,8 +278,8 @@
                             <g:message code="vendor.general.researchPlatform.label" />
                         </dt>
                         <dd>
-                            <g:if test="${vendorWekbData.researchPlatformForEbooks}">
-                                <ui:link url="${vendorWekbData.researchPlatformForEbooks}" target="_blank">${vendorWekbData.researchPlatformForEbooks}</ui:link>
+                            <g:if test="${vendor.researchPlatformForEbooks}">
+                                <ui:link url="${vendor.researchPlatformForEbooks}" target="_blank">${vendor.researchPlatformForEbooks}</ui:link>
                             </g:if>
                         </dd>
                     </dl>
@@ -383,7 +359,7 @@
                 </div>
             </g:if>
             --}%
-            %{--
+
             <div class="ui card">
                 <div class="content">
                     <div class="ui accordion">
@@ -426,10 +402,10 @@
                             <p class="ui header"><g:message code="package.plural" /></p>
 
                             <div class="ui divided middle aligned selection list la-flex-list">
-                                <g:each in="${vendor.packages}" var="pkg">
+                                <g:each in="${vendor.packages}" var="vp">
                                     <div class="ui item">
                                         <div class="content la-space-right">
-                                            <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link>
+                                            <g:link controller="package" action="show" id="${vp.pkg.id}">${vp.pkg.name}</g:link>
                                         </div>
                                     </div>
                                 </g:each>
@@ -461,7 +437,7 @@
                             <div class="ui divided middle aligned selection list la-flex-list">
                                 <div class="ui item">
                                     <div class="content la-space-right">
-                                        <g:link controller="myInstitution" action="currentLicenses" params="[licensor: vendor.id, status: RDStore.LICENSE_CURRENT.id, subStatus: RDStore.SUBSCRIPTION_CURRENT.id, filterSubmit: 'Filtern']">
+                                        <g:link controller="myInstitution" action="currentLicenses" params="[vendor: vendor.id, status: RDStore.LICENSE_CURRENT.id, subStatus: RDStore.SUBSCRIPTION_CURRENT.id, filterSubmit: 'Filtern']">
                                             <i class="icon filter"></i> <g:message code="license.plural.current" />
                                             &nbsp;<div class="ui blue circular label">${currentLicensesCount}</div>
                                         </g:link>
@@ -469,7 +445,7 @@
                                 </div>
                                 <div class="ui item">
                                     <div class="content la-space-right">
-                                        <g:link controller="myInstitution" action="currentLicenses" params="[licensor: vendor.id, filterSubmit: 'Filtern']">
+                                        <g:link controller="myInstitution" action="currentLicenses" params="[vendor: vendor.id, filterSubmit: 'Filtern']">
                                             <i class="icon filter"></i> <g:message code="license.plural.total" />
                                             &nbsp;<div class="ui blue circular label">${licLinks.size()}</div>
                                         </g:link>
@@ -480,7 +456,7 @@
                     </div>
                 </div>
             </div>
-            --}%
+
             %{--
             <g:if test="${institution.isCustomerType_Consortium() || institution.isCustomerType_Support() || institution.isCustomerType_Inst_Pro()}">
                 <div id="new-dynamic-properties-block">
@@ -533,7 +509,7 @@
                                                                 </div>
                                                                 <div class="fourteen wide column">
                                                                     <div class="ui label">${prs.roleLinks.collect { PersonRole pr -> pr.roleType.getI10n('value')}.join (' / ')}</div>
-                                                                    <g:if test="${!(prs.last_name in [RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value'), RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value'), RDStore.PRS_FUNC_METADATA.getI10n('value')])}"><div class="ui header">${prs}</div></g:if>
+                                                                    <g:if test="${!(prs.last_name in [RDStore.PRS_FUNC_INVOICING_CONTACT.getI10n('value'), RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value'), RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value'), RDStore.PRS_FUNC_METADATA.getI10n('value')])}"><div class="ui header">${prs}</div></g:if>
                                                                     <g:if test="${prs.contacts}">
                                                                         <g:each in="${prs.contacts.toSorted()}" var="contact">
                                                                             <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">

@@ -1,4 +1,4 @@
-<%@page import="de.laser.convenience.Marker; de.laser.utils.DateUtils; de.laser.storage.RDConstants; de.laser.Package; de.laser.Org; de.laser.Platform; de.laser.RefdataValue" %>
+<%@page import="de.laser.Vendor; de.laser.convenience.Marker; de.laser.utils.DateUtils; de.laser.storage.RDConstants; de.laser.Package; de.laser.Org; de.laser.Platform; de.laser.RefdataValue" %>
 <laser:serviceInjection/>
 <table class="ui sortable celled la-js-responsive-table la-table table">
     <thead>
@@ -26,6 +26,9 @@
                 </g:if>
                 <g:if test="${tmplConfigItem == 'provider'}">
                     <g:sortableColumn property="provider.name" title="${message(code: 'default.provider.label')}" params="${params}"/>
+                </g:if>
+                <g:if test="${tmplConfigItem == 'vendor'}">
+                    <g:sortableColumn property="vendor.name" title="${message(code: 'default.agency.label')}" params="${params}"/>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'platform'}">
                     <g:sortableColumn property="nominalPlatform.name" title="${message(code: 'platform.label')}" params="${params}"/>
@@ -82,6 +85,8 @@
             <g:set var="pkg" value="${Package.findByGokbId(record.uuid)}"/>
             <%
                 Org org
+                SortedSet<Vendor> vendors = new TreeSet<Vendor>()
+                Set<Map> nonSyncedVendors = []
                 Platform plat
                 if(record.providerUuid)
                     org = Org.findByGokbId(record.providerUuid)
@@ -91,6 +96,14 @@
                     plat = Platform.findByGokbId(record.nominalPlatformUuid)
                 else
                     plat = pkg.nominalPlatform
+                if(record.containsKey('vendors') && record.vendors.size() > 0) {
+                    record.vendors.each { ven ->
+                        Vendor vendor = Vendor.findByGokbId(ven.vendorUuid)
+                        if(vendor)
+                            vendors << vendor
+                        else nonSyncedVendors << ven
+                    }
+                }
                 boolean perpetuallySubscribed = false
             %>
             <tr>
@@ -175,6 +188,26 @@
                                 <g:link controller="organisation" action="show" id="${org.id}">${org.name}</g:link>
                             </g:if>
                             <g:else>${record.providerName}</g:else>
+                        </td>
+                    </g:if>
+                    <g:if test="${tmplConfigItem == 'vendor'}">
+                        <td>
+                            <ul>
+                                <g:each in="${vendors}" var="vendor">
+                                    <li>
+                                        <g:if test="${vendor.gokbId}">
+                                            <ui:wekbIconLink type="vendor" gokbId="${vendor.gokbId}" />
+                                        </g:if>
+                                        <g:link controller="organisation" action="show" id="${vendor.id}">${vendor.sortname}</g:link>
+                                    </li>
+                                </g:each>
+                                <g:each in="${nonSyncedVendors}" var="vendor">
+                                    <li>
+                                        <ui:wekbIconLink type="vendor" gokbId="${vendor.vendorUuid}" />
+                                        ${vendor.vendor}
+                                    </li>
+                                </g:each>
+                            </ul>
                         </td>
                     </g:if>
                     <g:if test="${tmplConfigItem == 'platform'}">

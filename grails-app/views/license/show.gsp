@@ -2,7 +2,7 @@
 <laser:htmlStart message="license.details.label" serviceInjection="true"/>
 
 %{-- help sidebar --}%
-<laser:render template="/templates/help/dateCreatedLastUpdated" model="[obj: license]"/>
+<laser:render template="/templates/flyouts/dateCreatedLastUpdated" model="[obj: license]"/>
         <ui:debugInfo>
             <div style="padding: 1em 0;">
                 <p>lic.licenseCategory: ${license.licenseCategory}</p>
@@ -154,7 +154,7 @@
                         <div id="container-provider">
                             <div class="ui card">
                                 <div class="content">
-                                    <h2 class="ui header">${message(code: 'license.details.tmplEntity')}</h2>
+                                    <h2 class="ui header">${message(code: 'default.provider.label')}</h2>
                                     <laser:render template="/templates/links/orgLinksAsList"
                                               model="${[roleLinks: visibleOrgRelations,
                                                         roleObject: license,
@@ -178,19 +178,32 @@
                                                             editmode: editable
                                                   ]}" />
 
-                                        <laser:render template="/templates/links/orgLinksSimpleModal"
-                                                  model="${[linkType: license.class.name,
-                                                            parent: license.class.name + ':' + license.id,
-                                                            property: 'orgRelations',
-                                                            recip_prop: 'lic',
-                                                            tmplRole: RDStore.OR_AGENCY,
-                                                            tmplEntity: message(code:'license.details.linkAgency.tmplEntity'),
-                                                            tmplText: message(code:'license.details.linkAgency.tmplText'),
-                                                            tmplButtonText: message(code:'license.details.tmplLinkAgencyText'),
-                                                            tmplModalID:'osel_add_modal_agency',
-                                                            tmplType: RDStore.OT_AGENCY,
-                                                            editmode: editable
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="container-vendor">
+                            <div class="ui card">
+                                <div class="content">
+                                    <h2 class="ui header">${message(code: 'default.agency.label')}</h2>
+                                    <laser:render template="/templates/links/vendorLinksAsList"
+                                                  model="${[vendorRoles: visibleVendors,
+                                                            roleObject: license,
+                                                            roleRespValue: 'Specific license editor',
+                                                            editmode: editable,
+                                                            showPersons: true
                                                   ]}" />
+                                    <div class="ui la-vertical buttons la-js-hide-this-card">
+                                        <laser:render template="/templates/links/vendorLinksSimpleModal"
+                                                      model="${[linkType: license.class.name,
+                                                                parent: license.class.name + ':' + license.id,
+                                                                recip_prop: 'license',
+                                                                tmplEntity: message(code:'license.details.linkAgency.tmplEntity'),
+                                                                tmplText: message(code:'license.details.linkAgency.tmplText'),
+                                                                tmplButtonText: message(code:'license.details.tmplLinkAgencyText'),
+                                                                tmplModalID:'osel_add_modal_agency',
+                                                                editmode: editable
+                                                      ]}" />
                                     </div>
                                 </div>
                             </div>

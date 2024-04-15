@@ -243,7 +243,7 @@ class SurveyConfig {
     Map<String, Object> getSurveyOrgsIDs() {
         Map<String, Object> result = [:]
 
-        result.orgsWithoutSubIDs = this.orgs?.org?.id?.minus(this?.subscription?.getDerivedSubscribers()?.id) ?: null
+        result.orgsWithoutSubIDs = this.orgs?.org?.id?.minus(this?.subscription?.getDerivedNonHiddenSubscribers()?.id) ?: null
 
         result.orgsWithSubIDs = this.orgs.org.id.minus(result.orgsWithoutSubIDs) ?: null
 

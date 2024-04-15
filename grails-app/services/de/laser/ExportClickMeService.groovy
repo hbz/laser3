@@ -1317,7 +1317,7 @@ class ExportClickMeService {
     static Map<String, Object> EXPORT_PROVIDER_CONFIG = [
             provider : [
                     label: 'Provider',
-                    message: 'default.ProviderAgency.singular',
+                    message: 'default.provider.singular',
                     fields: [
                             'provider.name'                  : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
                             'provider.sortname'              : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
@@ -1358,6 +1358,77 @@ class ExportClickMeService {
             myProviderProperties : [
                     label: 'Properties',
                     message: 'default.properties.my',
+                    fields: [:]
+            ]
+    ]
+
+    static Map<String, Object> EXPORT_VENDOR_CONFIG = [
+            vendor : [
+                    label: 'Vendor',
+                    message: 'default.agency.singular',
+                    fields: [
+                            'vendor.name'                  : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
+                            'vendor.sortname'              : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
+                            'vendor.status'                : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: true],
+                            'vendor.homepage'              : [field: 'homepage', label: 'Homepage URL', message: 'org.homepage.label', defaultChecked: true],
+                            'vendor.packages'              : [field: null, label: 'Packages', message:'package.plural', defaultChecked: true],
+                            'vendor.platforms'             : [field: null, label: 'Platforms', message: 'org.platforms.label', defaultChecked: true],
+                            'vendor.subscriptions'         : [field: null, label: 'Subscriptions', message: 'subscription.plural', defaultChecked: true],
+                            'vendor.licenses'              : [field: null, label: 'Licenses', message: 'license.plural', defaultChecked: true]
+                    ]
+            ],
+            vendorOrders : [
+                    label: 'Ordering',
+                    message: 'vendor.ordering.header',
+                    fields: [
+                            'vendor.webShopOrders'         : [field: 'webShopOrders', label: 'Order via Webshop', message: 'vendor.ordering.webshop.label'],
+                            'vendor.xmlOrders'             : [field: 'xmlOrders', label: 'Order via XML', message: 'vendor.ordering.xml.label'],
+                            'vendor.ediOrders'             : [field: 'ediOrders', label: 'Order via EDI', message: 'vendor.ordering.edi.label'],
+                            'vendor.supportedLibrarySystems': [field: null, label: 'Supported library systems', message: 'vendor.ordering.supportedLibrarySystems.label'],
+                            'vendor.electronicDeliveryDelays': [field: null, label: 'Electronic delivery delay notification via', message: 'vendor.ordering.electronicDeliveryDelayNotifications.label']
+                    ]
+            ],
+            vendorInvoicing : [
+                    label: 'Invoicing',
+                    message: 'vendor.invoicing.header',
+                    fields: [
+                            'vendor.electronicBillings'                 : [field: null, label: 'Electronic invoice formats', message: 'vendor.invoicing.formats.label'],
+                            'vendor.invoiceDispatchs'                   : [field: null, label: 'Invoice dispatch via', message: 'vendor.invoicing.dispatch.label'],
+                            'vendor.paperInvoice'                       : [field: 'paperInvoice', label: 'Paper invoice', message: 'vendor.invoicing.paperInvoice.label'],
+                            'vendor.managementOfCredits'                : [field: 'managementOfCredits', label: 'Management of credits', message: 'vendor.invoicing.managementOfCredits.label'],
+                            'vendor.processingOfCompensationPayments'   : [field: 'processingOfCompensationPayments', label: 'Processing of compensation payments (credits/subsequent debits)', message: 'vendor.invoicing.compensationPayments.label'],
+                            'vendor.individualInvoiceDesign'            : [field: 'individualInvoiceDesign', label: 'Individual invoice design', message: 'vendor.invoicing.individualInvoiceDesign.label']
+                    ]
+            ],
+            vendorGeneralServices : [
+                    label: 'General services',
+                    message: 'vendor.general.header',
+                    fields: [
+                            'vendor.technicalSupport'                       : [field: 'technicalSupport', label: 'Technical support', message: 'vendor.general.technicalSupport.label'],
+                            'vendor.shippingMetadata'                       : [field: 'shippingMetadata', label: 'Metadata (MARC records)', message: 'vendor.general.metadata.label'],
+                            'vendor.forwardingUsageStatisticsFromPublisher' : [field: 'forwardingUsageStatisticsFromPublisher', label: 'Forwarding usage statistics from the publisher', message: 'vendor.general.usageStats.label'],
+                            'vendor.activationForNewReleases'               : [field: 'activationForNewReleases', label: 'Update information about new releases within e-book packages', message: 'vendor.general.newReleaseInformation.label'],
+                            'vendor.exchangeOfIndividualTitles'             : [field: 'exchangeOfIndividualTitles', label: 'Exchange of individual titles within e-book packages', message: 'vendor.general.exchangeIndividualTitles.label'],
+                            'vendor.researchPlatformForEbooks'              : [field: 'researchPlatformForEbooks', label: 'Research platform for e-books', message: 'vendor.general.researchPlatform.label']
+                    ]
+            ],
+            vendorSupplierInformation : [
+                    label: 'Supplier information',
+                    message: 'vendor.supplier.header',
+                    fields: [
+                            'vendor.prequalificationVOL'        : [field: 'prequalificationVOL', label: 'Prequalification VOL', message: 'vendor.supplier.prequalificationVol.label'],
+                            'vendor.prequalificationVOLInfo'    : [field: 'prequalificationVOLInfo', label: 'Info to Prequalification VOL', message: 'vendor.supplier.infoPrequalificationVol.label']
+                    ]
+            ],
+            vendorContacts : [
+                    label: 'Contacts',
+                    message: 'org.contacts.label',
+                    subTabs: [],
+                    fields: [:]
+            ],
+            vendorAddresses : [
+                    label: 'Addresses',
+                    message: 'org.addresses.label',
                     fields: [:]
             ]
     ]
@@ -2902,6 +2973,59 @@ class ExportClickMeService {
         fields
     }
 
+    Map<String, Object> getExportVendorFields() {
+        Org contextOrg = contextService.getOrg()
+        Map<String, Object> exportFields = [:], contextParams = [ctx: contextOrg]
+        String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+        SortedSet<RefdataValue> contactTypes = new TreeSet<RefdataValue>(), addressTypes = new TreeSet<RefdataValue>()
+        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
+        addressTypes.addAll(RefdataCategory.getAllRefdataValues(RDConstants.ADDRESS_TYPE))
+
+        EXPORT_PROVIDER_CONFIG.keySet().each {
+            EXPORT_PROVIDER_CONFIG.get(it).fields.each {
+                exportFields.put(it.key, it.value)
+            }
+        }
+
+        contactTypes.each { RefdataValue contactType ->
+            exportFields.put("vendorContact."+contactType.owner.desc+"."+contactType.value, [field: null, label: contactType.getI10n('value')])
+        }
+        addressTypes.each { RefdataValue addressType ->
+            exportFields.put("vendorAddress."+addressType.value, [field: null, label: addressType.getI10n('value')])
+        }
+
+        exportFields
+    }
+
+    Map<String, Object> getExportVendorFieldsForUI() {
+        Org contextOrg = contextService.getOrg()
+        Map<String, Object> fields = [:], contextParams = [ctx: contextOrg]
+        String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+        Set<RefdataValue> contactTypes = []
+        SortedSet<RefdataValue> addressTypes = new TreeSet<RefdataValue>()
+        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true) order by pr.functionType.'+ LocaleUtils.getLocalizedAttributeName('value'), [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true) order by pr.positionType.'+ LocaleUtils.getLocalizedAttributeName('value'), [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true) order by pr.responsibilityType.'+ LocaleUtils.getLocalizedAttributeName('value'), [ctx: contextOrg]))
+        addressTypes.addAll(RefdataCategory.getAllRefdataValues(RDConstants.ADDRESS_TYPE))
+        RefdataCategory funcType = RefdataCategory.getByDesc(RDConstants.PERSON_FUNCTION), posType = RefdataCategory.getByDesc(RDConstants.PERSON_POSITION), respType = RefdataCategory.getByDesc(RDConstants.PERSON_RESPONSIBILITY)
+        List<Map> subTabs = [[view: funcType.desc, label: funcType.getI10n('desc')], [view: posType.desc, label: posType.getI10n('desc')], [view: respType.desc, label: respType.getI10n('desc')]]
+        String subTabActive = funcType.desc
+        fields.putAll(EXPORT_VENDOR_CONFIG)
+        fields.vendorContacts.fields.clear()
+        fields.vendorContacts.subTabs = subTabs
+        fields.vendorContacts.subTabActive = subTabActive
+        contactTypes.each { RefdataValue contactType ->
+            fields.vendorContacts.fields.put("vendorContact.${contactType.owner.desc}.${contactType.value}",[field: null, label: contactType.getI10n('value')])
+        }
+        fields.vendorAddresses.fields.clear()
+        addressTypes.each { RefdataValue addressType ->
+            fields.vendorAddresses.fields.put("vendorAddress.${addressType.value}",[field: null, label: addressType.getI10n('value')])
+        }
+        fields
+    }
+
     /**
      * Gets the address fields
      * @return the configuration map for the address export
@@ -3926,7 +4050,7 @@ class ExportClickMeService {
     }
 
     /**
-     * Exports the given fields from the given cost items
+     * Exports the given fields from the given organisations
      * @param result the organisation set to export
      * @param selectedFields the fields which should appear in the export
      * @param config the organisation type to be exported
@@ -3983,6 +4107,51 @@ class ExportClickMeService {
         sheetData[sheetTitle] = [titleRow: titles, columnData: exportData]
 
         sheetData =  _exportAccessPoints(result, sheetData, selectedExportFields, locale, "", format)
+
+        switch(format) {
+            case FORMAT.XLS:
+                return exportService.generateXLSXWorkbook(sheetData)
+            case FORMAT.CSV:
+                return exportService.generateSeparatorTableString(titles, exportData, '|')
+            case FORMAT.TSV:
+                return exportService.generateSeparatorTableString(titles, exportData, '\t')
+            case FORMAT.PDF:
+                //structure: list of maps (each map is the content of a page)
+                return [mainHeader: titles, pages: sheetData.values()]
+        }
+    }
+
+    /**
+     * Exports the given fields from the given cost items
+     * @param result the vendor set to export, including LAS:eR and we:kb data
+     * @param selectedFields the fields which should appear in the export
+     * @param format the {@link FORMAT} to be exported
+     * @param contactSources which type of contacts should be taken? (public or private)
+     * @param configMap filter parameters for further queries
+     * @return the output in the desired format
+     */
+    def exportVendors(Set<Map> result, Map<String, Object> selectedFields, FORMAT format, Set<String> contactSources = [], Map<String, Object> configMap = [:]) {
+        Locale locale = LocaleUtils.getCurrentLocale()
+
+        String sheetTitle = messageSource.getMessage('default.vendor.export.label', null, locale)
+
+        Map<String, Object> selectedExportFields = [:], configFields = getExportVendorFields()
+
+        configFields.keySet().each { String k ->
+            if (k in selectedFields.keySet() ) {
+                selectedExportFields.put(k, configFields.get(k))
+            }
+        }
+
+        List titles = _exportTitles(selectedExportFields, locale, null, null, contactSources, null, format)
+
+        List exportData = []
+        result.each { Map vendor ->
+            _setVendorRow(vendor, selectedExportFields, exportData, format, contactSources, configMap)
+        }
+
+        Map sheetData = [:]
+        sheetData[sheetTitle] = [titleRow: titles, columnData: exportData]
 
         switch(format) {
             case FORMAT.XLS:
@@ -4225,7 +4394,7 @@ class ExportClickMeService {
 
             participantResult.sub = [:]
             if(result.surveyConfig.subscription) {
-                participantResult.sub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(surveyOrg.org)
+                participantResult.sub = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(surveyOrg.org)
             }
 
             participantResult.participant = surveyOrg.org
@@ -4254,7 +4423,7 @@ class ExportClickMeService {
 
             participantResult.sub = [:]
             if(result.surveyConfig.subscription) {
-                participantResult.sub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(surveyOrg.org)
+                participantResult.sub = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(surveyOrg.org)
             }
 
             participantResult.participant = surveyOrg.org
@@ -4281,7 +4450,7 @@ class ExportClickMeService {
 
             participantResult.sub = [:]
             if(result.surveyConfig.subscription) {
-                participantResult.sub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(surveyOrg.org)
+                participantResult.sub = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(surveyOrg.org)
             }
 
             participantResult.participant = surveyOrg.org
@@ -5334,6 +5503,67 @@ class ExportClickMeService {
     }
 
     /**
+     * Fills a row for the vendor export
+     * @param result the vendor to export; a {@link Map} combined of we:kb and LAS:eR fields
+     * @param selectedFields the fields which should appear
+     * @param exportData the list containing the export rows
+     * @param format the {@link FORMAT} to be exported
+     * @param contactSources which type of contacts should be considered (public or private)?
+     * @param configMap filter parameters for further queries
+     */
+    //continue here: migrate from provider/org to vendor, implement the we:kb reading!
+    private void _setVendorRow(Map result, Map<String, Object> selectedFields, List exportData, FORMAT format, Set<String> contactSources = [], Map<String, Object> configMap = [:]){
+        List row = []
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+        selectedFields.keySet().each { String fieldKey ->
+            Map mapSelecetedFields = selectedFields.get(fieldKey)
+            String field = mapSelecetedFields.field
+            if(!mapSelecetedFields.separateSheet) {
+                if (fieldKey.contains('Contact.')) {
+                    if(contactSources) {
+                        contactSources.findAll{ String source -> source.contains('Contact') }.each { String contactSwitch ->
+                            _setOrgFurtherInformation(result, row, fieldKey, format, null, contactSwitch)
+                        }
+                    }
+                    else _setOrgFurtherInformation(result, row, fieldKey, format, null, 'publicContact')
+                }
+                else if (fieldKey.contains('Address.')) {
+                    if(contactSources) {
+                        contactSources.findAll{ String source -> source.contains('Address') }.each { String contactSwitch ->
+                            _setOrgFurtherInformation(result, row, fieldKey, format, null, contactSwitch)
+                        }
+                    }
+                    else _setOrgFurtherInformation(result, row, fieldKey, format, null, 'publicAddress')
+                }
+                else if (fieldKey == 'vendor.subscriptions') {
+                    def subStatus = configMap.subStatus
+                    List subscriptionQueryParams = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: result, actionName: configMap.action, status: subStatus ?: null])
+                    List nameOfSubscriptions = Subscription.executeQuery("select s.name " + subscriptionQueryParams[0], subscriptionQueryParams[1])
+                    row.add(createTableCell(format, nameOfSubscriptions.join('; ')))
+                }
+                else {
+                    //we:kb!
+                    def fieldValue = field && result[field] != null ? result[field] : ' '
+
+                    if(fieldValue instanceof RefdataValue){
+                        fieldValue = fieldValue.getI10n('value')
+                    }
+
+                    if(fieldValue instanceof Boolean){
+                        fieldValue = (fieldValue == true ? RDStore.YN_YES.getI10n('value') : (fieldValue == false ? RDStore.YN_NO.getI10n('value') : ''))
+                    }
+
+                    if(fieldValue instanceof Date){
+                        fieldValue = sdf.format(fieldValue)
+                    }
+                    row.add(createTableCell(format, fieldValue))
+                }
+            }
+        }
+        exportData.add(row)
+    }
+
+    /**
      * Fills a row for the survey evaluation
      * @param participantResult the evaluation of the participant to export
      * @param selectedFields the fields which should appear
@@ -6206,6 +6436,63 @@ class ExportClickMeService {
                 row.add(createTableCell(format, ' '))
             }
         }
+    }
+
+
+    private void _setVendorFurtherInformation(Map vendor, List row, String fieldKey, FORMAT format, String contactSwitch = 'publicContact'){
+        boolean isPublic = contactSwitch == 'publicContact'
+        String tenantFilter = '', addressTenantFilter, contactTypeFilter = ''
+        if (fieldKey.contains('Contact.')) {
+            if (vendor) {
+                Map<String, Object> queryParams = [vendor: vendor, type: RDStore.CCT_EMAIL, isPublic: isPublic]
+                if(!isPublic) {
+                    tenantFilter = ' and p.tenant = :ctx'
+                    queryParams.ctx = contextService.getOrg()
+                }
+                RefdataValue contactType = RefdataValue.getByCategoriesDescAndValue([RDConstants.PERSON_POSITION, RDConstants.PERSON_FUNCTION, RDConstants.PERSON_RESPONSIBILITY], fieldKey.split('\\.')[3])
+                switch(contactType.owner.desc) {
+                    case RDConstants.PERSON_FUNCTION: contactTypeFilter = 'pr.functionType = :functionType'
+                        queryParams.functionType = contactType
+                        break
+                    case RDConstants.PERSON_POSITION: contactTypeFilter = 'pr.positionType = :positionType'
+                        queryParams.positionType = contactType
+                        break
+                    case RDConstants.PERSON_RESPONSIBILITY: contactTypeFilter = 'pr.responsibilityType = :responsibilityType'
+                        queryParams.responsibilityType = contactType
+                        break
+                }
+                List<Contact> contactList = Contact.executeQuery("select c from PersonRole pr join pr.prs p join p.contacts c where pr.vendor = :vendor and "+contactTypeFilter+" and c.contentType = :type and p.isPublic = :isPublic"+tenantFilter, queryParams)
+
+                if (contactList) {
+                    row.add(createTableCell(format, contactList.content.join(";")))
+                } else {
+                    row.add(createTableCell(format, ' '))
+                }
+            } else {
+                row.add(createTableCell(format, ' '))
+            }
+
+        }
+        if (fieldKey.contains('Address.')) {
+            if (vendor) {
+                Map<String, Object> queryParams = [org: org, type: RefdataValue.getByValue(fieldKey.split('\\.')[1])]
+                if(contactSwitch == 'privateAddress') {
+                    addressTenantFilter = ' and a.tenant = :ctx'
+                    queryParams.ctx = contextService.getOrg()
+                }
+                else addressTenantFilter = ' and a.tenant = null'
+                Set<Address> addressList = Address.executeQuery("select a from Address a join a.type type where type = :type and a.vendor = :vendor"+addressTenantFilter, queryParams)
+
+                if (addressList) {
+                    row.add(createTableCell(format, addressList.collect { Address address -> _getAddress(address, vendor)}.join(";")))
+                } else {
+                    row.add(createTableCell(format, ' '))
+                }
+            } else {
+                row.add(createTableCell(format, ' '))
+            }
+        }
+
     }
 
     /**

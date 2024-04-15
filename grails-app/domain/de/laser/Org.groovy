@@ -846,6 +846,13 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         return Identifier.findByOrgAndNs(this, IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID))
     }
 
+    boolean isInfoAccessibleFor(Org ctx) {
+        if (this.isCustomerType_Inst() && ctx.isCustomerType_Pro()) {
+            return (this.id == ctx.id) || (ctx.isCustomerType_Consortium() && Combo.findByToOrgAndFromOrgAndType(ctx, this, RDStore.COMBO_TYPE_CONSORTIUM))
+        }
+        return false
+    }
+
     /**
      * Checks if the organisation is being marked for the given user with the given marker type
      * @param user the {@link User} whose watchlist should be checked

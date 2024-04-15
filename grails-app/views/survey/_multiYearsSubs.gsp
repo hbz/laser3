@@ -90,7 +90,7 @@
 
         </g:if>
 
-        <g:if test="${parentSuccessorSubscription.getDerivedSubscribers().size() > 0}">
+        <g:if test="${parentSuccessorSubscription.getDerivedNonHiddenSubscribers().size() > 0}">
             <g:link controller="subscription" action="copyElementsIntoSubscription" id="${parentSubscription.id}"
                     params="[sourceObjectId: genericOIDService.getOID(parentSubscription), targetObjectId: genericOIDService.getOID(parentSuccessorSubscription), isRenewSub: true, fromSurvey: true]"
                     class="ui button ">

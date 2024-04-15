@@ -111,6 +111,10 @@ class SubscriptionsQueryService {
 
                 base_qry += "AND ( exists ( select idMatch.id from OrgRole as idMatch where idMatch.sub = s and idMatch.org.globalUID = :identifier ) ) "
             }
+            else if (params.identifier.startsWith('vendor:')) {
+
+                base_qry += "AND ( exists ( select idMatch.id from VendorRole as idMatch where idMatch.subscription = s and idMatch.vendor.globalUID = :identifier ) ) "
+            }
             else if (params.identifier.startsWith('license:')) {
 
                 base_qry += "AND ( exists ( select idMatch.id from Links li join li.sourceLicense idMatch where li.destinationSubscription = s and li.linkType = :linkType and idMatch.globalUID = :identifier ) ) "
@@ -330,7 +334,7 @@ class SubscriptionsQueryService {
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
-            if(params.sort != "providerAgency")
+            if(!(params.sort in ["provider", "vendor"]))
                 base_qry += (params.sort=="s.name") ? " order by LOWER(${params.sort}) ${params.order}":" order by ${params.sort} ${params.order}"
         } else if(!params.containsKey('count')) {
             base_qry += " order by lower(trim(s.name)) asc, s.startDate, s.endDate, s.instanceOf desc"

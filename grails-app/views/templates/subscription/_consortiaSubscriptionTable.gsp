@@ -55,6 +55,9 @@
             <g:if test="${'showProviders' in tableConfig}">
                 <th rowspan="2">${message(code:'myinst.consortiaSubscriptions.provider')}</th>
             </g:if>
+            <g:if test="${'showVendors' in tableConfig}">
+                <th rowspan="2">${message(code:'myinst.consortiaSubscriptions.vendor')}</th>
+            </g:if>
             <th rowspan="2">${message(code:'myinst.consortiaSubscriptions.runningTimes')}</th>
             <g:if test="${'withCostItems' in tableConfig}">
                 <th rowspan="2">${message(code:'financials.amountFinal')}</th>
@@ -157,6 +160,13 @@
                     <td>
                         <g:each in="${subCons.providers}" var="p">
                             <g:link controller="organisation" action="show" id="${p.id}">${p.getDesignation()}</g:link> <br />
+                        </g:each>
+                    </td>
+                </g:if>
+                <g:if test="${'showVendors' in tableConfig}">
+                    <td>
+                        <g:each in="${subCons.vendors}" var="v">
+                            <g:link controller="vendor" action="show" id="${v.id}">${v.sortname}</g:link> <br />
                         </g:each>
                     </td>
                 </g:if>

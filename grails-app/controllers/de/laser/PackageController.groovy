@@ -76,9 +76,9 @@ class PackageController {
         result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
         result.languages = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)
         Set<Set<String>> filterConfig = [['q', 'pkgStatus'],
-                                    ['provider', 'ddc', 'curatoryGroup'],
+                                    ['provider', 'vendor', 'ddc', 'curatoryGroup'],
                                     ['curatoryGroupType', 'automaticUpdates']]
-        Set<String> tableConfig = ['lineNumber', 'name', 'pkgStatus', 'titleCount', 'provider', 'platform', 'curatoryGroup', 'automaticUpdates', 'lasUpdatedDisplay', 'my', 'marker']
+        Set<String> tableConfig = ['lineNumber', 'name', 'pkgStatus', 'titleCount', 'provider', 'vendor', 'platform', 'curatoryGroup', 'automaticUpdates', 'lasUpdatedDisplay', 'my', 'marker']
         if(SpringSecurityUtils.ifAnyGranted('ROLE_YODA')) {
             tableConfig << 'yodaActions'
         }
@@ -540,8 +540,9 @@ class PackageController {
 
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-            if(titlesList)
-                tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(titlesList,[sort:'sortname']))
+            titlesList.collate(30000).each { subList ->
+                tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(subList,[sort:'sortname']))
+            }
         }
 
         if (params.exportKBart) {
@@ -601,7 +602,7 @@ class PackageController {
             out.close()
         }
         else {
-            result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList, [sort: params.sort?: 'sortname', order: params.order]).drop(result.offset).take(result.max) : []
+            result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: params.sort?: 'sortname', order: params.order]) : []
             result.num_tipp_rows = titlesList.size()
             result
         }

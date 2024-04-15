@@ -385,6 +385,28 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                 sharedObject.deleteShare_trait()
             }
         }
+        if (sharedObject instanceof VendorRole) {
+            if (sharedObject.isShared) {
+                List<Subscription> newTargets = Subscription.findAllByInstanceOf(this)
+                log.debug('found targets: ' + newTargets)
+
+                newTargets.each{ sub ->
+                    log.debug('adding for: ' + sub)
+
+                    List<VendorRole> existingVendorRoles = VendorRole.findAll{
+                        subscription == sub && vendor == sharedObject.vendor
+                    }
+                    if (existingVendorRoles) {
+                        log.debug('found existing vendorRoles, deleting: ' + existingVendorRoles)
+                        existingVendorRoles.each{ VendorRole tmp -> tmp.delete() }
+                    }
+                    sharedObject.addShareForTarget_trait(sub)
+                }
+            }
+            else {
+                sharedObject.deleteShare_trait()
+            }
+        }
     }
 
     /**
@@ -410,6 +432,19 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
         orgRelations.each{ sharedObject ->
             targets.each{ sub ->
+                if (sharedObject.isShared) {
+                    log.debug('adding for: ' + sub)
+                    sharedObject.addShareForTarget_trait(sub)
+                }
+                else {
+                    log.debug('deleting all shares')
+                    sharedObject.deleteShare_trait()
+                }
+            }
+        }
+
+        VendorRole.findAllBySubscription(this).each { sharedObject ->
+            targets.each { sub ->
                 if (sharedObject.isShared) {
                     log.debug('adding for: ' + sub)
                     sharedObject.addShareForTarget_trait(sub)
@@ -459,17 +494,35 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @return a {@link List} of {@link Org}s linked as provider
      */
     List<Org> getProviders() {
-        Org.executeQuery("select og.org from OrgRole og where og.sub =:sub and og.roleType = :provider",
+        Org.executeQuery('select og.org from OrgRole og where og.sub =:sub and og.roleType = :provider order by og.org.sortname ',
             [sub: this, provider: RDStore.OR_PROVIDER])
     }
 
     /**
-     * Retrieves all organisation linked as agencies to this subscription
-     * @return a {@link List} of {@link Org}s linked as agency
+     * Retrieves all organisation linked as providers to this subscription
+     * @return a sorted {@link List} of {@link Org}s linked as provider
      */
-    List<Org> getAgencies() {
-        Org.executeQuery("select og.org from OrgRole og where og.sub =:sub and og.roleType = :agency",
-                [sub: this, agency: RDStore.OR_AGENCY])
+    List<Org> getSortedProviders(String order) {
+        Org.executeQuery('select og.org from OrgRole og where og.sub =:sub and og.roleType = :provider order by og.org.sortname '+order,
+            [sub: this, provider: RDStore.OR_PROVIDER])
+    }
+
+    /**
+     * Retrieves all vendors linked to this subscription
+     * @return a {@link List} of linked {@link Vendor}s
+     */
+    List<Vendor> getVendors() {
+        Vendor.executeQuery('select vr.vendor from VendorRole vr where vr.subscription = :sub ',
+                [sub: this])
+    }
+
+    /**
+     * Retrieves all vendors linked to this subscription
+     * @return a sorted {@link List} of linked {@link Vendor}s
+     */
+    List<Vendor> getSortedVendors(String order) {
+        Vendor.executeQuery('select vr.vendor from VendorRole vr where vr.subscription = :sub order by vr.vendor.sortname '+order,
+                [sub: this])
     }
 
     /**
@@ -558,7 +611,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * Gets all members of this consortial subscription
      * @return a {@link List} of {@link Org}s which are linked to child instances of this subscription by 'Subscriber' or 'Subscriber_Consortial'
      */
-    List<Org> getDerivedSubscribers() {
+    List<Org> getDerivedNonHiddenSubscribers() {
         List<Subscription> subs = Subscription.findAllByInstanceOf(this)
         //OR_SUBSCRIBER is legacy; the org role types are distinct!
         subs.isEmpty() ? [] : OrgRole.findAllBySubInListAndRoleTypeInList(subs, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS], [sort: 'org.name']).collect{it.org}
@@ -905,7 +958,7 @@ select distinct oap from OrgAccessPoint oap
      * @param org the member {@link Org} whose subscription should be retrieved
      * @return the member subscription of the subscriber
      */
-    Subscription getDerivedSubscriptionBySubscribers(Org org) {
+    Subscription getDerivedSubscriptionForNonHiddenSubscriber(Org org) {
         Subscription result
 
         Subscription.findAllByInstanceOf(this).each { s ->

@@ -217,9 +217,9 @@
             <g:set var="surveyOrg" value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org)}"/>
 
             <g:set var="existSubforOrg"
-                   value="${Subscription.get(surveyConfig.subscription?.id)?.getDerivedSubscribers()?.id?.contains(org?.id)}"/>
+                   value="${Subscription.get(surveyConfig.subscription?.id)?.getDerivedNonHiddenSubscribers()?.id?.contains(org?.id)}"/>
 
-            <g:set var="orgSub" value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(org)}"/>
+            <g:set var="orgSub" value="${surveyConfig.subscription?.getDerivedSubscriptionForNonHiddenSubscriber(org)}"/>
         </g:if>
 
         <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
@@ -260,23 +260,28 @@
                     <div class="la-flexbox">
                         <g:if test="${org instanceof Org}">
                             <ui:customerTypeProIcon org="${org}" cssClass="la-list-icon" />
-                        </g:if>
 
-                        <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
-                            ${fieldValue(bean: org, field: "name")}
+                            <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
+                                ${fieldValue(bean: org, field: "name")}
+                            </g:if>
+                            <g:else>
+                                <g:link controller="organisation" action="show" id="${org.id}">
+                                    ${fieldValue(bean: org, field: "name")}
+                                </g:link>
+                            </g:else>
+
+                            <g:if test="${surveyOrg && surveyOrg.orgInsertedItself}">
+                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                      data-content="${message(code: 'surveyLinks.newParticipate')}">
+                                    <i class="paper plane outline large icon"></i>
+                                </span>
+                            </g:if>
                         </g:if>
-                        <g:else>
-                            <g:link controller="organisation" action="show" id="${org.id}">
+                        <g:elseif test="${org instanceof Vendor}">
+                            <g:link controller="vendor" action="show" id="${org.id}">
                                 ${fieldValue(bean: org, field: "name")}
                             </g:link>
-                        </g:else>
-
-                        <g:if test="${surveyOrg && surveyOrg.orgInsertedItself}">
-                            <span data-position="top right" class="la-popup-tooltip la-delay"
-                                  data-content="${message(code: 'surveyLinks.newParticipate')}">
-                                <i class="paper plane outline large icon"></i>
-                            </span>
-                        </g:if>
+                        </g:elseif>
                     </div>
                 </th>
             </g:if>
@@ -604,7 +609,7 @@
                     <g:elseif test="${actionName == 'currentVendors'}">
                         <g:if test="${currentSubscriptions}">
                             <ul class="la-simpleList">
-                                <g:each in="${currentSubscriptions}" var="sub">
+                                <g:each in="${currentSubscriptions.get(org.id)}" var="sub">
                                     <li><g:link controller="subscription" action="show" id="${sub.id}">${sub}</g:link></li>
                                 </g:each>
                             </ul>
@@ -678,7 +683,13 @@
                         </g:each>
                     </g:if>
                     <g:elseif test="${org instanceof Vendor}">
-                        to be implemented
+                        <g:each in="${vendorService.getSubscribedPlatforms(org, institution)}" var="platform">
+                            <g:if test="${platform.gokbId != null}">
+                                <ui:wekbIconLink type="platform" gokbId="${platform.gokbId}" />
+                            </g:if>
+                            <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
+                            <br />
+                        </g:each>
                     </g:elseif>
                 </td>
             </g:if>

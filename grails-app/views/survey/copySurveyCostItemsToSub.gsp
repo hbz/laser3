@@ -48,7 +48,7 @@
                         <br />
                         <g:link controller="subscription" action="members"
                                 id="${parentSubscription.id}">${message(code: 'renewalEvaluation.orgsInSub')}</g:link>
-                        <ui:totalNumber total="${parentSubscription.getDerivedSubscribers().size()}"/>
+                        <ui:totalNumber total="${parentSubscription.getDerivedNonHiddenSubscribers().size()}"/>
                     </g:if>
                 </h3>
             </div>

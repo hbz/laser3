@@ -83,7 +83,7 @@ class SurveyOrg {
 
 
  /*       if (sub) {
-            def subChild = sub.getDerivedSubscriptionBySubscribers(org)
+            def subChild = sub.getDerivedSubscriptionForNonHiddenSubscriber(org)
 
             if (subChild?.isCurrentMultiYearSubscriptionNew()) {
                 existsMultiYearTerm = true

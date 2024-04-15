@@ -40,11 +40,22 @@
               </div>
             <g:if test="${'providerAgency' in licenseFilterTable}">
               <div class="field">
-                  <label for="licensor"><g:message code="default.ProviderAgency.singular"/></label>
+                  <label for="licensor"><g:message code="default.provider.label"/></label>
                   <select id="licensor" name="licensor" multiple="" class="ui search selection fluid dropdown">
                       <option value=""><g:message code="default.select.choose.label"/></option>
                       <g:each in="${orgs.licensors}" var="licensor">
                           <option <%=Params.getLongList(params, 'licensor').contains(licensor.id) ? 'selected="selected"' : ''%> value="${licensor.id}">${licensor.name}</option>
+                      </g:each>
+                  </select>
+              </div>
+            </g:if>
+            <g:if test="${'vendor' in licenseFilterTable}">
+              <div class="field">
+                  <label for="vendor"><g:message code="default.agency.label"/></label>
+                  <select id="vendor" name="vendor" multiple="" class="ui search selection fluid dropdown">
+                      <option value=""><g:message code="default.select.choose.label"/></option>
+                      <g:each in="${vendors}" var="vendor">
+                          <option <%=Params.getLongList(params, 'vendor').contains(vendor.id) ? 'selected="selected"' : ''%> value="${vendor.id}">${vendor.name}</option>
                       </g:each>
                   </select>
               </div>
