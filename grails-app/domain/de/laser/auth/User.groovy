@@ -24,7 +24,9 @@ class User {
 
     Date dateCreated
     Date lastUpdated
+
     Date lastLogin
+    Integer invalidLoginAttempts = 0
 
     boolean enabled         = false     // administrative
     boolean accountExpired  = false     // inactivity
@@ -43,6 +45,7 @@ class User {
         formalOrg                nullable: true
         formalRole               nullable: true
         lastLogin                nullable: true
+        invalidLoginAttempts     nullable: true
     }
 
     static mapping = {
@@ -67,7 +70,9 @@ class User {
 
         dateCreated     column: 'usr_date_created'
         lastUpdated     column: 'usr_last_updated'
-        lastLogin       column: 'usr_last_login'
+
+        lastLogin               column: 'usr_last_login'
+        invalidLoginAttempts    column: 'usr_invalid_login_attempts'
 
         roles           batchSize: 10
     }

@@ -1,4 +1,4 @@
-package de.laser.custom
+package de.laser.custom.auth
 
 import de.laser.ContextService
 import de.laser.UserService
@@ -39,11 +39,12 @@ class CustomAuthSuccessHandler extends CustomAjaxAwareAuthenticationSuccessHandl
     void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response,
                                         final Authentication authentication) throws ServletException, IOException {
 
-        if (! SpringSecurityUtils.isAjax(request)) {
-            User user = springSecurityService.getCurrentUser()
-            user.lastLogin = new Date()
-            user.save()
+        User user = springSecurityService.getCurrentUser() as User
+        user.lastLogin = new Date()
+        user.invalidLoginAttempts = 0
+        user.save()
 
+        if (! SpringSecurityUtils.isAjax(request)) {
             userService.initMandatorySettings(user)
         }
 

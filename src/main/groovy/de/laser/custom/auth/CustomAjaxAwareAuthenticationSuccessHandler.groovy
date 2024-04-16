@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.laser.custom
+package de.laser.custom.auth
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 import groovy.transform.CompileStatic

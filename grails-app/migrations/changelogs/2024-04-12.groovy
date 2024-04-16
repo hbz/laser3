@@ -242,7 +242,13 @@ databaseChangeLog = {
         }
     }
 
-//    changeSet(author: "klober (modified)", id: "1712918403913-30") {
+    changeSet(author: "klober (generated)", id: "1712918403913-30") {
+        addColumn(tableName: "user") {
+            column(name: "usr_invalid_login_attempts", type: "int4")
+        }
+    }
+
+//    changeSet(author: "klober (modified)", id: "1712918403913-31") {
 //        grailsChange {
 //            change {
 //                java.sql.Date now = new java.sql.Date(System.currentTimeMillis())

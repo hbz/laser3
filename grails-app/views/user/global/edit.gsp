@@ -88,10 +88,12 @@
                     </div><!-- .card -->
                 </g:if>
 
-                <g:if test="${contextService.getUser().isYoda()}">
+                <g:if test="${contextService.getUser().isYoda() || contextService.getUser().isAdmin()}">
                     <div class="ui card">
                         <div class="ui content">
-                            <h2 class="ui dividing header">${message(code: 'menu.yoda')}-${message(code: 'menu.admin')}</h2>
+                            <h2 class="ui dividing orange header">
+                                ${message(code: 'default.adminsOnly.label')}
+                            </h2>
                             <div class="ui form">
 %{--                                <div class="ui field">--}%
 %{--                                    <label>--}%
@@ -111,15 +113,15 @@
                                     </label>
                                     <ui:xEditableBoolean owner="${user}" field="accountExpired" overwriteEditable="true"/>
                                 </div>
-%{--                                <div class="ui field">--}%
-%{--                                    <label>--}%
-%{--                                        ${message(code:'user.accountLocked.label')}--}%
-%{--                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.locked')}">--}%
-%{--                                            <i class="question circle icon"></i>--}%
-%{--                                        </span>--}%
-%{--                                    </label>--}%
-%{--                                    <ui:xEditableBoolean owner="${user}" field="accountLocked" overwriteEditable="true"/>--}%
-%{--                                </div>--}%
+                                <div class="ui field">
+                                    <label>
+                                        ${message(code:'user.accountLocked.label')}
+                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.locked')}">
+                                            <i class="question circle icon"></i>
+                                        </span>
+                                    </label>
+                                    <ui:xEditableBoolean owner="${user}" field="accountLocked" overwriteEditable="true"/>
+                                </div>
 %{--                                <div class="ui field">--}%
 %{--                                    <label>--}%
 %{--                                        ${message(code:'user.passwordExpired.label')}--}%
@@ -132,6 +134,10 @@
                                 <div class="ui field">
                                     <label>${message(code:'user.lastLogin.label')}</label>
                                     <p>${user.lastLogin ? DateUtils.getLocalizedSDF_noZ().format(user.lastLogin): message(code: 'default.unknown')}</p>
+                                </div>
+                                <div class="ui field">
+                                    <label>${message(code:'user.invalidLoginAttempts.label')}</label>
+                                    <p>${user.invalidLoginAttempts ?: 0}</p>
                                 </div>
                             </div><!-- .form -->
                         </div><!-- .content -->
