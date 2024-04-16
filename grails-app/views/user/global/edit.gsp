@@ -92,7 +92,8 @@
                     <div class="ui card">
                         <div class="ui content">
                             <h2 class="ui dividing orange header">
-                                ${message(code: 'default.adminsOnly.label')}
+                                <i class="exclamation triangle small icon"></i>
+                                <div class="content">${message(code: 'default.adminsOnly.label')}</div>
                             </h2>
                             <div class="ui form">
 %{--                                <div class="ui field">--}%

@@ -102,6 +102,7 @@ class UserController {
                 editLink: 'edit',
                 deleteLink: 'delete',
                 users: result.users,
+                showUserMeta: true,
                 showAllAffiliations: true
         ]
         result.benchMark = prf.stopBenchmark()
