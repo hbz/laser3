@@ -1,7 +1,7 @@
 <%@ page import="de.laser.ExportClickMeService;" %>
 <laser:serviceInjection/>
 
-<!-- _individuallyExportModalOrgs.gsp -->
+<!-- _individuallyExportModalVendors.gsp -->
 <g:set var="formFields" value="${exportClickMeService.getExportVendorFieldsForUI()}"/>
 
 <ui:modal id="${modalID}" text="Excel-Export" refreshModal="true" hideSubmitButton="true">
