@@ -171,8 +171,12 @@ class ContextBarTagLib {
         String tt_list      = message(code: 'marker.WEKB_CHANGES')
 
         if (attrs.org) {
-            tt = isMarked ? 'Der Anbieter/Lieferant ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
-                    : 'Anklicken, um den Anbieter/Lieferant auf die ' + tt_list + ' zu setzen.'
+            tt = isMarked ? 'Der Anbieter ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
+                    : 'Anklicken, um den Anbieter auf die ' + tt_list + ' zu setzen.'
+        }
+        else if (attrs.vendor) {
+            tt = isMarked ? 'Der Lieferant ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
+                    : 'Anklicken, um den Lieferanten auf die ' + tt_list + ' zu setzen.'
         }
         else if (attrs.package) {
             tt = isMarked ? 'Das Paket ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
