@@ -16,6 +16,7 @@ import org.springframework.mail.MailMessage
 
 import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 /**
  * This service checks the system health
@@ -25,6 +26,10 @@ class SystemService {
 
     ContextService contextService
     MailService mailService
+
+    public static final int UA_FLAG_EXPIRED_AFTER_MONTHS = 6
+    public static final int UA_FLAG_LOCKED_AFTER_INVALID_ATTEMPTS = 5
+    public static final int UA_FLAG_UNLOCKED_AFTER_HOURS = 1
 
     /**
      * Dumps the state of currently active services
@@ -180,15 +185,13 @@ class SystemService {
         }
     }
 
-    void flagExpiredUserAccounts() {
-        log.info "--> flagExpiredUserAccounts"
-
+    void maintainExpiredUserAccounts() {
         List expiredAccounts = []
         LocalDate now = LocalDate.now()
 
         User.executeQuery("select u from User u where u.accountExpired != true and u.username != 'anonymous' order by u.username").each{ User usr ->
             LocalDate lastLogin = usr.lastLogin ? DateUtils.dateToLocalDate(usr.lastLogin) : DateUtils.dateToLocalDate(usr.dateCreated)
-            if (lastLogin.isBefore(now.minusMonths(6))) {
+            if (lastLogin.isBefore(now.minusMonths(UA_FLAG_EXPIRED_AFTER_MONTHS))) {
                 usr.accountExpired = true
                 usr.save()
 
@@ -197,7 +200,29 @@ class SystemService {
         }
 
         if (expiredAccounts) {
-            SystemEvent.createEvent('SYSTEM_FLAG_EXPIRED_ACCOUNTS', [expiredAccounts: expiredAccounts])
+            log.info '--> flagUserAccountsExpired after ' + UA_FLAG_EXPIRED_AFTER_MONTHS + ' months: ' + expiredAccounts.size()
+            SystemEvent.createEvent('SYSTEM_UA_FLAG_EXPIRED', [expired: expiredAccounts])
+        }
+    }
+
+    void maintainUnlockedUserAccounts() {
+        List unlockedAccounts = []
+        LocalDateTime now = LocalDateTime.now()
+
+        User.executeQuery("select u from User u where u.accountLocked = true and u.username != 'anonymous' order by u.username").each{ User usr ->
+            LocalDateTime lastUpdated = DateUtils.dateToLocalDateTime(usr.lastUpdated)
+            if (lastUpdated.isBefore(now.minusHours(UA_FLAG_UNLOCKED_AFTER_HOURS))) {
+                usr.invalidLoginAttempts = 0
+                usr.accountLocked = false
+                usr.save()
+
+                unlockedAccounts.add([usr.id, usr.username, usr.lastUpdated])
+            }
+        }
+
+        if (unlockedAccounts) {
+            log.info '--> flagUserAccountsUnlocked after ' + UA_FLAG_UNLOCKED_AFTER_HOURS + ' hours: ' + unlockedAccounts.size()
+            SystemEvent.createEvent('SYSTEM_UA_FLAG_UNLOCKED', [unlocked: unlockedAccounts])
         }
     }
 }

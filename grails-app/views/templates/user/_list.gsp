@@ -55,7 +55,7 @@
                         </g:if>
                         <g:if test="${us.accountLocked}">
                             <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.accountLocked.label')}">
-                                <i class="exclamation triangle large icon red"></i>
+                                <i class="exclamation triangle large icon yellow"></i>
                             </span>
                         </g:if>
                     </td>
