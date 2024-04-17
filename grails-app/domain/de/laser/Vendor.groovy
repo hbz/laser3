@@ -101,7 +101,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
     }
 
     static constraints = {
-        gokbId                      (unique: true)
+        gokbId                      (unique: true, nullable: true)
         globalUID                   (unique: true)
         sortname                    (nullable: true)
         homepage                    (nullable: true)
@@ -211,5 +211,37 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
             }
         }
         result
+    }
+
+    boolean isLibrarySystemSupported(String lsB) {
+        if(!supportedLibrarySystems)
+            false
+        else {
+            supportedLibrarySystems.collect { LibrarySystem lsA -> lsA.librarySystem.value }.contains(lsB)
+        }
+    }
+
+    boolean hasElectronicBilling(String ebB) {
+        if(!electronicBillings)
+            false
+        else {
+            electronicBillings.collect { ElectronicBilling ebA -> ebA.invoicingFormat.value }.contains(ebB)
+        }
+    }
+
+    boolean hasElectronicDeliveryDelayNotification(String eddnB) {
+        if(!electronicDeliveryDelays)
+            false
+        else {
+            electronicDeliveryDelays.collect { ElectronicDeliveryDelayNotification eddnA -> eddnA.delayNotification.value }.contains(eddnB)
+        }
+    }
+
+    boolean hasInvoiceDispatch(String idiB) {
+        if(!invoiceDispatchs)
+            false
+        else {
+            invoiceDispatchs.collect { InvoiceDispatch idiA -> idiA.invoiceDispatch.value }.contains(idiB)
+        }
     }
 }

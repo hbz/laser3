@@ -1573,7 +1573,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         lsA.delete()
                 }
                 supportedLibrarySystemsB.each { String lsB ->
-                    if((vendor.supportedLibrarySystems && !vendor.supportedLibrarySystems.contains(lsB)) || !vendor.supportedLibrarySystems) {
+                    if(!vendor.isLibrarySystemSupported(lsB)) {
                         new LibrarySystem(vendor: vendor, librarySystem: RefdataValue.getByValueAndCategory(lsB, RDConstants.VENDOR_SUPPORTED_LIBRARY_SYSTEM)).save()
                     }
                 }
@@ -1582,7 +1582,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         ebA.delete()
                 }
                 electronicBillingsB.each { String ebB ->
-                    if((vendor.electronicBillings && !vendor.electronicBillings.contains(ebB)) || !vendor.electronicBillings) {
+                    if(!vendor.hasElectronicBilling(ebB)) {
                         new ElectronicBilling(vendor: vendor, invoicingFormat: RefdataValue.getByValueAndCategory(ebB, RDConstants.VENDOR_INVOICING_FORMAT)).save()
                     }
                 }
@@ -1591,7 +1591,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         idiA.delete()
                 }
                 invoiceDispatchsB.each { String idiB ->
-                    if((vendor.invoiceDispatchs && !vendor.invoiceDispatchs.contains(idiB)) || !vendor.invoiceDispatchs) {
+                    if(!vendor.hasInvoiceDispatch(idiB)) {
                         new InvoiceDispatch(vendor: vendor, invoiceDispatch: RefdataValue.getByValueAndCategory(idiB, RDConstants.VENDOR_INVOICING_DISPATCH)).save()
                     }
                 }
@@ -1600,7 +1600,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         eddnA.delete()
                 }
                 electronicDeliveryDelaysB.each { String eddnB ->
-                    if((vendor.electronicDeliveryDelays && !vendor.electronicDeliveryDelays.contains(eddnB)) || !vendor.electronicDeliveryDelays) {
+                    if(!vendor.hasElectronicDeliveryDelayNotification(eddnB)) {
                         new ElectronicDeliveryDelayNotification(vendor: vendor, delayNotification: RefdataValue.getByValueAndCategory(eddnB, RDConstants.VENDOR_ELECTRONIC_DELIVERY_DELAY)).save()
                     }
                 }
