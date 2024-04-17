@@ -28425,20 +28425,25 @@ body[class*="platform"] .ui.icon.header .icon.la-object:before {
 
 body[class*="Vendor"] .ui.icon.header .icon.la-object,
 body[class*="vendor"] .ui.icon.header .icon.la-object {
-    display: inline-block;
-    background-color: #b54800;
-    border-color: #b54800;
+  display: inline-block;
+  background-color: #b54800;
+  border-color: #b54800;
 }
 
 body[class*="Vendor"] .ui.icon.header .icon.la-object:before,
 body[class*="vendor"] .ui.icon.header .icon.la-object:before {
-    content: "\f48b";
+  content: "\f48b";
 }
 
 body[class*="Vendor"] .la-objectIsMine,
 body[class*="vendor"] .la-objectIsMine {
-    box-shadow: 0 0 0 0.1em #b54800 inset !important;
-    color: #b54800;
+  box-shadow: 0 0 0 0.1em #b54800 inset !important;
+  color: #b54800;
+}
+
+body[class*="Vendor"] .ui.icon.header .icon.la-object:before,
+body[class*="vendor"] .ui.icon.header .icon.la-object:before {
+  content: "\f48b";
 }
 
 .ui.icon.header .icon.la-object-journal {
@@ -50781,6 +50786,31 @@ legend {
     width: 100%;
     margin: 0 0 1em;
   }
+}
+
+/* Addresses */
+
+.ui.buttons .or::before {
+  margin-left: -2.5em;
+  width: 4.785714em;
+  margin-top: 0;
+}
+
+.ui.buttons .or {
+  font-size: 1.5rem;
+}
+
+#buttonPhysicalAddress {
+  width: 50%;
+  border-right: 2px solid white;
+}
+
+#buttonPostalAddress {
+  width: 50%;
+}
+
+#physicalAddress {
+  border-right: 2px solid white;
 }
 /*!
  * # Fomantic-UI 2.9.3 - Grid
