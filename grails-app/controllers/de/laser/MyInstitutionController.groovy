@@ -1117,8 +1117,6 @@ class MyInstitutionController  {
         Map<String, Object> selectedFields = [:]
         Set<String> contactSwitch = []
 
-        /*
-        to be implemented
         if(params.fileformat) {
             if (params.filename) {
                 filename = params.filename
@@ -1129,7 +1127,7 @@ class MyInstitutionController  {
             contactSwitch.addAll(params.list("addressSwitch"))
             switch(params.fileformat) {
                 case 'xlsx':
-                    SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(vendorListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.XLS, contactSwitch)
+                    SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportVendors(vendorsTotal, selectedFields, ExportClickMeService.FORMAT.XLS, contactSwitch)
 
                     response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
                     response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -1143,12 +1141,12 @@ class MyInstitutionController  {
                     response.contentType = "text/csv"
                     ServletOutputStream out = response.outputStream
                     out.withWriter { writer ->
-                        writer.write((String) exportClickMeService.exportOrgs(vendorListTotal,selectedFields, 'provider',ExportClickMeService.FORMAT.CSV,contactSwitch))
+                        writer.write((String) exportClickMeService.exportVendors(vendorsTotal,selectedFields, ExportClickMeService.FORMAT.CSV,contactSwitch))
                     }
                     out.close()
                     return
                 case 'pdf':
-                    Map<String, Object> pdfOutput = exportClickMeService.exportOrgs(vendorListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.PDF, contactSwitch)
+                    Map<String, Object> pdfOutput = exportClickMeService.exportVendors(vendorsTotal, selectedFields, ExportClickMeService.FORMAT.PDF, contactSwitch)
 
                     byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
                     response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
@@ -1157,8 +1155,8 @@ class MyInstitutionController  {
                     return
             }
         }
-        */
-        result
+        else
+            result
     }
 
     /**

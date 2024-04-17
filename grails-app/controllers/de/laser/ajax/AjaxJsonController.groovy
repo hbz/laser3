@@ -18,6 +18,7 @@ import de.laser.ReportingGlobalService
 import de.laser.ReportingLocalService
 import de.laser.SubscriptionDiscountScale
 import de.laser.SubscriptionService
+import de.laser.Vendor
 import de.laser.auth.Role
 import de.laser.cache.EhcacheWrapper
 import de.laser.finance.PriceItem
@@ -1185,12 +1186,23 @@ class AjaxJsonController {
     def getEmailAddresses() {
         Map result = [:]
 
-        if (params.orgIdList) {
-            List<Long> orgIds = Params.getLongList_forCommaSeparatedString(params, 'orgIdList')
-            List<Org> orgList = orgIds ? Org.findAllByIdInList(orgIds) : []
+        if (params.orgIdList || params.vendorIdList) {
 
-            String query = "select distinct p from Person as p inner join p.roleLinks pr where pr.org in (:orgs) "
-            Map<String, Object> queryParams = [orgs: orgList]
+            String query
+            Map<String, Object> queryParams
+            if(params.containsKey('vendorIdList')) {
+                List<Long> vendorIds = Params.getLongList_forCommaSeparatedString(params, 'vendorIdList')
+                List<Vendor> vendorList = vendorIds ? Vendor.findAllByIdInList(vendorIds) : []
+                query = "select distinct p from Person as p inner join p.roleLinks pr where pr.vendor in (:vendors) "
+                queryParams = [vendors: vendorList]
+            }
+            else {
+                List<Long> orgIds = Params.getLongList_forCommaSeparatedString(params, 'orgIdList')
+                List<Org> orgList = orgIds ? Org.findAllByIdInList(orgIds) : []
+                query = "select distinct p from Person as p inner join p.roleLinks pr where pr.org in (:orgs) "
+                queryParams = [orgs: orgList]
+            }
+
 
             boolean showPrivateContactEmails = Boolean.valueOf(params.isPrivate)
             boolean showPublicContactEmails = Boolean.valueOf(params.isPublic)
@@ -1222,12 +1234,17 @@ class AjaxJsonController {
             List<Person> persons = Person.executeQuery(query, queryParams)
             persons.each { Person p ->
                 Contact mail = Contact.findByPrsAndContentType(p, RDStore.CCT_EMAIL)
+                String key
+                if(p.roleLinks[0].vendor)
+                    key = "org${p.roleLinks.vendor.id[0]}"
+                else
+                    key = "org${p.roleLinks.org.id[0]}"
                 if(mail) {
-                    Set<String> mails = result.get("org${p.roleLinks.org.id[0]}".toString())
+                    Set<String> mails = result.get(key)
                     if(!mails)
                         mails = []
                     mails << mail.content
-                    result.put("org${p.roleLinks.org.id[0]}".toString(), mails)
+                    result.put(key, mails)
                 }
             }
         }

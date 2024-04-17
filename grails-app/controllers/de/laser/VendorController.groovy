@@ -56,24 +56,10 @@ class VendorController {
         String filename = message+"_${datetoday}"
         Map<String, Object> selectedFields = [:]
         Set<String> contactSwitch = []
+        Set<Vendor> vendorsTotal = Vendor.findAllByGokbIdInList(result.wekbRecords.keySet())
         if(params.fileformat) {
             if (params.filename) {
                 filename =params.filename
-            }
-            Set<Map<String, Object>> vendorListTotal = result.wekbRecords.collect { String wekbId, Map data ->
-                Vendor laserVendor = Vendor.findByGokbId(wekbId)
-                String subscriptionConsortiumFilter = '', licenseConsortiumFilter = ''
-                if(result.institution.isCustomerType_Consortium()) {
-                    subscriptionConsortiumFilter = 'and s.instanceOf = null'
-                    licenseConsortiumFilter = 'and l.instanceOf = null'
-                }
-                data.contacts = laserVendor.contacts
-                data.addresses = laserVendor.addresses
-                data.packages = laserVendor.packages
-                data.platforms = vendorService.getSubscribedPlatforms(laserVendor, result.institution)
-                data.subscriptions = Subscription.executeQuery('select vr.subscription from VendorRole vr join vr.subscription s join s.orgRelations oo where vr.vendor = :vendor and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [vendor: laserVendor, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution])
-                data.licenses = License.executeQuery('select vr.license from VendorRole vr join vr.license l join l.orgRelations oo where vr.vendor = :vendor and l.status = :current and oo.org = :context '+licenseConsortiumFilter, [vendor: laserVendor, current: RDStore.LICENSE_CURRENT, context: result.institution])
-                data
             }
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
@@ -81,7 +67,7 @@ class VendorController {
             contactSwitch.addAll(params.list("addressSwitch"))
             switch(params.fileformat) {
                 case 'xlsx':
-                    SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportVendors(vendorListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.XLS, contactSwitch)
+                    SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportVendors(vendorsTotal, selectedFields, ExportClickMeService.FORMAT.XLS, contactSwitch)
                     response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
                     response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     wb.write(response.outputStream)
@@ -94,12 +80,12 @@ class VendorController {
                     response.contentType = "text/csv"
                     ServletOutputStream out = response.outputStream
                     out.withWriter { writer ->
-                        writer.write((String) exportClickMeService.exportVendors(vendorListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.CSV, contactSwitch))
+                        writer.write((String) exportClickMeService.exportVendors(vendorsTotal, selectedFields, ExportClickMeService.FORMAT.CSV, contactSwitch))
                     }
                     out.close()
                     return
                 case 'pdf':
-                    Map<String, Object> pdfOutput = exportClickMeService.exportVendors(vendorListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.PDF, contactSwitch)
+                    Map<String, Object> pdfOutput = exportClickMeService.exportVendors(vendorsTotal, selectedFields, ExportClickMeService.FORMAT.PDF, contactSwitch)
 
                     byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
                     response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
@@ -109,7 +95,6 @@ class VendorController {
             }
         }
         else {
-            Set<Vendor> vendorsTotal = Vendor.findAllByGokbIdInList(result.wekbRecords.keySet())
             result.vendorListTotal = vendorsTotal.size()
             result.vendorList = vendorsTotal.drop(result.offset).take(result.max)
             result
