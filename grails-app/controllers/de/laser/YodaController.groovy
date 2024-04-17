@@ -96,7 +96,7 @@ class YodaController {
         Map<String, Object> result = [
                 docStore: AppUtils.getDocumentStorageInfo()
         ]
-        result
+        result 
     }
 
     /**

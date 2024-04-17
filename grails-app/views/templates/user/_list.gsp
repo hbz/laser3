@@ -15,20 +15,23 @@
                 <g:message code="default.role.label"/>
             </g:else>
         </th>
+        <g:if test="${showUserMeta}">
+            <th class="center aligned"><i class="exclamation triangle icon grey"></i></th>
+        </g:if>
         <th>${message(code:'user.enabled.label')}</th>
         <th class="la-action-info">${message(code:'default.actions.label')}</th>
     </tr>
     </thead>
     <tbody>
         <g:each in="${users}" var="us">
+            <g:set var="noLogin" value="${us.accountExpired || us.accountLocked}"/>
             <tr>
                 <td>
                     ${fieldValue(bean: us, field: "username")}
-
                     <g:if test="${! UserRole.findByUser(us)}">
-                        <span class="la-popup-tooltip la-delay" data-content="Dieser Account besitzt keine ROLE." data-position="top right">
-                            <i class="icon minus circle red"></i>
-                        </span>
+                        <label class="ui icon label la-popup-tooltip la-delay" data-content="Dieser Account besitzt keine ROLE." data-position="top right">
+                            <i class="minus circle icon red"></i>
+                        </label>
                     </g:if>
                 </td>
                 <td>${us.getDisplayName()}</td>
@@ -43,8 +46,22 @@
                             </g:if>
                         </g:else>
                 </td>
+                <g:if test="${showUserMeta}">
+                    <td class="center aligned">
+                        <g:if test="${us.accountExpired}">
+                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.accountExpired.label')}">
+                                <i class="exclamation triangle large icon red"></i>
+                            </span>
+                        </g:if>
+                        <g:if test="${us.accountLocked}">
+                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.accountLocked.label')}">
+                                <i class="exclamation triangle large icon yellow"></i>
+                            </span>
+                        </g:if>
+                    </td>
+                </g:if>
                 <td>
-                    <g:if test="${modifyAccountEnability}">
+                    <g:if test="${contextService.getUser().isYoda()}">
                         <ui:xEditableBoolean owner="${us}" field="enabled"/>
                     </g:if>
                     <g:else>

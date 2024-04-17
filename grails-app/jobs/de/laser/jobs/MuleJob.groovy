@@ -41,13 +41,22 @@ class MuleJob extends AbstractJob {
             SystemEvent sysEvent = SystemEvent.createEvent('MULE_START')
             long start_time = System.currentTimeMillis()
 
-            wekbNewsService.updateCache()
+            LocalTime now = LocalTime.now()
 
-            // only once per day ..
+            systemService.maintainUnlockedUserAccounts()
 
-            if (Math.abs(LocalTime.parse('06:45').toSecondOfDay() - LocalTime.now().toSecondOfDay()) < 300) {
-                systemService.sendSystemInsightMails()
+            // only once per (full) hour ..
+            if (now.getMinute() == 0) {
+//                systemService.maintainUnlockedUserAccounts()
             }
+
+            // only once per day .. 6:45
+            if (now.getHour() == 6 && now.getMinute() == 45) {
+                systemService.sendSystemInsightMails()
+//                systemService.maintainExpiredUserAccounts()
+            }
+
+            wekbNewsService.updateCache()
 
             double elapsed = ((System.currentTimeMillis() - start_time) / 1000).round(2)
             sysEvent.changeTo('MULE_COMPLETE', [s: elapsed])

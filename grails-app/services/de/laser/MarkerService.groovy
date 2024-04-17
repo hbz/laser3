@@ -57,6 +57,9 @@ class MarkerService {
         if (cls == Org.class) {
             sql = 'Org obj where m.org = obj and m.type = :type and m.user = :user order by obj.sortname, obj.name'
         }
+        else if (cls == Vendor.class) {
+            sql = 'Vendor obj where m.org = obj and m.type = :type and m.user = :user order by obj.sortname, obj.name'
+        }
         else if (cls == Package.class) {
             sql = 'Package obj where m.pkg = obj and m.type = :type and m.user = :user order by obj.sortname, obj.name'
         }
@@ -77,12 +80,14 @@ class MarkerService {
     Map<String, List> getMyXMap() {
         Map<String, List> result = [:]
 
+        result.currentProviderIdList = orgTypeService.getCurrentOrgsOfProvidersAndAgencies(contextService.getOrg()).collect{ it.id }
+
+        result.currentVendorIdList = [] // TODO erms-5646
+
         result.currentPackageIdList = SubscriptionPackage.executeQuery(
                 'select distinct sp.pkg.id from SubscriptionPackage sp where sp.subscription in (select oo.sub from OrgRole oo join oo.sub sub where oo.org = :context and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true)))',
                 [context: contextService.getOrg(), current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED]
         )
-
-        result.currentProviderIdList = orgTypeService.getCurrentOrgsOfProvidersAndAgencies(contextService.getOrg()).collect{ it.id }
 
         // todo --
         List<Long> currentSubscriptionIdList = Subscription.executeQuery(

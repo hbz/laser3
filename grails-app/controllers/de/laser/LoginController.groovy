@@ -133,11 +133,11 @@ class LoginController {
       else if (exception instanceof CredentialsExpiredException) {
         msg = g.message(code: "springSecurity.errors.login.passwordExpired")
       }
-      else if (exception instanceof DisabledException) {
-        msg = g.message(code: "springSecurity.errors.login.disabled")
-      }
       else if (exception instanceof LockedException) {
         msg = g.message(code: "springSecurity.errors.login.locked")
+      }
+      else if (exception instanceof DisabledException) {
+          msg = g.message(code: "springSecurity.errors.login.disabled")
       }
       else {
         msg = g.message(code: "springSecurity.errors.login.fail")

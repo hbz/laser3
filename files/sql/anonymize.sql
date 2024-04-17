@@ -6,8 +6,7 @@ UPDATE "user" SET
     usr_display = CONCAT('User ', usr_id),
     usr_email = 'local@localhost.local',
     usr_password = 'you_shall_not_pass',
-    usr_enabled = false,
-    usr_account_locked = true
+    usr_enabled = false
 WHERE usr_id NOT IN (
     SELECT u.usr_id
     FROM "user" u

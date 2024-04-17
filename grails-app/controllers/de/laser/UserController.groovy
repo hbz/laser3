@@ -102,8 +102,8 @@ class UserController {
                 editLink: 'edit',
                 deleteLink: 'delete',
                 users: result.users,
-                showAllAffiliations: true,
-                modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA')
+                showUserMeta: true,
+                showAllAffiliations: true
         ]
         result.benchMark = prf.stopBenchmark()
         render view: '/user/global/list', model: result

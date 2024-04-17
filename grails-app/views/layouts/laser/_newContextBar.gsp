@@ -157,6 +157,11 @@
                     <ui:cbItemMarkerAction org="${orgInstance}"/>
                 </g:if>
             </g:if>
+            <g:elseif test="${controllerName == 'vendor'}">
+                <g:if test="${vendor}">
+                    <ui:cbItemMarkerAction vendor="${vendor}"/>
+                </g:if>
+            </g:elseif>
             <g:elseif test="${controllerName == 'package'}">
                 <g:if test="${packageInstance}">
                     <ui:cbItemMarkerAction package="${packageInstance}"/>

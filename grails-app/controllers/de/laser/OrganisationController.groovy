@@ -1496,7 +1496,6 @@ class OrganisationController  {
                 deleteLink: 'deleteUser',
                 users: result.users,
                 showAllAffiliations: false,
-                modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA'),
                 availableComboOrgs: availableComboOrgs
         ]
         render view: '/user/global/list', model: result

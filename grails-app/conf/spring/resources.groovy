@@ -1,9 +1,11 @@
 package spring
 
+
 import de.laser.custom.CustomMigrationCallbacks
-import de.laser.custom.CustomPasswordEncoderFactories
-import de.laser.custom.CustomUserDetailsService
-import de.laser.custom.CustomAuthSuccessHandler
+import de.laser.custom.auth.CustomPasswordEncoderFactories
+import de.laser.custom.auth.CustomAuthFailureHandler
+import de.laser.custom.auth.CustomUserDetailsService
+import de.laser.custom.auth.CustomAuthSuccessHandler
 import de.laser.custom.CustomAuditRequestResolver
 //import de.laser.custom.CustomWebSocketMessageBrokerConfig
 import de.laser.custom.CustomWkhtmltoxService
@@ -52,7 +54,7 @@ beans = {
     }
     // .. ]
 
-    // [ supporting initMandatorySettings for users ..
+    // [ login and more ..
     authenticationSuccessHandler( CustomAuthSuccessHandler ) {
         ConfigObject conf = SpringSecurityUtils.securityConfig
 
@@ -67,6 +69,15 @@ beans = {
         targetUrlParameter          = conf.successHandler.targetUrlParameter
         ajaxSuccessUrl              = conf.successHandler.ajaxSuccessUrl
         useReferer                  = conf.successHandler.useReferer
+    }
+
+    authenticationFailureHandler( CustomAuthFailureHandler ) {
+        ConfigObject conf = SpringSecurityUtils.securityConfig
+
+        redirectStrategy                = ref('redirectStrategy')
+        defaultFailureUrl               = conf.failureHandler.defaultFailureUrl
+        useForward                      = conf.failureHandler.useForward
+        allowSessionCreation            = conf.failureHandler.allowSessionCreation
     }
     // .. ]
 
