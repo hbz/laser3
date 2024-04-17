@@ -30,8 +30,8 @@ class User {
 
     boolean enabled         = false     // administrative
     boolean accountExpired  = false     // inactivity
-    boolean accountLocked   = false     // too many login attempts - not used
-    boolean passwordExpired = false     // forced to change password - not used
+    boolean accountLocked   = false     // too many login attempts
+    boolean passwordExpired = false     // not used
 
     static hasMany      = [ roles: UserRole ]
     static mappedBy     = [ roles: 'user' ]
