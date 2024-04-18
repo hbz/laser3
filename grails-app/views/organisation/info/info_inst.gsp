@@ -577,11 +577,7 @@
 
         JSPC.app.info.chart_config = {
             subscription: {
-                tooltip: {
-                    trigger: 'axis',
-                    axisPointer: { type: 'shadow' },
-                    formatter: JSPC.app.info.chart_config_helper.tooltip_formatter_notNull
-                },
+                tooltip: JSPC.app.info.chart_config_helper.tooltip,
                 series: [
                     <g:each in="${subscriptionTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ RefdataValue.get(it).getI10n('value') }}" var="status">
                         {
@@ -639,14 +635,10 @@
                 },
                 yAxis:  { type: 'value' },
                 legend: { bottom: 0 },
-                grid:   { left: '0.5%', right: '0.5%', top: '5%', bottom: '20%' },
+                grid:   JSPC.app.info.chart_config_helper.grid,
             },
             license: {
-                tooltip: {
-                    trigger: 'axis',
-                    axisPointer: { type: 'shadow' },
-                    formatter: JSPC.app.info.chart_config_helper.tooltip_formatter_notNull
-                },
+                tooltip: JSPC.app.info.chart_config_helper.tooltip,
                 series: [
                     <g:each in="${licenseTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ RefdataValue.get(it).getI10n('value') }}" var="status">
                         {
@@ -689,14 +681,10 @@
                 },
                 yAxis:  { type: 'value' },
                 legend: { bottom: 0 },
-                grid:   { left: '0.5%', right: '0.5%', top: '5%', bottom: '20%' },
+                grid:   JSPC.app.info.chart_config_helper.grid,
             },
             provider: {
-                tooltip: {
-                    trigger: 'axis',
-                    axisPointer: { type: 'shadow' },
-                    formatter: JSPC.app.info.chart_config_helper.tooltip_formatter_notNull
-                },
+                tooltip: JSPC.app.info.chart_config_helper.tooltip,
                 series: [
                 <g:each in="${providerTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ Org.get(it).sortname ?: Org.get(it).name }}" var="provider">
                     {
@@ -718,14 +706,10 @@
                     bottom: 0,
                     type: 'scroll'
                 },
-                grid:   { left: '0.5%', right: '0.5%', top: '5%', bottom: '20%' },
+                grid:   JSPC.app.info.chart_config_helper.grid,
             },
 %{--            survey: {--}%
-%{--                tooltip: {--}%
-%{--                    trigger: 'axis',--}%
-%{--                    axisPointer: { type: 'shadow' },--}%
-%{--                    formatter: JSPC.app.info.chart_config_helper.tooltip_formatter_notNull--}%
-%{--                },--}%
+%{--                tooltip: JSPC.app.info.chart_config_helper.tooltip,--}%
 %{--                series: [--}%
 %{--                    <g:each in="${surveyTimelineMap.values().collect{ it.keySet() }.flatten().unique()}" var="status"> --}%%{-- sort --}%
 %{--                        {--}%
@@ -773,7 +757,7 @@
 %{--                },--}%
 %{--                yAxis:  { type: 'value' },--}%
 %{--                legend: { bottom: 0 },--}%
-%{--                grid:   { left: '0.5%', right: '0.5%', top: '5%', bottom: '20%' },--}%
+%{--                grid:   JSPC.app.info.chart_config_helper.grid,--}%
 %{--            },--}%
         };
 

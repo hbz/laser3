@@ -31,7 +31,7 @@ class InfoService {
 
         static Map getTimelineMap(struct) {
             Map<String, Map> years = [:]
-            IntRange timeline = (Integer.parseInt(Year.now().toString()) - 7)..(Integer.parseInt(Year.now().toString()) + 3)
+            IntRange timeline = (Integer.parseInt(Year.now().toString()) - 4)..(Integer.parseInt(Year.now().toString()) + 3)
 
             timeline.each { year ->
                 String y = year.toString()
