@@ -40,13 +40,12 @@
                 <input id="tenant" name="tenant" type="hidden" value="${tenant}"/>
             </g:if>
 
-
-            <div class="five wide required field ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">
-                <label for="type.id">
+            <div class="five wide required field ${hasErrors(bean: addressInstance, field: 'type', 'error')}">
+                <label for="typeId">
                     ${RefdataCategory.getByDesc(RDConstants.ADDRESS_TYPE).getI10n('desc')}
                 </label>
                 %{--<ui:select class="ui dropdown multiple" id="type" name="type.id"--}%
-                <ui:select class="ui dropdown search selection"  name="type.id"
+                <ui:select class="ui dropdown search selection" id="typeId" name="type.id"
                               from="${Address.getAllRefdataValues()}"
                               optionKey="id"
                               optionValue="value"
@@ -138,26 +137,29 @@
                 <!-- Postanschrift START -->
                 <div class="ui grey inverted segment disabled eight wide column" id="postalAddress">
                     <h4 class="ui dividing header"><g:message code="address.pob.label" /></h4>
-
-                    <div class="required wide field">
-                        <label for="pob">
-                            <g:message code="address.pob.label" />
-                        </label>
-                        <g:textField id="pob" name="pob" value="${addressInstance?.pob}"/>
+                    <div class="fields">
+                        <div class="sixteen required wide field">
+                            <label for="pob">
+                                <g:message code="address.pob.label" />
+                            </label>
+                            <g:textField id="pob" name="pob" value="${addressInstance?.pob}"/>
+                        </div>
                     </div>
-
-                    <div class="required wide field">
-                        <label for="pobZipcode">
-                            <g:message code="address.zipcode.label" />
-                        </label>
-                        <g:textField id="pobZipcode" name="pobZipcode" value="${addressInstance?.pobZipcode}"/>
+                    <div class="fields">
+                        <div class="sixteen required wide field">
+                            <label for="pobZipcode">
+                                <g:message code="address.zipcode.label" />
+                            </label>
+                            <g:textField id="pobZipcode" name="pobZipcode" value="${addressInstance?.pobZipcode}"/>
+                        </div>
                     </div>
-
-                    <div class="required wide field">
-                        <label for="pobCity">
-                            <g:message code="address.city.label" />
-                        </label>
-                        <g:textField id="pobCity" name="pobCity" value="${addressInstance?.pobCity}"/>
+                    <div class="fields">
+                        <div class="sixteen required wide field">
+                            <label for="pobCity">
+                                <g:message code="address.city.label" />
+                            </label>
+                            <g:textField id="pobCity" name="pobCity" value="${addressInstance?.pobCity}"/>
+                        </div>
                     </div>
 
                 </div>
@@ -165,11 +167,6 @@
             </div>
         </div>
         <!-- Alternating address Table END-->
-
-
-
-
-
 
         <div class="field">
             <div class="two fields">
@@ -205,203 +202,196 @@
         /* Pflichtfelder wenn "Anlegen" geklickt wird*/
 
         $("#create_address").form({
-          on: "submit",
+          on: 'submit',
           inline: true,
           fields: {
 
-    org: {
-      identifier: "org",
-      rules: [
-        {
-          type: "empty",
-          prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
+            org: {
+              identifier: 'org',
+              rules: [
+                {
+                  type: 'empty',
+                  prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
+                }
+              ]
+            },
+            typeId: {
+              identifier: 'typeId',
+              rules: [
+                {
+                  type: 'empty',
+                  prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
+                }
+              ]
+            },
+            name: {
+              identifier: 'name',
+              rules: [
+                {
+                  type: 'empty',
+                  prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
+                }
+              ]
+            },
+            /* physicalAddress  */
+            street_1: {
+              identifier: 'street_1',
+              rules: [
+                {
+                  type: 'empty',
+                  prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
+                }
+              ]
+            },
+            street_2: {
+              identifier: 'street_2',
+              rules: [
+                {
+                  type: 'empty',
+                  prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
+                }
+              ]
+            },
+            zipcode: {
+              identifier: 'zipcode',
+              rules: [
+                {
+                  type: 'empty',
+                  prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
+                }
+              ]
+            },
+            city: {
+              identifier: 'city',
+              rules: [
+                {
+                  type: 'empty',
+                  prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
+                }
+              ]
+            }
+          }
+        });
+        $(".green.button").on("click", function () {
+          if ($("#buttonPhysicalAddress").hasClass("active")) {
+            removePostalAddress();
+          }
+          if ($("#buttonPostalAddress").hasClass("active")) {
+            removePhysicalAddress();
+          }
+        });
+
+        /* Alternating address  */
+        function removePostalAddress() {
+
+            // adding multiple at once from Hausanschrift
+          $("#create_address").form("add rule", "street_1", {
+            rules: [
+              {
+                type: 'empty',
+                prompt:  '{name} <g:message code="validation.needsToBeFilledOut"/>'
+              }
+            ]
+          });
+          $("#create_address").form("add rule", "street_2", {
+            rules: [
+              {
+                type: 'empty',
+                prompt:  '{name} <g:message code="validation.needsToBeFilledOut"/>'
+              }
+            ]
+          });
+          $("#create_address").form("add rule", "zipcode", {
+            rules: [
+              {
+                type: 'empty',
+                prompt:  '{name} <g:message code="validation.needsToBeFilledOut"/>'
+              }
+            ]
+          });
+          $("#create_address").form("add rule", "city", {
+            rules: [
+              {
+                type: 'empty',
+                prompt:  '{name} <g:message code="validation.needsToBeFilledOut"/>'
+              }
+            ]
+          });
+          // removing multiple at once from Postanschrift
+          $("#create_address").form("remove fields", ["pob", "pobZipcode", "pobCity"]);
         }
-      ]
-    },
-    type: {
-      identifier: "type",
-      rules: [
-        {
-          type: "minCount[1]",
-          prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
+
+        function removePhysicalAddress() {
+            // adding multiple at once to Postanschrift
+          $("#create_address").form("add rule", "pob", {
+            rules: [
+              {
+                type: 'empty',
+                prompt:  '{name} <g:message code="validation.needsToBeFilledOut"/>'
+              }
+            ]
+          });
+          $("#create_address").form("add rule", "pobZipcode", {
+            rules: [
+              {
+                type: 'empty',
+                prompt:  '{name} <g:message code="validation.needsToBeFilledOut"/>'
+              }
+            ]
+          });
+          $("#create_address").form("add rule", "pobCity", {
+            rules: [
+              {
+                type: 'empty',
+                prompt:  '{name} <g:message code="validation.needsToBeFilledOut"/>'
+              }
+            ]
+          });
+          // removing multiple at once from Hausanschrift
+          $("#create_address").form("remove fields", [
+            "street_1",
+            "street_2",
+            "zipcode",
+            "city"
+          ]);
         }
-      ]
-    },
-    name: {
-      identifier: "name",
-      rules: [
-        {
-          type: "empty",
-          prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
+
+        $("#buttonPhysicalAddress").click(function () {
+          $(this).addClass("active");
+          $("#buttonPostalAddress").removeClass("active");
+          deleteInputs(postalAddressInputs);
+          $("#postalAddress").addClass("disabled");
+          $("#physicalAddress").removeClass("disabled");
+          removePostalAddress()
+        });
+
+        $("#buttonPostalAddress").click(function () {
+          $(this).addClass("active");
+          $("#buttonPhysicalAddress").removeClass("active");
+          deleteInputs(physicalAddressInputs);
+          $("#postalAddress").removeClass("disabled");
+          $("#physicalAddress").addClass("disabled");
+          removePhysicalAddress()
+        });
+
+        let postalAddressInputs = [
+          $("#type"),
+          $("#pob"),
+          $("#pobZipcode"),
+          $("#pobCity")
+        ];
+        let physicalAddressInputs = [
+          $("#street_1"),
+          $("#street_2"),
+          $("#zipcode"),
+          $("#city")
+        ];
+
+        function deleteInputs(elems) {
+          for (let i = 0; i < elems.length; i++) {
+            $(elems[i]).val(null);
+          }
         }
-      ]
-    },
-    /* physicalAddress  */
-    street_1: {
-      identifier: "street_1",
-      rules: [
-        {
-          type: "empty",
-          prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
-        }
-      ]
-    },
-    street_2: {
-      identifier: "street_2",
-      rules: [
-        {
-          type: "empty",
-          prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
-        }
-      ]
-    },
-    zipcode: {
-      identifier: "zipcode",
-      rules: [
-        {
-          type: "empty",
-          prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
-        }
-      ]
-    },
-    city: {
-      identifier: "city",
-      rules: [
-        {
-          type: "empty",
-          prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
-        }
-      ]
-    }
-  }
-});
-$(".green.button").on("click", function () {
-  if ($("#buttonPhysicalAddress").hasClass("active")) {
-    console.log("buttonPhysicalAddress .hasClass active");
-    removePostalAddress();
-  }
-  if ($("#buttonPostalAddress").hasClass("active")) {
-    console.log("buttonPostalAddress .hasClass active");
-    removePhysicalAddress();
-  }
-});
-
-/* Alternating address  */
-function removePostalAddress() {
-
-    // adding multiple at once from Hausanschrift
-  console.log('adding multiple at once from Hausanschrift');
-  console.log('removing multiple at once from Postanschrift');
-  $("#create_address").form("add rule", "street_1", {
-    rules: [
-      {
-        type: "empty",
-        prompt: "Bitte Straße eingeben"
-      }
-    ]
-  });
-  $("#create_address").form("add rule", "street_2", {
-    rules: [
-      {
-        type: "empty",
-        prompt: "Bitte Nummer eingeben"
-      }
-    ]
-  });
-  $("#create_address").form("add rule", "zipcode", {
-    rules: [
-      {
-        type: "empty",
-        prompt: "Bitte zipcode eingeben"
-      }
-    ]
-  });
-  $("#create_address").form("add rule", "city", {
-    rules: [
-      {
-        type: "empty",
-        prompt: "Bitte city eingeben"
-      }
-    ]
-  });
-  // removing multiple at once from Postanschrift
-  $("#create_address").form("remove fields", ["pob", "pobZipcode", "pobCity"]);
-}
-
-function removePhysicalAddress() {
-    // adding multiple at once to Postanschrift
-
-  console.log('adding multiple at once to Postanschrift');
-  console.log('removing multiple at once from Hausanschrift');
-  $("#create_address").form("add rule", "pob", {
-    rules: [
-      {
-        type: "empty",
-        prompt: "Bitte pob eingeben"
-      }
-    ]
-  });
-  $("#create_address").form("add rule", "pobZipcode", {
-    rules: [
-      {
-        type: "empty",
-        prompt: "Bitte pobZipcode eingeben"
-      }
-    ]
-  });
-  $("#create_address").form("add rule", "pobCity", {
-    rules: [
-      {
-        type: "empty",
-        prompt: "Bitte pobCity eingeben"
-      }
-    ]
-  });
-  // removing multiple at once from Hausanschrift
-  $("#create_address").form("remove fields", [
-    "street_1",
-    "street_2",
-    "zipcode",
-    "city"
-  ]);
-}
-
-$("#buttonPhysicalAddress").click(function () {
-  $(this).addClass("active");
-  $("#buttonPostalAddress").removeClass("active");
-  deleteInputs(postalAddressInputs);
-  $("#postalAddress").addClass("disabled");
-  $("#physicalAddress").removeClass("disabled");
-  removePostalAddress()
-});
-
-$("#buttonPostalAddress").click(function () {
-  $(this).addClass("active");
-  $("#buttonPhysicalAddress").removeClass("active");
-  deleteInputs(physicalAddressInputs);
-  $("#postalAddress").removeClass("disabled");
-  $("#physicalAddress").addClass("disabled");
-  removePhysicalAddress()
-});
-
-let postalAddressInputs = [
-  $("#type"),
-  $("#pob"),
-  $("#pobZipcode"),
-  $("#pobCity")
-];
-let physicalAddressInputs = [
-  $("#street_1"),
-  $("#street_2"),
-  $("#zipcode"),
-  $("#city")
-];
-
-function deleteInputs(elems) {
-  for (let i = 0; i < elems.length; i++) {
-    $(elems[i]).val(null);
-  }
-}
     %{--
 
             JSPC.app.updateDropdown = function() {
