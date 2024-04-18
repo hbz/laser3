@@ -42,11 +42,11 @@
 
 
             <div class="five wide required field ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">
-                <label for="type">
+                <label for="type.id">
                     ${RefdataCategory.getByDesc(RDConstants.ADDRESS_TYPE).getI10n('desc')}
                 </label>
                 %{--<ui:select class="ui dropdown multiple" id="type" name="type.id"--}%
-                <ui:select class="ui dropdown search selection" id="type" name="type.id"
+                <ui:select class="ui dropdown search selection"  name="type.id"
                               from="${Address.getAllRefdataValues()}"
                               optionKey="id"
                               optionValue="value"
@@ -202,79 +202,80 @@
 
     <g:set var="languageSuffix" value="${LocaleUtils.getCurrentLang()}"/>
     <laser:script file="${this.getGroovyPageFileName()}">
-
         /* Pflichtfelder wenn "Anlegen" geklickt wird*/
-        $(".green.button").on("click", function () {
-          $("#create_address").form({
-            //on: "blur",
-            inline: true,
-            fields: {
-              org: {
-                identifier: "org",
-                rules: [
-                  {
-                    type: "empty",
-                    prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
-          }
-        ]
-      },
-      type: {
-        identifier: "type",
-        rules: [
-          {
-            type: "minCount[1]",
-            prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
-          }
-        ]
-      },
-      name: {
-        identifier: "name",
-        rules: [
-          {
-            type: "empty",
-            prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
-          }
-        ]
-      },
-      /* physicalAddress  */
-      street_1: {
-        identifier: "street_1",
-        rules: [
-          {
-            type: "empty",
-            prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
-          }
-        ]
-      },
-      street_2: {
-        identifier: "street_2",
-        rules: [
-          {
-            type: "empty",
-            prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
-          }
-        ]
-      },
-      zipcode: {
-        identifier: "zipcode",
-        rules: [
-          {
-            type: "empty",
-            prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
-          }
-        ]
-      },
-      city: {
-        identifier: "city",
-        rules: [
-          {
-            type: "empty",
-            prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
-          }
-        ]
-      }
+
+        $("#create_address").form({
+          on: "submit",
+          inline: true,
+          fields: {
+
+    org: {
+      identifier: "org",
+      rules: [
+        {
+          type: "empty",
+          prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
+        }
+      ]
+    },
+    type: {
+      identifier: "type",
+      rules: [
+        {
+          type: "minCount[1]",
+          prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
+        }
+      ]
+    },
+    name: {
+      identifier: "name",
+      rules: [
+        {
+          type: "empty",
+          prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
+        }
+      ]
+    },
+    /* physicalAddress  */
+    street_1: {
+      identifier: "street_1",
+      rules: [
+        {
+          type: "empty",
+          prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
+        }
+      ]
+    },
+    street_2: {
+      identifier: "street_2",
+      rules: [
+        {
+          type: "empty",
+          prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
+        }
+      ]
+    },
+    zipcode: {
+      identifier: "zipcode",
+      rules: [
+        {
+          type: "empty",
+          prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
+        }
+      ]
+    },
+    city: {
+      identifier: "city",
+      rules: [
+        {
+          type: "empty",
+          prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
+        }
+      ]
     }
-  });
+  }
+});
+$(".green.button").on("click", function () {
   if ($("#buttonPhysicalAddress").hasClass("active")) {
     console.log("buttonPhysicalAddress .hasClass active");
     removePostalAddress();
