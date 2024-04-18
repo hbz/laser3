@@ -191,5 +191,9 @@ legend {
     width: 50%;
 }
 #physicalAddress {
-    border-right: 2px solid white
+    border-right: 2px solid white;
+    background-color: @laAlternativeBackground;
+}
+#postalAddress {
+    background-color: @laAlternativeBackground;
 }

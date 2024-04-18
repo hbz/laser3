@@ -50811,6 +50811,11 @@ legend {
 
 #physicalAddress {
   border-right: 2px solid white;
+  background-color: #e6dee2;
+}
+
+#postalAddress {
+  background-color: #e6dee2;
 }
 /*!
  * # Fomantic-UI 2.9.3 - Grid
