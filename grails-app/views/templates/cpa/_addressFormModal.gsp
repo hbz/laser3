@@ -205,14 +205,6 @@
 
         /* Pflichtfelder wenn "Anlegen" geklickt wird*/
         $(".green.button").on("click", function () {
-
-          if($("#buttonPhysicalAddress").hasClass('active')){
-            removePostalAddress()
-          }
-          if($("#buttonPostalAddress").hasClass('active')){
-            console.log("buttonPostalAddress .hasClass active");
-            removePhysicalAddress();
-          }
           $("#create_address").form({
             //on: "blur",
             inline: true,
@@ -230,7 +222,7 @@
         identifier: "type",
         rules: [
           {
-            type   : 'minCount[1]',
+            type: "minCount[1]",
             prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
           }
         ]
@@ -245,7 +237,7 @@
         ]
       },
       /* physicalAddress  */
-     /* street_1: {
+      street_1: {
         identifier: "street_1",
         rules: [
           {
@@ -280,9 +272,17 @@
             prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
           }
         ]
-      } */
+      }
     }
   });
+  if ($("#buttonPhysicalAddress").hasClass("active")) {
+    console.log("buttonPhysicalAddress .hasClass active");
+    removePostalAddress();
+  }
+  if ($("#buttonPostalAddress").hasClass("active")) {
+    console.log("buttonPostalAddress .hasClass active");
+    removePhysicalAddress();
+  }
 });
 
 /* Alternating address  */
