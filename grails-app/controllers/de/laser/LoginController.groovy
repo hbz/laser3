@@ -226,7 +226,7 @@ class LoginController {
         boolean valid = false
 
         UrlMappingsHolder urlMappingsHolder = BeanStore.getUrlMappingsHolder()
-        UrlMappingInfo mappingInfo = urlMappingsHolder.matchAll(savedRequest.getRequestURI()).first()
+        UrlMappingInfo mappingInfo = urlMappingsHolder.matchAll(savedRequest.getRequestURI())?.first()
 
         if (mappingInfo) {
             GrailsClass controller = mappingInfo.hasProperty('controllerClass') ? mappingInfo.controllerClass :

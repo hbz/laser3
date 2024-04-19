@@ -93,7 +93,7 @@
                         <div class="ui content">
                             <h2 class="ui dividing orange header">
                                 <i class="exclamation triangle small icon"></i>
-                                <div class="content">${message(code: 'default.adminsOnly.label')}</div>
+                                <span class="content">${message(code: 'default.adminsOnly.label')}</span>
                             </h2>
                             <div class="ui form">
 %{--                                <div class="ui field">--}%
@@ -134,11 +134,15 @@
 %{--                                </div>--}%
                                 <div class="ui field">
                                     <label>${message(code:'user.lastLogin.label')}</label>
-                                    <p>${user.lastLogin ? DateUtils.getLocalizedSDF_noZ().format(user.lastLogin): message(code: 'default.unknown')}</p>
+                                    <p>${user.lastLogin ? DateUtils.getLocalizedSDF_noZ().format(user.lastLogin) : message(code: 'default.unknown')}</p>
                                 </div>
                                 <div class="ui field">
                                     <label>${message(code:'user.invalidLoginAttempts.label')}</label>
                                     <p>${user.invalidLoginAttempts ?: 0}</p>
+                                </div>
+                                <div class="ui field">
+                                    <label>${message(code:'default.lastUpdated.label')}</label>
+                                    <p>${DateUtils.getLocalizedSDF_noZ().format(user.lastUpdated)}</p>
                                 </div>
                             </div><!-- .form -->
                         </div><!-- .content -->

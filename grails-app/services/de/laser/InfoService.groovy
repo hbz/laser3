@@ -113,7 +113,7 @@ class InfoService {
                                     join por.sub sub
                                     where sub.id in (:subIdList)
                                     and por.roleType in (:porTypes)
-                                    order by por.org.sortname, por.org.name, sub.name, sub.startDate, sub.endDate asc '''
+                                    order by por.org.sortname, por.org.name, sub.name, sub.startDate, sub.endDate, sub.referenceYear asc '''
 
         Map providerParams = [
                 subIdList: subStruct.collect { it[1] },
@@ -278,7 +278,7 @@ class InfoService {
                                     join por.sub sub
                                     where sub.id in (:subIdList)
                                     and por.roleType in (:porTypes)
-                                    order by por.org.sortname, por.org.name, sub.name, sub.startDate, sub.endDate asc '''
+                                    order by por.org.sortname, por.org.name, sub.name, sub.startDate, sub.endDate, sub.referenceYear asc '''
 
         Map providerParams = [
                 subIdList: subStruct.collect { it[1] },
