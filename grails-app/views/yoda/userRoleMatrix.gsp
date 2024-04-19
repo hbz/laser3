@@ -29,7 +29,7 @@
                                         ${message(code:'user.enabled.label')}
                                     </g:if>
                                     <g:else>
-                                        ${message(code:'user.disabled.text')}
+                                        ${message(code:'user.accountDisabled.label')}
                                     </g:else>
                                 </td>
 %{--                                <td>--}%

@@ -99,7 +99,8 @@ class UserController {
                 filterableStatus: [
                     locked:   "${message(code:'user.accountLocked.label')}",
                     expired:  "${message(code:'user.accountExpired.label')}",
-                    disabled: "${message(code:'user.disabled.label')}"
+                    disabled: "${message(code:'user.accountDisabled.label')}",
+                    enabled:  "${message(code:'user.accountEnabled.label')}"
                 ],
                 orgField: true,
                 availableComboOrgs: availableComboOrgs
