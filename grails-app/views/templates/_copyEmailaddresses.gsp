@@ -1,5 +1,5 @@
 <!-- _copyEmailAddresses.gsp -->
-<%@ page import="de.laser.PersonRole; de.laser.Contact; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.PersonRole; de.laser.Contact; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Vendor" %>
 <laser:serviceInjection />
 
 <g:set var="modalID" value="${modalID ?: 'copyEmailaddresses_ajaxModal'}"/>
@@ -97,10 +97,15 @@
             var isPublic = $("#publicContacts").is(":checked");
             $(".address").text("");
             var selectedRoleTypIds = $("#prsFunctionMultiSelect").val().concat( $("#prsPositionMultiSelect").val() );
-
+            <g:if test="${instanceType == Vendor.class.name}">
+                let instanceIdList = '&vendorIdList=' + JSPC.app.jsonOrgIdList;
+            </g:if>
+            <g:else>
+                let instanceIdList = '&orgIdList=' + JSPC.app.jsonOrgIdList;
+            </g:else>
             $.ajax({
                 url: '<g:createLink controller="ajaxJson" action="getEmailAddresses"/>'
-                + '?isPrivate=' + isPrivate + '&isPublic=' + isPublic + '&selectedRoleTypIds=' + selectedRoleTypIds + '&orgIdList=' + JSPC.app.jsonOrgIdList,
+                + '?isPrivate=' + isPrivate + '&isPublic=' + isPublic + '&selectedRoleTypIds=' + selectedRoleTypIds + instanceIdList,
                 success: function (data) {
                     //$("#emailAddressesTextArea").val(data.join('; '));
                     $.each(data, function (i, e) {

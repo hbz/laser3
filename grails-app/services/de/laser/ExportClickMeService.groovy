@@ -3,7 +3,6 @@ package de.laser
 import de.laser.base.AbstractCoverage
 import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
-import de.laser.interfaces.CalculatedType
 import de.laser.properties.LicenseProperty
 import de.laser.remote.ApiSource
 import de.laser.storage.PropertyStore
@@ -1365,7 +1364,7 @@ class ExportClickMeService {
     static Map<String, Object> EXPORT_VENDOR_CONFIG = [
             vendor : [
                     label: 'Vendor',
-                    message: 'default.agency.singular',
+                    message: 'default.agency.label',
                     fields: [
                             'vendor.name'                  : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
                             'vendor.sortname'              : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
@@ -2983,8 +2982,8 @@ class ExportClickMeService {
         contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
         addressTypes.addAll(RefdataCategory.getAllRefdataValues(RDConstants.ADDRESS_TYPE))
 
-        EXPORT_PROVIDER_CONFIG.keySet().each {
-            EXPORT_PROVIDER_CONFIG.get(it).fields.each {
+        EXPORT_VENDOR_CONFIG.keySet().each {
+            EXPORT_VENDOR_CONFIG.get(it).fields.each {
                 exportFields.put(it.key, it.value)
             }
         }
@@ -4123,14 +4122,14 @@ class ExportClickMeService {
 
     /**
      * Exports the given fields from the given cost items
-     * @param result the vendor set to export, including LAS:eR and we:kb data
+     * @param result the {@link Vendor} set to export
      * @param selectedFields the fields which should appear in the export
      * @param format the {@link FORMAT} to be exported
      * @param contactSources which type of contacts should be taken? (public or private)
      * @param configMap filter parameters for further queries
      * @return the output in the desired format
      */
-    def exportVendors(Set<Map> result, Map<String, Object> selectedFields, FORMAT format, Set<String> contactSources = [], Map<String, Object> configMap = [:]) {
+    def exportVendors(Set<Vendor> result, Map<String, Object> selectedFields, FORMAT format, Set<String> contactSources = []) {
         Locale locale = LocaleUtils.getCurrentLocale()
 
         String sheetTitle = messageSource.getMessage('default.vendor.export.label', null, locale)
@@ -4146,8 +4145,8 @@ class ExportClickMeService {
         List titles = _exportTitles(selectedExportFields, locale, null, null, contactSources, null, format)
 
         List exportData = []
-        result.each { Map vendor ->
-            _setVendorRow(vendor, selectedExportFields, exportData, format, contactSources, configMap)
+        result.each { Vendor vendor ->
+            _setVendorRow(vendor, selectedExportFields, exportData, format, contactSources)
         }
 
         Map sheetData = [:]
@@ -5504,17 +5503,18 @@ class ExportClickMeService {
 
     /**
      * Fills a row for the vendor export
-     * @param result the vendor to export; a {@link Map} combined of we:kb and LAS:eR fields
+     * @param result the {@link Vendor} record to export
      * @param selectedFields the fields which should appear
      * @param exportData the list containing the export rows
      * @param format the {@link FORMAT} to be exported
      * @param contactSources which type of contacts should be considered (public or private)?
      * @param configMap filter parameters for further queries
      */
-    //continue here: migrate from provider/org to vendor, implement the we:kb reading!
-    private void _setVendorRow(Map result, Map<String, Object> selectedFields, List exportData, FORMAT format, Set<String> contactSources = [], Map<String, Object> configMap = [:]){
+    //continue here: migrate from provider/org to vendor
+    private void _setVendorRow(Vendor result, Map<String, Object> selectedFields, List exportData, FORMAT format, Set<String> contactSources = []){
         List row = []
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+        Org context = contextService.getOrg()
         selectedFields.keySet().each { String fieldKey ->
             Map mapSelecetedFields = selectedFields.get(fieldKey)
             String field = mapSelecetedFields.field
@@ -5522,41 +5522,70 @@ class ExportClickMeService {
                 if (fieldKey.contains('Contact.')) {
                     if(contactSources) {
                         contactSources.findAll{ String source -> source.contains('Contact') }.each { String contactSwitch ->
-                            _setOrgFurtherInformation(result, row, fieldKey, format, null, contactSwitch)
+                            _setVendorFurtherInformation(result, row, fieldKey, format, contactSwitch)
                         }
                     }
-                    else _setOrgFurtherInformation(result, row, fieldKey, format, null, 'publicContact')
+                    else _setVendorFurtherInformation(result, row, fieldKey, format, 'publicContact')
                 }
                 else if (fieldKey.contains('Address.')) {
                     if(contactSources) {
                         contactSources.findAll{ String source -> source.contains('Address') }.each { String contactSwitch ->
-                            _setOrgFurtherInformation(result, row, fieldKey, format, null, contactSwitch)
+                            _setVendorFurtherInformation(result, row, fieldKey, format, contactSwitch)
                         }
                     }
-                    else _setOrgFurtherInformation(result, row, fieldKey, format, null, 'publicAddress')
-                }
-                else if (fieldKey == 'vendor.subscriptions') {
-                    def subStatus = configMap.subStatus
-                    List subscriptionQueryParams = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: result, actionName: configMap.action, status: subStatus ?: null])
-                    List nameOfSubscriptions = Subscription.executeQuery("select s.name " + subscriptionQueryParams[0], subscriptionQueryParams[1])
-                    row.add(createTableCell(format, nameOfSubscriptions.join('; ')))
+                    else _setVendorFurtherInformation(result, row, fieldKey, format, 'publicAddress')
                 }
                 else {
-                    //we:kb!
-                    def fieldValue = field && result[field] != null ? result[field] : ' '
+                    switch(fieldKey) {
+                        case 'vendor.electronicBillings':
+                            row.add(createTableCell(format, result.electronicBillings.collect { ElectronicBilling eb -> eb.invoicingFormat.getI10n('value') }.join('; ')))
+                            break
+                        case 'vendor.electronicDeliveryDelays':
+                            row.add(createTableCell(format, result.electronicDeliveryDelays.collect { ElectronicDeliveryDelayNotification eddn -> eddn.delayNotification.getI10n('value') }.join('; ')))
+                            break
+                        case 'vendor.invoiceDispatchs':
+                            row.add(createTableCell(format, result.invoiceDispatchs.collect { InvoiceDispatch id -> id.invoiceDispatch.getI10n('value') }.join('; ')))
+                            break
+                        case 'vendor.licenses':
+                            String consortiaFilter = ''
+                            if(context.isCustomerType_Consortium())
+                                consortiaFilter = ' and l.instanceOf = null'
+                            List nameOfLicenses = Subscription.executeQuery('select l.reference from VendorRole vr join vr.license l, OrgRole oo where vr.license = oo.lic and vr.vendor = :vendor and l.status = :current and oo.org = :context'+consortiaFilter, [vendor: result, current: RDStore.LICENSE_CURRENT, context: context])
+                            row.add(createTableCell(format, nameOfLicenses.join('; ')))
+                            break
+                        case 'vendor.packages':
+                            row.add(createTableCell(format, result.packages.pkg.name.join('; ')))
+                            break
+                        case 'vendor.platforms':
+                            row.add(createTableCell(format, result.packages.pkg.nominalPlatform.name.join('; ')))
+                            break
+                        case 'vendor.subscriptions':
+                            String consortiaFilter = ''
+                            if(context.isCustomerType_Consortium())
+                                consortiaFilter = ' and s.instanceOf = null'
+                            List nameOfSubscriptions = Subscription.executeQuery('select s.name from VendorRole vr join vr.subscription s, OrgRole oo where vr.subscription = oo.sub and vr.vendor = :vendor and s.status = :current and oo.org = :context'+consortiaFilter, [vendor: result, current: RDStore.SUBSCRIPTION_CURRENT, context: context])
+                            row.add(createTableCell(format, nameOfSubscriptions.join('; ')))
+                            break
+                        case 'vendor.supportedLibrarySystems':
+                            row.add(createTableCell(format, result.supportedLibrarySystems.collect { LibrarySystem ls -> ls.librarySystem.getI10n('value') }.join('; ')))
+                            break
+                        default:
+                            def fieldValue = field && result[field] != null ? result[field] : ' '
 
-                    if(fieldValue instanceof RefdataValue){
-                        fieldValue = fieldValue.getI10n('value')
-                    }
+                            if(fieldValue instanceof RefdataValue){
+                                fieldValue = fieldValue.getI10n('value')
+                            }
 
-                    if(fieldValue instanceof Boolean){
-                        fieldValue = (fieldValue == true ? RDStore.YN_YES.getI10n('value') : (fieldValue == false ? RDStore.YN_NO.getI10n('value') : ''))
-                    }
+                            if(fieldValue instanceof Boolean){
+                                fieldValue = (fieldValue == true ? RDStore.YN_YES.getI10n('value') : (fieldValue == false ? RDStore.YN_NO.getI10n('value') : ''))
+                            }
 
-                    if(fieldValue instanceof Date){
-                        fieldValue = sdf.format(fieldValue)
+                            if(fieldValue instanceof Date){
+                                fieldValue = sdf.format(fieldValue)
+                            }
+                            row.add(createTableCell(format, fieldValue))
+                            break
                     }
-                    row.add(createTableCell(format, fieldValue))
                 }
             }
         }
@@ -6439,7 +6468,7 @@ class ExportClickMeService {
     }
 
 
-    private void _setVendorFurtherInformation(Map vendor, List row, String fieldKey, FORMAT format, String contactSwitch = 'publicContact'){
+    private void _setVendorFurtherInformation(Vendor vendor, List row, String fieldKey, FORMAT format, String contactSwitch = 'publicContact'){
         boolean isPublic = contactSwitch == 'publicContact'
         String tenantFilter = '', addressTenantFilter, contactTypeFilter = ''
         if (fieldKey.contains('Contact.')) {

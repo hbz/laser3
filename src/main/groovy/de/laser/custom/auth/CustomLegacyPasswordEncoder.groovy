@@ -1,4 +1,4 @@
-package de.laser.custom
+package de.laser.custom.auth
 
 import org.springframework.security.crypto.codec.Hex
 import org.springframework.security.crypto.codec.Utf8

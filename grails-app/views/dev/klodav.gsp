@@ -32,6 +32,14 @@
     </div>
 </div>
 
+<pre>
+    springSecurity.errors.login.expired             ${message(code:'springSecurity.errors.login.expired')}
+    springSecurity.errors.login.passwordExpired     ${message(code:'springSecurity.errors.login.passwordExpired')}
+    springSecurity.errors.login.locked              ${message(code:'springSecurity.errors.login.locked')}
+    springSecurity.errors.login.disabled            ${message(code:'springSecurity.errors.login.disabled')}
+    springSecurity.errors.login.fail                ${message(code:'springSecurity.errors.login.fail')}
+</pre>
+
 <div class="ui segment">
     <p class="ui header">
         <i class="icon large users"></i> roles

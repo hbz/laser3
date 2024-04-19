@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.convenience.Marker; de.laser.Org;de.laser.Package;de.laser.Platform" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.convenience.Marker; de.laser.Org;de.laser.Vendor;de.laser.Package;de.laser.Platform" %>
 
 <laser:htmlStart message="menu.my.markers" serviceInjection="true"/>
 
@@ -42,8 +42,11 @@
                     <th class="one wide">${message(code:'sidewide.number')}</th>
                     <th class="nine wide">
                         <g:if test="${objCat.value.first() instanceof Org}">
-                            ${message(code:'default.provider.label')} / ${message(code:'default.agency.label')}
+                            ${message(code:'default.provider.label')}
                         </g:if>
+                        <g:elseif test="${objCat.value.first() instanceof Vendor}">
+                            ${message(code:'vendor')}
+                        </g:elseif>
                         <g:elseif test="${objCat.value.first() instanceof Package}">
                             ${message(code:'package.label')}
                         </g:elseif>
@@ -80,6 +83,22 @@
                                 <ui:cbItemMarkerAction org="${obj}" simple="true"/>
                             </td>
                         </g:if>
+                        <g:elseif test="${obj instanceof Vendor}">
+                            <td>
+                                <g:link controller="vendor" action="show" id="${obj.id}" target="_blank">${obj.name}</g:link>
+                            </td>
+                            <td>
+                                <i class="icon grey shipping fast"></i> ${message(code:'vendor')}
+                            </td>
+                            <td class="center aligned">
+                                <g:if test="${obj.id in myXMap.currentVendorIdList}">
+                                    <ui:myXIcon tooltip="${message(code: 'menu.my.vendors')}" color="yellow"/>
+                                </g:if>
+                            </td>
+                            <td>
+                                <ui:cbItemMarkerAction vendor="${obj}" simple="true"/>
+                            </td>
+                        </g:elseif>
                         <g:elseif test="${obj instanceof Package}">
                             <td>
                                 <g:link controller="package" action="show" id="${obj.id}" target="_blank">${obj.name}</g:link>

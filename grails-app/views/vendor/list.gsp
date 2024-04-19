@@ -8,14 +8,11 @@
         </ui:breadcrumbs>
 
     <ui:controlButtons>
-        <%--
-        to be implemented
         <ui:exportDropdown>
             <ui:exportDropdownItem>
                 <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
             </ui:exportDropdownItem>
         </ui:exportDropdown>
-        --%>
     </ui:controlButtons>
 
         <ui:h1HeaderWithIcon message="menu.public.all_vendors" total="${vendorListTotal}" floated="true" />
@@ -50,7 +47,5 @@
         </div>
         <ui:paginate total="${vendorListTotal}" params="${params}" max="${max}" offset="${offset}" />
 
-        <%-- to be implemented
-        <laser:render template="/myInstitution/export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'provider', contactSwitch: true]" />
-        --%>
+        <laser:render template="/myInstitution/export/individuallyExportModalVendors" model="[modalID: 'individuallyExportModal', exportFileName: message(code: 'export.all.vendors'), contactSwitch: true]" />
 <laser:htmlEnd />

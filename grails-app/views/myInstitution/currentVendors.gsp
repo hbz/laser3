@@ -1,12 +1,10 @@
-<%@ page import="de.laser.RefdataValue" %>
+<%@ page import="de.laser.RefdataValue; de.laser.Vendor" %>
 
 <laser:htmlStart message="menu.my.vendors" />
 
         <ui:breadcrumbs>
             <ui:crumb message="menu.my.vendors" class="active" />
         </ui:breadcrumbs>
-        <%--
-        to be implemented
         <ui:controlButtons>
             <ui:exportDropdown>
                 <ui:exportDropdownItem>
@@ -18,9 +16,8 @@
             </ui:actionsDropdown>
 
         </ui:controlButtons>
-        --%>
 
-    <ui:h1HeaderWithIcon message="menu.my.providers" total="${vendorListTotal}" floated="true" />
+    <ui:h1HeaderWithIcon message="menu.my.vendors" total="${vendorListTotal}" floated="true" />
 
     <ui:messages data="${flash}" />
 
@@ -52,10 +49,7 @@
         </g:else>
     </div>
 
-    <%--
-    to be implemented
-    <laser:render template="/templates/copyEmailaddresses" model="[vendorList: vendorList]"/>
-    --%>
+    <laser:render template="/templates/copyEmailaddresses" model="[orgList: vendorList, instanceType: Vendor.class.name]"/>
 
     <ui:paginate total="${vendorListTotal}" params="${params}" max="${max}" offset="${offset}" />
 
@@ -63,9 +57,6 @@
         <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
     </ui:debugInfo>
 
-    <%--
-    to be implemented
-    <laser:render template="export/individuallyExportModalVendors" model="[modalID: 'individuallyExportModal', contactSwitch: true]" />
-    --%>
+    <laser:render template="export/individuallyExportModalVendors" model="[modalID: 'individuallyExportModal', exportFileName: message(code: 'export.my.currentVendors'), contactSwitch: true]" />
 
 <laser:htmlEnd />
