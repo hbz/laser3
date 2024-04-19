@@ -94,7 +94,16 @@ class UserController {
         String query = "select new map(concat('${Org.class.name}:',c.fromOrg.id) as oid,c.fromOrg.sortname as name) from Combo c where c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.sortname asc"
         availableComboOrgs.addAll(Org.executeQuery(query, [ctxOrg: result.orgInstance, type: RDStore.COMBO_TYPE_CONSORTIUM]))
         prf.setBenchmark('after combo orgs')
-        result.filterConfig = [filterableRoles:Role.findAllByRoleTypeInList(['user']), orgField: true, availableComboOrgs: availableComboOrgs]
+        result.filterConfig = [
+                filterableRoles: Role.findAllByRoleTypeInList(['user']),
+                filterableStatus: [
+                    locked:   "${message(code:'user.accountLocked.label')}",
+                    expired:  "${message(code:'user.accountExpired.label')}",
+                    disabled: "${message(code:'user.disabled.label')}"
+                ],
+                orgField: true,
+                availableComboOrgs: availableComboOrgs
+        ]
 
         result.tmplConfig = [
                 editable:result.editable,
@@ -102,7 +111,7 @@ class UserController {
                 editLink: 'edit',
                 deleteLink: 'delete',
                 users: result.users,
-                showUserMeta: true,
+                showUserStatus: true,
                 showAllAffiliations: true
         ]
         result.benchMark = prf.stopBenchmark()

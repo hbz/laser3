@@ -337,7 +337,7 @@ class SubscriptionsQueryService {
             if(!(params.sort in ["provider", "vendor"]))
                 base_qry += (params.sort=="s.name") ? " order by LOWER(${params.sort}) ${params.order}":" order by ${params.sort} ${params.order}"
         } else if(!params.containsKey('count')) {
-            base_qry += " order by lower(trim(s.name)) asc, s.startDate, s.endDate, s.instanceOf desc"
+            base_qry += " order by lower(trim(s.name)) asc, s.startDate, s.endDate, s.referenceYear, s.instanceOf desc"
             if(joinQuery)
                 base_qry += ", so.org.sortname asc"
         }

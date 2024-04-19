@@ -80,8 +80,8 @@
 
             <g:set var="isSubscriptionViewValid" value="${!(actionName.startsWith('copy') || actionName in ['renewEntitlementsWithSurvey', 'renewSubscription', 'emptySubscription'])}" />
 
-            <g:if test="${controllerName=='subscription' && isSubscriptionViewValid}">
-                <g:if test="${editable && subscription && contextService.getOrg().isCustomerType_Consortium() && subscription._getCalculatedType() in [Subscription.TYPE_CONSORTIAL]}">
+            <g:if test="${controllerName=='subscription' && subscription && isSubscriptionViewValid}">
+                <g:if test="${editable && contextService.getOrg().isCustomerType_Consortium() && subscription._getCalculatedType() in [Subscription.TYPE_CONSORTIAL]}">
                     <div class="item la-cb-action">
                         <button class="ui icon button la-toggle-ui la-popup-tooltip la-delay" id="subscriptionTransfer-toggle"
                                 data-content="${message(code:'statusbar.showSubscriptionTransfer.tooltip')}" data-position="bottom left">
@@ -93,8 +93,8 @@
 
             %{-- subscription members --}%
 
-            <g:if test="${controllerName == 'subscription' && isSubscriptionViewValid}">
-                <g:if test="${editable && subscription && contextService.getOrg().isCustomerType_Consortium() && subscription.getConsortia()?.id == contextService.getOrg().id}">
+            <g:if test="${controllerName == 'subscription' && subscription && isSubscriptionViewValid}">
+                <g:if test="${editable && contextService.getOrg().isCustomerType_Consortium() && subscription.getConsortia()?.id == contextService.getOrg().id}">
                     <div class="item la-cb-action">
 %{--                        <button class="ui icon button la-toggle-ui la-popup-tooltip la-delay" id="subscriptionMembers-toggle"--}%
 %{--                                data-content="${message(code:'consortium.member.plural')} ${message(code:'default.and')} ${message(code:'subscription.member.plural')}" data-position="bottom left">--}%
