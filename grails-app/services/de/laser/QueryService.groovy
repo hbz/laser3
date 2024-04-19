@@ -205,6 +205,18 @@ class QueryService {
     }
 
     /**
+     * Retrieves due public vendor properties
+     * @param contextOrg the institution whose properties should be accessed
+     * @param fromDateValue from when should objects being retrieved?
+     * @param toDateValue until when should objects being retrieved?
+     * @return a list of upcoming due organisation properties
+     */
+    List<OrgProperty> getDueVendorPrivateProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue) {
+        Map query = _getQuery(VendorProperty.class, contextOrg, fromDateValue, toDateValue, false)
+        VendorProperty.executeQuery(query.query, query.queryParams)
+    }
+
+    /**
      * Retrieves due private subscription properties
      * @param contextOrg the institution whose properties should be accessed
      * @param fromDateValue from when should objects being retrieved?
