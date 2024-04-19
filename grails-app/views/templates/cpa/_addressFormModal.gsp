@@ -82,7 +82,7 @@
         </div>
         <!-- Alternating address Buttons END-->
         <!-- Alternating address Table START-->
-        <div class="ui internally celled grid">
+        <div class="ui internally celled grid la-margin-bottom-1em">
             <div class="row">
                 <!-- Hausanschrift START -->
                 <div class="ui  segment eight wide column" id="physicalAddress">
@@ -168,9 +168,9 @@
         </div>
         <!-- Alternating address Table END-->
 
-        <div class="field">
+        <div class="field ">
             <div class="two fields">
-                <div class="field seven wide ${hasErrors(bean: addressInstance, field: 'country',
+                <div class="field eight wide ${hasErrors(bean: addressInstance, field: 'country',
                         'error')}">
                     <label for="country">
                         <g:message code="address.country.label" />
@@ -183,7 +183,7 @@
                                   noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                 </div>
 
-                <div class="field nine wide ${hasErrors(bean: addressInstance, field: 'region',
+                <div class="field eight wide ${hasErrors(bean: addressInstance, field: 'region',
                         'error')}">
                     <label for="region">
                         <g:message code="address.region.label" />
