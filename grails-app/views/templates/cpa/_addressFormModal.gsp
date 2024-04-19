@@ -199,8 +199,7 @@
 
     <g:set var="languageSuffix" value="${LocaleUtils.getCurrentLang()}"/>
     <laser:script file="${this.getGroovyPageFileName()}">
-        /* Pflichtfelder wenn "Anlegen" geklickt wird*/
-
+        /* Mandatory fields */
         $("#create_address").form({
           on: 'submit',
           inline: true,
@@ -233,7 +232,7 @@
                 }
               ]
             },
-            /* physicalAddress  */
+            /* physical Address  */
             street_1: {
               identifier: 'street_1',
               rules: [
@@ -274,7 +273,7 @@
         });
         $(".green.button").on("click", function () {
           if ($("#buttonPhysicalAddress").hasClass("active")) {
-            removePostalAddress();
+            JSPC.app.removePostalAddress();
           }
           if ($("#buttonPostalAddress").hasClass("active")) {
             removePhysicalAddress();
@@ -282,8 +281,7 @@
         });
 
         /* Alternating address  */
-        function removePostalAddress() {
-
+        JSPC.app.removePostalAddress = function(){
             // adding multiple at once from Hausanschrift
           $("#create_address").form("add rule", "street_1", {
             rules: [
@@ -359,16 +357,16 @@
         $("#buttonPhysicalAddress").click(function () {
           $(this).addClass("active");
           $("#buttonPostalAddress").removeClass("active");
-          deleteInputs(postalAddressInputs);
+          JSPC.app.deleteInputs(postalAddressInputs);
           $("#postalAddress").addClass("disabled");
           $("#physicalAddress").removeClass("disabled");
-          removePostalAddress()
+          JSPC.app.removePostalAddress()
         });
 
         $("#buttonPostalAddress").click(function () {
           $(this).addClass("active");
           $("#buttonPhysicalAddress").removeClass("active");
-          deleteInputs(physicalAddressInputs);
+          JSPC.app.deleteInputs(physicalAddressInputs);
           $("#postalAddress").removeClass("disabled");
           $("#physicalAddress").addClass("disabled");
           removePhysicalAddress()
@@ -387,7 +385,7 @@
           $("#city")
         ];
 
-        function deleteInputs(elems) {
+        JSPC.app.deleteInputs = function (elems) {
           for (let i = 0; i < elems.length; i++) {
             $(elems[i]).val(null);
           }
