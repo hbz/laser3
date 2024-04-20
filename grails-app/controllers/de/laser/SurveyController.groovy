@@ -970,7 +970,7 @@ class SurveyController {
 
                 if (params.fileformat == 'xlsx') {
                     try {
-                        SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSurveyEvaluation(result, selectedFields, contactSwitch, ExportClickMeService.FORMAT.XLS)
+                        SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSurveyEvaluation(ctrlResult.result, selectedFields, contactSwitch, ExportClickMeService.FORMAT.XLS)
                         // Write the output to a file
 
                         response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
