@@ -3561,7 +3561,7 @@ class ExportService {
 	 * @return a {@link Map} containing headers and data for export; it may be used for Excel worksheets as style information is defined in format-style maps or for
 	 * raw text output; access rows.field for the bare data
 	 */
-	Map<String, List> generateTitleExportCustom(Map configMap, String entitlementInstance, List showStatsInMonthRings = [], Org subscriber = null, boolean checkPerpetuallyPurchasedTitles = false) {
+	Map<String, Object> generateTitleExportCustom(Map configMap, String entitlementInstance, List showStatsInMonthRings = [], Org subscriber = null, boolean checkPerpetuallyPurchasedTitles = false) {
 		log.debug("Begin generateTitleExportCustom")
 		Sql sql = GlobalService.obtainSqlConnection()
 		Locale locale = LocaleUtils.getCurrentLocale()
@@ -3626,25 +3626,27 @@ class ExportService {
 			titleHeaders.addAll(showStatsInMonthRings.collect { Date month -> DateUtils.getSDF_yyyyMM().format(month) })
 		}
 		List rows = []
-		Map<String,List> export = [titles:titleHeaders]
-		data.titles.eachWithIndex { GroovyRowResult title, int outer ->
-			if(entitlementInstance == IssueEntitlement.class.name && data.coverageMap.get(title['ie_id'])) {
-				data.coverageMap.get(title['ie_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
-					log.debug "now processing coverage statement ${inner} for record ${outer}"
-					covStmt.putAll(title)
-					rows.add(buildRow('excel', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, checkPerpetuallyPurchasedTitles, showStatsInMonthRings, subscriber))
+		Map<String,List> export = [titles:titleHeaders, status202: data.status202]
+		if(!data.status202) {
+			data.titles.eachWithIndex { GroovyRowResult title, int outer ->
+				if(entitlementInstance == IssueEntitlement.class.name && data.coverageMap.get(title['ie_id'])) {
+					data.coverageMap.get(title['ie_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
+						log.debug "now processing coverage statement ${inner} for record ${outer}"
+						covStmt.putAll(title)
+						rows.add(buildRow('excel', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, checkPerpetuallyPurchasedTitles, showStatsInMonthRings, subscriber))
+					}
 				}
-			}
-			else if(entitlementInstance == TitleInstancePackagePlatform.class.name && data.coverageMap.get(title['tipp_id'])) {
-				data.coverageMap.get(title['tipp_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
-					log.debug "now processing coverage statement ${inner} for record ${outer}"
-					covStmt.putAll(title)
-					rows.add(buildRow('excel', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, checkPerpetuallyPurchasedTitles, showStatsInMonthRings, subscriber))
+				else if(entitlementInstance == TitleInstancePackagePlatform.class.name && data.coverageMap.get(title['tipp_id'])) {
+					data.coverageMap.get(title['tipp_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
+						log.debug "now processing coverage statement ${inner} for record ${outer}"
+						covStmt.putAll(title)
+						rows.add(buildRow('excel', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, checkPerpetuallyPurchasedTitles, showStatsInMonthRings, subscriber))
+					}
 				}
-			}
-			else {
+				else {
 //				log.debug "now processing record ${outer}"
-				rows.add(buildRow('excel', title, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, checkPerpetuallyPurchasedTitles, showStatsInMonthRings, subscriber))
+					rows.add(buildRow('excel', title, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, checkPerpetuallyPurchasedTitles, showStatsInMonthRings, subscriber))
+				}
 			}
 		}
 		export.rows = rows
@@ -3652,7 +3654,7 @@ class ExportService {
 		export
 	}
 
-	Map<String, List> generateRenewalExport(Map configMap, Set showStatsInMonthRings, Org subscriber) {
+	Map<String, Object> generateRenewalExport(Map configMap, Set showStatsInMonthRings, Org subscriber) {
 		log.debug("Begin generateRenewalExport")
 		Sql sql = GlobalService.obtainSqlConnection()
 		Locale locale = LocaleUtils.getCurrentLocale()
@@ -3667,7 +3669,7 @@ class ExportService {
 		queryClauseParts.subscriber = subscriber
 		userCache.put('label', 'Hole Titel ...')
         List<GroovyRowResult> rows = sql.rows(baseQuery, queryClauseParts.params)
-		Map<String, List> export = [titles: titleHeaders.keySet().toList()]
+		Map<String, Object> export = [titles: titleHeaders.keySet().toList()]
 		export.titles.addAll(showStatsInMonthRings.collect { Date month -> DateUtils.getSDF_yyyyMM().format(month) })
 		export.titles << "Pick"
 		Map<String, Object> identifierInverseMap = subscriptionControllerService.fetchTitles(configMap.refSub, true)
@@ -3692,10 +3694,13 @@ class ExportService {
 		configMap.endDate = endDate
 		userCache.put('label', 'Hole Daten vom Anbieter ...')
 		Map<String, Object> requestResponse = getReports(configMap)
+		if(requestResponse.containsKey("error") && requestResponse.error.code == 202) {
+			export.status202 = true
+		}
 		userCache.put('progress', 40)
 		userCache.put('label', 'Erzeuge Tabelle ...')
 		int processed = 0
-		if(rows) {
+		if(rows && !export.status202) {
 			double pointsPerIteration = 20/rows.size()
 			Map<Long, Map> allReports = [:]
 			//implicit COUNTER 4 check
@@ -4280,6 +4285,7 @@ class ExportService {
 		List<String> coreTitleNSrestricted = IdentifierNamespace.CORE_TITLE_NS.collect { String coreTitleNS ->
 			!(coreTitleNS in [IdentifierNamespace.ISBN, IdentifierNamespace.EISBN, IdentifierNamespace.ISSN, IdentifierNamespace.EISSN])
 		}
+		boolean status202 = false
 		if(entitlementInstance == TitleInstancePackagePlatform.class.name) {
 			identifiers = sql.rows("select id_tipp_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id ${queryData.join} where ${queryData.where}", queryData.params)
 			coverages = sql.rows("select tc_tipp_fk, tc_start_date as startDate, tc_start_volume as startVolume, tc_start_issue as startIssue, tc_end_date as endDate, tc_end_volume as endIssue, tc_end_issue as endIssue, tc_coverage_note as coverageNote, tc_coverage_depth as coverageDepth, tc_embargo as embargo from tippcoverage join title_instance_package_platform on tc_tipp_fk = tipp_id ${queryData.join} where ${queryData.where}", queryData.params)
@@ -4438,6 +4444,8 @@ class ExportService {
 						}
 					}
 				}
+				else if(requestResponse.containsKey("error") && requestResponse.error.code == 202)
+					status202 = true
 				/*
 				showStatsInMonthRings.each { Date month ->
 					queriedMonths << "max(case when to_char(c5r_report_from, 'MM') = '${DateUtils.getSDF_MM().format(month)}' then c5r_report_count else 0 end) as \"${DateUtils.getSDF_yyyyMM().format(month)}\""
@@ -4463,7 +4471,7 @@ class ExportService {
 		}
 
 		[titles: titles, coverageMap: coverageMap, priceItemMap: priceItemMap, identifierMap: identifierMap, reportMap: reportMap,
-		 coreTitleIdentifierNamespaces: coreTitleIdentifierNamespaces, otherTitleIdentifierNamespaces: otherTitleIdentifierNamespaces]
+		 coreTitleIdentifierNamespaces: coreTitleIdentifierNamespaces, otherTitleIdentifierNamespaces: otherTitleIdentifierNamespaces, status202: status202]
 	}
 
 	/**

@@ -342,7 +342,7 @@ class SubscriptionsQueryService {
                 base_qry += ", so.org.sortname asc"
         }
 
-        log.debug("query: ${base_qry} && params: ${qry_params}")
+//        log.debug("query: ${base_qry} && params: ${qry_params}")
 
         return [base_qry, qry_params, filterSet]
     }

@@ -66,7 +66,7 @@
                     </g:if>
                     <g:else>
                         <g:if test="${! us.enabled}">
-                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.disabled.text')}">
+                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.accountDisabled.label')}">
                                 <i class="icon minus circle red"></i>
                             </span>
                         </g:if>

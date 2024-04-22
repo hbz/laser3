@@ -854,7 +854,7 @@ r2d2 = {
                         $jscb.html(JSPC.dict.get('confirm.dialog.concludeBinding', JSPC.config.language) + '<i aria-hidden="true" class="check icon"></i>');
                         break;
                     case "clearUp":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.clearUp', JSPC.config.language) + '<i aria-hidden="true" class="bath icon"></i>');
+                        $jscb.html(JSPC.dict.get('confirm.dialog.clearUp', JSPC.config.language) + '<i aria-hidden="true" class="shower icon"></i>');
                         break;
                     default:
                         $('').html('Entfernen<i aria-hidden="true" class="x icon"></i>');
