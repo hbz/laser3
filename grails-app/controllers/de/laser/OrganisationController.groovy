@@ -1674,7 +1674,7 @@ class OrganisationController  {
             }
             SystemEvent.createEvent('SYSTEM_UA_FLAG_DISABLED', [org: [org.id, org.name], disabled: disabledAccounts])
         }
-        redirect view: 'users', model: [id: params.id, disabledAccounts: disabledAccounts]
+        redirect action:'users', id:params.id, params:[disabledAccounts: disabledAccounts]
     }
 
     /**
