@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      19.04.2024  rc-3.3  3.3.10      Andreas Bug         Verhalten für neue Art von Serverantwort implementiert
+
 5623    21.03.2024  rc-3.3  3.3.9       Andreas Feature     kleinere Ausbesserungen am Sync, besseres Debugging
 
 --      21.03.2024  rc-3.3  3.3.9       Andreas Feature     Verbesserungen in der Performance an der API-OA-Schnittstelle
