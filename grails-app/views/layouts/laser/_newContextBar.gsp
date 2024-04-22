@@ -1,8 +1,6 @@
 <%@ page import="de.laser.Subscription; de.laser.GenericOIDService; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.UserSetting; de.laser.auth.User; de.laser.auth.Role; de.laser.Org" %>
 <laser:serviceInjection />
 
-<g:set var="visibilityContextOrgMenu" value="la-show-context-orgMenu" />
-
 <nav id="contextBar" class="ui fixed menu" aria-label="${message(code:'wcag.label.modeNavigation')}">
 
     <div class="ui container">
@@ -108,17 +106,6 @@
                         </button>
                     </div>
                 </g:if>
-            </g:if>
-
-            %{-- edit mode switcher  --}%
-
-            <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription' || controllerName=='license') && actionName=='show' && (editable || contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))}">
-                <g:if test="${contextUser?.getSettingsValue(UserSetting.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES)?.value=='Yes'}">
-                    <ui:cbItemToggleAction id="decksaver-toggle" status="active" icon="pencil alternate" tooltip="${message(code:'statusbar.showButtons.tooltip')}" />
-                </g:if>
-                <g:else>
-                    <ui:cbItemToggleAction id="decksaver-toggle" status="inactive" icon="pencil alternate slash" tooltip="${message(code:'statusbar.hideButtons.tooltip')}" />
-                </g:else>
             </g:if>
 
             %{-- advanced mode switcher  --}%
