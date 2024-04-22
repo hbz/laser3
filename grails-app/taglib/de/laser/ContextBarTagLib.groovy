@@ -165,7 +165,7 @@ class ContextBarTagLib {
 
     def cbItemMarkerAction = { attrs, body ->
 
-        MarkerSupport obj   = (attrs.org ?: attrs.package ?: attrs.platform) as MarkerSupport
+        MarkerSupport obj   = (attrs.org ?: attrs.package ?: attrs.platform ?: attrs.vendor) as MarkerSupport
         boolean isMarked    = obj.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)
         String tt           = '?'
         String tt_list      = message(code: 'marker.WEKB_CHANGES')

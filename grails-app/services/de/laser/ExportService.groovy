@@ -3654,7 +3654,7 @@ class ExportService {
 		export
 	}
 
-	Map<String, List> generateRenewalExport(Map configMap, Set showStatsInMonthRings, Org subscriber) {
+	Map<String, Object> generateRenewalExport(Map configMap, Set showStatsInMonthRings, Org subscriber) {
 		log.debug("Begin generateRenewalExport")
 		Sql sql = GlobalService.obtainSqlConnection()
 		Locale locale = LocaleUtils.getCurrentLocale()
@@ -3669,7 +3669,7 @@ class ExportService {
 		queryClauseParts.subscriber = subscriber
 		userCache.put('label', 'Hole Titel ...')
         List<GroovyRowResult> rows = sql.rows(baseQuery, queryClauseParts.params)
-		Map<String, List> export = [titles: titleHeaders.keySet().toList()]
+		Map<String, Object> export = [titles: titleHeaders.keySet().toList()]
 		export.titles.addAll(showStatsInMonthRings.collect { Date month -> DateUtils.getSDF_yyyyMM().format(month) })
 		export.titles << "Pick"
 		Map<String, Object> identifierInverseMap = subscriptionControllerService.fetchTitles(configMap.refSub, true)
@@ -3694,10 +3694,13 @@ class ExportService {
 		configMap.endDate = endDate
 		userCache.put('label', 'Hole Daten vom Anbieter ...')
 		Map<String, Object> requestResponse = getReports(configMap)
+		if(requestResponse.containsKey("error") && requestResponse.error.code == 202) {
+			export.status202 = true
+		}
 		userCache.put('progress', 40)
 		userCache.put('label', 'Erzeuge Tabelle ...')
 		int processed = 0
-		if(rows) {
+		if(rows && !export.status202) {
 			double pointsPerIteration = 20/rows.size()
 			Map<Long, Map> allReports = [:]
 			//implicit COUNTER 4 check
