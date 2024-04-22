@@ -2,6 +2,8 @@ package de.laser
 
 import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
+import de.laser.helper.Params
+import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
@@ -19,6 +21,10 @@ class VendorController {
     UserService userService
     VendorService vendorService
 
+    public static final Map<String, String> CHECK404_ALTERNATIVES = [
+            'list' : 'menu.public.all_vendors',                // todo: check perms
+    ]
+
     @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
@@ -32,7 +38,7 @@ class VendorController {
         ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
     def list() {
-        Map<String, Object> result = vendorService.getResultGenerics(params)
+        Map<String, Object> result = vendorService.getResultGenerics(params), queryParams = [:]
         result.flagContentGokb = true // vendorService.getWekbVendorRecords()
         Map queryCuratoryGroups = gokbService.executeQuery(result.wekbApi.baseUrl + result.wekbApi.fixToken + '/groups', [:])
         if(queryCuratoryGroups.code == 404) {
@@ -50,13 +56,52 @@ class VendorController {
                 [value: 'Vendor', name: message(code: 'package.curatoryGroup.vendor')],
                 [value: 'Other', name: message(code: 'package.curatoryGroup.other')]
         ]
+        List<String> queryArgs = []
+        if(params.containsKey('orgNameContains')) {
+            queryArgs << "(genfunc_filter_matcher(v.name, :name) = true or genfunc_filter_matcher(v.sortname, :name) = true)"
+            queryParams.name = params.orgNameContains
+        }
+        if(params.containsKey('venStatus')) {
+            queryArgs << "v.status in (:status)"
+            queryParams.status = Params.getRefdataList(params, 'venStatus')
+        }
+        else if(!params.containsKey('venStatus') && !params.containsKey('filterSet')) {
+            queryArgs << "v.status = :status"
+            queryParams.status = "Current"
+            params.venStatus = RDStore.VENDOR_STATUS_CURRENT.id
+        }
+
+        if(params.containsKey('qp_supportedLibrarySystems')) {
+            queryArgs << "exists (select ls from v.supportedLibrarySystems ls where ls.librarySystem in (:librarySystems))"
+            queryParams.put('librarySystems', Params.getRefdataList(params, 'qp_supportedLibrarySystems'))
+        }
+
+        if(params.containsKey('qp_electronicBillings')) {
+            queryArgs << "exists (select eb from v.electronicBillings eb where eb.invoiceFormat in (:electronicBillings))"
+            queryParams.put('electronicBillings', Params.getRefdataList(params, 'qp_electronicBillings'))
+        }
+
+        if(params.containsKey('qp_invoiceDispatchs')) {
+            queryArgs << "exists (select idi from v.invoiceDispatchs idi where idi.invoiceDispatch in (:invoiceDispatchs))"
+            queryParams.put('invoiceDispatchs', Params.getRefdataList(params, 'qp_invoiceDispatchs'))
+        }
+
+        if(params.containsKey('curatoryGroup') || params.containsKey('curatoryGroupType')) {
+            queryArgs << "v.gokbId in (:wekbIds)"
+            queryParams.wekbIds = result.wekbRecords.keySet()
+        }
+        String vendorQuery = 'select v from Vendor v'
+        if(queryArgs) {
+            vendorQuery += ' where '+queryArgs.join(' and ')
+        }
+        Set<Vendor> vendorsTotal = Vendor.executeQuery(vendorQuery, queryParams)
+
         String message = message(code: 'export.all.vendors') as String
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         String datetoday = sdf.format(new Date())
         String filename = message+"_${datetoday}"
         Map<String, Object> selectedFields = [:]
         Set<String> contactSwitch = []
-        Set<Vendor> vendorsTotal = Vendor.findAllByGokbIdInList(result.wekbRecords.keySet())
         if(params.fileformat) {
             if (params.filename) {
                 filename =params.filename

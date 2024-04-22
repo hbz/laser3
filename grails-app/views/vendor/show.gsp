@@ -457,13 +457,11 @@
                 </div>
             </div>
 
-            %{--
             <g:if test="${institution.isCustomerType_Consortium() || institution.isCustomerType_Support() || institution.isCustomerType_Inst_Pro()}">
                 <div id="new-dynamic-properties-block">
-                    <laser:render template="properties" model="${[ vendor: vendor, authOrg: formalOrg, contextOrg: institution ]}"/>
+                    <laser:render template="properties" model="${[ vendor: vendor, institution: institution ]}"/>
                 </div><!-- #new-dynamic-properties-block -->
             </g:if>
-            --}%
         </div>
     </div>
     <aside class="five wide column la-sidekick">

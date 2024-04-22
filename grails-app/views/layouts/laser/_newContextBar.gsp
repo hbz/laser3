@@ -33,6 +33,9 @@
             <g:elseif test="${isMyOrg}">
                 <ui:cbItemInfo display="${message(code: 'license.relationship.org')}" icon="star" color="teal" />
             </g:elseif>
+            <g:elseif test="${isMyVendor}">
+                <ui:cbItemInfo display="${message(code: 'license.relationship.org')}" icon="star" color="teal" />
+            </g:elseif>
 
             %{-- child indicator --}%
 

@@ -84,6 +84,7 @@ class YodaController {
     StatusUpdateService statusUpdateService
     SubscriptionService subscriptionService
     SurveyUpdateService surveyUpdateService
+    VendorService vendorService
     YodaService yodaService
     WekbNewsService wekbNewsService
 
@@ -976,6 +977,12 @@ class YodaController {
             log.debug("process running, lock is set!")
         }
         redirect controller: 'platform', action: 'list'
+    }
+
+    @Secured(['ROLE_YODA'])
+    def migrateVendors() {
+        vendorService.migrateVendors()
+        redirect controller: 'myInstitution', action: 'dashboard'
     }
 
     /**

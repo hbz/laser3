@@ -17,6 +17,7 @@ import de.laser.system.SystemProfiler
 import de.laser.titles.TitleHistoryEvent
 import de.laser.titles.TitleHistoryEventParticipant
 import de.laser.traces.DeletedObject
+import de.laser.convenience.Marker
 import groovy.util.logging.Slf4j
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.client.RequestOptions
@@ -565,6 +566,7 @@ class DeletionService {
         List pendingChanges     = PendingChange.findAllByOwner(org)
         List tasks              = Task.findAllByOrg(org)
         List tasksResp          = Task.findAllByResponsibleOrg(org)
+        List markers            = Marker.findAllByOrg(org)
         List systemProfilers    = SystemProfiler.findAllByContext(org)
 
         List facts              = Fact.findAllByInst(org)
@@ -619,6 +621,7 @@ class DeletionService {
         result.info << ['Anstehende Änderungen', pendingChanges, FLAG_BLOCKER]
         result.info << ['Aufgaben (owner)', tasks, FLAG_BLOCKER]
         result.info << ['Aufgaben (responsibility)', tasksResp, FLAG_BLOCKER]
+        result.info << ['Marker', markers, FLAG_BLOCKER]
         result.info << ['SystemProfilers', systemProfilers]
 
         result.info << ['Facts', facts, FLAG_BLOCKER]
@@ -696,11 +699,12 @@ class DeletionService {
                     contacts.each{ tmp -> tmp.delete() }
 
                     // private properties
-                    //org.privateProperties.clear()
-                    //privateProperties.each { tmp -> tmp.delete() }
+                    org.propertySet.clear()
+                    privateProperties.each { tmp ->
+                        tmp.delete()
+                    }
 
                     // custom properties
-                    org.propertySet.clear()
                     customProperties.each { tmp -> // incomprehensible fix // ??
                         tmp.owner = null
                         tmp.save()

@@ -1,8 +1,9 @@
 package de.laser
 
 import de.laser.auth.User
+import de.laser.helper.Params
 import de.laser.remote.ApiSource
-import de.laser.storage.BeanStore
+import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.SwissKnife
 import grails.gorm.transactions.Transactional
@@ -12,6 +13,7 @@ import grails.web.servlet.mvc.GrailsParameterMap
 class VendorService {
 
     ContextService contextService
+    DeletionService deletionService
     GokbService gokbService
 
     /**
@@ -70,9 +72,9 @@ class VendorService {
 
 
         if(params.containsKey('venStatus')) {
-            queryParams.status = RefdataValue.get(params.venStatus).value
+            queryParams.status = Params.getRefdataList(params, 'venStatus').value
         }
-        else if(!params.containsKey('venStatus')) {
+        else if(!params.containsKey('venStatus') && !params.containsKey('filterSet')) {
             queryParams.status = "Current"
             params.venStatus = RDStore.VENDOR_STATUS_CURRENT.id
         }
@@ -80,13 +82,63 @@ class VendorService {
         Set<String> directMappings = ['curatoryGroupType', 'qp_supportedLibrarySystems', 'qp_electronicBillings', 'qp_invoiceDispatchs']
         directMappings.each { String mapping ->
             if(params.containsKey(mapping))
-                queryParams.put(mapping,params.get('mapping'))
+                queryParams.put(mapping,params.get(mapping))
         }
 
         Map<String, Object> wekbResult = gokbService.doQuery(result, [max: 10000, offset: 0], queryParams)
         if(wekbResult.recordsCount > 0)
             records.putAll(wekbResult.records.collectEntries { Map wekbRecord -> [wekbRecord.uuid, wekbRecord] })
         records
+    }
+
+    /**
+     * should be a batch process, triggered by DBM change script, but should be triggerable for Yodas as well
+     * Changes agencies ({@link Org}s defined as such) into {@link Vendor}s
+     */
+    void migrateVendors() {
+        Org.withTransaction { ts ->
+            Set<Org> agencies = Org.executeQuery('select o from Org o join o.orgType ot where ot = :agency', [agency: RDStore.OT_AGENCY])
+            agencies.each { Org agency ->
+                Vendor.convertFromAgency(agency)
+                agency.orgType.remove(RDStore.OT_AGENCY)
+            }
+            Set<OrgRole> agencyRelations = OrgRole.findAllByRoleTypeAndIsShared(RDStore.OR_AGENCY, false)
+            agencyRelations.each { OrgRole ar ->
+                Vendor v = Vendor.findByGlobalUID(ar.org.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
+                if(!v)
+                    v = Vendor.convertFromAgency(ar.org)
+                if(ar.sub || ar.lic) {
+                    VendorRole vr = new VendorRole(vendor: v)
+                    if(ar.sub)
+                        vr.subscription = ar.sub
+                    if(ar.lic)
+                        vr.license = ar.lic
+                    if(vr.save()) {
+                        if(ar.isShared) {
+                            if(ar.sub)
+                                vr.addShareForTarget_trait(ar.sub)
+                            if(ar.lic)
+                                vr.addShareForTarget_trait(ar.lic)
+                        }
+                        log.debug("processed: ${vr.vendor}:${vr.subscription}:${vr.license} ex ${ar.org}:${ar.sub}:${ar.lic}")
+                    }
+                    else log.error(vr.errors.getAllErrors().toListString())
+                }
+                else if(ar.pkg) {
+                    PackageVendor pv = new PackageVendor(vendor: v, pkg: ar.pkg)
+                    if(pv.save())
+                        log.debug("processed: ${pv.vendor}:${pv.pkg} ex ${ar.org}:${ar.pkg}")
+                    else log.error(pv.errors.getAllErrors().toListString())
+                }
+                ar.delete()
+            }
+            ts.flush()
+            agencies.each { Org agency ->
+                Map<String, Object> delResult = deletionService.deleteOrganisation(agency, null, false)
+                if(delResult.deletable == false)
+                    log.info("objects pending; ${agency.name}:${agency.id} could not be deleted")
+            }
+        }
     }
 
     boolean isMyVendor(Vendor vendor, Org contextOrg) {

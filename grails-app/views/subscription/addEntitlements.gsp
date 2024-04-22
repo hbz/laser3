@@ -35,7 +35,7 @@
         </div>
     </g:if>
 
-<laser:render template="KBARTSelectionUploadFormModal"/>
+<%-- <laser:render template="KBARTSelectionUploadFormModal"/> --%>
 
 <ui:modal id="linkToIssueEntitlementGroup" message="subscription.details.addEntitlements.add_selectedToIssueEntitlementGroup"
           refreshModal="true"
