@@ -496,7 +496,7 @@
                     <label for="qp_invoiceDispatchs">${message(code: 'vendor.invoicing.dispatch.label')}</label>
                     <select name="qp_invoiceDispatchs" id="qp_invoiceDispatchs" multiple="multiple" class="ui search selection dropdown">
                         <option value="">${message(code:'default.select.choose.label')}</option>
-                        <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_FORMAT)}" var="invoiceDispatch">
+                        <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_DISPATCH)}" var="invoiceDispatch">
                             <option <%=Params.getLongList(params, 'qp_invoiceDispatchs').contains(invoiceDispatch.value) ? 'selected=selected"' : ''%> value="${invoiceDispatch.value}">
                                 ${invoiceDispatch.getI10n("value")}
                             </option>

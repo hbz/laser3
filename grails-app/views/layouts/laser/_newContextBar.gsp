@@ -33,17 +33,20 @@
             <g:elseif test="${isMyOrg}">
                 <ui:cbItemInfo display="${message(code: 'license.relationship.org')}" icon="star" color="teal" />
             </g:elseif>
+            <g:elseif test="${isMyVendor}">
+                <ui:cbItemInfo display="${message(code: 'license.relationship.org')}" icon="star" color="teal" />
+            </g:elseif>
 
             %{-- child indicator --}%
 
             <g:if test="${controllerName == 'subscription' && subscription && !surveyConfig}">
-                <g:if test="${subscription.instanceOf && contextService.getOrg().id == subscription.getConsortia()?.id}">
+                <g:if test="${subscription.instanceOf && ((contextService.getOrg().id == subscription.getConsortia()?.id) || contextService.getUser().isYoda())}">
                     <ui:cbItemInfo display="Sie sehen eine Kindlizenz" icon="child" color="orange" />
                 </g:if>
             </g:if>
 
             <g:if test="${controllerName == 'license' && license}">
-                <g:if test="${license.instanceOf && contextService.getOrg().id == license.getLicensingConsortium()?.id}">
+                <g:if test="${license.instanceOf && ((contextService.getOrg().id == license.getLicensingConsortium()?.id) || contextService.getUser().isYoda())}">
                     <ui:cbItemInfo display="Sie sehen einen Einrichtungsvertrag" icon="child" color="green" />
                 </g:if>
             </g:if>
@@ -60,14 +63,6 @@
                 <ui:cbItemInfo display="${message(code: 'statusbar.flagContentElasticsearch.tooltip')}" icon="cloud" color="blue" />
             </g:if>
 
-            %{-- dateCreated & lastUpdated panel --}%
-
-            <g:if test="${(actionName=='show')}">
-                <div class="item la-cb-action">
-                    <button class="ui icon button la-toggle-ui" id="dateCreatedLastUpdated-toggle"><i class="calendar alternative icon"></i></button>
-                </div>
-            </g:if>
-
             %{-- help panel --}%
 
             <g:if test="${(controllerName=='subscription' && actionName=='show') || (controllerName=='myInstitution' && actionName=='financeImport') || (controllerName=='myInstitution' && actionName=='subscriptionImport') || (controllerName=='dev' && actionName=='frontend')}">
@@ -76,15 +71,40 @@
                 </div>
             </g:if>
 
-            %{-- subscription transfer  --}%
+            %{-- dateCreated & lastUpdated panel --}%
 
-            <g:if test="${controllerName=='subscription' && (!actionName.startsWith('copy') && actionName != 'renewEntitlementsWithSurvey' && actionName != 'renewSubscription' && actionName != 'emptySubscription')
-            && (editable && contextService.getOrg().isCustomerType_Consortium())}">
-                <g:if test="${subscription && subscription._getCalculatedType() in [Subscription.TYPE_CONSORTIAL]}">
+            <g:if test="${(actionName=='show')}">
+                <div class="item la-cb-action">
+                    <button class="ui icon button la-toggle-ui" id="dateCreatedLastUpdated-toggle"><i class="calendar alternative icon"></i></button>
+                </div>
+            </g:if>
+
+            %{-- subscription transfer --}%
+
+            <g:set var="isSubscriptionViewValid" value="${!(actionName.startsWith('copy') || actionName in ['renewEntitlementsWithSurvey', 'renewSubscription', 'emptySubscription'])}" />
+
+            <g:if test="${controllerName=='subscription' && subscription && isSubscriptionViewValid}">
+                <g:if test="${editable && contextService.getOrg().isCustomerType_Consortium() && subscription._getCalculatedType() in [Subscription.TYPE_CONSORTIAL]}">
                     <div class="item la-cb-action">
                         <button class="ui icon button la-toggle-ui la-popup-tooltip la-delay" id="subscriptionTransfer-toggle"
                                 data-content="${message(code:'statusbar.showSubscriptionTransfer.tooltip')}" data-position="bottom left">
                             <i class="clipboard icon"></i>
+                        </button>
+                    </div>
+                </g:if>
+            </g:if>
+
+            %{-- subscription members --}%
+
+            <g:if test="${controllerName == 'subscription' && subscription && isSubscriptionViewValid}">
+                <g:if test="${editable && contextService.getOrg().isCustomerType_Consortium() && subscription.getConsortia()?.id == contextService.getOrg().id}">
+                    <div class="item la-cb-action">
+%{--                        <button class="ui icon button la-toggle-ui la-popup-tooltip la-delay" id="subscriptionMembers-toggle"--}%
+%{--                                data-content="${message(code:'consortium.member.plural')} ${message(code:'default.and')} ${message(code:'subscription.member.plural')}" data-position="bottom left">--}%
+%{--                            <i class="university icon"></i>--}%
+%{--                        </button>--}%
+                        <button class="ui icon button la-toggle-ui" id="subscriptionMembers-toggle">
+                            <i class="university icon"></i>
                         </button>
                     </div>
                 </g:if>
@@ -140,6 +160,11 @@
                     <ui:cbItemMarkerAction org="${orgInstance}"/>
                 </g:if>
             </g:if>
+            <g:elseif test="${controllerName == 'vendor'}">
+                <g:if test="${vendor}">
+                    <ui:cbItemMarkerAction vendor="${vendor}"/>
+                </g:if>
+            </g:elseif>
             <g:elseif test="${controllerName == 'package'}">
                 <g:if test="${packageInstance}">
                     <ui:cbItemMarkerAction package="${packageInstance}"/>
@@ -151,41 +176,63 @@
                 </g:if>
             </g:elseif>
 
-        %{-- linkify --}%
+            %{-- linkify --}%
 
             <g:if test="${controllerName == 'subscription' && subscription}">
                 <g:set var="linkifyMap" value="${linksGenerationService.getSourcesAndDestinations(subscription, contextUser, RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE))}" />
 
-                <g:if test="${linkifyMap}">
+                <g:if test="${linkifyMap || subscription.instanceOf}">
                     <div class="item la-cb-action-ext">
                         <div class="ui simple dropdown button la-js-dont-hide-button icon">
                             <i class="linkify icon"></i>
                             <div class="menu">
+                                <g:if test="${subscription.instanceOf}">
+                                    <g:link controller="subscription" action="show" id="${subscription.instanceOf.id}" class="item la-flexbox">
+                                        <span class="text">
+                                            ${subscription}
+                                        </span>
+                                        <span class="description">
+                                            <i class="icon arrow up la-list-icon"></i>
+                                            ${message(code:'consortium.superSubscriptionType')}
+                                        </span>
+                                    </g:link>
+                                    <g:if test="${linkifyMap}">
+                                        <div class="divider"></div>
+                                    </g:if>
+                                </g:if>
                                 <g:each in="${linkifyMap}" var="linkifyCat">
                                     <g:each in="${linkifyCat.getValue()}" var="link">
                                         <g:set var="linkTarget" value="${link.determineSource() == subscription ? link.determineDestination() : link.determineSource()}" />
                                         <g:set var="linkPrio" value="${link.determineSource() == subscription ? 0 : 1}" />
                                         <g:if test="${linkTarget instanceof de.laser.Subscription}">
                                             <g:set var="linkType" value="${link.linkType.getI10n('value').split("\\|")[linkPrio]}" />
-                                            <g:link controller="subscription" action="show" id="${linkTarget.id}" class="item">
-                                                <g:if test="${link.linkType == RDStore.LINKTYPE_FOLLOWS}">
-                                                    <i class="icon arrow ${linkPrio == 1 ? 'right' : 'left'} la-list-icon"></i>
-                                                </g:if>
-                                                <g:else>
-                                                    <i class="icon clipboard la-list-icon"></i>
-                                                </g:else>
-                                                ${linkTarget}
-                                                (<g:formatDate formatName="default.date.format.notime" date="${linkTarget.startDate}"/>-<g:formatDate formatName="default.date.format.notime" date="${linkTarget.endDate}"/>)
-                                            [${linkType}]
+                                            <g:link controller="subscription" action="show" id="${linkTarget.id}" class="item la-flexbox">
+                                                <span class="text">
+                                                    ${linkTarget}
+                                                    (<g:formatDate formatName="default.date.format.notime" date="${linkTarget.startDate}"/> - <g:formatDate formatName="default.date.format.notime" date="${linkTarget.endDate}"/>)
+                                                </span>
+                                                <span class="description">
+                                                    <g:if test="${link.linkType == RDStore.LINKTYPE_FOLLOWS}">
+                                                        <i class="icon arrow ${linkPrio == 1 ? 'right' : 'left'} la-list-icon"></i>
+                                                    </g:if>
+                                                    <g:else>
+                                                        <i class="icon clipboard la-list-icon"></i>
+                                                    </g:else>
+                                                    ${linkType}
+                                                </span>
                                             </g:link>
                                         </g:if>
                                         <g:elseif test="${linkTarget instanceof de.laser.License}">
                                             <g:set var="linkType" value="${link.linkType.getI10n('value').split("\\|")[Math.abs(linkPrio-1)]}" />
-                                            <g:link controller="license" action="show" id="${linkTarget.id}" class="item">
-                                                <i class="icon scale balance la-list-icon"></i>
-                                                ${linkTarget}
-                                                (<g:formatDate formatName="default.date.format.notime" date="${linkTarget.startDate}"/>-<g:formatDate formatName="default.date.format.notime" date="${linkTarget.endDate}"/>)
-                                            [${linkType}]
+                                            <g:link controller="license" action="show" id="${linkTarget.id}" class="item la-flexbox">
+                                                <span class="text">
+                                                    ${linkTarget}
+                                                    (<g:formatDate formatName="default.date.format.notime" date="${linkTarget.startDate}"/> - <g:formatDate formatName="default.date.format.notime" date="${linkTarget.endDate}"/>)
+                                                </span>
+                                                <span class="description">
+                                                    <i class="icon scale balance la-list-icon"></i>
+                                                    ${linkType}
+                                                </span>
                                             </g:link>
                                         </g:elseif>
                                     </g:each>
@@ -198,36 +245,58 @@
             <g:elseif test="${controllerName == 'license' && license}">
                 <g:set var="linkifyMap" value="${linksGenerationService.getSourcesAndDestinations(license, contextUser, RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE)-RDStore.LINKTYPE_LICENSE)}" />
 
-                <g:if test="${linkifyMap}">
+                <g:if test="${linkifyMap || license.instanceOf}">
                     <div class="item la-cb-action-ext">
                         <div class="ui simple dropdown button la-js-dont-hide-button icon">
                             <i class="linkify icon"></i>
                             <div class="menu">
+                                <g:if test="${license.instanceOf}">
+                                    <g:link controller="license" action="show" id="${license.instanceOf.id}" class="item la-flexbox">
+                                        <span class="text">
+                                            ${license}
+                                        </span>
+                                        <span class="description">
+                                            <i class="icon arrow up la-list-icon"></i>
+                                            ${message(code:'consortium.superLicenseType')}
+                                        </span>
+                                    </g:link>
+                                    <g:if test="${linkifyMap}">
+                                        <div class="divider"></div>
+                                    </g:if>
+                                </g:if>
                                 <g:each in="${linkifyMap}" var="linkifyCat">
                                     <g:each in="${linkifyCat.getValue()}" var="link">
                                         <g:set var="linkTarget" value="${link.determineSource() == license ? link.determineDestination() : link.determineSource()}" />
                                         <g:set var="linkPrio" value="${link.determineSource() == license ? 0 : 1}" />
                                         <g:if test="${linkTarget instanceof de.laser.Subscription}">
                                             <g:set var="linkType" value="${link.linkType.getI10n('value').split("\\|")[Math.abs(linkPrio-1)]}" />
-                                            <g:link controller="subscription" action="show" id="${linkTarget.id}" class="item">
-                                                <i class="icon clipboard la-list-icon"></i>
-                                                ${linkTarget}
-                                                (<g:formatDate formatName="default.date.format.notime" date="${linkTarget.startDate}"/>-<g:formatDate formatName="default.date.format.notime" date="${linkTarget.endDate}"/>)
-                                            [${linkType}]
+                                            <g:link controller="subscription" action="show" id="${linkTarget.id}" class="item la-flexbox">
+                                                <span class="text">
+                                                    ${linkTarget}
+                                                    (<g:formatDate formatName="default.date.format.notime" date="${linkTarget.startDate}"/> - <g:formatDate formatName="default.date.format.notime" date="${linkTarget.endDate}"/>)
+                                                </span>
+                                                <span class="description">
+                                                    <i class="icon clipboard la-list-icon"></i>
+                                                    ${linkType}
+                                                </span>
                                             </g:link>
                                         </g:if>
                                         <g:elseif test="${linkTarget instanceof de.laser.License}">
                                             <g:set var="linkType" value="${link.linkType.getI10n('value').split("\\|")[linkPrio]}" />
-                                            <g:link controller="license" action="show" id="${linkTarget.id}" class="item">
-                                                <g:if test="${link.linkType == RDStore.LINKTYPE_FOLLOWS}">
-                                                    <i class="icon arrow ${linkPrio == 1 ? 'right' : 'left'} la-list-icon"></i>
-                                                </g:if>
-                                                <g:else>
-                                                    <i class="icon scale balance la-list-icon"></i>
-                                                </g:else>
-                                                ${linkTarget}
-                                                (<g:formatDate formatName="default.date.format.notime" date="${linkTarget.startDate}"/>-<g:formatDate formatName="default.date.format.notime" date="${linkTarget.endDate}"/>)
-                                            [${linkType}]
+                                            <g:link controller="license" action="show" id="${linkTarget.id}" class="item la-flexbox">
+                                                <span class="text">
+                                                    ${linkTarget}
+                                                    (<g:formatDate formatName="default.date.format.notime" date="${linkTarget.startDate}"/> - <g:formatDate formatName="default.date.format.notime" date="${linkTarget.endDate}"/>)
+                                                </span>
+                                                <span class="description">
+                                                    <g:if test="${link.linkType == RDStore.LINKTYPE_FOLLOWS}">
+                                                        <i class="icon arrow ${linkPrio == 1 ? 'right' : 'left'} la-list-icon"></i>
+                                                    </g:if>
+                                                    <g:else>
+                                                        <i class="icon scale balance la-list-icon"></i>
+                                                    </g:else>
+                                                    ${linkType}
+                                                </span>
                                             </g:link>
                                         </g:elseif>
                                     </g:each>
@@ -244,6 +313,20 @@
 
 </nav>%{-- contextBar --}%
 
+<style>
+    #contextBar .la-advanced-view .item.la-cb-action-ext .item.la-flexbox {
+        display: flex;
+    }
+    #contextBar .la-advanced-view .item.la-cb-action-ext .item.la-flexbox span.text {
+        float: none;
+        text-align: left;
+    }
+    #contextBar .la-advanced-view .item.la-cb-action-ext .item.la-flexbox span.description {
+        width: 100%;
+        float: none;
+        text-align: right;
+    }
+</style>
 
 <laser:script file="${this.getGroovyPageFileName()}">
 
@@ -331,6 +414,10 @@
 
             $('#dateCreatedLastUpdated-toggle').on('click', function() {
                 $('#dateCreatedLastUpdated-content').flyout('toggle');
+            });
+
+            $('#subscriptionMembers-toggle').on('click', function() {
+                $('#subscriptionMembers-content').flyout('toggle');
             });
 
             $('#subscriptionTransfer-toggle').on('click', function() {

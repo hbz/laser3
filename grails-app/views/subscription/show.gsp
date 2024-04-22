@@ -1,9 +1,10 @@
 <%@ page import="de.laser.config.ConfigMapper; de.laser.Person; de.laser.PersonRole; de.laser.Subscription; de.laser.Links; java.text.SimpleDateFormat;de.laser.properties.PropertyDefinition; de.laser.OrgRole; de.laser.License;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.interfaces.CalculatedType" %>
 <laser:htmlStart message="subscription.details.label" serviceInjection="true"/>
 
-%{-- help sidebar --}%
-<laser:render template="/templates/help/subscription_show"/>
-<laser:render template="/templates/help/dateCreatedLastUpdated" model="[obj: subscription]"/>
+%{-- flyouts --}%
+<laser:render template="/templates/flyouts/help/subscription_show"/>
+<laser:render template="/templates/flyouts/dateCreatedLastUpdated" model="[obj: subscription]"/>
+
 <ui:debugInfo>
     <div style="padding: 1em 0;">
         <p>sub.type: ${subscription.type}</p>
@@ -27,7 +28,7 @@
     <laser:render template="${customerTypeService.getActionsTemplatePath()}"/>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" visibleOrgRelations="${visibleOrgRelations}">
+<ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" visibleOrgRelations="${visibleOrgRelations}" visibleVendors="${visibleVendors}">
     <laser:render template="iconSubscriptionIsChild"/>
     <ui:xEditable owner="${subscription}" field="name"/>
 </ui:h1HeaderWithIcon>
@@ -414,7 +415,7 @@
             <div id="container-provider">
                 <div class="ui card">
                     <div class="content">
-                        <h2 class="ui header">${message(code: 'subscription.organisations.label')}</h2>
+                        <h2 class="ui header">${message(code: 'default.provider.label')}</h2>
                         <laser:render template="/templates/links/orgLinksAsList"
                                   model="${[roleLinks    : visibleOrgRelations,
                                             roleObject   : subscription,
@@ -438,13 +439,30 @@
                                                 tmplModalID   : 'modal_add_provider',
                                                 editmode      : editable
                                       ]}"/>
-                            <laser:render template="/templates/links/orgLinksSimpleModal"
+
+                        </div><!-- la-js-hide-this-card -->
+
+                    </div>
+                </div>
+            </div>
+
+            <div id="container-vendor">
+                <div class="ui card">
+                    <div class="content">
+                        <h2 class="ui header">${message(code: 'default.agency.label')}</h2>
+                        <laser:render template="/templates/links/vendorLinksAsList"
+                                  model="${[vendorRoles  : vendorRoles,
+                                            roleObject   : subscription,
+                                            roleRespValue: 'Specific subscription editor',
+                                            editmode     : editable,
+                                            showPersons  : true
+                                  ]}"/>
+
+                        <div class="ui la-vertical buttons la-js-hide-this-card">
+                            <laser:render template="/templates/links/vendorLinksSimpleModal"
                                       model="${[linkType      : subscription.class.name,
                                                 parent        : genericOIDService.getOID(subscription),
-                                                property      : 'orgs',
-                                                recip_prop    : 'sub',
-                                                tmplRole      : RDStore.OR_AGENCY,
-                                                tmplType      : RDStore.OT_AGENCY,
+                                                recip_prop    : 'subscription',
                                                 tmplEntity    : message(code: 'subscription.details.linkAgency.tmplEntity'),
                                                 tmplText      : message(code: 'subscription.details.linkAgency.tmplText'),
                                                 tmplButtonText: message(code: 'subscription.details.linkAgency.tmplButtonText'),

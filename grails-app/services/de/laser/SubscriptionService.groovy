@@ -162,9 +162,56 @@ class SubscriptionService {
         List<Subscription> subscriptions
         prf.setBenchmark('fetch subscription data')
         subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
-        //candidate for ugliest bugfix ever ...
-        if(params.sort == "providerAgency") {
-            subscriptions = Subscription.executeQuery("select oo.sub from OrgRole oo join oo.org providerAgency where oo.sub.id in (:subscriptions) and oo.roleType in (:providerAgency) order by providerAgency.name "+params.order, [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
+        //impossible to sort in nothing ...
+        if(params.sort == "provider") {
+            subscriptions.sort { Subscription s1, Subscription s2 ->
+                String sortname1 = s1.getSortedProviders(params.order)[0]?.sortname?.toLowerCase(), sortname2 = s2.getSortedProviders(params.order)[0]?.sortname?.toLowerCase()
+                int cmp
+                if(params.order == "asc") {
+                    if(!sortname1) {
+                        if(!sortname2)
+                            cmp = 0
+                        else cmp = 1
+                    }
+                    else {
+                        if(!sortname2)
+                            cmp = -1
+                        else cmp = sortname1 <=> sortname2
+                    }
+                }
+                else cmp = sortname2 <=> sortname1
+                if(!cmp)
+                    cmp = params.order == 'asc' ? s1.name <=> s2.name : s2.name <=> s1.name
+                if(!cmp)
+                    cmp = params.order == 'asc' ? s1.startDate <=> s2.startDate : s2.startDate <=> s1.startDate
+                cmp
+            }
+        }
+        else if(params.sort == "vendor") {
+            subscriptions.sort { Subscription s1, Subscription s2 ->
+                String sortname1 = s1.getSortedVendors(params.order)[0]?.sortname?.toLowerCase(), sortname2 = s2.getSortedVendors(params.order)[0]?.sortname?.toLowerCase()
+                int cmp
+                if(params.order == "asc") {
+                    if(!sortname1) {
+                        if(!sortname2)
+                            cmp = 0
+                        else cmp = 1
+                    }
+                    else {
+                        if(!sortname2)
+                            cmp = -1
+                        else cmp = sortname1 <=> sortname2
+                    }
+                }
+                else cmp = sortname2 <=> sortname1
+                if(!cmp) {
+                    cmp = params.order == 'asc' ? s1.name <=> s2.name : s2.name <=> s1.name
+                }
+                if(!cmp) {
+                    cmp = params.order == 'asc' ? s1.startDate <=> s2.startDate : s2.startDate <=> s1.startDate
+                }
+                cmp
+            }
         }
         result.allSubscriptions = subscriptions
         if(!params.exportXLS)
@@ -723,7 +770,7 @@ join sub.orgRelations or_sub where
      * @param subscription the subscription whose members should be queried
      * @return a list of member subscriptions
      */
-    List getValidSubChilds(Subscription subscription) {
+    List<Subscription> getValidSubChilds(Subscription subscription) {
         List<Subscription> validSubChildren = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.sub.instanceOf = :sub and oo.roleType in (:subRoleTypes) order by oo.org.sortname asc, oo.org.name asc',[sub:subscription,subRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
         validSubChildren
     }
@@ -928,6 +975,17 @@ join sub.orgRelations or_sub where
             }
         }
         visibleOrgRelations.sort { it.org?.name?.toLowerCase() }
+    }
+
+    /**
+     * Retrieves all visible vendor links for the given subscription
+     * @param subscription the subscription to retrieve the relations from
+     * @return a sorted list of visible relations
+     */
+    SortedSet<VendorRole> getVisibleVendors(Subscription subscription) {
+        SortedSet<VendorRole> visibleVendorRelations = new TreeSet<VendorRole>()
+        visibleVendorRelations.addAll(VendorRole.executeQuery('select vr from VendorRole vr join vr.vendor v where vr.subscription = :subscription order by v.sortname', [subscription: subscription]))
+        visibleVendorRelations
     }
 
     /**

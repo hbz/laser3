@@ -1507,6 +1507,22 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
             */
             vendor.status = RefdataValue.getByValueAndCategory(vendorRecord.status, RDConstants.VENDOR_STATUS)
+            vendor.homepage = vendorRecord.homepage
+            vendor.webShopOrders = vendorRecord.webShopOrders == RDStore.YN_YES.value
+            vendor.xmlOrders = vendorRecord.xmlOrders == RDStore.YN_YES.value
+            vendor.ediOrders = vendorRecord.ediOrders == RDStore.YN_YES.value
+            vendor.paperInvoice = vendorRecord.paperInvoice == RDStore.YN_YES.value
+            vendor.managementOfCredits = vendorRecord.managementOfCredits == RDStore.YN_YES.value
+            vendor.processingOfCompensationPayments = vendorRecord.processingOfCompensationPayments == RDStore.YN_YES.value
+            vendor.individualInvoiceDesign = vendorRecord.individualInvoiceDesign == RDStore.YN_YES.value
+            vendor.technicalSupport = vendorRecord.technicalSupport == RDStore.YN_YES.value
+            vendor.shippingMetadata = vendorRecord.shippingMetadata == RDStore.YN_YES.value
+            vendor.forwardingUsageStatisticsFromPublisher = vendorRecord.forwardingUsageStatisticsFromPublisher == RDStore.YN_YES.value
+            vendor.activationForNewReleases = vendorRecord.activationForNewReleases == RDStore.YN_YES.value
+            vendor.exchangeOfIndividualTitles = vendorRecord.exchangeOfIndividualTitles == RDStore.YN_YES.value
+            vendor.researchPlatformForEbooks = vendorRecord.researchPlatformForEbooks
+            vendor.prequalificationVOL = vendorRecord.prequalificationVOL == RDStore.YN_YES.value
+            vendor.prequalificationVOLInfo = vendorRecord.prequalificationVOLInfo
             if(vendor.save()) {
                 if(vendorRecord.contacts) {
                     List<String> typeNames = contactTypes.values().collect { RefdataValue cct -> cct.getI10n("value") }
@@ -1546,6 +1562,46 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     Package pkg = Package.findByGokbId(packageData.packageUuid)
                     if(pkg) {
                         setupPkgVendor(vendor, pkg)
+                    }
+                }
+                List<String> supportedLibrarySystemsB = vendorRecord.supportedLibrarySystems.collect { slsB -> slsB.supportedLibrarySystem },
+                        electronicBillingsB = vendorRecord.electronicBillings.collect { ebB -> ebB.electronicBilling },
+                        invoiceDispatchsB = vendorRecord.invoiceDispatchs.collect { idiB -> idiB.invoiceDispatch },
+                        electronicDeliveryDelaysB = vendorRecord.electronicDeliveryDelays.collect { eddnB -> eddnB.electronicDeliveryDelay }
+                vendor.supportedLibrarySystems.each { LibrarySystem lsA ->
+                    if(!supportedLibrarySystemsB.contains(lsA.librarySystem.value))
+                        lsA.delete()
+                }
+                supportedLibrarySystemsB.each { String lsB ->
+                    if(!vendor.isLibrarySystemSupported(lsB)) {
+                        new LibrarySystem(vendor: vendor, librarySystem: RefdataValue.getByValueAndCategory(lsB, RDConstants.VENDOR_SUPPORTED_LIBRARY_SYSTEM)).save()
+                    }
+                }
+                vendor.electronicBillings.each { ElectronicBilling ebA ->
+                    if(!electronicBillingsB.contains(ebA.invoicingFormat.value))
+                        ebA.delete()
+                }
+                electronicBillingsB.each { String ebB ->
+                    if(!vendor.hasElectronicBilling(ebB)) {
+                        new ElectronicBilling(vendor: vendor, invoicingFormat: RefdataValue.getByValueAndCategory(ebB, RDConstants.VENDOR_INVOICING_FORMAT)).save()
+                    }
+                }
+                vendor.invoiceDispatchs.each { InvoiceDispatch idiA ->
+                    if(!invoiceDispatchsB.contains(idiA.invoiceDispatch.value))
+                        idiA.delete()
+                }
+                invoiceDispatchsB.each { String idiB ->
+                    if(!vendor.hasInvoiceDispatch(idiB)) {
+                        new InvoiceDispatch(vendor: vendor, invoiceDispatch: RefdataValue.getByValueAndCategory(idiB, RDConstants.VENDOR_INVOICING_DISPATCH)).save()
+                    }
+                }
+                vendor.electronicDeliveryDelays.each { ElectronicDeliveryDelayNotification eddnA ->
+                    if(!electronicDeliveryDelaysB.contains(eddnA.delayNotification.value))
+                        eddnA.delete()
+                }
+                electronicDeliveryDelaysB.each { String eddnB ->
+                    if(!vendor.hasElectronicDeliveryDelayNotification(eddnB)) {
+                        new ElectronicDeliveryDelayNotification(vendor: vendor, delayNotification: RefdataValue.getByValueAndCategory(eddnB, RDConstants.VENDOR_ELECTRONIC_DELIVERY_DELAY)).save()
                     }
                 }
                 if(source.rectype == RECTYPE_VENDOR) {
@@ -1668,13 +1724,15 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @throws SyncException
      */
     void createOrUpdateSupport(Vendor vendor, Map<String, String> contactProps) throws SyncException {
-        Person personInstance = Person.executeQuery('select p from PersonRole pr join pr.prs p where p.tenant = null and pr.vendor = :vendor and p.isPublic = true and p.last_name = :type', [vendor: vendor, type: contactProps.rdType.getI10n("value")])[0]
-        if(!personInstance) {
+        List<Person> personCheck = Person.executeQuery('select p from PersonRole pr join pr.prs p where p.tenant = null and pr.vendor = :vendor and p.isPublic = true and p.last_name = :type', [vendor: vendor, type: contactProps.rdType.getI10n("value")])
+        Person personInstance
+        if(!personCheck) {
             personInstance = new Person(isPublic: true, last_name: contactProps.rdType.getI10n("value"))
             if(!personInstance.save()) {
                 throw new SyncException("Error on setting up contact for ${vendor}, concerning person instance: ${personInstance.getErrors().getAllErrors().toListString()}")
             }
         }
+        else personInstance = personCheck[0]
         PersonRole personRole = PersonRole.findByPrsAndVendorAndFunctionType(personInstance, vendor, contactProps.rdType)
         if(!personRole) {
             personRole = new PersonRole(prs: personInstance, vendor: vendor, functionType: contactProps.rdType)
@@ -1695,6 +1753,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         if(!contact.save()) {
             throw new SyncException("Error on setting contact for ${vendor}, concerning contact: ${contact.getErrors().getAllErrors().toListString()}")
         }
+        //log.debug(contact.getProperties().toMapString())
     }
 
     /**
@@ -2578,6 +2637,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         tippStatus.put(RDStore.TIPP_STATUS_RETIRED.value,RDStore.TIPP_STATUS_RETIRED)
         tippStatus.put(RDStore.TIPP_STATUS_EXPECTED.value,RDStore.TIPP_STATUS_EXPECTED)
         tippStatus.put(RDStore.TIPP_STATUS_REMOVED.value,RDStore.TIPP_STATUS_REMOVED)
+        contactTypes.put(RDStore.PRS_FUNC_INVOICING_CONTACT.value,RDStore.PRS_FUNC_INVOICING_CONTACT)
         contactTypes.put(RDStore.PRS_FUNC_TECHNICAL_SUPPORT.value,RDStore.PRS_FUNC_TECHNICAL_SUPPORT)
         contactTypes.put(RDStore.PRS_FUNC_SERVICE_SUPPORT.value,RDStore.PRS_FUNC_SERVICE_SUPPORT)
         contactTypes.put(RDStore.PRS_FUNC_METADATA.value,RDStore.PRS_FUNC_METADATA)

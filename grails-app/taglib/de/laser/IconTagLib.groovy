@@ -324,4 +324,19 @@ class IconTagLib {
         out << '<i class="chart bar icon' + color + '"></i>'
         out << '</span>'
     }
+
+    def booleanIcon = { attrs, body ->
+        String icon = 'question circle yellow'
+
+        if (attrs.value === true) {
+            icon = 'check circle green'
+        }
+        else if(attrs.value === false) {
+            icon = 'minus circle red'
+        }
+        else if (attrs.value === null) {
+            'minus circle orange'
+        }
+        out << '<i class="icon ' + icon + '"></i>'
+    }
 }

@@ -2,7 +2,7 @@
 <laser:htmlStart message="platform.details" />
 
 %{-- help sidebar --}%
-<laser:render template="/templates/help/dateCreatedLastUpdated" model="[obj: platformInstance]"/>
+<laser:render template="/templates/flyouts/dateCreatedLastUpdated" model="[obj: platformInstance]"/>
 
     <g:set var="entityName" value="${message(code: 'platform.label')}"/>
 

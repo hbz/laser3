@@ -6,6 +6,7 @@
         <h2 class="ui header">${message(code: 'subscription.packages.label')}</h2>
         <div class="ui accordion la-accordion-showMore">
         <g:each in="${subscription.packages}" var="sp">
+            <g:set var="packageInstanceRecord" value="${packageMetadata.get(sp.pkg.gokbId)}"/>
             <% String buttonColor = ""
             if(sp.pendingChangeConfig.size() > 0) {
                 buttonColor = "green"
@@ -32,12 +33,13 @@
                                         <g:if test="${sp.pkg.contentProvider.gokbId}"><ui:wekbIconLink type="org" gokbId="${sp.pkg.contentProvider.gokbId}"/></g:if>
                                     </g:if>
                                 </div>
-                                <g:each in="${sp.pkg.agencies}" var="agency">
+                                <g:each in="${sp.pkg.vendors}" var="pv">
+                                    <g:set var="vendorRecord" value="${packageInstanceRecord.vendors.find { rec -> rec.vendorUuid == pv.vendor.gokbId }}"/>
                                     <div>
                                         <i aria-hidden="true" class="shipping fast grey icon la-popup-tooltip la-delay" data-content="${message(code: 'default.agency.label')}"></i>
-                                        <g:link controller="org" action="show" id="${agency.id}">${agency.name}</g:link>
-                                        <g:if test="${agency.url}"><ui:linkWithIcon href="${agency.url.startsWith('http') ? agency.url : 'http://' + agency.url}"/></g:if>
-                                        <g:if test="${agency.gokbId}"><ui:wekbIconLink type="vendor" gokbId="${agency.gokbId}"/></g:if>
+                                        <g:link controller="vendor" action="show" id="${pv.vendor.id}">${pv.vendor.name}</g:link>
+                                        <g:if test="${vendorRecord.homepage}"><ui:linkWithIcon href="${vendorRecord.homepage.startsWith('http') ? vendorRecord.homepage : 'http://' + vendorRecord.homepage}"/></g:if>
+                                        <g:if test="${pv.vendor.gokbId}"><ui:wekbIconLink type="vendor" gokbId="${pv.vendor.gokbId}"/></g:if>
                                     </div>
                                 </g:each>
                             </div>
@@ -193,7 +195,6 @@
                     </g:else>
                 </div>
                 <div class="ui fluid segment content">
-                    <g:set var="packageInstanceRecord" value="${packageMetadata.get(sp.pkg.gokbId)}"/>
                     <div class="ui grid">
                         <div class="eight wide column">
                             <dl>

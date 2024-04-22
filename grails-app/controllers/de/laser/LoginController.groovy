@@ -133,11 +133,11 @@ class LoginController {
       else if (exception instanceof CredentialsExpiredException) {
         msg = g.message(code: "springSecurity.errors.login.passwordExpired")
       }
-      else if (exception instanceof DisabledException) {
-        msg = g.message(code: "springSecurity.errors.login.disabled")
-      }
       else if (exception instanceof LockedException) {
         msg = g.message(code: "springSecurity.errors.login.locked")
+      }
+      else if (exception instanceof DisabledException) {
+          msg = g.message(code: "springSecurity.errors.login.disabled")
       }
       else {
         msg = g.message(code: "springSecurity.errors.login.fail")
@@ -226,9 +226,10 @@ class LoginController {
         boolean valid = false
 
         UrlMappingsHolder urlMappingsHolder = BeanStore.getUrlMappingsHolder()
-        UrlMappingInfo mappingInfo = urlMappingsHolder.matchAll(savedRequest.getRequestURI()).first()
+        UrlMappingInfo[] matchedMappingInfo = urlMappingsHolder.matchAll(savedRequest.getRequestURI())
 
-        if (mappingInfo) {
+        if (matchedMappingInfo.length > 0) {
+            UrlMappingInfo mappingInfo = matchedMappingInfo.first()
             GrailsClass controller = mappingInfo.hasProperty('controllerClass') ? mappingInfo.controllerClass :
                     CodeUtils.getAllControllerArtefacts().find {
                         it.clazz.simpleName == mappingInfo.controllerName.capitalize() + 'Controller'

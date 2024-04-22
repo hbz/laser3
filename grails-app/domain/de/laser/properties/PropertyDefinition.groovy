@@ -54,12 +54,14 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     public static final String PLA_PROP    = 'Platform Property'
     public static final String SUB_PROP    = 'Subscription Property'
     public static final String SVY_PROP    = 'Survey Property'
+    public static final String VEN_PROP    = 'Vendor Property'
 
     //sorting is for German terms for the next three arrays; I10n is todo for later
 
     @Transient
     public static final String[] AVAILABLE_CUSTOM_DESCR = [
             PRS_PROP,
+            VEN_PROP,
             SUB_PROP,
             //ORG_PROP, // erms-4798
             //PLA_PROP, // erms-4837
@@ -69,6 +71,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     @Transient
     public static final String[] AVAILABLE_PRIVATE_DESCR = [
             PRS_PROP,
+            VEN_PROP,
             SUB_PROP,
             ORG_PROP,
             PLA_PROP,
@@ -314,6 +317,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
      *     <li>{@link #PRS_PROP}</li>
      *     <li>{@link #SUB_PROP}</li>
      *     <li>{@link #SVY_PROP}</li>
+     *     <li>{@link #VEN_PROP}</li>
      * </ul>
      * @return a {@link List} of property definitions which have no tenant, i.e. are public, matching the given object type
      */
@@ -331,6 +335,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
      *     <li>{@link #PRS_PROP}</li>
      *     <li>{@link #SUB_PROP}</li>
      *     <li>{@link #SVY_PROP}</li>
+     *     <li>{@link #VEN_PROP}</li>
      * </ul>
      * @param tenant the institution ({@link Org}) whose property definitions should be retrieved
      * @return a {@link List} of property definitions which have the given tenant, matching the given object type
@@ -349,6 +354,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
      *     <li>{@link #PRS_PROP}</li>
      *     <li>{@link #SUB_PROP}</li>
      *     <li>{@link #SVY_PROP}</li>
+     *     <li>{@link #VEN_PROP}</li>
      * </ul>
      * @param mandatory should the mandatory properties set or the optional ones
      * @return a {@link List} of property definitions which have no tenant (i.e. are public), matching the given mandatory flag
@@ -367,6 +373,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
      *     <li>{@link #PRS_PROP}</li>
      *     <li>{@link #SUB_PROP}</li>
      *     <li>{@link #SVY_PROP}</li>
+     *     <li>{@link #VEN_PROP}</li>
      * </ul>
      * @param mandatory should the mandatory properties set or the optional ones
      * @return a {@link List} of property definitions which have the given tenant, matching the given mandatory flag

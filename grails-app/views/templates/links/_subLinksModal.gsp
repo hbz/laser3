@@ -234,7 +234,9 @@
             minCharacters: 1
         });
         <g:if test="${context instanceof Subscription || context instanceof License}">
-            <g:set var="firstProvider" value="${context.orgRelations.find { OrgRole oo -> oo.roleType.id in [RDStore.OR_PROVIDER.id, RDStore.OR_LICENSOR.id] }?.org}"/>
+            <g:if test="${!subscriptionLicenseLink}">
+                <g:set var="firstProvider" value="${context.orgRelations.find { OrgRole oo -> oo.roleType.id in [RDStore.OR_PROVIDER.id, RDStore.OR_LICENSOR.id] }?.org}"/>
+            </g:if>
             <g:if test="${firstProvider}">
                 let providerOID = "${genericOIDService.getOID(firstProvider)}";
                 let providerText = "${firstProvider.name}";

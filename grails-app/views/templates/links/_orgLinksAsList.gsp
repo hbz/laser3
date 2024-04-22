@@ -14,9 +14,6 @@
                         <g:elseif test="${role.roleType.value==RDStore.OR_PROVIDER.value}">
                             <i class="la-list-icon la-popup-tooltip la-delay handshake outline icon" data-content="${message(code:'default.provider.label')}"></i>
                         </g:elseif>
-                        <g:elseif test="${role.roleType.value ==RDStore.OR_AGENCY.value}">
-                            <i class="la-list-icon la-popup-tooltip la-delay shipping fast icon" data-content="${message(code:'default.agency.label')}"></i>
-                        </g:elseif>
                         <g:link controller="organisation" action="show" id="${role.org.id}">
                             ${role.org.name}
                         </g:link>

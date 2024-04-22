@@ -1,4 +1,5 @@
-package de.laser.custom
+package de.laser.custom.auth
+
 
 import de.laser.utils.CodeUtils
 import grails.core.GrailsApplication

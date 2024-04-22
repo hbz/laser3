@@ -15,7 +15,7 @@
 <laser:htmlStart message="${isProviderOrAgency ? 'menu.institutions.provider.show' : 'menu.institutions.org.show'}" serviceInjection="true" />
 
 %{-- help sidebar --}%
-<laser:render template="/templates/help/dateCreatedLastUpdated" model="[obj: orgInstance]"/>
+<laser:render template="/templates/flyouts/dateCreatedLastUpdated" model="[obj: orgInstance]"/>
 <laser:render template="breadcrumb"
           model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView, consortialView: consortialView]}"/>
 
@@ -26,7 +26,6 @@
 <ui:h1HeaderWithIcon text="${orgInstance.name}" >
     <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
 </ui:h1HeaderWithIcon>
-
 
 <ui:anualRings object="${orgInstance}" controller="organisation" action="show" navNext="${navNextOrg}"
                navPrev="${navPrevOrg}"/>
@@ -66,13 +65,6 @@
         <div class="la-inline-lists">
             <div class="ui card" id="js-confirmationCard">
                 <div class="content">
-
-                    <g:if test="${contextService.getUser().isYoda() && contextService.getOrg().isCustomerType_Consortium() && orgInstance.isCustomerType_Inst()}">
-                        <div class="ui top right attached label">
-                            <g:link controller="org" action="info" params="[id: orgInstance.id]" style="color:#004678;text-decoration:underline">${message(code:'menu.institutions.org.info')}</g:link>
-                        </div>
-                    </g:if>
-
                     <dl>
                         <dt><g:message code="default.name.label" /></dt>
                         <dd>

@@ -42,7 +42,7 @@
             }
             searchTimer = setTimeout(function() {
                 $.ajax({
-                    url: "<g:createLink controller="ajaxHtml" action="lookupProvidersAgencies"/>?tableView=true&query="+searchVal,
+                    url: "<g:createLink controller="ajaxHtml" action="lookupProviders"/>?tableView=true&query="+searchVal,
                     success: function (data) {
                         $('#${tmplModalID}_providerResultWrapper').html(data);
                     }

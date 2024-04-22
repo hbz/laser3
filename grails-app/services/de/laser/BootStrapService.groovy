@@ -125,7 +125,7 @@ class BootStrapService {
         }
 
         log.debug(".__                                .________ ")
-        log.debug("|  |   _____    ______ ___________  \\_____  \\ ~ Grails_6")
+        log.debug("|  |   _____    ______ ___________  \\_____  \\ ~ Grails_" + AppUtils.getMeta('info.app.grailsVersion'))
         log.debug("|  |   \\__  \\  /  ___// __ \\_  __ \\   _(__  < ")
         log.debug("|  |___ / __ \\_\\___ \\\\  ___/|  | \\/  /       \\ ")
         log.debug("|_____ (____  /____  >\\___  >__|    /______  / ")

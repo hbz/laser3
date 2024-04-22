@@ -1,4 +1,4 @@
-package de.laser.custom
+package de.laser.custom.auth
 
 import de.laser.auth.User
 import grails.plugin.springsecurity.userdetails.GrailsUser

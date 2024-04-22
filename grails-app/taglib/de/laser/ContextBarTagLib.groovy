@@ -165,14 +165,18 @@ class ContextBarTagLib {
 
     def cbItemMarkerAction = { attrs, body ->
 
-        MarkerSupport obj   = (attrs.org ?: attrs.package ?: attrs.platform) as MarkerSupport
+        MarkerSupport obj   = (attrs.org ?: attrs.package ?: attrs.platform ?: attrs.vendor) as MarkerSupport
         boolean isMarked    = obj.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)
         String tt           = '?'
         String tt_list      = message(code: 'marker.WEKB_CHANGES')
 
         if (attrs.org) {
-            tt = isMarked ? 'Der Anbieter/Lieferant ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
-                    : 'Anklicken, um den Anbieter/Lieferant auf die ' + tt_list + ' zu setzen.'
+            tt = isMarked ? 'Der Anbieter ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
+                    : 'Anklicken, um den Anbieter auf die ' + tt_list + ' zu setzen.'
+        }
+        else if (attrs.vendor) {
+            tt = isMarked ? 'Der Lieferant ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
+                    : 'Anklicken, um den Lieferanten auf die ' + tt_list + ' zu setzen.'
         }
         else if (attrs.package) {
             tt = isMarked ? 'Das Paket ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'

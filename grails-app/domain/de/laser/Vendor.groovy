@@ -6,6 +6,8 @@ import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.convenience.Marker
 import de.laser.interfaces.DeleteFlag
 import de.laser.interfaces.MarkerSupport
+import de.laser.properties.OrgProperty
+import de.laser.properties.VendorProperty
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -24,19 +26,52 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
     @RefdataInfo(cat = RDConstants.VENDOR_STATUS)
     RefdataValue status
 
+    String homepage
+    boolean webShopOrders = false
+    boolean xmlOrders = false
+    boolean ediOrders = false
+    boolean paperInvoice = false
+    boolean managementOfCredits = false
+    boolean processingOfCompensationPayments = false
+    boolean individualInvoiceDesign = false
+    boolean technicalSupport = false
+    boolean shippingMetadata = false
+    boolean forwardingUsageStatisticsFromPublisher = false
+    boolean activationForNewReleases = false
+    boolean exchangeOfIndividualTitles = false
+    String researchPlatformForEbooks
+    boolean prequalificationVOL = false
+    String prequalificationVOLInfo
+
     Date dateCreated
     Date lastUpdated
     Date lastUpdatedCascading
 
+    SortedSet supportedLibrarySystems
+    SortedSet electronicBillings
+    SortedSet invoiceDispatchs
+    SortedSet electronicDeliveryDelays
+
     static mappedBy = [
             contacts: 'vendor',
-            addresses: 'vendor'
+            addresses: 'vendor',
+            packages: 'vendor',
+            propertySet: 'owner',
+            supportedLibrarySystems: 'vendor',
+            electronicBillings: 'vendor',
+            invoiceDispatchs: 'vendor',
+            electronicDeliveryDelays: 'vendor',
     ]
 
     static hasMany = [
             contacts: Contact,
             addresses: Address,
-            packages: PackageVendor
+            propertySet: VendorProperty,
+            packages: PackageVendor,
+            supportedLibrarySystems: LibrarySystem,
+            electronicBillings: ElectronicBilling,
+            invoiceDispatchs: InvoiceDispatch,
+            electronicDeliveryDelays: ElectronicDeliveryDelayNotification
     ]
 
     static mapping = {
@@ -47,41 +82,37 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         globalUID column: 'ven_guid'
         name column: 'ven_name'
         sortname column: 'ven_sortname'
-
+        status column: 'ven_status_rv_fk'
+        homepage column: 'ven_homepage'
+        webShopOrders column: 'ven_web_shop_orders'
+        xmlOrders column: 'ven_xml_orders'
+        ediOrders column: 'vel_edi_orders'
+        paperInvoice column: 'ven_paper_invoice'
+        managementOfCredits column: 'ven_management_of_credits'
+        processingOfCompensationPayments column: 'ven_processing_of_compensation_payments'
+        individualInvoiceDesign column: 'ven_individual_invoice_design'
+        technicalSupport column: 'ven_technical_support'
+        shippingMetadata column: 'ven_shipping_metadata'
+        forwardingUsageStatisticsFromPublisher column: 'ven_forwarding_usage_statistics_from_publisher'
+        activationForNewReleases column: 'ven_activation_new_releases'
+        exchangeOfIndividualTitles column: 'ven_exchange_individual_titles'
+        researchPlatformForEbooks column: 'ven_research_platform_ebooks', type: 'text'
+        prequalificationVOL column: 'ven_prequalification_vol'
+        prequalificationVOLInfo column: 'ven_prequalification_vol_info', type: 'text'
         dateCreated column: 'ven_date_created'
         lastUpdated column: 'ven_last_updated'
         lastUpdatedCascading column: 'ven_last_updated_cascading'
-
-        status column: 'ven_status_rv_fk'
     }
 
     static constraints = {
-        gokbId                   (unique: true)
-        globalUID                (unique: true)
-        sortname                 (nullable: true)
-        lastUpdatedCascading     (nullable: true)
+        gokbId                      (unique: true, nullable: true)
+        globalUID                   (unique: true)
+        sortname                    (nullable: true)
+        homepage                    (nullable: true, maxSize: 512)
+        researchPlatformForEbooks   (nullable: true)
+        prequalificationVOLInfo     (nullable: true)
+        lastUpdatedCascading        (nullable: true)
     }
-
-    static final Set<String> WEKB_PROPERTIES = ['homepage',
-                                                'webShopOrders',
-                                                'xmlOrders',
-                                                'ediOrders',
-                                                'paperInvoice',
-                                                'managementOfCredits',
-                                                'processingOfCompensationPayments',
-                                                'individualInvoiceDesign',
-                                                'technicalSupport',
-                                                'shippingMetadata',
-                                                'forwardingUsageStatisticsFromPublisher',
-                                                'activationForNewReleases',
-                                                'exchangeOfIndividualTitles',
-                                                'researchPlatformForEbooks',
-                                                'prequalificationVOL',
-                                                'prequalificationVOLInfo',
-                                                'supportedLibrarySystems',
-                                                'electronicBillings',
-                                                'invoiceDispatchs',
-                                                'electronicDeliveryDelays']
 
     @Transient
     int getProvidersCount(){
@@ -156,6 +187,63 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         result
     }
 
+    static Vendor convertFromAgency(Org agency) {
+        Vendor v = null
+        if(agency.gokbId)
+            v = Vendor.findByGokbId(agency.gokbId)
+        if(!v)
+            v = new Vendor(globalUID: agency.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
+        v.name = agency.name
+        v.sortname = agency.sortname
+        v.gokbId = agency.gokbId //for the case vendors have already recorded as orgs by sync
+        v.homepage = agency.url
+        if(agency.status == RDStore.ORG_STATUS_CURRENT)
+            v.status = RDStore.VENDOR_STATUS_CURRENT
+        if(agency.status == RDStore.ORG_STATUS_DELETED)
+            v.status = RDStore.VENDOR_STATUS_DELETED
+        if(agency.status == RDStore.ORG_STATUS_RETIRED)
+            v.status = RDStore.VENDOR_STATUS_RETIRED
+        if(agency.status == RDStore.ORG_STATUS_REMOVED)
+            v.status = RDStore.VENDOR_STATUS_REMOVED
+        v.dateCreated = agency.dateCreated
+        agency.contacts.each { Contact c ->
+            c.vendor = v
+            c.org = null
+            c.save()
+        }
+        agency.addresses.each { Address a ->
+            a.vendor = v
+            a.org = null
+            a.save()
+        }
+        PersonRole.findAllByOrg(agency).each { PersonRole pr ->
+            pr.vendor = v
+            pr.org = null
+            pr.save()
+        }
+        OrgProperty.findAllByOwner(agency).each { OrgProperty op ->
+            VendorProperty vp = new VendorProperty()
+            if(op.dateValue)
+                vp.dateValue = op.dateValue
+            if(op.decValue)
+                vp.decValue = op.decValue
+            if(op.intValue)
+                vp.intValue = op.intValue
+            if(op.refValue)
+                vp.refValue = op.refValue
+            if(op.stringValue)
+                vp.stringValue = op.stringValue
+            if(op.urlValue)
+                vp.urlValue = op.urlValue
+            vp.note = op.note
+            vp.tenant = op.tenant
+            vp.dateCreated = op.dateCreated
+            vp.lastUpdated = op.lastUpdated
+            vp.save()
+        }
+        v.save()
+    }
+
     /**
      * Substitution caller for {@link #dropdownNamingConvention(de.laser.Org)}; substitutes with the context institution
      * @return this organisation's name according to the dropdown naming convention (<a href="https://github.com/hbz/laser2/wiki/UI:-Naming-Conventions">see here</a>)
@@ -184,5 +272,37 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
             }
         }
         result
+    }
+
+    boolean isLibrarySystemSupported(String lsB) {
+        if(!supportedLibrarySystems)
+            false
+        else {
+            supportedLibrarySystems.collect { LibrarySystem lsA -> lsA.librarySystem.value }.contains(lsB)
+        }
+    }
+
+    boolean hasElectronicBilling(String ebB) {
+        if(!electronicBillings)
+            false
+        else {
+            electronicBillings.collect { ElectronicBilling ebA -> ebA.invoicingFormat.value }.contains(ebB)
+        }
+    }
+
+    boolean hasElectronicDeliveryDelayNotification(String eddnB) {
+        if(!electronicDeliveryDelays)
+            false
+        else {
+            electronicDeliveryDelays.collect { ElectronicDeliveryDelayNotification eddnA -> eddnA.delayNotification.value }.contains(eddnB)
+        }
+    }
+
+    boolean hasInvoiceDispatch(String idiB) {
+        if(!invoiceDispatchs)
+            false
+        else {
+            invoiceDispatchs.collect { InvoiceDispatch idiA -> idiA.invoiceDispatch.value }.contains(idiB)
+        }
     }
 }
