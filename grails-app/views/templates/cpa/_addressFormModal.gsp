@@ -1,6 +1,6 @@
 <%@ page import="de.laser.utils.LocaleUtils; de.laser.RefdataCategory; de.laser.Address; de.laser.Org; de.laser.FormService; de.laser.storage.RDStore; de.laser.RefdataValue;de.laser.storage.RDConstants; de.laser.I10nTranslation;" %>
 <laser:serviceInjection />
-<ui:modalContact modalSize="big" id="addressFormModal" text="${modalText ?: message(code: 'address.add.addressForPublic.label')}" msgClose="${message(code: 'default.button.cancel')}" msgSave="${modalMsgSave ?: message(code: 'default.button.create.label')}">
+<ui:modalAddress form="create_address" modalSize="big" id="addressFormModal" text="${modalText ?: message(code: 'address.add.addressForPublic.label')}" msgClose="${message(code: 'default.button.cancel')}" msgSave="${modalMsgSave ?: message(code: 'default.button.create.label')}">
     <g:form id="create_address" class="ui form" url="${url}" method="POST">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <input type="hidden" name="tab" value="addresses"/>
@@ -390,60 +390,6 @@
             $(elems[i]).val(null);
           }
         }
-    %{--
-
-            JSPC.app.updateDropdown = function() {
-                var dropdownRegion = $('#region');
-                var selectedCountry = $("#country").val();
-                var selectedRegions = ${raw(params.list('region') as String)};
-
-                dropdownRegion.empty();
-                dropdownRegion.append('<option selected="selected" disabled>${message(code: 'default.select.choose.label')}</option>');
-                dropdownRegion.prop('selectedIndex', 0);
-
-                $.ajax({
-                    url: '<g:createLink controller="ajaxJson" action="getRegions"/>'
-                    + '?country=' + selectedCountry + '&format=json',
-                    success: function (data) {
-                        $.each(data, function (key, entry) {
-                            if(jQuery.inArray(entry.id, selectedRegions) >=0 ){
-                                dropdownRegion.append($('<option></option>').attr('value', entry.id).attr('selected', 'selected').text(entry.${"value_" + languageSuffix}));
-                            }else{
-                                dropdownRegion.append($('<option></option>').attr('value', entry.id).text(entry.${"value_" + languageSuffix}));
-                            }
-                         });
-                    }
-                });
-            }
-
-            if($("#country").val()) { JSPC.app.updateDropdown(); }
-
-            $("#country").change(function() { JSPC.app.updateDropdown(); });
-    --}%
-    %{--        $("#create_address").submit(function (e) {
-                e.preventDefault();
-                let addressElements = [$('#type'), $('#name'), $('#additionFirst'), $('#additionSecond'), $('#street_1'), $('#street_2'), $('#zipcode'), $('#city'), $('#pob'), $('#pobZipcode'), $('#pobCity'), $('#country'), $('#region')];
-                if(!JSPC.app.areElementsFilledOut(addressElements)) {
-                    if(confirm("${message(code:'person.create.noAddressConfirm')}")) {
-                        $('#create_address').unbind('submit').submit();
-                    }
-                }
-                else $('#create_address').unbind('submit').submit();
-            });--}%
-    %{--
-            JSPC.app.areElementsFilledOut = function (elems) {
-                let filledOut = false;
-                if(elems !== null) {
-                    for(let i = 0; i < elems.length; i++) {
-                        filledOut = elems[i].val() !== null && elems[i].val() !== "null" && elems[i].val().length > 0
-                        if(filledOut)
-                            break;
-                    }
-                }
-                else filledOut = true;
-                return filledOut;
-            };
-      --}%
         </laser:script>
 
-    </ui:modalContact>
+    </ui:modalAddress>

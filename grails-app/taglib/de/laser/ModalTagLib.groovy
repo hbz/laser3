@@ -38,7 +38,7 @@ class ModalTagLib {
     // CONTENT
     // </ui:modal>
 
-    def modalContact = { attrs, body ->
+    def modalAddress = { attrs, body ->
 
         def (text, message) = SwissKnife.getTextAndMessage(attrs)
         String id           = attrs.id ? ' id="' + attrs.id + '" ' : ''
@@ -76,7 +76,7 @@ class ModalTagLib {
         if (attrs.hideSubmitButton == true || attrs.hideSubmitButton == 'true') {
         }
         else {
-                out << '<input type="submit" class="ui button green" name="save" form="create_address" value="' + msgSave + '" />'
+                out << '<input type="submit" class="ui button green" name="save" form="' + attrs.form + '" value="' + msgSave + '" />'
         }
 
         out << '</div>'
