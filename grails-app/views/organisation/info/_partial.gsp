@@ -84,6 +84,14 @@
         formatter:      JSPC.app.info.chart_config_helper.tooltip_formatter_notNull
     }
 
+    JSPC.app.info.setCounter = function($e, c) {
+        if (c < 1) {
+            $e.find('.blue.circular.label').addClass('disabled').text( c )
+        } else {
+            $e.find('.blue.circular.label').removeClass('disabled').text( c )
+        }
+    }
+
     let $statsToggle = $('.stats-toggle')
 
     $statsToggle.on('click', function() {
@@ -98,7 +106,7 @@
         }
     })
 
-    $statsToggle.first().trigger('click')
+    $statsToggle.first().trigger('click') // init
 
 </laser:script>
 

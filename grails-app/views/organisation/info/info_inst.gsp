@@ -53,6 +53,7 @@
                     <g:each in="${licenseTimelineMap.keySet()}" var="year">
                         <a href="#" class="item" data-tab="year-${year}"> ${year} </a>
                     </g:each>
+%{--                    <a href="#" class="item" data-tab="year-*"> Alle </a>--}%
                 </div>
 
                 <div class="ui tiny header">${message(code: 'license.status.label')}</div>
@@ -72,6 +73,7 @@
                     <g:each in="${providerTimelineMap.keySet()}" var="year">
                         <a href="#" class="item" data-tab="year-${year}"> ${year} </a>
                     </g:each>
+%{--                    <a href="#" class="item" data-tab="year-*"> Alle </a>--}%
                 </div>
 
                 <div class="ui tiny header">${message(code: 'default.provider.label')}</div>
@@ -92,6 +94,7 @@
 %{--                        <a href="#" class="item" data-tab="year-${year}"> ${year} </a>--}%
 %{--                    --}%%{--                        <a href="#" class="item ${year == Year.now().toString() ? 'active' : ''}" data-tab="year-${year}"> ${year} </a>--}%
 %{--                    </g:each>--}%
+%{--                <a href="#" class="item" data-tab="year-*"> Alle </a>--}%
 %{--                </div>--}%
 
 %{--                <div class="ui tiny header">${message(code: 'default.status.label')}</div>--}%
@@ -145,7 +148,7 @@
                                 <g:each in="${subList}" var="subId">
                                     <g:set var="sub" value="${Subscription.get(subId)}" />
                                     <g:set var="orgCons" value="${sub.getConsortia()}" />
-                                    <tr data-id="${subId}">
+                                    <tr data-id="${subId}" data-referenceYear="${sub.referenceYear}">
                                         <td>
                                             <div class="la-flexbox la-minor-object">
                                                 <i class="icon clipboard la-list-icon"></i>
@@ -259,7 +262,7 @@
                                 <g:each in="${subList}" var="subId">
                                     <g:set var="sub" value="${Subscription.get(subId)}" />
                                     <g:set var="orgCons" value="${sub.getConsortia()}" />
-                                    <tr data-id="${subId}">
+                                    <tr data-id="${subId}" data-referenceYear="${sub.referenceYear}">
                                         <td>
                                             <div class="la-flexbox la-minor-object">
                                                 <i class="icon clipboard la-list-icon"></i>
@@ -794,11 +797,7 @@
 
                 $.each( $(statsId + ' .menu .item[data-tab^=' + t + ']'), function(i, e) {
                     let yList = chartConfig.series[i].raw[y]
-                    if (yList.length < 1) {
-                        $(e).find('.blue.circular.label').addClass('disabled').text( yList.length )
-                    } else {
-                        $(e).find('.blue.circular.label').removeClass('disabled').text( yList.length )
-                    }
+                    JSPC.app.info.setCounter($(e), yList.length)
 
                     yList.forEach((f) => {
                         $(statsId + ' tr[data-id=' + f + ']').show()
@@ -826,15 +825,19 @@
                 $(this).addClass('active')
 
                 let y = $(this).attr('data-tab')
-%{--                if (y == 'year-*') { $(statsId + ' tr[data-id]').show() }--}%
-%{--                else {--}%
+                if (y == 'year-*') {
+%{--                    $(statsId + ' tr[data-id]').show()--}%
+                }
+                else {
                     $years.each( function(i, e) {
                         if ($(e).attr('data-tab') == y) {
                             chart.trigger('click', {type: 'click', name: y.replace('year-', ''), dataIndex: i})
                         }
                     })
-%{--                }--}%
+                }
             });
+
+            $(statsId + ' .menu .item[data-tab=year-${Year.now()}]').trigger('click'); // init
         });
 
 %{--        $('#survey-toggle-subscriptions').on('change', function() {--}%

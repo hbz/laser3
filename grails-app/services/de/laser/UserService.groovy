@@ -78,6 +78,9 @@ class UserService {
             else if (params.status == 'disabled') {
                 whereQuery.add( 'u.enabled = false' )
             }
+            else if (params.status == 'enabled') {
+                whereQuery.add( 'u.enabled = true' )
+            }
         }
 
         if (params.name && params.name != '' ) {

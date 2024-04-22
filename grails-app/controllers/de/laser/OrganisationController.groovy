@@ -13,6 +13,7 @@ import de.laser.properties.PropertyDefinition
 import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.system.SystemEvent
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.PdfUtils
@@ -1658,6 +1659,22 @@ class OrganisationController  {
         }
 
         render view: 'delete', model: result
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def disableAllUsers() {
+        List disabledAccounts = []
+
+        Org org = Org.get(params.id)
+        if (org) {
+            User.executeQuery('select u from User u where u.formalOrg = :org and u.enabled = true', [org: org]).each { User usr ->
+                usr.enabled = false
+                usr.save()
+                disabledAccounts.add([usr.id, usr.username])
+            }
+            SystemEvent.createEvent('SYSTEM_UA_FLAG_DISABLED', [org: [org.id, org.name], disabled: disabledAccounts])
+        }
+        redirect view: 'users', model: [id: params.id, disabledAccounts: disabledAccounts]
     }
 
     /**
