@@ -350,7 +350,11 @@ class SubscriptionController {
                     render template: '/templates/usageReport', model: fileResult
                 }
                 else {
-                    Map<String, Object> errorMap = [error: ctrlResult.error]
+                    Map<String, Object> errorMap
+                    if(ctrlResult.error.code)
+                        errorMap = [error: ctrlResult.error.code]
+                    else
+                        errorMap = [error: ctrlResult.error]
                     render template: '/templates/usageReport', model: errorMap
                 }
             }
@@ -1792,29 +1796,36 @@ class SubscriptionController {
                     queryMap.pkgIds = ctrlResult.result.parentSubscription.packages?.pkg?.id
                     queryMap.refSub = ctrlResult.result.parentSubscription
                     //Map<String, List> export = exportService.generateTitleExportCustom(queryMap, TitleInstancePackagePlatform.class.name, monthsInRing.sort { Date monthA, Date monthB -> monthA <=> monthB }, ctrlResult.result.subscriber, true)
-                    Map<String, List> export = exportService.generateRenewalExport(queryMap, monthsInRing, ctrlResult.result.subscriber)
-                    /*
-                    String refYes = RDStore.YN_YES.getI10n('value')
-                    String refNo = RDStore.YN_NO.getI10n('value')
-                    userCache.put('progress', 100) //debug only
-                    export.rows.eachWithIndex { def field, int index ->
-                        if(export.rows[index][0] && export.rows[index][0].style == 'negative'){
-                            export.rows[index] << [field: refNo, style: 'negative']
-                        }else {
-                            export.rows[index] << [field: refYes, style: null]
+                    if(!export.status202) {
+                        Map<String, List> export = exportService.generateRenewalExport(queryMap, monthsInRing, ctrlResult.result.subscriber)
+                        /*
+                        String refYes = RDStore.YN_YES.getI10n('value')
+                        String refNo = RDStore.YN_NO.getI10n('value')
+                        userCache.put('progress', 100) //debug only
+                        export.rows.eachWithIndex { def field, int index ->
+                            if(export.rows[index][0] && export.rows[index][0].style == 'negative'){
+                                export.rows[index] << [field: refNo, style: 'negative']
+                            }else {
+                                export.rows[index] << [field: refYes, style: null]
+                            }
                         }
+                        */
+                        Map sheetData = [:]
+                        sheetData[g.message(code: 'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow: export.titles, columnData: export.rows]
+                        wb = exportService.generateXLSXWorkbook(sheetData)
+                        userCache.put('progress', 100)
+                        FileOutputStream fos = new FileOutputStream(dir+'/'+token)
+                        //--> to document
+                        wb.write(fos)
+                        fos.flush()
+                        fos.close()
+                        wb.dispose()
                     }
-                    */
-                    Map sheetData = [:]
-                    sheetData[g.message(code: 'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow: export.titles, columnData: export.rows]
-                    wb = exportService.generateXLSXWorkbook(sheetData)
-                    userCache.put('progress', 100)
-                    FileOutputStream fos = new FileOutputStream(dir+'/'+token)
-                    //--> to document
-                    wb.write(fos)
-                    fos.flush()
-                    fos.close()
-                    wb.dispose()
+                    else {
+                        userCache.put('progress', 100)
+                        fileResult.remove('token')
+                        fileResult.error = 202
+                    }
                     render template: '/templates/usageReport', model: fileResult
                     return
                 }
@@ -1913,7 +1924,7 @@ class SubscriptionController {
 
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                Map<String, List> export = queryMap ? exportService.generateTitleExportCustom(queryMap, domainClName, [], ctrlResult.result.subscriber, params.tab == 'allTipps') : [titles: [], rows: []]
+                Map<String, Object> export = queryMap ? exportService.generateTitleExportCustom(queryMap, domainClName, [], ctrlResult.result.subscriber, params.tab == 'allTipps') : [titles: [], rows: []]
                 Map sheetData = [:]
 
                 if(params.tab == 'allTipps') {
