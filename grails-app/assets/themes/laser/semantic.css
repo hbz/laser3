@@ -50659,12 +50659,14 @@ legend {
 }
 
 #physicalAddress {
+  border: none;
   border-right: 2px solid white;
   background-color: #e6dee2;
 }
 
 #postalAddress {
   background-color: #e6dee2;
+  border: none;
 }
 /*!
  * # Fomantic-UI 2.9.3 - Grid
