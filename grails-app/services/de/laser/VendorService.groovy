@@ -101,12 +101,16 @@ class VendorService {
             agencies.each { Org agency ->
                 Vendor.convertFromAgency(agency)
                 agency.orgType.remove(RDStore.OT_AGENCY)
+                agency.save()
             }
             Set<OrgRole> agencyRelations = OrgRole.findAllByRoleTypeAndIsShared(RDStore.OR_AGENCY, false)
             agencyRelations.each { OrgRole ar ->
                 Vendor v = Vendor.findByGlobalUID(ar.org.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
-                if(!v)
+                if(!v) {
                     v = Vendor.convertFromAgency(ar.org)
+                    ar.org.orgType.remove(RDStore.OT_AGENCY)
+                    ar.org.save()
+                }
                 if(ar.sub || ar.lic) {
                     VendorRole vr = new VendorRole(vendor: v)
                     if(ar.sub)

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Subscription;" %>
+<%@ page import="de.laser.VendorRole; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Subscription;" %>
 <g:if test="${filteredSubscriptions}">
 
     <g:if test="${controllerName == "subscription"}">
@@ -13,6 +13,13 @@
                                                 editmode     : editable,
                                                 showPersons  : false
                                       ]}"/>
+                            <laser:render template="/templates/links/vendorLinksAsList"
+                                          model="${[vendorRoles  : vendorRoles,
+                                                    roleObject   : subscription,
+                                                    roleRespValue: 'Specific subscription editor',
+                                                    editmode     : editable,
+                                                    showPersons  : true
+                                          ]}"/>
 
                             <div class="ui la-vertical buttons">
                                 <laser:render template="/templates/links/orgLinksSimpleModal"
@@ -28,19 +35,16 @@
                                                     tmplModalID   : 'modal_add_provider',
                                                     editmode      : editable
                                           ]}"/>
-                                <laser:render template="/templates/links/orgLinksSimpleModal"
-                                          model="${[linkType      : subscription.class.name,
-                                                    parent        : genericOIDService.getOID(subscription),
-                                                    property      : 'orgs',
-                                                    recip_prop    : 'sub',
-                                                    tmplRole      : RDStore.OR_AGENCY,
-                                                    tmplType      : RDStore.OT_AGENCY,
-                                                    tmplEntity    : message(code: 'subscription.details.linkAgency.tmplEntity'),
-                                                    tmplText      : message(code: 'subscription.details.linkAgency.tmplText'),
-                                                    tmplButtonText: message(code: 'subscription.details.linkAgency.tmplButtonText'),
-                                                    tmplModalID   : 'modal_add_agency',
-                                                    editmode      : editable
-                                          ]}"/>
+                                <laser:render template="/templates/links/vendorLinksSimpleModal"
+                                              model="${[linkType      : subscription.class.name,
+                                                        parent        : genericOIDService.getOID(subscription),
+                                                        recip_prop    : 'subscription',
+                                                        tmplEntity    : message(code: 'subscription.details.linkAgency.tmplEntity'),
+                                                        tmplText      : message(code: 'subscription.details.linkAgency.tmplText'),
+                                                        tmplButtonText: message(code: 'subscription.details.linkAgency.tmplButtonText'),
+                                                        tmplModalID   : 'modal_add_agency',
+                                                        editmode      : editable
+                                              ]}"/>
                             </div>
         </div>
     </g:if>
@@ -113,6 +117,13 @@
                                                     editmode     : editable,
                                                     showPersons  : false
                                           ]}"/>
+                                <laser:render template="/templates/links/vendorLinksAsList"
+                                              model="${[vendorRoles  : VendorRole.findAllBySubscription(sub, [sort: 'vendor.sortname']),
+                                                        roleObject   : sub,
+                                                        roleRespValue: 'Specific subscription editor',
+                                                        editmode     : editable,
+                                                        showPersons  : true
+                                              ]}"/>
                                 <div class="ui la-vertical buttons la-js-hide-this-card">
 
                                     <laser:render template="/templates/links/orgLinksSimpleModal"
@@ -128,19 +139,16 @@
                                                         tmplModalID   : 'modal_add_provider_' + sub.id,
                                                         editmode      : editable
                                               ]}"/>
-                                    <laser:render template="/templates/links/orgLinksSimpleModal"
-                                              model="${[linkType      : sub.class.name,
-                                                        parent        : genericOIDService.getOID(sub),
-                                                        property      : 'orgs',
-                                                        recip_prop    : 'sub',
-                                                        tmplRole      : RDStore.OR_AGENCY,
-                                                        tmplType      : RDStore.OT_AGENCY,
-                                                        tmplEntity    : message(code: 'subscription.details.linkAgency.tmplEntity'),
-                                                        tmplText      : message(code: 'subscription.details.linkAgency.tmplText'),
-                                                        tmplButtonText: message(code: 'subscription.details.linkAgency.tmplButtonText'),
-                                                        tmplModalID   : 'modal_add_agency_' + sub.id,
-                                                        editmode      : editable
-                                              ]}"/>
+                                    <laser:render template="/templates/links/vendorLinksSimpleModal"
+                                                  model="${[linkType      : sub.class.name,
+                                                            parent        : genericOIDService.getOID(sub),
+                                                            recip_prop    : 'subscription',
+                                                            tmplEntity    : message(code: 'subscription.details.linkAgency.tmplEntity'),
+                                                            tmplText      : message(code: 'subscription.details.linkAgency.tmplText'),
+                                                            tmplButtonText: message(code: 'subscription.details.linkAgency.tmplButtonText'),
+                                                            tmplModalID   : 'modal_add_agency' + sub.id,
+                                                            editmode      : editable
+                                                  ]}"/>
 
                                 </div><!-- la-js-hide-this-card -->
                             </div>

@@ -464,6 +464,14 @@ class CopyElementsService {
                     }
                 }
 
+                //VendorRole
+                VendorRole.findAllBySubscription(subMember).each { VendorRole vr ->
+                    VendorRole newVendorRole = new VendorRole(vendor: vr.vendor)
+                    newVendorRole.subscription = newSubscription
+                    newVendorRole.save()
+                    log.debug("new vendor role set: ${newVendorRole.subscription} for ${newVendorRole.vendor.sortname}")
+                }
+
                 if (subMember.prsLinks && targetObject.prsLinks) {
                     //PersonRole
                     subMember.prsLinks?.each { prsLink ->
@@ -582,6 +590,31 @@ class CopyElementsService {
                         newSubOrgRole.isShared = true
                         newSubOrgRole.save()
                         ((ShareSupport) targetObject).updateShare(newSubOrgRole)
+                    }
+                }
+            }
+
+            if (params.list('copyObject.deleteVendors') && isBothObjectsSet(sourceObject, targetObject)) {
+                List<VendorRole> toDeleteVendorRelations = params.list('copyObject.deleteVendors').collect { genericOIDService.resolveOID(it) }
+                deleteOrgRelations(toDeleteVendorRelations, targetObject, flash)
+                //isTargetSubChanged = true
+            }
+            if (params.list('copyObject.takeVendors') && isBothObjectsSet(sourceObject, targetObject)) {
+                List<VendorRole> toCopyVendorRelations = params.list('copyObject.takeVendors').collect { genericOIDService.resolveOID(it) }
+                copyOrgRelations(toCopyVendorRelations, sourceObject, targetObject, flash)
+                //isTargetSubChanged = true
+
+                List<VendorRole> toggleShareVendorRoles = params.list('toggleShareVendorRoles').collect {
+                    genericOIDService.resolveOID(it)
+                }
+
+                //targetObject = targetObject.refresh()
+                VendorRole.findAllBySubscription(targetObject).each { VendorRole newSubVenRole ->
+
+                    if (newSubVenRole.vendor in toggleShareVendorRoles.vendor) {
+                        newSubVenRole.isShared = true
+                        newSubVenRole.save()
+                        ((ShareSupport) targetObject).updateShare(newSubVenRole)
                     }
                 }
             }

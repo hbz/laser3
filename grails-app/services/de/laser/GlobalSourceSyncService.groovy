@@ -1383,7 +1383,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 if(orgRecord.contacts) {
                     List<String> typeNames = contactTypes.values().collect { RefdataValue cct -> cct.getI10n("value") }
                     typeNames.addAll(contactTypes.keySet())
-                    List<Person> oldPersons = Person.executeQuery('select p from Person p where p.tenant = :provider and p.isPublic = true and p.last_name in (:contactTypes)',[provider: org, contactTypes: typeNames])
+                    List<Person> oldPersons = Person.executeQuery('select p from Person p join p.roleLinks pr where p.tenant = :provider and p.isPublic = true and p.last_name in (:contactTypes) and :provider in (pr.org)',[provider: org, contactTypes: typeNames])
                     List<Long> funcTypes = contactTypes.values().collect { RefdataValue cct -> cct.id }
                     oldPersons.each { Person old ->
                         PersonRole.executeUpdate('delete from PersonRole pr where pr.org = :provider and pr.prs = :oldPerson and pr.functionType.id in (:funcTypes)', [provider: org, oldPerson: old, funcTypes: funcTypes])
