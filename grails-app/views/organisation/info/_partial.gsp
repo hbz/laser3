@@ -66,6 +66,9 @@
                 })
                 return '<div>' + params[0].name + content + '</div>'
             },
+            grid: {
+                left: '0.5%', right: '0.5%', top: '5%', bottom: '20%'
+            },
             series_lineStyle:  {
                 type: 'solid',
                 width: 2,
@@ -73,6 +76,19 @@
                 shadowBlur: 10,
                 shadowOffsetY: 8
             },
+        }
+    }
+    JSPC.app.info.chart_config_helper.tooltip = {
+        trigger:        'axis',
+        axisPointer:    { type: 'shadow' },
+        formatter:      JSPC.app.info.chart_config_helper.tooltip_formatter_notNull
+    }
+
+    JSPC.app.info.setCounter = function($e, c) {
+        if (c < 1) {
+            $e.find('.blue.circular.label').addClass('disabled').text( c )
+        } else {
+            $e.find('.blue.circular.label').removeClass('disabled').text( c )
         }
     }
 
@@ -90,7 +106,7 @@
         }
     })
 
-    $statsToggle.first().trigger('click')
+    $statsToggle.first().trigger('click') // init
 
 </laser:script>
 

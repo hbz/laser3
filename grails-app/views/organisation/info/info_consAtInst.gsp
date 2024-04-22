@@ -32,10 +32,16 @@
                 <div class="ui secondary wrapping menu">
                     <g:each in="${subscriptionTimelineMap.keySet()}" var="year">
                         <a href="#" class="item" data-tab="year-${year}"> ${year} </a>
-                    %{--                        <a href="#" class="item ${year == Year.now().toString() ? 'active' : ''}" data-tab="year-${year}"> ${year} </a>--}%
                     </g:each>
 %{--                    <a href="#" class="item" data-tab="year-*"> Alle </a>--}%
                 </div>
+
+%{--                <div class="ui tiny header">${message(code: 'subscription.referenceYear.label')}</div>--}%
+%{--                <div class="ui secondary wrapping menu">--}%
+%{--                    <g:each in="${surveyTimelineMap.keySet()}" var="year">--}%
+%{--                        <a href="#" class="item" data-tab="referenceYear-${year}"> ${year} </a>--}%
+%{--                    </g:each>--}%
+%{--                </div>--}%
 
                 <div class="ui tiny header">${message(code: 'subscription.status.label')}</div>
                 <div class="ui secondary wrapping menu la-tab-with-js">
@@ -53,8 +59,8 @@
                 <div class="ui secondary wrapping menu">
                     <g:each in="${licenseTimelineMap.keySet()}" var="year">
                         <a href="#" class="item" data-tab="year-${year}"> ${year} </a>
-                    %{--                        <a href="#" class="item ${year == Year.now().toString() ? 'active' : ''}" data-tab="year-${year}"> ${year} </a>--}%
                     </g:each>
+%{--                    <a href="#" class="item" data-tab="year-*"> Alle </a>--}%
                 </div>
 
                 <div class="ui tiny header">${message(code: 'license.status.label')}</div>
@@ -73,9 +79,16 @@
                 <div class="ui secondary wrapping menu">
                     <g:each in="${providerTimelineMap.keySet()}" var="year">
                         <a href="#" class="item" data-tab="year-${year}"> ${year} </a>
-                    %{--                                            <a href="#" class="item ${year == Year.now().toString() ? 'active' : ''}" data-tab="year-${year}"> ${year} </a>--}%
                     </g:each>
+%{--                    <a href="#" class="item" data-tab="year-*"> Alle </a>--}%
                 </div>
+
+%{--                <div class="ui tiny header">${message(code: 'subscription.referenceYear.label')}</div>--}%
+%{--                <div class="ui secondary wrapping menu">--}%
+%{--                    <g:each in="${surveyTimelineMap.keySet()}" var="year">--}%
+%{--                        <a href="#" class="item" data-tab="referenceYear-${year}"> ${year} </a>--}%
+%{--                    </g:each>--}%
+%{--                </div>--}%
 
                 <div class="ui tiny header">${message(code: 'default.provider.label')}</div>
                 <div class="ui secondary wrapping menu la-tab-with-js">
@@ -93,8 +106,8 @@
                 <div class="ui secondary wrapping menu">
                     <g:each in="${surveyTimelineMap.keySet()}" var="year">
                         <a href="#" class="item" data-tab="year-${year}"> ${year} </a>
-                    %{--                        <a href="#" class="item ${year == Year.now().toString() ? 'active' : ''}" data-tab="year-${year}"> ${year} </a>--}%
                     </g:each>
+%{--                    <a href="#" class="item" data-tab="year-*"> Alle </a>--}%
                 </div>
 
                 <div class="ui tiny header">${message(code: 'default.status.label')}</div>
@@ -145,7 +158,7 @@
                             <tbody>
                                 <g:each in="${subList}" var="subId">
                                     <g:set var="sub" value="${Subscription.get(subId)}" />
-                                    <tr data-id="${subId}">
+                                    <tr data-id="${subId}" data-referenceYear="${sub.referenceYear}">
                                         <td>
                                             <div class="la-flexbox la-minor-object">
                                                 <i class="icon clipboard la-list-icon"></i>
@@ -245,7 +258,7 @@
                             <tbody>
                                 <g:each in="${subList}" var="subId">
                                     <g:set var="sub" value="${Subscription.get(subId)}" />
-                                    <tr data-id="${subId}">
+                                    <tr data-id="${subId}" data-referenceYear="${sub.referenceYear}">
                                         <td>
                                             <div class="la-flexbox la-minor-object">
                                                 <i class="icon clipboard la-list-icon"></i>
@@ -551,11 +564,7 @@
 
         JSPC.app.info.chart_config = {
             subscription: {
-                tooltip: {
-                    trigger: 'axis',
-                    axisPointer: { type: 'shadow' },
-                    formatter: JSPC.app.info.chart_config_helper.tooltip_formatter_notNull
-                },
+                tooltip: JSPC.app.info.chart_config_helper.tooltip,
                 series: [
                     <g:each in="${subscriptionTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ RefdataValue.get(it).getI10n('value') }}" var="status">
                         {
@@ -603,14 +612,10 @@
                 },
                 yAxis:  { type: 'value' },
                 legend: { bottom: 0 },
-                grid:   { left: '0.5%', right: '0.5%', top: '5%', bottom: '20%' },
+                grid:   JSPC.app.info.chart_config_helper.grid,
             },
             license: {
-                tooltip: {
-                    trigger: 'axis',
-                    axisPointer: { type: 'shadow' },
-                    formatter: JSPC.app.info.chart_config_helper.tooltip_formatter_notNull
-                },
+                tooltip: JSPC.app.info.chart_config_helper.tooltip,
                 series: [
                     <g:each in="${licenseTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ RefdataValue.get(it).getI10n('value') }}" var="status">
                         {
@@ -656,14 +661,10 @@
                 },
                 yAxis:  { type: 'value' },
                 legend: { bottom: 0 },
-                grid:   { left: '0.5%', right: '0.5%', top: '5%', bottom: '20%' },
+                grid:   JSPC.app.info.chart_config_helper.grid,
             },
             provider: {
-                tooltip: {
-                    trigger: 'axis',
-                    axisPointer: { type: 'shadow' },
-                    formatter: JSPC.app.info.chart_config_helper.tooltip_formatter_notNull
-                },
+                tooltip: JSPC.app.info.chart_config_helper.tooltip,
                 series: [
                 <g:each in="${providerTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ Org.get(it).sortname ?: Org.get(it).name }}" var="provider">
                     {
@@ -688,14 +689,10 @@
                     bottom: 0,
                     type: 'scroll'
                 },
-                grid:   { left: '0.5%', right: '0.5%', top: '5%', bottom: '20%' },
+                grid:   JSPC.app.info.chart_config_helper.grid,
             },
             survey: {
-                tooltip: {
-                    trigger: 'axis',
-                    axisPointer: { type: 'shadow' },
-                    formatter: JSPC.app.info.chart_config_helper.tooltip_formatter_notNull
-                },
+                tooltip: JSPC.app.info.chart_config_helper.tooltip,
                 series: [
                     <g:each in="${surveyTimelineMap.values().collect{ it.keySet() }.flatten().unique()}" var="status"> %{-- sort --}%
                         {
@@ -749,7 +746,7 @@
                 },
                 yAxis:  { type: 'value' },
                 legend: { bottom: 0 },
-                grid:   { left: '0.5%', right: '0.5%', top: '5%', bottom: '20%' },
+                grid:   JSPC.app.info.chart_config_helper.grid,
             },
         };
 
@@ -785,17 +782,14 @@
 
                 $.each( $(statsId + ' .menu .item[data-tab^=' + t + ']'), function(i, e) {
                     let yList = chartConfig.series[i].raw[y]
-                    if (yList.length < 1) {
-                        $(e).find('.blue.circular.label').addClass('disabled').text( yList.length )
-                    } else {
-                        $(e).find('.blue.circular.label').removeClass('disabled').text( yList.length )
-                    }
+                    JSPC.app.info.setCounter($(e), yList.length)
 
                     yList.forEach((f) => {
                         $(statsId + ' tr[data-id=' + f + ']').show()
                     })
                 })
                 // chart.dispatchAction({ type: 'select', dataIndex: y })
+                // chart.dispatchAction({ type: 'highlight', seriesIndex: s, dataIndex: y })
                 $($(statsId + ' .menu .item[data-tab^=' + t + ']')[s]).trigger('click')
 
                 $(statsId + ' .menu .item[data-tab^=year-]').removeClass('active')
@@ -816,15 +810,27 @@
                 $(this).addClass('active')
 
                 let y = $(this).attr('data-tab')
-%{--                if (y == 'year-*') { $(statsId + ' tr[data-id]').show() }--}%
-%{--                else {--}%
+                if (y == 'year-*') {
+%{--                    $(statsId + ' tr[data-id]').show()--}%
+
+%{--                    $.each( $(statsId + ' .menu .item[data-tab^=' + statsId.replace('.stats_', '') + ']'), function(i, e) {--}%
+%{--                        let $tab = $(statsId + '.stats-content .tab[data-tab=' + $(e).attr('data-tab') + '])')  // survey problem--}%
+%{--                        JSPC.app.info.setCounter($(e), $tab.find('tr[data-id]').length)--}%
+
+%{--                        console.log($(e).attr('data-tab'))--}%
+%{--                        console.log($tab)--}%
+%{--                    })--}%
+                }
+                else {
                     $years.each( function(i, e) {
                         if ($(e).attr('data-tab') == y) {
                             chart.trigger('click', {type: 'click', name: y.replace('year-', ''), dataIndex: i})
                         }
                     })
-%{--                }--}%
+                }
             });
+
+            $(statsId + ' .menu .item[data-tab=year-${Year.now()}]').trigger('click'); // init
         });
 
         $('#survey-toggle-subscriptions').on('change', function() {

@@ -195,7 +195,7 @@ class SystemService {
                 usr.accountExpired = true
                 usr.save()
 
-                expiredAccounts.add([usr.id, usr.username, usr.lastLogin])
+                expiredAccounts.add([usr.id, usr.username, usr.lastLogin ? DateUtils.getLocalizedSDF_noZ().format(usr.lastLogin) : null])
             }
         }
 
@@ -216,7 +216,7 @@ class SystemService {
                 usr.accountLocked = false
                 usr.save()
 
-                unlockedAccounts.add([usr.id, usr.username, usr.lastUpdated])
+                unlockedAccounts.add([usr.id, usr.username, DateUtils.getLocalizedSDF_noZ().format(usr.lastUpdated)])
             }
         }
 

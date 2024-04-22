@@ -15,7 +15,7 @@
                 <g:message code="default.role.label"/>
             </g:else>
         </th>
-        <g:if test="${showUserMeta}">
+        <g:if test="${showUserStatus}">
             <th class="center aligned"><i class="exclamation triangle icon grey"></i></th>
         </g:if>
         <th>${message(code:'user.enabled.label')}</th>
@@ -46,7 +46,7 @@
                             </g:if>
                         </g:else>
                 </td>
-                <g:if test="${showUserMeta}">
+                <g:if test="${showUserStatus}">
                     <td class="center aligned">
                         <g:if test="${us.accountExpired}">
                             <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.accountExpired.label')}">
@@ -66,7 +66,7 @@
                     </g:if>
                     <g:else>
                         <g:if test="${! us.enabled}">
-                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.disabled.text')}">
+                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.accountDisabled.label')}">
                                 <i class="icon minus circle red"></i>
                             </span>
                         </g:if>

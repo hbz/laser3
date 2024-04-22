@@ -68,6 +68,21 @@ class UserService {
             }
         }
 
+        if (params.status) {
+            if (params.status == 'expired') {
+                whereQuery.add( 'u.accountExpired = true' )
+            }
+            else if (params.status == 'locked') {
+                whereQuery.add( 'u.accountLocked = true' )
+            }
+            else if (params.status == 'disabled') {
+                whereQuery.add( 'u.enabled = false' )
+            }
+            else if (params.status == 'enabled') {
+                whereQuery.add( 'u.enabled = true' )
+            }
+        }
+
         if (params.name && params.name != '' ) {
             whereQuery.add('(genfunc_filter_matcher(u.username, :name) = true or genfunc_filter_matcher(u.display, :name) = true)')
             queryParams.put('name', params.name)
