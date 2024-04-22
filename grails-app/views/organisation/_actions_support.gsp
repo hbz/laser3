@@ -52,12 +52,13 @@
             </g:elseif>
         </g:if>
 
-        <g:if test="${actionName == 'show'}">
-            <sec:ifAnyGranted roles="ROLE_ADMIN">
+        <sec:ifAnyGranted roles="ROLE_ADMIN">
+            <g:if test="${actionName in ['show']}">
                 <div class="divider"></div>
+                <g:link class="item" action="disableAllUsers" id="${params.id}"><i class="user lock icon"></i> ${message(code:'org.disableAllUsers.label')}</g:link>
                 <g:link class="item" action="delete" id="${params.id}"><i class="trash alternate outline icon"></i> ${message(code:'deletion.org')}</g:link>
-            </sec:ifAnyGranted>
-        </g:if>
+            </g:if>
+        </sec:ifAnyGranted>
     </ui:actionsDropdown>
 </g:if>
 

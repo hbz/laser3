@@ -60,17 +60,13 @@
             </g:elseif>
         </g:if>
 
-        <g:if test="${contextService.getUser().isYoda() && contextService.getOrg().isCustomerType_Consortium() && orgInstance.isCustomerType_Inst()}">
-            <div class="divider"></div>
-            <ui:actionsDropdownItem controller="org" action="info" message="menu.institutions.org.info" params="[id: orgInstance.id]" />
-        </g:if>
-
-        <g:if test="${actionName == 'show'}">
-            <sec:ifAnyGranted roles="ROLE_ADMIN">
+        <sec:ifAnyGranted roles="ROLE_ADMIN">
+            <g:if test="${actionName in ['show']}">
                 <div class="divider"></div>
+                <g:link class="item" action="disableAllUsers" id="${params.id}"><i class="user lock icon"></i> ${message(code:'org.disableAllUsers.label')}</g:link>
                 <g:link class="item" action="delete" id="${params.id}"><i class="trash alternate outline icon"></i> ${message(code:'deletion.org')}</g:link>
-            </sec:ifAnyGranted>
-        </g:if>
+            </g:if>
+        </sec:ifAnyGranted>
     </ui:actionsDropdown>
 </g:if>
 <g:elseif test="${contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )}">
@@ -128,6 +124,12 @@
             </g:if>
             <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
         </g:elseif>
+        <sec:ifAnyGranted roles="ROLE_ADMIN">
+            <g:if test="${actionName in ['show']}">
+                <div class="divider"></div>
+                <g:link class="item" action="disableAllUsers" id="${params.id}"><i class="user lock icon"></i> ${message(code:'org.disableAllUsers.label')}</g:link>
+            </g:if>
+        </sec:ifAnyGranted>
     </ui:actionsDropdown>
 </g:elseif>
 <g:else>
