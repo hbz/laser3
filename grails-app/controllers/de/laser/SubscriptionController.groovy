@@ -1795,9 +1795,9 @@ class SubscriptionController {
                     queryMap.status = RDStore.TIPP_STATUS_CURRENT.id
                     queryMap.pkgIds = ctrlResult.result.parentSubscription.packages?.pkg?.id
                     queryMap.refSub = ctrlResult.result.parentSubscription
+                    Map<String, Object> export = exportService.generateRenewalExport(queryMap, monthsInRing, ctrlResult.result.subscriber)
                     //Map<String, List> export = exportService.generateTitleExportCustom(queryMap, TitleInstancePackagePlatform.class.name, monthsInRing.sort { Date monthA, Date monthB -> monthA <=> monthB }, ctrlResult.result.subscriber, true)
                     if(!export.status202) {
-                        Map<String, List> export = exportService.generateRenewalExport(queryMap, monthsInRing, ctrlResult.result.subscriber)
                         /*
                         String refYes = RDStore.YN_YES.getI10n('value')
                         String refNo = RDStore.YN_NO.getI10n('value')
