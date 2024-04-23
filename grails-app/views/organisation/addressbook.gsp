@@ -64,7 +64,7 @@
             <label></label>
             <a href="${request.forwardURI}"
                class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-            <input type="submit" class="ui primary button" value="${message(code: 'default.button.filter.label')}">test
+            <input type="submit" class="ui primary button" value="${message(code: 'default.button.filter.label')}">
         </div>
     </g:form>
 </ui:filter>
