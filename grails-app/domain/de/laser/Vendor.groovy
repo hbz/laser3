@@ -221,6 +221,11 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
             pr.org = null
             pr.save()
         }
+        Marker.findAllByOrg(agency).each { Marker m ->
+            m.ven = v
+            m.org = null
+            m.save()
+        }
         OrgProperty.findAllByOwner(agency).each { OrgProperty op ->
             VendorProperty vp = new VendorProperty()
             if(op.dateValue)
