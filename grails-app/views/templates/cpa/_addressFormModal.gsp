@@ -286,7 +286,7 @@
             JSPC.app.removePostalAddress();
           }
           if ($("#buttonPostalAddress").hasClass("active")) {
-            removePhysicalAddress();
+            JSPC.app.removePhysicalAddress();
           }
         });
 
@@ -329,7 +329,7 @@
           $("#create_address").form("remove fields", ["pob", "pobZipcode", "pobCity"]);
         }
 
-        function removePhysicalAddress() {
+        JSPC.app.removePhysicalAddress = function() {
             // adding multiple at once to Postanschrift
           $("#create_address").form("add rule", "pob", {
             rules: [
@@ -379,7 +379,7 @@
           JSPC.app.deleteInputs(physicalAddressInputs);
           $("#postalAddress").removeClass("disabled");
           $("#physicalAddress").addClass("disabled");
-          removePhysicalAddress()
+          JSPC.app.removePhysicalAddress()
         });
 
         let postalAddressInputs = [
