@@ -58,42 +58,47 @@ class VendorController {
         ]
         List<String> queryArgs = []
         if(params.containsKey('orgNameContains')) {
-            queryArgs << "(genfunc_filter_matcher(v.name, :name) = true or genfunc_filter_matcher(v.sortname, :name) = true)"
+            queryArgs << "(genfunc_filter_matcher(o.name, :name) = true or genfunc_filter_matcher(o.sortname, :name) = true)"
             queryParams.name = params.orgNameContains
         }
         if(params.containsKey('venStatus')) {
-            queryArgs << "v.status in (:status)"
+            queryArgs << "o.status in (:status)"
             queryParams.status = Params.getRefdataList(params, 'venStatus')
         }
         else if(!params.containsKey('venStatus') && !params.containsKey('filterSet')) {
-            queryArgs << "v.status = :status"
+            queryArgs << "o.status = :status"
             queryParams.status = "Current"
             params.venStatus = RDStore.VENDOR_STATUS_CURRENT.id
         }
 
         if(params.containsKey('qp_supportedLibrarySystems')) {
-            queryArgs << "exists (select ls from v.supportedLibrarySystems ls where ls.librarySystem in (:librarySystems))"
+            queryArgs << "exists (select ls from o.supportedLibrarySystems ls where ls.librarySystem in (:librarySystems))"
             queryParams.put('librarySystems', Params.getRefdataList(params, 'qp_supportedLibrarySystems'))
         }
 
         if(params.containsKey('qp_electronicBillings')) {
-            queryArgs << "exists (select eb from v.electronicBillings eb where eb.invoiceFormat in (:electronicBillings))"
+            queryArgs << "exists (select eb from o.electronicBillings eb where eb.invoiceFormat in (:electronicBillings))"
             queryParams.put('electronicBillings', Params.getRefdataList(params, 'qp_electronicBillings'))
         }
 
         if(params.containsKey('qp_invoiceDispatchs')) {
-            queryArgs << "exists (select idi from v.invoiceDispatchs idi where idi.invoiceDispatch in (:invoiceDispatchs))"
+            queryArgs << "exists (select idi from o.invoiceDispatchs idi where idi.invoiceDispatch in (:invoiceDispatchs))"
             queryParams.put('invoiceDispatchs', Params.getRefdataList(params, 'qp_invoiceDispatchs'))
         }
 
         if(params.containsKey('curatoryGroup') || params.containsKey('curatoryGroupType')) {
-            queryArgs << "v.gokbId in (:wekbIds)"
+            queryArgs << "o.gokbId in (:wekbIds)"
             queryParams.wekbIds = result.wekbRecords.keySet()
         }
-        String vendorQuery = 'select v from Vendor v'
+        String vendorQuery = 'select o from Vendor o'
         if(queryArgs) {
             vendorQuery += ' where '+queryArgs.join(' and ')
         }
+        if(params.containsKey('sort')) {
+            vendorQuery += " order by ${params.sort} ${params.order ?: 'asc'}, v.name ${params.order ?: 'asc'} "
+        }
+        else
+            vendorQuery += " order by o.sortname "
         Set<Vendor> vendorsTotal = Vendor.executeQuery(vendorQuery, queryParams)
 
         String message = message(code: 'export.all.vendors') as String

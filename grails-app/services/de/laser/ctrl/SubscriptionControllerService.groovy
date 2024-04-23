@@ -2121,7 +2121,7 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         else {
             if(subscriptionService.checkThreadRunning('PackageTransfer_'+result.subscription.id) && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,Package.findByGokbId(params.addUUID))) {
-                result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running.withPackage',[subscriptionService.getCachedPackageName('PackageTransfer_'+result.subscription.id)], LocaleUtils.getCurrentLocale())
+                result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running.withPackage',[subscriptionService.getCachedPackageName('PackageTransfer_'+result.subscription.id)] as Object[], LocaleUtils.getCurrentLocale())
                 result.bulkProcessRunning = true
             }
             if (result.subscription.packages) {
@@ -3781,6 +3781,10 @@ class SubscriptionControllerService {
                             newOrgRole.save()
                         }
                     }
+                    VendorRole.findAllBySubscription(result.sourceObject).each { VendorRole vr ->
+                        VendorRole newVendorRole = new VendorRole(subscription: result.targetObject, vendor: vr.vendor)
+                        newVendorRole.save()
+                    }
                 }
             }
             [result:result,status:STATUS_OK]
@@ -4042,7 +4046,7 @@ class SubscriptionControllerService {
 
             args.superOrgType       = [messageSource.getMessage('consortium.superOrgType', null, locale)]
             args.memberTypeSingle   = [messageSource.getMessage('consortium.subscriber', null, locale)]
-            args.memberType         = [messageSource.getMessage('consortium.subscriber', null, locale)]
+            args.memberType         = [messageSource.getMessage('consortium.member.plural', null, locale)]
             args.memberTypeGenitive = [messageSource.getMessage('consortium.subscriber', null, locale)]
         }
         result.args = args
