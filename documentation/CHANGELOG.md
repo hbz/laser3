@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5655    23.04.2024  dev     3.4         Andreas Feature     Sortierung der Länderauswahl umgestellt
+
 5615    23.04.2024  dev     3.4         Ingrid  Feature     Alternierende Eingabe für Hausanschrift oder Postfach, mehr Pflichtfelder
 
 5650    23.04.2024  dev     3.4         David   Feature     Refactoring: Edit-Mode komplett entfernen
