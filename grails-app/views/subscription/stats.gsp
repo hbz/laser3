@@ -348,7 +348,7 @@
                     data: {
                         reportType: $(this).val(),
                         platforms: platforms,
-                        customer: '${subscription.getSubscriber().globalUID}',
+                        customer: '${subscription.getSubscriberRespConsortia().globalUID}',
                         subscription: ${subscription.id}
                     }
                 }).done(function(response) {

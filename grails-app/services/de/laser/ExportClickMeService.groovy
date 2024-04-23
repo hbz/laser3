@@ -3557,11 +3557,11 @@ class ExportClickMeService {
         renewalData.add([createTableCell(format, messageSource.getMessage('renewalEvaluation.withMultiYearTermSub.label', null, locale) + " (${renewalResult.orgsWithMultiYearTermSub.size()})", 'positive')])
 
 
-        renewalResult.orgsWithMultiYearTermSub.sort{it.getSubscriber().sortname}.each { sub ->
+        renewalResult.orgsWithMultiYearTermSub.sort{it.getSubscriberRespConsortia().sortname}.each { sub ->
             Map renewalMap = [:]
 
             renewalMap.sub = sub
-            renewalMap.participant = sub.getSubscriber()
+            renewalMap.participant = sub.getSubscriberRespConsortia()
             renewalMap.multiYearTermTwoSurvey = renewalResult.multiYearTermTwoSurvey
             renewalMap.multiYearTermThreeSurvey = renewalResult.multiYearTermThreeSurvey
             renewalMap.multiYearTermFourSurvey = renewalResult.multiYearTermFourSurvey
@@ -3581,8 +3581,8 @@ class ExportClickMeService {
         renewalData.add([createTableCell(format, messageSource.getMessage('renewalEvaluation.orgsWithParticipationInParentSuccessor.label', null, locale) + " (${renewalResult.orgsWithParticipationInParentSuccessor.size()})", 'positive')])
 
 
-        renewalResult.orgsWithParticipationInParentSuccessor.sort{it.getSubscriber().sortname}.each { sub ->
-            Org org = sub.getSubscriber()
+        renewalResult.orgsWithParticipationInParentSuccessor.sort{it.getSubscriberRespConsortia().sortname}.each { sub ->
+            Org org = sub.getSubscriberRespConsortia()
 
             Map renewalMap = [:]
 
@@ -3669,11 +3669,11 @@ class ExportClickMeService {
         }
 
         if (renewalResult.orgsWithMultiYearTermSub) {
-            sheetData = _exportAccessPoints(renewalResult.orgsWithMultiYearTermSub.collect { it.getSubscriber() }, sheetData, selectedExportFields, locale, " - 2", format)
+            sheetData = _exportAccessPoints(renewalResult.orgsWithMultiYearTermSub.collect { it.getSubscriberRespConsortia() }, sheetData, selectedExportFields, locale, " - 2", format)
         }
 
         if (renewalResult.orgsWithParticipationInParentSuccessor) {
-            sheetData = _exportAccessPoints(renewalResult.orgsWithParticipationInParentSuccessor.collect { it.getSubscriber() }, sheetData, selectedExportFields, locale, " - 3", format)
+            sheetData = _exportAccessPoints(renewalResult.orgsWithParticipationInParentSuccessor.collect { it.getSubscriberRespConsortia() }, sheetData, selectedExportFields, locale, " - 3", format)
         }
 
         if (renewalResult.newOrgsContinuetoSubscription) {
@@ -4958,7 +4958,7 @@ class ExportClickMeService {
         boolean rowWithCost = false
         if(result instanceof Subscription) {
             subscription = result
-            org = subscription.getSubscriber()
+            org = subscription.getSubscriberRespConsortia()
         }
         else {
             subscription = result.sub
@@ -5319,7 +5319,7 @@ class ExportClickMeService {
         Org org = null
 
         if(costItem.sub)
-            org = costItem.sub.getSubscriber()
+            org = costItem.sub.getSubscriberRespConsortia()
 
         if(costItem.surveyOrg)
             org = costItem.surveyOrg.org

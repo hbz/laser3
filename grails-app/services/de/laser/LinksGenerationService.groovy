@@ -320,7 +320,7 @@ class LinksGenerationService {
                     configMap.contextInstances.each { contextInstance ->
                         def pairChild
                         if(contextInstance instanceof Subscription) {
-                            pairChild = (Subscription) configMap.pairInstances.find { child -> child.getSubscriber() == contextInstance.getSubscriber() }
+                            pairChild = (Subscription) configMap.pairInstances.find { child -> child.getSubscriberRespConsortia() == contextInstance.getSubscriberRespConsortia() }
                         }
                         else if(contextInstance instanceof License) {
                             pairChild = (License) configMap.pairInstances.find { child -> child.getLicensee() == contextInstance.getLicensee() }
@@ -411,7 +411,7 @@ class LinksGenerationService {
             sourceChildren.each { sourceChild ->
                 def destinationChild
                 if(sourceChild instanceof Subscription)
-                    destinationChild = destinationChildren.find { dest -> dest.getSubscriber() == sourceChild.getSubscriber() }
+                    destinationChild = destinationChildren.find { dest -> dest.getSubscriberRespConsortia() == sourceChild.getSubscriberRespConsortia() }
                 else if(sourceChild instanceof License)
                     destinationChild = destinationChildren.find { dest -> dest.getLicensee() == sourceChild.getLicensee() }
                 if(destinationChild) {

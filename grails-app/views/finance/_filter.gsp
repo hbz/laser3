@@ -27,7 +27,7 @@
                             <g:message code="${subMemberLabel}"/>
                         </label>
                         <g:select id="filterSubMembers" name="filterSubMembers" multiple="" value="${filterPresets?.filterSubMembers?.collect{ sm -> sm.id }}"
-                                  class="ui fluid search dropdown" from="${subMembers}" optionKey="id" optionValue="${{it.getSubscriber().dropdownNamingConvention(institution)}}"
+                                  class="ui fluid search dropdown" from="${subMembers}" optionKey="id" optionValue="${{it.getSubscriberRespConsortia().dropdownNamingConvention(institution)}}"
                                   noSelection="${['':message(code:'default.select.all.label')]}"
                         />
                     </div>

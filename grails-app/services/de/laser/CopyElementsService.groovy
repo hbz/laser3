@@ -275,7 +275,7 @@ class CopyElementsService {
         List<Subscription> targetChildSubs = subscriptionService.getValidSubChilds(targetObject), memberHoldingsToTransfer = []
         subscriptionToTake.each { Subscription subMember ->
             //Gibt es mich schon in der Ziellizenz?
-            Org found = targetChildSubs?.find { Subscription targetSubChild -> targetSubChild.getSubscriber() == subMember.getSubscriber() }?.getSubscriber()
+            Org found = targetChildSubs?.find { Subscription targetSubChild -> targetSubChild.getSubscriberRespConsortia() == subMember.getSubscriberRespConsortia() }?.getSubscriberRespConsortia()
 
             if (found) {
                 // mich gibts schon! Fehlermeldung ausgeben!

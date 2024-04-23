@@ -254,7 +254,7 @@ class ManagementService {
                         subscriptions.each { Subscription subscription ->
                             if (subscription.isEditableBy(result.user)) {
                                 if (newLicense && subscriptionService.setOrgLicRole(subscription, newLicense, params.processOption == 'unlinkLicense'))
-                                    changeAccepted << "${subscription.name} (${messageSource.getMessage('subscription.linkInstance.label', null, locale)} ${subscription.getSubscriber().sortname})"
+                                    changeAccepted << "${subscription.name} (${messageSource.getMessage('subscription.linkInstance.label', null, locale)} ${subscription.getSubscriberRespConsortia().sortname})"
                             }
                         }
                         if (changeAccepted) {
@@ -384,7 +384,7 @@ class ManagementService {
                                     }
                                     /*
                                     else {
-                                        Object[] args = [pkg.name, selectedSub.getSubscriber().name]
+                                        Object[] args = [pkg.name, selectedSub.getSubscriberRespConsortia().name]
                                         result.error << messageSource.getMessage('subscriptionsManagement.unlinkInfo.costsExisting', args, locale)
                                     }
                                     */
@@ -455,7 +455,7 @@ class ManagementService {
                                         if (!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg = :sp and ci.costItemStatus != :deleted and ci.owner = :context', [sp: subPkg, deleted: RDStore.COST_ITEM_DELETED, context: result.institution])) {
                                             packageService.unlinkFromSubscription(pkg_to_link, subscription, result.institution, params.processOption == 'unlinkwithIE')
                                         } else {
-                                            Object[] args = [subPkg.pkg.name, subPkg.subscription.getSubscriber().name]
+                                            Object[] args = [subPkg.pkg.name, subPkg.subscription.getSubscriberRespConsortia().name]
                                             result.error << messageSource.getMessage('subscriptionsManagement.unlinkInfo.costsExisting', args, locale)
                                         }
                                     }

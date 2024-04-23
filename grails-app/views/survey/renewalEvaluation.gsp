@@ -244,7 +244,7 @@
                 </thead>
                 <tbody>
                 <g:each in="${orgsWithMultiYearTermSub}" var="sub" status="i">
-                    <g:set value="${sub.getSubscriber()}" var="subscriberOrg"/>
+                    <g:set value="${sub.getSubscriberRespConsortia()}" var="subscriberOrg"/>
                     <tr>
                         <td class="center aligned">
                             ${i + 1}
@@ -298,7 +298,7 @@
                 </thead>
                 <tbody>
                 <g:each in="${orgsWithParticipationInParentSuccessor}" var="sub" status="i">
-                    <g:set value="${sub.getSubscriber()}" var="subscriberOrg"/>
+                    <g:set value="${sub.getSubscriberRespConsortia()}" var="subscriberOrg"/>
                     <tr>
                         <td class="center aligned">
                             ${i + 1}

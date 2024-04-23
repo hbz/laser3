@@ -8,12 +8,10 @@ import de.laser.cache.EhcacheWrapper
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.finance.CostItem
-import de.laser.finance.CostItemElementConfiguration
 import de.laser.finance.PriceItem
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.OrgProperty
-import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
 import de.laser.remote.ApiSource
@@ -44,7 +42,6 @@ import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.grails.orm.hibernate.cfg.PropertyConfig
-import org.hibernate.Session
 import org.springframework.context.MessageSource
 import org.springframework.transaction.TransactionStatus
 import org.springframework.web.multipart.MultipartFile
@@ -330,7 +327,7 @@ class SubscriptionControllerService {
             Map<String, Object> c4counts = [:], c4allYearCounts = [:], c5counts = [:]//, c5allYearCounts = [:], countSumsPerYear = [:]
             SortedSet datePoints = new TreeSet(), allYears = new TreeSet()
             String sort, groupKey
-            Org customer = result.subscription.getSubscriber()
+            Org customer = result.subscription.getSubscriberRespConsortia()
             result.customer = customer
             if(platform && refSub) {
                 CostItem refCostItem = CostItem.findBySubAndCostItemElementConfiguration(result.subscription, RDStore.CIEC_POSITIVE)
@@ -988,7 +985,7 @@ class SubscriptionControllerService {
                 }
             }
             if(platformRecord) {
-                CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(configMap.subscription.getSubscriber(), platform)
+                CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(configMap.subscription.getSubscriberRespConsortia(), platform)
                 configMap.putAll(exportService.prepareSushiCall(platformRecord))
                 if(configMap.revision && configMap.statsUrl && ci.value) {
                     if(configMap.revision == AbstractReport.COUNTER_5) {
@@ -1796,7 +1793,7 @@ class SubscriptionControllerService {
         else {
             result.surveys = SurveyConfig.executeQuery("from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
                     [sub: result.subscription.instanceOf,
-                     org: result.subscription.getSubscriber(),
+                     org: result.subscription.getSubscriberRespConsortia(),
                      invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]])
 
             [result:result,status:STATUS_OK]
@@ -1845,7 +1842,7 @@ class SubscriptionControllerService {
 
             Subscription previousSubscription = subscriberSub._getCalculatedPreviousForSurvey()
             Subscription baseSub = result.surveyConfig.subscription ?: subscriberSub.instanceOf
-            result.subscriber = subscriberSub.getSubscriber()
+            result.subscriber = subscriberSub.getSubscriberRespConsortia()
 
             IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
             result.titleGroupID = issueEntitlementGroup ? issueEntitlementGroup.id.toString() : null
@@ -2638,7 +2635,7 @@ class SubscriptionControllerService {
                 checkedCache = [:]
             }
 
-            result.subscriber = result.subscription.getSubscriber()
+            result.subscriber = result.subscription.getSubscriberRespConsortia()
             params.issueEntitlementStatus = RDStore.TIPP_STATUS_CURRENT
             params.subscription = result.subscription
             params.addEntitlements = true
@@ -3955,7 +3952,7 @@ class SubscriptionControllerService {
 
         if (result.subscription) {
             result.subscriptionConsortia = result.subscription.getConsortia()
-            result.inContextOrg = result.contextOrg.id == result.subscription.getSubscriber().id
+            result.inContextOrg = result.contextOrg.id == result.subscription.getSubscriberRespConsortia().id
             result.licenses = Links.findAllByDestinationSubscriptionAndLinkType(result.subscription, RDStore.LINKTYPE_LICENSE).collect { Links li -> li.sourceLicense }
             LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(result.subscription)
             result.hasNext = links.nextLink.size() > 0
@@ -3973,7 +3970,7 @@ class SubscriptionControllerService {
                     result.currentCostItemCounts = subscrCostCounts ? subscrCostCounts[0] : 0
                     result.currentSurveysCounts = SurveyConfig.executeQuery("select count(*) from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
                             [sub: result.subscription.instanceOf,
-                             org: result.subscription.getSubscriber(),
+                             org: result.subscription.getSubscriberRespConsortia(),
                              invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]])[0]
                 }else{
                     result.currentSurveysCounts = SurveyConfig.executeQuery("select count(*) from SurveyConfig as surConfig where surConfig.subscription = :sub", [sub: result.subscription])[0]
@@ -3987,7 +3984,7 @@ class SubscriptionControllerService {
             }else{
                 result.currentSurveysCounts = SurveyConfig.executeQuery("select count(*) from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
                         [sub: result.subscription.instanceOf,
-                         org: result.subscription.getSubscriber(),
+                         org: result.subscription.getSubscriberRespConsortia(),
                          invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]])[0]
                 List subscrCostCounts = CostItem.executeQuery('select count(*) from CostItem ci where ci.sub = :sub and ci.isVisibleForSubscriber = true and ci.costItemStatus != :deleted', [sub: result.subscription, deleted: RDStore.COST_ITEM_DELETED])
                 int subscrCount = subscrCostCounts ? subscrCostCounts[0] : 0

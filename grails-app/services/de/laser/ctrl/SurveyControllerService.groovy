@@ -33,9 +33,7 @@ import de.laser.SubscriptionsQueryService
 import de.laser.SurveyService
 import de.laser.Task
 import de.laser.TitleInstancePackagePlatform
-import de.laser.UserService
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import de.laser.custom.CustomWkhtmltoxService
 import de.laser.finance.CostItem
 import de.laser.finance.Order
 import de.laser.helper.Params
@@ -360,9 +358,9 @@ class SurveyControllerService {
                 List<Subscription> subscriptionList = CostItem.executeQuery(query, [subList: orgSubscriptions, owner: result.surveyInfo.owner, status: RDStore.COST_ITEM_DELETED, costItemElement: Long.valueOf(result.selectedCostItemElementID)])
 
                 subscriptionList.each { Subscription sub ->
-                    Org org = sub.getSubscriber()
+                    Org org = sub.getSubscriberRespConsortia()
                     if (selectedSubParticipants && org && org.id in selectedSubParticipants.id)
-                        result.selectedSubParticipants << sub.getSubscriber()
+                        result.selectedSubParticipants << sub.getSubscriberRespConsortia()
                 }
             }
 
@@ -842,23 +840,23 @@ class SurveyControllerService {
             result.parentSubChilds.each { Subscription sub ->
                 if (sub.isCurrentMultiYearSubscriptionToParentSub()) {
                     result.orgsWithMultiYearTermSub << sub
-                    orgsWithMultiYearTermOrgsID << sub.getSubscriber().id
+                    orgsWithMultiYearTermOrgsID << sub.getSubscriberRespConsortia().id
 
                 } else {
                     //println(sub)
-                    currentParticipantIDs << sub.getSubscriber().id
+                    currentParticipantIDs << sub.getSubscriberRespConsortia().id
                 }
             }
 
 
             result.orgsWithParticipationInParentSuccessor = []
             result.parentSuccessorSubChilds.each { sub ->
-                Org org = sub.getSubscriber()
+                Org org = sub.getSubscriberRespConsortia()
                 if (!(org.id in orgsWithMultiYearTermOrgsID) || !(org.id in currentParticipantIDs)) {
                     result.orgsWithParticipationInParentSuccessor << sub
                 }
             }
-            result.orgsWithParticipationInParentSuccessor = result.orgsWithParticipationInParentSuccessor.sort { it.getSubscriber().sortname }
+            result.orgsWithParticipationInParentSuccessor = result.orgsWithParticipationInParentSuccessor.sort { it.getSubscriberRespConsortia().sortname }
 
             result.orgInsertedItself = []
 
@@ -1147,7 +1145,7 @@ class SurveyControllerService {
                 result.orgsWithoutResult?.remove(it)
             }*/
 
-                result.orgsWithMultiYearTermSub = result.orgsWithMultiYearTermSub.sort { it.getSubscriber().sortname }
+                result.orgsWithMultiYearTermSub = result.orgsWithMultiYearTermSub.sort { it.getSubscriberRespConsortia().sortname }
 
             }
 
@@ -2659,14 +2657,14 @@ class SurveyControllerService {
             result.parentSuccessortParticipantsList = []
 
             result.parentSubChilds.each { sub ->
-                Org org = sub.getSubscriber()
+                Org org = sub.getSubscriberRespConsortia()
                 result.participantsList << org
                 result.parentParticipantsList << org
 
             }
 
             result.parentSuccessorSubChilds.each { sub ->
-                Org org = sub.getSubscriber()
+                Org org = sub.getSubscriberRespConsortia()
                 if (!(result.participantsList && org.id in result.participantsList.id)) {
                     result.participantsList << org
                 }
@@ -2710,7 +2708,7 @@ class SurveyControllerService {
 
             result.parentSuccessorSubChilds.each { sub ->
                 Map newMap = [:]
-                Org org = sub.getSubscriber()
+                Org org = sub.getSubscriberRespConsortia()
                 newMap.id = org.id
                 newMap.sortname = org.sortname
                 newMap.name = org.name
@@ -2809,7 +2807,7 @@ class SurveyControllerService {
 
             result.parentSuccessorSubChilds.each { sub ->
                 Map newMap = [:]
-                Org org = sub.getSubscriber()
+                Org org = sub.getSubscriberRespConsortia()
                 newMap.id = org.id
                 newMap.sortname = org.sortname
                 newMap.name = org.name
@@ -2893,7 +2891,7 @@ class SurveyControllerService {
                             copyCostItem.costInLocalCurrencyAfterTax = copyCostItem.costInLocalCurrencyAfterTax ? Math.round(copyCostItem.costInLocalCurrencyAfterTax) : null
                         }
 
-                        Org org = participantSub.getSubscriber()
+                        Org org = participantSub.getSubscriberRespConsortia()
                         SurveyResult surveyResult = org ? SurveyResult.findBySurveyConfigAndParticipantAndTypeAndStringValueIsNotNull(result.surveyConfig, org, PropertyStore.SURVEY_PROPERTY_ORDER_NUMBER) : null
 
                         if (surveyResult) {
@@ -2944,7 +2942,7 @@ class SurveyControllerService {
 
             result.parentSubChilds.each { sub ->
                 Map newMap = [:]
-                Org org = sub.getSubscriber()
+                Org org = sub.getSubscriberRespConsortia()
                 newMap.id = org.id
                 newMap.sortname = org.sortname
                 newMap.name = org.name
@@ -3087,7 +3085,7 @@ class SurveyControllerService {
                 result.parentSuccessorSubChilds.each { sub ->
 
                     Map newMap = [:]
-                    Org org = sub.getSubscriber()
+                    Org org = sub.getSubscriberRespConsortia()
                     newMap.id = org.id
                     newMap.org = org
                     newMap.sortname = org.sortname
@@ -3195,7 +3193,7 @@ class SurveyControllerService {
                     params.list('selectedSub').each { subID ->
                         if (Long.parseLong(subID) in result.parentSuccessorSubChilds.id) {
                             Subscription sub = Subscription.get(Long.parseLong(subID))
-                            Org org = sub.getSubscriber()
+                            Org org = sub.getSubscriberRespConsortia()
                             Subscription oldSub = sub._getCalculatedPreviousForSurvey()
 
                             AbstractPropertyWithCalculatedLastUpdated copyProperty
@@ -3342,7 +3340,7 @@ class SurveyControllerService {
             result.parentSuccessortParticipantsList = []
 
             result.parentSuccessorSubChilds.each { sub ->
-                Org org = sub.getSubscriber()
+                Org org = sub.getSubscriberRespConsortia()
                 result.parentSuccessortParticipantsList << org
 
             }
@@ -3472,7 +3470,7 @@ class SurveyControllerService {
             //MultiYearTerm Subs
             result.parentSubChilds.each { sub ->
                 if (sub.isCurrentMultiYearSubscriptionToParentSub()) {
-                    Org org = sub.getSubscriber()
+                    Org org = sub.getSubscriberRespConsortia()
                     if (!(result.parentSuccessortParticipantsList && org.id in result.parentSuccessortParticipantsList.id)) {
                         countNewSubs++
                         result.newSubs.addAll(_processAddMember(sub, result.parentSuccessorSubscription, org, sub.startDate, sub.endDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProviderAgency, providersSelection, agenciesSelection))

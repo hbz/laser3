@@ -75,7 +75,7 @@
                     if(docctx.targetOrg)
                         inTargetOrg = contextService.getOrg().id == docctx.targetOrg.id
                     else if(docctx.subscription)
-                        inTargetOrg = contextOrg.id == docctx.subscription.getSubscriber().id
+                        inTargetOrg = contextOrg.id == docctx.subscription.getSubscriberRespConsortia().id
                     else if(docctx.license)
                         inTargetOrg = contextOrg.id in docctx.license.getDerivedLicensees().id
                     switch(docctx.shareConf) {

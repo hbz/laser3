@@ -45,7 +45,7 @@ class IssueEntitlementController {
       result.issueEntitlementInstance = IssueEntitlement.get(params.id)
       result.sub = result.issueEntitlementInstance.subscription
 
-      if(result.sub.getSubscriber().id == contextService.getOrg().id || (result.sub.getConsortia() && result.sub.getConsortia().id == contextService.getOrg().id)){
+      if(result.sub.getSubscriberRespConsortia().id == contextService.getOrg().id || (result.sub.getConsortia() && result.sub.getConsortia().id == contextService.getOrg().id)){
           result.isMySub = true
       }
 
@@ -57,7 +57,7 @@ class IssueEntitlementController {
 
       // Get usage statistics
       Long title_id = result.issueEntitlementInstance.tipp.id
-      Org org = result.issueEntitlementInstance.subscription.getSubscriber() // TODO
+      Org org = result.issueEntitlementInstance.subscription.getSubscriberRespConsortia() // TODO
       Platform supplier =  result.issueEntitlementInstance.tipp.platform
       Long supplier_id = supplier?.id
 
@@ -117,7 +117,7 @@ class IssueEntitlementController {
         result.contextOrg = contextService.getOrg()
         result.participantPerpetualAccessToTitle = []
 
-        result.participantPerpetualAccessToTitle = surveyService.listParticipantPerpetualAccessToTitle(result.issueEntitlementInstance.subscription.getSubscriber(), result.issueEntitlementInstance.tipp)
+        result.participantPerpetualAccessToTitle = surveyService.listParticipantPerpetualAccessToTitle(result.issueEntitlementInstance.subscription.getSubscriberRespConsortia(), result.issueEntitlementInstance.tipp)
 
       result
     }

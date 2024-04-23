@@ -31,11 +31,8 @@ import groovy.sql.BatchingPreparedStatementWrapper
 import groovy.sql.BatchingStatementWrapper
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
-import groovy.xml.XmlSlurper
-import groovy.xml.slurpersupport.GPathResult
 import io.micronaut.http.client.DefaultHttpClientConfiguration
 import io.micronaut.http.client.HttpClientConfiguration
-import org.apache.lucene.index.DocIDMerger.Sub
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.web.json.JSONObject
 import org.springframework.context.MessageSource
@@ -575,7 +572,7 @@ join sub.orgRelations or_sub where
                             } else if (ci.costItemElementConfiguration == RDStore.CIEC_NEGATIVE) {
                                 entries."${ci.billingCurrency}" -= ci.costInBillingCurrencyAfterTax
                             }
-                            //result.totalMembers << ci.sub.getSubscriber()
+                            //result.totalMembers << ci.sub.getSubscriberRespConsortia()
                         }
                         if (obj.sub) {
                             Subscription subCons = (Subscription) obj.sub
@@ -787,8 +784,8 @@ join sub.orgRelations or_sub where
         )
         if(validSubChilds) {
             validSubChilds = validSubChilds?.sort { a, b ->
-                Org sa = a.getSubscriber()
-                Org sb = b.getSubscriber()
+                Org sa = a.getSubscriberRespConsortia()
+                Org sb = b.getSubscriberRespConsortia()
                 (sa.sortname ?: sa.name ?: "")?.compareTo((sb.sortname ?: sb.name ?: ""))
             }
         }
@@ -820,8 +817,8 @@ join sub.orgRelations or_sub where
         }
         if(validSubChilds) {
             /*validSubChilds = validSubChilds?.sort { a, b ->
-                def sa = a.getSubscriber()
-                def sb = b.getSubscriber()
+                def sa = a.getSubscriberRespConsortia()
+                def sb = b.getSubscriberRespConsortia()
                 (sa.sortname ?: sa.name ?: "")?.compareTo((sb.sortname ?: sb.name ?: ""))
             }*/
         }
@@ -1591,7 +1588,7 @@ join sub.orgRelations or_sub where
                 }
             }
             if(sub.hasPerpetualAccess) {
-                Long ownerId = sub.getSubscriber().id
+                Long ownerId = sub.getSubscriberRespConsortia().id
                 ieDirectMapSet.each { Map<String, Object> configMap ->
                     sql.withBatch("insert into permanent_title (pt_version, pt_ie_fk, pt_date_created, pt_subscription_fk, pt_last_updated, pt_tipp_fk, pt_owner_fk) " +
                             "select 0, ie_id, now(), ie_subscription_fk, now(), ie_tipp_fk, "+ownerId+" from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_gokb_id = :wekbId and ie_subscription_fk = :subId") { BatchingPreparedStatementWrapper stmt ->
@@ -1788,7 +1785,7 @@ join sub.orgRelations or_sub where
     boolean setOrgLicRole(Subscription sub, License newLicense, boolean unlink) {
         boolean success = false
         Links curLink = Links.findBySourceLicenseAndDestinationSubscriptionAndLinkType(newLicense,sub,RDStore.LINKTYPE_LICENSE)
-        Org subscr = sub.getSubscriber()
+        Org subscr = sub.getSubscriberRespConsortia()
         if(!unlink && !curLink) {
             try {
                 if(Links.construct([source: newLicense, destination: sub, linkType: RDStore.LINKTYPE_LICENSE, owner: contextService.getOrg()])) {
@@ -2736,7 +2733,7 @@ join sub.orgRelations or_sub where
                                 IssueEntitlement ieInNewSub = surveyService.titleContainedBySubscription(newSub, match, [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_EXPECTED])
                                 boolean allowedToSelect = false
                                 if (surveyConfig.pickAndChoosePerpetualAccess) {
-                                    boolean participantPerpetualAccessToTitle = surveyService.hasParticipantPerpetualAccessToTitle3(newSub.getSubscriber(), match)
+                                    boolean participantPerpetualAccessToTitle = surveyService.hasParticipantPerpetualAccessToTitle3(newSub.getSubscriberRespConsortia(), match)
                                     allowedToSelect = !(participantPerpetualAccessToTitle) && (!ieInNewSub || (ieInNewSub && (contextOrg.id == surveyConfig.surveyInfo.owner.id)))
                                 } else {
                                     allowedToSelect = !ieInNewSub || (ieInNewSub && (contextOrg.id == surveyConfig.surveyInfo.owner.id))
@@ -3089,7 +3086,7 @@ join sub.orgRelations or_sub where
                     sql.executeInsert("insert into permanent_title (pt_version, pt_ie_fk, pt_date_created, pt_subscription_fk, pt_last_updated, pt_tipp_fk, pt_owner_fk) select 0, ie_id, now(), " + subId + ", now(), ie_tipp_fk, " + ownerId + " from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_status_rv_fk != :removed and ie_status_rv_fk = tipp_status_rv_fk and ie_subscription_fk = :subId and not exists(select pt_id from permanent_title where pt_tipp_fk = tipp_id and pt_owner_fk = :ownerId)", [subId: subId, removed: RDStore.TIPP_STATUS_REMOVED.id, ownerId: ownerId])
 
                     if (subscription.instanceOf == null && auditService.getAuditConfig(subscription, 'hasPerpetualAccess')) {
-                        Set depending = Subscription.findAllByInstanceOf(subscription)
+                        Set<Subscription> depending = Subscription.findAllByInstanceOf(subscription)
                         depending.eachWithIndex { dependingObj, i ->
                             subId = dependingObj.id
                             ownerId = dependingObj.subscriber.id
@@ -3133,7 +3130,7 @@ join sub.orgRelations or_sub where
                     sql.executeInsert("insert into permanent_title (pt_version, pt_ie_fk, pt_date_created, pt_subscription_fk, pt_last_updated, pt_tipp_fk, pt_owner_fk) select 0, ie_id, now(), " + subId + ", now(), ie_tipp_fk, " + ownerId + " from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_status_rv_fk != :removed and ie_status_rv_fk = tipp_status_rv_fk and ie_subscription_fk = :subId and not exists(select pt_id from permanent_title where pt_tipp_fk = tipp_id and pt_owner_fk = :ownerId)", [subId: subId, removed: RDStore.TIPP_STATUS_REMOVED.id, ownerId: ownerId])
 
                     if (subscription.instanceOf == null && auditService.getAuditConfig(subscription, 'hasPerpetualAccess')) {
-                        Set depending = Subscription.findAllByInstanceOf(subscription)
+                        Set<Subscription> depending = Subscription.findAllByInstanceOf(subscription)
                         depending.eachWithIndex { dependingObj, int i ->
                             ownerId = dependingObj.subscriber.id
                             countIeIDs = IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is null and ie.status.id in (:status)', [sub: dependingObj, status: status])[0]

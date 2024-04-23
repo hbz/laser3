@@ -271,7 +271,7 @@ class DeletionService {
         List privateProps   = new ArrayList(sub.propertySet.findAll { it.type.tenant != null })
         List customProps    = new ArrayList(sub.propertySet.findAll { it.type.tenant == null })
 
-        List surveys        = sub.instanceOf ? SurveyOrg.findAllByOrgAndSurveyConfig(sub.getSubscriber(), SurveyConfig.findAllBySubscription(sub.instanceOf)) : SurveyConfig.findAllBySubscription(sub)
+        List surveys        = sub.instanceOf ? SurveyOrg.findAllByOrgAndSurveyConfig(sub.getSubscriberRespConsortia(), SurveyConfig.findAllBySubscription(sub.instanceOf)) : SurveyConfig.findAllBySubscription(sub)
 
         SurveyInfo surveyInfo
         // collecting informations
@@ -1020,7 +1020,7 @@ class DeletionService {
                 Order order = ci.order
                 Invoice invoice = ci.invoice
                 if(ci.sub && ci.isVisibleForSubscriber) {
-                    accessibleOrgs << ci.sub.getSubscriber().globalUID
+                    accessibleOrgs << ci.sub.getSubscriberRespConsortia().globalUID
                 }
                 ci.order = null
                 ci.invoice = null
