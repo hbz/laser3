@@ -170,7 +170,7 @@
 
                 <g:if test="${linkifyMap || subscription.instanceOf}">
                     <div class="item la-cb-action-ext">
-                        <div class="ui simple dropdown button la-js-dont-hide-button icon">
+                        <div class="ui simple dropdown button icon">
                             <i class="linkify icon"></i>
                             <div class="menu">
                                 <g:if test="${subscription.instanceOf}">
@@ -234,7 +234,7 @@
 
                 <g:if test="${linkifyMap || license.instanceOf}">
                     <div class="item la-cb-action-ext">
-                        <div class="ui simple dropdown button la-js-dont-hide-button icon">
+                        <div class="ui simple dropdown button icon">
                             <i class="linkify icon"></i>
                             <div class="menu">
                                 <g:if test="${license.instanceOf}">

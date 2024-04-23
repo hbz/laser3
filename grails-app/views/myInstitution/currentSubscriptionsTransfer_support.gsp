@@ -453,14 +453,14 @@
                                                 <g:if test="${!(editable)}">
                                                 <%-- 1 --%>
                                                     <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                            class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
+                                                            class="ui icon blue tiny button la-modern-button"
                                                             target="_blank"><i class="download small icon"></i></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                                     <%-- 1 --%>
                                                         <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                                class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
+                                                                class="ui icon blue tiny button la-modern-button"
                                                                 target="_blank"><i class="download small icon"></i></g:link>
 
                                                     <%-- 2 --%>
@@ -621,7 +621,7 @@
                             %>
                             <g:each in="${documentSet2}" var="docctx">
                                 <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
-                                    <div class="ui small feed content la-js-dont-hide-this-card">
+                                    <div class="ui small feed content">
                                         <div class="ui grid summary">
                                             <div class="eleven wide column la-column-right-lessPadding">
                                                 <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
@@ -643,14 +643,14 @@
                                                 <g:if test="${!(editable)}">
                                                 <%-- 1 --%>
                                                     <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                            class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
+                                                            class="ui icon blue tiny button la-modern-button"
                                                             target="_blank"><i class="download small icon"></i></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                                     <%-- 1 --%>
                                                         <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                                class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
+                                                                class="ui icon blue tiny button la-modern-button"
                                                                 target="_blank"><i class="download small icon"></i></g:link>
 
                                                     <%-- 2 --%>

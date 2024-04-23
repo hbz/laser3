@@ -95,12 +95,12 @@
                 <div class="field">
                     <g:if test="${auditService.getAuditConfig(subscription, 'holdingSelection')}">
                         <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherited')}" class="ui icon green button la-modern-button la-audit-button la-popup-tooltip la-delay" data-inherited="true">
-                            <i aria-hidden="true" class="icon la-js-editmode-icon thumbtack"></i>
+                            <i aria-hidden="true" class="icon thumbtack"></i>
                         </button>
                     </g:if>
                     <g:else>
                         <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherit')}" class="ui icon blue button la-modern-button la-audit-button la-popup-tooltip la-delay" data-inherited="false">
-                            <i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash"></i>
+                            <i aria-hidden="true" class="icon la-thumbtack slash"></i>
                         </button>
                     </g:else>
                 </div>

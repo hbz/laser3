@@ -8,14 +8,14 @@ class DropdownTagLib {
 
     def controlButtons = { attrs, body ->
 
-        out << '<nav class="ui icon buttons la-js-ctrls la-js-dont-hide-button" aria-label="' + message(code: 'wcag.label.actionMenu') + '">'
+        out << '<nav class="ui icon buttons la-js-ctrls" aria-label="' + message(code: 'wcag.label.actionMenu') + '">'
         out <<   body()
         out << '</nav>'
     }
 
     def exportDropdown = { attrs, body ->
 
-        out << '<div class="ui simple dropdown button la-js-dont-hide-button">'
+        out << '<div class="ui simple dropdown button">'
         out <<     '<i class="download icon"></i>'
         out <<     '<div class="menu">'
         out <<         body()
@@ -34,7 +34,7 @@ class DropdownTagLib {
 
     def actionsDropdown = { attrs, body ->
 
-        out << '<div class="ui simple dropdown button la-js-dont-hide-button">'
+        out << '<div class="ui simple dropdown button">'
         out <<     '<i class="magic icon"></i>'
         out <<     '<div class="menu" style="left:auto; right:0">'
         out <<         body()

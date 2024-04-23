@@ -157,7 +157,7 @@
 
                             <div class="la-title">${message(code: 'default.details.label')}</div>
 
-                            <g:link class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                            <g:link class="ui icon tiny blue button la-popup-tooltip la-delay"
                                     data-content="${message(code: 'laser')}"
                                     target="_blank"
                                     controller="tipp" action="show"
@@ -168,7 +168,7 @@
                             <g:each in="${apisources}" var="gokbAPI">
                                 <g:if test="${tipp.gokbId}">
                                     <a role="button"
-                                       class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                       class="ui icon tiny blue button la-popup-tooltip la-delay"
                                        data-content="${message(code: 'wekb')}"
                                        href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/tippContent/?id=' + tipp.gokbId : '#'}"
                                        target="_blank"><i class="la-gokb  icon"></i>
