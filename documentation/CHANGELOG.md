@@ -9,6 +9,8 @@
 
 5653    23.04.2024  dev     3.4         David   Feature     Refactoring: Subscription.getSubscriber()
 
+5615    23.04.2024  dev     3.4         Ingrid  Feature     Alternierende Eingabe für Hausanschrift oder Postfach, mehr Pflichtfelder
+
 5650    23.04.2024  dev     3.4         David   Feature     Refactoring: Edit-Mode komplett entfernen
 
 --      19.04.2024  rc-3.3  3.3.10      Andreas Bug         Verhalten für neue Art von Serverantwort implementiert
