@@ -67,10 +67,10 @@
     }
 %>
 <g:if test="${(contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support() || contextService.getOrg().isCustomerType_Inst_Pro())}">
-    <ui:card message="${documentMessage}" class="documents la-js-hideable ${css_class}" href="#modalCreateDocument" editable="${editable || editable2}">
+    <ui:card message="${documentMessage}" class="documents ${css_class}" href="#modalCreateDocument" editable="${editable || editable2}">
         <g:each in="${baseItems}" var="docctx">
             <g:if test="${docctx.isDocAFile() && (docctx.status?.value!='Deleted')}">
-                <div class="ui small feed content la-js-dont-hide-this-card">
+                <div class="ui small feed content">
                     <div class="ui grid summary">
                         <div class="eight wide column la-column-right-lessPadding">
                             <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
@@ -89,12 +89,12 @@
 
                         <g:if test="${! (editable || editable2)}">
                             <%-- 1 --%>
-                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button la-js-dont-hide-button" target="_blank"><i class="download icon"></i></g:link>
+                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="download icon"></i></g:link>
                         </g:if>
                         <g:else>
                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                 <%-- 1 --%>
-                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button la-js-dont-hide-button" target="_blank"><i class="download icon"></i></g:link>
+                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="download icon"></i></g:link>
 
                                 <%-- 2 --%>
                                 <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
@@ -107,13 +107,13 @@
                             </g:if>
                             <g:elseif test="${docctx.shareConf == RDStore.SHARE_CONF_UPLOADER_AND_TARGET}">
                                 <%-- 1 --%>
-                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button la-js-dont-hide-button" target="_blank"><i class="download icon"></i></g:link>
+                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="download icon"></i></g:link>
                             </g:elseif>
 
                             <%-- 3 --%>
                             <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton() && userService.hasFormalAffiliation(contextService.getUser(), docctx.owner.owner, 'INST_EDITOR')}">
                                 <g:if test="${docctx?.isShared}">
-                                    <span class="la-js-editmode-container">
+                                    <span>
                                         <ui:remoteLink class="ui icon green button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay"
                                                        controller="ajax"
                                                        action="toggleShare"
@@ -122,7 +122,7 @@
                                                        data-done=""
                                                        data-update="container-documents"
                                                        role="button">
-                                            <i class="icon la-share la-js-editmode-icon"></i>
+                                            <i class="icon la-share"></i>
                                         </ui:remoteLink>
                                     </span>
                                 </g:if>
@@ -137,7 +137,7 @@
                                                    data-done=""
                                                    data-update="container-documents"
                                                    role="button">
-                                        <i class="la-share slash icon la-js-editmode-icon"></i>
+                                        <i class="la-share slash icon"></i>
                                     </ui:remoteLink>
                                 </g:else>
                             </g:if>
@@ -164,7 +164,7 @@
                                 %{-- old --}%
 
 %{--                            <g:if test="${docctx.owner.owner?.id == contextOrg.id}">--}%
-%{--                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button la-js-dont-hide-button" target="_blank"><i class="download icon"></i></g:link>--}%
+%{--                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="download icon"></i></g:link>--}%
 
 %{--                                <%-- START First Button --%>--}%
 %{--                                <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />--}%
@@ -203,7 +203,7 @@
 %{--                            <%-- START Third Button --%>--}%
 %{--                            <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton() && userService.hasFormalAffiliation(contextService.getUser(), docctx.owner.owner, 'INST_EDITOR')}">--}%
 %{--                                <g:if test="${docctx?.isShared}">--}%
-%{--                                    <span class="la-js-editmode-container">--}%
+%{--                                    <span>--}%
 %{--                                    <ui:remoteLink class="ui icon green button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay"--}%
 %{--                                                      controller="ajax"--}%
 %{--                                                      action="toggleShare"--}%
@@ -212,7 +212,7 @@
 %{--                                                      data-done=""--}%
 %{--                                                      data-update="container-documents"--}%
 %{--                                                      role="button">--}%
-%{--                                        <i class="icon la-share la-js-editmode-icon"></i>--}%
+%{--                                        <i class="icon la-share"></i>--}%
 %{--                                    </ui:remoteLink>--}%
 %{--                                    </span>--}%
 %{--                                </g:if>--}%
@@ -227,7 +227,7 @@
 %{--                                                      data-done=""--}%
 %{--                                                      data-update="container-documents"--}%
 %{--                                                      role="button">--}%
-%{--                                        <i class="la-share slash icon la-js-editmode-icon"></i>--}%
+%{--                                        <i class="la-share slash icon"></i>--}%
 %{--                                    </ui:remoteLink>--}%
 %{--                                </g:else>--}%
 %{--                            </g:if>--}%
@@ -240,10 +240,10 @@
     </ui:card>
 </g:if>
 <g:if test="${sharedItems}">
-    <ui:card message="license.documents.shared" class="documents la-js-hideable ${css_class}" editable="${editable}">
+    <ui:card message="license.documents.shared" class="documents ${css_class}" editable="${editable}">
         <g:each in="${sharedItems}" var="docctx">
             <g:if test="${docctx.isDocAFile() && (docctx.status?.value!='Deleted')}">
-                <div class="ui small feed content la-js-dont-hide-this-card">
+                <div class="ui small feed content">
 
                     <div class="ui grid summary">
                         <div class="eleven wide column">
@@ -261,7 +261,7 @@
                         </div>
 
                         <div class="five wide right aligned column">
-                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button la-js-dont-hide-button" target="_blank"><i class="download icon"></i></g:link>
+                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="download icon"></i></g:link>
 
                             %{--
                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">

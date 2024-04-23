@@ -13,7 +13,7 @@ class LinkTagLib {
         String icon = attrs.icon ?: 'external alternate'
 
         out << '<span class="la-popup-tooltip la-delay" data-position="top right" data-content="' + message(code: 'tooltip.callUrl') + '" style="bottom:-3px">&nbsp;'
-        out << '<a href="' + attrs.href + '" target="_blank" aria-label="' + attrs.href + '" class="la-js-dont-hide-button">'
+        out << '<a href="' + attrs.href + '" target="_blank" aria-label="' + attrs.href + '">'
         out << '<i class="icon ' + icon + '" aria-hidden="true"></i>'
         out << '</a>'
         out << '</span>'
@@ -86,7 +86,7 @@ class LinkTagLib {
         }
 
         out << '<a href="' + href + '" target="_blank" aria-label="' + label + '" '
-        out << 'class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay" '
+        out << 'class="ui icon blue button la-modern-button la-popup-tooltip la-delay" '
         out << 'data-position="top right" data-content="' + label + '" '
 //        out << 'data-content="' + message(code: 'org.isWekbCurated.header.label') + '" '
 //        out << 'aria-label="' + message(code: 'org.isWekbCurated.header.label') + '" '

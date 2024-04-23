@@ -68,7 +68,7 @@
                             <dt class="control-label">${message(code: 'subscription.startDate.label')}</dt>
                             <dd><ui:xEditable owner="${subscription}" field="startDate" type="date" validation="datesCheck"/></dd>
                             <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><ui:auditButton
+                                <dd><ui:auditButton
                                         auditable="[subscription, 'startDate']" auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
@@ -77,7 +77,7 @@
                             <dd><ui:xEditable owner="${subscription}" field="endDate" type="date"
                                                  validation="datesCheck" overwriteEditable="${editable && !subscription.isAutomaticRenewAnnually}"/></dd>
                             <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><ui:auditButton
+                                <dd><ui:auditButton
                                         auditable="[subscription, 'endDate']" auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
@@ -86,7 +86,7 @@
                             <dt class="control-label">${message(code: 'subscription.manualCancellationDate.label.shy')}</dt>
                             <dd><ui:xEditable owner="${subscription}" field="manualCancellationDate" type="date"/></dd>
                             <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><ui:auditButton
+                                <dd><ui:auditButton
                                         auditable="[subscription, 'manualCancellationDate']"
                                         auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
@@ -96,7 +96,7 @@
                             <dt class="control-label">${message(code: 'subscription.referenceYear.label')}</dt>
                             <dd><ui:xEditable owner="${subscription}" field="referenceYear" type="year"/></dd>
                             <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><ui:auditButton
+                                <dd><ui:auditButton
                                         auditable="[subscription, 'referenceYear']"
                                         auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
@@ -108,7 +108,7 @@
                                                      config="${RDConstants.SUBSCRIPTION_STATUS}"
                                                      constraint="removeValue_deleted"/></dd>
                             <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><ui:auditButton
+                                <dd><ui:auditButton
                                         auditable="[subscription, 'status']" auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
@@ -145,7 +145,7 @@
                                                             config="${RDConstants.SUBSCRIPTION_TYPE}"
                                                             constraint="removeValue_administrativeSubscription,removeValue_localSubscription"/>
                                 </dd>
-                                <dd class="la-js-editmode-container">
+                                <dd>
                                     <ui:auditButton auditable="[subscription, 'type']" auditConfigs="${auditConfigs}"/>
                                 </dd>
                             </dl>
@@ -154,7 +154,7 @@
                             <dt class="control-label">${message(code: 'subscription.kind.label')}</dt>
                             <dd><ui:xEditableRefData owner="${subscription}" field="kind" config="${RDConstants.SUBSCRIPTION_KIND}"/></dd>
                             <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><ui:auditButton
+                                <dd><ui:auditButton
                                         auditable="[subscription, 'kind']" auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
@@ -162,7 +162,7 @@
                             <dt class="control-label">${message(code: 'subscription.form.label')}</dt>
                             <dd><ui:xEditableRefData owner="${subscription}" field="form" config="${RDConstants.SUBSCRIPTION_FORM}"/></dd>
                             <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><ui:auditButton
+                                <dd><ui:auditButton
                                         auditable="[subscription, 'form']" auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
@@ -170,7 +170,7 @@
                             <dt class="control-label">${message(code: 'subscription.resource.label')}</dt>
                             <dd><ui:xEditableRefData owner="${subscription}" field="resource" config="${RDConstants.SUBSCRIPTION_RESOURCE}"/></dd>
                             <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><ui:auditButton
+                                <dd><ui:auditButton
                                         auditable="[subscription, 'resource']" auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
@@ -188,7 +188,7 @@
                                 <dt class="control-label">${message(code: 'subscription.isPublicForApi.label')}</dt>
                                 <dd><ui:xEditableBoolean owner="${subscription}" field="isPublicForApi"/></dd>
                                 <g:if test="${editable}">
-                                    <dd class="la-js-editmode-container">
+                                    <dd>
                                         <ui:auditButton auditable="[subscription, 'isPublicForApi']" auditConfigs="${auditConfigs}"/>
                                     </dd>
                                 </g:if>
@@ -199,7 +199,7 @@
                                 <%--<dd><ui:xEditableRefData owner="${subscription}" field="hasPerpetualAccess" config="${RDConstants.Y_N}" /></dd>--%>
                                 <dd><ui:xEditableBoolean owner="${subscription}" field="hasPerpetualAccess"/></dd>
                                 <g:if test="${editable}">
-                                    <dd class="la-js-editmode-container">
+                                    <dd>
                                         <ui:auditButton auditable="[subscription, 'hasPerpetualAccess']" auditConfigs="${auditConfigs}"/>
                                     </dd>
                                 </g:if>
@@ -209,7 +209,7 @@
                                 <dt class="control-label">${message(code: 'subscription.hasPublishComponent.label')}</dt>
                                 <dd><ui:xEditableBoolean owner="${subscription}" field="hasPublishComponent"/></dd>
                                 <g:if test="${editable}">
-                                    <dd class="la-js-editmode-container">
+                                    <dd>
                                         <ui:auditButton auditable="[subscription, 'hasPublishComponent']" auditConfigs="${auditConfigs}"/>
                                     </dd>
                                 </g:if>
@@ -219,7 +219,7 @@
                                 <dt class="control-label">${message(code: 'subscription.holdingSelection.label')}</dt>
                                 <dd><ui:xEditableRefData owner="${subscription}" field="holdingSelection" config="${RDConstants.SUBSCRIPTION_HOLDING}"/></dd>
                                 <g:if test="${editable}">
-                                    <dd class="la-js-editmode-container">
+                                    <dd>
                                         <ui:auditButton auditable="[subscription, 'holdingSelection']" auditConfigs="${auditConfigs}"/>
                                     </dd>
                                 </g:if>
@@ -235,7 +235,7 @@
                 <div id="packages" class="la-padding-top-1em"></div>
             </g:if>
         <%--
-        <div class="ui card la-js-hideable hidden">
+        <div class="ui card hidden">
             <div class="content">
                 <laser:render template="/templates/links/orgLinksAsList"
                           model="${[roleLinks: visibleOrgRelations,
@@ -244,7 +244,7 @@
                                     editmode: editable,
                                     showPersons: true
                           ]}" />
-                <div class="ui la-vertical buttons la-js-hide-this-card">
+                <div class="ui la-vertical buttons">
 
                     <laser:render template="/templates/links/orgLinksSimpleModal"
                               model="${[linkType: subscription.class.name,
@@ -273,7 +273,7 @@
                                         editmode: editable
                               ]}" />
 
-                </div><!-- la-js-hide-this-card -->
+                </div>
 
             </div>
         </div>
@@ -284,7 +284,7 @@
                     <div class="content">
                         <g:if test="${totalCostPerUse}">
                             <dl>
-                                <dt class="control-label la-js-dont-hide-this-card">${message(code: 'subscription.details.costPerUse.header')}</dt>
+                                <dt class="control-label">${message(code: 'subscription.details.costPerUse.header')}</dt>
                                 <dd><g:formatNumber number="${totalCostPerUse}" type="currency"
                                                     currencyCode="${currencyCode}" maxFractionDigits="2"
                                                     minFractionDigits="2" roundingMode="HALF_UP"/>
@@ -338,7 +338,7 @@
                             <div class="ui divider"></div>
                         </g:if>
                         <dl>
-                            <dt class="control-label la-js-dont-hide-this-card">${message(code: 'default.usage.label')}</dt>
+                            <dt class="control-label">${message(code: 'default.usage.label')}</dt>
                             <dd>
                                 <table class="ui compact celled la-table-inCard la-ignore-fixed table">
                                     <thead>
@@ -424,7 +424,7 @@
                                             showPersons  : true
                                   ]}"/>
 
-                        <div class="ui la-vertical buttons la-js-hide-this-card">
+                        <div class="ui la-vertical buttons">
 
                             <laser:render template="/templates/links/orgLinksSimpleModal"
                                       model="${[linkType      : subscription.class.name,
@@ -440,7 +440,7 @@
                                                 editmode      : editable
                                       ]}"/>
 
-                        </div><!-- la-js-hide-this-card -->
+                        </div>
 
                     </div>
                 </div>
@@ -458,7 +458,7 @@
                                             showPersons  : true
                                   ]}"/>
 
-                        <div class="ui la-vertical buttons la-js-hide-this-card">
+                        <div class="ui la-vertical buttons">
                             <laser:render template="/templates/links/vendorLinksSimpleModal"
                                       model="${[linkType      : subscription.class.name,
                                                 parent        : genericOIDService.getOID(subscription),
@@ -470,7 +470,7 @@
                                                 editmode      : editable
                                       ]}"/>
 
-                        </div><!-- la-js-hide-this-card -->
+                        </div>
 
                     </div>
                 </div>

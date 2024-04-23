@@ -186,7 +186,7 @@
                         var="gokbAPI">
                     <g:if test="${tipp.pkg.gokbId}">
                         <a role="button"
-                           class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                           class="ui icon tiny blue button la-popup-tooltip la-delay"
                            data-content="${message(code: 'wekb')}"
                            href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/public/packageContent/?id=' + tipp.pkg.gokbId : '#'}"
                            target="_blank"><i class="la-gokb  icon"></i>
@@ -233,7 +233,7 @@
 
             <div class="item">${message(code: 'platform.primaryURL')}:               ${tipp.platform.primaryUrl}
                 <g:if test="${tipp.platform.primaryUrl}">
-                    <a role="button" class="ui icon mini blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
+                    <a role="button" class="ui icon mini blue button la-modern-button la-popup-tooltip la-delay"
                        data-content="${message(code: 'tipp.tooltip.callUrl')}"
                        href="${tipp.platform.primaryUrl?.contains('http') ? tipp.platform.primaryUrl : 'http://' + tipp.platform.primaryUrl}"
                        target="_blank"><i class="external alternate icon"></i></a>
@@ -244,7 +244,7 @@
                     var="gokbAPI">
                 <g:if test="${tipp.platform.gokbId}">
                     <a role="button"
-                       class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                       class="ui icon tiny blue button la-popup-tooltip la-delay"
                        data-content="${message(code: 'wekb')}"
                        href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/public/platformContent/?id=' + tipp.platform.gokbId : '#'}"
                        target="_blank"><i class="la-gokb  icon"></i>

@@ -465,7 +465,7 @@
                                                 <g:each in="${subscription.packages.sort { it.pkg.name }}" var="sp">
                                                     <tr>
                                                         <th scope="row"
-                                                            class="control-label la-js-dont-hide-this-card">${message(code: 'subscription.packages.label')}</th>
+                                                            class="control-label">${message(code: 'subscription.packages.label')}</th>
                                                         <td>
                                                             <g:link controller="package" action="show"
                                                                     id="${sp.pkg.id}">${sp.pkg.name}</g:link>
@@ -526,7 +526,7 @@
                                                         var="link">
                                                     <tr><g:set var="pair" value="${link.getOther(subscription)}"/>
                                                         <th scope="row"
-                                                            class="control-label la-js-dont-hide-this-card">${pair.licenseCategory?.getI10n("value")}</th>
+                                                            class="control-label">${pair.licenseCategory?.getI10n("value")}</th>
                                                         <td>
                                                             <g:link controller="license" action="show" id="${pair.id}">
                                                                 ${pair.reference} (${pair.status.getI10n("value")})
@@ -544,7 +544,7 @@
                                                         <td class="right aligned">
                                                             <g:if test="${pair.propertySet}">
                                                                 <div id="derived-license-properties-toggle${link.id}"
-                                                                        class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                                                        class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
                                                                         data-content="${message(code: 'subscription.details.viewLicenseProperties')}">
                                                                     <i class="ui angle double down icon"></i>
                                                                 </div>

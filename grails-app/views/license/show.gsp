@@ -72,7 +72,7 @@
                                         <ui:xEditable owner="${license}" type="date" field="startDate" validation="datesCheck" />
                                     </dd>
                                     <g:if test="${editable}">
-                                        <dd class="la-js-editmode-container"><ui:auditButton auditable="[license, 'startDate']" auditConfigs="${auditConfigs}" /></dd>
+                                        <dd><ui:auditButton auditable="[license, 'startDate']" auditConfigs="${auditConfigs}" /></dd>
                                     </g:if>
                                 </dl>
                                 <dl>
@@ -81,7 +81,7 @@
                                         <ui:xEditable owner="${license}" type="date" field="endDate" validation="datesCheck" />
                                     </dd>
                                     <g:if test="${editable}">
-                                        <dd class="la-js-editmode-container"><ui:auditButton auditable="[license, 'endDate']" auditConfigs="${auditConfigs}" /></dd>
+                                        <dd><ui:auditButton auditable="[license, 'endDate']" auditConfigs="${auditConfigs}" /></dd>
                                     </g:if>
                                 </dl>
                                 <dl>
@@ -90,7 +90,7 @@
                                         <ui:xEditableRefData owner="${license}" field="openEnded" config="${RDConstants.Y_N_U}"/>
                                     </dd>
                                     <g:if test="${editable}">
-                                        <dd class="la-js-editmode-container"><ui:auditButton auditable="[license, 'openEnded']" auditConfigs="${auditConfigs}" /></dd>
+                                        <dd><ui:auditButton auditable="[license, 'openEnded']" auditConfigs="${auditConfigs}" /></dd>
                                     </g:if>
                                 </dl>
                             </div>
@@ -103,7 +103,7 @@
                                         <ui:xEditableRefData owner="${license}" field="status" config="${RDConstants.LICENSE_STATUS}"/>
                                     </dd>
                                     <g:if test="${editable}">
-                                        <dd class="la-js-editmode-container"><ui:auditButton auditable="[license, 'status']" auditConfigs="${auditConfigs}"/></dd>
+                                        <dd><ui:auditButton auditable="[license, 'status']" auditConfigs="${auditConfigs}"/></dd>
                                     </g:if>
                                 </dl>
                                 <dl>
@@ -112,7 +112,7 @@
                                         <ui:xEditableRefData owner="${license}" field="licenseCategory" config="${RDConstants.LICENSE_CATEGORY}"/>
                                     </dd>
                                     <g:if test="${editable}">
-                                        <dd class="la-js-editmode-container"><ui:auditButton auditable="[license, 'licenseCategory']" auditConfigs="${auditConfigs}"/></dd>
+                                        <dd><ui:auditButton auditable="[license, 'licenseCategory']" auditConfigs="${auditConfigs}"/></dd>
                                     </g:if>
                                 </dl>
 
@@ -128,7 +128,7 @@
                                         <dt class="control-label">${message(code: 'license.isPublicForApi.label')}</dt>
                                         <dd><ui:xEditableBoolean owner="${license}" field="isPublicForApi" /></dd>
                                         <g:if test="${editable}">
-                                            <dd class="la-js-editmode-container"><ui:auditButton auditable="[license, 'isPublicForApi']" auditConfigs="${auditConfigs}"/></dd>
+                                            <dd><ui:auditButton auditable="[license, 'isPublicForApi']" auditConfigs="${auditConfigs}"/></dd>
                                         </g:if>
                                     </dl>
                                 </g:if>
@@ -163,7 +163,7 @@
                                                         showPersons: true
                                               ]}" />
 
-                                    <div class="ui la-vertical buttons la-js-hide-this-card">
+                                    <div class="ui la-vertical buttons">
                                         <laser:render template="/templates/links/orgLinksSimpleModal"
                                                   model="${[linkType: license.class.name,
                                                             parent: license.class.name + ':' + license.id,
@@ -193,7 +193,7 @@
                                                             editmode: editable,
                                                             showPersons: true
                                                   ]}" />
-                                    <div class="ui la-vertical buttons la-js-hide-this-card">
+                                    <div class="ui la-vertical buttons">
                                         <laser:render template="/templates/links/vendorLinksSimpleModal"
                                                       model="${[linkType: license.class.name,
                                                                 parent: license.class.name + ':' + license.id,

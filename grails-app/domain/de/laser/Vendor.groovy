@@ -6,6 +6,8 @@ import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.convenience.Marker
 import de.laser.interfaces.DeleteFlag
 import de.laser.interfaces.MarkerSupport
+import de.laser.properties.OrgProperty
+import de.laser.properties.VendorProperty
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -54,6 +56,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
             contacts: 'vendor',
             addresses: 'vendor',
             packages: 'vendor',
+            propertySet: 'owner',
             supportedLibrarySystems: 'vendor',
             electronicBillings: 'vendor',
             invoiceDispatchs: 'vendor',
@@ -63,6 +66,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
     static hasMany = [
             contacts: Contact,
             addresses: Address,
+            propertySet: VendorProperty,
             packages: PackageVendor,
             supportedLibrarySystems: LibrarySystem,
             electronicBillings: ElectronicBilling,
@@ -92,9 +96,9 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         forwardingUsageStatisticsFromPublisher column: 'ven_forwarding_usage_statistics_from_publisher'
         activationForNewReleases column: 'ven_activation_new_releases'
         exchangeOfIndividualTitles column: 'ven_exchange_individual_titles'
-        researchPlatformForEbooks column: 'ven_research_platform_ebooks'
+        researchPlatformForEbooks column: 'ven_research_platform_ebooks', type: 'text'
         prequalificationVOL column: 'ven_prequalification_vol'
-        prequalificationVOLInfo column: 'ven_prequalification_vol_info'
+        prequalificationVOLInfo column: 'ven_prequalification_vol_info', type: 'text'
         dateCreated column: 'ven_date_created'
         lastUpdated column: 'ven_last_updated'
         lastUpdatedCascading column: 'ven_last_updated_cascading'
@@ -104,7 +108,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         gokbId                      (unique: true, nullable: true)
         globalUID                   (unique: true)
         sortname                    (nullable: true)
-        homepage                    (nullable: true)
+        homepage                    (nullable: true, maxSize: 512)
         researchPlatformForEbooks   (nullable: true)
         prequalificationVOLInfo     (nullable: true)
         lastUpdatedCascading        (nullable: true)
@@ -181,6 +185,68 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         if(!result)
             id <=> v.id
         result
+    }
+
+    static Vendor convertFromAgency(Org agency) {
+        Vendor v = null
+        if(agency.gokbId)
+            v = Vendor.findByGokbId(agency.gokbId)
+        if(!v)
+            v = new Vendor(globalUID: agency.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
+        v.name = agency.name
+        v.sortname = agency.sortname
+        v.gokbId = agency.gokbId //for the case vendors have already recorded as orgs by sync
+        v.homepage = agency.url
+        if(agency.status == RDStore.ORG_STATUS_CURRENT)
+            v.status = RDStore.VENDOR_STATUS_CURRENT
+        if(agency.status == RDStore.ORG_STATUS_DELETED)
+            v.status = RDStore.VENDOR_STATUS_DELETED
+        if(agency.status == RDStore.ORG_STATUS_RETIRED)
+            v.status = RDStore.VENDOR_STATUS_RETIRED
+        if(agency.status == RDStore.ORG_STATUS_REMOVED)
+            v.status = RDStore.VENDOR_STATUS_REMOVED
+        v.dateCreated = agency.dateCreated
+        agency.contacts.each { Contact c ->
+            c.vendor = v
+            c.org = null
+            c.save()
+        }
+        agency.addresses.each { Address a ->
+            a.vendor = v
+            a.org = null
+            a.save()
+        }
+        PersonRole.findAllByOrg(agency).each { PersonRole pr ->
+            pr.vendor = v
+            pr.org = null
+            pr.save()
+        }
+        Marker.findAllByOrg(agency).each { Marker m ->
+            m.ven = v
+            m.org = null
+            m.save()
+        }
+        OrgProperty.findAllByOwner(agency).each { OrgProperty op ->
+            VendorProperty vp = new VendorProperty()
+            if(op.dateValue)
+                vp.dateValue = op.dateValue
+            if(op.decValue)
+                vp.decValue = op.decValue
+            if(op.intValue)
+                vp.intValue = op.intValue
+            if(op.refValue)
+                vp.refValue = op.refValue
+            if(op.stringValue)
+                vp.stringValue = op.stringValue
+            if(op.urlValue)
+                vp.urlValue = op.urlValue
+            vp.note = op.note
+            vp.tenant = op.tenant
+            vp.dateCreated = op.dateCreated
+            vp.lastUpdated = op.lastUpdated
+            vp.save()
+        }
+        v.save()
     }
 
     /**

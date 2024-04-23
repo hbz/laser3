@@ -4,10 +4,10 @@
     boolean editable2 = contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
 %>
 
-    <ui:card message="workflow.open.plural" class="workflows la-js-hideable" href="#modalCreateWorkflow" editable="${editable || editable2}">
+    <ui:card message="workflow.open.plural" class="workflows" href="#modalCreateWorkflow" editable="${editable || editable2}">
         <g:each in="${checklists.findAll{ it.getInfo().status != RDStore.WF_WORKFLOW_STATUS_DONE }}" var="clist">
             <g:set var="clistInfo" value="${clist.getInfo()}" />
-            <div class="ui small feed content la-js-dont-hide-this-card">
+            <div class="ui small feed content">
                     <div class="ui grid summary">
                         <div class="ten wide column la-column-right-lessPadding">
                             <a data-wfid="${clist.id}">${clist.title}</a>

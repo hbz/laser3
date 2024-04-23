@@ -359,7 +359,7 @@
 
                                 %{--<g:each in="${apisources}" var="gokbAPI">
                                     <g:if test="${provider.gokbId}">
-                                        <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                        <a role="button" class="ui icon tiny blue button la-popup-tooltip la-delay"
                                            data-content="${message(code: 'wekb')}"
                                            href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/orgContent/?id=' + provider.gokbId : '#'}"
                                            target="_blank"><i class="la-gokb  icon"></i>

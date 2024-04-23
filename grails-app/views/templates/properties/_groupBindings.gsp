@@ -7,7 +7,7 @@
         <table class="ui compact la-js-responsive-table la-table-inCard table">
             <thead>
                 <tr>
-                    <th class="la-js-dont-hide-this-card">Merkmalsgruppe</th>
+                    <th>Merkmalsgruppe</th>
                     <th></th>
                     <th>Voreinstellung</th>
                     <th>Für dieses Objekt überschreiben</th>
@@ -60,7 +60,7 @@
                                 </g:if>
                             </td>
                         </g:if>
-                        <td class="x la-js-editmode-container">
+                        <td class="x">
                             <g:if test="${editable}">
                                 <g:if test="${! binding}">
                                     <g:if test="${propDefGroup.isVisible}">

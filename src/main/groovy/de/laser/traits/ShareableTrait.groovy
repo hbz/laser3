@@ -75,7 +75,7 @@ trait ShareableTrait {
             OrgRole.executeUpdate('delete from OrgRole oorr where oorr.sharedFrom = :sf', [sf: this])
         }
         if (this instanceof VendorRole) {
-            VendorRole.executeUpdate('select from VendorRole vr where vr.sharedFrom = :sf', [sf: this])
+            VendorRole.executeUpdate('delete from VendorRole vr where vr.sharedFrom = :sf', [sf: this])
         }
     }
 }

@@ -93,7 +93,7 @@
                                                               data-update="objIdentifierPanel"
                                                               role="button"
                                             >
-                                                <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
+                                                <i class="icon la-thumbtack slash"></i>
                                             </ui:remoteLink>
                                             <g:link controller="ajax" action="deleteIdentifier" class="ui icon negative button la-modern-button js-open-confirm-modal"
                                                     params='${[owner: "${object.class.name}:${object.id}", target: "${ident.class.name}:${ident.id}"]}'
@@ -118,7 +118,7 @@
                                                               data-update="objIdentifierPanel"
                                                               role="button"
                                             >
-                                                <i class="thumbtack icon la-js-editmode-icon"></i>
+                                                <i class="thumbtack icon"></i>
                                             </ui:remoteLink>
                                         </g:else>
                                     </g:if>
