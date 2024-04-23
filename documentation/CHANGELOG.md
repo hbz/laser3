@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5655    23.04.2024  dev     3.4         Andreas Feature     Sortierung der Länderauswahl umgestellt
+
 --      19.04.2024  rc-3.3  3.3.10      Andreas Bug         Verhalten für neue Art von Serverantwort implementiert
 
 5638    11.04.2024  dev     3.4         Andreas Bug         Beifang von leeren Adresszeilen entfernt
