@@ -301,14 +301,13 @@ class ExportClickMeService {
                     ]
             ],
 
-            agencies: [
+            vendor: [
                     label: 'Agency',
                     message: 'default.agency.label',
                     fields: [
-                            'agency.sortname'          : [field: 'sub.agencies.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
-                            'agency.name'              : [field: 'sub.agencies.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
-                            'agency.altnames'          : [field: 'sub.agencies.altnames.name', label: 'Alt Name', message: 'exportClickMe.agency.altnames'],
-                            'agency.url'               : [field: 'sub.agencies.url', label: 'Url', message: 'exportClickMe.agency.url'],
+                            'vendor.sortname'          : [field: 'sub.vendors.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
+                            'vendor.name'              : [field: 'sub.vendors.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
+                            'vendor.url'               : [field: 'sub.vendors.homepage', label: 'Url', message: 'exportClickMe.agency.url'],
                     ]
             ],
 
@@ -383,14 +382,13 @@ class ExportClickMeService {
                     ]
             ],
 
-            agencies: [
-                    label: 'Agency',
+            vendors: [
+                    label: 'Vendor',
                     message: 'default.agency.label',
                     fields: [
-                            'agency.sortname'          : [field: 'agencies.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
-                            'agency.name'              : [field: 'agencies.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
-                            'agency.altnames'          : [field: 'agencies.altnames.name', label: 'Alt Name', message: 'exportClickMe.agency.altnames'],
-                            'agency.url'               : [field: 'agencies.url', label: 'Url', message: 'exportClickMe.agency.url'],
+                            'vendor.sortname'          : [field: 'vendors.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
+                            'vendor.name'              : [field: 'vendors.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
+                            'vendor.url'               : [field: 'vendors.url', label: 'Url', message: 'exportClickMe.agency.url'],
                     ]
             ],
 
@@ -661,14 +659,13 @@ class ExportClickMeService {
                     ]
             ],
 
-            agencies: [
-                    label: 'Agency',
+            vendors: [
+                    label: 'Vendor',
                     message: 'default.agency.label',
                     fields: [
-                            'agency.sortname'          : [field: 'agencies.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
-                            'agency.name'              : [field: 'agencies.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
-                            'agency.altnames'          : [field: 'agencies.altnames.name', label: 'Alt Name', message: 'exportClickMe.agency.altnames'],
-                            'agency.url'               : [field: 'agencies.url', label: 'Url', message: 'exportClickMe.agency.url'],
+                            'vendor.sortname'          : [field: 'vendors.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
+                            'vendor.name'              : [field: 'vendors.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
+                            'vendor.url'               : [field: 'vendors.url', label: 'Url', message: 'exportClickMe.agency.url'],
                     ]
             ],
 
@@ -892,14 +889,13 @@ class ExportClickMeService {
                     ]
             ],
 
-            agencies: [
+            vendors: [
                     label: 'Agency',
                     message: 'default.agency.label',
                     fields: [
-                            'agency.sortname'          : [field: 'agencies.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
-                            'agency.name'              : [field: 'agencies.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
-                            'agency.altnames'          : [field: 'agencies.altnames.name', label: 'Alt Name', message: 'exportClickMe.agency.altnames'],
-                            'agency.url'               : [field: 'agencies.url', label: 'Url', message: 'exportClickMe.agency.url']
+                            'vendor.sortname'          : [field: 'vendors.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
+                            'vendor.name'              : [field: 'vendors.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
+                            'vendor.url'               : [field: 'vendors.url', label: 'Url', message: 'exportClickMe.agency.url']
                     ]
             ],
 
