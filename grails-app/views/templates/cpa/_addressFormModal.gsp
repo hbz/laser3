@@ -170,12 +170,12 @@
 
         <div class="field ">
             <div class="two fields">
-                <div class="field eight wide ${hasErrors(bean: addressInstance, field: 'country',
+                <div class="field eight wide required  ${hasErrors(bean: addressInstance, field: 'country',
                         'error')}">
                     <label for="country">
                         <g:message code="address.country.label" />
                     </label>
-                    <ui:select class="ui dropdown" id="country" name="country.id"
+                    <ui:select class="ui dropdown  search" id="country" name="country.id"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.COUNTRY)}"
                                   optionKey="id"
                                   optionValue="value"
@@ -188,7 +188,7 @@
                     <label for="region">
                         <g:message code="address.region.label" />
                     </label>
-                    <select id="region" name="region" class="ui search fluid dropdown">
+                    <select id="region" name="region" class="ui search fluid dropdown three column">
                         <option value="">${message(code: 'default.select.choose.label')}</option>
                     </select>
                 </div>
@@ -199,6 +199,7 @@
 
     <g:set var="languageSuffix" value="${LocaleUtils.getCurrentLang()}"/>
     <laser:script file="${this.getGroovyPageFileName()}">
+
         /* Mandatory fields */
         $("#create_address").form({
           on: 'submit',
@@ -216,6 +217,15 @@
             },
             typeId: {
               identifier: 'typeId',
+              rules: [
+                {
+                  type: 'empty',
+                  prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
+                }
+              ]
+            },
+            country: {
+              identifier: 'country',
               rules: [
                 {
                   type: 'empty',
@@ -390,6 +400,38 @@
             $(elems[i]).val(null);
           }
         }
-        </laser:script>
+
+
+        JSPC.app.updateDropdown = function() {
+            var dropdownRegion = $('#region');
+            var selectedCountry = $("#country").val();
+            var selectedRegions = ${raw(params.list('region') as String)};
+
+            dropdownRegion.empty();
+            dropdownRegion.append('<option selected="true" disabled>${message(code: 'default.select.choose.label')}</option>');
+            dropdownRegion.prop('selectedIndex', 0);
+
+            $.ajax({
+                url: '<g:createLink controller="ajaxJson" action="getRegions"/>'
+                + '?country=' + selectedCountry + '&format=json',
+                success: function (data) {
+                    $.each(data, function (key, entry) {
+                        if(jQuery.inArray(entry.id, selectedRegions) >=0 ){
+                            dropdownRegion.append($('<option></option>').attr('value', entry.id).attr('selected', 'selected').text(entry.${"value_" + languageSuffix}));
+                        }else{
+                            dropdownRegion.append($('<option></option>').attr('value', entry.id).text(entry.${"value_" + languageSuffix}));
+                        }
+                     });
+                }
+            });
+        }
+
+        if($("#country").val()) { JSPC.app.updateDropdown(); }
+
+        $("#country").change(function() { JSPC.app.updateDropdown(); });
+
+
+
+    </laser:script>
 
     </ui:modalAddress>
