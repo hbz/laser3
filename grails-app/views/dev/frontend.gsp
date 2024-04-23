@@ -66,8 +66,6 @@
     %{-- TABLES --}%
     <laser:render template="frontend_responsibleTable" />
     <laser:render template="sparklines" />
-    %{-- DECKSAVER --}%
-    <laser:render template="frontend_decksaver" />
     %{-- TOGGLE BUTTONS  --}%
     <laser:render template="frontend_toggleButtons" />
     %{-- MODALS  --}%

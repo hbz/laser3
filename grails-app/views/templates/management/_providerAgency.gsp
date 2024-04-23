@@ -124,7 +124,7 @@
                                                         editmode     : editable,
                                                         showPersons  : true
                                               ]}"/>
-                                <div class="ui la-vertical buttons la-js-hide-this-card">
+                                <div class="ui la-vertical buttons">
 
                                     <laser:render template="/templates/links/orgLinksSimpleModal"
                                               model="${[linkType      : sub.class.name,
@@ -150,7 +150,7 @@
                                                             editmode      : editable
                                                   ]}"/>
 
-                                </div><!-- la-js-hide-this-card -->
+                                </div>
                             </div>
                         </div>
                     </td>

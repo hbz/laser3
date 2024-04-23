@@ -4,7 +4,7 @@
 <%
     LinkedHashSet groupedProperties = []
 %>
-<!-- TODO div class="ui card la-dl-no-table la-js-hideable" -->
+<!-- TODO div class="ui card la-dl-no-table" -->
 <div class="ui card la-dl-no-table">
 
     <div class="content">
@@ -65,7 +65,7 @@
 
 <%-- orphaned properties --%>
 
-<%--<div class="ui card la-dl-no-table la-js-hideable"> --%>
+<%--<div class="ui card la-dl-no-table"> --%>
     <div class="content">
         <g:if test="${controllerName == 'survey' && actionName == 'show'}">
             <g:set var="surveyProperties" value="${surveyConfig.getOrphanedSurveyConfigProperties(groupedProperties)}"/>

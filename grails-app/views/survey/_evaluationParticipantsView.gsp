@@ -489,14 +489,14 @@
                                                 <g:if test="${!(editable)}">
                                                 <%-- 1 --%>
                                                     <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                            class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
+                                                            class="ui icon blue tiny button la-modern-button"
                                                             target="_blank"><i class="download small icon"></i></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                                     <%-- 1 --%>
                                                         <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                                class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
+                                                                class="ui icon blue tiny button la-modern-button"
                                                                 target="_blank"><i
                                                                 class="download small icon"></i></g:link>
 
@@ -549,7 +549,7 @@
                                     params="${[surveyConfigID: surveyConfig.id,
                                                exportXLS   : true,
                                                tab           : 'selectedIEs']}"
-                                    class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                    class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
                                     data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}" data-position="bottom left"
                                     target="_blank"><i class="download icon"></i></g:link>
                         </td>
@@ -1033,14 +1033,14 @@
                                                 <g:if test="${!(editable)}">
                                                 <%-- 1 --%>
                                                     <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                            class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
+                                                            class="ui icon blue tiny button la-modern-button"
                                                             target="_blank"><i class="download small icon"></i></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                                     <%-- 1 --%>
                                                         <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                                class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
+                                                                class="ui icon blue tiny button la-modern-button"
                                                                 target="_blank"><i
                                                                 class="download small icon"></i></g:link>
 
@@ -1093,7 +1093,7 @@
                                     params="${[surveyConfigID: surveyConfig.id,
                                                exportXLS   : true,
                                                tab           : 'selectedIEs']}"
-                                    class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                    class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
                                     data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}" data-position="bottom left"
                                     target="_blank"><i class="download icon"></i></g:link>
                         </td>

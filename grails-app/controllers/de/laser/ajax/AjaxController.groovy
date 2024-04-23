@@ -1627,32 +1627,6 @@ class AjaxController {
     }
 
     /**
-     * De-/activates the editing mode in certain views. Viewing mode prevents editing of values in those views despite
-     * the context user has editing rights to the object
-     * @return the changed view
-     */
-    @Transactional
-    @Secured(['ROLE_USER'])
-    def toggleEditMode() {
-        log.debug ('toggleEditMode()')
-
-        User user = contextService.getUser()
-        def show = params.showEditMode
-
-        if (show) {
-            def setting = user.getSetting(UserSetting.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES)
-
-            if (show == 'true') {
-                setting.setValue(RDStore.YN_YES)
-            }
-            else if (show == 'false') {
-                setting.setValue(RDStore.YN_NO)
-            }
-        }
-        render show
-    }
-
-    /**
      * Adds an identifier to the given owner object
      */
     @Secured(['ROLE_USER'])

@@ -40,7 +40,7 @@
                 <div class="la-inline-lists">
 
                     <g:if test="${params.tab != 'general'}">
-                    <div class="ui la-dl-no-table la-js-hideable">
+                    <div class="ui la-dl-no-table">
                         <div class="content">
 
                             <table class="ui la-js-responsive-table la-table table">
@@ -193,7 +193,7 @@
                     <g:if test="${params.tab == 'general'}">
                         <ui:flagDeprecated />
 
-                        <div class="ui card la-dl-no-table la-js-hideable">
+                        <div class="ui card la-dl-no-table">
                             <div class="content">
                                 <h2 class="ui header">
                                     ${message(code:'org.confProperties')}

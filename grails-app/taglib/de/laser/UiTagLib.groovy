@@ -258,12 +258,12 @@ class UiTagLib {
                                         params: ['owner': oid, 'property': [objAttr], keep: true],
                                 )
                                 out << '">'
-                                out << '<i aria-hidden="true" class="icon la-js-editmode-icon thumbtack"></i>'
+                                out << '<i aria-hidden="true" class="icon thumbtack"></i>'
                                 out << '</a>'
                             }
                             else {
                                 out << '<div class="ui simple dropdown icon green button la-modern-button ' + attrs.class + ' la-audit-button" data-content="Wert wird vererbt">'
-                                out   << '<i aria-hidden="true" class="icon la-js-editmode-icon thumbtack"></i>'
+                                out   << '<i aria-hidden="true" class="icon thumbtack"></i>'
                                 out   << '<div class="menu">'
                                 out << g.link( 'Vererbung deaktivieren. Wert für Einrichtung <strong>löschen</strong>',
                                         controller: 'ajax',
@@ -289,7 +289,7 @@ class UiTagLib {
                                     params: ['owner': oid, 'property': [objAttr]],
                             )
                             out << '">'
-                            out << '<i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash"></i>'
+                            out << '<i aria-hidden="true" class="icon la-thumbtack slash"></i>'
                             out << '</a>'
                         }
                     }

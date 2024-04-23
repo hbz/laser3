@@ -63,7 +63,7 @@
                             <dd>
                                 <ui:xEditable owner="${platformInstance}" field="primaryUrl"/>
                                 <g:if test="${platformInstance.primaryUrl}">
-                                    <a role="button" class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                    <a role="button" class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
                                        data-content="${message(code: 'tipp.tooltip.callUrl')}"
                                        href="${platformInstance.primaryUrl.startsWith('http') ? platformInstance.primaryUrl : 'http://' + platformInstance.primaryUrl}"
                                        target="_blank"><i class="external alternate icon"></i></a>
@@ -228,7 +228,7 @@
                     <table class="ui three column table">
                         <g:each in="${orgAccessPointList}" var="orgAccessPoint">
                             <tr>
-                                <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code: 'platform.accessPoint')}</th>
+                                <th scope="row" class="control-label">${message(code: 'platform.accessPoint')}</th>
                                 <td>
                                     <g:link controller="accessPoint" action="edit_${orgAccessPoint.oap.accessMethod.value.toLowerCase()}"  id="${orgAccessPoint.oap.id}">
                                         ${orgAccessPoint.oap.name}  (${orgAccessPoint.oap.accessMethod.getI10n('value')})

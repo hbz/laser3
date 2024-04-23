@@ -18,10 +18,10 @@
 %>
 
 <g:if test="${(contextService.getOrg().isCustomerType_Inst() || contextService.getOrg().isCustomerType_Consortium_Pro())}">
-    <ui:card message="${controllerName == 'survey' ? 'surveyConfigsInfo.docs' : 'license.documents'}" class="documents la-js-hideable ${css_class}" href="${controllerName == 'survey' ? '#modalCreateDocument' : ''}" editable="${(controllerName == 'survey')  ? (actionName == 'show') : (editable || editable2)}">
+    <ui:card message="${controllerName == 'survey' ? 'surveyConfigsInfo.docs' : 'license.documents'}" class="documents ${css_class}" href="${controllerName == 'survey' ? '#modalCreateDocument' : ''}" editable="${(controllerName == 'survey')  ? (actionName == 'show') : (editable || editable2)}">
         <g:each in="${baseItems}" var="docctx">
            <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
-                <div class="ui small feed content la-js-dont-hide-this-card">
+                <div class="ui small feed content">
                     <div class="ui grid summary">
                         <div class="nine wide column">
                             <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
