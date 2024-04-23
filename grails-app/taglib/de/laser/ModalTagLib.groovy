@@ -34,6 +34,55 @@ class ModalTagLib {
         }
     }
 
+    //<ui:modalContact id="myModalDialog" text="${text}" message="local.string" hideSubmitButton="true" modalSize="large/small/tiny/mini" >
+    // CONTENT
+    // </ui:modal>
+
+    def modalAddress = { attrs, body ->
+
+        def (text, message) = SwissKnife.getTextAndMessage(attrs)
+        String id           = attrs.id ? ' id="' + attrs.id + '" ' : ''
+        String modalSize    = attrs.modalSize ? attrs.modalSize  : ''
+        String refreshModal    = attrs.refreshModal ? 'longer'  : ''
+        String title        = (text && message) ? text + " - " + message : text + message
+        String isEditModal  = attrs.isEditModal
+
+        String msgClose    = attrs.msgClose  ?: "${g.message(code:'default.button.close.label')}"
+        String msgSave     = attrs.msgSave   ?: (isEditModal ? "${g.message(code:'default.button.save_changes')}" : "${g.message(code:'default.button.create.label')}")
+        String msgDelete   = attrs.msgDelete ?: "${g.message(code:'default.button.delete.label')}"
+
+        out << '<div role="dialog" class="ui ' + refreshModal + ' modal ' + modalSize + '"' + id + ' aria-label="Modal">'
+        out << '<div class="header">' + title + '</div>'
+
+        if (attrs.contentClass) {
+            out << '<div class="content ' + attrs.contentClass + '">'
+        } else {
+            out << '<div class="content">'
+        }
+
+        out << body()
+        out << '</div>'
+        out << '<div class="actions">'
+        out << '<button class="ui button deny" >' + msgClose + '</button>'
+
+        if (attrs.showDeleteButton) {
+
+            out << '<input type="submit" class="ui negative button" name="delete" value="' + msgDelete + '" onclick="'
+            out << "return confirm('${g.message(code:'default.button.delete.confirmDeletion.message')}')?"
+            out << '$(\'#' + attrs.id + '\').find(\'#' + attrs.deleteFormID + '\').submit():null'
+            out << '"/>'
+        }
+
+        if (attrs.hideSubmitButton == true || attrs.hideSubmitButton == 'true') {
+        }
+        else {
+                out << '<input type="submit" class="ui button green" name="save" form="' + attrs.form + '" value="' + msgSave + '" />'
+        }
+
+        out << '</div>'
+        out << '</div>'
+    }
+
     //<ui:modal id="myModalDialog" text="${text}" message="local.string" hideSubmitButton="true" modalSize="large/small/tiny/mini" >
     // CONTENT
     // </ui:modal>
