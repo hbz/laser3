@@ -183,7 +183,7 @@
     <aside class="five wide column la-sidekick">
         <div class="ui one cards">
             <div id="container-documents">
-                <ui:card message="subscription.offerNote.label" class="documents la-js-hideable ${css_class}"
+                <ui:card message="subscription.offerNote.label" class="documents ${css_class}"
                          href="#modalCreateDocument" editable="${editable || editable2}">
                     <%
                         Set<DocContext> documentSet = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType and owner.owner = :owner', [subscription: subscription, docType: RDStore.DOC_TYPE_OFFER, owner: contextOrg])
@@ -191,7 +191,7 @@
                     %>
                     <g:each in="${documentSet}" var="docctx">
                         <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
-                            <div class="ui small feed content la-js-dont-hide-this-card">
+                            <div class="ui small feed content">
                                 <div class="ui grid summary">
                                     <div class="eight wide column la-column-right-lessPadding">
                                         <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
@@ -216,14 +216,14 @@
                                         <g:if test="${!(editable)}">
                                         <%-- 1 --%>
                                             <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                    class="ui icon blue button la-modern-button la-js-dont-hide-button"
+                                                    class="ui icon blue button la-modern-button"
                                                     target="_blank"><i class="download icon"></i></g:link>
                                         </g:if>
                                         <g:else>
                                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                             <%-- 1 --%>
                                                 <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                        class="ui icon blue button la-modern-button la-js-dont-hide-button"
+                                                        class="ui icon blue button la-modern-button"
                                                         target="_blank"><i class="download icon"></i></g:link>
 
                                             <%-- 2 --%>
@@ -263,7 +263,7 @@
                     </g:each>
                 </ui:card>
 
-                <ui:card message="subscription.renewalFile.label" class="documents la-js-hideable ${css_class}"
+                <ui:card message="subscription.renewalFile.label" class="documents ${css_class}"
                          href="#modalCreateDocument" editable="${editable || editable2}">
                     <%
                         Set<DocContext> documentSet2 = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType and owner.owner = :owner', [subscription: subscription, docType: RDStore.DOC_TYPE_RENEWAL, owner: contextOrg])
@@ -271,7 +271,7 @@
                     %>
                     <g:each in="${documentSet2}" var="docctx">
                         <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
-                            <div class="ui small feed content la-js-dont-hide-this-card">
+                            <div class="ui small feed content">
                                 <div class="ui grid summary">
                                     <div class="eight wide column la-column-right-lessPadding">
                                         <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
@@ -294,14 +294,14 @@
                                         <g:if test="${!(editable)}">
                                         <%-- 1 --%>
                                             <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                    class="ui icon blue button la-modern-button la-js-dont-hide-button"
+                                                    class="ui icon blue button la-modern-button"
                                                     target="_blank"><i class="download icon"></i></g:link>
                                         </g:if>
                                         <g:else>
                                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                             <%-- 1 --%>
                                                 <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                        class="ui icon blue button la-modern-button la-js-dont-hide-button"
+                                                        class="ui icon blue button la-modern-button"
                                                         target="_blank"><i class="download icon"></i></g:link>
 
                                             <%-- 2 --%>

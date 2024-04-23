@@ -100,8 +100,6 @@ JSPC = {
             'search.API.source',
             'select2.placeholder',
             'select2.noMatchesFound',
-            'statusbar.hideButtons.tooltip',
-            'statusbar.showButtons.tooltip',
             'xEditable.button.cancel',
             'xEditable.button.ok'
     ]

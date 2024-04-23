@@ -46,7 +46,7 @@
         </tr>
         <tr>
             <td>
-                <i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash"></i>
+                <i aria-hidden="true" class="icon la-thumbtack slash"></i>
             </td>
             <td>
                 Wert wird nicht vererbt
@@ -54,7 +54,7 @@
         </tr>
         <tr>
             <td>
-                <i aria-hidden="true" class="icon la-js-editmode-icon thumbtack"></i>
+                <i aria-hidden="true" class="icon thumbtack"></i>
             </td>
             <td>
                 Wert wird vererbt
@@ -62,7 +62,7 @@
         </tr>
         <tr>
             <td>
-                <i aria-hidden="true" class="icon la-js-editmode-icon thumbtack la-thumbtack-regular"></i>
+                <i aria-hidden="true" class="icon thumbtack la-thumbtack-regular"></i>
             </td>
             <td>
                 Wert wird automatisch geerbt
@@ -79,7 +79,7 @@
         </tr>
         <tr>
             <td>
-                <i class="la-share icon la-js-editmode-icon" aria-hidden="true"></i>
+                <i class="la-share icon" aria-hidden="true"></i>
             </td>
             <td>
                 Objekt wird geteilt
@@ -87,7 +87,7 @@
         </tr>
         <tr>
             <td>
-                <i class="la-share slash icon la-js-editmode-icon" aria-hidden="true"></i>
+                <i class="la-share slash icon" aria-hidden="true"></i>
             </td>
             <td>
                 Objekt wird nicht geteilt

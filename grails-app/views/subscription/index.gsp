@@ -496,7 +496,7 @@
 
                                                         </div>
 
-                                                        <div class="ui icon blue button la-modern-button "><i
+                                                        <div class="ui icon blue button la-modern-button"><i
                                                                 class="ui angle double down icon"></i>
                                                         </div>
                                                         <g:if test="${editable}">

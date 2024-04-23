@@ -50636,6 +50636,38 @@ legend {
     margin: 0 0 1em;
   }
 }
+
+/* Addresses */
+
+.ui.buttons .or::before {
+  margin-left: -2.5em;
+  width: 4.785714em;
+  margin-top: 0;
+}
+
+.ui.buttons .or {
+  font-size: 1.5rem;
+}
+
+#buttonPhysicalAddress {
+  width: 50%;
+  border-right: 2px solid white;
+}
+
+#buttonPostalAddress {
+  width: 50%;
+}
+
+#physicalAddress {
+  border: none;
+  border-right: 2px solid white;
+  background-color: #e6dee2;
+}
+
+#postalAddress {
+  background-color: #e6dee2;
+  border: none;
+}
 /*!
  * # Fomantic-UI 2.9.3 - Grid
  * https://github.com/fomantic/Fomantic-UI/

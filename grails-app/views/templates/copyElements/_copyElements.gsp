@@ -298,14 +298,14 @@
                                                 <g:if test="${target_role.isShared}">
                                                     <span data-position="top left" class="la-popup-tooltip la-delay"
                                                           data-content="${message(code: 'property.share.tooltip.on')}">
-                                                        <i class="la-share icon la-js-editmode-icon"></i>
+                                                        <i class="la-share icon"></i>
                                                     </span>
 
                                                 </g:if>
                                                 <g:else>
                                                     <span data-position="top left" class="la-popup-tooltip la-delay"
                                                           data-content="${message(code: 'property.share.tooltip.off')}">
-                                                        <i class="la-share slash icon la-js-editmode-icon"></i>
+                                                        <i class="la-share slash icon"></i>
                                                     </span>
                                                 </g:else>
                                             </div>
@@ -324,6 +324,96 @@
                                 </div>
                                 <br />
                             </g:if>
+                        </g:each>
+                    </td>
+                </g:if>
+                </tr>
+            </g:if>
+
+            <g:if test="${!contextService.getOrg().isCustomerType_Support()}">
+                <tr data-type="takeVendors" data-element="copyObject.takeVendors">
+                    <td data-element="source">
+                        <div>
+                <g:if test="${!source_visibleVendors}">
+                    <strong><i class="shipping fast icon"></i>&nbsp;${message(code: "vendor.plural")}:
+                    </strong>
+                </g:if>
+                <g:each in="${source_visibleVendors}" var="source_role">
+                        <div data-oid="${genericOIDService.getOID(source_role)}" class="la-multi-sources">
+                            <strong><i class="shipping fast icon"></i>&nbsp;</strong>
+                            <g:link controller="vendor" action="show" target="_blank" id="${source_role.vendor.id}">
+                                ${source_role.vendor.name}
+                            </g:link>
+                            <br />
+                        </div>
+                </g:each>
+                </div>
+            </td>
+                <g:if test="${isConsortialObjects}">
+                    <td class="center aligned">
+                        <g:each in="${source_visibleVendors}" var="source_role">
+                                <div class="ui checkbox la-toggle-radio la-share">
+                                    <input class="ui checkbox" type="checkbox" name="toggleShareVendorRoles"
+                                           value="${source_role.class.name}:${source_role.id}" ${source_role.isShared ? 'checked' : ''}/>
+                                </div>
+                                <br />
+                        </g:each>
+                    </td>
+                </g:if>
+
+%{--    TODO : markup fail            </td>--}%
+            %{--AKTIONEN:--}%
+                <td class="center aligned">
+                    <g:each in="${source_visibleVendors}" var="source_role">
+                            <div class="ui checkbox la-toggle-radio la-replace">
+                                <g:checkBox name="copyObject.takeVendors" data-action="copy" value="${genericOIDService.getOID(source_role)}" checked="${true}"/>
+                            </div>
+                            <br />
+                    </g:each>
+                </td>
+                <g:if test="${!copyObject}">
+                    <td data-element="target">
+                        <div>
+                            <g:if test="${!target_visibleVendors}">
+                                <strong><i class="shipping fast icon"></i>&nbsp;${message(code: "vendor.plural")}:
+                                </strong>
+                            </g:if>
+                            <g:each in="${target_visibleVendors}" var="target_role">
+                                    <div data-oid="${genericOIDService.getOID(target_role)}">
+                                        <strong><i class="shipping fast icon"></i>&nbsp;${target_role.roleType.getI10n("value")}:
+                                        </strong>
+                                        <g:link controller="vendor" action="show" target="_blank"
+                                                id="${target_role.vendor.id}">
+                                            ${target_role.vendor.name}
+                                        </g:link>
+                                        <g:if test="${isConsortialObjects}">
+                                            <div class="right aligned wide column">
+                                                <g:if test="${target_role.isShared}">
+                                                    <span data-position="top left" class="la-popup-tooltip la-delay"
+                                                          data-content="${message(code: 'property.share.tooltip.on')}">
+                                                        <i class="la-share icon la-js-editmode-icon"></i>
+                                                    </span>
+
+                                                </g:if>
+                                                <g:else>
+                                                    <span data-position="top left" class="la-popup-tooltip la-delay"
+                                                          data-content="${message(code: 'property.share.tooltip.off')}">
+                                                        <i class="la-share slash icon la-js-editmode-icon"></i>
+                                                    </span>
+                                                </g:else>
+                                            </div>
+                                        </g:if>
+                                    </div>
+                                    <br />
+                            </g:each>
+                        </div>
+                    </td>
+                    <td>
+                        <g:each in="${target_visibleVendors}" var="target_role">
+                                <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
+                                    <g:checkBox name="copyObject.deleteVendors" data-action="delete" value="${genericOIDService.getOID(target_role)}" checked="${false}"/>
+                                </div>
+                                <br />
                         </g:each>
                     </td>
                 </g:if>

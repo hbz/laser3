@@ -474,12 +474,6 @@
                         </div>
 
                         <div class="field">
-                            <label>${message(code: 'profile.editMode')}</label>
-                            <g:set var="US_SHOW_EDIT_MODE" value="${user.getSetting(KEYS.SHOW_EDIT_MODE, RDStore.YN_YES)}" />
-                            <ui:xEditableRefData owner="${US_SHOW_EDIT_MODE}" field="rdValue" config="${US_SHOW_EDIT_MODE.key.rdc}" />
-                        </div>
-
-                        <div class="field">
                             <label>${message(code: 'profile.simpleViews')}</label>
                             <g:set var="US_SHOW_SIMPLE_VIEWS" value="${user.getSetting(KEYS.SHOW_SIMPLE_VIEWS, null)}" />
                             <ui:xEditableRefData owner="${US_SHOW_SIMPLE_VIEWS}" field="rdValue" config="${US_SHOW_SIMPLE_VIEWS.key.rdc}" />

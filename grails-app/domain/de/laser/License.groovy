@@ -387,6 +387,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
      * Retrieves the providers and agencies for this license
      * @return a set of {@link Org}s
      */
+    @Deprecated
     Set<Org> getProviderAgency() {
         orgRelations.findAll { OrgRole or ->
             or.roleType in [RDStore.OR_LICENSOR, RDStore.OR_AGENCY]

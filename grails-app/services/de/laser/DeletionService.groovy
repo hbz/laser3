@@ -621,7 +621,7 @@ class DeletionService {
         result.info << ['Anstehende Änderungen', pendingChanges, FLAG_BLOCKER]
         result.info << ['Aufgaben (owner)', tasks, FLAG_BLOCKER]
         result.info << ['Aufgaben (responsibility)', tasksResp, FLAG_BLOCKER]
-        result.info << ['Marker', markers, FLAG_BLOCKER]
+        result.info << ['Marker', markers]
         result.info << ['SystemProfilers', systemProfilers]
 
         result.info << ['Facts', facts, FLAG_BLOCKER]

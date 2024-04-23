@@ -20,10 +20,10 @@
     boolean editable2 = userService.hasFormalAffiliation(contextService.getUser(), contextService.getOrg(), 'INST_EDITOR')
 %>
 
-    <ui:card message="license.notes" class="notes la-js-hideable ${css_class}" href="#modalCreateNote" editable="${editable || editable2}">
+    <ui:card message="license.notes" class="notes ${css_class}" href="#modalCreateNote" editable="${editable || editable2}">
         <g:each in="${baseItems}" var="docctx">
             <g:if test="${docctx.isDocANote() && !(docctx.domain)}">
-                <div class="ui small feed content la-js-dont-hide-this-card">
+                <div class="ui small feed content">
                     <div class="ui grid summary">
                         <div class="ten wide column la-column-right-lessPadding">
                             <g:if test="${(docctx.owner.owner?.id == contextService.getOrg().id || docctx.owner.owner == null) && (editable || editable2)}">
@@ -68,7 +68,7 @@
                                                       data-done=""
                                                       data-update="container-notes"
                                                       role="button">
-                                        <i class="icon la-share la-js-editmode-icon"></i>
+                                        <i class="icon la-share"></i>
                                     </ui:remoteLink>
                                 </g:if>
                                 <g:else>
@@ -82,7 +82,7 @@
                                                       data-done=""
                                                       data-update="container-notes"
                                                       role="button">
-                                        <i class="la-share slash icon la-js-editmode-icon"></i>
+                                        <i class="la-share slash icon"></i>
                                     </ui:remoteLink>
                                 </g:else>
                             </g:if>
@@ -116,11 +116,11 @@
     </ui:card>
 
     <g:if test="${sharedItems}">
-        <ui:card message="license.notes.shared" class="documents la-js-hideable ${css_class}" editable="${editable}">
+        <ui:card message="license.notes.shared" class="documents ${css_class}" editable="${editable}">
             <g:each in="${sharedItems}" var="docctx">
 
                 <g:if test="${docctx.isDocANote() && !(docctx.domain) && (docctx.status?.value != 'Deleted')}">
-                    <div class="ui small feed content la-js-dont-hide-this-card">
+                    <div class="ui small feed content">
 
                         <div class="ui grid summary">
                             <div class="twelve wide column">

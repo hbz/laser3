@@ -205,7 +205,7 @@ making obsolete package/actions
                                     <div class="ui fluid segment title">
                                         <ui:wekbIconLink type="source" gokbId="${packageInstanceRecord.source.uuid}"/>
                                         ${packageInstanceRecord.source.name}
-                                        <div class="ui icon blue button la-modern-button ${buttonColor} la-js-dont-hide-button la-popup-tooltip la-delay"
+                                        <div class="ui icon blue button la-modern-button ${buttonColor} la-popup-tooltip la-delay"
                                              data-content="${message(code: 'platform.details')}">
                                             <i class="ui angle double down icon"></i>
                                         </div>
@@ -261,7 +261,7 @@ making obsolete package/actions
                                                     <ui:wekbIconLink type="platform" gokbId="${platformInstanceRecord.uuid}"/>
                                                 </div>
                                                 <div class="right aligned column">
-                                                    <div class="ui icon blue button la-modern-button ${buttonColor} la-js-dont-hide-button la-popup-tooltip la-delay"
+                                                    <div class="ui icon blue button la-modern-button ${buttonColor} la-popup-tooltip la-delay"
                                                          data-content="${message(code: 'platform.details')}">
                                                         <i class="ui angle double down icon"></i>
                                                     </div>

@@ -120,7 +120,7 @@
                                           role="button"
                                           ariaLabel="Termin wieder auf Ihrem Dashboard anzeigen lassen"
                         >
-                            <i class="icon bell slash la-js-editmode-icon"></i>
+                            <i class="icon bell slash"></i>
                         </ui:remoteLink>
                     </g:if>
                     <g:else>
@@ -135,7 +135,7 @@
                                           role="button"
                                           ariaLabel="Termin nicht auf Ihrem Dashboard anzeigen lassen"
                         >
-                            <i class="icon bell la-js-editmode-icon"></i>
+                            <i class="icon bell"></i>
                         </ui:remoteLink>
                     </g:else>
                 </td>
@@ -154,7 +154,7 @@
                                       role="button"
                                       ariaLabel="fälligen Termin auf NICHT erledigt sezten"
                     >
-                        <i class="icon check la-js-editmode-icon"></i>
+                        <i class="icon check"></i>
                     </ui:remoteLink>
                 </g:if>
                 <g:else>
@@ -169,7 +169,7 @@
                                       role="button"
                                       ariaLabel="${message(code:'ariaLabel.check.universal')}"
                     >
-                        <i class="icon check la-js-editmode-icon"></i>
+                        <i class="icon check"></i>
                     </ui:remoteLink>
                 </g:else>
                 </td>
