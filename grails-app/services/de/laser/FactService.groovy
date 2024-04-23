@@ -465,7 +465,7 @@ class FactService {
    * @param metric the metric type
    * @return the total usage for the given subscription
    */
-  def totalUsageForSub(sub, factType, metric) {
+  def totalUsageForSub(Subscription sub, factType, metric) {
     Fact.executeQuery(TOTAL_USAGE_FOR_SUB_IN_PERIOD, [
         start: sub.startDate,
         // end  : sub.endDate ?: new Date().parse('yyyy', '9999'), // TODO Fix that hack
@@ -474,7 +474,7 @@ class FactService {
         factType : factType,
         status : 'Deleted',
         metric : metric,
-        inst : sub.subscriber]
+        inst : sub.getSubscriberRespConsortia()]
     )[0]
   }
 

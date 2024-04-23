@@ -16,10 +16,10 @@
 </ui:debugInfo>
 
 <ui:breadcrumbs>
-    <g:if test="${issueEntitlementInstance.subscription.subscriber}">
+    <g:if test="${issueEntitlementInstance.subscription.getSubscriberRespConsortia()}">
         <ui:crumb controller="myInstitution" action="currentSubscriptions"
-                     params="${[shortcode: issueEntitlementInstance.subscription.subscriber.shortcode]}"
-                     text="${issueEntitlementInstance.subscription.subscriber.name} - ${message(code: 'subscription.plural')}"/>
+                     params="${[shortcode: issueEntitlementInstance.subscription.getSubscriberRespConsortia().shortcode]}"
+                     text="${issueEntitlementInstance.subscription.getSubscriberRespConsortia().name} - ${message(code: 'subscription.plural')}"/>
     </g:if>
     <ui:crumb controller="subscription" action="index" id="${issueEntitlementInstance.subscription.id}"
                  text="${issueEntitlementInstance.subscription.name}"/>

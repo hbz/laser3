@@ -3910,7 +3910,7 @@ class SurveyControllerService {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
         result.subscription = Subscription.get(params.id)
-        result.institution = result.subscription.subscriber
+        result.institution = result.subscription.getSubscriberRespConsortia()
 
         if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
             if (!result.subscription.isVisibleBy(result.user)) {

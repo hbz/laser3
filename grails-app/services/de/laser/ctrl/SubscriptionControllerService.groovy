@@ -2701,7 +2701,7 @@ class SubscriptionControllerService {
         IssueEntitlement ie = IssueEntitlement.get(params.ieid)
         ie.status = RDStore.TIPP_STATUS_REMOVED
 
-        PermanentTitle permanentTitle = PermanentTitle.findByOwnerAndTipp(ie.subscription.subscriber, ie.tipp)
+        PermanentTitle permanentTitle = PermanentTitle.findByOwnerAndTipp(ie.subscription.getSubscriberRespConsortia(), ie.tipp)
         if (permanentTitle) {
             permanentTitle.delete()
         }
@@ -2722,7 +2722,7 @@ class SubscriptionControllerService {
         ie.status = RDStore.TIPP_STATUS_REMOVED
         if(ie.save()){
 
-            PermanentTitle permanentTitle = PermanentTitle.findByOwnerAndTipp(ie.subscription.subscriber, ie.tipp)
+            PermanentTitle permanentTitle = PermanentTitle.findByOwnerAndTipp(ie.subscription.getSubscriberRespConsortia(), ie.tipp)
             if (permanentTitle) {
                 permanentTitle.delete()
             }
@@ -3835,7 +3835,7 @@ class SubscriptionControllerService {
     List<Map> getFilteredSubscribers(GrailsParameterMap params, Subscription parentSub) {
         Map<String, Object> result = [:]
 
-        result.institution = parentSub.subscriber
+        result.institution = parentSub.getSubscriberRespConsortia()
         params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         GrailsParameterMap orgParams = params.clone()
         orgParams.remove("sort")
@@ -3948,7 +3948,7 @@ class SubscriptionControllerService {
         }
         result.contextOrg = contextService.getOrg()
         result.contextCustomerType = result.contextOrg.getCustomerType()
-        result.institution = result.subscription ? result.subscription?.subscriber : result.contextOrg //TODO temp, remove the duplicate
+        result.institution = result.subscription ? result.subscription?.getSubscriberRespConsortia() : result.contextOrg //TODO temp, remove the duplicate
 
         if (result.subscription) {
             result.subscriptionConsortia = result.subscription.getConsortia()

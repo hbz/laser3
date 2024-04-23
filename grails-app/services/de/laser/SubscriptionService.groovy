@@ -1293,7 +1293,7 @@ join sub.orgRelations or_sub where
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(gokbId)
         if (tipp == null) {
             throw new EntitlementCreationException("Unable to tipp ${gokbId}")
-        }else if(PermanentTitle.findByOwnerAndTipp(sub.subscriber, tipp)){
+        }else if(PermanentTitle.findByOwnerAndTipp(sub.getSubscriberRespConsortia(), tipp)){
             throw new EntitlementCreationException("Unable to create IssueEntitlement because IssueEntitlement exist as PermanentTitle")
         }
         else if(IssueEntitlement.findAllBySubscriptionAndTippAndStatusInList(sub, tipp, [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_RETIRED])) {
@@ -1327,11 +1327,11 @@ join sub.orgRelations or_sub where
                 if((pickAndChoosePerpetualAccess || sub.hasPerpetualAccess) && new_ie.status != RDStore.TIPP_STATUS_EXPECTED){
                     new_ie.perpetualAccessBySub = sub
 
-                    if(!PermanentTitle.findByOwnerAndTipp(sub.subscriber, tipp)){
+                    if(!PermanentTitle.findByOwnerAndTipp(sub.getSubscriberRespConsortia(), tipp)){
                         PermanentTitle permanentTitle = new PermanentTitle(subscription: sub,
                                 issueEntitlement: new_ie,
                                 tipp: tipp,
-                                owner: sub.subscriber).save()
+                                owner: sub.getSubscriberRespConsortia()).save()
                     }
 
                 }
@@ -1503,7 +1503,7 @@ join sub.orgRelations or_sub where
         }
         else {
             ie.status = RDStore.TIPP_STATUS_REMOVED
-            PermanentTitle permanentTitle = PermanentTitle.findByOwnerAndTipp(sub.subscriber, ie.tipp)
+            PermanentTitle permanentTitle = PermanentTitle.findByOwnerAndTipp(sub.getSubscriberRespConsortia(), ie.tipp)
             if (permanentTitle) {
                 permanentTitle.delete()
             }
@@ -1531,7 +1531,7 @@ join sub.orgRelations or_sub where
         else {
             ie.status = RDStore.TIPP_STATUS_REMOVED
 
-            PermanentTitle permanentTitle = PermanentTitle.findByOwnerAndTipp(sub.subscriber, ie.tipp)
+            PermanentTitle permanentTitle = PermanentTitle.findByOwnerAndTipp(sub.getSubscriberRespConsortia(), ie.tipp)
             if (permanentTitle) {
                 permanentTitle.delete()
             }
@@ -3074,7 +3074,7 @@ join sub.orgRelations or_sub where
                 Long userId = contextService.getUser().id
                 executorService.execute({
                     Thread.currentThread().setName('permanentTitlesProcess_' + subscription.id)
-                    Long ownerId = subscription.subscriber.id, subId = subscription.id, start = System.currentTimeSeconds()
+                    Long ownerId = subscription.getSubscriberRespConsortia().id, subId = subscription.id, start = System.currentTimeSeconds()
                     Sql sql = GlobalService.obtainSqlConnection()
                     Connection connection = sql.dataSource.getConnection()
 
@@ -3089,7 +3089,7 @@ join sub.orgRelations or_sub where
                         Set<Subscription> depending = Subscription.findAllByInstanceOf(subscription)
                         depending.eachWithIndex { dependingObj, i ->
                             subId = dependingObj.id
-                            ownerId = dependingObj.subscriber.id
+                            ownerId = dependingObj.getSubscriberRespConsortia().id
                             countIeIDs = IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is null and ie.status.id in (:status)', [sub: dependingObj, status: status])[0]
                             log.debug("setPermanentTitlesBySubscription (${i+1}/${depending.size()}) -> set perpetualAccessBySub of ${countIeIDs} IssueEntitlements to sub: " + dependingObj.id)
 
@@ -3120,7 +3120,7 @@ join sub.orgRelations or_sub where
                 Sql sql = GlobalService.obtainSqlConnection()
                 Connection connection = sql.dataSource.getConnection()
                 orgSubs.eachWithIndex { Subscription subscription, int s ->
-                    Long ownerId = subscription.subscriber.id, subId = subscription.id
+                    Long ownerId = subscription.getSubscriberRespConsortia().id, subId = subscription.id
 
                     List<Long> status = [RDStore.TIPP_STATUS_CURRENT.id, RDStore.TIPP_STATUS_RETIRED.id, RDStore.TIPP_STATUS_DELETED.id]
                     int countIeIDs = IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is null and ie.status.id in (:status)', [sub: subscription, status: status])[0]
@@ -3132,7 +3132,7 @@ join sub.orgRelations or_sub where
                     if (subscription.instanceOf == null && auditService.getAuditConfig(subscription, 'hasPerpetualAccess')) {
                         Set<Subscription> depending = Subscription.findAllByInstanceOf(subscription)
                         depending.eachWithIndex { dependingObj, int i ->
-                            ownerId = dependingObj.subscriber.id
+                            ownerId = dependingObj.getSubscriberRespConsortia().id
                             countIeIDs = IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is null and ie.status.id in (:status)', [sub: dependingObj, status: status])[0]
                             log.debug("setPermanentTitlesBySubscription (${i + 1}/${depending.size()} at subscription ${s+1}/${orgSubs.size()}) -> set perpetualAccessBySub of ${countIeIDs} IssueEntitlements to sub: " + dependingObj.id)
 

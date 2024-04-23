@@ -2220,9 +2220,9 @@ class MyInstitutionController  {
                 if(entry == "subscription") {
                     row[i] = subChild.globalUID
                 }else if(entry == "subscriber.sortname") {
-                    row[i] = subChild.subscriber.sortname
+                    row[i] = subChild.getSubscriberRespConsortia().sortname
                 }else if(entry == "subscriber.name") {
-                    row[i] = subChild.subscriber.name
+                    row[i] = subChild.getSubscriberRespConsortia().name
                 }
                 else row[i] = ""
             }
