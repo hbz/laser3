@@ -428,7 +428,7 @@
 
 <laser:render template="/templates/export/individuallyExportTippsModal" model="[modalID: 'individuallyExportTippsModal']"/>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     $('.export').click(function(e) {
         e.preventDefault();
         $('#individuallyExportTippsModal').modal('hide');

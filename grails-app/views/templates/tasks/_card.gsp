@@ -4,8 +4,8 @@
 <%--OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${userService.hasFormalAffiliation(user, institution, 'INST_EDITOR')} @ ${institution}--%>
 <g:set var="overwriteEditable" value="${editable || userService.hasFormalAffiliation(user, institution, 'INST_EDITOR')}" />
 
-<ui:card message="task.plural" class="notes la-js-hideable ${css_class}" href="#modalCreateTask" editable="${overwriteEditable}">
-    <div class="ui relaxed divided list  la-js-dont-hide-this-card">
+<ui:card message="task.plural" class="notes ${css_class}" href="#modalCreateTask" editable="${overwriteEditable}">
+    <div class="ui relaxed divided list">
     <g:each in="${tasks}" var="tsk">
         <g:if test="${tsk.status == RDStore.TASK_STATUS_DONE}">
             <g:set var="icon" value="check circle outline"/>
@@ -47,7 +47,7 @@
             </div>
 
 
-        %{--<div class="ui grid la-js-dont-hide-this-card">
+        %{--<div class="ui grid">
             <div class="twelve wide column summary">
 
                     <g:if test="${tsk.status == RDStore.TASK_STATUS_DONE}">

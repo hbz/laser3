@@ -64,7 +64,7 @@
         </table>
     </g:form>
 
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
         $('.org').each(function() {
             $(this).dropdown({
                 apiSettings: {

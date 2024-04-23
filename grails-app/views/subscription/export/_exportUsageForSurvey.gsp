@@ -129,7 +129,7 @@
         <strong><g:message code="default.stats.error.noReportAvailable"/></strong>
     </g:else>
 </ui:modal>
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     $("#reportType").on('change', function() {
         <g:applyCodec encodeAs="none">
             let platforms = ${platformsJSON};

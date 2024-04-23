@@ -156,7 +156,7 @@
 
                                         <div class="right aligned five wide column la-column-left-lessPadding la-border-left">
                                             <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                    class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
+                                                    class="ui icon blue tiny button la-modern-button"
                                                     target="_blank">
                                                 <i class="download small icon"></i>
                                             </g:link>
@@ -260,7 +260,7 @@
                         %>
                         <g:each in="${documentSet2}" var="docctx">
                             <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
-                                <div class="ui small feed content la-js-dont-hide-this-card">
+                                <div class="ui small feed content">
                                     <div class="ui grid summary">
                                         <div class="eleven wide column la-column-right-lessPadding">
                                             <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
@@ -280,7 +280,7 @@
 
                                         <div class="right aligned five wide column la-column-left-lessPadding la-border-left">
                                             <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                    class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
+                                                    class="ui icon blue tiny button la-modern-button"
                                                     target="_blank">
                                                 <i class="download small icon"></i>
                                             </g:link>
@@ -297,7 +297,7 @@
                     <td>
                         <g:if test="${surveyConfig && surveyConfig.surveyInfo.status in [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED]}">
                             <g:link controller="survey" action="showExportModalRenewal" id="${surveyConfig.surveyInfo.id}"
-                                    class="ui icon button blue la-js-dont-hide-button la-modern-button trigger-modal">
+                                    class="ui icon button blue la-modern-button trigger-modal">
                                 <i class="download small icon"></i>
                             </g:link>
                         </g:if>

@@ -66,8 +66,6 @@
 
     %{-- main menu --}%
 
-    <g:set var="visibilityContextOrgMenu" value="la-hide-context-orgMenu" />
-
         <nav id="mainMenue" class="ui fixed inverted menu la-js-verticalNavi" role="menubar">
             <div class="ui container" role="none">
                 <ui:link addItemAttributes="true" controller="home" aria-label="${message(code:'default.home.label')}" class="header item la-logo-item">
@@ -171,7 +169,7 @@
         %{-- global content container --}%
 
         <div class="pusher">
-            <main id="mainContent" class="ui main container ${visibilityContextOrgMenu} hidden">
+            <main id="mainContent" class="ui main container hidden">
 
                 %{-- system messages --}%
 
@@ -226,22 +224,6 @@
         %{-- global confirmation modal --}%
 
         <ui:confirmationModal  />
-
-        %{-- decksaver --}%
-
-        <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show'}">
-            <laser:script file="${this.getGroovyPageFileName()}">
-                <%
-                    boolean isDeckSaverEditMode = contextUser ? (
-                            contextUser.getSettingsValue(UserSetting.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES).value == 'Yes' &&
-                            (editable || contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))
-                    ) : false
-                %>
-                deckSaver.configs.editMode = ${isDeckSaverEditMode};
-                deckSaver.configs.ajaxUrl = '<g:createLink controller="ajax" action="toggleEditMode"/>';
-                deckSaver.go();
-            </laser:script>
-        </g:if>
 
         %{-- system maintenance mode --}%
 

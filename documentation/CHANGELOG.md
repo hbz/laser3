@@ -9,7 +9,19 @@
 
 5655    23.04.2024  dev     3.4         Andreas Feature     Sortierung der Länderauswahl umgestellt
 
+5615    23.04.2024  dev     3.4         Ingrid  Feature     Alternierende Eingabe für Hausanschrift oder Postfach, mehr Pflichtfelder
+
+5650    23.04.2024  dev     3.4         David   Feature     Refactoring: Edit-Mode komplett entfernen
+
 --      19.04.2024  rc-3.3  3.3.10      Andreas Bug         Verhalten für neue Art von Serverantwort implementiert
+
+5640    18.04.2024  dev     3.4         David   Feature     Inaktive Accounts automatisiert deaktivieren
+
+5645    18.04.2024  dev     3.4         David   Feature     We:kb-News: Lieferanten
+
+3502    12.04.2024  dev     3.4         David   Feature     Navigation zwischen Objekten einer Liste ermöglichen
+
+5530    11.04.2024  dev     3.4         David   Feature     Dashboard für Einrichtungen
 
 5638    11.04.2024  dev     3.4         Andreas Bug         Beifang von leeren Adresszeilen entfernt
 

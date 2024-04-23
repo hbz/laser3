@@ -1,8 +1,6 @@
 <%@ page import="de.laser.Subscription; de.laser.GenericOIDService; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.UserSetting; de.laser.auth.User; de.laser.auth.Role; de.laser.Org" %>
 <laser:serviceInjection />
 
-<g:set var="visibilityContextOrgMenu" value="la-show-context-orgMenu" />
-
 <nav id="contextBar" class="ui fixed menu" aria-label="${message(code:'wcag.label.modeNavigation')}">
 
     <div class="ui container">
@@ -110,17 +108,6 @@
                 </g:if>
             </g:if>
 
-            %{-- edit mode switcher  --}%
-
-            <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription' || controllerName=='license') && actionName=='show' && (editable || contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))}">
-                <g:if test="${contextUser?.getSettingsValue(UserSetting.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES)?.value=='Yes'}">
-                    <ui:cbItemToggleAction id="decksaver-toggle" status="active" icon="pencil alternate" tooltip="${message(code:'statusbar.showButtons.tooltip')}" />
-                </g:if>
-                <g:else>
-                    <ui:cbItemToggleAction id="decksaver-toggle" status="inactive" icon="pencil alternate slash" tooltip="${message(code:'statusbar.hideButtons.tooltip')}" />
-                </g:else>
-            </g:if>
-
             %{-- advanced mode switcher  --}%
 
             <g:if test="${(params.mode)}">
@@ -183,7 +170,7 @@
 
                 <g:if test="${linkifyMap || subscription.instanceOf}">
                     <div class="item la-cb-action-ext">
-                        <div class="ui simple dropdown button la-js-dont-hide-button icon">
+                        <div class="ui simple dropdown button icon">
                             <i class="linkify icon"></i>
                             <div class="menu">
                                 <g:if test="${subscription.instanceOf}">
@@ -247,7 +234,7 @@
 
                 <g:if test="${linkifyMap || license.instanceOf}">
                     <div class="item la-cb-action-ext">
-                        <div class="ui simple dropdown button la-js-dont-hide-button icon">
+                        <div class="ui simple dropdown button icon">
                             <i class="linkify icon"></i>
                             <div class="menu">
                                 <g:if test="${license.instanceOf}">

@@ -25,24 +25,24 @@
                     <g:if test="${editmode}">
                         <g:if test="${roleObject.showUIShareButton()}">
                             <g:if test="${role.isShared}">
-                                <span class="la-js-editmode-container">
+                                <span>
                                     <g:link id="test" class="ui icon button la-modern-button green la-selectable-button la-popup-tooltip la-delay"
                                             controller="ajax" action="toggleShare"
                                             params="${[owner:genericOIDService.getOID(roleObject), sharedObject:genericOIDService.getOID(role), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]}"
                                             data-position="top right" data-content="${message(code:'property.share.tooltip.on')}"
                                     >
-                                        <i class="la-share icon la-js-editmode-icon"></i>
+                                        <i class="la-share icon"></i>
                                     </g:link>
                                 </span>
                             </g:if>
                             <g:else>
-                                <span class="la-js-editmode-container">
+                                <span>
                                     <g:link class="ui icon button blue la-modern-button la-selectable-button la-popup-tooltip la-delay  "
                                             controller="ajax" action="toggleShare"
                                             params="${[owner:genericOIDService.getOID(roleObject), sharedObject:genericOIDService.getOID(role), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]}"
                                              data-position="top right" data-content="${message(code:'property.share.tooltip.off')}"
                                     >
-                                        <i class="la-share slash icon la-js-editmode-icon"></i>
+                                        <i class="la-share slash icon"></i>
                                     </g:link>
                                 </span>
                             </g:else>
