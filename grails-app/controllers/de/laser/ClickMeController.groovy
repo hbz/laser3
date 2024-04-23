@@ -42,7 +42,8 @@ class ClickMeController {
         result.accessPointNotice = false
         result.currentTabNotice = false
         result.overrideFormat = null
-        result.showClickMeConfigSave = BeanStore.getContextService().isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+        result.showClickMeConfigSave = true
+        result.enableClickMeConfigSave = BeanStore.getContextService().isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
         result.tab = null
         result.multiMap = false
 

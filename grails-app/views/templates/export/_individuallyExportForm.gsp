@@ -389,8 +389,12 @@
         </div><!-- .fields -->
 
         <g:if test="${showClickMeConfigSave}">
-            <div class="fields">
-
+            <g:if test="${!enableClickMeConfigSave}">
+                <div class="fields">
+            </g:if>
+            <g:else>
+                <div class="fields disabled la-popup-tooltip la-delay" data-position="left center" data-content="${message(code:'tooltip.onlyFullMembership')}">
+            </g:else>
                 <div class="wide eight field">
                     <label for="clickMeConfigName">Export <g:message code="default.config.label"/> <g:message code="default.name.label"/></label>
                     <input name="clickMeConfigName" id="clickMeConfigName" value=""/>

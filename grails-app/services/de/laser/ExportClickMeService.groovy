@@ -5,6 +5,7 @@ import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
 import de.laser.properties.LicenseProperty
 import de.laser.remote.ApiSource
+import de.laser.storage.BeanStore
 import de.laser.storage.PropertyStore
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
@@ -6875,7 +6876,7 @@ class ExportClickMeService {
         def request = WebUtils.retrieveGrailsWebRequest().getCurrentRequest()
         GrailsParameterMap grailsParameterMap = new GrailsParameterMap(request)
 
-        if(grailsParameterMap.saveClickMeConfig){
+        if(grailsParameterMap.saveClickMeConfig && BeanStore.getContextService().isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)){
             String jsonConfig = (new JSON(selectedExportFields)).toString()
             String clickMeConfigName = grailsParameterMap.clickMeConfigName
             String clickMeType = grailsParameterMap.clickMeType
