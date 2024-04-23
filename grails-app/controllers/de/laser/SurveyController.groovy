@@ -3,6 +3,7 @@ package de.laser
 import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
 import de.laser.ctrl.FinanceControllerService
+import de.laser.ctrl.SubscriptionControllerService
 import de.laser.ctrl.SurveyControllerService
 import de.laser.helper.Params
 import de.laser.helper.Profiler
@@ -2131,67 +2132,6 @@ class SurveyController {
         }
 
         render(template: "/templates/copyEmailaddresses", model: result)
-    }
-
-    /**
-     * Call to open the renewal export configuration modal
-     */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
-    })
-    Map<String,Object> showExportModalRenewal() {
-        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
-        if(result.status == SurveyControllerService.STATUS_ERROR) {
-            if (!result.result) {
-                response.sendError(401)
-                return
-            }
-        }
-        if (!result.editable) {
-            response.sendError(HttpStatus.SC_FORBIDDEN); return
-        }
-        render template: "/survey/export/individuallyExportRenewModal", model: [modalID: 'individuallyRenewalExportModal', surveyConfig: result.surveyConfig, surveyInfo: result.surveyInfo,
-                                                                                modalTextHeader: 'Excel-Export ('+ g.message(code: 'subscription.referenceYear.label')+': '+ result.surveyConfig.subscription.referenceYear+')']
-
-    }
-
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], wtc = DebugInfo.NOT_TRANSACTIONAL)
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
-    })
-    Map<String,Object> exportModal() {
-        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
-        if(result.status == SurveyControllerService.STATUS_ERROR) {
-            if (!result.result) {
-                response.sendError(401)
-                return
-            }
-        }
-
-        if (!result.editable) {
-            response.sendError(HttpStatus.SC_FORBIDDEN); return
-        }
-
-        String templateName = ""
-        String modalID = "individuallyExportSurvey"
-        boolean contactSwitch = false
-
-        if(params.exportType == 'costItemsExport'){
-            templateName = "export/individuallyExportCostItemModal"
-            contactSwitch = true
-        }else if(params.exportType == 'renewalExport'){
-            templateName = "export/individuallyExportRenewModal"
-            contactSwitch = false
-        }else {
-            templateName = "export/individuallyExportModal"
-            contactSwitch = true
-        }
-
-        result.modalID = modalID
-        result.contactSwitch = contactSwitch
-
-        render(template: templateName, model: result)
     }
 
     @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], wtc = DebugInfo.NOT_TRANSACTIONAL)

@@ -296,8 +296,10 @@
                     </td>
                     <td>
                         <g:if test="${surveyConfig && surveyConfig.surveyInfo.status in [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED]}">
-                            <g:link controller="survey" action="showExportModalRenewal" id="${surveyConfig.surveyInfo.id}"
-                                    class="ui icon button blue la-modern-button trigger-modal">
+                            <g:link class="triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
+                                params="[exportController: 'survey', exportAction: 'renewalEvaluation', exportParams: params, clickMeType: 'surveyRenewalEvaluation',
+                                         id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id,
+                                         modalText: 'Export: ('+ g.message(code: 'subscription.referenceYear.label')+': '+ surveyConfig.subscription.referenceYear+')']">
                                 <i class="download small icon"></i>
                             </g:link>
                         </g:if>

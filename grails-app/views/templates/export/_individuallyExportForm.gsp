@@ -21,7 +21,7 @@
             <g:each in="${totalFields}" var="fields" status="i">
                 <g:if test="${fields.value.fields.size() > 0}">
                     <a class="${("tab-${i}" == "tab-0") ? 'active' : ''}  item"
-                       data-tab="tab-${i}">${fields.value.message ? message(code: fields.value.message) : fields.value.label}</a>
+                       data-tab="tab-${i}">${fields.value.message ? message(code: fields.value.message) : fields.value.label} (<div id="numberOfChecked-tab-${i}"></div>)</a>
                 </g:if>
                 <g:else>
                     <a class="disabled item"
@@ -387,6 +387,22 @@
             </div>
 
         </div><!-- .fields -->
+
+        <g:if test="${showClickMeConfigSave}">
+            <div class="fields">
+
+                <div class="wide eight field">
+                    <label for="clickMeConfigName">Export <g:message code="default.config.label"/> <g:message code="default.name.label"/></label>
+                    <input name="clickMeConfigName" id="clickMeConfigName" value=""/>
+                </div>
+
+                <div class="wide eight field">
+                    <button class="ui button positive right floated export" value="saveClickMeConfig" name="saveClickMeConfig">Export <g:message code="default.config.label"/> <g:message
+                            code="default.button.save"/> </button>
+                </div>
+
+            </div><!-- .fields -->
+        </g:if>
     </div><!-- .form -->
 
 <laser:script file="${this.getGroovyPageFileName()}">
@@ -395,4 +411,14 @@
         $('#${modalID} *[id^=fileformat-query-]').addClass('hidden')
         $('#${modalID} *[id^=fileformat-query-' + $('#${modalID} select[name=fileformat]').val() + ']').removeClass('hidden')
     }).trigger('change');
+
+    $('input[type="checkbox"]').on( 'change', function() {
+    <%
+        totalFields.eachWithIndex { def fields, int i ->
+            String tmp = '$("#numberOfChecked-tab-'+i+'").html($'+"('[data-tab=tab-" + i + "]" + ' input[type="checkbox"]' + "').filter(':checked').length);"
+            println raw(tmp)
+        }
+    %>
+    }).trigger('change');
+
 </laser:script>

@@ -437,9 +437,6 @@
 
 </div>
 
-
-<laser:render template="/templates/export/individuallyExportTippsModal" model="[modalID: 'individuallyExportTippsModal']" />
-
 <laser:script file="${this.getGroovyPageFileName()}">
 
     JSPC.app.selectAll = function () {
@@ -545,5 +542,7 @@
     JSPC.app.loadFilter();
     --%>
 </laser:script>
+
+<g:render template="/clickMe/export/js"/>
 
 <laser:htmlEnd />

@@ -10,7 +10,7 @@
     <ui:controlButtons>
         <ui:exportDropdown>
             <ui:exportDropdownItem>
-                <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
+                <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'vendors']"/>
             </ui:exportDropdownItem>
         </ui:exportDropdown>
     </ui:controlButtons>
@@ -47,5 +47,6 @@
         </div>
         <ui:paginate total="${vendorListTotal}" params="${params}" max="${max}" offset="${offset}" />
 
-        <laser:render template="/myInstitution/export/individuallyExportModalVendors" model="[modalID: 'individuallyExportModal', exportFileName: message(code: 'export.all.vendors'), contactSwitch: true]" />
+<g:render template="/clickMe/export/js"/>
+
 <laser:htmlEnd />

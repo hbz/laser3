@@ -15,7 +15,7 @@
 <ui:controlButtons>
     <ui:exportDropdown>
         <ui:exportDropdownItem>
-            <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
+            <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'consortiaParticipations']"/>
         </ui:exportDropdownItem>
         <%--
         <ui:exportDropdownItem>
@@ -74,6 +74,6 @@
 
 <laser:render template="/templates/copyEmailaddresses" model="[orgList: totalMembers]"/>
 
-<laser:render template="export/individuallyExportModalConsortiaParticipations" model="[modalID: 'individuallyExportModal']" />
+<g:render template="/clickMe/export/js"/>
 
 <laser:htmlEnd />

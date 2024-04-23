@@ -27,7 +27,7 @@
         --%>
         <g:if test="${num_tipp_rows < 1000000}">
             <ui:exportDropdownItem>
-                <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Export</a>
+                <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'tipps']"/>
             </ui:exportDropdownItem>
         </g:if>
         <g:else>
@@ -121,8 +121,6 @@
 </g:if>
 
 
-<laser:render template="/templates/export/individuallyExportTippsModal" model="[modalID: 'individuallyExportTippsModal']" />
-
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.selectAll = function () {
       $('#select-all').is( ":checked")? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
@@ -143,5 +141,7 @@
         });
     });
 </laser:script>
+
+<g:render template="/clickMe/export/js"/>
 
 <laser:htmlEnd />

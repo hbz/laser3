@@ -34,7 +34,7 @@
             <g:if test="${actionName == 'index'}">
                 <g:if test="${currentTitlesCounts < 1000000}">
                     <ui:exportDropdownItem>
-                        <a class="item" data-ui="modal" href="#individuallyExportIEsModal">Export</a>
+                        <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'ies']"/>
                     </ui:exportDropdownItem>
                 </g:if>
                 <g:else>
@@ -44,7 +44,7 @@
             <g:elseif test="${actionName == 'addEntitlements'}">
                 <g:if test="${currentTitlesCounts < 1000000}">
                     <ui:exportDropdownItem>
-                        <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Export</a>
+                        <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'tipps']"/>
                     </ui:exportDropdownItem>
                 </g:if>
                 <g:else>

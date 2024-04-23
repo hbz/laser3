@@ -39,7 +39,7 @@
     --%>
         <g:if test="${num_ti_rows < 1000000}">
             <ui:exportDropdownItem>
-                <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Export</a>
+                <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'tipps']"/>
             </ui:exportDropdownItem>
         </g:if>
         <g:else>
@@ -426,12 +426,10 @@
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
 </ui:debugInfo>
 
-<laser:render template="/templates/export/individuallyExportTippsModal" model="[modalID: 'individuallyExportTippsModal']"/>
-
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.export').click(function(e) {
         e.preventDefault();
-        $('#individuallyExportTippsModal').modal('hide');
+        $('#exportClickMeModal').modal('hide');
         $('#globalLoadingIndicator').show();
         //the shorthand ?: is not supported???
         let fileformat = $(this).attr('data-fileformat') ? $(this).attr('data-fileformat') : $('#fileformat-query').val();
@@ -439,7 +437,7 @@
         if(fileformat === 'kbart')
             fd = { fileformat: fileformat };
         else {
-            let nativeForm = new FormData($('#individuallyExportTippsModal').find('form')[0]);
+            let nativeForm = new FormData($('#exportClickMeModal').find('form')[0]);
             nativeForm.forEach((value, key) => fd[key] = value);
         }
         <g:each in="${params.keySet()}" var="param">
@@ -487,5 +485,7 @@
     JSPC.app.ajaxDropdown($('#filterPvd'), '<g:createLink controller="ajaxJson" action="lookupProviders"/>?query={query}', '${params.filterPvd}');
     JSPC.app.ajaxDropdown($('#filterHostPlat'), '<g:createLink controller="ajaxJson" action="lookupPlatforms"/>?query={query}', '${params.filterHostPlat}');
 </laser:script>
+
+<g:render template="/clickMe/export/js"/>
 
 <laser:htmlEnd/>
