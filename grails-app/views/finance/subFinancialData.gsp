@@ -26,7 +26,7 @@
                         </g:link>
                     </ui:exportDropdownItem>--%>
                     <ui:exportDropdownItem>
-                        <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
+                        <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'financialsExport']"/>
                     </ui:exportDropdownItem>
                     <ui:exportDropdownItem>
                         <g:link class="item exportCSV js-open-confirm-modal"
@@ -43,7 +43,7 @@
                         <g:link class="item" controller="finance" action="financialsExport" params="${params+[exportXLS:true,sub:subscription.id]}">${message(code:'default.button.exports.xls')}</g:link>
                     </ui:exportDropdownItem>--%>
                     <ui:exportDropdownItem>
-                        <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
+                        <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'financialsExport']"/>
                     </ui:exportDropdownItem>
                     <ui:exportDropdownItem>
                         <g:link class="item exportCSV js-open-confirm-modal"
@@ -99,7 +99,8 @@
 
         <laser:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets,fixedSubscription:subscription,ciTitles:ciTitles]" />
 
-        <laser:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal', subscription: subscription]" />
         <laser:render template="/subscription/financeImportTemplate" />
+
+        <g:render template="/clickMe/export/js"/>
 
 <laser:htmlEnd />

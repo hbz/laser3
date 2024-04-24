@@ -713,8 +713,6 @@
 <div id="magicArea">
 </div>
 
-<laser:render template="export/individuallyExportIEsModal" model="[modalID: 'individuallyExportIEsModal']"/>
-
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.hideModal = function () {
@@ -859,4 +857,7 @@
 
     JSPC.app.loadPackages();
 </laser:script>
+
+<g:render template="/clickMe/export/js"/>
+
 <laser:htmlEnd/>

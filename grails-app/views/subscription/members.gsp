@@ -20,7 +20,7 @@
                 </g:else>
             </ui:exportDropdownItem>--%>
             <ui:exportDropdownItem>
-                <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
+                <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'subMembers']"/>
             </ui:exportDropdownItem>
             <%--
             <ui:exportDropdownItem>
@@ -322,7 +322,6 @@
         </tbody>
         </table>
                 <laser:render template="/templates/copyEmailaddresses" model="[orgList: filteredSubChilds?.collect {it.orgs}?:[]]"/>
-                <laser:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal']" />
             </g:if>
             <g:else>
                 <g:if test="${filterSet}">
@@ -342,6 +341,8 @@
             }
         });
     </laser:script>
+
+<g:render template="/clickMe/export/js"/>
 
 <laser:htmlEnd />
 

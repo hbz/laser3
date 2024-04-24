@@ -5,6 +5,7 @@ import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
 import de.laser.properties.LicenseProperty
 import de.laser.remote.ApiSource
+import de.laser.storage.BeanStore
 import de.laser.storage.PropertyStore
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
@@ -17,11 +18,14 @@ import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
+import grails.converters.JSON
 import grails.gorm.transactions.Transactional
+import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.xml.XmlSlurper
 import groovy.xml.slurpersupport.GPathResult
+import org.grails.web.util.WebUtils
 import org.springframework.context.MessageSource
 import org.hibernate.Session
 import org.xml.sax.SAXException
@@ -1863,12 +1867,11 @@ class ExportClickMeService {
     }
 
     /**
-     * Called from _individuallyExportRenewModal.gsp
      * Gets the fields for the subscription renewal for the given survey and prepares them for the UI
      * @param surveyConfig the survey to which the renewal fields should be generated
      * @return the configuration map for the survey for the modal
      */
-    Map<String, Object> getExportRenewalFieldsForUI(SurveyConfig surveyConfig) {
+    Map<String, Object> getExportRenewalFieldsForUI(SurveyConfig surveyConfig, ClickMeConfig clickMeConfig = null) {
 
         Map<String, Object> fields = [:]
         fields.putAll(EXPORT_RENEWAL_CONFIG)
@@ -1930,6 +1933,8 @@ class ExportClickMeService {
                     fields.survey.fields.costItemsElements << ["renewalSurveyCostItems.${it.key}": [field: null, label: RefdataValue.get(it.key).getI10n('value')]]
                 }
         }*/
+
+        fields = getClickMeFields(clickMeConfig, fields)
 
         fields
     }
@@ -2007,8 +2012,7 @@ class ExportClickMeService {
      * @param subscription the subscription whose members should be exported
      * @return the configuration map for the subscription member export for the UI
      */
-    Map<String, Object> getExportSubscriptionMembersFieldsForUI(Org institution, Subscription subscription = null) {
-        //calls: getExportSubscriptionMembersFieldsForUI(institution, subscription) ==> /subscription/export/_individuallyExportModal.gsp
+    Map<String, Object> getExportSubscriptionMembersFieldsForUI(Org institution, Subscription subscription = null, ClickMeConfig clickMeConfig = null) {
 
         Map<String, Object> fields = [:]
         fields.putAll(EXPORT_SUBSCRIPTION_MEMBERS_CONFIG)
@@ -2076,6 +2080,8 @@ class ExportClickMeService {
         addressTypes.each { RefdataValue addressType ->
             fields.participantAddresses.fields.put("participantAddress.${addressType.value}", [field: null, label: addressType.getI10n('value')])
         }
+
+        fields = getClickMeFields(clickMeConfig, fields)
 
         fields
     }
@@ -2188,7 +2194,7 @@ class ExportClickMeService {
      * @param showTransferFields should the subscription transfer fields be displayed as well?
      * @return the configuration map for the subscription export for the UI
      */
-    Map<String, Object> getExportSubscriptionFieldsForUI(Org institution, boolean showTransferFields = false) {
+    Map<String, Object> getExportSubscriptionFieldsForUI(Org institution, boolean showTransferFields = false, ClickMeConfig clickMeConfig = null) {
 
         Map<String, Object> fields = [:]
         fields.putAll(institution.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_SUBSCRIPTION_SUPPORT_CONFIG : EXPORT_SUBSCRIPTION_CONFIG)
@@ -2354,7 +2360,7 @@ class ExportClickMeService {
      * @param consortium the context consortium whose perspective should be taken for the export
      * @return the configuration map for the participation export for the UI
      */
-    Map<String, Object> getExportConsortiaParticipationFieldsForUI(Org consortium) {
+    Map<String, Object> getExportConsortiaParticipationFieldsForUI(Org consortium, ClickMeConfig clickMeConfig = null) {
 
         Map<String, Object> fields = [:]
         fields.putAll(consortium.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_CONSORTIA_PARTICIPATIONS_SUPPORT_CONFIG : EXPORT_CONSORTIA_PARTICIPATIONS_CONFIG)
@@ -2429,6 +2435,8 @@ class ExportClickMeService {
             }
         }
 
+        fields = getClickMeFields(clickMeConfig, fields)
+
         fields
     }
 
@@ -2495,7 +2503,7 @@ class ExportClickMeService {
      * @param institution the context institution whose perspective should be taken for the export
      * @return the configuration map for the subscription export for the UI
      */
-    Map<String, Object> getExportLicenseFieldsForUI(Org institution) {
+    Map<String, Object> getExportLicenseFieldsForUI(Org institution, ClickMeConfig clickMeConfig = null) {
 
         Map<String, Object> fields = [:]
         fields.putAll(institution.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_LICENSE_SUPPORT_CONFIG : EXPORT_LICENSE_CONFIG)
@@ -2533,6 +2541,8 @@ class ExportClickMeService {
             else
                 fields.licProperties.fields << ["licProperty.${propertyDefinition.id}": [field: null, label: propertyDefinition."${localizedName}", privateProperty: false]]
         }
+
+        fields = getClickMeFields(clickMeConfig, fields)
 
         fields
     }
@@ -2598,7 +2608,7 @@ class ExportClickMeService {
      * @param sub the {@link Subscription} whose packages should be included in the export
      * @return the configuration map for the cost item export for UI
      */
-    Map<String, Object> getExportCostItemFieldsForUI(Subscription sub = null) {
+    Map<String, Object> getExportCostItemFieldsForUI(Subscription sub = null, ClickMeConfig clickMeConfig = null) {
         Org institution = contextService.getOrg()
 
         Map<String, Object> fields = [:]
@@ -2651,6 +2661,8 @@ class ExportClickMeService {
             fields.participantCustomerIdentifiers.fields << ["participantCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
         }
 
+        fields = getClickMeFields(clickMeConfig, fields)
+
         fields
     }
 
@@ -2693,7 +2705,7 @@ class ExportClickMeService {
      * Gets the cost item fields for the given institution
      * @return the configuration map for the cost item export for UI
      */
-    Map<String, Object> getExportSurveyCostItemFieldsForUI() {
+    Map<String, Object> getExportSurveyCostItemFieldsForUI(ClickMeConfig clickMeConfig = null) {
         Org institution = contextService.getOrg()
 
         Map<String, Object> fields = [:]
@@ -2723,6 +2735,8 @@ class ExportClickMeService {
         addressTypes.each { RefdataValue addressType ->
             fields.participantAddresses.fields.put("participantAddress.${addressType.value}", [field: null, label: addressType.getI10n('value')])
         }
+
+        fields = getClickMeFields(clickMeConfig, fields)
 
         fields
     }
@@ -2857,7 +2871,7 @@ class ExportClickMeService {
      * @param orgType the organisation type to be exported
      * @return the configuration map for the organisation export for UI
      */
-    Map<String, Object> getExportOrgFieldsForUI(String orgType) {
+    Map<String, Object> getExportOrgFieldsForUI(String orgType, ClickMeConfig clickMeConfig = null) {
 
 //        println 'orgType'
 //        println orgType
@@ -2965,6 +2979,8 @@ class ExportClickMeService {
                 break
         }
 
+        fields = getClickMeFields(clickMeConfig, fields)
+
         fields
     }
 
@@ -2994,7 +3010,7 @@ class ExportClickMeService {
         exportFields
     }
 
-    Map<String, Object> getExportVendorFieldsForUI() {
+    Map<String, Object> getExportVendorFieldsForUI(ClickMeConfig clickMeConfig = null) {
         Org contextOrg = contextService.getOrg()
         Map<String, Object> fields = [:], contextParams = [ctx: contextOrg]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
@@ -3018,6 +3034,9 @@ class ExportClickMeService {
         addressTypes.each { RefdataValue addressType ->
             fields.vendorAddresses.fields.put("vendorAddress.${addressType.value}",[field: null, label: addressType.getI10n('value')])
         }
+
+        fields = getClickMeFields(clickMeConfig, fields)
+
         fields
     }
 
@@ -3088,7 +3107,7 @@ class ExportClickMeService {
      * Gets the address fields for the UI
      * @return the configuration map for the address export for UI
      */
-    Map<String, Object> getExportAddressFieldsForUI() {
+    Map<String, Object> getExportAddressFieldsForUI(ClickMeConfig clickMeConfig = null) {
 
         Map<String, Object> fields = [:], filterFields = [:]
         fields.putAll(EXPORT_ADDRESS_CONFIG)
@@ -3141,6 +3160,8 @@ class ExportClickMeService {
                 break
         }
         */
+
+        fields = getClickMeFields(clickMeConfig, fields)
 
         [exportFields: fields, filterFields: filterFields]
     }
@@ -3225,7 +3246,7 @@ class ExportClickMeService {
      * @param surveyConfig the survey whose evaluation should be exported
      * @return the configuration map for the survey evaluation export for UI
      */
-    Map<String, Object> getExportSurveyEvaluationFieldsForUI(SurveyConfig surveyConfig) {
+    Map<String, Object> getExportSurveyEvaluationFieldsForUI(SurveyConfig surveyConfig, ClickMeConfig clickMeConfig = null) {
 
         Map<String, Object> fields = [:]
         fields.putAll(EXPORT_SURVEY_EVALUATION)
@@ -3379,6 +3400,10 @@ class ExportClickMeService {
             }
         }
 
+        fields = getClickMeFields(clickMeConfig, fields)
+
+        fields = getClickMeFields(clickMeConfig, fields)
+
         fields
     }
 
@@ -3387,7 +3412,7 @@ class ExportClickMeService {
      * Gets the issue entitlement export fields and prepares them for the UI
      * @return the configuration map for the issue entitlement export for the UI
      */
-    Map<String, Object> getExportIssueEntitlementFieldsForUI() {
+    Map<String, Object> getExportIssueEntitlementFieldsForUI(ClickMeConfig clickMeConfig = null) {
 
         Map<String, Object> fields = [:]
         fields.putAll(EXPORT_ISSUE_ENTITLEMENT_CONFIG)
@@ -3403,6 +3428,8 @@ class ExportClickMeService {
         IdentifierNamespace.findAllByNsType(TitleInstancePackagePlatform.class.name, [sort: 'ns']).each {
             fields.issueEntitlementIdentifiers.fields << ["issueEntitlementIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
+
+        fields = getClickMeFields(clickMeConfig, fields)
 
         fields
     }
@@ -3441,7 +3468,7 @@ class ExportClickMeService {
      * Gets the title export fields and prepares them for the UI
      * @return the configuration map for the title export for the UI
      */
-    Map<String, Object> getExportTippFieldsForUI() {
+    Map<String, Object> getExportTippFieldsForUI(ClickMeConfig clickMeConfig = null) {
 
         Map<String, Object> fields = [:]
         fields.putAll(EXPORT_TIPP_CONFIG)
@@ -3450,6 +3477,8 @@ class ExportClickMeService {
         IdentifierNamespace.findAllByNsType(TitleInstancePackagePlatform.class.name, [sort: 'ns']).each {
             fields.tippIdentifiers.fields << ["tippIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
+
+        fields = getClickMeFields(clickMeConfig, fields)
 
         fields
     }
@@ -3495,6 +3524,8 @@ class ExportClickMeService {
                 selectedExportFields.put(k, configFields.get(k))
             }
         }
+
+        saveClickMeConfig(selectedExportFields, "EXPORT_RENEWAL_CONFIG")
 
         Integer maxCostItemsElements = 0
         maxCostItemsElements = CostItem.executeQuery('select count(*) from CostItem where surveyOrg in (select surOrg from SurveyOrg as surOrg where surveyConfig = :surveyConfig) group by costItemElement', [surveyConfig: renewalResult.surveyConfig]).size()
@@ -3709,6 +3740,8 @@ class ExportClickMeService {
             }
         }
 
+        saveClickMeConfig(selectedExportFields, "EXPORT_SUBSCRIPTION_MEMBERS_CONFIG")
+
         Map<String, List<RefdataValue>> selectedCostItemElements = [all: []]
         List<String> removeSelectedCostItemElements = []
         selectedExportFields.keySet().findAll {it.startsWith('participantSubCostItem.')}.each {
@@ -3790,6 +3823,8 @@ class ExportClickMeService {
             }
         }
 
+        saveClickMeConfig(selectedExportFields, institution.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? 'EXPORT_CONSORTIA_PARTICIPATIONS_SUPPORT_CONFIG' : 'EXPORT_CONSORTIA_PARTICIPATIONS_CONFIG')
+
         Map<String, List<RefdataValue>> selectedCostItemElements = [:]
         List<String> removeSelectedCostItemElements = []
         selectedExportFields.keySet().findAll {it.startsWith('subCostItem.')}.each { String key ->
@@ -3866,6 +3901,8 @@ class ExportClickMeService {
             }
         }
 
+        saveClickMeConfig(selectedExportFields, "EXPORT_SUBSCRIPTION_CONFIG")
+
         Map<String, List<RefdataValue>> selectedCostItemElements = [:]
         List<String> removeSelectedCostItemElements = []
         selectedExportFields.keySet().findAll {it.startsWith('subCostItem.')}.each { String key ->
@@ -3940,6 +3977,8 @@ class ExportClickMeService {
             }
         }
 
+        saveClickMeConfig(selectedExportFields, "EXPORT_LICENSE_CONFIG")
+
         List titles = _exportTitles(selectedExportFields, locale, null, null, null, null, format)
 
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
@@ -3982,6 +4021,9 @@ class ExportClickMeService {
                 selectedExportFields.put(k, configFields.get(k))
             }
         }
+
+        saveClickMeConfig(selectedExportFields, "EXPORT_COST_ITEM_CONFIG")
+
         Map sheetData = [:]
 
         List titles = _exportTitles(selectedExportFields, locale, null, null, contactSources, null, format)
@@ -4031,6 +4073,9 @@ class ExportClickMeService {
                 selectedExportFields.put(k, configFields.get(k))
             }
         }
+
+        saveClickMeConfig(selectedExportFields, "EXPORT_SURVEY_COST_ITEM_CONFIG")
+
         List titles = _exportTitles(selectedExportFields, locale, null, null, contactSources, null, format)
 
         List exportData = []
@@ -4060,15 +4105,20 @@ class ExportClickMeService {
         String sheetTitle
         Map wekbRecords = [:]
 
+        String nameOfClickMeMap = ''
+
         switch(config) {
             case 'consortium':
                 sheetTitle = messageSource.getMessage('consortium.label', null, locale)
+                nameOfClickMeMap = 'EXPORT_CONSORTIA_CONFIG'
                 break
             case 'institution':
                 sheetTitle = messageSource.getMessage('default.institution', null, locale)
+                nameOfClickMeMap = contextService.contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? 'EXPORT_ORG_SUPPORT_CONFIG' : 'EXPORT_ORG_CONFIG'
                 break
             case 'member':
                 sheetTitle = messageSource.getMessage('subscription.details.consortiaMembers.label', null, locale)
+                nameOfClickMeMap = 'EXPORT_ORG_CONFIG'
                 break
             case 'provider':
                 sheetTitle = messageSource.getMessage('default.ProviderAgency.export.label', null, locale)
@@ -4080,6 +4130,7 @@ class ExportClickMeService {
                         wekbRecords.put(providerRecord.uuid, providerRecord)
                     }
                 }
+                nameOfClickMeMap = 'EXPORT_PROVIDER_CONFIG'
                 break
         }
 
@@ -4090,6 +4141,8 @@ class ExportClickMeService {
                 selectedExportFields.put(k, configFields.get(k))
             }
         }
+
+        saveClickMeConfig(selectedExportFields, "EXPORT_VENDOR_CONFIG")
 
         List titles = _exportTitles(selectedExportFields, locale, null, null, contactSources, null, format)
 
@@ -4138,6 +4191,8 @@ class ExportClickMeService {
             }
         }
 
+        saveClickMeConfig(selectedExportFields, nameOfClickMeMap)
+
         List titles = _exportTitles(selectedExportFields, locale, null, null, contactSources, null, format)
 
         List exportData = []
@@ -4182,6 +4237,8 @@ class ExportClickMeService {
             if(configFields.address.containsKey(key))
                 selectedExportAddressFields.put(key, configFields.address.get(key))
         }
+
+        saveClickMeConfig(selectedFields, "EXPORT_ADDRESS_CONFIG")
 
         List titleRow = [messageSource.getMessage('contact.contentType.label', null, locale)]
         titleRow.addAll(_exportTitles(selectedExportContactFields, locale, null, null, null, null, format))
@@ -4337,6 +4394,8 @@ class ExportClickMeService {
                 selectedExportFields.put(k, configFields.get(k))
             }
         }
+
+        saveClickMeConfig(selectedExportFields, "EXPORT_SURVEY_EVALUATION")
 
         Map<String, List<RefdataValue>> selectedCostItemElements = [selectedCostItemElementsForSurveyCostItems: [], selectedCostItemElementsForSubCostItems: []]
         List<String> removeSelectedCostItemElements = []
@@ -4501,6 +4560,8 @@ class ExportClickMeService {
             }
         }
 
+        saveClickMeConfig(selectedExportFields, "EXPORT_TIPP_CONFIG")
+
         List titles = _exportTitles(selectedExportFields, locale, null, null, null, null, format)
 
         List exportData = []
@@ -4566,6 +4627,8 @@ class ExportClickMeService {
                 selectedExportFields.put(k, configFields.get(k))
             }
         }
+
+        saveClickMeConfig(selectedExportFields, "EXPORT_ISSUE_ENTITLEMENT_CONFIG")
 
         List titles = _exportTitles(selectedExportFields, locale, null, null, null, null, format)
 
@@ -6806,5 +6869,44 @@ class ExportClickMeService {
             }
         }
         result
+    }
+
+    private void saveClickMeConfig(Map selectedExportFields, String nameOfClickMeMap){
+        Org contextOrg = contextService.getOrg()
+        def request = WebUtils.retrieveGrailsWebRequest().getCurrentRequest()
+        GrailsParameterMap grailsParameterMap = new GrailsParameterMap(request)
+
+        if(grailsParameterMap.saveClickMeConfig && BeanStore.getContextService().isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)){
+            String jsonConfig = (new JSON(selectedExportFields)).toString()
+            String clickMeConfigName = grailsParameterMap.clickMeConfigName
+            String clickMeType = grailsParameterMap.clickMeType
+            int countClickMeConfigs = ClickMeConfig.executeQuery('select count(*) from ClickMeConfig where contextOrg = :contextOrg and clickMeType = :clickMeType', [contextOrg: contextOrg, clickMeType: clickMeType])[0]
+
+            ClickMeConfig clickMeConfig = new ClickMeConfig(name: clickMeConfigName,
+                    contextOrg: contextOrg,
+                    jsonConfig: jsonConfig,
+                    contextUrl: "/${grailsParameterMap.exportController}/${grailsParameterMap.exportAction}",
+                    nameOfClickMeMap: nameOfClickMeMap,
+                    clickMeType: clickMeType,
+                    configOrder: countClickMeConfigs+1
+            ).save()
+
+        }
+
+    }
+
+    Map getClickMeFields(ClickMeConfig clickMeConfig, Map fields){
+        if (clickMeConfig){
+            Map clickMeConfigMap = JSON.parse(clickMeConfig.jsonConfig)
+            fields.each { def field ->
+                field.value.fields.each{
+                    if(it.value && it.value.containsKey('defaultChecked')){
+                        it.value.defaultChecked = it.key in clickMeConfigMap ? true: false
+                    }
+                }
+            }
+        }
+
+        return fields
     }
 }

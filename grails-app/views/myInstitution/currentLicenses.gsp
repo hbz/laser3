@@ -9,7 +9,7 @@
   <ui:controlButtons>
       <ui:exportDropdown>
           <ui:exportDropdownItem>
-              <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
+              <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'lics']"/>
           </ui:exportDropdownItem>
       <%--
           <g:if test="${filterSet || defaultSet}">
@@ -55,5 +55,7 @@
   <ui:debugInfo>
       <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
   </ui:debugInfo>
-  <laser:render template="export/individuallyExportModalLics" model="[modalID: 'individuallyExportModal']" />
+
+<g:render template="/clickMe/export/js"/>
+
 <laser:htmlEnd />

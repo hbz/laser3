@@ -10,7 +10,7 @@
     <ui:controlButtons>
         <ui:exportDropdown>
             <ui:exportDropdownItem>
-                <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
+                <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'providers']"/>
             </ui:exportDropdownItem>
             <%--
             <g:if test="${filterSet}">
@@ -82,6 +82,5 @@
         </div>
         <ui:paginate total="${orgListTotal}" params="${params}" max="${max}" offset="${offset}" />
 
-        <laser:render template="/myInstitution/export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'provider', contactSwitch: true]" />
-
+        <g:render template="/clickMe/export/js"/>
 <laser:htmlEnd />

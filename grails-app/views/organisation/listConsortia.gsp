@@ -13,7 +13,7 @@
         %>
         <ui:exportDropdown>
             <ui:exportDropdownItem>
-                <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
+                <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'consortias']"/>
             </ui:exportDropdownItem>
             <%--
             <g:if test="${filterSet}">
@@ -60,7 +60,6 @@
         </g:form>
     </ui:filter>
 
-    <laser:render template="/myInstitution/export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'consortium', contactSwitch: true]" />
     <laser:render template="/templates/filter/orgFilterTable"
               model="[orgList: availableOrgs,
                       currentConsortiaIdList: consortiaIds,
@@ -71,5 +70,7 @@
               ]"/>
 
     <ui:paginate action="listConsortia" params="${params}" max="${max}" total="${consortiaTotal}" />
+
+<g:render template="/clickMe/export/js"/>
 
 <laser:htmlEnd />

@@ -8,7 +8,7 @@
         <ui:controlButtons>
             <ui:exportDropdown>
                 <ui:exportDropdownItem>
-                    <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
+                    <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'vendors']"/>
                 </ui:exportDropdownItem>
             </ui:exportDropdown>
             <ui:actionsDropdown>
@@ -57,6 +57,6 @@
         <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
     </ui:debugInfo>
 
-    <laser:render template="export/individuallyExportModalVendors" model="[modalID: 'individuallyExportModal', exportFileName: message(code: 'export.my.currentVendors'), contactSwitch: true]" />
+    <g:render template="/clickMe/export/js"/>
 
 <laser:htmlEnd />

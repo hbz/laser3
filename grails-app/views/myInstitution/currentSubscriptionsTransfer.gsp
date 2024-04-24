@@ -9,7 +9,7 @@
 <ui:controlButtons>
     <ui:exportDropdown>
         <ui:exportDropdownItem>
-            <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
+            <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'subsTransfer']"/>
         </ui:exportDropdownItem>
     </ui:exportDropdown>
 </ui:controlButtons>
@@ -741,8 +741,6 @@
     <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}" max="${max}" total="${num_sub_rows}"/>
 </g:if>
 
-<laser:render template="export/individuallyExportModalSubsTransfer" model="[modalID: 'individuallyExportModal']"/>
-
 <g:if test="${editable}">
     <laser:render template="/templates/documents/modal"
                   model="${[newModalId: "modalCreateDocument", owntp: 'subscription']}"/>
@@ -758,5 +756,7 @@
 </laser:script>
 
 </g:if>
+
+<g:render template="/clickMe/export/js"/>
 
 <laser:htmlEnd/>

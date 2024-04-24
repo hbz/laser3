@@ -9,7 +9,7 @@
     <ui:controlButtons>
         <ui:exportDropdown>
             <ui:exportDropdownItem>
-                <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
+                <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'institutions', exportFileName: message(code: 'menu.institutions')]"/>
             </ui:exportDropdownItem>
         </ui:exportDropdown>
 
@@ -64,6 +64,7 @@
 
     <ui:paginate action="listInstitution" params="${params}" max="${max}" total="${consortiaMemberTotal}" />
 
-    <laser:render template="/myInstitution/export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'institution', contactSwitch: true]" />
+
+<g:render template="/clickMe/export/js"/>
 
 <laser:htmlEnd />

@@ -14,7 +14,7 @@
         <ui:controlButtons>
             <ui:exportDropdown>
                 <ui:exportDropdownItem>
-                    <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
+                    <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'financialsExport']"/>
                 </ui:exportDropdownItem>
             </ui:exportDropdown>
 
@@ -45,5 +45,6 @@
 
         <laser:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets,ciTitles:ciTitles]" />
 
-        <laser:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal', subscription: null]" />
+        <g:render template="/clickMe/export/js"/>
+
 <laser:htmlEnd />
