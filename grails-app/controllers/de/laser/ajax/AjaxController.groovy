@@ -1108,6 +1108,9 @@ class AjaxController {
         else if (obj instanceof Platform) {
             attrs.platform = obj
         }
+        else if (obj instanceof Vendor) {
+            attrs.vendor = obj
+        }
 
         if (obj.isMarked(user, type)) {
             obj.removeMarker(user, type)
