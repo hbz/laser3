@@ -16,7 +16,6 @@ import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.utils.DateUtils
 import de.laser.utils.PdfUtils
-import de.laser.utils.LocaleUtils
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.sql.Sql
@@ -198,10 +197,10 @@ class SubscriptionController {
             Platform platformInstance = sp.pkg.nominalPlatform
             if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_LOCAL]) {
                 //create dummies for that they may be xEdited - OBSERVE BEHAVIOR for eventual performance loss!
-                CustomerIdentifier keyPair = CustomerIdentifier.findByPlatformAndCustomer(platformInstance, result.subscription.getSubscriber())
+                CustomerIdentifier keyPair = CustomerIdentifier.findByPlatformAndCustomer(platformInstance, result.subscription.getSubscriberRespConsortia())
                 if(!keyPair) {
                     keyPair = new CustomerIdentifier(platform: platformInstance,
-                            customer: result.subscription.getSubscriber(),
+                            customer: result.subscription.getSubscriberRespConsortia(),
                             type: RDStore.CUSTOMER_IDENTIFIER_TYPE_DEFAULT,
                             owner: contextService.getOrg(),
                             isPublic: true)
@@ -228,7 +227,7 @@ class SubscriptionController {
                         result.errorArgs = errorArgs.toArray()
                     }
                     else {
-                        CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriber(), platformInstance)
+                        CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriberRespConsortia(), platformInstance)
                         if(!ci?.value) {
                             if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_LOCAL])
                                 result.error = 'noCustomerId.local'
@@ -242,7 +241,7 @@ class SubscriptionController {
                 //Set<String> tippUIDs = subscriptionControllerService.fetchTitles(params, refSubs, 'uids')
                 Map<String, Object> dateRangeParams = subscriptionControllerService.getDateRange(params, result.subscription)
                 result.reportTypes = []
-                CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriber(), platformInstance)
+                CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriberRespConsortia(), platformInstance)
                 if(ci?.value) {
                     Set allAvailableReports = subscriptionControllerService.getAvailableReports(result)
                     if(allAvailableReports)
@@ -317,7 +316,7 @@ class SubscriptionController {
         else {
             Subscription sub = Subscription.get(params.id)
             String dateHash = "${params.startDate}${params.endDate}".encodeAsMD5()
-            String token = "report_${params.reportType}_${params.platform}_${dateHash}_${sub.getSubscriber().id}_${sub.id}"
+            String token = "report_${params.reportType}_${params.platform}_${dateHash}_${sub.getSubscriberRespConsortia().id}_${sub.id}"
             if(params.metricType) {
                 token += '_'+params.list('metricType').join('_')
             }
@@ -1278,7 +1277,7 @@ class SubscriptionController {
         result.surveyInfo = result.surveyConfig.surveyInfo
 
         Subscription baseSub = result.surveyConfig.subscription ?: subscriberSub.instanceOf
-        result.subscriber = subscriberSub.getSubscriber()
+        result.subscriber = subscriberSub.getSubscriberRespConsortia()
         result.subscriberSub = subscriberSub
 
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
@@ -1875,7 +1874,7 @@ class SubscriptionController {
                     subscriptions = linksGenerationService.getSuccessionChain(ctrlResult.result.subscriberSub, 'sourceSubscription')
                     subscriptions.each { Subscription s ->
                         packageIds.addAll(s.packages?.pkg?.id)
-                        subscribers.add(s.getSubscriber().id)
+                        subscribers.add(s.getSubscriberRespConsortia().id)
                     }
                     //in SubscriptionControllerService, these equivalent assignments are commented out as of June 2nd, 2023 - I make coherency to the more recent state TODO @moe!
                     //subscriptions << ctrlResult.result.subscriberSub

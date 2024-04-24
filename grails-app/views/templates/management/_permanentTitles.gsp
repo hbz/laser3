@@ -50,7 +50,7 @@
                 <tbody>
                 <g:each in="${filteredSubscriptions}" status="i" var="zeile">
                     <g:set var="sub" value="${zeile instanceof Subscription ? zeile : zeile.sub}"/>
-                    <g:set var="subscr" value="${zeile instanceof Subscription ? zeile.getSubscriber() : zeile.orgs}"/>
+                    <g:set var="subscr" value="${zeile instanceof Subscription ? zeile.getSubscriberRespConsortia() : zeile.orgs}"/>
                     <tr>
                         <td>${(offset ?: 0) + i + 1}</td>
                         <g:if test="${controllerName == "subscription"}">

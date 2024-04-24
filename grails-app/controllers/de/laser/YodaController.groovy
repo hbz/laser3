@@ -1633,7 +1633,7 @@ class YodaController {
                     ies.eachWithIndex { IssueEntitlement issueEntitlement, int i ->
                         //log.debug("now processing record ${offset+i} out of ${ieCount}")
                         TitleInstancePackagePlatform titleInstancePackagePlatform = issueEntitlement.tipp
-                        Org owner = issueEntitlement.subscription.subscriber
+                        Org owner = issueEntitlement.subscription.getSubscriberRespConsortia()
                         issueEntitlement.perpetualAccessBySub = issueEntitlement.subscription
                         issueEntitlement.save()
 

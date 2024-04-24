@@ -93,7 +93,7 @@ class FinanceController  {
                 if(result.subscription.instanceOf){
                     result.currentSurveysCounts = SurveyConfig.executeQuery("from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
                             [sub: result.subscription.instanceOf,
-                             org: result.subscription.getSubscriber(),
+                             org: result.subscription.getSubscriberRespConsortia(),
                              invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]]).size()
                     result.currentCostItemCounts = result.financialData.subscr ? result.financialData.subscr.count : result.financialData.cons.count
                 }else{
@@ -104,7 +104,7 @@ class FinanceController  {
             }else{
                 result.currentSurveysCounts = SurveyConfig.executeQuery("from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
                         [sub: result.subscription.instanceOf,
-                         org: result.subscription.getSubscriber(),
+                         org: result.subscription.getSubscriberRespConsortia(),
                          invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]]).size()
                 if (result.institution.isCustomerType_Inst_Pro()) {
                     if(result.subscription.instanceOf)

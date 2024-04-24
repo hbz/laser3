@@ -183,7 +183,7 @@
                                 memberRunningTimes += " ${formatDate(date: member.endDate, format: message(code: 'default.date.format.notime'))})"
                             else memberRunningTimes += ")"
                         %>
-                        <td><g:link controller="subscription" action="show" id="${member.id}" absolute="true">${member.getSubscriber().sortname} ${memberRunningTimes}</g:link></td>
+                        <td><g:link controller="subscription" action="show" id="${member.id}" absolute="true">${member.getSubscriberRespConsortia().sortname} ${memberRunningTimes}</g:link></td>
                     </tr>
                 </g:each>
             </table>

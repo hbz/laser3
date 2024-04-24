@@ -297,7 +297,7 @@ class PropertyService {
                 objMap.manageChildren = "membersSubscriptionsManagement"
                 objMap.manageChildrenParams = [id:s.id,propertiesFilterPropDef:genericOIDService.getOID(propDef), tab: 'properties']
             }
-            else objMap.subscriber = s.getSubscriber()
+            else objMap.subscriber = s.getSubscriberRespConsortia()
             objMap.displayController = "subscription"
         }
         else if(obj instanceof License) {

@@ -31,7 +31,7 @@
             inTargetOrg = contextOrg.id == it.targetOrg.id
         }
         else if(it.subscription) {
-            inTargetOrg = contextOrg.id == it.subscription.getSubscriber().id
+            inTargetOrg = contextOrg.id == it.subscription.getSubscriberRespConsortia().id
         }
         else if(it.license) {
             inTargetOrg = contextOrg.id in it.license.getAllLicensee().id

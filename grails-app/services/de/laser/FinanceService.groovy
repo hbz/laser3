@@ -138,7 +138,7 @@ class FinanceService {
                 }
                 else {
                     newCostItem = new CostItem()
-                    if(params.mode == 'copy' && sub?._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && sub?.getSubscriber() == result.institution)
+                    if(params.mode == 'copy' && sub?._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && sub?.getSubscriberRespConsortia() == result.institution)
                         newCostItem.copyBase = CostItem.get(params.long('costItemId'))
                 }
                 newCostItem.owner = (Org) result.institution
@@ -306,7 +306,7 @@ class FinanceService {
                             ci.save()
                         }
                         else {
-                            memberFailures << ci.sub.getSubscriber().sortname
+                            memberFailures << ci.sub.getSubscriberRespConsortia().sortname
                         }
                     }
                 }

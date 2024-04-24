@@ -9,6 +9,8 @@
 
 5655    23.04.2024  dev     3.4         Andreas Feature     Sortierung der Länderauswahl umgestellt
 
+5653    23.04.2024  dev     3.4         David   Feature     Refactoring: Subscription.getSubscriber()
+
 5615    23.04.2024  dev     3.4         Ingrid  Feature     Alternierende Eingabe für Hausanschrift oder Postfach, mehr Pflichtfelder
 
 5650    23.04.2024  dev     3.4         David   Feature     Refactoring: Edit-Mode komplett entfernen
@@ -28,6 +30,8 @@
 5639    10.04.2024  dev     3.4         Andreas Bug         Argumentfehler in Abfrage behoben
 
 5636    10.04.2024  dev     3.4         Andreas Bug         if-Abfrage zum Abfangen ungültiger Sortierparameter korrigiert
+
+2348    10.04.2024  dev     3.4         David   Feature     getDerivedSubscriptionBySubscribers(Org org) überdenken
 
 5619    02.04.2024  dev     3.4         Andreas Feature     Plattform-Filter erweitert
 
@@ -52,6 +56,8 @@
 5616    18.03.2024  dev     3.4         Andreas Feature     Umstellung des Entknüpfungsprozesses auf natives SQL
 
 5518    18.03.2024  dev     3.4         Andreas Bug         falsche Zählung in Bubble
+
+5519    18.03.2024  dev     3.4         David   Bug         Filter: Titel-Umfrage > Titel > Status wird ignoriert
 
 5610    08.03.2024  dev     3.4         Andreas Feature     Erweiterung des Filters in "Meine Einrichtungen"
 

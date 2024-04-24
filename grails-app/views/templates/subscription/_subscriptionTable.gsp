@@ -110,7 +110,7 @@
                                 </g:else>
                                 <g:if test="${s.instanceOf}">
                                     <g:if test="${s.consortia && s.consortia == institution}">
-                                        ( ${s.subscriber?.name} )
+                                        ( ${s.getSubscriberRespConsortia()?.name} )
                                     </g:if>
                                 </g:if>
                             </g:link>

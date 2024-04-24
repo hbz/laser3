@@ -9,7 +9,7 @@
     <div style="padding: 1em 0;">
         <p>sub.type: ${subscription.type}</p>
 
-        <p>sub.subscriber: ${subscription.subscriber}</p>
+        <p>sub.getSubscriberRespConsortia(): ${subscription.getSubscriberRespConsortia()}</p>
 
         <p>sub.instanceOf: <g:if test="${subscription.instanceOf}">
             <g:link action="show" id="${subscription.instanceOf.id}">${subscription.instanceOf.name}</g:link>

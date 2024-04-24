@@ -27,7 +27,7 @@
             </thead>
             <tbody>
                 <g:each in="${memberSubs}" var="sub" status="i">
-                    <g:set var="subInst" value="${sub.getSubscriber()}" />
+                    <g:set var="subInst" value="${sub.getSubscriberRespConsortia()}" />
                     <tr <%= sub.id == subscription.id ? 'class="warning"' : '' %>>
                         <td>
                             ${i+1}

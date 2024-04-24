@@ -419,7 +419,7 @@
                 </thead>
                 <tbody>
                 <g:each in="${filteredSubscriptions}" status="i" var="sub">
-                    <g:set var="subscr" value="${sub.getSubscriber()}"/>
+                    <g:set var="subscr" value="${sub.getSubscriberRespConsortia()}"/>
                     <tr>
                         <g:if test="${editable}">
                             <td>
