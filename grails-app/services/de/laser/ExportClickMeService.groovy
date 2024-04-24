@@ -1940,13 +1940,12 @@ class ExportClickMeService {
     }
 
     /**
-     * Gets the subscription member export fields for the given subscription and institution for processing
-     * @param institution the context institution
+     * Gets the subscription member export fields for the given subscription and contextOrg for processing
      * @param subscription the subscription whose members should be exported
      * @return the configuration map for the subscription member export
      */
-    Map<String, Object> getExportSubscriptionMembersFields(Org institution, Subscription subscription) {
-
+    Map<String, Object> getExportSubscriptionMembersFields(Subscription subscription) {
+        Org contextOrg = contextService.getOrg()
         Map<String, Object> exportFields = [:]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
@@ -1964,9 +1963,9 @@ class ExportClickMeService {
             exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
         }
         SortedSet<RefdataValue> contactTypes = new TreeSet<RefdataValue>(), addressTypes = new TreeSet<RefdataValue>()
-        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: institution]))
-        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: institution]))
-        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: institution]))
+        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
         addressTypes.addAll(RefdataCategory.getAllRefdataValues(RDConstants.ADDRESS_TYPE))
         contactTypes.each { RefdataValue contactType ->
             exportFields.put("participantContact."+contactType.owner.desc+"."+contactType.value, [field: null, label: contactType.getI10n('value')])
@@ -1978,7 +1977,7 @@ class ExportClickMeService {
             childSubs.addAll(subscription.getNonDeletedDerivedSubscriptions())
         if(childSubs) {
             String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
-            Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet: childSubs, context: institution])
+            Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet: childSubs, context: contextOrg])
 
             memberProperties.each {PropertyDefinition propertyDefinition ->
                 exportFields.put("participantSubProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}"])
@@ -1991,13 +1990,13 @@ class ExportClickMeService {
         else {
             String consortiaQuery = "select s from OrgRole oo join oo.sub s where oo.org = :context and s.instanceOf != null"
             String query = "select sp.type from SubscriptionProperty sp where sp.owner in (${consortiaQuery}) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
-            Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [context: institution])
+            Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [context: contextOrg])
 
             memberProperties.each {PropertyDefinition propertyDefinition ->
                 exportFields.put("participantSubProperty.${propertyDefinition.id}", [field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)])
             }
 
-            CostItem.executeQuery('select ci.costItemElement from CostItem ci where ci.sub in ('+consortiaQuery+') and ci.costItemStatus != :deleted and ci.costItemElement != null', [context: institution, deleted: RDStore.COST_ITEM_DELETED]).each { RefdataValue cie ->
+            CostItem.executeQuery('select ci.costItemElement from CostItem ci where ci.sub in ('+consortiaQuery+') and ci.costItemStatus != :deleted and ci.costItemElement != null', [context: contextOrg, deleted: RDStore.COST_ITEM_DELETED]).each { RefdataValue cie ->
                 exportFields.put("participantSubCostItem.${cie.id}", [field: null, label: cie.getI10n('value')])
             }
         }
@@ -2007,13 +2006,12 @@ class ExportClickMeService {
 
     /**
      * Generic call from views
-     * Gets the subscription member export fields for the given subscription and institution and prepares them for the UI
-     * @param institution the context institution
+     * Gets the subscription member export fields for the given subscription and contextOrg and prepares them for the UI
      * @param subscription the subscription whose members should be exported
      * @return the configuration map for the subscription member export for the UI
      */
-    Map<String, Object> getExportSubscriptionMembersFieldsForUI(Org institution, Subscription subscription = null, ClickMeConfig clickMeConfig = null) {
-
+    Map<String, Object> getExportSubscriptionMembersFieldsForUI(Subscription subscription = null, ClickMeConfig clickMeConfig = null) {
+        Org contextOrg = contextService.getOrg()
         Map<String, Object> fields = [:]
         fields.putAll(EXPORT_SUBSCRIPTION_MEMBERS_CONFIG)
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
@@ -2035,7 +2033,7 @@ class ExportClickMeService {
             List<Subscription> childSubs = subscription.getNonDeletedDerivedSubscriptions()
             if(childSubs) {
                 String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
-                Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet: childSubs, context: institution])
+                Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet: childSubs, context: contextOrg])
 
                 memberProperties.each {PropertyDefinition propertyDefinition ->
                     fields.participantSubProperties.fields << ["participantSubProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
@@ -2049,22 +2047,22 @@ class ExportClickMeService {
         else {
             String consortiaQuery = "select s from OrgRole oo join oo.sub s where oo.org = :context and s.instanceOf != null"
             String query = "select sp.type from SubscriptionProperty sp where sp.owner in (${consortiaQuery}) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
-            Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [context: institution])
+            Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [context: contextOrg])
 
             memberProperties.each {PropertyDefinition propertyDefinition ->
                 fields.participantSubProperties.fields << ["participantSubProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
             }
 
-            CostItem.executeQuery('select ci.costItemElement from CostItem ci where ci.sub in ('+consortiaQuery+') and ci.costItemStatus != :deleted and ci.costItemElement != null', [context: institution, deleted: RDStore.COST_ITEM_DELETED]).each { RefdataValue cie ->
+            CostItem.executeQuery('select ci.costItemElement from CostItem ci where ci.sub in ('+consortiaQuery+') and ci.costItemStatus != :deleted and ci.costItemElement != null', [context: contextOrg, deleted: RDStore.COST_ITEM_DELETED]).each { RefdataValue cie ->
                 fields.participantSubCostItems.fields.costItemsElements << ["participantSubCostItem.${cie.id}":[field: null, label: cie.getI10n('value')]]
             }
         }
 
         Set<RefdataValue> contactTypes = []
         SortedSet<RefdataValue> addressTypes = new TreeSet<RefdataValue>()
-        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true) order by pr.functionType.'+LocaleUtils.getLocalizedAttributeName('value'), [ctx: institution]))
-        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true) order by pr.positionType.'+LocaleUtils.getLocalizedAttributeName('value'), [ctx: institution]))
-        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true) order by pr.responsibilityType.'+LocaleUtils.getLocalizedAttributeName('value'), [ctx: institution]))
+        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true) order by pr.functionType.'+LocaleUtils.getLocalizedAttributeName('value'), [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true) order by pr.positionType.'+LocaleUtils.getLocalizedAttributeName('value'), [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true) order by pr.responsibilityType.'+LocaleUtils.getLocalizedAttributeName('value'), [ctx: contextOrg]))
         addressTypes.addAll(RefdataCategory.getAllRefdataValues(RDConstants.ADDRESS_TYPE))
         RefdataCategory funcType = RefdataCategory.getByDesc(RDConstants.PERSON_FUNCTION), posType = RefdataCategory.getByDesc(RDConstants.PERSON_POSITION), respType = RefdataCategory.getByDesc(RDConstants.PERSON_RESPONSIBILITY)
         List<Map> subTabs = [[view: funcType.desc, label: funcType.getI10n('desc')], [view: posType.desc, label: posType.getI10n('desc')], [view: respType.desc, label: respType.getI10n('desc')]]
@@ -2087,13 +2085,12 @@ class ExportClickMeService {
     }
 
     /**
-     * Gets the subscription fields for the given institution
-     * @param institution the context institution whose perspective should be taken for the export
+     * Gets the subscription fields for the given contextOrg
      * @param showTransferFields should the subscription transfer fields be displayed as well?
      * @return the configuration map for the subscription export
      */
-    Map<String, Object> getExportSubscriptionFields(Org institution,boolean showTransferFields = false) {
-
+    Map<String, Object> getExportSubscriptionFields(boolean showTransferFields = false) {
+        Org contextOrg = contextService.getOrg()
         Map<String, Object> exportFields = [:]
         Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName
@@ -2108,11 +2105,11 @@ class ExportClickMeService {
                 break
         }
 
-        Map<String, Object> config = institution.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_SUBSCRIPTION_SUPPORT_CONFIG : EXPORT_SUBSCRIPTION_CONFIG
+        Map<String, Object> config = contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_SUBSCRIPTION_SUPPORT_CONFIG : EXPORT_SUBSCRIPTION_CONFIG
 
         config.keySet().each { String key ->
             if(key == 'institutions') {
-                if (institution.isCustomerType_Consortium()) {
+                if (contextOrg.isCustomerType_Consortium()) {
                     config.get(key).fields.each {
                         exportFields.put(it.key, it.value)
                     }
@@ -2133,8 +2130,8 @@ class ExportClickMeService {
             }
         }
 
-        if(institution.getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO]) {
-            if (institution.getCustomerType() == CustomerTypeService.ORG_INST_PRO) {
+        if(contextOrg.getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO]) {
+            if (contextOrg.getCustomerType() == CustomerTypeService.ORG_INST_PRO) {
                 exportFields.put('subscription.isAutomaticRenewAnnually', [field: 'isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
             }
             exportFields.put('subscription.consortium', [field: null, label: 'Consortium', message: 'consortium.label'])
@@ -2143,7 +2140,7 @@ class ExportClickMeService {
 
         //determine field configuration based on customer type
         Set<String> fieldKeyPrefixes = []
-        switch(institution.getCustomerType()) {
+        switch(contextOrg.getCustomerType()) {
         //cases one to three
             case CustomerTypeService.ORG_CONSORTIUM_BASIC:
             case CustomerTypeService.ORG_CONSORTIUM_PRO: fieldKeyPrefixes.addAll(['own', 'cons'])
@@ -2160,9 +2157,9 @@ class ExportClickMeService {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
         String consortiaFilter = ''
-        if(institution.isCustomerType_Consortium())
+        if(contextOrg.isCustomerType_Consortium())
             consortiaFilter = ' and s.instanceOf = null '
-        Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg join sp.subscription s join s.orgRelations oo where oo.org = :ctx '+consortiaFilter+')', [ctx: institution]).each { Platform plat ->
+        Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg join sp.subscription s join s.orgRelations oo where oo.org = :ctx '+consortiaFilter+')', [ctx: contextOrg]).each { Platform plat ->
             exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
         }
         IdentifierNamespace.findAllByNsType(IdentifierNamespace.NS_PACKAGE, [sort: 'ns']).each { IdentifierNamespace idns ->
@@ -2170,11 +2167,11 @@ class ExportClickMeService {
         }
 
         Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc",
-                [ctx:institution,availableTypes:[PropertyDefinition.SUB_PROP]])
+                [ctx:contextOrg,availableTypes:[PropertyDefinition.SUB_PROP]])
 
 
         propList.each { PropertyDefinition propertyDefinition ->
-            exportFields.put("subProperty." + propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant?.id == institution.id)])
+            exportFields.put("subProperty." + propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant?.id == contextOrg.id)])
         }
 
         Set<RefdataValue> elements = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.COST_ITEM_ELEMENT)
@@ -2189,19 +2186,18 @@ class ExportClickMeService {
 
     /**
      * Generic call from views
-     * Gets the subscription fields for the given institution for the UI
-     * @param institution the context institution whose perspective should be taken for the export
+     * Gets the subscription fields for the given contextOrg for the UI
      * @param showTransferFields should the subscription transfer fields be displayed as well?
      * @return the configuration map for the subscription export for the UI
      */
-    Map<String, Object> getExportSubscriptionFieldsForUI(Org institution, boolean showTransferFields = false, ClickMeConfig clickMeConfig = null) {
-
+    Map<String, Object> getExportSubscriptionFieldsForUI(boolean showTransferFields = false, ClickMeConfig clickMeConfig = null) {
+        Org contextOrg = contextService.getOrg()
         Map<String, Object> fields = [:]
-        fields.putAll(institution.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_SUBSCRIPTION_SUPPORT_CONFIG : EXPORT_SUBSCRIPTION_CONFIG)
+        fields.putAll(contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_SUBSCRIPTION_SUPPORT_CONFIG : EXPORT_SUBSCRIPTION_CONFIG)
 
-        if(institution.getCustomerType() == CustomerTypeService.ORG_INST_PRO)
+        if(contextOrg.getCustomerType() == CustomerTypeService.ORG_INST_PRO)
             fields.subscription.fields.put('subscription.isAutomaticRenewAnnually', [field: 'isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
-        if (!institution.isCustomerType_Consortium()) {
+        if (!contextOrg.isCustomerType_Consortium()) {
             fields.remove('institutions')
             fields.subscription.fields.put('subscription.consortium', [field: null, label: 'Consortium', message: 'consortium.label', defaultChecked: true])
             fields.licenses.fields.put('license.consortium', [field: null, label: 'Consortium', message: 'exportClickMe.license.consortium', defaultChecked: true])
@@ -2232,9 +2228,9 @@ class ExportClickMeService {
             fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
         String consortiaFilter = ''
-        if(institution.isCustomerType_Consortium())
+        if(contextOrg.isCustomerType_Consortium())
             consortiaFilter = ' and s.instanceOf = null '
-        Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg join sp.subscription s join s.orgRelations oo where oo.org = :ctx '+consortiaFilter+') order by plat.name', [ctx:institution]).each { Platform plat ->
+        Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg join sp.subscription s join s.orgRelations oo where oo.org = :ctx '+consortiaFilter+') order by plat.name', [ctx:contextOrg]).each { Platform plat ->
             fields.participantCustomerIdentifiers.fields << ["participantCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
         }
         if (fields.packages) {
@@ -2243,18 +2239,18 @@ class ExportClickMeService {
             }
         }
 
-        Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc", [ctx:institution,availableTypes:[PropertyDefinition.SUB_PROP]])
+        Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc", [ctx:contextOrg,availableTypes:[PropertyDefinition.SUB_PROP]])
 
         propList.each { PropertyDefinition propertyDefinition ->
             //the proxies again ...
-            if(propertyDefinition.tenant?.id == institution.id)
+            if(propertyDefinition.tenant?.id == contextOrg.id)
                 fields.mySubProperties.fields << ["subProperty.${propertyDefinition.id}": [field: null, label: propertyDefinition."${localizedName}", privateProperty: true]]
             else
                 fields.subProperties.fields << ["subProperty.${propertyDefinition.id}": [field: null, label: propertyDefinition."${localizedName}", privateProperty: false]]
         }
 
         //determine tabs configuration based on customer type
-        switch(institution.getCustomerType()) {
+        switch(contextOrg.getCustomerType()) {
             //cases one to three
             case CustomerTypeService.ORG_CONSORTIUM_BASIC:
             case CustomerTypeService.ORG_CONSORTIUM_PRO:
@@ -2284,12 +2280,11 @@ class ExportClickMeService {
     }
 
     /**
-     * Gets the consortia participation fields for the given consortium
-     * @param consortium the context institution whose perspective should be taken for the export
+     * Gets the consortia participation fields for the given contextOrg
      * @return the configuration map for the subscription export
      */
-    Map<String, Object> getExportConsortiaParticipationFields(Org consortium) {
-
+    Map<String, Object> getExportConsortiaParticipationFields() {
+        Org contextOrg = contextService.getOrg()
         Map<String, Object> exportFields = [:]
         Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName
@@ -2304,7 +2299,7 @@ class ExportClickMeService {
                 break
         }
 
-        Map<String, Object> config = consortium.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_CONSORTIA_PARTICIPATIONS_SUPPORT_CONFIG : EXPORT_CONSORTIA_PARTICIPATIONS_CONFIG
+        Map<String, Object> config = contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_CONSORTIA_PARTICIPATIONS_SUPPORT_CONFIG : EXPORT_CONSORTIA_PARTICIPATIONS_CONFIG
 
         config.keySet().each { String key ->
             config.get(key).fields.each {
@@ -2318,16 +2313,16 @@ class ExportClickMeService {
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
-        Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg join sp.subscription s join s.orgRelations oo where oo.org = :ctx and s.instanceOf = null)', [ctx: consortium]).each { Platform plat ->
+        Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg join sp.subscription s join s.orgRelations oo where oo.org = :ctx and s.instanceOf = null)', [ctx: contextOrg]).each { Platform plat ->
             exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
         }
         IdentifierNamespace.findAllByNsType(IdentifierNamespace.NS_PACKAGE, [sort: 'ns']).each { IdentifierNamespace idns ->
             exportFields.put("packageIdentifiers."+idns.id, [field: null, label: idns.ns + "(${messageSource.getMessage('package', null, locale)})"])
         }
         SortedSet<RefdataValue> contactTypes = new TreeSet<RefdataValue>(), addressTypes = new TreeSet<RefdataValue>()
-        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: consortium]))
-        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: consortium]))
-        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: consortium]))
+        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
         addressTypes.addAll(RefdataCategory.getAllRefdataValues(RDConstants.ADDRESS_TYPE))
         contactTypes.each { RefdataValue contactType ->
             exportFields.put("participantContact."+contactType.owner.desc+"."+contactType.value, [field: null, label: contactType.getI10n('value')])
@@ -2337,11 +2332,11 @@ class ExportClickMeService {
         }
 
         Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc",
-                [ctx:consortium,availableTypes:[PropertyDefinition.SUB_PROP]])
+                [ctx:contextOrg,availableTypes:[PropertyDefinition.SUB_PROP]])
 
 
         propList.each { PropertyDefinition propertyDefinition ->
-            exportFields.put("subProperty." + propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant?.id == consortium.id)])
+            exportFields.put("subProperty." + propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant?.id == contextOrg.id)])
         }
 
         Set<RefdataValue> elements = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.COST_ITEM_ELEMENT)
@@ -2356,14 +2351,13 @@ class ExportClickMeService {
 
     /**
      * Generic call from views
-     * Gets the export fields for the given consortium for the UI
-     * @param consortium the context consortium whose perspective should be taken for the export
+     * Gets the export fields for the given contextOrg for the UI
      * @return the configuration map for the participation export for the UI
      */
-    Map<String, Object> getExportConsortiaParticipationFieldsForUI(Org consortium, ClickMeConfig clickMeConfig = null) {
-
+    Map<String, Object> getExportConsortiaParticipationFieldsForUI(ClickMeConfig clickMeConfig = null) {
+        Org contextOrg = contextService.getOrg()
         Map<String, Object> fields = [:]
-        fields.putAll(consortium.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_CONSORTIA_PARTICIPATIONS_SUPPORT_CONFIG : EXPORT_CONSORTIA_PARTICIPATIONS_CONFIG)
+        fields.putAll(contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_CONSORTIA_PARTICIPATIONS_SUPPORT_CONFIG : EXPORT_CONSORTIA_PARTICIPATIONS_CONFIG)
 
         Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName
@@ -2385,7 +2379,7 @@ class ExportClickMeService {
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
-        Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg join sp.subscription s join s.orgRelations oo where oo.org = :ctx and s.instanceOf = null) order by plat.name', [ctx:consortium]).each { Platform plat ->
+        Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg join sp.subscription s join s.orgRelations oo where oo.org = :ctx and s.instanceOf = null) order by plat.name', [ctx:contextOrg]).each { Platform plat ->
             fields.participantCustomerIdentifiers.fields << ["participantCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
         }
         if (fields.packages) {
@@ -2395,9 +2389,9 @@ class ExportClickMeService {
         }
 
         SortedSet<RefdataValue> contactTypes = new TreeSet<RefdataValue>(), addressTypes = new TreeSet<RefdataValue>()
-        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: consortium]))
-        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: consortium]))
-        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: consortium]))
+        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
         addressTypes.addAll(RefdataCategory.getAllRefdataValues(RDConstants.ADDRESS_TYPE))
         RefdataCategory funcType = RefdataCategory.getByDesc(RDConstants.PERSON_FUNCTION), posType = RefdataCategory.getByDesc(RDConstants.PERSON_POSITION), respType = RefdataCategory.getByDesc(RDConstants.PERSON_RESPONSIBILITY)
         List<Map> subTabs = [[view: funcType.desc, label: funcType.getI10n('desc')], [view: posType.desc, label: posType.getI10n('desc')], [view: respType.desc, label: respType.getI10n('desc')]]
@@ -2414,11 +2408,11 @@ class ExportClickMeService {
             fields.participantAddresses.fields.put("participantAddress.${addressType.value}", [field: null, label: addressType.getI10n('value')])
         }
 
-        Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc", [ctx:consortium,availableTypes:[PropertyDefinition.SUB_PROP]])
+        Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc", [ctx:contextOrg,availableTypes:[PropertyDefinition.SUB_PROP]])
 
         propList.each { PropertyDefinition propertyDefinition ->
             //the proxies again ...
-            if(propertyDefinition.tenant?.id == consortium.id)
+            if(propertyDefinition.tenant?.id == contextOrg.id)
                 fields.mySubProperties.fields << ["subProperty.${propertyDefinition.id}": [field: null, label: propertyDefinition."${localizedName}", privateProperty: true]]
             else
                 fields.subProperties.fields << ["subProperty.${propertyDefinition.id}": [field: null, label: propertyDefinition."${localizedName}", privateProperty: false]]
@@ -2441,12 +2435,11 @@ class ExportClickMeService {
     }
 
     /**
-     * Gets the license fields for the given institution
-     * @param institution the context institution whose perspective should be taken for the export
+     * Gets the license fields for the given contextOrg
      * @return the configuration map for the license export
      */
-    Map<String, Object> getExportLicenseFields(Org institution) {
-
+    Map<String, Object> getExportLicenseFields() {
+        Org contextOrg = contextService.getOrg()
         Map<String, Object> exportFields = [:]
         Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName
@@ -2461,11 +2454,11 @@ class ExportClickMeService {
                 break
         }
 
-        Map<String, Object> config = institution.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_LICENSE_SUPPORT_CONFIG : EXPORT_LICENSE_CONFIG
+        Map<String, Object> config = contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_LICENSE_SUPPORT_CONFIG : EXPORT_LICENSE_CONFIG
 
         config.keySet().each { String key ->
             if(key == 'institutions') {
-                if (institution.isCustomerType_Consortium()) {
+                if (contextOrg.isCustomerType_Consortium()) {
                     config.get(key).fields.each {
                         exportFields.put(it.key, it.value)
                     }
@@ -2478,7 +2471,7 @@ class ExportClickMeService {
             }
         }
 
-        if(institution.getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO]) {
+        if(contextOrg.getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO]) {
             exportFields.put('consortium', [field: null, label: 'Consortium', message: 'consortium.label'])
         }
 
@@ -2487,11 +2480,11 @@ class ExportClickMeService {
         }
 
         Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc",
-                [ctx:institution,availableTypes:[PropertyDefinition.LIC_PROP]])
+                [ctx:contextOrg,availableTypes:[PropertyDefinition.LIC_PROP]])
 
 
         propList.each { PropertyDefinition propertyDefinition ->
-            exportFields.put("licProperty." + propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant?.id == institution.id)])
+            exportFields.put("licProperty." + propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant?.id == contextOrg.id)])
         }
 
         exportFields
@@ -2499,16 +2492,15 @@ class ExportClickMeService {
 
     /**
      * Generic call from views
-     * Gets the license fields for the given institution for the UI
-     * @param institution the context institution whose perspective should be taken for the export
+     * Gets the license fields for the given contextOrg for the UI
      * @return the configuration map for the subscription export for the UI
      */
-    Map<String, Object> getExportLicenseFieldsForUI(Org institution, ClickMeConfig clickMeConfig = null) {
-
+    Map<String, Object> getExportLicenseFieldsForUI(ClickMeConfig clickMeConfig = null) {
+        Org contextOrg = contextService.getOrg()
         Map<String, Object> fields = [:]
-        fields.putAll(institution.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_LICENSE_SUPPORT_CONFIG : EXPORT_LICENSE_CONFIG)
+        fields.putAll(contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_LICENSE_SUPPORT_CONFIG : EXPORT_LICENSE_CONFIG)
 
-        if (!institution.isCustomerType_Consortium()) {
+        if (!contextOrg.isCustomerType_Consortium()) {
             fields.remove('institutions')
             fields.licenses.fields.put('consortium', [field: null, label: 'Consortium', message: 'consortium.label', defaultChecked: true])
         }
@@ -2532,11 +2524,11 @@ class ExportClickMeService {
             fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
 
-        Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc", [ctx:institution,availableTypes:[PropertyDefinition.LIC_PROP]])
+        Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc", [ctx:contextOrg,availableTypes:[PropertyDefinition.LIC_PROP]])
 
         propList.each { PropertyDefinition propertyDefinition ->
             //the proxies again ...
-            if(propertyDefinition.tenant?.id == institution.id)
+            if(propertyDefinition.tenant?.id == contextOrg.id)
                 fields.myLicProperties.fields << ["licProperty.${propertyDefinition.id}": [field: null, label: propertyDefinition."${localizedName}", privateProperty: true]]
             else
                 fields.licProperties.fields << ["licProperty.${propertyDefinition.id}": [field: null, label: propertyDefinition."${localizedName}", privateProperty: false]]
@@ -2548,12 +2540,12 @@ class ExportClickMeService {
     }
 
     /**
-     * Gets the cost item fields for the given institution. The export may be restricted to packages of a certain subscription
+     * Gets the cost item fields for the given contextOrg. The export may be restricted to packages of a certain subscription
      * @param sub the {@link Subscription} whose packages should be included in the export
      * @return the configuration map for the cost item export
      */
     Map<String, Object> getExportCostItemFields(Subscription sub = null) {
-        Org institution = contextService.getOrg()
+        Org contextOrg = contextService.getOrg()
         Map<String, Object> exportFields = [:]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
@@ -2564,9 +2556,9 @@ class ExportClickMeService {
         }
 
         SortedSet<RefdataValue> contactTypes = new TreeSet<RefdataValue>(), addressTypes = new TreeSet<RefdataValue>()
-        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: institution]))
-        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: institution]))
-        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: institution]))
+        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
         addressTypes.addAll(RefdataCategory.getAllRefdataValues(RDConstants.ADDRESS_TYPE))
         contactTypes.each { RefdataValue contactType ->
             exportFields.put("participantContact."+contactType.owner.desc+"."+contactType.value, [field: null, label: contactType.getI10n('value')])
@@ -2575,8 +2567,8 @@ class ExportClickMeService {
             exportFields.put("participantAddress."+addressType.value, [field: null, label: addressType.getI10n('value')])
         }
 
-        if(institution.getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO]) {
-            if(institution.getCustomerType() == CustomerTypeService.ORG_INST_PRO) {
+        if(contextOrg.getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO]) {
+            if(contextOrg.getCustomerType() == CustomerTypeService.ORG_INST_PRO) {
                 exportFields.put('subscription.isAutomaticRenewAnnually', [field: 'sub.isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
             }
             exportFields.put('subscription.consortium', [field: null, label: 'Consortium', message: 'consortium.label'])
@@ -2586,7 +2578,7 @@ class ExportClickMeService {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
         String subquery
-        Map<String, Object> queryParams = [ctx: institution]
+        Map<String, Object> queryParams = [ctx: contextOrg]
         if(sub) {
             subquery = '(select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :s)'
             queryParams.s = sub
@@ -2604,19 +2596,19 @@ class ExportClickMeService {
 
     /**
      * Generic call from views
-     * Gets the cost item fields for the given institution. The export may be restricted to packages of a certain subscription
+     * Gets the cost item fields for the given contextOrg. The export may be restricted to packages of a certain subscription
      * @param sub the {@link Subscription} whose packages should be included in the export
      * @return the configuration map for the cost item export for UI
      */
     Map<String, Object> getExportCostItemFieldsForUI(Subscription sub = null, ClickMeConfig clickMeConfig = null) {
-        Org institution = contextService.getOrg()
+        Org contextOrg = contextService.getOrg()
 
         Map<String, Object> fields = [:]
         fields.putAll(EXPORT_COST_ITEM_CONFIG)
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
-        if(institution.getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO]) {
-            if(institution.getCustomerType() == CustomerTypeService.ORG_INST_PRO) {
+        if(contextOrg.getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO]) {
+            if(contextOrg.getCustomerType() == CustomerTypeService.ORG_INST_PRO) {
                 fields.subscription.fields.put('subscription.isAutomaticRenewAnnually', [field: 'sub.isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
             }
             fields.subscription.fields.put('subscription.consortium', [field: null, label: 'Consortium', message: 'consortium.label', defaultChecked: true])
@@ -2629,9 +2621,9 @@ class ExportClickMeService {
             fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
         SortedSet<RefdataValue> contactTypes = new TreeSet<RefdataValue>(), addressTypes = new TreeSet<RefdataValue>()
-        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: institution]))
-        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: institution]))
-        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: institution]))
+        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
         addressTypes.addAll(RefdataCategory.getAllRefdataValues(RDConstants.ADDRESS_TYPE))
         RefdataCategory funcType = RefdataCategory.getByDesc(RDConstants.PERSON_FUNCTION), posType = RefdataCategory.getByDesc(RDConstants.PERSON_POSITION), respType = RefdataCategory.getByDesc(RDConstants.PERSON_RESPONSIBILITY)
         List<Map> subTabs = [[view: funcType.desc, label: funcType.getI10n('desc')], [view: posType.desc, label: posType.getI10n('desc')], [view: respType.desc, label: respType.getI10n('desc')]]
@@ -2648,7 +2640,7 @@ class ExportClickMeService {
         }
 
         String subquery
-        Map<String, Object> queryParams = [ctx: institution]
+        Map<String, Object> queryParams = [ctx: contextOrg]
         if(sub) {
             subquery = '(select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :s)'
             queryParams.s = sub
@@ -2667,11 +2659,11 @@ class ExportClickMeService {
     }
 
     /**
-     * Gets the cost item fields for the given institution
+     * Gets the cost item fields for the given contextOrg
      * @return the configuration map for the cost item export
      */
     Map<String, Object> getExportSurveyCostItemFields() {
-        Org institution = contextService.getOrg()
+        Org contextOrg = contextService.getOrg()
         Map<String, Object> exportFields = [:]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
@@ -2682,9 +2674,9 @@ class ExportClickMeService {
         }
 
         SortedSet<RefdataValue> contactTypes = new TreeSet<RefdataValue>(), addressTypes = new TreeSet<RefdataValue>()
-        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: institution]))
-        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: institution]))
-        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: institution]))
+        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
         addressTypes.addAll(RefdataCategory.getAllRefdataValues(RDConstants.ADDRESS_TYPE))
         contactTypes.each { RefdataValue contactType ->
             exportFields.put("participantContact."+contactType.owner.desc+"."+contactType.value, [field: null, label: contactType.getI10n('value')])
@@ -2702,11 +2694,11 @@ class ExportClickMeService {
 
     /**
      * Generic call from views
-     * Gets the cost item fields for the given institution
+     * Gets the cost item fields for the given contextOrg
      * @return the configuration map for the cost item export for UI
      */
     Map<String, Object> getExportSurveyCostItemFieldsForUI(ClickMeConfig clickMeConfig = null) {
-        Org institution = contextService.getOrg()
+        Org contextOrg = contextService.getOrg()
 
         Map<String, Object> fields = [:]
         fields.putAll(EXPORT_SURVEY_COST_ITEM_CONFIG)
@@ -2718,9 +2710,9 @@ class ExportClickMeService {
             fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
         SortedSet<RefdataValue> contactTypes = new TreeSet<RefdataValue>(), addressTypes = new TreeSet<RefdataValue>()
-        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: institution]))
-        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: institution]))
-        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: institution]))
+        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
         addressTypes.addAll(RefdataCategory.getAllRefdataValues(RDConstants.ADDRESS_TYPE))
         RefdataCategory funcType = RefdataCategory.getByDesc(RDConstants.PERSON_FUNCTION), posType = RefdataCategory.getByDesc(RDConstants.PERSON_POSITION), respType = RefdataCategory.getByDesc(RDConstants.PERSON_RESPONSIBILITY)
         List<Map> subTabs = [[view: funcType.desc, label: funcType.getI10n('desc')], [view: posType.desc, label: posType.getI10n('desc')], [view: respType.desc, label: respType.getI10n('desc')]]
@@ -3114,11 +3106,11 @@ class ExportClickMeService {
         filterFields.putAll(EXPORT_ADDRESS_FILTER)
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
-        Org institution = contextService.getOrg()
+        Org contextOrg = contextService.getOrg()
         String i10nAttr = LocaleUtils.getLocalizedAttributeName('value')
-        Set<RefdataValue> functionTypes = PersonRole.executeQuery('select ft from PersonRole pr join pr.functionType ft join pr.prs p where (p.tenant = :contextOrg or p.isPublic = true) order by ft.'+i10nAttr, [contextOrg: institution])
-        Set<RefdataValue> positionTypes = PersonRole.executeQuery('select pt from PersonRole pr join pr.positionType pt join pr.prs p where (p.tenant = :contextOrg or p.isPublic = true) order by pt.'+i10nAttr, [contextOrg: institution])
-        Set<RefdataValue> addressTypes = RefdataValue.executeQuery('select at from Address a join a.type at where a.tenant = :contextOrg order by at.'+i10nAttr, [contextOrg: institution])
+        Set<RefdataValue> functionTypes = PersonRole.executeQuery('select ft from PersonRole pr join pr.functionType ft join pr.prs p where (p.tenant = :contextOrg or p.isPublic = true) order by ft.'+i10nAttr, [contextOrg: contextOrg])
+        Set<RefdataValue> positionTypes = PersonRole.executeQuery('select pt from PersonRole pr join pr.positionType pt join pr.prs p where (p.tenant = :contextOrg or p.isPublic = true) order by pt.'+i10nAttr, [contextOrg: contextOrg])
+        Set<RefdataValue> addressTypes = RefdataValue.executeQuery('select at from Address a join a.type at where a.tenant = :contextOrg order by at.'+i10nAttr, [contextOrg: contextOrg])
 
         functionTypes.each { RefdataValue functionType ->
             filterFields.function.fields.put('function.'+functionType.id, [field: null, label: functionType.getI10n('value')])
@@ -3718,21 +3710,20 @@ class ExportClickMeService {
     }
 
     /**
-     * Exports the selected fields about the members of the given subscription for the given institution
+     * Exports the selected fields about the members of the given subscription for the given contextOrg
      * @param result the subscription members to export
      * @param selectedFields the fields which should appear
      * @param subscription the subscription as reference for the fields
-     * @param institution the institution as reference for the fields
      * @param contactSwitch which set of contacts should be considered (public or private)?
      * @param format the {@link FORMAT} to be exported
      * @return the output in the desired format
      */
-    def exportSubscriptionMembers(Collection result, Map<String, Object> selectedFields, Subscription subscription, Org institution, Set<String> contactSwitch, FORMAT format) {
-       Locale locale = LocaleUtils.getCurrentLocale()
+    def exportSubscriptionMembers(Collection result, Map<String, Object> selectedFields, Subscription subscription, Set<String> contactSwitch, FORMAT format) {
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         Map<String, Object> selectedExportFields = [:]
 
-        Map<String, Object> configFields = getExportSubscriptionMembersFields(institution, subscription)
+        Map<String, Object> configFields = getExportSubscriptionMembersFields(subscription)
 
         configFields.keySet().each { String k ->
             if (k in selectedFields.keySet() ) {
@@ -3805,17 +3796,16 @@ class ExportClickMeService {
      * Exports the given fields from the given subscriptions
      * @param result the subscription set to export
      * @param selectedFields the fields which should appear
-     * @param institution the institution as reference
      * @param format the {@link FORMAT} to be exported
      * @param showTransferFields should the subscription transfer fields be included in the export?
      * @return the output in the desired format
      */
-    def exportSubscriptions(ArrayList<Subscription> result, Map<String, Object> selectedFields, Org institution, FORMAT format, boolean showTransferFields = false) {
+    def exportSubscriptions(ArrayList<Subscription> result, Map<String, Object> selectedFields, FORMAT format, boolean showTransferFields = false) {
         Locale locale = LocaleUtils.getCurrentLocale()
-
+        Org contextOrg = contextService.getOrg()
         Map<String, Object> selectedExportFields = [:]
 
-        Map<String, Object> configFields = getExportSubscriptionFields(institution, showTransferFields)
+        Map<String, Object> configFields = getExportSubscriptionFields(showTransferFields)
 
         configFields.keySet().each { String k ->
             if (k in selectedFields.keySet() ) {
@@ -3823,7 +3813,7 @@ class ExportClickMeService {
             }
         }
 
-        saveClickMeConfig(selectedExportFields, institution.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? 'EXPORT_CONSORTIA_PARTICIPATIONS_SUPPORT_CONFIG' : 'EXPORT_CONSORTIA_PARTICIPATIONS_CONFIG')
+        saveClickMeConfig(selectedExportFields, contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? 'EXPORT_CONSORTIA_PARTICIPATIONS_SUPPORT_CONFIG' : 'EXPORT_CONSORTIA_PARTICIPATIONS_CONFIG')
 
         Map<String, List<RefdataValue>> selectedCostItemElements = [:]
         List<String> removeSelectedCostItemElements = []
@@ -3883,17 +3873,16 @@ class ExportClickMeService {
      * Exports the given fields from the given consortia participations
      * @param result the subscription set to export
      * @param selectedFields the fields which should appear
-     * @param consortium the consortium as reference
      * @param contactSwitch which set of contacts should be considered (public or private)?
      * @param format the {@link FORMAT} to be exported
      * @return an Excel worksheet containing the export
      */
-    def exportConsortiaParticipations(Set result, Map<String, Object> selectedFields, Org consortium, Set<String> contactSwitch, FORMAT format) {
+    def exportConsortiaParticipations(Set result, Map<String, Object> selectedFields, Set<String> contactSwitch, FORMAT format) {
         Locale locale = LocaleUtils.getCurrentLocale()
 
         Map<String, Object> selectedExportFields = [:]
 
-        Map<String, Object> configFields = getExportConsortiaParticipationFields(consortium)
+        Map<String, Object> configFields = getExportConsortiaParticipationFields()
 
         configFields.keySet().each { String k ->
             if (k in selectedFields.keySet() ) {
@@ -3960,16 +3949,15 @@ class ExportClickMeService {
      * Exports the given fields from the given subscriptions
      * @param result the subscription set to export
      * @param selectedFields the fields which should appear
-     * @param institution the institution as reference
      * @param format the {@link FORMAT} to be exported
      * @return the output in the desired format
      */
-    def exportLicenses(ArrayList<License> result, Map<String, Object> selectedFields, Org institution, FORMAT format) {
+    def exportLicenses(ArrayList<License> result, Map<String, Object> selectedFields, FORMAT format) {
         Locale locale = LocaleUtils.getCurrentLocale()
 
         Map<String, Object> selectedExportFields = [:]
 
-        Map<String, Object> configFields = getExportLicenseFields(institution)
+        Map<String, Object> configFields = getExportLicenseFields()
 
         configFields.keySet().each { String k ->
             if (k in selectedFields.keySet() ) {
@@ -4114,7 +4102,7 @@ class ExportClickMeService {
                 break
             case 'institution':
                 sheetTitle = messageSource.getMessage('default.institution', null, locale)
-                nameOfClickMeMap = contextService.contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? 'EXPORT_ORG_SUPPORT_CONFIG' : 'EXPORT_ORG_CONFIG'
+                nameOfClickMeMap = contextService.getOrg().getCustomerType() == CustomerTypeService.ORG_SUPPORT ? 'EXPORT_ORG_SUPPORT_CONFIG' : 'EXPORT_ORG_CONFIG'
                 break
             case 'member':
                 sheetTitle = messageSource.getMessage('subscription.details.consortiaMembers.label', null, locale)
@@ -5114,7 +5102,7 @@ class ExportClickMeService {
                     _setOrgFurtherInformation(org, row, fieldKey, format)
                 }
                 else if(fieldKey.contains('subscription.notes')) { //subscription.notes and subscription.notes.shared
-                    Map<String, Object> subNotes = _getNotesForObject(subscription, contextOrg)
+                    Map<String, Object> subNotes = _getNotesForObject(subscription)
                     if(fieldKey == 'subscription.notes')
                         row.add(createTableCell(format, subNotes.baseItems.join('\n')))
                     else if(fieldKey == 'subscription.notes.shared')
@@ -5285,7 +5273,7 @@ class ExportClickMeService {
         List row = []
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Locale locale = LocaleUtils.getCurrentLocale()
-        Org org, contextOrg = contextService.getOrg()
+        Org org
         License license
         if(result instanceof License) {
             license = result
@@ -5312,7 +5300,7 @@ class ExportClickMeService {
                     row.add(createTableCell(format, license.getLicensingConsortium()?.name))
                 }
                 else if(fieldKey.contains('license.notes')) { //license.notes and license.notes.shared
-                    Map<String, Object> licNotes = _getNotesForObject(license, contextOrg)
+                    Map<String, Object> licNotes = _getNotesForObject(license)
                     if(fieldKey == 'license.notes')
                         row.add(createTableCell(format, licNotes.baseItems.join('\n')))
                     else if(fieldKey == 'license.notes.shared')
@@ -6806,13 +6794,13 @@ class ExportClickMeService {
 
     /**
      * Convenience method, the current implementation should be refactored by library.
-     * Exports the notes for the given object, owned by the given institution
+     * Exports the notes for the given object, owned by the given contextOrg
      * @param objInstance the object of which the notes are subject
-     * @param contextOrg the institution ({@link Org}) whose notes of the given object should be exported
-     * @return a {@link Map} containing the object's notes, owned by the institution, of structure: [baseItems: notes directly attached to the object, sharedItems: items coming from a possible parent (if a parent exist at all)]
+     * @return a {@link Map} containing the object's notes, owned by the contextOrg, of structure: [baseItems: notes directly attached to the object, sharedItems: items coming from a possible parent (if a parent exist at all)]
      */
-    private Map<String, Object> _getNotesForObject(objInstance, Org contextOrg) {
+    private Map<String, Object> _getNotesForObject(objInstance) {
         List<DocContext> baseItems = [], sharedItems = []
+        Org contextOrg = contextService.getOrg()
         docstoreService.getNotes(objInstance, contextOrg).each { DocContext dc ->
             if(dc.status != RDStore.DOC_CTX_STATUS_DELETED) {
                 String noteContent = dc.owner.title
