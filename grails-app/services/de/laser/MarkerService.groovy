@@ -57,14 +57,14 @@ class MarkerService {
         if (cls == Org.class) {
             sql = 'Org obj where m.org = obj and m.type = :type and m.user = :user order by obj.sortname, obj.name'
         }
-        else if (cls == Vendor.class) {
-            sql = 'Vendor obj where m.org = obj and m.type = :type and m.user = :user order by obj.sortname, obj.name'
-        }
         else if (cls == Package.class) {
             sql = 'Package obj where m.pkg = obj and m.type = :type and m.user = :user order by obj.sortname, obj.name'
         }
         else if (cls == Platform.class) {
             sql = 'Platform obj where m.plt = obj and m.type = :type and m.user = :user order by obj.normname, obj.name'
+        }
+        else if (cls == Vendor.class) {
+            sql = 'Vendor obj where m.ven = obj and m.type = :type and m.user = :user order by obj.sortname, obj.name'
         }
 
         if (sql) {

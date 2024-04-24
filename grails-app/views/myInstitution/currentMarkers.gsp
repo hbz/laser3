@@ -44,14 +44,14 @@
                         <g:if test="${objCat.value.first() instanceof Org}">
                             ${message(code:'default.provider.label')}
                         </g:if>
-                        <g:elseif test="${objCat.value.first() instanceof Vendor}">
-                            ${message(code:'vendor')}
-                        </g:elseif>
                         <g:elseif test="${objCat.value.first() instanceof Package}">
                             ${message(code:'package.label')}
                         </g:elseif>
                         <g:elseif test="${objCat.value.first() instanceof Platform}">
                             ${message(code:'platform.label')}
+                        </g:elseif>
+                        <g:elseif test="${objCat.value.first() instanceof Vendor}">
+                            ${message(code:'vendor')}
                         </g:elseif>
                     </th>
                     <th class="three wide"></th>
@@ -83,22 +83,6 @@
                                 <ui:cbItemMarkerAction org="${obj}" simple="true"/>
                             </td>
                         </g:if>
-                        <g:elseif test="${obj instanceof Vendor}">
-                            <td>
-                                <g:link controller="vendor" action="show" id="${obj.id}" target="_blank">${obj.name}</g:link>
-                            </td>
-                            <td>
-                                <i class="icon grey shipping fast"></i> ${message(code:'vendor')}
-                            </td>
-                            <td class="center aligned">
-                                <g:if test="${obj.id in myXMap.currentVendorIdList}">
-                                    <ui:myXIcon tooltip="${message(code: 'menu.my.vendors')}" color="yellow"/>
-                                </g:if>
-                            </td>
-                            <td>
-                                <ui:cbItemMarkerAction vendor="${obj}" simple="true"/>
-                            </td>
-                        </g:elseif>
                         <g:elseif test="${obj instanceof Package}">
                             <td>
                                 <g:link controller="package" action="show" id="${obj.id}" target="_blank">${obj.name}</g:link>
@@ -129,6 +113,22 @@
                             </td>
                             <td>
                                 <ui:cbItemMarkerAction platform="${obj}" simple="true"/>
+                            </td>
+                        </g:elseif>
+                        <g:elseif test="${obj instanceof Vendor}">
+                            <td>
+                                <g:link controller="vendor" action="show" id="${obj.id}" target="_blank">${obj.name}</g:link>
+                            </td>
+                            <td>
+                                <i class="icon grey shipping fast"></i> ${message(code:'vendor')}
+                            </td>
+                            <td class="center aligned">
+                                <g:if test="${obj.id in myXMap.currentVendorIdList}">
+                                    <ui:myXIcon tooltip="${message(code: 'menu.my.vendors')}" color="yellow"/>
+                                </g:if>
+                            </td>
+                            <td>
+                                <ui:cbItemMarkerAction vendor="${obj}" simple="true"/>
                             </td>
                         </g:elseif>
                     </tr>

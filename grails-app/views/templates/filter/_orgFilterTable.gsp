@@ -931,7 +931,8 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('marker')}">
                 <td class="center aligned">
                     <g:if test="${org.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
-                        <ui:markerIcon type="WEKB_CHANGES" color="purple" />
+%{--                        <ui:markerIcon type="WEKB_CHANGES" color="purple" />--}%
+                        <ui:cbItemMarkerAction package="${org}" simple="true"/>
                     </g:if>
                 </td>
             </g:if>
