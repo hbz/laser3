@@ -1,6 +1,9 @@
 <%@ page import="de.laser.utils.DateUtils;" %>
 
 <div class="ui segment" id="costPerUse">
+    <g:if test="${selectedPeriodNotCovered}">
+        <ui:msg icon="ui exclamation icon" class="info">${selectedPeriodNotCovered}</ui:msg>
+    </g:if>
     <div id="chartWrapper" style="width:100%; min-height:500px"></div>
     <%--
     <g:each in="${costPerUse}" var="costPerMetric">
@@ -63,6 +66,14 @@
         </thead>
         <tbody>
             <g:each in="${costPerUse}" var="institutionalUsage">
+                <g:if test="${institutionalUsage.getKey() == 'consortialData'}">
+                    Zugrunde liegen <g:formatNumber type="currency" number="${consortialTotal}" currencySymbol="EUR" /> als Gesamtkosten
+                    <g:if test="${consortialTotal != consortialPart}">; davon anteilig <g:formatNumber number="${consortialPart}" type="currency" currencySymbol="EUR" /> für den gewählten Zeitraum</g:if>
+                </g:if>
+                <g:elseif test="${institutionalUsage.getKey() == 'ownData'}">
+                    Zugrunde liegen <g:formatNumber type="currency" number="${ownTotal}" currencySymbol="EUR" /> als Gesamtkosten
+                    <g:if test="${ownTotal != ownPart}">; davon anteilig <g:formatNumber number="${ownPart}" type="currency" currencySymbol="EUR" /> für den gewählten Zeitraum</g:if>
+                </g:elseif>
                 <g:each in="${institutionalUsage.getValue()}" var="costPerMetric">
                     <%
                         String costString, metricType = costPerMetric.getKey()
@@ -105,6 +116,11 @@
         </tbody>
     </table>
     <laser:script file="${this.getGroovyPageFileName()}">
+        function format(data) {
+            data = parseFloat(data);
+            return data.toLocaleString('de-DE', {style: 'currency', currency: 'EUR'});
+        }
+
         let chartDom = $('#chartWrapper')[0];
         let cpuChart = echarts.init(chartDom);
         let option;
@@ -114,7 +130,14 @@
                 text: '<g:message code="default.usage.costPerUse.chartTitle"/>'
             },
             tooltip: {
-                trigger: 'axis'
+                trigger: 'item',
+                formatter: function(params) {
+                    let val;
+                    if(params.seriesIndex % 2 === 0) //index 0 or 2
+                        val = format(params.value);
+                    else val = params.value;
+                    return params.seriesName+': '+val;
+                }
             },
             legend: {
                 data: ['Kosten pro Nutzung', 'Nutzung']
@@ -170,7 +193,6 @@
                     {
                         name: <% print "'${costString} (${metricType})'" %>,
                         type: 'bar',
-                        stack: 'costs',
                         data: <% print '['
                             print costs.get('total')+','
                             datePoints.eachWithIndex { String datePoint, int i ->
@@ -185,7 +207,6 @@
                     {
                         name: <% print "'Nutzung (${metricType})'" %>,
                         type: 'bar',
-                        stack: 'usage',
                         yAxisIndex: 1,
                         data: <% print '['
                             print sums.get(metricType).get('total')+','

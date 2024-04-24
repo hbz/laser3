@@ -337,6 +337,9 @@ class SubscriptionControllerService {
                     titles = fetchTitles(refSub)
                 }
                 Map<String, Object> dateRanges = getDateRange(params, refCostItem)
+                if(dateRanges.containsKey('alternatePeriod')){
+                    result.alternatePeriod = Boolean.valueOf('true')
+                }
                 if(dateRanges.containsKey('startDate') && dateRanges.containsKey('endDate')) {
                     result.startDate = dateRanges.startDate
                     result.endDate = dateRanges.endDate
@@ -451,7 +454,7 @@ class SubscriptionControllerService {
                                     Date reportFrom = DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:Begin'.text())
                                     //String year = yearFormat.format(reportFrom)
                                     for(GPathResult instance: performance.'ns2:Instance') {
-                                        String metricType = instance.'ns2:Metric_Type'.text()
+                                        String metricType = instance.'ns2:MetricType'.text()
                                         Integer count = Integer.parseInt(instance.'ns2:Count'.text())
                                         Map<String, Object> metricDatePointSums = c4counts.get(metricType) ?: [total: 0], metricYearSums = c4allYearCounts.get(metricType) ?: [:]
                                         //if((!dateRanges.startDate || reportFrom >= dateRanges.startDate) && (!dateRanges.endDate || reportFrom <= dateRanges.endDate)) {
@@ -527,40 +530,50 @@ class SubscriptionControllerService {
      */
     Map<String, Object> calculateCostPerUse(Map<String, Object> statsData, String config) {
         Map<String, Map<String, BigDecimal>> costPerMetric = [:]
-        Set<CostItem> allCostItems = [], filteredCostItems = []
+        Set<CostItem> allCostItems = []
         if(config == "own") {
             //Set<RefdataValue> elementsToUse = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :institution and ciec.useForCostPerUse = true', [institution: statsData.contextOrg])
-            allCostItems = CostItem.executeQuery('select ci from CostItem ci where ci.owner = :ctx and ci.sub = :sub', [ctx: statsData.contextOrg, sub: statsData.subscription])
+            allCostItems = CostItem.executeQuery('select ci from CostItem ci where ci.owner = :ctx and ci.sub = :sub order by ci.startDate', [ctx: statsData.contextOrg, sub: statsData.subscription])
         }
         else if(config == "consortial") {
             Org consortium = statsData.subscription.getConsortia()
             //Set<RefdataValue> elementsToUse = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :institution and ciec.useForCostPerUse = true', [institution: consortium])
-            allCostItems = CostItem.executeQuery('select ci from CostItem ci where ci.owner = :consortium and ci.sub = :sub and ci.isVisibleForSubscriber = true', [consortium: consortium, sub: statsData.subscription])
+            allCostItems = CostItem.executeQuery('select ci from CostItem ci where ci.owner = :consortium and ci.sub = :sub and ci.isVisibleForSubscriber = true order by ci.startDate', [consortium: consortium, sub: statsData.subscription])
         }
-        //determine unambiguity
-        Map<String, Calendar> timespan = [:]
-        allCostItems.each { CostItem ci ->
-            /*
-             * acceptable cases:
-             * one start and one end date
-             * if one start date has been set: a subsequent cost with the same start date must also match the end date
-             */
-            //use return of Map.put: the previously stored value under that key
-            Calendar stCal = GregorianCalendar.getInstance(), endCal = GregorianCalendar.getInstance()
-            stCal.setTime(ci.startDate)
-            endCal.setTime(ci.endDate)
-            Calendar start = timespan.put('start', stCal)
-            Calendar end = timespan.put('end', endCal)
-            if(start && start == stCal && end && end == endCal) {
-                filteredCostItems << ci
-            }
-            else if(!start && !end)
-                filteredCostItems << ci
+        /*
+         * acceptable cases:
+         * one start and one end date
+         * if one start date has been set: a subsequent cost with the same start date must also match the end date
+         * now: consider the time selection
+         * 1. no extrapolation
+         * 2. check time spans
+         * 2a. time spans match
+         * 2b. selected is larger than covered by cost items
+         * 2c. cost item coverage is larger than selected span
+         *
+         * cases 2a and 2b: take cost item span
+         * case 2c: take selected span
+         */
+        Calendar stCal = GregorianCalendar.getInstance(), endCal = GregorianCalendar.getInstance()
+        SortedSet<Date> startDates = new TreeSet<Date>(), endDates = new TreeSet<Date>(Collections.reverseOrder())
+        startDates.addAll(allCostItems.startDate)
+        endDates.addAll(allCostItems.endDate)
+        if(startDates[0] <= statsData.startDate) {
+            stCal.setTime(startDates[0])
         }
-        int monthsCount = timespan.end.get(Calendar.MONTH) - timespan.start.get(Calendar.MONTH)
+        else if(startDates[0] > statsData.startDate) {
+            stCal.setTime(statsData.startDate)
+        }
+        if(endDates[0] <= statsData.endDate) {
+            endCal.setTime(endDates[0])
+        }
+        else if(endDates[0] > statsData.endDate) {
+            endCal.setTime(statsData.endDate)
+        }
+        int monthsCount = (endCal.get(Calendar.MONTH)+1) - stCal.get(Calendar.MONTH)
         //calculate 100%
         BigDecimal costForYear = 0.0
-        filteredCostItems.each { CostItem ci ->
+        allCostItems.each { CostItem ci ->
             switch(ci.costItemElementConfiguration) {
                 case RDStore.CIEC_POSITIVE: costForYear += ci.costInBillingCurrencyAfterTax
                     break
@@ -569,7 +582,8 @@ class SubscriptionControllerService {
             }
         }
         BigDecimal partialCostForYear = costForYear / monthsCount
-        if(filteredCostItems) {
+        //log.debug("total cost for year: ${costForYear}, partial amount: ${partialCostForYear} for ${monthsCount} months total")
+        if(allCostItems) {
             //loop 1: metrics
             statsData.sums.each { String metricType, Map<String, Object> reportYearMetrics ->
                 //loop 2: metrics in report year
@@ -588,7 +602,7 @@ class SubscriptionControllerService {
                 costPerMetric.put(metricType, metricSums)
             }
         }
-        costPerMetric
+        [costForYear: costForYear, partialCostForYear: partialCostForYear, costPerMetric: costPerMetric]
     }
 
     /**
@@ -611,11 +625,11 @@ class SubscriptionControllerService {
         if(params.containsKey('startDate') && params.containsKey('endDate')) {
             if(params.containsKey('startDate')) {
                 startTime = LocalDate.parse(params.startDate+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
-                dateRangeParams.startDate = Date.from(startTime.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+                dateRangeParams.startDate = Date.from(startTime.atStartOfDay(ZoneId.systemDefault()).toInstant())
             }
             if(params.containsKey('endDate')) {
                 endTime = LocalDate.parse(params.endDate+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
-                dateRangeParams.endDate = Date.from(endTime.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+                dateRangeParams.endDate = Date.from(endTime.withDayOfMonth(endTime.getMonth().length(endTime.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
             }
         }
         else {
@@ -703,11 +717,21 @@ class SubscriptionControllerService {
         if(params.containsKey('startDate') && params.containsKey('endDate')) {
             if(params.containsKey('startDate')) {
                 startTime = LocalDate.parse(params.startDate+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
-                dateRangeParams.startDate = Date.from(startTime.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+                dateRangeParams.startDate = Date.from(startTime.atStartOfDay(ZoneId.systemDefault()).toInstant())
+                if(costItem.startDate && dateRangeParams.startDate < costItem.startDate) {
+                    startTime = costItem.startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                    dateRangeParams.startDate = costItem.startDate
+                    dateRangeParams.alternatePeriod = Boolean.valueOf('true')
+                }
             }
             if(params.containsKey('endDate')) {
                 endTime = LocalDate.parse(params.endDate+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
-                dateRangeParams.endDate = Date.from(endTime.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+                dateRangeParams.endDate = Date.from(endTime.withDayOfMonth(endTime.getMonth().length(endTime.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+                if(costItem.endDate && dateRangeParams.endDate > costItem.endDate) {
+                    endTime = costItem.endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                    dateRangeParams.endDate = costItem.endDate
+                    dateRangeParams.alternatePeriod = Boolean.valueOf('true')
+                }
             }
         }
         else {
