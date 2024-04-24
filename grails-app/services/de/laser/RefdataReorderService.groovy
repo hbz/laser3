@@ -16,10 +16,37 @@ class RefdataReorderService {
      * This overwrites the sorting, so it may be sorted according to German values. Then the display is wrongly sorted in English!!!
      */
     void reorderRefdata() {
+        //country: Germany, Austria and Switzerland first
+        int order = 10
+        List countries = RefdataValue.executeQuery("select rdv from RefdataValue rdv join rdv.owner rdc where rdc.desc = :country order by rdv.value_de asc", [country: RDConstants.COUNTRY])
+        countries.eachWithIndex { RefdataValue ct, int i ->
+            switch(ct.value) {
+                case 'DE': ct.order = 0
+                    break
+                case 'AT': ct.order = 10
+                    break
+                case 'CH': ct.order = 20
+                    break
+                default: ct.order = i*order+30
+                    break
+            }
+            ct.save()
+        }
+        //address type: billing address first
+        order = 10
+        List addressTypes = RefdataValue.executeQuery("select rdv from RefdataValue rdv join rdv.owner rdc where rdc.desc = :addressType order by rdv.value_de asc", [addressType: RDConstants.ADDRESS_TYPE])
+        addressTypes.eachWithIndex { RefdataValue at, int i ->
+            if(at.value == 'Billing address')
+                at.order = 0
+            else {
+                at.order = i*order+10
+            }
+            at.save()
+        }
         //semesters: take the order of insertion and make then the ID ascending
         List semesters = RefdataValue.findAllByOwnerAndOrderIsNull(RefdataCategory.getByDesc(RDConstants.SEMESTER),[sort:'id', order:'asc'])
         //RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = 0 where rdv.value = :value',[value:'semester.not.applicable'])
-        int order = 10
+        order = 10
         semesters.each { RefdataValue s ->
             s.order = order
             s.save()
