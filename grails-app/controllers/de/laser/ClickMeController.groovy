@@ -18,7 +18,6 @@ class ClickMeController {
         Map<String,Object> result = [:]
         result.contextOrg = contextService.getOrg()
         result.contextCustomerType = result.contextOrg.getCustomerType()
-        result.institution = result.subscription ? result.subscription?.subscriber : result.contextOrg
 
         String templateName = "export/generallyModal"
         String modalID = "exportClickMeModal"
@@ -75,7 +74,7 @@ class ClickMeController {
                 result.exportFileName = result.exportFileName ?: message(code: 'consortium.plural.label')
                 break
             case "consortiaParticipations":
-                result.formFields = exportClickMeService.getExportConsortiaParticipationFieldsForUI(result.institution, result.clickMeConfig)
+                result.formFields = exportClickMeService.getExportConsortiaParticipationFieldsForUI(result.contextOrg, result.clickMeConfig)
                 result.contactSwitch = true
                 result.exportFileName = result.exportFileName ?: message(code: 'consortium.member.plural')
                 break
@@ -104,7 +103,7 @@ class ClickMeController {
                 result.exportFileName = result.exportFileName ?: message(code: 'subscription.details.consortiaMembers.label')
                 break
             case "lics":
-                result.formFields = exportClickMeService.getExportLicenseFieldsForUI(result.institution, result.clickMeConfig)
+                result.formFields = exportClickMeService.getExportLicenseFieldsForUI(result.contextOrg, result.clickMeConfig)
                 result.contactSwitch = true
                 result.exportFileName = result.exportFileName ?: message(code: 'license.plural')
                 break
@@ -114,12 +113,12 @@ class ClickMeController {
                 result.exportFileName = result.exportFileName ?: message(code: 'default.ProviderAgency.export.label')
                 break
             case "subs":
-                result.formFields = exportClickMeService.getExportSubscriptionFieldsForUI(result.institution, false, result.clickMeConfig)
+                result.formFields = exportClickMeService.getExportSubscriptionFieldsForUI(result.contextOrg, false, result.clickMeConfig)
                 result.exportFileName = result.exportFileName ?: message(code: 'subscription.plural')
                 break
             case "subMembers":
                 result.subscription = Subscription.get(params.id)
-                result.formFields = exportClickMeService.getExportSubscriptionMembersFieldsForUI(result.institution, result.subscription, result.clickMeConfig)
+                result.formFields = exportClickMeService.getExportSubscriptionMembersFieldsForUI(result.contextOrg, result.subscription, result.clickMeConfig)
                 result.exportController = 'subscription'
                 result.exportAction = 'members'
                 result.exportParams = result.exportParams+[id:params.id]
@@ -127,7 +126,7 @@ class ClickMeController {
                 result.exportFileName = result.exportFileName ?: escapeService.escapeString(result.subscription.name) + "_" + message(code:'subscriptionDetails.members.members')
                 break
             case "subsTransfer":
-                result.formFields = exportClickMeService.getExportSubscriptionFieldsForUI(result.institution, true, result.clickMeConfig)
+                result.formFields = exportClickMeService.getExportSubscriptionFieldsForUI(result.contextOrg, true, result.clickMeConfig)
                 result.exportFileName = result.exportFileName ?: message(code: 'export.my.currentSubscriptionsTransfer')
                 break
             case "surveyEvaluation":
