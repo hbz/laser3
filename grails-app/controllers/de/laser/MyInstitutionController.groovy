@@ -2,7 +2,6 @@ package de.laser
 
 
 import de.laser.annotations.DebugInfo
-import de.laser.base.AbstractReport
 import de.laser.cache.EhcacheWrapper
 import de.laser.cache.SessionCacheWrapper
 import de.laser.convenience.Marker
@@ -38,12 +37,10 @@ import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
 import de.laser.workflow.WfChecklist
 import grails.gsp.PageRenderer
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.grails.web.json.JSONObject
 import org.springframework.transaction.TransactionStatus
 import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.web.multipart.MultipartFile
@@ -2223,9 +2220,9 @@ class MyInstitutionController  {
                 if(entry == "subscription") {
                     row[i] = subChild.globalUID
                 }else if(entry == "subscriber.sortname") {
-                    row[i] = subChild.subscriber.sortname
+                    row[i] = subChild.getSubscriberRespConsortia().sortname
                 }else if(entry == "subscriber.name") {
-                    row[i] = subChild.subscriber.name
+                    row[i] = subChild.getSubscriberRespConsortia().name
                 }
                 else row[i] = ""
             }
@@ -2547,7 +2544,7 @@ class MyInstitutionController  {
                 }*/
 
 
-                result.subscriber = result.subscription.getSubscriber()
+                result.subscriber = result.subscription.getSubscriberRespConsortia()
             }
 
         }

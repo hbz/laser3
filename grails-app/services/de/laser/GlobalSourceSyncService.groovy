@@ -1010,7 +1010,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             subsConcerned.each { Subscription s ->
                 IssueEntitlement ie = IssueEntitlement.construct([subscription: s, tipp: tipp])
                 if(s.hasPerpetualAccess) {
-                    Org owner = s.getSubscriber()
+                    Org owner = s.getSubscriberRespConsortia()
                     PermanentTitle perm = PermanentTitle.findByOwnerAndTipp(owner, tipp)
                     if(!perm) {
                         perm = new PermanentTitle(owner: owner, tipp: tipp, subscription: s, issueEntitlement: ie)
@@ -1964,7 +1964,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 if(newStatus == RDStore.TIPP_STATUS_CURRENT) {
                     IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription s where ie.tipp = :title and ie.status in (:considered) and s.hasPerpetualAccess = true', [title: tippA, considered: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED]]).each { IssueEntitlement ie ->
                         ie.perpetualAccessBySub = ie.subscription
-                        Org owner = ie.subscription.getSubscriber()
+                        Org owner = ie.subscription.getSubscriberRespConsortia()
                         PermanentTitle perm = PermanentTitle.findByOwnerAndTipp(owner, ie.tipp)
                         if(!perm) {
                             perm = new PermanentTitle(owner: owner, tipp: ie.tipp, subscription: ie.subscription, issueEntitlement: ie)

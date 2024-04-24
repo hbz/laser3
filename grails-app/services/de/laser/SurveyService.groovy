@@ -992,7 +992,7 @@ class SurveyService {
         List currentMembersSubs = subscriptionService.getValidSurveySubChilds(surveyConfig.subscription)
 
         currentMembersSubs.each { Subscription subChild ->
-                Org org = subChild.getSubscriber()
+                Org org = subChild.getSubscriberRespConsortia()
 
                 if (!(SurveyOrg.findAllBySurveyConfigAndOrg(surveyConfig, org))) {
 

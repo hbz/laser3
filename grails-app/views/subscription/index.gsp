@@ -415,7 +415,7 @@
                                         <div class="ui fluid segment title" data-ajaxTippId="${ie.tipp.id}" data-ajaxIeId="${ie ? ie.id : null}">
                                             <div class="ui stackable equal width grid">
                                                 <g:set var="participantPerpetualAccessToTitle"
-                                                       value="${surveyService.listParticipantPerpetualAccessToTitle(subscription.getSubscriber(), ie.tipp)}"/>
+                                                       value="${surveyService.listParticipantPerpetualAccessToTitle(subscription.getSubscriberRespConsortia(), ie.tipp)}"/>
                                                 <g:if test="${participantPerpetualAccessToTitle.size() > 0}">
                                                     <g:if test="${ie.perpetualAccessBySub && ie.perpetualAccessBySub != subscription}">
                                                         <g:link controller="subscription" action="index" id="${ie.perpetualAccessBySub.id}">

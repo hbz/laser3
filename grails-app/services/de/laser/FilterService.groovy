@@ -1224,7 +1224,7 @@ class FilterService {
         if (params.hasPerpetualAccess && !params.hasPerpetualAccessBySubs) {
             //may become a performance bottleneck; keep under observation!
             String permanentTitleQuery = "select pt from PermanentTitle pt where pt.tipp = ie.tipp and pt.owner in (:subscribers)"
-            qry_params.subscribers = subscriptions.collect { Subscription s -> s.getSubscriber() }
+            qry_params.subscribers = subscriptions.collect { Subscription s -> s.getSubscriberRespConsortia() }
             if (params.long('hasPerpetualAccess') == RDStore.YN_YES.id) {
                 base_qry += "and exists(${permanentTitleQuery}) "
             }else{

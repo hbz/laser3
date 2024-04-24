@@ -779,7 +779,7 @@ class ExportService {
 		if(!result)
 			return null
 		Subscription refSub
-		Org customer = result.subscription.getSubscriber()
+		Org customer = result.subscription.getSubscriberRespConsortia()
 		boolean allTitles = false
 		if (params.statsForSurvey == true) {
 			if(params.loadFor == 'allTipps')

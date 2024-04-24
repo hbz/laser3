@@ -47,7 +47,7 @@
                     </g:else>
                     <g:if test="${s.instanceOf}">
                         <g:if test="${s.consortia && s.consortia == institution}">
-                            ( ${s.subscriber?.name} )
+                            ( ${s.getSubscriberRespConsortia()?.name} )
                         </g:if>
                     </g:if>
                 </g:link>
@@ -61,7 +61,7 @@
             </td>
             <td>
                 <g:set var="countPT" value="${PermanentTitle.executeQuery('''select count(*) from PermanentTitle
-                        where owner = :owner and tipp in (select ie.tipp from IssueEntitlement ie where ie.subscription = :sub and ie.tipp.status != :removed and ie.status != :removed)''', [owner: s.subscriber, sub: s, removed: RDStore.TIPP_STATUS_REMOVED])[0]}"/>
+                        where owner = :owner and tipp in (select ie.tipp from IssueEntitlement ie where ie.subscription = :sub and ie.tipp.status != :removed and ie.status != :removed)''', [owner: s.getSubscriberRespConsortia(), sub: s, removed: RDStore.TIPP_STATUS_REMOVED])[0]}"/>
                 <g:link controller="subscription" action="index" id="${s.id}" params="[hasPerpetualAccess: 1]">${countPT}</g:link>
             </td>
             <td>

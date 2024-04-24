@@ -60,7 +60,7 @@ class TippController  {
     result.subscription = params.sub ? Subscription.get(params.sub) : null
     Org org
     if(result.subscription){
-      org = result.subscription.getSubscriber()
+      org = result.subscription.getSubscriberRespConsortia()
     }else{
       org = result.contextOrg
     }

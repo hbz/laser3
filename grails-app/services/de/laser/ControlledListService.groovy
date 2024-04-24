@@ -128,7 +128,7 @@ class ControlledListService {
                 queryString += " and s.instanceOf = null "
                 break
             case CalculatedType.TYPE_PARTICIPATION:
-                Org subscriber = ctx.getSubscriber()
+                Org subscriber = ctx.getSubscriberRespConsortia()
                 queryString += " and s.instanceOf != null and exists (select os from OrgRole os where os.sub = s and os.roleType in (:subscriberCons) and os.org = :subscriber) "
                 filter.subscriberCons = [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
                 filter.subscriber = subscriber

@@ -170,7 +170,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
             'isSlavedAsString', 'provider', 'multiYearSubscription',
             'currentMultiYearSubscriptionNew', 'renewalDate',
             'commaSeperatedPackagesIsilList', 'calculatedPropDefGroups', 'allocationTerm',
-            'subscriber', 'providers', 'agencies', 'consortia'
+            'subscriberRespConsortia', 'providers', 'agencies', 'consortia'
     ] // mark read-only accessor methods
 
     static mapping = {
@@ -553,7 +553,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      *     <li>else if it is a consortial parent license, the consortium</li>
      * </ul>
      */
-  Org getSubscriber() {
+  Org getSubscriberRespConsortia() {
     Org result
     Org cons
     
@@ -998,7 +998,7 @@ select distinct oap from OrgAccessPoint oap
     Collection<OrgAccessPoint> getOrgAccessPointsOfSubscriber() {
         Collection<OrgAccessPoint> result = []
 
-        result = this.getSubscriber()?.accessPoints
+        result = this.getSubscriberRespConsortia()?.accessPoints
 
         result
     }
@@ -1011,7 +1011,7 @@ select distinct oap from OrgAccessPoint oap
     boolean isOrgInSurveyRenewal() {
         boolean isOrgInSurveyRenewal = false
        if(this.instanceOf && this.type && this.type.id == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id){
-            Org participant = this.getSubscriber()
+            Org participant = this.getSubscriberRespConsortia()
 
            if(participant){
                int countSurveyOrgs = SurveyOrg.executeQuery('select count(surveyOrg.id) FROM SurveyOrg surveyOrg LEFT JOIN surveyOrg.surveyConfig surConfig LEFT JOIN surConfig.surveyInfo surInfo ' +

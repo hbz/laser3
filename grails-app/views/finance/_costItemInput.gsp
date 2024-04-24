@@ -256,13 +256,13 @@
                         <g:if test="${validSubChilds}">
                             <label>${licenseeLabel}</label>
                             <g:if test="${(mode != 'copy') && costItem && costItem.sub && costItem.sub.instanceOf}">
-                                <input class="la-full-width" readonly="readonly" value="${costItem.sub.getSubscriber().sortname}" />
+                                <input class="la-full-width" readonly="readonly" value="${costItem.sub.getSubscriberRespConsortia().sortname}" />
                             </g:if>
                             <g:elseif test="${costItem?.sub == subscription && subscription._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL}">
                                 <input type="button" name="toggleLicenseeTarget" id="toggleLicenseeTarget_${idSuffix}" class="ui blue button la-full-width" value="${message(code:'financials.newCosts.toggleLicenseeTarget')}">
                                 <g:select name="newLicenseeTarget" id="newLicenseeTarget_${idSuffix}" class="ui dropdown multiple search"
                                           from="${validSubChilds}" multiple="multiple"
-                                          optionValue="${{it.name ? it.getSubscriber().dropdownNamingConvention(institution) : it.label}}"
+                                          optionValue="${{it.name ? it.getSubscriberRespConsortia().dropdownNamingConvention(institution) : it.label}}"
                                           optionKey="${{Subscription.class.name + ':' + it.id}}"
                                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                                           value="${Subscription.class.name + ':forParent'}"
@@ -272,7 +272,7 @@
                                 <input type="button" name="toggleLicenseeTarget" id="toggleLicenseeTarget_${idSuffix}" class="ui blue button la-full-width" value="${message(code:'financials.newCosts.toggleLicenseeTarget')}">
                                 <g:select name="newLicenseeTarget" id="newLicenseeTarget_${idSuffix}" class="ui dropdown multiple search"
                                           from="${validSubChilds}" multiple="multiple"
-                                          optionValue="${{it.name ? it.getSubscriber().dropdownNamingConvention(institution) : it.label}}"
+                                          optionValue="${{it.name ? it.getSubscriberRespConsortia().dropdownNamingConvention(institution) : it.label}}"
                                           optionKey="${{Subscription.class.name + ':' + it.id}}"
                                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                                           value="${Subscription.class.name + ':' + costItem?.sub?.id}"
