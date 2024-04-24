@@ -3,6 +3,14 @@
 <table class="ui sortable celled la-js-responsive-table la-table table">
     <thead>
         <tr>
+            <g:if test="${tmplShowCheckbox}">
+                <th>
+                    <g:if test="${records}">
+                        <g:checkBox name="pkgListToggler" id="pkgListToggler" checked="false"/>
+                    </g:if>
+                </th>
+            </g:if>
+
             <g:each in="${tmplConfigShow}" var="tmplConfigItem" status="i">
                 <g:if test="${tmplConfigItem == 'lineNumber'}">
                     <th>${message(code: 'sidewide.number')}</th>
@@ -53,7 +61,7 @@
                 <g:if test="${tmplConfigItem == 'marker'}">
                     <th class="center aligned"><ui:markerIcon type="WEKB_CHANGES" /></th>
                 </g:if>
-                <g:if test="${tmplConfigItem == 'linkPackage'}">
+                <g:if test="${tmplConfigItem == 'linkPackage' || tmplConfigItem == 'linkSurveyPackage' || tmplConfigItem == 'unLinkSurveyPackage'}">
                     <th class="center aligned">${message(code: 'default.actions.label')}</th>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'markPerpetualAccess'}">
@@ -95,7 +103,7 @@
                 if(record.nominalPlatformUuid)
                     plat = Platform.findByGokbId(record.nominalPlatformUuid)
                 else
-                    plat = pkg.nominalPlatform
+                    plat = pkg?.nominalPlatform
                 if(record.containsKey('vendors') && record.vendors.size() > 0) {
                     record.vendors.each { ven ->
                         Vendor vendor = Vendor.findByGokbId(ven.vendorUuid)
@@ -107,6 +115,14 @@
                 boolean perpetuallySubscribed = false
             %>
             <tr>
+                <g:if test="${tmplShowCheckbox}">
+                    <td>
+                        <g:if test="${editable && (!uuidPkgs || !(record.uuid in uuidPkgs))}">
+                            <g:checkBox id="selectedPkgs_${jj}" name="selectedPkgs" value="${record.uuid}" checked="false"/>
+                        </g:if>
+                    </td>
+                </g:if>
+
                 <g:each in="${tmplConfigShow}" var="tmplConfigItem">
                     <g:if test="${tmplConfigItem == 'lineNumber'}">
                         <td>${(params.int('offset') ?: 0) + jj + 1}</td>
@@ -305,6 +321,34 @@
                             </g:if>
                         </td>
                     </g:if>
+                    <g:if test="${tmplConfigItem == 'linkSurveyPackage'}">
+                        <td class="right aligned">
+                            <g:if test="${editable}">
+                                <g:if test="${(!uuidPkgs || !(record.uuid in uuidPkgs))}">
+                                    <g:link type="button" class="ui icon button" controller="survey" action="linkSurveyPackage" id="${params.id}"
+                                            params="[addUUID: record.uuid, surveyConfigID: surveyConfig.id]"><g:message
+                                            code="surveyPackages.linkPackage"/></g:link>
+
+                                </g:if>
+                                <g:else>
+                                    <g:link type="button" class="ui button negative" controller="survey" action="linkSurveyPackage" id="${params.id}"
+                                            params="[removeUUID: record.uuid, surveyConfigID: surveyConfig.id]"><g:message
+                                            code="surveyPackages.unlinkPackage"/></g:link>
+
+                                </g:else>
+                            </g:if>
+                        </td>
+                    </g:if>
+                    <g:if test="${tmplConfigItem == 'unLinkSurveyPackage'}">
+                        <td class="right aligned">
+                            <g:if test="${editable && (!uuidPkgs || !(record.uuid in uuidPkgs))}">
+                                <g:link type="button" class="ui button negative" controller="survey" action="packages" id="${params.id}"
+                                        params="[removeUUID: record.uuid, surveyConfigID: surveyConfig.id]"><g:message
+                                        code="surveyPackages.unlinkPackage"/></g:link>
+
+                            </g:if>
+                        </td>
+                    </g:if>
                     <g:if test="${tmplConfigItem == 'markPerpetualAccess'}">
                         <td class="x">
                             <g:if test="${pkg}">
@@ -357,3 +401,16 @@
         </g:each>
     </tbody>
 </table>
+
+<g:if test="${tmplShowCheckbox}">
+    <laser:script file="${this.getGroovyPageFileName()}">
+        $('#pkgListToggler').click(function () {
+            if ($(this).prop('checked')) {
+                $("tr[class!=disabled] input[name=selectedPkgs]").prop('checked', true)
+            } else {
+                $("tr[class!=disabled] input[name=selectedPkgs]").prop('checked', false)
+            }
+        })
+    </laser:script>
+
+</g:if>

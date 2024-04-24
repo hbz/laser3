@@ -599,7 +599,7 @@ class SubscriptionController {
                 SXSSFWorkbook wb
                 switch(params.fileformat) {
                     case 'xlsx':
-                        wb = (SXSSFWorkbook) exportClickMeService.exportSubscriptionMembers(ctrlResult.result.filteredSubChilds, selectedFields, ctrlResult.result.subscription, ctrlResult.result.institution, contactSwitch, ExportClickMeService.FORMAT.XLS)
+                        wb = (SXSSFWorkbook) exportClickMeService.exportSubscriptionMembers(ctrlResult.result.filteredSubChilds, selectedFields, ctrlResult.result.subscription, contactSwitch, ExportClickMeService.FORMAT.XLS)
                         response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
                         response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                         wb.write(response.outputStream)
@@ -608,7 +608,7 @@ class SubscriptionController {
                         wb.dispose()
                         return
                     case 'pdf':
-                        Map<String, Object> pdfOutput = exportClickMeService.exportSubscriptionMembers(ctrlResult.result.filteredSubChilds, selectedFields, ctrlResult.result.subscription, ctrlResult.result.institution, contactSwitch, ExportClickMeService.FORMAT.PDF)
+                        Map<String, Object> pdfOutput = exportClickMeService.exportSubscriptionMembers(ctrlResult.result.filteredSubChilds, selectedFields, ctrlResult.result.subscription, contactSwitch, ExportClickMeService.FORMAT.PDF)
 
                         byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
                         response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
@@ -620,7 +620,7 @@ class SubscriptionController {
                         response.contentType = "text/csv"
                         ServletOutputStream out = response.outputStream
                         out.withWriter { writer ->
-                            writer.write((String) exportClickMeService.exportSubscriptionMembers(ctrlResult.result.filteredSubChilds, selectedFields, ctrlResult.result.subscription, ctrlResult.result.institution, contactSwitch, ExportClickMeService.FORMAT.CSV))
+                            writer.write((String) exportClickMeService.exportSubscriptionMembers(ctrlResult.result.filteredSubChilds, selectedFields, ctrlResult.result.subscription, contactSwitch, ExportClickMeService.FORMAT.CSV))
                         }
                         out.close()
                         return

@@ -1941,12 +1941,11 @@ class ExportClickMeService {
 
     /**
      * Gets the subscription member export fields for the given subscription and contextOrg for processing
-     * @param contextOrg the context contextOrg
      * @param subscription the subscription whose members should be exported
      * @return the configuration map for the subscription member export
      */
-    Map<String, Object> getExportSubscriptionMembersFields(Org contextOrg, Subscription subscription) {
-
+    Map<String, Object> getExportSubscriptionMembersFields(Subscription subscription) {
+        Org contextOrg = contextService.getOrg()
         Map<String, Object> exportFields = [:]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
@@ -2008,12 +2007,11 @@ class ExportClickMeService {
     /**
      * Generic call from views
      * Gets the subscription member export fields for the given subscription and contextOrg and prepares them for the UI
-     * @param contextOrg the context contextOrg
      * @param subscription the subscription whose members should be exported
      * @return the configuration map for the subscription member export for the UI
      */
-    Map<String, Object> getExportSubscriptionMembersFieldsForUI(Org contextOrg, Subscription subscription = null, ClickMeConfig clickMeConfig = null) {
-
+    Map<String, Object> getExportSubscriptionMembersFieldsForUI(Subscription subscription = null, ClickMeConfig clickMeConfig = null) {
+        Org contextOrg = contextService.getOrg()
         Map<String, Object> fields = [:]
         fields.putAll(EXPORT_SUBSCRIPTION_MEMBERS_CONFIG)
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
@@ -2088,12 +2086,11 @@ class ExportClickMeService {
 
     /**
      * Gets the subscription fields for the given contextOrg
-     * @param contextOrg the context contextOrg whose perspective should be taken for the export
      * @param showTransferFields should the subscription transfer fields be displayed as well?
      * @return the configuration map for the subscription export
      */
-    Map<String, Object> getExportSubscriptionFields(Org contextOrg,boolean showTransferFields = false) {
-
+    Map<String, Object> getExportSubscriptionFields(boolean showTransferFields = false) {
+        Org contextOrg = contextService.getOrg()
         Map<String, Object> exportFields = [:]
         Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName
@@ -2190,12 +2187,11 @@ class ExportClickMeService {
     /**
      * Generic call from views
      * Gets the subscription fields for the given contextOrg for the UI
-     * @param contextOrg the context contextOrg whose perspective should be taken for the export
      * @param showTransferFields should the subscription transfer fields be displayed as well?
      * @return the configuration map for the subscription export for the UI
      */
-    Map<String, Object> getExportSubscriptionFieldsForUI(Org contextOrg, boolean showTransferFields = false, ClickMeConfig clickMeConfig = null) {
-
+    Map<String, Object> getExportSubscriptionFieldsForUI(boolean showTransferFields = false, ClickMeConfig clickMeConfig = null) {
+        Org contextOrg = contextService.getOrg()
         Map<String, Object> fields = [:]
         fields.putAll(contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_SUBSCRIPTION_SUPPORT_CONFIG : EXPORT_SUBSCRIPTION_CONFIG)
 
@@ -2285,11 +2281,10 @@ class ExportClickMeService {
 
     /**
      * Gets the consortia participation fields for the given contextOrg
-     * @param contextOrg the context contextOrg whose perspective should be taken for the export
      * @return the configuration map for the subscription export
      */
-    Map<String, Object> getExportConsortiaParticipationFields(Org contextOrg) {
-
+    Map<String, Object> getExportConsortiaParticipationFields() {
+        Org contextOrg = contextService.getOrg()
         Map<String, Object> exportFields = [:]
         Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName
@@ -2357,11 +2352,10 @@ class ExportClickMeService {
     /**
      * Generic call from views
      * Gets the export fields for the given contextOrg for the UI
-     * @param contextOrg the context contextOrg whose perspective should be taken for the export
      * @return the configuration map for the participation export for the UI
      */
-    Map<String, Object> getExportConsortiaParticipationFieldsForUI(Org contextOrg, ClickMeConfig clickMeConfig = null) {
-
+    Map<String, Object> getExportConsortiaParticipationFieldsForUI(ClickMeConfig clickMeConfig = null) {
+        Org contextOrg = contextService.getOrg()
         Map<String, Object> fields = [:]
         fields.putAll(contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_CONSORTIA_PARTICIPATIONS_SUPPORT_CONFIG : EXPORT_CONSORTIA_PARTICIPATIONS_CONFIG)
 
@@ -2442,11 +2436,10 @@ class ExportClickMeService {
 
     /**
      * Gets the license fields for the given contextOrg
-     * @param contextOrg the context contextOrg whose perspective should be taken for the export
      * @return the configuration map for the license export
      */
-    Map<String, Object> getExportLicenseFields(Org contextOrg) {
-
+    Map<String, Object> getExportLicenseFields() {
+        Org contextOrg = contextService.getOrg()
         Map<String, Object> exportFields = [:]
         Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName
@@ -2500,11 +2493,10 @@ class ExportClickMeService {
     /**
      * Generic call from views
      * Gets the license fields for the given contextOrg for the UI
-     * @param contextOrg the context contextOrg whose perspective should be taken for the export
      * @return the configuration map for the subscription export for the UI
      */
-    Map<String, Object> getExportLicenseFieldsForUI(Org contextOrg, ClickMeConfig clickMeConfig = null) {
-
+    Map<String, Object> getExportLicenseFieldsForUI(ClickMeConfig clickMeConfig = null) {
+        Org contextOrg = contextService.getOrg()
         Map<String, Object> fields = [:]
         fields.putAll(contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_LICENSE_SUPPORT_CONFIG : EXPORT_LICENSE_CONFIG)
 
@@ -2782,7 +2774,7 @@ class ExportClickMeService {
                     exportFields.put("consortiumAddress."+addressType.value, [field: null, label: addressType.getI10n('value')])
                 }
                 break
-            case 'contextOrg':
+            case 'institution':
                 Map<String, Object> config2 = contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_ORG_SUPPORT_CONFIG : EXPORT_ORG_CONFIG
 
                 config2.keySet().each {
@@ -3722,17 +3714,16 @@ class ExportClickMeService {
      * @param result the subscription members to export
      * @param selectedFields the fields which should appear
      * @param subscription the subscription as reference for the fields
-     * @param contextOrg the contextOrg as reference for the fields
      * @param contactSwitch which set of contacts should be considered (public or private)?
      * @param format the {@link FORMAT} to be exported
      * @return the output in the desired format
      */
-    def exportSubscriptionMembers(Collection result, Map<String, Object> selectedFields, Subscription subscription, Org contextOrg, Set<String> contactSwitch, FORMAT format) {
-       Locale locale = LocaleUtils.getCurrentLocale()
+    def exportSubscriptionMembers(Collection result, Map<String, Object> selectedFields, Subscription subscription, Set<String> contactSwitch, FORMAT format) {
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         Map<String, Object> selectedExportFields = [:]
 
-        Map<String, Object> configFields = getExportSubscriptionMembersFields(contextOrg, subscription)
+        Map<String, Object> configFields = getExportSubscriptionMembersFields(subscription)
 
         configFields.keySet().each { String k ->
             if (k in selectedFields.keySet() ) {
@@ -3805,17 +3796,16 @@ class ExportClickMeService {
      * Exports the given fields from the given subscriptions
      * @param result the subscription set to export
      * @param selectedFields the fields which should appear
-     * @param contextOrg the contextOrg as reference
      * @param format the {@link FORMAT} to be exported
      * @param showTransferFields should the subscription transfer fields be included in the export?
      * @return the output in the desired format
      */
-    def exportSubscriptions(ArrayList<Subscription> result, Map<String, Object> selectedFields, Org contextOrg, FORMAT format, boolean showTransferFields = false) {
+    def exportSubscriptions(ArrayList<Subscription> result, Map<String, Object> selectedFields, FORMAT format, boolean showTransferFields = false) {
         Locale locale = LocaleUtils.getCurrentLocale()
-
+        Org contextOrg = contextService.getOrg()
         Map<String, Object> selectedExportFields = [:]
 
-        Map<String, Object> configFields = getExportSubscriptionFields(contextOrg, showTransferFields)
+        Map<String, Object> configFields = getExportSubscriptionFields(showTransferFields)
 
         configFields.keySet().each { String k ->
             if (k in selectedFields.keySet() ) {
@@ -3883,17 +3873,16 @@ class ExportClickMeService {
      * Exports the given fields from the given consortia participations
      * @param result the subscription set to export
      * @param selectedFields the fields which should appear
-     * @param contextOrg the contextOrg as reference
      * @param contactSwitch which set of contacts should be considered (public or private)?
      * @param format the {@link FORMAT} to be exported
      * @return an Excel worksheet containing the export
      */
-    def exportConsortiaParticipations(Set result, Map<String, Object> selectedFields, Org contextOrg, Set<String> contactSwitch, FORMAT format) {
+    def exportConsortiaParticipations(Set result, Map<String, Object> selectedFields, Set<String> contactSwitch, FORMAT format) {
         Locale locale = LocaleUtils.getCurrentLocale()
 
         Map<String, Object> selectedExportFields = [:]
 
-        Map<String, Object> configFields = getExportConsortiaParticipationFields(contextOrg)
+        Map<String, Object> configFields = getExportConsortiaParticipationFields()
 
         configFields.keySet().each { String k ->
             if (k in selectedFields.keySet() ) {
@@ -3960,16 +3949,15 @@ class ExportClickMeService {
      * Exports the given fields from the given subscriptions
      * @param result the subscription set to export
      * @param selectedFields the fields which should appear
-     * @param contextOrg the contextOrg as reference
      * @param format the {@link FORMAT} to be exported
      * @return the output in the desired format
      */
-    def exportLicenses(ArrayList<License> result, Map<String, Object> selectedFields, Org contextOrg, FORMAT format) {
+    def exportLicenses(ArrayList<License> result, Map<String, Object> selectedFields, FORMAT format) {
         Locale locale = LocaleUtils.getCurrentLocale()
 
         Map<String, Object> selectedExportFields = [:]
 
-        Map<String, Object> configFields = getExportLicenseFields(contextOrg)
+        Map<String, Object> configFields = getExportLicenseFields()
 
         configFields.keySet().each { String k ->
             if (k in selectedFields.keySet() ) {
@@ -4114,7 +4102,7 @@ class ExportClickMeService {
                 break
             case 'institution':
                 sheetTitle = messageSource.getMessage('default.institution', null, locale)
-                nameOfClickMeMap = contextService.contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? 'EXPORT_ORG_SUPPORT_CONFIG' : 'EXPORT_ORG_CONFIG'
+                nameOfClickMeMap = contextService.getOrg().getCustomerType() == CustomerTypeService.ORG_SUPPORT ? 'EXPORT_ORG_SUPPORT_CONFIG' : 'EXPORT_ORG_CONFIG'
                 break
             case 'member':
                 sheetTitle = messageSource.getMessage('subscription.details.consortiaMembers.label', null, locale)
@@ -5114,7 +5102,7 @@ class ExportClickMeService {
                     _setOrgFurtherInformation(org, row, fieldKey, format)
                 }
                 else if(fieldKey.contains('subscription.notes')) { //subscription.notes and subscription.notes.shared
-                    Map<String, Object> subNotes = _getNotesForObject(subscription, contextOrg)
+                    Map<String, Object> subNotes = _getNotesForObject(subscription)
                     if(fieldKey == 'subscription.notes')
                         row.add(createTableCell(format, subNotes.baseItems.join('\n')))
                     else if(fieldKey == 'subscription.notes.shared')
@@ -5285,7 +5273,7 @@ class ExportClickMeService {
         List row = []
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Locale locale = LocaleUtils.getCurrentLocale()
-        Org org, contextOrg = contextService.getOrg()
+        Org org
         License license
         if(result instanceof License) {
             license = result
@@ -5312,7 +5300,7 @@ class ExportClickMeService {
                     row.add(createTableCell(format, license.getLicensingConsortium()?.name))
                 }
                 else if(fieldKey.contains('license.notes')) { //license.notes and license.notes.shared
-                    Map<String, Object> licNotes = _getNotesForObject(license, contextOrg)
+                    Map<String, Object> licNotes = _getNotesForObject(license)
                     if(fieldKey == 'license.notes')
                         row.add(createTableCell(format, licNotes.baseItems.join('\n')))
                     else if(fieldKey == 'license.notes.shared')
@@ -6808,11 +6796,11 @@ class ExportClickMeService {
      * Convenience method, the current implementation should be refactored by library.
      * Exports the notes for the given object, owned by the given contextOrg
      * @param objInstance the object of which the notes are subject
-     * @param contextOrg the contextOrg ({@link Org}) whose notes of the given object should be exported
      * @return a {@link Map} containing the object's notes, owned by the contextOrg, of structure: [baseItems: notes directly attached to the object, sharedItems: items coming from a possible parent (if a parent exist at all)]
      */
-    private Map<String, Object> _getNotesForObject(objInstance, Org contextOrg) {
+    private Map<String, Object> _getNotesForObject(objInstance) {
         List<DocContext> baseItems = [], sharedItems = []
+        Org contextOrg = contextService.getOrg()
         docstoreService.getNotes(objInstance, contextOrg).each { DocContext dc ->
             if(dc.status != RDStore.DOC_CTX_STATUS_DELETED) {
                 String noteContent = dc.owner.title
