@@ -3226,9 +3226,10 @@ class MyInstitutionController  {
                 myMarkedObjects: [
                         org: markerService.getObjectsByClassAndType(Org.class, fMarkerType),
                         pkg: markerService.getObjectsByClassAndType(Package.class, fMarkerType),
-                        plt: markerService.getObjectsByClassAndType(Platform.class, fMarkerType)
+                        plt: markerService.getObjectsByClassAndType(Platform.class, fMarkerType),
+                        ven: markerService.getObjectsByClassAndType(Vendor.class, fMarkerType)
                 ],
-                myXMap:             markerService.getMyXMap(),
+                myXMap:             markerService.getMyXMap(), // TODO
                 filterMarkerType:   fMarkerType.value
         ]
         result
