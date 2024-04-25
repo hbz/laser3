@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5652    25.04.2024  dev     3.4         David   Feature     Reporting: Einrichtungskosten in % anzeigen
+
 5646    24.04.2024  dev     3.4         David   Feature     Marker/Beobachtungsliste: Lieferanten
 
 5655    23.04.2024  dev     3.4         Andreas Feature     Sortierung der Länderauswahl umgestellt
