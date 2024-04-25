@@ -201,7 +201,7 @@ class ContextBarTagLib {
                 String onClick = ui.remoteJsToggler(jsMap)
 
                 if (! attrs.ajax) {
-                    out << '<span id="marker-' + obj.id + '" style="margin-left:1em;">'
+                    out << '<span id="marker-' + obj.id + '">'
                 }
 
                 out <<      '<a class="ui icon label la-popup-tooltip la-long-tooltip la-delay" onclick="' + onClick + '" '
