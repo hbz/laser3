@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Params; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Subscription; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.Org; de.laser.CustomerTypeService; de.laser.Doc; de.laser.survey.SurveyOrg;" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.helper.Params; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Subscription; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.Org; de.laser.CustomerTypeService; de.laser.Doc; de.laser.survey.SurveyOrg;" %>
 
 <laser:htmlStart message="menu.my.currentSubscriptionsTransfer" serviceInjection="true"/>
 
@@ -9,7 +9,7 @@
 <ui:controlButtons>
     <ui:exportDropdown>
         <ui:exportDropdownItem>
-            <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'subsTransfer']"/>
+            <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.SUBSCRIPTIONS_TRANSFER]"/>
         </ui:exportDropdownItem>
     </ui:exportDropdown>
 </ui:controlButtons>

@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ExportClickMeService" %>
 <laser:htmlStart message="subscription.details.financials.label" serviceInjection="true"/>
 
         <g:set var="own" value="${financialData.own}"/>
@@ -14,7 +15,7 @@
         <ui:controlButtons>
             <ui:exportDropdown>
                 <ui:exportDropdownItem>
-                    <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'financialsExport']"/>
+                    <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.COST_ITEMS]"/>
                 </ui:exportDropdownItem>
             </ui:exportDropdown>
 

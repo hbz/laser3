@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.Subscription; de.laser.Links; de.laser.interfaces.CalculatedType; de.laser.OrgRole; de.laser.Org; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.SubscriptionPackage" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.Subscription; de.laser.Links; de.laser.interfaces.CalculatedType; de.laser.OrgRole; de.laser.Org; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.SubscriptionPackage" %>
 
 <laser:serviceInjection />
 <g:set var="actionStart" value="${System.currentTimeMillis()}"/>
@@ -34,7 +34,7 @@
             <g:if test="${actionName == 'index'}">
                 <g:if test="${currentTitlesCounts < 1000000}">
                     <ui:exportDropdownItem>
-                        <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'ies']"/>
+                        <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.ISSUE_ENTITLEMENTS]"/>
                     </ui:exportDropdownItem>
                 </g:if>
                 <g:else>
@@ -44,7 +44,7 @@
             <g:elseif test="${actionName == 'addEntitlements'}">
                 <g:if test="${currentTitlesCounts < 1000000}">
                     <ui:exportDropdownItem>
-                        <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'tipps']"/>
+                        <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.TIPPS]"/>
                     </ui:exportDropdownItem>
                 </g:if>
                 <g:else>

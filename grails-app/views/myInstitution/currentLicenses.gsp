@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.License;de.laser.RefdataCategory;de.laser.interfaces.CalculatedType;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.RefdataValue;de.laser.Links;de.laser.Org" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.CustomerTypeService; de.laser.License;de.laser.RefdataCategory;de.laser.interfaces.CalculatedType;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.RefdataValue;de.laser.Links;de.laser.Org" %>
 
 <laser:htmlStart message="license.current" serviceInjection="true" />
 
@@ -9,7 +9,7 @@
   <ui:controlButtons>
       <ui:exportDropdown>
           <ui:exportDropdownItem>
-              <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'lics']"/>
+              <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.LICENSES]"/>
           </ui:exportDropdownItem>
       <%--
           <g:if test="${filterSet || defaultSet}">

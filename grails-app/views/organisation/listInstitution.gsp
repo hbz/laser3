@@ -1,4 +1,4 @@
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService" %>
+<%@ page import="de.laser.ExportClickMeService; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService" %>
 <laser:htmlStart message="menu.public.all_insts" serviceInjection="true"/>
         <g:set var="entityName" value="${message(code: 'org.label')}" />
 
@@ -9,7 +9,7 @@
     <ui:controlButtons>
         <ui:exportDropdown>
             <ui:exportDropdownItem>
-                <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'institutions', exportFileName: message(code: 'menu.institutions')]"/>
+                <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.INSTITUTIONS, exportFileName: message(code: 'menu.institutions')]"/>
             </ui:exportDropdownItem>
         </ui:exportDropdown>
 

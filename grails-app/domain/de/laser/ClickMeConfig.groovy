@@ -9,12 +9,13 @@ class ClickMeConfig {
     String nameOfClickMeMap
     String clickMeType
     int configOrder
+    String note = ""
 
     Date dateCreated
     Date lastUpdated
 
     static constraints = {
-
+        note (nullable: true, blank: true)
     }
 
     static mapping = {
@@ -30,6 +31,7 @@ class ClickMeConfig {
         contextUrl column: 'cmc_context_url'
         jsonConfig column: 'cmc_json_config', type: 'text'
         configOrder column: 'cmc_config_order'
+        note column: 'cmc_note', type: 'text'
 
         contextOrg column: 'cmc_context_org_fk', index: 'cmc_context_org_idx'
 

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.storage.RDStore" %>
 
     <g:set var="entityName" value="${message(code: 'org.label')}"/>
     <g:set var="title" value="${message(code: 'menu.my.insts')}"/>
@@ -13,7 +13,7 @@
 <ui:controlButtons>
     <ui:exportDropdown>
         <ui:exportDropdownItem>
-            <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'manageMembers']"/>
+            <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.INSTITUTIONS]"/>
         </ui:exportDropdownItem>
         <%--
         <g:if test="${filterSet}">

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.RefdataValue" %>
 
 <laser:htmlStart message="menu.my.providers" />
 
@@ -9,7 +9,7 @@
         <ui:controlButtons>
             <ui:exportDropdown>
                 <ui:exportDropdownItem>
-                    <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'providers']"/>
+                    <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.PROVIDERS]"/>
                 </ui:exportDropdownItem>
                 <%--
                 <g:if test="${filterSet}">
