@@ -82,11 +82,18 @@ class MarkerService {
 
         result.currentProviderIdList = orgTypeService.getCurrentOrgsOfProvidersAndAgencies(contextService.getOrg()).collect{ it.id }
 
-        result.currentVendorIdList = [] // TODO erms-5646
-
         result.currentPackageIdList = SubscriptionPackage.executeQuery(
                 'select distinct sp.pkg.id from SubscriptionPackage sp where sp.subscription in (select oo.sub from OrgRole oo join oo.sub sub where oo.org = :context and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true)))',
                 [context: contextService.getOrg(), current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED]
+        )
+
+//        result.currentVendorIdList = Vendor.executeQuery(
+//                'select distinct vr.vendor from VendorRole vr, OrgRole oo join oo.sub sub where vr.subscription = sub and oo.org = :context and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true))',
+//                [context: contextService.getOrg(), current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED]
+//        )
+        result.currentVendorIdList = Vendor.executeQuery(
+                'select distinct vr.vendor from VendorRole vr, OrgRole oo join oo.sub sub where vr.subscription = sub and oo.org = :context',
+                [context: contextService.getOrg()]
         )
 
         // todo --
