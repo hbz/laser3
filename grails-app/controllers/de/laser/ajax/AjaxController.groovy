@@ -2133,28 +2133,25 @@ class AjaxController {
     def generateCostPerUse() {
         Map<String, Object> ctrlResult = subscriptionControllerService.getStatsDataForCostPerUse(params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_OK) {
-            if(ctrlResult.result.containsKey('alternatePeriod')) {
+            if(ctrlResult.result.containsKey('alternatePeriodStart') && ctrlResult.result.containsKey('alternatePeriodEnd')) {
                 SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-                ctrlResult.result.selectedPeriodNotCovered = message(code: 'default.stats.error.selectedPeriodNotCovered', args: [sdf.format(ctrlResult.result.startDate), sdf.format(ctrlResult.result.endDate)] as Object[])
+                ctrlResult.result.selectedPeriodNotCovered = message(code: 'default.stats.error.selectedPeriodNotCovered', args: [sdf.format(ctrlResult.result.alternatePeriodStart), sdf.format(ctrlResult.result.alternatePeriodEnd)] as Object[])
             }
             ctrlResult.result.costPerUse = [:]
             if(ctrlResult.result.subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) {
                 Map<String, Object> costPerUseConsortial = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "consortial")
                 ctrlResult.result.costPerUse.consortialData = costPerUseConsortial.costPerMetric
-                ctrlResult.result.consortialTotal = costPerUseConsortial.costForYear
-                ctrlResult.result.consortialPart  = costPerUseConsortial.partialCostForYear
+                ctrlResult.result.consortialCosts = costPerUseConsortial.costsAllYears
                 if (ctrlResult.result.contextOrg.isCustomerType_Inst_Pro()) {
                     Map<String, Object> costPerUseOwn = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own")
                     ctrlResult.result.costPerUse.ownData = costPerUseOwn.costPerMetric
-                    ctrlResult.result.ownTotal = costPerUseOwn.costForYear
-                    ctrlResult.result.ownPart  = costPerUseOwn.partialCostForYear
+                    ctrlResult.result.ownCosts = costPerUseOwn.costsAllYears
                 }
             }
             else {
                 Map<String, Object> costPerUseOwn = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own")
                 ctrlResult.result.costPerUse.ownData = costPerUseOwn.costPerMetric
-                ctrlResult.result.ownTotal = costPerUseOwn.costForYear
-                ctrlResult.result.ownPart  = costPerUseOwn.partialCostForYear
+                ctrlResult.result.ownCosts = costPerUseOwn.costsAllYears
             }
             render template: "/subscription/costPerUse", model: ctrlResult.result
         }

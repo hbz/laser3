@@ -67,12 +67,20 @@
         <tbody>
             <g:each in="${costPerUse}" var="institutionalUsage">
                 <g:if test="${institutionalUsage.getKey() == 'consortialData'}">
-                    Zugrunde liegen <g:formatNumber type="currency" number="${consortialTotal}" currencySymbol="EUR" /> als Gesamtkosten
-                    <g:if test="${consortialTotal != consortialPart}">; davon anteilig <g:formatNumber number="${consortialPart}" type="currency" currencySymbol="EUR" /> für den gewählten Zeitraum</g:if>
+                    Zugrunde liegen:
+                    <g:each in="${consortialCosts}" var="yearMap">
+                        für ${yearMap.getKey()}:
+                        <g:formatNumber type="currency" number="${yearMap.getValue().total}" currencySymbol="EUR" /> als Gesamtkosten
+                        davon anteilig <g:formatNumber number="${yearMap.getValue().partial}" type="currency" currencySymbol="EUR" /> pro Monat
+                    </g:each>
                 </g:if>
                 <g:elseif test="${institutionalUsage.getKey() == 'ownData'}">
-                    Zugrunde liegen <g:formatNumber type="currency" number="${ownTotal}" currencySymbol="EUR" /> als Gesamtkosten
-                    <g:if test="${ownTotal != ownPart}">; davon anteilig <g:formatNumber number="${ownPart}" type="currency" currencySymbol="EUR" /> für den gewählten Zeitraum</g:if>
+                    Zugrunde liegen:
+                    <g:each in="${ownCosts}" var="yearMap">
+                        für ${yearMap.getKey()}:
+                        <g:formatNumber type="currency" number="${yearMap.getValue().total}" currencySymbol="EUR" /> als Gesamtkosten
+                        davon anteilig <g:formatNumber number="${yearMap.getValue().partial}" type="currency" currencySymbol="EUR" /> pro Monat
+                    </g:each>
                 </g:elseif>
                 <g:each in="${institutionalUsage.getValue()}" var="costPerMetric">
                     <%
