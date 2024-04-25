@@ -10,7 +10,7 @@
 <ui:controlButtons>
     <ui:exportDropdown>
         <ui:exportDropdownItem>
-            <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: de.laser.ExportClickMeService.CONSORTIAS]"/>
+            <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.CONSORTIAS]"/>
         </ui:exportDropdownItem>
         <g:if test="${filterSet}">
             <%--

@@ -9,7 +9,7 @@
         <ui:controlButtons>
             <ui:exportDropdown>
                 <ui:exportDropdownItem>
-                    <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: de.laser.ExportClickMeService.SUBSCRIPTIONS]"/>
+                    <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.SUBSCRIPTIONS]"/>
                 </ui:exportDropdownItem>
                 <%--
                 <g:if test="${filterSet || defaultSet}">
