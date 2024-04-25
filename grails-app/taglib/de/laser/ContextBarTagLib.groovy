@@ -174,10 +174,6 @@ class ContextBarTagLib {
             tt = isMarked ? 'Der Anbieter ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
                     : 'Anklicken, um den Anbieter auf die ' + tt_list + ' zu setzen.'
         }
-        else if (attrs.vendor) {
-            tt = isMarked ? 'Der Lieferant ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
-                    : 'Anklicken, um den Lieferanten auf die ' + tt_list + ' zu setzen.'
-        }
         else if (attrs.package) {
             tt = isMarked ? 'Das Paket ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
                     : 'Anklicken, um das Paket auf die ' + tt_list + ' zu setzen.'
@@ -185,6 +181,10 @@ class ContextBarTagLib {
         else if (attrs.platform) {
             tt = isMarked ? 'Der Plattform ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
                     : 'Anklicken, um die Plattform auf die ' + tt_list + ' zu setzen.'
+        }
+        else if (attrs.vendor) {
+            tt = isMarked ? 'Der Lieferant ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
+                    : 'Anklicken, um den Lieferanten auf die ' + tt_list + ' zu setzen.'
         }
 
         if (obj) {
@@ -201,7 +201,7 @@ class ContextBarTagLib {
                 String onClick = ui.remoteJsToggler(jsMap)
 
                 if (! attrs.ajax) {
-                    out << '<span id="marker-' + obj.id + '" style="margin-left:1em;">'
+                    out << '<span id="marker-' + obj.id + '">'
                 }
 
                 out <<      '<a class="ui icon label la-popup-tooltip la-long-tooltip la-delay" onclick="' + onClick + '" '
