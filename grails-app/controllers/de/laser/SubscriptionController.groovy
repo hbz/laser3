@@ -350,7 +350,7 @@ class SubscriptionController {
                 }
                 else {
                     Map<String, Object> errorMap
-                    if(ctrlResult.error.code)
+                    if(ctrlResult.error.hasProperty('code'))
                         errorMap = [error: ctrlResult.error.code]
                     else
                         errorMap = [error: ctrlResult.error]

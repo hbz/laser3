@@ -244,6 +244,7 @@ class DateUtils {
                 new SimpleDateFormat('dd/MM/yy'),//Parsing was wrong, needs to be under supervision
                 new SimpleDateFormat('dd/MM/yyyy'),
                 new SimpleDateFormat('yyyy/MM'),
+                new SimpleDateFormat('yyyy-MM'),
                 getSDF_yyyy()
         ]
 
