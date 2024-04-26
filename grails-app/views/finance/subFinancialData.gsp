@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.storage.RDStore;" %>
 <laser:htmlStart message="subscription.details.financials.label" />
 
         <laser:serviceInjection />
@@ -26,7 +26,7 @@
                         </g:link>
                     </ui:exportDropdownItem>--%>
                     <ui:exportDropdownItem>
-                        <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'financialsExport']"/>
+                        <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.COST_ITEMS]"/>
                     </ui:exportDropdownItem>
                     <ui:exportDropdownItem>
                         <g:link class="item exportCSV js-open-confirm-modal"
@@ -43,7 +43,7 @@
                         <g:link class="item" controller="finance" action="financialsExport" params="${params+[exportXLS:true,sub:subscription.id]}">${message(code:'default.button.exports.xls')}</g:link>
                     </ui:exportDropdownItem>--%>
                     <ui:exportDropdownItem>
-                        <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'financialsExport']"/>
+                        <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.COST_ITEMS]"/>
                     </ui:exportDropdownItem>
                     <ui:exportDropdownItem>
                         <g:link class="item exportCSV js-open-confirm-modal"

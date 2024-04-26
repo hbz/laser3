@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.storage.BeanStore; de.laser.finance.CostItem; de.laser.Links; de.laser.Person; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.Subscription" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.CustomerTypeService; de.laser.storage.BeanStore; de.laser.finance.CostItem; de.laser.Links; de.laser.Person; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.Subscription" %>
 
 <laser:htmlStart text="${BeanStore.getContextService().getOrg().isCustomerType_Consortium() ? message(code:'subscription.details.consortiaMembers.label') : ''}" serviceInjection="true" />
 
@@ -20,7 +20,7 @@
                 </g:else>
             </ui:exportDropdownItem>--%>
             <ui:exportDropdownItem>
-                <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'subMembers']"/>
+                <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.SUBSCRIPTIONS_MEMBERS]"/>
             </ui:exportDropdownItem>
             <%--
             <ui:exportDropdownItem>

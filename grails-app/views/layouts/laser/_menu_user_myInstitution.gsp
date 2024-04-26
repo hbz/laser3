@@ -28,5 +28,9 @@
 
         <div class="divider"></div>
         <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="reporting" message="menu.institutions.reporting" />
+
+        <div class="divider"></div>
+        <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="exportConfigs" message="menu.institutions.clickMeConfig" />
+
     </div>
 </div>

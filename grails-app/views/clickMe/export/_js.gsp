@@ -19,7 +19,7 @@
                 closable: false,
                 transition: 'scale',
                 onApprove : function() {
-                    $(this).find('.ui.form').submit();
+                    $(this).find('#exportClickMeModal .ui.form').submit();
                     return false;
                 }
             }).modal('show');

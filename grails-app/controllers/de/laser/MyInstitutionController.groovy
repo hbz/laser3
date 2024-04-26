@@ -4714,5 +4714,25 @@ join sub.orgRelations or_sub where
         render view: customerTypeService.getCustomerTypeDependingView('currentSubscriptionsTransfer'), model: result
     }
 
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+    })
+    def exportConfigs() {
+        Map<String, Object> ctrlResult = myInstitutionControllerService.exportConfigs(this, params)
+
+        ctrlResult.result
+    }
+
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+    })
+    def exportConfigsActions() {
+        Map<String, Object> ctrlResult = myInstitutionControllerService.exportConfigsActions(this, params)
+
+        redirect(action: 'exportConfigs', params: [tab: ctrlResult.result.tab])
+    }
+
 
 }

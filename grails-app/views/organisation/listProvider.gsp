@@ -10,7 +10,7 @@
     <ui:controlButtons>
         <ui:exportDropdown>
             <ui:exportDropdownItem>
-                <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'providers']"/>
+                <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.PROVIDERS]"/>
             </ui:exportDropdownItem>
             <%--
             <g:if test="${filterSet}">
