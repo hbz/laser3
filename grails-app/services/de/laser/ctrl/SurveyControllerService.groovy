@@ -1776,6 +1776,34 @@ class SurveyControllerService {
                                 //result.message = messageSource.getMessage('default.deleted.message', args:[messageSource.getMessage('surveyProperty.label'), surveyProperty.getI10n('name')])
                         }
                         break
+                    case "moveUp":
+                    case "moveDown":
+                        List<Long> surveyPropertiesIDs = Params.getLongList(params, 'surveyPropertiesIDs')
+                        println(surveyPropertiesIDs)
+
+                        SurveyConfigProperties surveyConfigProperties = SurveyConfigProperties.get(params.surveyPropertyConfigId)
+
+                        Set<SurveyConfigProperties> sequence = SurveyConfigProperties.executeQuery("select scp from SurveyConfigProperties scp where scp.surveyConfig = :surveyConfig and scp.id in (:surveyPropertiesIDs) order by scp.propertyOrder", [surveyPropertiesIDs: surveyPropertiesIDs, surveyConfig: result.surveyConfig]) as Set<SurveyConfigProperties>
+
+                        println(sequence.propertyOrder)
+
+                        int idx = sequence.findIndexOf { it.id == surveyConfigProperties.id }
+                        int pos = surveyConfigProperties.propertyOrder
+                        SurveyConfigProperties surveyConfigProperties2
+
+                        if (params.actionForSurveyProperty == 'moveUp') {
+                            surveyConfigProperties2 = sequence.getAt(idx - 1)
+                        } else if (params.actionForSurveyProperty == 'moveDown') {
+                            surveyConfigProperties2 = sequence.getAt(idx + 1)
+                        }
+
+                        if (surveyConfigProperties2) {
+                            surveyConfigProperties.propertyOrder = surveyConfigProperties2.propertyOrder
+                            surveyConfigProperties.save()
+                            surveyConfigProperties2.propertyOrder = pos
+                            surveyConfigProperties2.save()
+                        }
+                        break
                 }
             }
 
