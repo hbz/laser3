@@ -1066,7 +1066,7 @@ class SubscriptionControllerService {
                     if(configMap.revision == AbstractReport.COUNTER_5) {
                         allAvailableReports = new TreeSet<String>()
                         String queryArguments = exportService.buildQueryArguments(configMap, platformRecord, ci)
-                        Map<String, Object> availableReports = statsSyncService.fetchJSONData(configMap.statsUrl + queryArguments, true)
+                        Map<String, Object> availableReports = statsSyncService.fetchJSONData(configMap.statsUrl + queryArguments, ci, true)
                         if(availableReports && availableReports.list) {
                             availableReports.list.each { listEntry ->
                                 String reportType = listEntry["Report_ID"].toLowerCase()

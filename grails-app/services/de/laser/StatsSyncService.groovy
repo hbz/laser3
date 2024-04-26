@@ -6,6 +6,7 @@ import de.laser.http.BasicHttpClient
 import de.laser.config.ConfigMapper
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
+import de.laser.stats.SushiCallError
 import de.laser.utils.DateUtils
 import de.laser.remote.ApiSource
 import de.laser.stats.Fact
@@ -479,7 +480,7 @@ class StatsSyncService {
                                         String params = "?customer_id=${keyPair.value}"
                                         if(keyPair.requestorKey || apiKey)
                                             params += "&requestor_id=${keyPair.requestorKey}&api_key=${apiKey}"
-                                        Map<String, Object> availableReports = fetchJSONData(statsUrl + params, true)
+                                        Map<String, Object> availableReports = fetchJSONData(statsUrl + params, keyPair, true)
                                         if (availableReports && availableReports.list) {
                                             List<String> reportList = availableReports.list.collect { listEntry -> listEntry["Report_ID"].toLowerCase() }
                                             //List<String> reportList = ['tr'] //debug only
@@ -1103,7 +1104,7 @@ class StatsSyncService {
      * @param requestList is the list of available reports fetched?
      * @return the JSON response map
      */
-    Map<String, Object> fetchJSONData(String url, boolean requestList = false) {
+    Map<String, Object> fetchJSONData(String url, CustomerIdentifier ci, boolean requestList = false) {
         Map<String, Object> result = [:]
         try {
             Closure success = { resp, json ->
@@ -1164,6 +1165,11 @@ class StatsSyncService {
             log.error("stack trace: ", e)
         }
         if(result.containsKey('error')) {
+            if(result.error.hasProperty('code') && result.error in ([2000 ,2010, 2020])) {
+                SushiCallError sce = new SushiCallError(platform: ci.platform, org: ci.customer, customerId: ci.value, requestorId: ci.requestorKey, errMess: 'key pair error')
+                if(!sce.save())
+                    log.error(sce.getErrors().getAllErrors().toListString())
+            }
             Map sysEventPayload = result.clone()
             sysEventPayload.url = url
             SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
@@ -1178,7 +1184,7 @@ class StatsSyncService {
      * @param requestBody is the list of available reports fetched?
      * @return the response body or an error map upon failure
      */
-    Map<String, Object> fetchXMLData(String url, requestBody) {
+    Map<String, Object> fetchXMLData(String url, CustomerIdentifier ci, requestBody) {
         Map<String, Object> result = [:]
 
         BasicHttpClient http
@@ -1195,7 +1201,9 @@ class StatsSyncService {
                                           ns3       : "http://www.niso.org/schemas/sushi/counter"])
                     if (xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Number'?.text() == '2010') {
                         log.warn("wrong key pair")
-                        //StatsMissingPeriod.construct([from: startTime.getTime(), to: currentYearEnd.getTime(), cursor: lsc])
+                        SushiCallError sce = new SushiCallError(platform: ci.platform, org: ci.customer, customerId: ci.value, requestorId: ci.requestorKey, errMess: xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Message'?.text())
+                        if(!sce.save())
+                            log.error(sce.getErrors().getAllErrors().toListString())
                         result = [error: xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Message'?.text(), code: 401]
                     }
                     else if (['3000', '3020'].any { String errorCode -> errorCode == xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Number'?.text() }) {
