@@ -74,7 +74,26 @@
                     </g:form>
                 </td>
                 <td>
-                    <ui:xEditable owner="${surveyPropertyConfig}" field="propertyOrder"/>
+                    <g:if test="${editable}">
+                        <g:if test="${i == 1 && surveyProperties.size() == 2}">
+                            <g:link class="ui icon blue button compact la-modern-button" action="actionsForSurveyProperty" id="${params.id}"
+                                    params="[actionForSurveyProperty: 'moveUp', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id]"><i class="icon arrow up"></i>
+                            </g:link>
+                        </g:if>
+                        <g:else>
+                            <g:if test="${i > 0}">
+                                <g:link class="ui icon blue button compact la-modern-button" action="actionsForSurveyProperty" id="${params.id}"
+                                        params="[actionForSurveyProperty: 'moveUp', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id]"><i class="icon arrow up"></i>
+                                </g:link>
+                            </g:if>
+                            <g:if test="${i < surveyProperties.size()-1}">
+                                <g:link class="ui icon blue button compact la-modern-button" action="actionsForSurveyProperty" id="${params.id}"
+                                        params="[actionForSurveyProperty: 'moveDown', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id]"><i class="icon arrow down"></i>
+                                </g:link>
+                            </g:if>
+                        </g:else>
+                    </g:if>
+
                 </td>
                 <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
                         SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyPropertyConfig.surveyProperty)
@@ -95,7 +114,7 @@
             </tr>
         </g:each>
         </tbody>
-        <g:if test="${controllerName == 'survey' && actionName == 'show' && editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
+        <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
             <g:set var="selectableProperties"
                    value="${pdg ? surveyConfig.getSelectablePropertiesByPropDefGroup(pdg) : (selectablePrivateProperties ? surveyConfig.getPrivateSelectableProperties() : surveyConfig.getOrphanedSelectableProperties())}"/>
             <tfoot>
@@ -109,7 +128,7 @@
                             <div class="field" style="margin-bottom:0">
                                 <ui:dropdown name="selectedProperty"
                                              class="la-filterPropDef"
-                                             from="${selectableProperties}"
+                                             from="${selectableProperties.sort{it.getI10n('name')}}"
                                              iconWhich="shield alternate"
                                              optionKey="${{ "${it.id}" }}"
                                              optionValue="${{ it.getI10n('name') }}"
