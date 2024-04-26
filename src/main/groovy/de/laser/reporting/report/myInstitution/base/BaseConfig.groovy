@@ -9,9 +9,6 @@ import de.laser.RefdataCategory
 import de.laser.Subscription
 import de.laser.SubscriptionsQueryService
 import de.laser.auth.Role
-import de.laser.storage.BeanStore
-import de.laser.storage.RDConstants
-import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.myInstitution.config.CostItemXCfg
@@ -22,8 +19,13 @@ import de.laser.reporting.report.myInstitution.config.OrganisationConsCfg
 import de.laser.reporting.report.myInstitution.config.OrganisationInstCfg
 import de.laser.reporting.report.myInstitution.config.PackageXCfg
 import de.laser.reporting.report.myInstitution.config.PlatformXCfg
+import de.laser.reporting.report.myInstitution.config.ProviderXCfg
 import de.laser.reporting.report.myInstitution.config.SubscriptionConsCfg
 import de.laser.reporting.report.myInstitution.config.SubscriptionInstCfg
+import de.laser.reporting.report.myInstitution.config.VendorXCfg
+import de.laser.storage.BeanStore
+import de.laser.storage.RDConstants
+import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
 import groovy.util.logging.Slf4j
 import org.springframework.context.MessageSource
@@ -48,7 +50,9 @@ class BaseConfig {
     static String KEY_ORGANISATION              = 'organisation'
     static String KEY_PACKAGE                   = 'package'
     static String KEY_PLATFORM                  = 'platform'
+    static String KEY_PROVIDER                  = 'provider'
     static String KEY_SUBSCRIPTION              = 'subscription'
+    static String KEY_VENDOR                    = 'vendor'
 
     static String FILTER_PREFIX                 = 'filter:'
     static String FILTER_SOURCE_POSTFIX         = '_source'
@@ -90,7 +94,7 @@ class BaseConfig {
     static String CI_CTX_IE_SUBSCRIPTION        = 'issueEntitlement$subscription'       // IE
 
     static List<String> FILTER = [
-            KEY_ORGANISATION, KEY_SUBSCRIPTION, KEY_LICENSE, KEY_PACKAGE, KEY_PLATFORM //, KEY_ISSUEENTITLEMENT // 'costItem'
+            KEY_ORGANISATION, /* KEY_VENDOR, KEY_PROVIDER,'*/ KEY_SUBSCRIPTION, KEY_LICENSE, KEY_PACKAGE, KEY_PLATFORM //, KEY_ISSUEENTITLEMENT // 'costItem'
     ]
 
     static List<String> CHARTS = [
@@ -116,10 +120,12 @@ class BaseConfig {
         }
         else if (key == KEY_PACKAGE) { PackageXCfg }
         else if (key == KEY_PLATFORM) { PlatformXCfg }
+        else if (key == KEY_PROVIDER) { ProviderXCfg }
         else if (key == KEY_SUBSCRIPTION) {
             if (BaseDetailsExport.ctxConsortium()) { SubscriptionConsCfg }
             else if (BaseDetailsExport.ctxInst()) { SubscriptionInstCfg }
         }
+        else if (key == KEY_VENDOR) { VendorXCfg }
     }
 
     /**

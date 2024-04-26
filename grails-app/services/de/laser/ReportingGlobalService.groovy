@@ -53,8 +53,14 @@ class ReportingGlobalService {
         else if (params.filter == BaseConfig.KEY_PLATFORM) {
             doFilterPlatform(result, params.clone() as GrailsParameterMap)
         }
+        else if (params.filter == BaseConfig.KEY_PROVIDER) {
+            doFilterProvider(result, params.clone() as GrailsParameterMap)
+        }
         else if (params.filter == BaseConfig.KEY_SUBSCRIPTION) {
             doFilterSubscription(result, params.clone() as GrailsParameterMap)
+        }
+        else if (params.filter == BaseConfig.KEY_VENDOR) {
+            doFilterVendor(result, params.clone() as GrailsParameterMap)
         }
     }
 
@@ -158,6 +164,17 @@ class ReportingGlobalService {
         result.cfgDistributionList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base.distribution )
     }
 
+    void doFilterProvider (Map<String, Object> result, GrailsParameterMap params) {
+
+//        result.filterResult = ProviderFilter.filter(params)
+//
+//        //result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_PROVIDER ).base.query.default )
+//        BaseConfig.getCurrentConfig( BaseConfig.KEY_PROVIDER ).keySet().each{ pk ->
+//            result.cfgQueryList.putAll(BaseConfig.getCurrentConfig(BaseConfig.KEY_PROVIDER).get(pk).query.default)
+//        }
+//        result.cfgDistributionList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_PROVIDER ).base.distribution )
+    }
+
     /**
      * Prepares the subscription filter and writes the result to the result map
      * @param result the result map
@@ -177,6 +194,17 @@ class ReportingGlobalService {
             result.cfgQueryList.remove('consortium') // ?
         }
         result.cfgDistributionList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).base.distribution )
+    }
+
+    void doFilterVendor (Map<String, Object> result, GrailsParameterMap params) {
+
+        result.filterResult = VendorFilter.filter(params)
+
+        //result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_VENDOR ).base.query.default )
+        BaseConfig.getCurrentConfig( BaseConfig.KEY_VENDOR ).keySet().each{ pk ->
+            result.cfgQueryList.putAll(BaseConfig.getCurrentConfig(BaseConfig.KEY_VENDOR).get(pk).query.default)
+        }
+        result.cfgDistributionList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_VENDOR ).base.distribution )
     }
 
     // ----- 2 - chart
