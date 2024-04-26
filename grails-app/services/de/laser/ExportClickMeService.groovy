@@ -65,6 +65,31 @@ class ExportClickMeService {
         XLS, CSV, TSV, PDF
     }
 
+    static final String ADDRESSBOOK = "addressbook"
+    static final String CONSORTIAS = "consortias"
+    static final String CONSORTIA_PARTICIPATIONS = "consortiaParticipations"
+    static final String COST_ITEMS = "costItems"
+    static final String ISSUE_ENTITLEMENTS = "issueEntitlements"
+    static final String INSTITUTIONS = "institutions"
+    static final String LICENSES = "licenses"
+    static final String PROVIDERS = "providers"
+    static final String SUBSCRIPTIONS = "subscriptions"
+    static final String SUBSCRIPTIONS_MEMBERS = "subscriptionsMembers"
+    static final String SUBSCRIPTIONS_TRANSFER = "subscriptionsTransfer"
+    static final String SURVEY_EVALUATION = "surveyEvaluation"
+    static final String SURVEY_RENEWAL_EVALUATION = "surveyRenewalEvaluation"
+    static final String SURVEY_COST_ITEMS = "surveyCostItems"
+    static final String TIPPS = "tipps"
+    static final String VENDORS = "vendors"
+
+
+    static List<String> CLICK_ME_TYPES = [ADDRESSBOOK, CONSORTIAS, CONSORTIA_PARTICIPATIONS,
+                                        COST_ITEMS, ISSUE_ENTITLEMENTS, INSTITUTIONS,
+                                        LICENSES, PROVIDERS, SUBSCRIPTIONS, SUBSCRIPTIONS_MEMBERS,
+                                        SUBSCRIPTIONS_TRANSFER, SURVEY_EVALUATION,  SURVEY_RENEWAL_EVALUATION,
+                                        SURVEY_COST_ITEMS, TIPPS, VENDORS
+    ]
+
     static Map<String, Object> EXPORT_RENEWAL_CONFIG = [
             //Wichtig: Hier bei dieser Config bitte drauf achten, welche Feld Bezeichnung gesetzt ist, 
             // weil die Felder von einer zusammengesetzten Map kommen. siehe SurveyControllerService -> renewalEvaluation
@@ -1047,30 +1072,30 @@ class ExportClickMeService {
                     label: 'Organisation',
                     message: 'org.institution.label',
                     fields: [
-                            'participant.sortname'          : [field: 'sub.subscriber.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
-                            'participant.name'              : [field: 'sub.subscriber.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                            'participant.funderType'        : [field: 'sub.subscriber.funderType', label: 'Funder Type', message: 'org.funderType.label'],
-                            'participant.funderHskType'     : [field: 'sub.subscriber.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
-                            'participant.libraryType'       : [field: 'sub.subscriber.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
-                            'participant.url'               : [field: 'sub.subscriber.url', label: 'URL', message: 'default.url.label'],
-                            'participant.legalPatronName'   : [field: 'sub.subscriber.legalPatronName', label: 'Lagal Patron Name', message: 'org.legalPatronName.label'],
-                            'participant.urlGov'            : [field: 'sub.subscriber.urlGov', label: 'URL of governing institution', message: 'org.urlGov.label'],
+                            'participant.sortname'          : [field: 'sub.subscriberRespConsortia.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
+                            'participant.name'              : [field: 'sub.subscriberRespConsortia.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
+                            'participant.funderType'        : [field: 'sub.subscriberRespConsortia.funderType', label: 'Funder Type', message: 'org.funderType.label'],
+                            'participant.funderHskType'     : [field: 'sub.subscriberRespConsortia.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
+                            'participant.libraryType'       : [field: 'sub.subscriberRespConsortia.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
+                            'participant.url'               : [field: 'sub.subscriberRespConsortia.url', label: 'URL', message: 'default.url.label'],
+                            'participant.legalPatronName'   : [field: 'sub.subscriberRespConsortia.legalPatronName', label: 'Lagal Patron Name', message: 'org.legalPatronName.label'],
+                            'participant.urlGov'            : [field: 'sub.subscriberRespConsortia.urlGov', label: 'URL of governing institution', message: 'org.urlGov.label'],
                             /*
                             'participantContact.General contact person'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
                             'participantContact.Functional Contact Billing Adress'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
                             'participant.postAdress'        : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
                             'participant.billingAdress'     : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
                             */
-                            'participant.eInvoice'          : [field: 'sub.subscriber.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
-                            'participant.eInvoicePortal'    : [field: 'sub.subscriber.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
-                            'participant.linkResolverBaseURL'    : [field: 'sub.subscriber.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
+                            'participant.eInvoice'          : [field: 'sub.subscriberRespConsortia.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
+                            'participant.eInvoicePortal'    : [field: 'sub.subscriberRespConsortia.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
+                            'participant.linkResolverBaseURL'    : [field: 'sub.subscriberRespConsortia.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
                             'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
                             'participant.discoverySystemsFrontend' : [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
                             'participant.discoverySystemsIndex' : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label'],
-                            'participant.libraryNetwork'    : [field: 'sub.subscriber.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
-                            'participant.country'           : [field: 'sub.subscriber.country', label: 'Country', message: 'org.country.label'],
-                            'participant.region'            : [field: 'sub.subscriber.region', label: 'Region', message: 'org.region.label'],
-                            'participant.uuid'              : [field: 'sub.subscriber.globalUID', label: 'Laser-UUID',  message: null],
+                            'participant.libraryNetwork'    : [field: 'sub.subscriberRespConsortia.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
+                            'participant.country'           : [field: 'sub.subscriberRespConsortia.country', label: 'Country', message: 'org.country.label'],
+                            'participant.region'            : [field: 'sub.subscriberRespConsortia.region', label: 'Region', message: 'org.region.label'],
+                            'participant.uuid'              : [field: 'sub.subscriberRespConsortia.globalUID', label: 'Laser-UUID',  message: null],
                     ]
             ],
 
@@ -3800,7 +3825,7 @@ class ExportClickMeService {
      * @param showTransferFields should the subscription transfer fields be included in the export?
      * @return the output in the desired format
      */
-    def exportSubscriptions(ArrayList<Subscription> result, Map<String, Object> selectedFields, FORMAT format, boolean showTransferFields = false) {
+    def exportSubscriptions(LinkedHashSet<Subscription> result, Map<String, Object> selectedFields, FORMAT format, boolean showTransferFields = false) {
         Locale locale = LocaleUtils.getCurrentLocale()
         Org contextOrg = contextService.getOrg()
         Map<String, Object> selectedExportFields = [:]
@@ -4130,7 +4155,7 @@ class ExportClickMeService {
             }
         }
 
-        saveClickMeConfig(selectedExportFields, "EXPORT_VENDOR_CONFIG")
+        saveClickMeConfig(selectedExportFields, nameOfClickMeMap)
 
         List titles = _exportTitles(selectedExportFields, locale, null, null, contactSources, null, format)
 
@@ -4179,7 +4204,7 @@ class ExportClickMeService {
             }
         }
 
-        saveClickMeConfig(selectedExportFields, nameOfClickMeMap)
+        saveClickMeConfig(selectedExportFields, 'EXPORT_VENDOR_CONFIG')
 
         List titles = _exportTitles(selectedExportFields, locale, null, null, contactSources, null, format)
 
@@ -6876,7 +6901,8 @@ class ExportClickMeService {
                     contextUrl: "/${grailsParameterMap.exportController}/${grailsParameterMap.exportAction}",
                     nameOfClickMeMap: nameOfClickMeMap,
                     clickMeType: clickMeType,
-                    configOrder: countClickMeConfigs+1
+                    configOrder: countClickMeConfigs+1,
+                    note: grailsParameterMap.clickMeConfigNote
             ).save()
 
         }

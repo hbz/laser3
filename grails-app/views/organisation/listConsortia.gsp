@@ -1,4 +1,4 @@
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService" %>
+<%@ page import="de.laser.ExportClickMeService; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService" %>
 <laser:htmlStart message="menu.public.all_cons" serviceInjection="true"/>
 
         <g:set var="entityName" value="${message(code: 'org.label')}" />
@@ -13,7 +13,7 @@
         %>
         <ui:exportDropdown>
             <ui:exportDropdownItem>
-                <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'consortias']"/>
+                <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.CONSORTIAS]"/>
             </ui:exportDropdownItem>
             <%--
             <g:if test="${filterSet}">

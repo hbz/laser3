@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.storage.RDStore" %>
 <laser:htmlStart message="menu.my.consortia" serviceInjection="true"/>
 
     <g:set var="entityName" value="${message(code: 'org.label')}"/>
@@ -10,7 +10,7 @@
 <ui:controlButtons>
     <ui:exportDropdown>
         <ui:exportDropdownItem>
-            <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'consortias']"/>
+            <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.CONSORTIAS]"/>
         </ui:exportDropdownItem>
         <g:if test="${filterSet}">
             <%--

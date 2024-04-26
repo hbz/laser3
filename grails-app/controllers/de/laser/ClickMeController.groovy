@@ -27,7 +27,12 @@ class ClickMeController {
         result.clickMeConfig = null
         result.exportController = params.exportController
         result.exportAction = params.exportAction
-        result.exportParams = params.exportParams
+        result.exportParams = [:]
+        params.each { String k, v ->
+            if(!(k in ['controller', 'action', 'exportParams']))
+                result.exportParams[k] = v
+        }
+
         result.clickMeType = params.clickMeType
 
         result.formFields = [:]
@@ -41,7 +46,6 @@ class ClickMeController {
         result.overrideFormat = null
         result.showClickMeConfigSave = true
         result.enableClickMeConfigSave = BeanStore.getContextService().isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
-        result.tab = null
         result.multiMap = false
 
         if(params.clickMeConfigId)
@@ -51,8 +55,9 @@ class ClickMeController {
             result.showClickMeConfigSave = result.clickMeConfig ? false : true
         }
 
+
         switch (params.clickMeType) {
-            case "addressbook":
+            case ExportClickMeService.ADDRESSBOOK:
                 Map<String, Object> fields = exportClickMeService.getExportAddressFieldsForUI(result.clickMeConfig)
                 Map<String, Object> formFields = fields.exportFields as Map, filterFields = fields.filterFields as Map
                 Map<String, Object> urlParams = params.clone()
@@ -65,96 +70,96 @@ class ClickMeController {
                 result.orgSwitch = true
                 result.currentTabNotice = true
                 break
-            case "consortias":
+            case ExportClickMeService.CONSORTIAS:
                 result.formFields = exportClickMeService.getExportOrgFieldsForUI('consortium', result.clickMeConfig)
                 result.contactSwitch = true
                 result.accessPointNotice = true
                 result.exportFileName = result.exportFileName ?: message(code: 'consortium.plural.label')
                 break
-            case "consortiaParticipations":
+            case ExportClickMeService.CONSORTIA_PARTICIPATIONS:
                 result.formFields = exportClickMeService.getExportConsortiaParticipationFieldsForUI(result.clickMeConfig)
                 result.contactSwitch = true
                 result.exportFileName = result.exportFileName ?: message(code: 'consortium.member.plural')
                 break
-            case "ies":
+            case ExportClickMeService.COST_ITEMS:
+                result.subscription = Subscription.get(params.id)
+                result.formFields = exportClickMeService.getExportCostItemFieldsForUI(result.subscription, result.clickMeConfig)
+                result.exportController = 'finance'
+                result.exportAction = 'financialsExport'
+                result.exportParams = result.exportParams
+                result.contactSwitch = true
+                result.exportFileName = result.exportFileName ?: (result.subscription ? (escapeService.escapeString(subscription.name) + "_" + message(code:'subscription.details.financials.label')) : message(code:'subscription.details.financials.label'))
+                result.overrideFormat = [xlsx: 'XLSX']
+                result.multiMap = true
+                break
+            case ExportClickMeService.INSTITUTIONS:
+                result.formFields = exportClickMeService.getExportOrgFieldsForUI('institution', result.clickMeConfig)
+                result.contactSwitch = true
+                result.accessPointNotice = true
+                result.exportFileName = result.exportFileName ?: message(code: 'subscription.details.consortiaMembers.label')
+                break
+            case ExportClickMeService.ISSUE_ENTITLEMENTS:
                 result.subscription = Subscription.get(params.id)
                 result.formFields = exportClickMeService.getExportIssueEntitlementFieldsForUI(result.clickMeConfig)
                 result.exportController = 'subscription'
                 result.exportAction = 'index'
                 result.exportFileName = result.exportFileName ?: escapeService.escapeString(result.subscription.name) + "_" + message(code:'default.ie')
                 break
-            case "financialsExport":
-                result.subscription = Subscription.get(params.id)
-                result.formFields = exportClickMeService.getExportCostItemFieldsForUI(result.subscription, result.clickMeConfig)
-                result.exportController = 'finance'
-                result.exportAction = 'financialsExport'
-                result.exportParams = result.exportParams+[id:params.id]
-                result.contactSwitch = true
-                result.exportFileName = result.exportFileName ?: (result.subscription ? (escapeService.escapeString(subscription.name) + "_" + message(code:'subscription.details.financials.label')) : message(code:'subscription.details.financials.label'))
-                result.overrideFormat = [xlsx: 'XLSX']
-                result.multiMap = true
-                break
-            case "institutions":
-                result.formFields = exportClickMeService.getExportOrgFieldsForUI('institution', result.clickMeConfig)
-                result.contactSwitch = true
-                result.accessPointNotice = true
-                result.exportFileName = result.exportFileName ?: message(code: 'subscription.details.consortiaMembers.label')
-                break
-            case "lics":
+            case ExportClickMeService.LICENSES:
                 result.formFields = exportClickMeService.getExportLicenseFieldsForUI(result.clickMeConfig)
                 result.contactSwitch = true
                 result.exportFileName = result.exportFileName ?: message(code: 'license.plural')
                 break
-            case "providers":
+            case ExportClickMeService.PROVIDERS:
                 result.formFields = exportClickMeService.getExportOrgFieldsForUI('provider', result.clickMeConfig)
                 result.contactSwitch = true
                 result.exportFileName = result.exportFileName ?: message(code: 'default.ProviderAgency.export.label')
                 break
-            case "subs":
+            case ExportClickMeService.SUBSCRIPTIONS:
                 result.formFields = exportClickMeService.getExportSubscriptionFieldsForUI(false, result.clickMeConfig)
                 result.exportFileName = result.exportFileName ?: message(code: 'subscription.plural')
                 break
-            case "subMembers":
+            case ExportClickMeService.SUBSCRIPTIONS_MEMBERS:
                 result.subscription = Subscription.get(params.id)
                 result.formFields = exportClickMeService.getExportSubscriptionMembersFieldsForUI(result.subscription, result.clickMeConfig)
                 result.exportController = 'subscription'
                 result.exportAction = 'members'
-                result.exportParams = result.exportParams+[id:params.id]
+                result.exportParams = result.exportParams
                 result.contactSwitch = true
                 result.exportFileName = result.exportFileName ?: escapeService.escapeString(result.subscription.name) + "_" + message(code:'subscriptionDetails.members.members')
                 break
-            case "subsTransfer":
+            case ExportClickMeService.SUBSCRIPTIONS_TRANSFER:
                 result.formFields = exportClickMeService.getExportSubscriptionFieldsForUI(true, result.clickMeConfig)
                 result.exportFileName = result.exportFileName ?: message(code: 'export.my.currentSubscriptionsTransfer')
                 break
-            case "surveyEvaluation":
+            case ExportClickMeService.SURVEY_EVALUATION:
                 result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
                 result.formFields = exportClickMeService.getExportSurveyEvaluationFieldsForUI(result.surveyConfig, result.clickMeConfig)
                 result.contactSwitch = true
                 result.overrideFormat = [xlsx: 'XLSX', csv: 'CSV']
                 result.exportFileName = result.exportFileName ?: escapeService.escapeString(result.surveyConfig.getSurveyName()) + "_" + message(code:'surveyResult.label')
                 break
-            case "surveyRenewalEvaluation":
+            case ExportClickMeService.SURVEY_RENEWAL_EVALUATION:
                 result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
                 result.formFields = exportClickMeService.getExportRenewalFieldsForUI(result.surveyConfig, result.clickMeConfig)
                 result.contactSwitch = true
                 result.overrideFormat = [xlsx: 'XLSX', csv: 'CSV']
-                result.exportFileName = result.exportFileName ?: escapeService.escapeString(surveyConfig.getSurveyName()) + "_" + message(code:'renewalexport.renewals')
+                result.exportFileName = result.exportFileName ?: escapeService.escapeString(result.surveyConfig.getSurveyName()) + "_" + message(code:'renewalexport.renewals')
                 result.exportExcelButtonName = message(code: 'renewalEvaluation.exportExcelRenewal')
                 result.exportCSVButtonName = message(code: 'renewalEvaluation.exportCSVRenewal')
                 break
-            case "surveyCostItems":
+            case ExportClickMeService.SURVEY_COST_ITEMS:
                 result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
                 result.formFields = exportClickMeService.getExportSurveyCostItemFieldsForUI(result.clickMeConfig)
                 result.contactSwitch = true
                 result.overrideFormat = [xlsx: 'XLSX', csv: 'CSV']
-                result.exportFileName = result.exportFileName ?: escapeService.escapeString(surveyConfig.getSurveyName()) + "_" + message(code: 'financials.costItem')
+                result.exportFileName = result.exportFileName ?: escapeService.escapeString(result.surveyConfig.getSurveyName()) + "_" + message(code: 'financials.costItem')
                 break
-            case "tipps":
+            case ExportClickMeService.TIPPS:
                 result.formFields = exportClickMeService.getExportTippFieldsForUI(result.clickMeConfig)
                 result.exportFileName = result.exportFileName ?: message(code:'default.title.label')
                 break
-            case "vendors":
+            case ExportClickMeService.VENDORS:
                 result.formFields = exportClickMeService.getExportVendorFieldsForUI(result.clickMeConfig)
                 result.contactSwitch = true
                 result.exportFileName = result.exportFileName ?: message(code: 'vendor.plural')

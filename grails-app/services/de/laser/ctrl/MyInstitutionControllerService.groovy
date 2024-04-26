@@ -133,6 +133,77 @@ class MyInstitutionControllerService {
         [status: STATUS_OK, result: result]
     }
 
+    Map<String, Object> exportConfigs(MyInstitutionController controller, GrailsParameterMap params) {
+        Map<String, Object> result = getResultGenerics(controller, params)
+        params.tab = params.tab ?: ExportClickMeService.ADDRESSBOOK
+
+        List notShowClickMe = []
+
+        if(result.contextOrg.isCustomerType_Consortium()){
+            notShowClickMe = [ExportClickMeService.CONSORTIAS]
+        }else{
+            notShowClickMe = [ExportClickMeService.CONSORTIA_PARTICIPATIONS, ExportClickMeService.INSTITUTIONS,
+                              ExportClickMeService.SUBSCRIPTIONS_MEMBERS, ExportClickMeService.SUBSCRIPTIONS_TRANSFER,
+                              ExportClickMeService.SURVEY_EVALUATION, ExportClickMeService.SURVEY_RENEWAL_EVALUATION,
+                              ExportClickMeService.SURVEY_COST_ITEMS]
+        }
+
+        if(result.contextOrg.isCustomerType_Basic()){
+            notShowClickMe << [ExportClickMeService.CONSORTIAS]
+        }
+
+
+        result.clickMeTypes = ExportClickMeService.CLICK_ME_TYPES - notShowClickMe
+        result.clickMeConfigsCount= [:]
+        result.clickMeTypes.each { String clickMeType ->
+            result.clickMeConfigsCount[clickMeType] = ClickMeConfig.executeQuery('select count(*) from ClickMeConfig where contextOrg = :contextOrg and clickMeType = :clickMeType', [contextOrg: result.contextOrg, clickMeType: clickMeType])[0]
+        }
+
+
+        result.clickMeConfigs = ClickMeConfig.executeQuery('from ClickMeConfig where contextOrg = :contextOrg and clickMeType = :clickMeType order by configOrder', [contextOrg: result.contextOrg, clickMeType: params.tab])
+        result.clickMeConfigsAllCount = ClickMeConfig.executeQuery('select count(*) from ClickMeConfig where contextOrg = :contextOrg ', [contextOrg: result.contextOrg])[0]
+
+        [status: STATUS_OK, result: result]
+    }
+
+    Map<String, Object> exportConfigsActions(MyInstitutionController controller, GrailsParameterMap params) {
+        Map<String, Object> result = getResultGenerics(controller, params)
+        result.tab = params.tab ?: ExportClickMeService.ADDRESSBOOK
+        if(result.editable) {
+            if (params.cmd == 'delete' && params.id) {
+                ClickMeConfig clickMeConfig = ClickMeConfig.findByContextOrgAndId(result.contextOrg, params.id)
+
+                if (clickMeConfig) {
+                    clickMeConfig.delete()
+                }
+            }
+            if (params.cmd in ['moveUp', 'moveDown'] && params.id) {
+                ClickMeConfig toMoveClickMeConfig = ClickMeConfig.findByContextOrgAndId(result.contextOrg, params.id)
+                Set<ClickMeConfig> sequence = ClickMeConfig.executeQuery('select cmc from ClickMeConfig as cmc where cmc.contextOrg = :contextOrg and cmc.clickMeType = :clickMeType order by cmc.configOrder', [contextOrg: result.contextOrg, clickMeType: params.tab]) as Set<ClickMeConfig>
+
+                int idx = sequence.findIndexOf { it.id == toMoveClickMeConfig.id }
+                int pos = toMoveClickMeConfig.configOrder
+                ClickMeConfig toMoveClickMeConfig2
+
+                if (params.cmd == 'moveUp') {
+                    toMoveClickMeConfig2 = sequence.getAt(idx - 1)
+                } else if (params.cmd == 'moveDown') {
+                    toMoveClickMeConfig2 = sequence.getAt(idx + 1)
+                }
+
+                if (toMoveClickMeConfig2) {
+                    toMoveClickMeConfig.configOrder = toMoveClickMeConfig2.configOrder
+                    toMoveClickMeConfig.save()
+                    toMoveClickMeConfig2.configOrder = pos
+                    toMoveClickMeConfig2.save()
+                }
+            }
+
+        }
+        [status: STATUS_OK, result: result]
+    }
+
+
     //--------------------------------------------- helper section -------------------------------------------------
 
     /**

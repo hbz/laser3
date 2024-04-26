@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Package" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.Package" %>
 <laser:htmlStart message="package.show.nav.current" />
 
 <ui:breadcrumbs>
@@ -27,7 +27,7 @@
         --%>
         <g:if test="${num_tipp_rows < 1000000}">
             <ui:exportDropdownItem>
-                <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: 'tipps']"/>
+                <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.TIPPS]"/>
             </ui:exportDropdownItem>
         </g:if>
         <g:else>

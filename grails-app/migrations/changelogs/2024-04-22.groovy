@@ -63,4 +63,10 @@ databaseChangeLog = {
         }
     }
 
+    changeSet(author: "djebeniani (generated)", id: "1713471812092-5") {
+        addColumn(tableName: "click_me_config") {
+            column(name: "cmc_note", type: "TEXT")
+        }
+    }
+
 }
