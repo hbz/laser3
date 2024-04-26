@@ -37,9 +37,6 @@
                                 <th>Abruf o.k.?</th>
                             </tr>
                             <g:each in="${Subscription.executeQuery('select new map(sub.id as memberSubId, org.sortname as memberName, org.id as memberId, ci as customerIdentifier) from CustomerIdentifier ci, OrgRole oo join oo.org org join oo.sub sub where ci.customer = org and sub.instanceOf = :parent and oo.roleType in (:subscrRoles) and ci.platform.gokbId = :platform order by ci.customer.sortname asc', [parent: subscription, platform: platform.uuid, subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])}" var="row">
-                                <%
-                                    String queryArguments = exportService.buildQueryArguments(platformSushiConfig, platform, row.customerIdentifier)
-                                %>
                                 <tr>
                                     <td>
                                         <g:link action="stats" id="${row.memberSubId}">${row.memberName}</g:link>
@@ -50,7 +47,7 @@
                                     <td>
                                         <ui:xEditable owner="${row.customerIdentifier}" field="requestorKey"/>
                                     </td>
-                                    <td id="${genericOIDService.getHtmlOID(row.customerIdentifier)}" class="sushiConnectionCheck" data-revision="${platformSushiConfig.revision}" data-statsUrl="${platformSushiConfig.statsUrl}" data-queryArguments="${queryArguments}">
+                                    <td id="${genericOIDService.getHtmlOID(row.customerIdentifier)}" class="sushiConnectionCheck" data-org="${row.memberId}" data-platform="${platform.id}" data-customerId="${row.customerIdentifier.value}" data-requestorId="${row.customerIdentifier.requestorKey}">
 
                                     </td>
                                 </tr>
@@ -281,8 +278,9 @@
                 if(currMonth < 10)
                     currMonth = '0'+currMonth;
                 months.push(currDate.getFullYear()+'-'+currMonth);
-                if(currDate.getFullYear()+'-'+currMonth === startDate)
+                if(currDate.getFullYear()+'-'+currMonth === startDate) {
                     startIndex = monthIndex;
+                }
                 if(currDate.getFullYear()+'-'+currMonth === endDate)
                     endIndex = monthIndex;
                 currDate.setMonth(currDate.getMonth()+1);
@@ -291,8 +289,6 @@
             $("#selDate").slider({
                 min: 0,
                 max: months.length-1,
-                start: startIndex,
-                end: endIndex,
                 step: step,
                 showLabelTicks: 'always',
                 interpretLabel: function(value) {
@@ -315,29 +311,25 @@
                     $('#selDate .thumb[data-tooltip=' + end + ']').attr('data-tooltip', JSPC.app.stats_slider_date_format( months[end], 'long' ))
                     JSPC.app.stats_slider_color(start, end)
                 }
-            }).slider('set value', null);
+            }).slider('set rangeValue', startIndex, endIndex);
 
             $(".sushiConnectionCheck").each(function(i) {
                 let cell = $(this);
                 let data = {
-                    statsUrl: cell.attr("data-statsUrl"),
-                    queryArguments: $(this).attr("data-queryArguments"),
-                    revision: cell.attr("data-revision")
+                    org: cell.attr("data-org"),
+                    platform: cell.attr("data-platform"),
+                    customerId: cell.attr("data-customerId"),
+                    requestorId: cell.attr("data-requestorId")
                 };
-                setTimeout(function(){
                     $.ajax({
                         url: "<g:createLink controller="ajaxJson" action="checkSUSHIConnection"/>",
                         data: data
                     }).done(function(response) {
-                        if(response.success === true) {
-                            cell.html('<i class="ui circular inverted icon green check"></i>');
-                        }
-                        else {
+                        if(response.error === true) {
                             cell.html('<span class="la-popup-tooltip" data-content="'+response.message+'"><i class="ui circular inverted icon red times"></i></span>');
                             r2d2.initDynamicUiStuff('#'+cell.attr('id'));
                         }
                     });
-                }, 1000 * i);
             });
             $("#reportType").on('change', function() {
                 <g:applyCodec encodeAs="none">

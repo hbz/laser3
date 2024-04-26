@@ -2402,7 +2402,7 @@ class ExportService {
 						}
 					}
 					//log.debug(requestBody.toString())
-					result.putAll(statsSyncService.fetchXMLData(statsSource.statsUrl, requestBody))
+					result.putAll(statsSyncService.fetchXMLData(statsSource.statsUrl, customerId, requestBody))
 				}
 				else if(statsSource.revision == 'counter5') {
 					String url = statsSource.statsUrl + "/${configMap.reportType}"
@@ -2413,7 +2413,7 @@ class ExportService {
 					url += configMap.accessTypes ? "&access_type=${configMap.accessTypes}" : ""
 					url += configMap.accessMethods ? "&access_method=${configMap.accessMethods}" : ""
 					url += "&begin_date=${monthFormatter.format(configMap.startDate)}&end_date=${monthFormatter.format(configMap.endDate)}"
-					result.putAll(statsSyncService.fetchJSONData(url))
+					result.putAll(statsSyncService.fetchJSONData(url, customerId))
 				}
 			}
 		}
