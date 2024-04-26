@@ -48,15 +48,15 @@ class OrganisationFilter extends BaseFilter {
                         [orgStatus: RDStore.ORG_STATUS_DELETED, orgType: RDStore.OT_INSTITUTION]
                 )
                 break
-            case 'all-provider':
-                queryParams.orgIdList = _getAllProviderAndAgencyIdList( [RDStore.OT_PROVIDER] )
-                break
-            case 'all-agency':
-                queryParams.orgIdList = _getAllProviderAndAgencyIdList( [RDStore.OT_AGENCY] )
-                break
-            case 'all-providerAndAgency':
-                queryParams.orgIdList = _getAllProviderAndAgencyIdList( [RDStore.OT_PROVIDER, RDStore.OT_AGENCY] )
-                break
+//            case 'all-provider':
+//                queryParams.orgIdList = _getAllProviderAndAgencyIdList( [RDStore.OT_PROVIDER] )
+//                break
+//            case 'all-agency':
+//                queryParams.orgIdList = _getAllProviderAndAgencyIdList( [RDStore.OT_AGENCY] )
+//                break
+//            case 'all-providerAndAgency':
+//                queryParams.orgIdList = _getAllProviderAndAgencyIdList( [RDStore.OT_PROVIDER, RDStore.OT_AGENCY] )
+//                break
             case 'my-inst':
                 queryParams.orgIdList = Org.executeQuery(
                         'select o.id from Org as o, Combo as c where c.fromOrg = o and c.toOrg = :org and c.type = :comboType and (o.status is null or o.status != :orgStatus)',
@@ -91,15 +91,15 @@ where (consOr.roleType = :consRoleType)
                 ) )
                 queryParams.orgIdList = queryParams.orgIdList.unique()
                 break
-            case 'my-provider':
-                queryParams.orgIdList = _getMyProviderAndAgencyIdList( [RDStore.OR_PROVIDER] )
-                break
-            case 'my-agency':
-                queryParams.orgIdList = _getMyProviderAndAgencyIdList( [RDStore.OR_AGENCY] )
-                break
-            case 'my-providerAndAgency':
-                queryParams.orgIdList = _getMyProviderAndAgencyIdList( [RDStore.OR_PROVIDER, RDStore.OR_AGENCY] )
-                break
+//            case 'my-provider':
+//                queryParams.orgIdList = _getMyProviderAndAgencyIdList( [RDStore.OR_PROVIDER] )
+//                break
+//            case 'my-agency':
+//                queryParams.orgIdList = _getMyProviderAndAgencyIdList( [RDStore.OR_AGENCY] )
+//                break
+//            case 'my-providerAndAgency':
+//                queryParams.orgIdList = _getMyProviderAndAgencyIdList( [RDStore.OR_PROVIDER, RDStore.OR_AGENCY] )
+//                break
         }
 
         String cmbKey = BaseConfig.FILTER_PREFIX + 'org_'
@@ -218,32 +218,32 @@ where (consOr.roleType = :consRoleType)
         filterResult
     }
 
-    static List<Long> _getAllProviderAndAgencyIdList(List orgTypes) {
-
-        List<Long> idList = Org.executeQuery(
-                'select o.id from Org o where (o.status is null or o.status != :orgStatus) and exists (select ot from o.orgType ot where ot in (:orgTypes))',
-                [orgStatus: RDStore.ORG_STATUS_DELETED, orgTypes: orgTypes]
-        )
-        idList
-    }
-
-    static List<Long> _getMyProviderAndAgencyIdList(List roleTypes) {
-
-        ContextService contextService = BeanStore.getContextService()
-
-        List<Long> idList = Org.executeQuery( '''
-            select distinct(prov.org.id) from OrgRole prov 
-                join prov.sub sub 
-                join sub.orgRelations subOr 
-            where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :org and subOr.roleType in (:subRoleTypes))
-                and (prov.org.status is null or prov.org.status != :orgStatus) 
-            ''',
-            [
-                    org: contextService.getOrg(), orgStatus: RDStore.ORG_STATUS_DELETED,
-                    subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA],
-                    provRoleTypes: roleTypes
-            ]
-        )
-        idList
-    }
+//    static List<Long> _getAllProviderAndAgencyIdList(List orgTypes) {
+//
+//        List<Long> idList = Org.executeQuery(
+//                'select o.id from Org o where (o.status is null or o.status != :orgStatus) and exists (select ot from o.orgType ot where ot in (:orgTypes))',
+//                [orgStatus: RDStore.ORG_STATUS_DELETED, orgTypes: orgTypes]
+//        )
+//        idList
+//    }
+//
+//    static List<Long> _getMyProviderAndAgencyIdList(List roleTypes) {
+//
+//        ContextService contextService = BeanStore.getContextService()
+//
+//        List<Long> idList = Org.executeQuery( '''
+//            select distinct(prov.org.id) from OrgRole prov
+//                join prov.sub sub
+//                join sub.orgRelations subOr
+//            where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :org and subOr.roleType in (:subRoleTypes))
+//                and (prov.org.status is null or prov.org.status != :orgStatus)
+//            ''',
+//            [
+//                    org: contextService.getOrg(), orgStatus: RDStore.ORG_STATUS_DELETED,
+//                    subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA],
+//                    provRoleTypes: roleTypes
+//            ]
+//        )
+//        idList
+//    }
 }

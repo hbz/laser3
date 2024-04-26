@@ -30,19 +30,19 @@ class PackageXCfg extends BaseConfig {
                             'subscriptionStatus'        : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_SUBSCRIPTION_STATUS, spec: BaseConfig.FIELD_IS_MULTIPLE ],
                             'paymentType'               : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
                             'nominalPlatform'           : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_PACKAGE_PLATFORM, spec: BaseConfig.FIELD_IS_MULTIPLE ],
-                            'orProvider'                : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_PACKAGE_OR_PROVIDER, spec: BaseConfig.FIELD_IS_MULTIPLE ],
+//                            'orProvider'                : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_PACKAGE_OR_PROVIDER, spec: BaseConfig.FIELD_IS_MULTIPLE ],
                             'scope'                     : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ]
                     ],
                     filter : [
                             default: [
                                     [ 'contentType', 'packageStatus' ],
-                                    [ 'file', 'orProvider', 'nominalPlatform' ],
+                                    [ 'file', /* 'orProvider', */ 'nominalPlatform' ],
                                     [ 'breakable', 'scope' ],
                                     [ 'paymentType', 'openAccess']
                             ],
                             my: [
                                     [ 'contentType',  'subscriptionStatus', 'packageStatus' ],
-                                    [ 'file', 'orProvider', 'nominalPlatform' ],
+                                    [ 'file', /* 'orProvider', */ 'nominalPlatform' ],
                                     [ 'breakable', 'scope' ],
                                     [ 'paymentType', 'openAccess']
                             ]
@@ -75,21 +75,21 @@ class PackageXCfg extends BaseConfig {
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
                                     ],
-                                    'package-x-provider' : [
-                                            detailsTemplate     : 'package',
-                                            chartTemplate       : '2axis2values_nonMatches',
-                                            chartLabels         : [ 'x.providers.1', 'x.providers.2' ]
-                                    ],
+//                                    'package-x-provider' : [
+//                                            detailsTemplate     : 'package',
+//                                            chartTemplate       : '2axis2values_nonMatches',
+//                                            chartLabels         : [ 'x.providers.1', 'x.providers.2' ]
+//                                    ],
                                     'package-x-platform' : [    // TODO - moved from query !
                                             detailsTemplate     : 'package',
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
                                     ],
-                                    'package-x-platformProvider' : [
-                                            detailsTemplate     : 'package',
-                                            chartTemplate       : 'generic',
-                                            chartLabels         : []
-                                    ],
+//                                    'package-x-platformProvider' : [
+//                                            detailsTemplate     : 'package',
+//                                            chartTemplate       : 'generic',
+//                                            chartLabels         : []
+//                                    ],
                                     'package-x-curatoryGroup' : [ // ES
                                             detailsTemplate     : 'package',
                                             chartTemplate       : 'generic',
@@ -124,27 +124,27 @@ class PackageXCfg extends BaseConfig {
                     ]
             ],
 
-            provider : [
-                    meta : [
-                            class:  Org,
-                            cfgKey: BaseConfig.KEY_PACKAGE
-                    ],
-                    source : [
-                            'filter-restricting-provider'
-                    ],
-                    fields : [ ],
-                    filter : [
-                            default : []
-                    ],
-                    query : [
-                            default : [
-                                    provider : [
-                                            'provider-orgType' : [ 'generic.org.orgType' ],
-                                            'provider-*' :       [ 'generic.all' ],
-                                    ]
-                            ]
-                    ]
-            ],
+//            provider : [
+//                    meta : [
+//                            class:  Org,
+//                            cfgKey: BaseConfig.KEY_PACKAGE
+//                    ],
+//                    source : [
+//                            'filter-restricting-provider'
+//                    ],
+//                    fields : [ ],
+//                    filter : [
+//                            default : []
+//                    ],
+//                    query : [
+//                            default : [
+//                                    provider : [
+//                                            'provider-orgType' : [ 'generic.org.orgType' ],
+//                                            'provider-*' :       [ 'generic.all' ],
+//                                    ]
+//                            ]
+//                    ]
+//            ],
 
             platform : [
                     meta : [
@@ -163,7 +163,7 @@ class PackageXCfg extends BaseConfig {
                                     platform : [
                                             'platform-serviceProvider' :    [ '@' ],
                                             'platform-softwareProvider' :   [ '@' ],
-                                            'platform-org' :                [ '@' ],    // KEY_PLATFORM -> distribution
+//                                            'platform-org' :                [ '@' ],    // KEY_PLATFORM -> distribution
                                             'platform-primaryUrl' :         [ '@' ],    // KEY_PLATFORM -> distribution
                                             'platform-status' :             [ 'generic.plt.status' ],
                                             'platform-*' :                  [ 'generic.all' ]
@@ -182,7 +182,7 @@ class PackageXCfg extends BaseConfig {
             'contentType'               : [ dtc: false ],
 
             'packageStatus'             : [ dtc: false ],
-            'orProvider'                : [ dtc: true  ],
+//            'orProvider'                : [ dtc: true  ],
             'nominalPlatform'           : [ dtc: true  ],
             'file'                      : [ dtc: false ],
             '_+_currentTitles'          : [ dtc: true  ],    // virtual

@@ -95,27 +95,27 @@ class SubscriptionConsCfg extends BaseConfig {
                                              chartTemplate       : 'generic',
                                              chartLabels         : []
                                      ],
-                                     'subscription-x-provider' : [
-                                             detailsTemplate     : 'subscription',
-                                             chartTemplate       : 'generic',
-                                             chartLabels         : []
-                                     ],
-                                     'subscription-x-memberProvider' : [
-                                             detailsTemplate    : 'subscription',
-                                             chartTemplate      : 'generic',
-                                             chartLabels        : []
-                                     ],
+//                                     'subscription-x-provider' : [
+//                                             detailsTemplate     : 'subscription',
+//                                             chartTemplate       : 'generic',
+//                                             chartLabels         : []
+//                                     ],
+//                                     'subscription-x-memberProvider' : [
+//                                             detailsTemplate    : 'subscription',
+//                                             chartTemplate      : 'generic',
+//                                             chartLabels        : []
+//                                     ],
 //                                     'subscription-x-memberCost-TODO' : [
 //                                             label              : 'Anbieter → Lizenz → Teilnehmerkosten',
 //                                             detailsTemplate    : 'TODO',
 //                                             chartTemplate      : 'generic',
 //                                             chartLabels        : []
 //                                     ],
-                                     'subscription-x-platform' : [
-                                             detailsTemplate     : 'subscription',
-                                             chartTemplate       : '2axis2values_nonMatches',
-                                             chartLabels         : [ 'x.platforms.1', 'x.platforms.2' ]
-                                     ],
+//                                     'subscription-x-platform' : [
+//                                             detailsTemplate     : 'subscription',
+//                                             chartTemplate       : '2axis2values_nonMatches',
+//                                             chartLabels         : [ 'x.platforms.1', 'x.platforms.2' ]
+//                                     ],
                                      'subscription-x-memberSubscription' : [
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : 'generic',
@@ -228,58 +228,58 @@ class SubscriptionConsCfg extends BaseConfig {
                     ]
             ],
 
-            provider : [
-                    meta : [
-                            class:  Org,
-                            cfgKey: BaseConfig.KEY_SUBSCRIPTION
-                    ],
-                    source : [
-                            'depending-provider'
-                    ],
-                    fields : [
-                            'country'   : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
-                            'region'    : [type: BaseConfig.FIELD_TYPE_REFDATA, spec: BaseConfig.FIELD_IS_VIRTUAL ],
-                            'orgType'   : [ type: BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE ]
-                    ],
-                    filter : [
-                            default : []
-                    ],
-                    query : [
-                            default : [
-                                    provider : [
-                                            'provider-orgType' : [ 'generic.org.orgType' ],
-                                            'provider-*' :       [ 'generic.all' ]
-                                            //'provider-country',
-                                            //'provider-region'
-                                    ]
-                            ]
-                    ]
-            ],
+//            provider : [
+//                    meta : [
+//                            class:  Org,
+//                            cfgKey: BaseConfig.KEY_SUBSCRIPTION
+//                    ],
+//                    source : [
+//                            'depending-provider'
+//                    ],
+//                    fields : [
+//                            'country'   : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
+//                            'region'    : [type: BaseConfig.FIELD_TYPE_REFDATA, spec: BaseConfig.FIELD_IS_VIRTUAL ],
+//                            'orgType'   : [ type: BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE ]
+//                    ],
+//                    filter : [
+//                            default : []
+//                    ],
+//                    query : [
+//                            default : [
+//                                    provider : [
+//                                            'provider-orgType' : [ 'generic.org.orgType' ],
+//                                            'provider-*' :       [ 'generic.all' ]
+//                                            //'provider-country',
+//                                            //'provider-region'
+//                                    ]
+//                            ]
+//                    ]
+//            ],
 
-            agency : [
-                    meta : [
-                            class:  Org,
-                            cfgKey: BaseConfig.KEY_SUBSCRIPTION
-                    ],
-                    source : [
-                            'depending-agency'
-                    ],
-                    fields : [
-                            'country'   : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
-                            'region'    : [type: BaseConfig.FIELD_TYPE_REFDATA, spec: BaseConfig.FIELD_IS_VIRTUAL ],
-                            'orgType'   : [ type: BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE ]
-                    ],
-                    filter : [
-                            default : []
-                    ],
-                    query : [
-                            default : [
-                                    agency : [
-                                            'agency-orgType' : [ 'generic.org.orgType' ],
-                                            'agency-*' :       [ 'generic.all' ],
-                                    ]
-                            ]
-                    ]
-            ]
+//            agency : [
+//                    meta : [
+//                            class:  Org,
+//                            cfgKey: BaseConfig.KEY_SUBSCRIPTION
+//                    ],
+//                    source : [
+//                            'depending-agency'
+//                    ],
+//                    fields : [
+//                            'country'   : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
+//                            'region'    : [type: BaseConfig.FIELD_TYPE_REFDATA, spec: BaseConfig.FIELD_IS_VIRTUAL ],
+//                            'orgType'   : [ type: BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE ]
+//                    ],
+//                    filter : [
+//                            default : []
+//                    ],
+//                    query : [
+//                            default : [
+//                                    agency : [
+//                                            'agency-orgType' : [ 'generic.org.orgType' ],
+//                                            'agency-*' :       [ 'generic.all' ],
+//                                    ]
+//                            ]
+//                    ]
+//            ]
     ]
 }

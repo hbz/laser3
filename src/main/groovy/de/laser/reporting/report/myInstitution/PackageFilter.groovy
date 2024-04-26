@@ -114,17 +114,17 @@ class PackageFilter extends BaseFilter {
 
                         filterLabelValue = Platform.getAll(pList).collect{ it.name }
                     }
-                    else if (p == 'orProvider') {
-                        Long[] pList = Params.getLongList(params, key)
-
-                        queryParts.add('OrgRole ro')
-                        whereParts.add('ro.pkg = pkg and ro.org.id in (:p' + (++pCount) + ')')
-                        queryParams.put('p' + pCount, pList)
-                        whereParts.add('ro.roleType in (:p'  + (++pCount) + ')')
-                        queryParams.put('p' + pCount, [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER])
-
-                        filterLabelValue = Org.getAll(pList).collect{ it.name }
-                    }
+//                    else if (p == 'orProvider') {
+//                        Long[] pList = Params.getLongList(params, key)
+//
+//                        queryParts.add('OrgRole ro')
+//                        whereParts.add('ro.pkg = pkg and ro.org.id in (:p' + (++pCount) + ')')
+//                        queryParams.put('p' + pCount, pList)
+//                        whereParts.add('ro.roleType in (:p'  + (++pCount) + ')')
+//                        queryParams.put('p' + pCount, [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER])
+//
+//                        filterLabelValue = Org.getAll(pList).collect{ it.name }
+//                    }
                     else if (p == 'subscriptionStatus') {
                         Long[] pList = Params.getLongList(params, key)
 
@@ -170,10 +170,11 @@ class PackageFilter extends BaseFilter {
 
         BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).keySet().each{ pk ->
             if (pk != 'base') {
-                if (pk == 'provider') {
-                    _handleInternalOrgFilter(pk, filterResult)
-                }
-                else if (pk == 'platform') {
+//                if (pk == 'provider') {
+//                    _handleInternalOrgFilter(pk, filterResult)
+//                }
+//                else
+                if (pk == 'platform') {
                     _handleInternalPlatformFilter(pk, filterResult)
                 }
             }
@@ -189,15 +190,15 @@ class PackageFilter extends BaseFilter {
         filterResult
     }
 
-    static void _handleInternalOrgFilter(String partKey, Map<String, Object> filterResult) {
-        String queryBase = 'select distinct (org.id) from OrgRole ro join ro.pkg pkg join ro.org org'
-        List<String> whereParts = [ 'pkg.id in (:packageIdList)', 'ro.roleType in (:roleTypes)' ]
-
-        Map<String, Object> queryParams = [ packageIdList: filterResult.data.packageIdList, roleTypes: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER] ]
-
-        String query = queryBase + ' where ' + whereParts.join(' and ')
-        filterResult.data.put( partKey + 'IdList', queryParams.packageIdList ? Org.executeQuery(query, queryParams) : [] )
-    }
+//    static void _handleInternalOrgFilter(String partKey, Map<String, Object> filterResult) {
+//        String queryBase = 'select distinct (org.id) from OrgRole ro join ro.pkg pkg join ro.org org'
+//        List<String> whereParts = [ 'pkg.id in (:packageIdList)', 'ro.roleType in (:roleTypes)' ]
+//
+//        Map<String, Object> queryParams = [ packageIdList: filterResult.data.packageIdList, roleTypes: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER] ]
+//
+//        String query = queryBase + ' where ' + whereParts.join(' and ')
+//        filterResult.data.put( partKey + 'IdList', queryParams.packageIdList ? Org.executeQuery(query, queryParams) : [] )
+//    }
 
     static void _handleInternalPlatformFilter(String partKey, Map<String, Object> filterResult) {
         String queryBase = 'select distinct (plt.id) from Package pkg join pkg.nominalPlatform plt'

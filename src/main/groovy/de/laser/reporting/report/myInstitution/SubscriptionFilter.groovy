@@ -350,18 +350,18 @@ class SubscriptionFilter extends BaseFilter {
         if (partKey == 'consortium') {
             queryParams.put( 'roleTypes', [RDStore.OR_SUBSCRIPTION_CONSORTIA] )
         }
-        if (partKey == 'provider') {
-            queryParams.put( 'roleTypes', [RDStore.OR_PROVIDER] )
-        }
-        if (partKey == 'agency') {
-            queryParams.put( 'roleTypes', [RDStore.OR_AGENCY] )
-        }
+//        if (partKey == 'provider') {
+//            queryParams.put( 'roleTypes', [RDStore.OR_PROVIDER] )
+//        }
+//        if (partKey == 'agency') {
+//            queryParams.put( 'roleTypes', [RDStore.OR_AGENCY] )
+//        }
 
         String cmbKey = BaseConfig.FILTER_PREFIX + partKey + '_'
         int pCount = 0
 
         getCurrentFilterKeys(params, cmbKey).each { key ->
-            List<String> validPartKeys = ['member', 'consortium', 'provider', 'agency']
+            List<String> validPartKeys = ['member', 'consortium' /*, 'provider', 'agency' */]
 
             if (params.get(key)) {
                 String p = key.replaceFirst(cmbKey,'')

@@ -15,13 +15,13 @@ class OrganisationConsCfg extends BaseConfig {
                     source : [
                             'all-org',
                             'all-inst',
-                            'all-provider',
-                            'all-agency',
-                            'all-providerAndAgency',
+//                            'all-provider',
+//                            'all-agency',
+//                            'all-providerAndAgency',
                             'my-inst',
-                            'my-provider',
-                            'my-agency',
-                            'my-providerAndAgency'
+//                            'my-provider',
+//                            'my-agency',
+//                            'my-providerAndAgency'
                     ],
                     fields : [
                             'country'           : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
@@ -46,9 +46,9 @@ class OrganisationConsCfg extends BaseConfig {
                                     [ 'customerType', 'legalInfo' ],
                                     [ 'propertyKey', 'propertyValue' ]
                             ],
-                            provider : [ // TODO : provider != agency
-                                    // all disabled
-                            ]
+//                            provider : [ // TODO : provider != agency
+//                                    // all disabled
+//                            ]
                     ],
                     query : [
                             default : [
@@ -65,21 +65,21 @@ class OrganisationConsCfg extends BaseConfig {
                                             'org-*' :               [ 'generic.all' ]
                                     ]
                             ],
-                            providerAndAgency : [
-                                    org : [
-                                            'org-orgType': [ 'generic.org.orgType' ]
-                                    ]
-                            ],
-                            provider : [
-                                    org : [
-                                            'org-orgType': [ 'generic.org.orgType' ]
-                                    ]
-                            ],
-                            agency : [
-                                    org : [
-                                            'org-orgType': [ 'generic.org.orgType' ]
-                                    ]
-                            ]
+//                            providerAndAgency : [
+//                                    org : [
+//                                            'org-orgType': [ 'generic.org.orgType' ]
+//                                    ]
+//                            ],
+//                            provider : [
+//                                    org : [
+//                                            'org-orgType': [ 'generic.org.orgType' ]
+//                                    ]
+//                            ],
+//                            agency : [
+//                                    org : [
+//                                            'org-orgType': [ 'generic.org.orgType' ]
+//                                    ]
+//                            ]
                     ],
                     distribution : [
                             default : [

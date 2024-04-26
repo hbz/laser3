@@ -32,17 +32,17 @@ class PlatformQuery extends BaseQuery {
 
         //println 'PlatformQuery.query() -> ' + params.query + ' : ' + suffix
 
-        Closure sharedQuery_platform_org = {
-            // println 'sharedQuery_platform_org()'
-            handleGenericAllQuery(
-                    params.query,
-                    'select org.name, org.name, count(*) from Platform plt join plt.org org where plt.id in (:idList) group by org.name order by org.name',
-                    'select plt.id from Platform plt where plt.id in (:idList) and plt.org.name = :d order by plt.name',
-                    idList,
-                    result
-            )
-            handleGenericNonMatchingData(params.query, 'select plt.id from Platform plt where plt.id in (:idList) and plt.org is null order by plt.name', idList, result)
-        }
+//        Closure sharedQuery_platform_org = {
+//            // println 'sharedQuery_platform_org()'
+//            handleGenericAllQuery(
+//                    params.query,
+//                    'select org.name, org.name, count(*) from Platform plt join plt.org org where plt.id in (:idList) group by org.name order by org.name',
+//                    'select plt.id from Platform plt where plt.id in (:idList) and plt.org.name = :d order by plt.name',
+//                    idList,
+//                    result
+//            )
+//            handleGenericNonMatchingData(params.query, 'select plt.id from Platform plt where plt.id in (:idList) and plt.org is null order by plt.name', idList, result)
+//        }
         Closure sharedQuery_platform_primaryUrl = {
             // println 'sharedQuery_platform_primaryUrl()'
             handleGenericAllQuery(
@@ -92,9 +92,9 @@ class PlatformQuery extends BaseQuery {
 
             _processSimpleRefdataQuery(params.query, suffix, idList, result)
         }
-        else if ( suffix in ['org']) {
-            sharedQuery_platform_org()
-        }
+//        else if ( suffix in ['org']) {
+//            sharedQuery_platform_org()
+//        }
         else if ( suffix in ['primaryUrl']) {
             sharedQuery_platform_primaryUrl()
         }
@@ -152,9 +152,9 @@ class PlatformQuery extends BaseQuery {
                 handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_DATA_LABEL, (idList - orphanedIdList - positiveIdSet.toList()), result)
                 _handleGenericNoCounterpartData_TMP(params.query, orphanedIdList, result)
             }
-            else if (params.query in ['platform-x-org']) {
-                sharedQuery_platform_org()
-            }
+//            else if (params.query in ['platform-x-org']) {
+//                sharedQuery_platform_org()
+//            }
             else if (params.query in ['platform-x-primaryUrl']) {
                 sharedQuery_platform_primaryUrl()
             }

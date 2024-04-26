@@ -94,11 +94,18 @@ class BaseConfig {
     static String CI_CTX_IE_SUBSCRIPTION        = 'issueEntitlement$subscription'       // IE
 
     static List<String> FILTER = [
-            KEY_ORGANISATION, /* KEY_VENDOR, KEY_PROVIDER,'*/ KEY_SUBSCRIPTION, KEY_LICENSE, KEY_PACKAGE, KEY_PLATFORM //, KEY_ISSUEENTITLEMENT // 'costItem'
+            KEY_ORGANISATION,
+            // KEY_VENDOR,
+            // KEY_PROVIDER,
+            KEY_SUBSCRIPTION,
+            KEY_LICENSE,
+            KEY_PACKAGE,
+            KEY_PLATFORM //, KEY_ISSUEENTITLEMENT // 'costItem'
     ]
 
     static List<String> CHARTS = [
-            CHART_BAR, CHART_PIE
+            CHART_BAR,
+            CHART_PIE
     ]
 
     /**

@@ -14,13 +14,13 @@ class OrganisationInstCfg extends BaseConfig {
                     ],
                     source : [
                             'all-consortium',
-                            'all-provider',
-                            'all-agency',
-                            'all-providerAndAgency',
+//                            'all-provider',
+//                            'all-agency',
+//                            'all-providerAndAgency',
                             'my-consortium',
-                            'my-provider',
-                            'my-agency',
-                            'my-providerAndAgency'
+//                            'my-provider',
+//                            'my-agency',
+//                            'my-providerAndAgency'
                     ],
                     fields : [
                             'country'           : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
@@ -59,21 +59,21 @@ class OrganisationInstCfg extends BaseConfig {
                                            'org-*' :                [ 'generic.all' ]
                                     ]
                             ],
-                            providerAndAgency : [
-                                    org : [
-                                            'org-orgType': [ 'generic.org.orgType' ]
-                                    ]
-                            ],
-                            provider : [
-                                    org : [
-                                            'org-orgType': [ 'generic.org.orgType' ]
-                                    ]
-                            ],
-                            agency : [
-                                    org : [
-                                            'org-orgType': [ 'generic.org.orgType' ]
-                                    ]
-                            ]
+//                            providerAndAgency : [
+//                                    org : [
+//                                            'org-orgType': [ 'generic.org.orgType' ]
+//                                    ]
+//                            ],
+//                            provider : [
+//                                    org : [
+//                                            'org-orgType': [ 'generic.org.orgType' ]
+//                                    ]
+//                            ],
+//                            agency : [
+//                                    org : [
+//                                            'org-orgType': [ 'generic.org.orgType' ]
+//                                    ]
+//                            ]
                     ],
                     distribution : [
                             default : [
