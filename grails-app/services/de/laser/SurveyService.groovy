@@ -2014,4 +2014,78 @@ class SurveyService {
                 'OR dateValue is not null)', [surveyConfig: surveyConfig, type: propertyDefinition, orgs: orgs])[0]
     }
 
+    Map selectSurveyMembersWithImport(InputStream stream) {
+
+        Integer processCount = 0
+        Integer processRow = 0
+
+        List orgList = []
+
+        //now, assemble the identifiers available to highlight
+        Map<String, IdentifierNamespace> namespaces = [gnd  : IdentifierNamespace.findByNsAndNsType('gnd_org_nr', Org.class.name),
+                                                       isil: IdentifierNamespace.findByNsAndNsType('ISIL', Org.class.name),
+                                                       ror: IdentifierNamespace.findByNsAndNsType('ROR ID',Org.class.name),
+                                                       wib : IdentifierNamespace.findByNsAndNsType('wibid', Org.class.name)]
+
+        ArrayList<String> rows = stream.text.split('\n')
+        Map<String, Integer> colMap = [gndCol: -1, isilCol: -1, rorCol: -1, wibCol: -1,
+                                       startDateCol: -1, endDateCol: -1, ]
+
+        //read off first line of KBART file
+        List titleRow = rows.remove(0).split('\t'), wrongOrgs = [], truncatedRows = []
+        titleRow.eachWithIndex { headerCol, int c ->
+            switch (headerCol.toLowerCase().trim()) {
+                case "gnd-nr": colMap.gndCol = c
+                    break
+                case "isil": colMap.isilCol = c
+                    break
+                case "ror-id": colMap.rorCol = c
+                    break
+                case "wib-id": colMap.wibCol = c
+                    break
+            }
+        }
+        rows.eachWithIndex { row, int i ->
+            processRow++
+            log.debug("now processing rows ${i}")
+            ArrayList<String> cols = row.split('\t', -1)
+            if(cols.size() == titleRow.size()) {
+                Org match = null
+                if (colMap.wibCol >= 0 && cols[colMap.wibCol] != null && !cols[colMap.wibCol].trim().isEmpty()) {
+                    List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.status != :removed', [value: cols[colMap.wibCol].trim(), ns: namespaces.wib, removed: RDStore.TIPP_STATUS_REMOVED])
+                    if (matchList.size() == 1)
+                        match = matchList[0] as Org
+                }
+                if (!match && colMap.isilCol >= 0 && cols[colMap.isilCol] != null && !cols[colMap.isilCol].trim().isEmpty()) {
+                    List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.status != :removed', [value: cols[colMap.isilCol].trim(), ns: namespaces.isil, removed: RDStore.TIPP_STATUS_REMOVED])
+                    if (matchList.size() == 1)
+                        match = matchList[0] as Org
+                }
+                if (!match && colMap.gndCol >= 0 && cols[colMap.gndCol] != null && !cols[colMap.gndCol].trim().isEmpty()) {
+                    List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.status != :removed', [value: cols[colMap.gndCol].trim(), ns: namespaces.gnd, removed: RDStore.TIPP_STATUS_REMOVED])
+                    if (matchList.size() == 1)
+                        match = matchList[0] as Org
+                }
+                if (!match && colMap.rorCol >= 0 && cols[colMap.rorCol] != null && !cols[colMap.rorCol].trim().isEmpty()) {
+                    List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.status != :removed', [value: cols[colMap.rorCol].trim(), ns: namespaces.ror, removed: RDStore.TIPP_STATUS_REMOVED])
+                    if (matchList.size() == 1)
+                        match = matchList[0] as Org
+                }
+
+                if (match) {
+                    processCount++
+                    Map orgMap = [orgId: match.id]
+                    orgList << orgMap
+
+                } else {
+                    wrongOrgs << i+2
+                }
+            }else{
+                truncatedRows << i+2
+            }
+        }
+
+        return [orgList: orgList, processCount: processCount, processRow: processRow, wrongOrgs: wrongOrgs.join(', '), truncatedRows: truncatedRows.join(', ')]
+    }
+
 }

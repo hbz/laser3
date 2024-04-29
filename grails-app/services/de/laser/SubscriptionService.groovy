@@ -18,6 +18,7 @@ import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.properties.SubscriptionProperty
 import de.laser.remote.ApiSource
+import de.laser.stats.SushiCallError
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
@@ -1712,8 +1713,14 @@ join sub.orgRelations or_sub where
         else [success: false, code: -1]
     }
 
-    Map<String, Object> checkSUSHIConnection(String statsUrl, String queryArguments, String revision) {
+    Map<String, Object> checkSUSHIConnection(Long orgId, Long platformId, String customerId, String requestorId) {
         Map<String, Object> connSuccessful = [:]
+        List<SushiCallError> sce = SushiCallError.executeQuery('select sce from SushiCallError sce where sce.org.id = :org and sce.platform.id = :platform and sce.customerId = :customerId and sce.requestorId = :requestorId', [org: orgId, platform: platformId, customerId: customerId, requestorId: requestorId])
+        sce.each {
+            connSuccessful.error = true
+            connSuccessful.message = sce.errMess
+        }
+        /*
         if(revision == AbstractReport.COUNTER_5) {
             String url = statsUrl+queryArguments
             try {
@@ -1759,6 +1766,7 @@ join sub.orgRelations or_sub where
                 connSuccessful = [success: true]
             else connSuccessful = [success: false, code: result.code, message: result.error]
         }
+        */
         connSuccessful
     }
 

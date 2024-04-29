@@ -25,17 +25,18 @@
             </thead>
             <tbody>
             <g:each in="${keyPairs}" var="pair" status="rowno">
-
-%{-- TODO: erms-5495 --}%
-%{--                <g:set var="overwriteEditable_ci" value="${editable}" />--}%
+                <g:set var="overwriteEditable_ci" value="${editable}" />
                 <%
+                    //ERMS-5495 in conflict with ERMS-5647! overwriteEditable_ci is now set to editable; raise subject of kanban!
+                    /*
                     boolean overwriteEditable_ci = contextService.getUser().isAdmin() ||
                             userService.hasFormalAffiliation(contextService.getUser(), pair.owner, 'INST_EDITOR') ||
                             userService.hasFormalAffiliation(contextService.getUser(), pair.customer, 'INST_EDITOR')
+                     */
                 %>
                 <tr>
-                    <td>${pair.customer.sortname ?: pair.customer.name}</td>
-                    <td>${pair.getProvider()} : ${pair.platform.name}</td>
+                    <td><g:link controller="organisation" action="show" id="${pair.customer.id}">${pair.customer.sortname ?: pair.customer.name}</g:link></td>
+                    <td><g:link controller="organisation" action="show" id="${pair.getProvider().id}">${pair.getProvider()}</g:link>: <g:link controller="platform" action="show" id="${pair.platform.id}">${pair.platform.name}</g:link></td>
                     <td><ui:xEditable owner="${pair}" field="value" overwriteEditable="${overwriteEditable_ci}" /></td>
                     <td><ui:xEditable owner="${pair}" field="requestorKey" overwriteEditable="${overwriteEditable_ci}" /></td>
                     <td><ui:xEditable owner="${pair}" field="note" overwriteEditable="${overwriteEditable_ci}" /></td>

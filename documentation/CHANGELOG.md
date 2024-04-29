@@ -7,6 +7,18 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5663    26.04.2024  dev     3.4         Andreas Feature     Neue Merkmalsdefinitionen aufgenommen
+
+5662    26.04.2024  dev     3.4         Andreas Feature     Neue Referenzwerte aufgenommen
+
+5661    26.04.2024  dev     3.4         Andreas Feature     Neue Referenzwerte aufgenommen
+
+5660    26.04.2024  dev     3.4         Andreas Feature     Neue Referenzwerte aufgenommen
+
+5658    26.04.2024  dev     3.4         Andreas Feature     Keine Berechnung des Wertes, wenn Umrechnungskurs fehlt
+
+5647    26.04.2024  dev     3.4         Andreas Bug         Bearbeitbarkeit der Schlüsselpaare wiederhergestellt und Sprunglinks eingebaut
+
 5652    25.04.2024  dev     3.4         David   Feature     Reporting: Einrichtungskosten in % anzeigen
 
 5646    24.04.2024  dev     3.4         David   Feature     Marker/Beobachtungsliste: Lieferanten
