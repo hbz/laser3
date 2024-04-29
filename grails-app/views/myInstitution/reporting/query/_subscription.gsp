@@ -6,7 +6,7 @@
 
     <g:if test="${validFilterResult}">
         <ui:msg class="positive" noClose="true">
-                <laser:render template="/myInstitution/reporting/query/filterResult" model="${[filter: filter, filterResult: filterResult]}" />
+                <laser:render template="/myInstitution/reporting/query/query_filterResult" model="${[filter: filter, filterResult: filterResult]}" />
         </ui:msg>
     </g:if>
     <g:else>
@@ -16,6 +16,6 @@
     <laser:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterResult.labels]}" />
 
     <g:if test="${validFilterResult}">
-        <laser:render template="/myInstitution/reporting/query/form" model="${[cfgKey: "${BaseConfig.KEY_SUBSCRIPTION}"]}"/>
+        <laser:render template="/myInstitution/reporting/query/query_form" model="${[cfgKey: "${BaseConfig.KEY_SUBSCRIPTION}"]}"/>
     </g:if>
 </g:if>

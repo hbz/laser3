@@ -151,7 +151,7 @@ class MyInstitutionController  {
 
             PageRenderer groovyPageRenderer = BeanStore.getGroovyPageRenderer()
             cacheMap.filterCache.result = groovyPageRenderer.render(
-                    template: '/myInstitution/reporting/query/filterResult',
+                    template: '/myInstitution/reporting/query/query_filterResult',
                     model: [ filter: params.filter, filterResult: result.filterResult ]
             ).replaceAll('\\s+', ' ').trim()
 
