@@ -694,9 +694,11 @@ class SubscriptionController {
 
             if(ctrlResult.result.selectSubMembersWithImport){
                 if(ctrlResult.result.selectSubMembersWithImport.truncatedRows){
-                    flash.message = message(code: 'subscription.details.addMembers.option.selectMembersWithFile.selectProcess.truncatedRows', args: [ctrlResult.result.selectSubMembersWithImport.processCount, ctrlResult.result.selectSubMembersWithImport.processRow, ctrlResult.result.selectSubMembersWithImport.wrongOrgs ?: '0', ctrlResult.result.selectSubMembersWithImport.truncatedRows])
+                    flash.message = message(code: 'subscription.details.addMembers.option.selectMembersWithFile.selectProcess.truncatedRows', args: [ctrlResult.result.selectSubMembersWithImport.processCount, ctrlResult.result.selectSubMembersWithImport.processRow, ctrlResult.result.selectSubMembersWithImport.wrongOrgs, ctrlResult.result.selectSubMembersWithImport.truncatedRows])
+                }else if(ctrlResult.result.selectSubMembersWithImport.wrongOrgs){
+                    flash.message = message(code: 'subscription.details.addMembers.option.selectMembersWithFile.selectProcess.wrongOrgs', args: [ctrlResult.result.selectSubMembersWithImport.processCount, ctrlResult.result.selectSubMembersWithImport.processRow, ctrlResult.result.selectSubMembersWithImport.wrongOrgs])
                 }else {
-                    flash.message = message(code: 'subscription.details.addMembers.option.selectMembersWithFile.selectProcess', args: [ctrlResult.result.selectSubMembersWithImport.processCount, ctrlResult.result.selectSubMembersWithImport.processRow, ctrlResult.result.selectSubMembersWithImport.wrongOrgs ?: '0'])
+                    flash.message = message(code: 'subscription.details.addMembers.option.selectMembersWithFile.selectProcess', args: [ctrlResult.result.selectSubMembersWithImport.processCount, ctrlResult.result.selectSubMembersWithImport.processRow])
                 }
             }
 
