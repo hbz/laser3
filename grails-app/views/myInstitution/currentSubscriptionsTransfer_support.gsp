@@ -382,7 +382,7 @@
                                 </g:link>
                                 <br/>
                             </g:each>
-                            <g:each in="${s.agencies}" var="org">
+                            <g:each in="${s.vendors}" var="org">
                                 <g:link controller="organisation" action="show" id="${org.id}">
                                     ${fieldValue(bean: org, field: "name")}
                                     <g:if test="${org.sortname}">
