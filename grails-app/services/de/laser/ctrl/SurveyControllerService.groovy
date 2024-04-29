@@ -693,13 +693,10 @@ class SurveyControllerService {
                         }
                     } else {
                         Map transferWorkflowForMultiYear = [:]
-                        println(transferWorkflow)
                         if (transferWorkflow["transferWorkflowForMultiYear_${subscription.id}"]) {
                             transferWorkflowForMultiYear = transferWorkflow["transferWorkflowForMultiYear_${subscription.id}"]
-                            println(transferWorkflowForMultiYear)
                         } else {
                             transferWorkflowForMultiYear = [:]
-                            println("New")
                         }
 
                         if (params.transferMembers != null) {
@@ -1691,7 +1688,12 @@ class SurveyControllerService {
         if (!result) {
             [result: null, status: STATUS_ERROR]
         } else {
-            result.editable = (result.surveyInfo && result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
+
+            if(params.actionForSurveyProperty in ["moveUp", "moveDown"]){
+                result.editable = result.editable
+            }else {
+                result.editable = (result.surveyInfo && result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
+            }
             if(result.editable) {
                 switch (params.actionForSurveyProperty) {
                     case "setSurveyPropertyMandatory":
@@ -1780,14 +1782,11 @@ class SurveyControllerService {
                         break
                     case "moveUp":
                     case "moveDown":
+
+                        //Reorder in PropertyDefinitionGroup
                         List<Long> surveyPropertiesIDs = Params.getLongList(params, 'surveyPropertiesIDs')
-                        println(surveyPropertiesIDs)
-
                         SurveyConfigProperties surveyConfigProperties = SurveyConfigProperties.get(params.surveyPropertyConfigId)
-
                         Set<SurveyConfigProperties> sequence = SurveyConfigProperties.executeQuery("select scp from SurveyConfigProperties scp where scp.surveyConfig = :surveyConfig and scp.id in (:surveyPropertiesIDs) order by scp.propertyOrder", [surveyPropertiesIDs: surveyPropertiesIDs, surveyConfig: result.surveyConfig]) as Set<SurveyConfigProperties>
-
-                        println(sequence.propertyOrder)
 
                         int idx = sequence.findIndexOf { it.id == surveyConfigProperties.id }
                         int pos = surveyConfigProperties.propertyOrder
@@ -1805,6 +1804,41 @@ class SurveyControllerService {
                             surveyConfigProperties2.propertyOrder = pos
                             surveyConfigProperties2.save()
                         }
+
+                        //Reorder in surveyconfig
+                        LinkedHashSet groupedProperties = []
+                        List<SurveyConfigProperties> surveyProperties = []
+                        Map<String, Object> allPropDefGroups = result.surveyConfig.getCalculatedPropDefGroups(result.surveyInfo.owner)
+                        allPropDefGroups.sorted.each{ def entry ->
+                            PropertyDefinitionGroup pdg = entry[1]
+                            LinkedHashSet<SurveyConfigProperties> orderSurveyProperties = result.surveyConfig.getSurveyConfigPropertiesByPropDefGroup(pdg)
+                            if(orderSurveyProperties){
+                                orderSurveyProperties = orderSurveyProperties.sort {it.propertyOrder}
+                                surveyProperties = surveyProperties + orderSurveyProperties
+                            }
+
+                            groupedProperties << orderSurveyProperties
+                        }
+
+                        if(groupedProperties) {
+                            LinkedHashSet<SurveyConfigProperties> orderSurveyProperties = result.surveyConfig.getOrphanedSurveyConfigProperties(groupedProperties)
+                            if(orderSurveyProperties){
+                                orderSurveyProperties = orderSurveyProperties.sort {it.propertyOrder}
+                                surveyProperties = surveyProperties + orderSurveyProperties
+                            }
+                        }
+
+                        LinkedHashSet<SurveyConfigProperties> orderSurveyProperties = result.surveyConfig.getPrivateSurveyConfigProperties()
+                        if(orderSurveyProperties){
+                            orderSurveyProperties = orderSurveyProperties.sort {it.propertyOrder}
+                            surveyProperties = surveyProperties + orderSurveyProperties
+                        }
+
+                        surveyProperties.eachWithIndex{ SurveyConfigProperties surveyConfigProperty, int i ->
+                            surveyConfigProperty.propertyOrder = i+1
+                            surveyConfigProperty.save()
+                        }
+
                         break
                 }
             }
