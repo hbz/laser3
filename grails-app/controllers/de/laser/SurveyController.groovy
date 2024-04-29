@@ -1299,6 +1299,15 @@ class SurveyController {
                 return
             }
         }else {
+
+            if(ctrlResult.result.selectMembersWithImport){
+                if(ctrlResult.result.selectMembersWithImport.truncatedRows){
+                    flash.message = message(code: 'surveyParticipants.addParticipants.option.selectMembersWithFile.selectProcess.truncatedRows', args: [ctrlResult.result.selectMembersWithImport.processCount, ctrlResult.result.selectMembersWithImport.processRow, ctrlResult.result.selectMembersWithImport.wrongOrgs, ctrlResult.result.selectMembersWithImport.truncatedRows])
+                }else {
+                    flash.message = message(code: 'surveyParticipants.addParticipants.option.selectMembersWithFile.selectProcess', args: [ctrlResult.result.selectMembersWithImport.processCount, ctrlResult.result.selectMembersWithImport.processRow, ctrlResult.result.selectMembersWithImport.wrongOrgs])
+                }
+            }
+
             ctrlResult.result
             redirect action: 'surveyParticipants', id: params.id, params: [surveyConfigID: params.surveyConfigID, tab: params.actionSurveyParticipants == 'addSubMembersToSurvey' ? 'selectedSubParticipants' : params.tab]
             return

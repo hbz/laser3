@@ -63,7 +63,7 @@ import groovy.time.TimeCategory
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
 import org.springframework.dao.DataIntegrityViolationException
-
+import org.springframework.web.multipart.MultipartFile
 
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -1831,9 +1831,30 @@ class SurveyControllerService {
 
             switch (params.actionSurveyParticipants) {
                 case "addSurveyParticipants":
-                    if (params.selectedOrgs) {
-                        params.list('selectedOrgs').each { soId ->
-                            Org org = Org.get(Long.parseLong(soId))
+                    List<Org> members = []
+
+
+                    if(params.selectMembersWithImport?.filename){
+
+                        MultipartFile importFile = params.selectMembersWithImport
+                        InputStream stream = importFile.getInputStream()
+
+                        result.selectMembersWithImport = surveyService.selectSurveyMembersWithImport(stream)
+
+                        if(result.selectMembersWithImport.orgList){
+                            result.selectMembersWithImport.orgList.each { it ->
+                                members << Org.findById(Long.valueOf(it.orgId))
+                            }
+                        }
+
+
+                    }else {
+                        params.list('selectedOrgs').each { it ->
+                            members << Org.findById(Long.valueOf(it))
+                        }
+                    }
+
+                    members.each { Org org ->
                             boolean existsMultiYearTerm = false
                             Subscription sub = result.surveyConfig.subscription
                             if (sub && !result.surveyConfig.pickAndChoose && result.surveyConfig.subSurveyUseForTransfer) {
@@ -1881,7 +1902,6 @@ class SurveyControllerService {
                             }
                         }
                         result.surveyConfig.save()
-                    }
                     break
                 case "deleteSurveyParticipants":
                     if (params.selectedOrgs) {
