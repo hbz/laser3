@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5663    26.04.2024  dev     3.4         Andreas Feature     Neue Merkmalsdefinitionen aufgenommen
+
 5662    26.04.2024  dev     3.4         Andreas Feature     Neue Referenzwerte aufgenommen
 
 5661    26.04.2024  dev     3.4         Andreas Feature     Neue Referenzwerte aufgenommen
