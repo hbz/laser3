@@ -63,7 +63,7 @@ import groovy.time.TimeCategory
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
 import org.springframework.dao.DataIntegrityViolationException
-
+import org.springframework.web.multipart.MultipartFile
 
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -246,7 +246,9 @@ class SurveyControllerService {
                 cloneParams.filterSet = true
             }
 
-            result.consortiaMembersCount = Org.executeQuery("select count(*) " + countFsr.query.minus("select o "), countFsr.queryParams)[0]
+            String queryConsortiaMembersCount = countFsr.query.minus("select o ")
+            queryConsortiaMembersCount = queryConsortiaMembersCount.split("order by")[0]
+            result.consortiaMembersCount = Org.executeQuery("select count(*) " + queryConsortiaMembersCount, countFsr.queryParams)[0]
 
             FilterService.Result fsr = filterService.getOrgComboQuery(params, result.institution as Org)
             if (fsr.isFilterSet) {
@@ -1831,9 +1833,30 @@ class SurveyControllerService {
 
             switch (params.actionSurveyParticipants) {
                 case "addSurveyParticipants":
-                    if (params.selectedOrgs) {
-                        params.list('selectedOrgs').each { soId ->
-                            Org org = Org.get(Long.parseLong(soId))
+                    List<Org> members = []
+
+
+                    if(params.selectMembersWithImport?.filename){
+
+                        MultipartFile importFile = params.selectMembersWithImport
+                        InputStream stream = importFile.getInputStream()
+
+                        result.selectMembersWithImport = surveyService.selectSurveyMembersWithImport(stream)
+
+                        if(result.selectMembersWithImport.orgList){
+                            result.selectMembersWithImport.orgList.each { it ->
+                                members << Org.findById(Long.valueOf(it.orgId))
+                            }
+                        }
+
+
+                    }else {
+                        params.list('selectedOrgs').each { it ->
+                            members << Org.findById(Long.valueOf(it))
+                        }
+                    }
+
+                    members.each { Org org ->
                             boolean existsMultiYearTerm = false
                             Subscription sub = result.surveyConfig.subscription
                             if (sub && !result.surveyConfig.pickAndChoose && result.surveyConfig.subSurveyUseForTransfer) {
@@ -1881,7 +1904,6 @@ class SurveyControllerService {
                             }
                         }
                         result.surveyConfig.save()
-                    }
                     break
                 case "deleteSurveyParticipants":
                     if (params.selectedOrgs) {
@@ -2025,7 +2047,7 @@ class SurveyControllerService {
                     Date startDate = params.startNow ? new Date() : result.surveyInfo.startDate
 
 
-                    result.surveyConfigs.each { config ->
+                    result.surveyInfo.surveyConfigs.each { config ->
                         config.orgs.org.each { org ->
                             if (result.surveyInfo.type == RDStore.SURVEY_TYPE_TITLE_SELECTION) {
                                 Subscription subscription = config.subscription.getDerivedSubscriptionForNonHiddenSubscriber(org)
