@@ -2042,6 +2042,7 @@ class SurveyController {
                 return
             }
         }
+        result
     }
 
     /**

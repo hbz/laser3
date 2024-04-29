@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfig;" %>
+<%@ page import="de.laser.survey.SurveyConfig; de.laser.storage.RDStore;" %>
 <laser:htmlStart message="default.notes.label" />
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>

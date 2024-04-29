@@ -246,7 +246,9 @@ class SurveyControllerService {
                 cloneParams.filterSet = true
             }
 
-            result.consortiaMembersCount = Org.executeQuery("select count(*) " + countFsr.query.minus("select o "), countFsr.queryParams)[0]
+            String queryConsortiaMembersCount = countFsr.query.minus("select o ")
+            queryConsortiaMembersCount = queryConsortiaMembersCount.split("order by")[0]
+            result.consortiaMembersCount = Org.executeQuery("select count(*) " + queryConsortiaMembersCount, countFsr.queryParams)[0]
 
             FilterService.Result fsr = filterService.getOrgComboQuery(params, result.institution as Org)
             if (fsr.isFilterSet) {
@@ -2045,7 +2047,7 @@ class SurveyControllerService {
                     Date startDate = params.startNow ? new Date() : result.surveyInfo.startDate
 
 
-                    result.surveyConfigs.each { config ->
+                    result.surveyInfo.surveyConfigs.each { config ->
                         config.orgs.org.each { org ->
                             if (result.surveyInfo.type == RDStore.SURVEY_TYPE_TITLE_SELECTION) {
                                 Subscription subscription = config.subscription.getDerivedSubscriptionForNonHiddenSubscriber(org)
