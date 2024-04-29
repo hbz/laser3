@@ -95,7 +95,7 @@ class BaseConfig {
 
     static List<String> FILTER = [
             KEY_ORGANISATION,
-            // KEY_VENDOR,
+             KEY_VENDOR,
             // KEY_PROVIDER,
             KEY_SUBSCRIPTION,
             KEY_LICENSE,
@@ -189,7 +189,7 @@ class BaseConfig {
         Map<String, Object> cfg = [:]
         // println '|--- BaseConfig.getCurrentConfigByFilterAndPrefix( ' + filter + ' )'
 
-        if (filter in [ KEY_COSTITEM, KEY_ISSUEENTITLEMENT, KEY_LICENSE, KEY_ORGANISATION, KEY_PACKAGE, KEY_PLATFORM, KEY_SUBSCRIPTION ]) {
+        if (filter in [ KEY_COSTITEM, KEY_ISSUEENTITLEMENT, KEY_LICENSE, KEY_ORGANISATION, KEY_PACKAGE, KEY_PLATFORM, KEY_PROVIDER, KEY_SUBSCRIPTION, KEY_VENDOR ]) {
             cfg = getCurrentConfig( filter )
         }
         else if (filter in ['org']) {

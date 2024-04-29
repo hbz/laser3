@@ -23,6 +23,7 @@ class ProviderQuery extends BaseQuery {
 
         def (String prefix, String suffix) = params.query.split('-') // only simply cfg.query
         List<Long> idList = BaseFilter.getCachedFilterIdList(prefix, params)
+//        List<Long> orphanedIdList = BaseFilter.getCachedFilterIdList(prefix + 'Orphaned', params)
 
         //println 'ProviderQuery.query() -> ' + params.query + ' : ' + suffix
 
@@ -37,6 +38,14 @@ class ProviderQuery extends BaseQuery {
                     idList,
                     result
             )
+//            handleGenericAllSignOrphanedQuery(
+//                    params.query,
+//                    'select v.id, v.name, 1, false from Vendor v where v.id in (:idList) order by v.name',
+//                    'select v.id from Vendor v where v.id in (:idList) and v.name = :d order by v.id',
+//                    idList,
+//                    orphanedIdList,
+//                    result
+//            )
         }
         else if ( suffix in ['libraryType', 'region', 'country', 'libraryNetwork', 'funderType', 'funderHskType']) {
 

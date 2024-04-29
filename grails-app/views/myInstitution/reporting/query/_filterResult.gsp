@@ -40,6 +40,10 @@
     ${message(code: 'reporting.filter.result.platform', args: [filterResult.data.platformIdList.size(), filterResult.data.platformESRecords.size()])}
 </g:elseif>
 
+<g:elseif test="${filter == BaseConfig.KEY_PROVIDER}">
+    ${message(code: 'reporting.filter.result.provider', args: [filterResult.data.providerIdList.size()])}
+</g:elseif>
+
 <g:elseif test="${filter == BaseConfig.KEY_SUBSCRIPTION}">
     ${message(code: 'reporting.filter.result.subscription.part', args: [filterResult.data.subscriptionIdList.size()])}
     <g:if test="${filterResult.data.memberSubscriptionIdList}">
@@ -60,3 +64,6 @@
     ${message(code: 'reporting.filter.result.end')}
 </g:elseif>
 
+<g:elseif test="${filter == BaseConfig.KEY_VENDOR}">
+    ${message(code: 'reporting.filter.result.vendor', args: [filterResult.data.vendorIdList.size()])}
+</g:elseif>

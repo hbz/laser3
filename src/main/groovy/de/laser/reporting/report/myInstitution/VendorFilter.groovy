@@ -164,27 +164,21 @@ class VendorFilter extends BaseFilter {
         idList
     }
 
-    static List<Long> _getMyVendorIdList() { // TODO TODO TODO
+    static List<Long> _getMyVendorIdList() { // TODO
 
         ContextService contextService = BeanStore.getContextService()
 
-        List<Long> idList = Vendor.executeQuery(
-                'select ven.id from Vendor ven where (ven.status is null or ven.status != :vendorStatus)',
-                [vendorStatus: RDStore.VENDOR_STATUS_DELETED]
+        List<Long> idList = Vendor.executeQuery( '''
+            select distinct(vr.vendor.id) from VendorRole vr
+                join vr.subscription sub
+                join sub.orgRelations subOr
+            where (sub = subOr.sub and subOr.org = :org and subOr.roleType in (:subRoleTypes))
+            ''', [
+                org: contextService.getOrg(),
+//                vendorStatus: RDStore.VENDOR_STATUS_DELETED,
+                subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]
+            ]
         )
-
-//        List<Long> idList = Org.executeQuery( '''
-//            select distinct(ven.vendor.id) from VendorRole ven
-//                join ven.sub sub
-//                join sub.orgRelations subOr
-//            where (sub = subOr.sub and subOr.org = :org and subOr.roleType in (:subRoleTypes))
-//                and (prov.org.status is null or prov.org.status != :orgStatus)
-//            ''',
-//            [
-//                    org: contextService.getOrg(), vendorStatus: RDStore.VENDOR_STATUS_DELETED,
-//                    subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]
-//            ]
-//        )
         idList
     }
 }

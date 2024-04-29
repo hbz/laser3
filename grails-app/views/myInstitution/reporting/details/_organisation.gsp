@@ -2,7 +2,7 @@
 <laser:serviceInjection />
 <g:set var="wekb" value="${ElasticSearchHelper.getCurrentApiSource()}"/>
 
-<laser:render template="/myInstitution/reporting/details/top" />
+<laser:render template="/myInstitution/reporting/details/details_top" />
 
 <div class="ui segment">
     <table class="ui table la-js-responsive-table la-table compact">

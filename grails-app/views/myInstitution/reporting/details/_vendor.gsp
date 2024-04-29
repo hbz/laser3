@@ -2,8 +2,9 @@
 <laser:serviceInjection />
 <g:set var="wekb" value="${ElasticSearchHelper.getCurrentApiSource()}"/>
 
-<laser:render template="/myInstitution/reporting/details/top" />
+<laser:render template="/myInstitution/reporting/details/details_top" />
 
+### ${list} ###
 <div class="ui segment">
     <table class="ui table la-js-responsive-table la-table compact">
         <thead>
@@ -14,110 +15,53 @@
 %{--            <g:if test="${query == 'org-country'}">--}%
 %{--                <th>${message(code:'org.region.label')}</th>--}%
 %{--            </g:if>--}%
-            <g:if test="${query == 'org-x-property'}">
-                <th>${message(code:'reporting.details.property.value')}</th>
+            <g:if test="${query == 'vendor-x-property'}">
+%{--                <th>${message(code:'reporting.details.property.value')}</th>--}%
             </g:if>
-            <g:elseif test="${query == 'org-x-identifier'}">
-                <th>${message(code:'identifier.label')}</th>
-            </g:elseif>
-            <g:if test="${query.startsWith('provider-')}">
-                <th>${message(code:'org.platforms.label')}</th>
-                <th>${message(code:'wekb')}</th>
-            </g:if>
-            %{--<th></th>--}%
+            <th>${message(code:'vendor.homepage.label')}</th>
+            <th>${message(code:'wekb')}</th>
         </tr>
         </thead>
         <tbody>
-            <g:each in="${list}" var="org" status="i">
+            <g:each in="${list}" var="vendor" status="i">
                 <tr>
                     <td>${i + 1}.</td>
-                    <td>${org.sortname}</td>
+                    <td>${vendor.sortname}</td>
                     <td>
-                        <g:link controller="organisation" action="show" id="${org.id}" target="_blank">${org.name}</g:link>
+                        <g:link controller="vendor" action="show" id="${vendor.id}" target="_blank">${vendor.name}</g:link>
                     </td>
 %{--                    <g:if test="${query == 'org-country'}">--}%
 %{--                        <td>--}%
 %{--                            ${org.region?.getI10n('value')}--}%
 %{--                        </td>--}%
 %{--                    </g:if>--}%
-                    <g:if test="${query == 'org-x-property'}">
+                    <g:if test="${query == 'vendor-x-property'}">
                         <td>
-                            <uiReporting:objectProperties owner="${org}" tenant="${contextService.getOrg()}" propDefId="${id}" />
+                            <uiReporting:objectProperties owner="${vendor}" tenant="${contextService.getOrg()}" propDefId="${id}" />
                         </td>
                     </g:if>
-                    <g:elseif test="${query == 'org-x-identifier'}">
-                        <td>
-                            <%
-                                List<Identifier> identList = Identifier.findAllByOrgAndNs(org, IdentifierNamespace.get(id))
-                                println identList.collect{ it.value ?: null }.findAll().join(' ,<br/>') // removing empty and null values
-                            %>
-                        </td>
-                    </g:elseif>
-                    <g:if test="${query.startsWith('provider-')}">
-                        <td>
-                            <g:each in="${org.platforms}" var="plt">
-                                <g:link controller="platform" action="show" id="${plt.id}" target="_blank">${plt.name}</g:link><br/>
-                            </g:each>
-                        </td>
-                        <td>
-                            <g:if test="${wekb?.baseUrl && org.gokbId}">
-                                <a href="${wekb.baseUrl + '/public/orgContent/' + org.gokbId}" target="_blank">
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'reporting.chart.result.link.unchecked.label')}"
-                                            data-position="top right">
-                                        <i class="icon external alternate grey"></i>
-                                    </span>
-                                </a>
-                            </g:if>
-                        </td>
-                    </g:if>
-                    %{--
-                    <td>
-                        <g:each in="${[RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT]}" var="ft">
-                            <g:each in="${org.getContactPersonsByFunctionType(true, ft)}" var="person">
-                                <span>
-                                    ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}:
-                                    ${person.title}
-                                    ${person.first_name}
-                                    ${person.middle_name}
-                                    ${person.last_name}
 
-                                    <g:if test="${person.contacts}">
-                                        <br/>
-                                        ${person.contacts.toSorted().collect{ it.contentType.getI10n('value')  + ': ' + it.content }.join('; ')}
-                                    </g:if>
-                                    <g:if test="${person.contacts}">
-                                        <br/>
-                                        ${person.addresses.collect{ it.type.collect{
-                                            it.getI10n('value') }.join(', ') + ': ' + [
-                                                ( it.name ?: '' ),
-                                                ( it.additionFirst ?: '' ),
-                                                ( it.additionSecond ?: '' ),
-                                                '-',
-                                                ( it.street_1 ?: '' ),
-                                                ( it.street_2 ?: '' ),
-                                                ',',
-                                                ( it.zipcode ?: '' ),
-                                                ( it.city ?: '' ),
-                                                '-',
-                                                ( it.region ? it.region.getI10n('value')  : '' ),
-                                                ( it.country ? it.country.getI10n('value')  : '' ),
-                                                '-',
-                                                ( it.pobZipcode ?: '' ),
-                                                ( it.pobCity ?: '' )
-                                                ].join(' ')
-                                        }.join('; ')}
-                                    </g:if>
-                                </span>
-                            </g:each>
-                        </g:each>
+                    <td>
+                        <g:if test="${vendor.homepage}">
+                            <a href="${vendor.homepage}" target="_blank"> ${vendor.homepage} </a>
+                        </g:if>
                     </td>
-                    --}%
+                    <td>
+                        <g:if test="${wekb?.baseUrl && vendor.gokbId}">
+                            <a href="${wekb.baseUrl + '/resource/show/' + vendor.gokbId}" target="_blank">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'reporting.chart.result.link.unchecked.label')}"
+                                        data-position="top right">
+                                    <i class="icon external alternate grey"></i>
+                                </span>
+                            </a>
+                        </g:if>
+                    </td>
                 </tr>
             </g:each>
         </tbody>
     </table>
 </div>
 
-<laser:render template="/templates/copyEmailaddresses" model="[modalID: 'detailsCopyEmailModal', orgList: list]" />
+%{--<laser:render template="/templates/copyEmailaddresses" model="[modalID: 'detailsCopyEmailModal', orgList: list]" />--}%
 
-<laser:render template="/myInstitution/reporting/export/detailsModal" model="[modalID: 'detailsExportModal', token: token]" />
+%{--<laser:render template="/myInstitution/reporting/export/detailsModal" model="[modalID: 'detailsExportModal', token: token]" />--}%

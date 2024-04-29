@@ -30,8 +30,7 @@ class VendorXCfg extends BaseConfig {
                             ]
                     ],
                     distribution : [
-                            default : [
-                            ]
+                            default : [:]
                     ]
             ]
     ]

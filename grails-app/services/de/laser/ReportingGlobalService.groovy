@@ -279,7 +279,6 @@ class ReportingGlobalService {
                 result.labels.tooltip = getTooltipLabels(clone)
 
                 if (suffix in ['*']) {
-                    //println 'ReportingGlobalService KEY_PACKAGE *'
                     result.labels.chart = [BaseConfig.getLabel('reporting.chart.chartLabel.counterpart.label'), BaseConfig.getLabel('reporting.chart.chartLabel.noCounterpart.label')]
                     result.tmpl = TMPL_PATH_CHART + 'generic_signOrphaned'
                 }
@@ -295,7 +294,6 @@ class ReportingGlobalService {
                 result.labels.tooltip = getTooltipLabels(clone)
 
                 if (suffix in ['*']) {
-                    //println 'ReportingGlobalService KEY_PLATFORM *'
                     result.labels.chart = [BaseConfig.getLabel('reporting.chart.chartLabel.counterpart.label'), BaseConfig.getLabel('reporting.chart.chartLabel.noCounterpart.label')]
                     result.tmpl = TMPL_PATH_CHART + 'generic_signOrphaned'
                 }
@@ -304,6 +302,15 @@ class ReportingGlobalService {
 
                     result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getDistributionLabel(BaseConfig.KEY_PLATFORM, 'chartLabel.' + it) }
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
+                }
+            }
+            else if (prefix in [ BaseConfig.KEY_PROVIDER ]) {
+                result.putAll( ProviderQuery.query(clone) )
+                result.labels.tooltip = getTooltipLabels(clone)
+
+                if (suffix in ['*']) {
+                    result.labels.chart = [BaseConfig.getLabel('reporting.chart.chartLabel.counterpart.label'), BaseConfig.getLabel('reporting.chart.chartLabel.noCounterpart.label')]
+//                    result.tmpl = TMPL_PATH_CHART + 'generic_signOrphaned'
                 }
             }
             else if (prefix in [ BaseConfig.KEY_SUBSCRIPTION, 'memberSubscription' ]) {
@@ -315,6 +322,15 @@ class ReportingGlobalService {
 
                     result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getDistributionLabel(BaseConfig.KEY_SUBSCRIPTION, 'chartLabel.' + it)  }
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
+                }
+            }
+            else if (prefix in [ BaseConfig.KEY_VENDOR ]) {
+                result.putAll( VendorQuery.query(clone) )
+                result.labels.tooltip = getTooltipLabels(clone)
+
+                if (suffix in ['*']) {
+                    result.labels.chart = [BaseConfig.getLabel('reporting.chart.chartLabel.counterpart.label'), BaseConfig.getLabel('reporting.chart.chartLabel.noCounterpart.label')]
+//                    result.tmpl = TMPL_PATH_CHART + 'generic_signOrphaned'
                 }
             }
 
@@ -351,7 +367,7 @@ class ReportingGlobalService {
                     return
                 }
             }
-            //println 'ReportingGlobalService.doChartDetails() -> filter: ' + params.filter + ', prefix:' + prefix + ', suffix:' + suffix
+//            println 'ReportingGlobalService.doChartDetails() -> filter: ' + params.filter + ', prefix:' + prefix + ', suffix:' + suffix
             Map<String, Object> cfg = BaseConfig.getCurrentConfigByFilter( params.filter )
 
             if (cfg) {
@@ -383,35 +399,50 @@ class ReportingGlobalService {
                     else if (tmpl == BaseConfig.KEY_PLATFORM) {
                         result.list = Platform.executeQuery('select plt from Platform plt where plt.id in (:idList) order by plt.name', [idList: idList])
                     }
+                    else if (tmpl == BaseConfig.KEY_PROVIDER) { // TODO
+//                        result.list = Vendor.executeQuery('select v from Vendor v where v.id in (:idList) order by v.sortname, v.name', [idList: idList])
+                    }
                     else if (tmpl == BaseConfig.KEY_SUBSCRIPTION) {
                         result.list = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
+                    }
+                    else if (tmpl == BaseConfig.KEY_VENDOR) {
+                        result.list = Vendor.executeQuery('select v from Vendor v where v.id in (:idList) order by v.sortname, v.name', [idList: idList])
                     }
                 }
                 else {
                     result.tmpl = TMPL_PATH_DETAILS + prefix
 
-                    if (prefix in [ BaseConfig.KEY_COSTITEM ]) {
-                        result.list = idList ? CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idList) order by ci.costTitle', [idList: idList]) : []
+                    if (! idList) {
+                        result.list = []
+                    }
+                    else if (prefix in [ BaseConfig.KEY_COSTITEM ]) {
+                        result.list = CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idList) order by ci.costTitle', [idList: idList])
                     }
                     else if (prefix == BaseConfig.KEY_ISSUEENTITLEMENT) {
                         result.list = License.executeQuery('select ie from IssueEntitlement ie where ie.id in (:idList) order by ie.tipp.sortname', [idList: idList])
                     }
                     else if (prefix in [ BaseConfig.KEY_LICENSE ]) {
-                        result.list = idList ? License.executeQuery('select l from License l where l.id in (:idList) order by l.sortableReference, l.reference', [idList: idList]) : []
+                        result.list = License.executeQuery('select l from License l where l.id in (:idList) order by l.sortableReference, l.reference', [idList: idList])
                     }
-                    else if (prefix in [ 'licensor', 'org', 'member', 'consortium', 'provider', 'agency' ]) {
-                        result.list = idList ? Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList]) : []
+                    else if (prefix in [ 'licensor', 'org', 'member', 'consortium', /*'provider',*/ 'agency' ]) {
+                        result.list = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
                         result.tmpl = TMPL_PATH_DETAILS + BaseConfig.KEY_ORGANISATION
                     }
                     else if (prefix in [ BaseConfig.KEY_PACKAGE ]) {
-                        result.list = idList ? Package.executeQuery('select pkg from Package pkg where pkg.id in (:idList) order by pkg.name', [idList: idList]) : []
+                        result.list = Package.executeQuery('select pkg from Package pkg where pkg.id in (:idList) order by pkg.name', [idList: idList])
                     }
                     else if (prefix in [ BaseConfig.KEY_PLATFORM ]) {
-                        result.list = idList ? Platform.executeQuery('select plt from Platform plt where plt.id in (:idList) order by plt.name', [idList: idList]) : []
+                        result.list = Platform.executeQuery('select plt from Platform plt where plt.id in (:idList) order by plt.name', [idList: idList])
+                    }
+                    else if (prefix in [ BaseConfig.KEY_PROVIDER ]) {
+                        result.list = [] // TODO -- Vendor.executeQuery('select v from Vendor v where v.id in (:idList) order by v.sortname, v.name', [idList: idList])
                     }
                     else if (prefix in [ BaseConfig.KEY_SUBSCRIPTION, 'memberSubscription' ]) {
-                        result.list = idList ? Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList]) : []
+                        result.list = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
                         result.tmpl = TMPL_PATH_DETAILS + BaseConfig.KEY_SUBSCRIPTION
+                    }
+                    else if (prefix in [ BaseConfig.KEY_VENDOR ]) {
+                        result.list = Vendor.executeQuery('select v from Vendor v where v.id in (:idList) order by v.sortname, v.name', [idList: idList])
                     }
                 }
             }

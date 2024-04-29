@@ -30,8 +30,7 @@ class ProviderXCfg extends BaseConfig {
                             ]
                     ],
                     distribution : [
-                            default : [
-                            ]
+                            default : [:]
                     ]
             ]
     ]
