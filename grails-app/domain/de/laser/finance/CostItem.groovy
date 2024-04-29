@@ -241,8 +241,9 @@ class CostItem extends AbstractBase
     //needs to be def because of GORM magic, looking for a database mapping ...
     def getCostInLocalCurrencyAfterTax() {
         Double result = ( costInLocalCurrency ?: 0.0 ) * ( taxKey ? ((taxKey.taxRate/100) + 1) : 1.0 )
-
-        finalCostRounding ? result.round(0) : result.round(2)
+        if(currencyRate > 0)
+            finalCostRounding ? result.round(0) : result.round(2)
+        else null
     }
 
     /**
