@@ -583,7 +583,7 @@ class ManagementService {
                 int deletedProperties = 0
                 Object[] args
                     if(params.processOption == 'changeCreateProperty') {
-                        if(params.filterPropValue) {
+                        //if(params.filterPropValue) {
                             Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
                             subscriptions.each { Subscription subscription ->
                                 if (subscription.isEditableBy(result.user) || (subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.institution.isCustomerType_Inst_Pro())) {
@@ -622,9 +622,10 @@ class ManagementService {
 
                             args = [newProperties, changeProperties]
                             flash.message = messageSource.getMessage('subscriptionsManagement.successful.property', args, locale)
-                        }else{
+                        //}
+                        /*else{
                                 flash.error = messageSource.getMessage('subscriptionsManagement.noPropertyValue', null, locale)
-                        }
+                        }*/
 
                     }else if(params.processOption == 'deleteAllProperties' || params.processOption == 'deleteProperty'){
                         Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
