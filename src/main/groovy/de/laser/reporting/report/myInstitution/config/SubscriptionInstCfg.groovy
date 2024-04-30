@@ -2,6 +2,7 @@ package de.laser.reporting.report.myInstitution.config
 
 import de.laser.Org
 import de.laser.Subscription
+import de.laser.Vendor
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 
 class SubscriptionInstCfg extends BaseConfig {
@@ -145,6 +146,30 @@ class SubscriptionInstCfg extends BaseConfig {
                             ]
                     ]
             ],
+
+            vendor : [
+                    meta : [
+                            class:  Vendor,
+                            cfgKey: BaseConfig.KEY_SUBSCRIPTION
+                    ],
+                    source : [
+                            'depending-vendor'
+                    ],
+                    fields : [
+                            'status'    : [ type: BaseConfig.FIELD_TYPE_REFDATA ]
+                    ],
+                    filter : [
+                            default : []
+                    ],
+                    query : [
+                            default : [
+                                    vendor : [
+                                            'vendor-status' :   [ 'generic.vendor.status' ],
+                                            'vendor-*' :        [ 'generic.all' ],
+                                    ]
+                            ]
+                    ]
+            ]
 
 //            provider : [
 //                    meta : [

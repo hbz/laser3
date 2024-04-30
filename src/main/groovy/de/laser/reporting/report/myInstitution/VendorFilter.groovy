@@ -81,50 +81,14 @@ class VendorFilter extends BaseFilter {
 
                     filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                 }
-                // --> refdata join tables
-                else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
-
-                    if (p == BaseConfig.RDJT_GENERIC_ORG_TYPE) {
-                        whereParts.add('exists (select ot from org.orgType ot where ot = :p' + (++pCount) + ')')
-                        queryParams.put('p' + pCount, RefdataValue.get(params.long(key)))
-
-                        filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
-                    }
-                }
                 // --> custom filter implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
 
-                    if (p == BaseConfig.CI_GENERIC_SUBJECT_GROUP) {
-                        queryParts.add('OrgSubjectGroup osg')
-                        whereParts.add('osg.org = org and osg.subjectGroup.id = :p' + (++pCount))
-                        queryParams.put('p' + pCount, params.long(key))
-
-                        filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
-                    }
-                    else if (p == BaseConfig.CI_GENERIC_LEGAL_INFO) {
-                        long li = params.long(key)
-                        whereParts.add( getLegalInfoQueryWhereParts(li) )
-
-                        Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(p)
-                        filterLabelValue = customRdv.get('from').find{ it.id == li }.value_de
-                    }
-                    else if (p == BaseConfig.CI_GENERIC_CUSTOMER_TYPE) {
-                        queryParts.add('OrgSetting oss')
-
-                        whereParts.add('oss.org = org and oss.key = :p' + (++pCount))
-                        queryParams.put('p' + pCount, OrgSetting.KEYS.CUSTOMER_TYPE)
-
-                        whereParts.add('oss.roleValue = :p' + (++pCount))
-                        queryParams.put('p' + pCount, Role.get(params.long(key)))
-
-                        Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(p)
-                        filterLabelValue = customRdv.get('from').find{ it.id == params.long(key) }.value_de
-                    }
-                    else if (p == BaseConfig.CI_CTX_PROPERTY_KEY) {
-                        Long pValue = params.long('filter:org_propertyValue')
+                    if (p == BaseConfig.CI_CTX_PROPERTY_KEY) {
+                        Long pValue = params.long('filter:vendor_propertyValue')
 
                         String pq = getPropertyFilterSubQuery(
-                                'OrgProperty', 'org',
+                                'VendorProperty', 'ven',
                                 params.long(key),
                                 pValue,
                                 queryParams

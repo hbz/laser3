@@ -17,15 +17,21 @@ class VendorXCfg extends BaseConfig {
                             'my-vendor',
                     ],
                     fields : [
+                            'status' : [ type: BaseConfig.FIELD_TYPE_REFDATA ]
                     ],
                     filter : [
                             default : [
+                                    [ 'status' ],
+                            ],
+                            my : [
+                                    [ 'status' ],
                             ]
                     ],
                     query : [
                             default : [
                                     vendor : [
-                                            'vendor-*' :               [ 'generic.all' ]
+                                            'vendor-status' :           [ 'generic.vendor.status' ],
+                                            'vendor-*' :                [ 'generic.all' ]
                                     ]
                             ]
                     ],

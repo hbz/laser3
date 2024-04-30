@@ -56,7 +56,7 @@
 </div>
 
 <laser:render template="/myInstitution/reporting/export/queryModal" model="[modalID: 'queryExportModal', token: token]" />
-<laser:render template="/myInstitution/reporting/query/helpModal" model="[modalID: 'queryHelpModal', token: token]" />
+<laser:render template="/myInstitution/reporting/query/query_helpModal" model="[modalID: 'queryHelpModal', token: token]" />
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.reporting.current.request = {

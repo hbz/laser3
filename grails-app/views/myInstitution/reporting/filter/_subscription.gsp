@@ -15,8 +15,11 @@
             <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).provider}">
                 <a class="item" data-tab="sub-filter-tab-5">${message(code:'default.provider.label')}</a>
             </g:if>
-            <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).agency}">
-                <a class="item" data-tab="sub-filter-tab-6">${message(code:'default.agency.plural.label')}</a>
+%{--            <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).agency}">--}%
+%{--                <a class="item" data-tab="sub-filter-tab-6">${message(code:'default.agency.plural.label')}</a>--}%
+%{--            </g:if>--}%
+            <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).vendor}">
+                <a class="item" data-tab="sub-filter-tab-6">${message(code:'default.vendor.export.label')}</a>
             </g:if>
             <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).memberSubscription}">
                 <a class="item" data-tab="sub-filter-tab-help"> ? %{--<i class="icon question"></i>--}%</a>
@@ -143,20 +146,41 @@
 
         </g:if>
 
-        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).agency}" />
+%{--        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).agency}" />--}%
+%{--        <g:if test="${config}">--}%
+
+%{--            <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-6">--}%
+%{--                <div class="field">--}%
+%{--                    <label for="filter:agency_source">${message(code:'reporting.ui.global.filter.selection')}</label>--}%
+
+%{--                    <g:select name="filter:agency_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="${it}" optionValue="${{BaseConfig.getSourceLabel(config.meta.cfgKey, it)}}" value="${params.get('filter:agency_source')}" />--}%
+%{--                </div>--}%
+
+%{--                <g:each in="${config.filter.default}" var="cfgFilter">--}%
+%{--                    <div class="fields <uiReporting:numberToString number="${cfgFilter.size()}" min="2"/>">--}%
+%{--                        <g:each in="${cfgFilter}" var="field">--}%
+%{--                            <uiReporting:filterField config="${config}" field="${field}" key="agency" />--}%
+%{--                        </g:each>--}%
+%{--                    </div>--}%
+%{--                </g:each>--}%
+%{--            </div><!-- .tab -->--}%
+
+%{--        </g:if>--}%
+
+        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).vendor}" />
         <g:if test="${config}">
 
             <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-6">
                 <div class="field">
-                    <label for="filter:agency_source">${message(code:'reporting.ui.global.filter.selection')}</label>
+                    <label for="filter:vendor_source">${message(code:'reporting.ui.global.filter.selection')}</label>
 
-                    <g:select name="filter:agency_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="${it}" optionValue="${{BaseConfig.getSourceLabel(config.meta.cfgKey, it)}}" value="${params.get('filter:agency_source')}" />
+                    <g:select name="filter:vendor_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="${it}" optionValue="${{BaseConfig.getSourceLabel(config.meta.cfgKey, it)}}" value="${params.get('filter:vendor_source')}" />
                 </div>
 
                 <g:each in="${config.filter.default}" var="cfgFilter">
                     <div class="fields <uiReporting:numberToString number="${cfgFilter.size()}" min="2"/>">
                         <g:each in="${cfgFilter}" var="field">
-                            <uiReporting:filterField config="${config}" field="${field}" key="agency" />
+                            <uiReporting:filterField config="${config}" field="${field}" key="vendor" />
                         </g:each>
                     </div>
                 </g:each>

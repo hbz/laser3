@@ -95,10 +95,10 @@ class BaseConfig {
 
     static List<String> FILTER = [
             KEY_ORGANISATION,
-             KEY_VENDOR,
-            // KEY_PROVIDER,
             KEY_SUBSCRIPTION,
             KEY_LICENSE,
+            KEY_VENDOR,
+            // KEY_PROVIDER,
             KEY_PACKAGE,
             KEY_PLATFORM //, KEY_ISSUEENTITLEMENT // 'costItem'
     ]
@@ -200,34 +200,6 @@ class BaseConfig {
         }
         cfg
     }
-
-//    static Map<String, Object> getCurrentConfigByPrefix(String prefix) {
-//        Map<String, Object> cfg = [:]
-//
-//        if (prefix in [ KEY_COSTITEM ]) {
-//            cfg = getCurrentConfig( BaseConfig.KEY_COSTITEM )
-//        }
-//        else if (prefix in [ KEY_ISSUEENTITLEMENT ]) {
-//            cfg = getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT )
-//        }
-//        else if (prefix in [ KEY_LICENSE, 'licensor' ]) {
-//            cfg = getCurrentConfig( BaseConfig.KEY_LICENSE )
-//        }
-//        else if (prefix in ['org']) {
-//            cfg = getCurrentConfig( BaseConfig.KEY_ORGANISATION )
-//        }
-//        else if (prefix in [ KEY_PACKAGE ]) {
-//            cfg = getCurrentConfig( BaseConfig.KEY_PACKAGE )
-//        }
-//        else if (prefix in [ KEY_PLATFORM]) {
-//            cfg = getCurrentConfig( BaseConfig.KEY_PLATFORM )
-//        }
-//        else if (prefix in [ KEY_SUBSCRIPTION, 'memberSubscription', 'member', 'consortium', 'provider', 'agency' ]) {
-//            cfg = getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION )
-//        }
-//
-//        cfg
-//    }
 
     /**
      * Substitution call for {@link #getCustomImplRefdata(java.lang.String, java.lang.Class)}, without configuration class

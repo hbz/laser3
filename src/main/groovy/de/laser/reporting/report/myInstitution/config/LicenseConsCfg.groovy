@@ -2,6 +2,7 @@ package de.laser.reporting.report.myInstitution.config
 
 import de.laser.License
 import de.laser.Org
+import de.laser.Vendor
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 
 class LicenseConsCfg extends BaseConfig {
@@ -17,7 +18,7 @@ class LicenseConsCfg extends BaseConfig {
                             'consortia-lic'
                     ],
                     fields : [
-                            'annual'                : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, spec: BaseConfig.FIELD_IS_MULTIPLE ],   // TODO custom_impl
+                            'annual'                : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, spec: BaseConfig.FIELD_IS_MULTIPLE ],   // TODO custom_impl
                             'endDateLimit'          : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'licenseCategory'       : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
                             //'openEnded'             : [ type: FIELD_TYPE_REFDATA ],
@@ -76,7 +77,7 @@ class LicenseConsCfg extends BaseConfig {
                     ],
                     fields : [
                             'country'   : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
-                            'region'    : [type: BaseConfig.FIELD_TYPE_REFDATA, spec: BaseConfig.FIELD_IS_VIRTUAL ],
+                            'region'    : [ type: BaseConfig.FIELD_TYPE_REFDATA, spec: BaseConfig.FIELD_IS_VIRTUAL ],
                             'orgType'   : [ type: BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE ]
                     ],
                     filter : [
@@ -93,5 +94,29 @@ class LicenseConsCfg extends BaseConfig {
                             ]
                     ]
             ],
+
+            vendor : [
+                    meta : [
+                            class:  Vendor,
+                            cfgKey: BaseConfig.KEY_LICENSE
+                    ],
+                    source : [
+                            'depending-vendor'
+                    ],
+                    fields : [
+                            'status'    : [ type: BaseConfig.FIELD_TYPE_REFDATA ]
+                    ],
+                    filter : [
+                            default : []
+                    ],
+                    query : [
+                            default : [
+                                    vendor : [
+                                            'vendor-status' :   [ 'generic.vendor.status' ],
+                                            'vendor-*' :        [ 'generic.all' ],
+                                    ]
+                            ]
+                    ]
+            ]
     ]
 }

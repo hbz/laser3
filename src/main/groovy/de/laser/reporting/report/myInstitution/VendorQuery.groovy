@@ -1,8 +1,6 @@
 package de.laser.reporting.report.myInstitution
 
 import de.laser.ContextService
-import de.laser.Org
-import de.laser.auth.Role
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
 import de.laser.storage.BeanStore
@@ -47,18 +45,18 @@ class VendorQuery extends BaseQuery {
 //                    result
 //            )
         }
-        else if ( suffix in ['libraryType', 'region', 'country', 'libraryNetwork', 'funderType', 'funderHskType']) {
+        else if ( suffix in ['status']) {
 
             _processSimpleRefdataQuery(params.query, suffix, idList, result)
         }
         else if ( suffix in ['x']) {
 
-            if (params.query in ['org-x-property']) {
+            if (params.query in ['vendor-x-property']) {
 
                 handleGenericPropertyXQuery(
                         params.query,
-                        'select pd.id, pd.name, count(*) from Org o join o.propertySet prop join prop.type pd where o.id in (:idList)',
-                        'select o.id from Org o join o.propertySet prop join prop.type pd where o.id in (:idList)',
+                        'select pd.id, pd.name, count(*) from Vendor v join v.propertySet prop join prop.type pd where v.id in (:idList)',
+                        'select v.id from Vendor v join v.propertySet prop join prop.type pd where v.id in (:idList)',
                         idList,
                         contextService.getOrg(),
                         result

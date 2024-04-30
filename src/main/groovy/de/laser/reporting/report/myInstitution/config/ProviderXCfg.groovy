@@ -17,15 +17,21 @@ class ProviderXCfg extends BaseConfig {
                             'my-provider',
                     ],
                     fields : [
+                            'status' : [ type: BaseConfig.FIELD_TYPE_REFDATA ]
                     ],
                     filter : [
                             default : [
+                                    [ 'status' ],
+                            ],
+                            my : [
+                                    [ 'status' ],
                             ]
                     ],
                     query : [
                             default : [
                                     provider : [
-                                            'provider-*' :               [ 'generic.all' ]
+                                            'provider-status' :         [ 'generic.provider.status' ],
+                                            'provider-*' :              [ 'generic.all' ]
                                     ]
                             ]
                     ],

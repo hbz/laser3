@@ -117,15 +117,16 @@ class ReportingGlobalService {
 
         result.filterResult = OrganisationFilter.filter(params)
 
-        if (params.get('filter:org_source').endsWith('-providerAndAgency')) {
-            result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query.providerAndAgency )
-        }
-        else if (params.get('filter:org_source').endsWith('-provider')) {
+//        if (params.get('filter:org_source').endsWith('-providerAndAgency')) {
+//            result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query.providerAndAgency )
+//        }
+//        else
+        if (params.get('filter:org_source').endsWith('-provider')) {
             result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query.provider )
         }
-        else if (params.get('filter:org_source').endsWith('-agency')) {
-            result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query.agency )
-        }
+//        else if (params.get('filter:org_source').endsWith('-agency')) {
+//            result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query.agency )
+//        }
         else {
             result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query.default )
         }
@@ -263,7 +264,7 @@ class ReportingGlobalService {
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
                 }
             }
-            else if (prefix in ['org', 'member', 'consortium', 'provider', 'agency', 'licensor']) {
+            else if (prefix in ['org', 'member', 'consortium', /*'provider', 'agency', */ 'licensor']) {
                 result.putAll( OrganisationQuery.query(clone) )
                 result.labels.tooltip = getTooltipLabels(clone)
 
@@ -412,37 +413,34 @@ class ReportingGlobalService {
                 else {
                     result.tmpl = TMPL_PATH_DETAILS + prefix
 
-                    if (! idList) {
-                        result.list = []
+                    if (prefix in [ BaseConfig.KEY_COSTITEM ]) {
+                        result.list = idList ? CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idList) order by ci.costTitle', [idList: idList]) : []
                     }
-                    else if (prefix in [ BaseConfig.KEY_COSTITEM ]) {
-                        result.list = CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idList) order by ci.costTitle', [idList: idList])
-                    }
-                    else if (prefix == BaseConfig.KEY_ISSUEENTITLEMENT) {
-                        result.list = License.executeQuery('select ie from IssueEntitlement ie where ie.id in (:idList) order by ie.tipp.sortname', [idList: idList])
+                    else if (prefix in [ BaseConfig.KEY_ISSUEENTITLEMENT ]) {
+                        result.list = idList ? License.executeQuery('select ie from IssueEntitlement ie where ie.id in (:idList) order by ie.tipp.sortname', [idList: idList]) : []
                     }
                     else if (prefix in [ BaseConfig.KEY_LICENSE ]) {
-                        result.list = License.executeQuery('select l from License l where l.id in (:idList) order by l.sortableReference, l.reference', [idList: idList])
+                        result.list = idList ? License.executeQuery('select l from License l where l.id in (:idList) order by l.sortableReference, l.reference', [idList: idList]) : []
                     }
-                    else if (prefix in [ 'licensor', 'org', 'member', 'consortium', /*'provider',*/ 'agency' ]) {
-                        result.list = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
+                    else if (prefix in [ 'licensor', 'org', 'member', 'consortium', /*'provider', 'agency' */]) {
+                        result.list = idList ? Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList]) : []
                         result.tmpl = TMPL_PATH_DETAILS + BaseConfig.KEY_ORGANISATION
                     }
                     else if (prefix in [ BaseConfig.KEY_PACKAGE ]) {
-                        result.list = Package.executeQuery('select pkg from Package pkg where pkg.id in (:idList) order by pkg.name', [idList: idList])
+                        result.list = idList ? Package.executeQuery('select pkg from Package pkg where pkg.id in (:idList) order by pkg.name', [idList: idList]) : []
                     }
                     else if (prefix in [ BaseConfig.KEY_PLATFORM ]) {
-                        result.list = Platform.executeQuery('select plt from Platform plt where plt.id in (:idList) order by plt.name', [idList: idList])
+                        result.list = idList ? Platform.executeQuery('select plt from Platform plt where plt.id in (:idList) order by plt.name', [idList: idList]) : []
                     }
                     else if (prefix in [ BaseConfig.KEY_PROVIDER ]) {
                         result.list = [] // TODO -- Vendor.executeQuery('select v from Vendor v where v.id in (:idList) order by v.sortname, v.name', [idList: idList])
                     }
                     else if (prefix in [ BaseConfig.KEY_SUBSCRIPTION, 'memberSubscription' ]) {
-                        result.list = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
+                        result.list = idList ? Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList]) : []
                         result.tmpl = TMPL_PATH_DETAILS + BaseConfig.KEY_SUBSCRIPTION
                     }
                     else if (prefix in [ BaseConfig.KEY_VENDOR ]) {
-                        result.list = Vendor.executeQuery('select v from Vendor v where v.id in (:idList) order by v.sortname, v.name', [idList: idList])
+                        result.list = idList ? Vendor.executeQuery('select v from Vendor v where v.id in (:idList) order by v.sortname, v.name', [idList: idList]) : []
                     }
                 }
             }
