@@ -33,6 +33,8 @@ import de.laser.SubscriptionsQueryService
 import de.laser.SurveyService
 import de.laser.Task
 import de.laser.TitleInstancePackagePlatform
+import de.laser.Vendor
+import de.laser.VendorRole
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.finance.CostItem
 import de.laser.finance.Order
@@ -3931,7 +3933,7 @@ class SurveyControllerService {
                             new OrgRole(org: provider, sub: memberSub, roleType: RDStore.OR_PROVIDER).save()
                         }
                         newParentSub.getVendors().each { provider ->
-                            new OrgRole(org: provider, sub: memberSub, roleType: RDStore.OR_AGENCY).save()
+                            new VendorRole(vendor: provider, sub: memberSub, roleType: RDStore.OR_AGENCY).save()
                         }
                     } else {
                         if (providersSelection) {
@@ -3941,7 +3943,7 @@ class SurveyControllerService {
                         }
                         if (agenciesSelection) {
                             agenciesSelection.each { orgID ->
-                                new OrgRole(org: Org.get(orgID), sub: memberSub, roleType: RDStore.OR_AGENCY).save()
+                                new VendorRole(vendor: Vendor.get(orgID), sub: memberSub, roleType: RDStore.OR_AGENCY).save()
                             }
                         }
                     }
