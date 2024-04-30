@@ -302,10 +302,10 @@ class SurveyService {
                     row.add([field: surveyConfig.comment ?: '', style: null])
 
                     if (surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
-                        row.add([field: subscription?.comment ? subscription.comment : '', style: null])
-                        //Performance lastig providers und agencies
-                        row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
-                        row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
+                        row.add([field: subscription.comment, style: null])
+                        //Performance lastig providers und vendors
+                        row.add([field: subscription.providers.join(", "), style: null])
+                        row.add([field: subscription.vendors.join(", "), style: null])
 
                         List licenseNames = []
                         Links.findAllByDestinationSubscriptionAndLinkType(subscription,RDStore.LINKTYPE_LICENSE).each { Links li ->
@@ -313,17 +313,17 @@ class SurveyService {
                             licenseNames << l.reference
                         }
                         row.add([field: licenseNames ? licenseNames.join(", ") : '', style: null])
-                        List packageNames = subscription?.packages?.collect {
+                        List packageNames = subscription.packages?.collect {
                             it.pkg.name
                         }
                         row.add([field: packageNames ? packageNames.join(", ") : '', style: null])
 
-                        row.add([field: subscription?.status?.getI10n("value") ?: '', style: null])
-                        row.add([field: subscription?.kind?.getI10n("value") ?: '', style: null])
-                        row.add([field: subscription?.form?.getI10n("value") ?: '', style: null])
-                        row.add([field: subscription?.resource?.getI10n("value") ?: '', style: null])
-                        row.add([field: subscription?.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
-                        row.add([field: subscription?.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
+                        row.add([field: subscription.status?.getI10n("value") ?: '', style: null])
+                        row.add([field: subscription.kind?.getI10n("value") ?: '', style: null])
+                        row.add([field: subscription.form?.getI10n("value") ?: '', style: null])
+                        row.add([field: subscription.resource?.getI10n("value") ?: '', style: null])
+                        row.add([field: subscription.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
+                        row.add([field: subscription.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
 
                         if (surveyConfig.subSurveyUseForTransfer) {
                             CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, surveyOrg.org), RDStore.COST_ITEM_DELETED)
@@ -341,7 +341,7 @@ class SurveyService {
                         String value = ""
 
                         if (surResult.type.isIntegerType()) {
-                            value = surResult?.intValue ? surResult.intValue.toString() : ""
+                            value = surResult.intValue ? surResult.intValue.toString() : ""
                         } else if (surResult.type.isStringType()) {
                             value = surResult.stringValue ?: ""
                         } else if (surResult.type.isBigDecimalType()) {
@@ -379,8 +379,8 @@ class SurveyService {
 
                     subscription = surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(contextOrg) ?: null
                     row.add([field: surveyConfig.getConfigNameShort() ?: "", style: null])
-                    row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
-                    row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
+                    row.add([field: subscription.providers.join(","), style: null])
+                    row.add([field: subscription.vendors.join(", "), style: null])
 
                     List licenseNames = []
                     Links.findAllByDestinationSubscriptionAndLinkType(subscription, RDStore.LINKTYPE_LICENSE).each { Links li ->
@@ -388,16 +388,16 @@ class SurveyService {
                         licenseNames << l.reference
                     }
                     row.add([field: licenseNames ? licenseNames.join(", ") : '', style: null])
-                    List packageNames = subscription?.packages?.collect {
+                    List packageNames = subscription.packages?.collect {
                         it.pkg.name
                     }
                     row.add([field: packageNames ? packageNames.join(", ") : '', style: null])
-                    row.add([field: subscription?.status?.getI10n("value") ?: '', style: null])
-                    row.add([field: subscription?.kind?.getI10n("value") ?: '', style: null])
-                    row.add([field: subscription?.form?.getI10n("value") ?: '', style: null])
-                    row.add([field: subscription?.resource?.getI10n("value") ?: '', style: null])
-                    row.add([field: subscription?.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
-                    row.add([field: subscription?.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
+                    row.add([field: subscription.status?.getI10n("value") ?: '', style: null])
+                    row.add([field: subscription.kind?.getI10n("value") ?: '', style: null])
+                    row.add([field: subscription.form?.getI10n("value") ?: '', style: null])
+                    row.add([field: subscription.resource?.getI10n("value") ?: '', style: null])
+                    row.add([field: subscription.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
+                    row.add([field: subscription.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
 
                     if (surveyConfig.subSurveyUseForTransfer) {
                         CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, contextOrg), RDStore.COST_ITEM_DELETED)
@@ -541,10 +541,10 @@ class SurveyService {
                     }
 
                     if (surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
-                        row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
-                        row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
+                        row.add([field: subscription.providers.join(", "), style: null])
+                        row.add([field: subscription.vendors.join(", "), style: null])
 
-                        row.add([field: subscription?.status?.getI10n("value") ?: '', style: null])
+                        row.add([field: subscription.status?.getI10n("value") ?: '', style: null])
 
                         CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, surveyOrg.org), RDStore.COST_ITEM_DELETED)
 
@@ -620,10 +620,10 @@ class SurveyService {
 
                 if (surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
                     subscription = surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(contextOrg) ?: null
-                    row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
-                    row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
+                    row.add([field: subscription.providers.join(", "), style: null])
+                    row.add([field: subscription.vendors.join(", "), style: null])
 
-                    row.add([field: subscription?.status?.getI10n("value") ?: '', style: null])
+                    row.add([field: subscription.status?.getI10n("value") ?: '', style: null])
 
                     CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, contextOrg), RDStore.COST_ITEM_DELETED)
 
@@ -737,9 +737,9 @@ class SurveyService {
                         row.add([field: surveyResult.surveyConfig.comment ?: '', style: null])
 
                         if (surveyResult.surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
-                            //Performance lastig providers und agencies
-                            row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
-                            row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
+                            //Performance lastig providers und vendors
+                            row.add([field: subscription.providers.join(", "), style: null])
+                            row.add([field: subscription.vendors.join(", "), style: null])
 
                             List licenseNames = []
                             Links.findAllByDestinationSubscriptionAndLinkType(subscription,RDStore.LINKTYPE_LICENSE).each { Links li ->
@@ -747,17 +747,17 @@ class SurveyService {
                             }
                             row.add([field: licenseNames ? licenseNames.join(", ") : '', style: null])
 
-                            List packageNames = subscription?.packages?.collect {
+                            List packageNames = subscription.packages?.collect {
                                 it.pkg.name
                             }
                             row.add([field: packageNames ? packageNames.join(", ") : '', style: null])
 
-                            row.add([field: subscription?.status?.getI10n("value") ?: '', style: null])
-                            row.add([field: subscription?.kind?.getI10n("value") ?: '', style: null])
-                            row.add([field: subscription?.form?.getI10n("value") ?: '', style: null])
-                            row.add([field: subscription?.resource?.getI10n("value") ?: '', style: null])
-                            row.add([field: subscription?.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
-                            row.add([field: subscription?.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
+                            row.add([field: subscription.status?.getI10n("value") ?: '', style: null])
+                            row.add([field: subscription.kind?.getI10n("value") ?: '', style: null])
+                            row.add([field: subscription.form?.getI10n("value") ?: '', style: null])
+                            row.add([field: subscription.resource?.getI10n("value") ?: '', style: null])
+                            row.add([field: subscription.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
+                            row.add([field: subscription.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
 
                                 CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg, RDStore.COST_ITEM_DELETED)
 

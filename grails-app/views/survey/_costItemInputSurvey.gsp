@@ -3,7 +3,7 @@
 
 <g:hiddenField name="shortcode" value="${contextService.getOrg().shortcode}"/>
 <g:if test="${setting == 'bulkForAll'}">
-    <g:hiddenField name="surveyConfig" value="${surveyConfig.class.getName()}:${surveyConfig.id}"/>
+    <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
     <g:hiddenField name="surveyOrgs" value="${surveyOrgList.join(",")}"/>
 </g:if>
 <g:else>

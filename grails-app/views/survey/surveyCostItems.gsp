@@ -127,31 +127,57 @@
                     params="${params}">
 
                 <div id="bulkCostItems" class="hidden">
-                    <h3 class="ui header"><span class="la-long-tooltip la-popup-tooltip la-delay"
-                                                data-position="right center"
-                                                data-content="${message(code: 'surveyCostItems.bulkOption.info')}">
-                        ${message(code: 'surveyCostItems.bulkOption.label')}
-                        <i class="question circle icon"></i>
-                    </span></h3>
+                    <g:if test="${countCostItems == 0}">
+                        <ui:msg icon="info" message="surveyCostItems.bulkOption.info"/>
+                    </g:if>
+                    <g:else>
+                        <h3 class="ui header"><span class="la-long-tooltip la-popup-tooltip la-delay"
+                                                    data-position="right center"
+                                                    data-content="${message(code: 'surveyCostItems.bulkOption.info')}">
+                            ${message(code: 'surveyCostItems.bulkOption.label')}
+                            <i class="question circle icon"></i>
+                        </span></h3>
 
-                    <div class="ui basic segment">
+                        <div class="ui basic segment">
 
-                        <laser:render template="costItemInputSurvey"/>
+                            <laser:render template="costItemInputSurvey"/>
 
-                        <g:if test="${params.tab == 'selectedSubParticipants'}">
+                            <g:if test="${params.tab == 'selectedSubParticipants'}">
+                                <div class="ui horizontal divider"><g:message code="search.advancedSearch.option.OR"/></div>
+
+                                <div class="fields la-forms-grid">
+                                    <fieldset class="sixteen wide field la-account-currency">
+                                        <div class="field center aligned">
+
+                                            <label>${message(code: 'surveyCostItems.bulkOption.percentOnOldPrice')}</label>
+
+                                            <div class="ui right labeled input">
+                                                <input type="number"
+                                                       name="percentOnOldPrice"
+                                                       id="percentOnOldPrice"
+                                                       placeholder="${g.message(code: 'surveyCostItems.bulkOption.percentOnOldPrice')}"
+                                                       value="" step="0.01"/>
+
+                                                <div class="ui basic label">%</div>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </g:if>
+
                             <div class="ui horizontal divider"><g:message code="search.advancedSearch.option.OR"/></div>
 
                             <div class="fields la-forms-grid">
                                 <fieldset class="sixteen wide field la-account-currency">
                                     <div class="field center aligned">
 
-                                        <label>${message(code: 'surveyCostItems.bulkOption.percentOnOldPrice')}</label>
+                                        <label>${message(code: 'surveyCostItems.bulkOption.percentOnSurveyPrice')}</label>
 
                                         <div class="ui right labeled input">
                                             <input type="number"
-                                                   name="percentOnOldPrice"
-                                                   id="percentOnOldPrice"
-                                                   placeholder="${g.message(code: 'surveyCostItems.bulkOption.percentOnOldPrice')}"
+                                                   name="percentOnSurveyPrice"
+                                                   id="percentOnSurveyPrice"
+                                                   placeholder="${g.message(code: 'surveyCostItems.bulkOption.percentOnSurveyPrice')}"
                                                    value="" step="0.01"/>
 
                                             <div class="ui basic label">%</div>
@@ -159,40 +185,20 @@
                                     </div>
                                 </fieldset>
                             </div>
-                        </g:if>
 
-                        <div class="ui horizontal divider"><g:message code="search.advancedSearch.option.OR"/></div>
-
-                        <div class="fields la-forms-grid">
-                            <fieldset class="sixteen wide field la-account-currency">
-                                <div class="field center aligned">
-
-                                    <label>${message(code: 'surveyCostItems.bulkOption.percentOnSurveyPrice')}</label>
-
-                                    <div class="ui right labeled input">
-                                        <input type="number"
-                                               name="percentOnSurveyPrice"
-                                               id="percentOnSurveyPrice"
-                                               placeholder="${g.message(code: 'surveyCostItems.bulkOption.percentOnSurveyPrice')}"
-                                               value="" step="0.01"/>
-
-                                        <div class="ui basic label">%</div>
-                                    </div>
-                                </div>
-                            </fieldset>
                         </div>
 
-                    </div>
+                        <div class="two fields">
+                            <div class="eight wide field" style="text-align: left;">
+                                <button class="ui button"
+                                        type="submit">${message(code: 'default.button.save_changes')}</button>
+                            </div>
 
-                    <div class="two fields">
-                        <div class="eight wide field" style="text-align: left;">
-                            <button class="ui button"
-                                    type="submit">${message(code: 'default.button.save_changes')}</button>
+                            <div class="eight wide field" style="text-align: right;">
+                            </div>
                         </div>
+                    </g:else>
 
-                        <div class="eight wide field" style="text-align: right;">
-                        </div>
-                    </div>
 
                 </div>
 

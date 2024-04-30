@@ -165,7 +165,7 @@
     <table class="ui celled sortable table la-js-responsive-table la-table">
         <thead>
         <tr>
-            <g:if test="${showCheckbox}">
+            <g:if test="${showCheckboxForParticipantsHasAccess}">
                 <th>
                     <g:if test="${surveyParticipantsHasAccess}">
                         <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
@@ -251,7 +251,7 @@
                 <% surResults << SurveyResult.findByParticipantAndSurveyConfigAndType(participant, surveyConfig, surveyProperty) %>
             </g:each>
             <tr>
-                <g:if test="${showCheckbox}">
+                <g:if test="${showCheckboxForParticipantsHasAccess}">
                     <td>
                         <g:checkBox name="selectedOrgs" value="${participant.id}" checked="false"/>
                     </td>
@@ -579,7 +579,7 @@
         </tbody>
         <tfoot>
         <tr>
-            <g:if test="${showCheckbox}">
+            <g:if test="${showCheckboxForParticipantsHasAccess}">
                 <td>
                 </td>
             </g:if>
@@ -638,10 +638,16 @@
                         </g:if>
                     </td>
                 </g:if>
+                <g:elseif test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
+                    <g:each in="${surResults}" var="resultProperty">
+                        <td></td>
+                    </g:each>
+                </g:elseif>
                 <g:else>
                     <td></td>
                 </g:else>
             </g:each>
+            <td></td>
         </tr>
         </tfoot>
     </table>
@@ -706,12 +712,10 @@
     <table class="ui celled sortable table la-js-responsive-table la-table">
         <thead>
         <tr>
-            <g:if test="${showCheckbox}">
-                    <g:if test="${surveyParticipantsHasNotAccess && !(actionName in ['openParticipantsAgain', 'participantsReminder']) && params.tab != 'participantsViewAllNotFinish'}">
+            <g:if test="${showCheckboxForParticipantsHasNoAccess}">
                         <th>
                         <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
                         </th>
-                    </g:if>
             </g:if>
 
             <g:each in="${tmplConfigShow}" var="tmplConfigItem" status="i">
@@ -795,12 +799,10 @@
             </g:each>
 
             <tr>
-                <g:if test="${showCheckbox}">
-                    <g:if test="${!(actionName in ['openParticipantsAgain', 'participantsReminder']) && params.tab != 'participantsViewAllNotFinish'}">
+                <g:if test="${showCheckboxForParticipantsHasNoAccess}">
                     <td>
                         <g:checkBox name="selectedOrgs" value="${participant.id}" checked="false"/>
                     </td>
-                    </g:if>
                 </g:if>
                 <g:each in="${tmplConfigShow}" var="tmplConfigItem">
 
@@ -1123,7 +1125,7 @@
         </tbody>
         <tfoot>
         <tr>
-            <g:if test="${showCheckbox}">
+            <g:if test="${showCheckboxForParticipantsHasNoAccess}">
                 <td>
                 </td>
             </g:if>
@@ -1182,6 +1184,11 @@
                         </g:if>
                     </td>
                 </g:if>
+                <g:elseif test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
+                    <g:each in="${surResults}" var="resultProperty">
+                        <td></td>
+                    </g:each>
+                </g:elseif>
                 <g:else>
                     <td></td>
                 </g:else>
@@ -1256,7 +1263,7 @@
 
 
 <laser:script file="${this.getGroovyPageFileName()}">
-<g:if test="${showCheckbox}">
+<g:if test="${showCheckboxForParticipantsHasAccess || showCheckboxForParticipantsHasNoAccess}">
     $('#orgListToggler').click(function () {
         if ($(this).prop('checked')) {
             $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', true)

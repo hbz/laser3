@@ -2808,33 +2808,33 @@ join sub.orgRelations or_sub where
                 }
             }
         }
-        sourceSub.getAgencies().each { agency ->
+        sourceSub.getVendors().each { agency ->
             RefdataValue refdataValue = RDStore.PRS_RESP_SPEC_SUB_EDITOR
 
             Person.getPublicByOrgAndObjectResp(agency, sourceSub, 'Specific subscription editor').each { prs ->
-                if(!(agency in targetSub.orgRelations.org)){
-                    OrgRole or = OrgRole.findByOrgAndSub(agency, sourceSub)
-                    OrgRole newOrgRole = new OrgRole()
-                    InvokerHelper.setProperties(newOrgRole, or.properties)
-                    newOrgRole.sub = targetSub
-                    newOrgRole.save()
+                if(!(agency in targetSub.vendors)){
+                    VendorRole vr = VendorRole.findByVendorAndSub(agency, sourceSub)
+                    VendorRole newVendorRole = new VendorRole()
+                    InvokerHelper.setProperties(newVendorRole, vr.properties)
+                    newVendorRole.sub = targetSub
+                    newVendorRole.save()
                 }
-                if(!PersonRole.findWhere(prs: prs, org: agency, responsibilityType: refdataValue, sub: targetSub)){
-                    PersonRole newPrsRole = new PersonRole(prs: prs, org: agency, sub: targetSub, responsibilityType: refdataValue)
+                if(!PersonRole.findWhere(prs: prs, vendor: agency, responsibilityType: refdataValue, sub: targetSub)){
+                    PersonRole newPrsRole = new PersonRole(prs: prs, vendor: agency, sub: targetSub, responsibilityType: refdataValue)
                     newPrsRole.save()
                 }
             }
 
             Person.getPrivateByOrgAndObjectRespFromAddressbook(agency, sourceSub, 'Specific subscription editor', contextService.getOrg()).each { prs ->
-                if(!(agency in targetSub.orgRelations.org)){
-                    OrgRole or = OrgRole.findByOrgAndSub(agency, sourceSub)
-                    OrgRole newOrgRole = new OrgRole()
-                    InvokerHelper.setProperties(newOrgRole, or.properties)
-                    newOrgRole.sub = targetSub
-                    newOrgRole.save()
+                if(!(agency in targetSub.vendors)){
+                    VendorRole vr = VendorRole.findByVendorAndSub(agency, sourceSub)
+                    VendorRole newVendorRole = new VendorRole()
+                    InvokerHelper.setProperties(newVendorRole, vr.properties)
+                    newVendorRole.sub = targetSub
+                    newVendorRole.save()
                 }
-                if(!PersonRole.findWhere(prs: prs, org: agency, responsibilityType: refdataValue, sub: targetSub)){
-                    PersonRole newPrsRole = new PersonRole(prs: prs, org: agency, sub: targetSub, responsibilityType: refdataValue)
+                if(!PersonRole.findWhere(prs: prs, vendor: agency, responsibilityType: refdataValue, sub: targetSub)){
+                    PersonRole newPrsRole = new PersonRole(prs: prs, vendor: agency, sub: targetSub, responsibilityType: refdataValue)
                     newPrsRole.save()
                 }
             }
