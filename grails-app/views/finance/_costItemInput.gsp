@@ -580,10 +580,16 @@
             }
         },
         checkValues: function () {
-            if ( (JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val()) * JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costCurrencyRate.val(), true)).toFixed(2) !== JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val()).toFixed(2) ) {
-                //console.log("inserted values are: "+JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val())+" * "+JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costCurrencyRate.val(), true)+" = "+JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val()).toFixed(2)+", correct would be: "+(JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val()) * JSPC.app.finance${idSuffix}.costCurrencyRate.val(), true).toFixed(2));
-                JSPC.app.finance${idSuffix}.costElems.parent('.field').addClass('error');
-                return false;
+            if(JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costCurrencyRate.val()) > 0) {
+                if ( (JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val()) * JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costCurrencyRate.val(), true)).toFixed(2) !== JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val()).toFixed(2) ) {
+                    //console.log("inserted values are: "+JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val())+" * "+JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costCurrencyRate.val(), true)+" = "+JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val()).toFixed(2)+", correct would be: "+(JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val()) * JSPC.app.finance${idSuffix}.costCurrencyRate.val(), true).toFixed(2));
+                    JSPC.app.finance${idSuffix}.costElems.parent('.field').addClass('error');
+                    return false;
+                }
+                else {
+                    JSPC.app.finance${idSuffix}.costElems.parent('.field').removeClass('error');
+                    return true;
+                }
             }
             else {
                 JSPC.app.finance${idSuffix}.costElems.parent('.field').removeClass('error');
@@ -606,15 +612,19 @@
             let billingCurrencyAfterRounding = roundB ? Math.round(parsedBillingCurrency) : parsedBillingCurrency
             let localCurrencyAfterRounding = roundB ? Math.round(parsedLocalCurrency) : parsedLocalCurrency
             JSPC.app.finance${idSuffix}.costBillingCurrency.val(JSPC.app.finance${idSuffix}.doubleToString(billingCurrencyAfterRounding));
-            JSPC.app.finance${idSuffix}.costLocalCurrency.val(JSPC.app.finance${idSuffix}.doubleToString(localCurrencyAfterRounding));
+            if(parsedCurrencyRate > 0) {
+                JSPC.app.finance${idSuffix}.costLocalCurrency.val(JSPC.app.finance${idSuffix}.doubleToString(localCurrencyAfterRounding));
+            }
             let billingAfterTax = roundF ? Math.round(billingCurrencyAfterRounding * taxF) : billingCurrencyAfterRounding * taxF;
-            let localAfterTax = roundF ? Math.round(localCurrencyAfterRounding * taxF ) : localCurrencyAfterRounding * taxF;
             JSPC.app.finance${idSuffix}.costBillingCurrencyAfterTax.val(
                  JSPC.app.finance${idSuffix}.doubleToString(billingAfterTax)
             );
-            JSPC.app.finance${idSuffix}.costLocalCurrencyAfterTax.val(
-                 JSPC.app.finance${idSuffix}.doubleToString(localAfterTax)
-            );
+            if(parsedCurrencyRate > 0) {
+                let localAfterTax = roundF ? Math.round(localCurrencyAfterRounding * taxF ) : localCurrencyAfterRounding * taxF;
+                JSPC.app.finance${idSuffix}.costLocalCurrencyAfterTax.val(
+                    JSPC.app.finance${idSuffix}.doubleToString(localAfterTax)
+                );
+            }
         },
         stringToDouble: function (input, currencyRate = false) {
             let output = 0.0;
@@ -685,7 +695,9 @@
                 if (! JSPC.app.finance${idSuffix}.isError(JSPC.app.finance${idSuffix}.costLocalCurrency) && ! JSPC.app.finance${idSuffix}.isError(JSPC.app.finance${idSuffix}.costCurrencyRate)) {
                     let parsedLocalCurrency = JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val().trim());
                     let parsedCurrencyRate = JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costCurrencyRate.val().trim(), true);
-                    JSPC.app.finance${idSuffix}.costBillingCurrency.val(JSPC.app.finance${idSuffix}.doubleToString((parsedLocalCurrency / parsedCurrencyRate)));
+                    if (parsedCurrencyRate > 0) {
+                        JSPC.app.finance${idSuffix}.costBillingCurrency.val(JSPC.app.finance${idSuffix}.doubleToString((parsedLocalCurrency / parsedCurrencyRate)));
+                    }
                     $(".la-account-currency").find(".field").removeClass("error");
                     JSPC.app.finance${idSuffix}.calcTaxResults();
                 }
@@ -703,7 +715,12 @@
                 if (! JSPC.app.finance${idSuffix}.isError(JSPC.app.finance${idSuffix}.costBillingCurrency) && ! JSPC.app.finance${idSuffix}.isError(JSPC.app.finance${idSuffix}.costCurrencyRate)) {
                     let parsedBillingCurrency = JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val().trim());
                     let parsedCurrencyRate = JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costCurrencyRate.val().trim(), true);
-                    JSPC.app.finance${idSuffix}.costLocalCurrency.val((parsedBillingCurrency * parsedCurrencyRate));
+                    if (parsedCurrencyRate === 0) {
+                        JSPC.app.finance${idSuffix}.costLocalCurrency.val("");
+                    }
+                    else {
+                        JSPC.app.finance${idSuffix}.costLocalCurrency.val((parsedBillingCurrency * parsedCurrencyRate));
+                    }
                     $(".la-account-currency").find(".field").removeClass("error");
                     JSPC.app.finance${idSuffix}.calcTaxResults();
                 }
@@ -736,6 +753,9 @@
                     if(allSet) {
                         JSPC.app.finance${idSuffix}.calcTaxResults($(this).attr("id") === JSPC.app.finance${idSuffix}.costLocalCurrency.attr("id")); //will set boolean localHandInput
                     }
+                    else if(parsedCurrencyRate == 0) {
+                        JSPC.app.finance${idSuffix}.calcTaxResults()
+                    }
                     else {
                         if(JSPC.app.finance${idSuffix}.costLocalCurrency.val().length > 0 && JSPC.app.finance${idSuffix}.costCurrencyRate.val().length > 0 && parsedCurrencyRate > 0) {
                             JSPC.app.finance${idSuffix}.calculateBillingCurrency.click();
@@ -743,7 +763,7 @@
                         if(JSPC.app.finance${idSuffix}.costBillingCurrency.val().length > 0 && JSPC.app.finance${idSuffix}.costLocalCurrency.val().length > 0 && parsedBillingCurrency > 0 && parsedLocalCurrency > 0) {
                             JSPC.app.finance${idSuffix}.calculateCurrencyRate.click();
                         }
-                        if(JSPC.app.finance${idSuffix}.costBillingCurrency.val().length > 0 && JSPC.app.finance${idSuffix}.costCurrencyRate.val().length > 0) {
+                        if(JSPC.app.finance${idSuffix}.costBillingCurrency.val().length > 0 && JSPC.app.finance${idSuffix}.costCurrencyRate.val().length > 0 && parsedCurrencyRate > 0) {
                             JSPC.app.finance${idSuffix}.calculateLocalCurrency.click();
                         }
                     }
