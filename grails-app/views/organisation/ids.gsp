@@ -133,23 +133,23 @@
                 <tbody>
                     <g:each in="${customerIdentifier}" var="ci" status="rowno">
                         <g:if test="${ci.isPublic || (ci.owner.id == contextService.getOrg().id) || isGrantedOrgRoleAdminOrOrgEditor}">
+                            <%  boolean editable_this_ci = (ci.customer.id == institution.id || isComboRelated) %>
                             <tr>
                                 <td>${rowno+1}</td>
                                 <td>
                                     ${ci.getProvider()}
                                 </td>
                                 <td>${ci.platform}</td>
-                                <td>${ci.value}</td>
-                                <td>${ci.requestorKey}</td>
-                                <td>${ci.note}</td>
+                                <td><ui:xEditable owner="${ci}" field="value" overwriteEditable="${editable_customeridentifier && editable_this_ci}" /></td>
+                                <td><ui:xEditable owner="${ci}" field="requestorKey" overwriteEditable="${editable_customeridentifier && editable_this_ci}" /></td>
+                                <td><ui:xEditable owner="${ci}" field="note" overwriteEditable="${editable_customeridentifier && editable_this_ci}" /></td>
                                 <td>
                                     %{-- TODO: erms-5495 --}%
-                                    <%  boolean editable_this_ci = (ci.customer.id == institution.id || isComboRelated) %>
                                     <g:if test="${editable_customeridentifier && editable_this_ci}">
-                                        <button class="ui icon button blue la-modern-button" onclick="JSPC.app.IdContoller.editCustomerIdentifier(${ci.id});"
+                                        %{--}<button class="ui icon button blue la-modern-button" onclick="JSPC.app.IdContoller.editCustomerIdentifier(${ci.id});"
                                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                             <i aria-hidden="true" class="write icon"></i>
-                                        </button>
+                                        </button>--}%
                                         <g:link controller="organisation"
                                                 action="deleteCustomerIdentifier"
                                                 id="${orgInstance.id}"
