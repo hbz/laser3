@@ -51,9 +51,6 @@ class OrganisationFilter extends BaseFilter {
 //            case 'all-provider':
 //                queryParams.orgIdList = _getAllProviderAndAgencyIdList( [RDStore.OT_PROVIDER] )
 //                break
-//            case 'all-providerAndAgency':
-//                queryParams.orgIdList = _getAllProviderAndAgencyIdList( [RDStore.OT_PROVIDER, RDStore.OT_AGENCY] )
-//                break
             case 'my-inst':
                 queryParams.orgIdList = Org.executeQuery(
                         'select o.id from Org as o, Combo as c where c.fromOrg = o and c.toOrg = :org and c.type = :comboType and (o.status is null or o.status != :orgStatus)',
@@ -90,9 +87,6 @@ where (consOr.roleType = :consRoleType)
                 break
 //            case 'my-provider':
 //                queryParams.orgIdList = _getMyProviderAndAgencyIdList( [RDStore.OR_PROVIDER] )
-//                break
-//            case 'my-providerAndAgency':
-//                queryParams.orgIdList = _getMyProviderAndAgencyIdList( [RDStore.OR_PROVIDER, RDStore.OR_AGENCY] )
 //                break
         }
 
@@ -221,23 +215,4 @@ where (consOr.roleType = :consRoleType)
 //        idList
 //    }
 //
-//    static List<Long> _getMyProviderAndAgencyIdList(List roleTypes) {
-//
-//        ContextService contextService = BeanStore.getContextService()
-//
-//        List<Long> idList = Org.executeQuery( '''
-//            select distinct(prov.org.id) from OrgRole prov
-//                join prov.sub sub
-//                join sub.orgRelations subOr
-//            where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :org and subOr.roleType in (:subRoleTypes))
-//                and (prov.org.status is null or prov.org.status != :orgStatus)
-//            ''',
-//            [
-//                    org: contextService.getOrg(), orgStatus: RDStore.ORG_STATUS_DELETED,
-//                    subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA],
-//                    provRoleTypes: roleTypes
-//            ]
-//        )
-//        idList
-//    }
 }

@@ -123,7 +123,7 @@ class MyInstitutionController  {
         if (params.init) {
             result.filter = params.filter
             result.xhr = true
-            render template: '/myInstitution/reporting/filter/form', model: result
+            render template: '/myInstitution/reporting/filter/filter_form', model: result
             return
         }
         else if (params.filter) {

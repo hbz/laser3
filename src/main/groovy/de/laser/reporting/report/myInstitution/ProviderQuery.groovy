@@ -33,15 +33,15 @@ class ProviderQuery extends BaseQuery {
 
             handleGenericAllQuery(
                     params.query,
-                    'select v.name, v.name, count(v.name) from Vendor v where v.id in (:idList) group by v.name order by v.name',
-                    'select v.id from Vendor v where v.id in (:idList) and v.name = :d order by v.id',
+                    'select pro.name, pro.name, count(pro.name) from Provider pro where pro.id in (:idList) group by pro.name order by pro.name',
+                    'select pro.id from Provider pro where pro.id in (:idList) and pro.name = :d order by pro.id',
                     idList,
                     result
             )
 //            handleGenericAllSignOrphanedQuery(
 //                    params.query,
-//                    'select v.id, v.name, 1, false from Vendor v where v.id in (:idList) order by v.name',
-//                    'select v.id from Vendor v where v.id in (:idList) and v.name = :d order by v.id',
+//                    'select pro.id, pro.name, 1, false from Provider pro where pro.id in (:idList) order by pro.name',
+//                    'select pro.id from Provider pro where pro.id in (:idList) and pro.name = :d order by pro.id',
 //                    idList,
 //                    orphanedIdList,
 //                    result
@@ -133,9 +133,9 @@ class ProviderQuery extends BaseQuery {
 
         handleGenericRefdataQuery(
                 query,
-                PROPERTY_QUERY[0] + 'from Vendor v join v.' + refdata + ' p where v.id in (:idList)' + PROPERTY_QUERY[1],
-                'select v.id from Vendor v join v.' + refdata + ' p where v.id in (:idList) and p.id = :d order by v.name',
-                'select distinct v.id from Vendor v where v.id in (:idList) and v.' + refdata + ' is null',
+                PROPERTY_QUERY[0] + 'from Provider pro join pro.' + refdata + ' p where pro.id in (:idList)' + PROPERTY_QUERY[1],
+                'select pro.id from Provider pro join pro.' + refdata + ' p where pro.id in (:idList) and p.id = :d order by pro.name',
+                'select distinct pro.id from Provider pro where pro.id in (:idList) and pro.' + refdata + ' is null',
                 idList,
                 result
         )

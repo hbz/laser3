@@ -20,14 +20,14 @@ class ProviderFilter extends BaseFilter {
         // notice: params is cloned
         Map<String, Object> filterResult = [ labels: [:], data: [:] ]
 
-        List<String> queryParts         = [ 'select distinct (ven.id) from Vendor ven']
-        List<String> whereParts         = [ 'where ven.id in (:providerIdList)']
+        List<String> queryParts         = [ 'select distinct (pro.id) from Provider pro']
+        List<String> whereParts         = [ 'where pro.id in (:providerIdList)']
         Map<String, Object> queryParams = [ providerIdList: [] ]
 
         ContextService contextService = BeanStore.getContextService()
 
         String filterSource = getCurrentFilterSource(params, 'provider')
-        filterResult.labels.put('base', [source: BaseConfig.getSourceLabel(BaseConfig.KEY_VENDOR, filterSource)])
+        filterResult.labels.put('base', [source: BaseConfig.getSourceLabel(BaseConfig.KEY_PROVIDER, filterSource)])
 
         switch (filterSource) {
             case 'all-provider':
@@ -46,7 +46,7 @@ class ProviderFilter extends BaseFilter {
 
             if (params.get(key)) {
                 String p = key.replaceFirst(cmbKey,'')
-                String pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_VENDOR ).base, p)
+                String pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_PROVIDER ).base, p)
 
                 def filterLabelValue
 
@@ -56,7 +56,7 @@ class ProviderFilter extends BaseFilter {
 
                         String modifier = getDateModifier( params.get(key + '_modifier') )
 
-                        whereParts.add( 'ven.' + p + ' ' + modifier + ' :p' + (++pCount) )
+                        whereParts.add( 'pro.' + p + ' ' + modifier + ' :p' + (++pCount) )
                         queryParams.put( 'p' + pCount, DateUtils.parseDateGeneric(params.get(key)) )
 
                         filterLabelValue = getDateModifier(params.get(key + '_modifier')) + ' ' + params.get(key)
@@ -64,8 +64,8 @@ class ProviderFilter extends BaseFilter {
                     else if (Vendor.getDeclaredField(p).getType() in [boolean, Boolean]) {
                         RefdataValue rdv = RefdataValue.get(params.long(key))
 
-                        if (rdv == RDStore.YN_YES)     { whereParts.add( 'ven.' + p + ' is true' ) }
-                        else if (rdv == RDStore.YN_NO) { whereParts.add( 'ven.' + p + ' is false' ) }
+                        if (rdv == RDStore.YN_YES)     { whereParts.add( 'pro.' + p + ' is true' ) }
+                        else if (rdv == RDStore.YN_NO) { whereParts.add( 'pro.' + p + ' is false' ) }
 
                         filterLabelValue = rdv.getI10n('value')
                     }
@@ -76,7 +76,7 @@ class ProviderFilter extends BaseFilter {
                 }
                 // --> refdata generic
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA) {
-                    whereParts.add( 'ven.' + p + '.id = :p' + (++pCount) )
+                    whereParts.add( 'pro.' + p + '.id = :p' + (++pCount) )
                     queryParams.put( 'p' + pCount, params.long(key) )
 
                     filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
@@ -135,14 +135,14 @@ class ProviderFilter extends BaseFilter {
                 }
 
                 if (filterLabelValue) {
-                    filterResult.labels.get('base').put(p, [label: GenericHelper.getFieldLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_VENDOR ).base, p), value: filterLabelValue])
+                    filterResult.labels.get('base').put(p, [label: GenericHelper.getFieldLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_PROVIDER ).base, p), value: filterLabelValue])
                 }
             }
         }
 
         String query = queryParts.unique().join(' , ') + ' ' + whereParts.join(' and ')
 
-//        println 'VendorFilter.filter() -->'
+//        println 'ProviderFilter.filter() -->'
 //        println query
 //        println queryParams
 //        println whereParts
@@ -157,8 +157,8 @@ class ProviderFilter extends BaseFilter {
     static List<Long> _getAllProviderIdList() {
 
         List<Long> idList = Vendor.executeQuery(
-                'select ven.id from Vendor ven where (ven.status is null or ven.status != :vendorStatus)',
-                [vendorStatus: RDStore.VENDOR_STATUS_DELETED]
+                'select pro.id from Provider pro where (pro.status is null or pro.status != :providerStatus)',
+                [providerStatus: RDStore.VENDOR_STATUS_DELETED]
         )
 
         idList
@@ -169,8 +169,8 @@ class ProviderFilter extends BaseFilter {
         ContextService contextService = BeanStore.getContextService()
 
         List<Long> idList = Vendor.executeQuery(
-                'select ven.id from Vendor ven where (ven.status is null or ven.status != :vendorStatus)',
-                [vendorStatus: RDStore.VENDOR_STATUS_DELETED]
+                'select pro.id from Provider pro where (pro.status is null or pro.status != :providerStatus)',
+                [providerStatus: RDStore.VENDOR_STATUS_DELETED]
         )
 
 //        List<Long> idList = Org.executeQuery( '''
