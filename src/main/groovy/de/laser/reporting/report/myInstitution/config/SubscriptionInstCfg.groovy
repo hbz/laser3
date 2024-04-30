@@ -78,6 +78,11 @@ class SubscriptionInstCfg extends BaseConfig {
                                              chartTemplate      : 'annual',
                                              chartLabels        : []
                                      ],
+                                     'subscription-x-vendor' : [
+                                             detailsTemplate     : 'subscription',
+                                             chartTemplate       : 'generic',
+                                             chartLabels         : []
+                                     ],
                                      'subscription-x-license' : [
                                              detailsTemplate     : 'subscription',
                                              chartTemplate       : 'generic',
@@ -198,31 +203,5 @@ class SubscriptionInstCfg extends BaseConfig {
 //                            ]
 //                    ]
 //            ],
-
-//            agency : [
-//                    meta : [
-//                            class:  Org,
-//                            cfgKey: BaseConfig.KEY_SUBSCRIPTION
-//                    ],
-//                    source : [
-//                            'depending-agency'
-//                    ],
-//                    fields : [
-//                            'country'   : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
-//                            'region'    : [type: BaseConfig.FIELD_TYPE_REFDATA, spec: BaseConfig.FIELD_IS_VIRTUAL ],
-//                            'orgType'   : [ type: BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE ]
-//                    ],
-//                    filter : [
-//                            default : []
-//                    ],
-//                    query : [
-//                            default : [
-//                                    agency : [
-//                                           'agency-orgType' : [ 'generic.org.orgType' ],
-//                                           'agency-*' :       [ 'generic.all' ]
-//                                    ]
-//                            ]
-//                    ]
-//            ]
     ]
 }

@@ -2,7 +2,7 @@
 <laser:serviceInjection/>
 
 <g:if test="${filterResult}">
-    <g:set var="validFilterResult" value="${filterResult.data.subscriptionIdList || filterResult.data.memberIdList || filterResult.data.consortiumIdList || filterResult.data.providerIdList || filterResult.data.agencyIdList}" />
+    <g:set var="validFilterResult" value="${filterResult.data.subscriptionIdList || filterResult.data.memberIdList || filterResult.data.consortiumIdList || filterResult.data.providerIdList || filterResult.data.vendorIdList}" />
 
     <g:if test="${validFilterResult}">
         <ui:msg class="positive" noClose="true">

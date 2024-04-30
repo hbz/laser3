@@ -16,11 +16,9 @@ class OrganisationConsCfg extends BaseConfig {
                             'all-org',
                             'all-inst',
 //                            'all-provider',
-//                            'all-agency',
 //                            'all-providerAndAgency',
                             'my-inst',
 //                            'my-provider',
-//                            'my-agency',
 //                            'my-providerAndAgency'
                     ],
                     fields : [
@@ -75,11 +73,6 @@ class OrganisationConsCfg extends BaseConfig {
 //                                            'org-orgType': [ 'generic.org.orgType' ]
 //                                    ]
 //                            ],
-//                            agency : [
-//                                    org : [
-//                                            'org-orgType': [ 'generic.org.orgType' ]
-//                                    ]
-//                            ]
                     ],
                     distribution : [
                             default : [

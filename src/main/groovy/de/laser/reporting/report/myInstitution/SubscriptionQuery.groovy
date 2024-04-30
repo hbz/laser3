@@ -6,6 +6,7 @@ import de.laser.Org
 import de.laser.Platform
 import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
+import de.laser.Vendor
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
 import de.laser.reporting.report.myInstitution.base.BaseFilter
@@ -330,6 +331,29 @@ class SubscriptionQuery extends BaseQuery {
                 }
 
                 result.data = result.data.findAll { it[2] > 0 } // remove ms without matching m
+            }
+            else if (params.query in ['subscription-x-vendor']) {
+
+                result.data = Vendor.executeQuery(
+                        'select v.id, v.name, count(*) from VendorRole vr join vr.vendor v where v.id in (:vendorIdList) and vr.subscription.id in (:idList) group by v.id order by v.name',
+                        [vendorIdList: BaseFilter.getCachedFilterIdList('vendor', params), idList: idList]
+                )
+                result.data.each { d ->
+                    result.dataDetails.add([
+                            query : params.query,
+                            id    : d[0],
+                            label : d[1],
+                            idList: Subscription.executeQuery(
+                                    'select sub.id from VendorRole vr join vr.subscription sub join vr.vendor v where sub.id in (:idList) and v.id = :d order by sub.name',
+                                    [idList: idList, d: d[0]]
+                            )
+                    ])
+                }
+
+                List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
+                List<Long> noDataList = nonMatchingIdList ? Subscription.executeQuery('select sub.id from Subscription sub where sub.id in (:idList)', [idList: nonMatchingIdList]) : []
+
+                handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_VENDOR_LABEL, noDataList, result)
             }
         }
 

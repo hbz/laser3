@@ -30,6 +30,7 @@ class BaseQuery {
     static String NO_PLATFORM_LABEL          = 'noPlatform.label'
     static String NO_PLATFORM_PROVIDER_LABEL = 'noPlatformProvider.label'
     static String NO_PROVIDER_LABEL          = 'noProvider.label'
+    static String NO_VENDOR_LABEL            = 'noVendor.label'
     static String NO_STARTDATE_LABEL         = 'noStartDate.label'
     static String NO_ENDDATE_LABEL           = 'noEndDate.label'
 

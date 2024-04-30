@@ -61,9 +61,6 @@
     <g:if test="${filterResult.data.providerIdList}">
         ${message(code: 'reporting.filter.result.and.provider', args: [filterResult.data.providerIdList.size()])}
     </g:if>
-    <g:if test="${filterResult.data.agencyIdList}">
-        ${message(code: 'reporting.filter.result.and.agency', args: [filterResult.data.agencyIdList.size()])}
-    </g:if>
     <g:if test="${filterResult.data.vendorIdList}">
         ${message(code: 'reporting.filter.result.and.vendor', args: [filterResult.data.vendorIdList.size()])}
     </g:if>

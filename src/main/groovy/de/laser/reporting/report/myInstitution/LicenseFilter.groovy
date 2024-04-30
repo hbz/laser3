@@ -342,7 +342,7 @@ class LicenseFilter extends BaseFilter {
         int pCount = 0
 
         getCurrentFilterKeys(params, cmbKey).each { key ->
-            List<String> validPartKeys = ['vendor' /*, 'provider', 'agency' */]
+            List<String> validPartKeys = ['vendor' /*, 'provider'*/]
 
             if (params.get(key)) {
                 String p = key.replaceFirst(cmbKey,'')

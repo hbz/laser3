@@ -51,9 +51,6 @@ class OrganisationFilter extends BaseFilter {
 //            case 'all-provider':
 //                queryParams.orgIdList = _getAllProviderAndAgencyIdList( [RDStore.OT_PROVIDER] )
 //                break
-//            case 'all-agency':
-//                queryParams.orgIdList = _getAllProviderAndAgencyIdList( [RDStore.OT_AGENCY] )
-//                break
 //            case 'all-providerAndAgency':
 //                queryParams.orgIdList = _getAllProviderAndAgencyIdList( [RDStore.OT_PROVIDER, RDStore.OT_AGENCY] )
 //                break
@@ -93,9 +90,6 @@ where (consOr.roleType = :consRoleType)
                 break
 //            case 'my-provider':
 //                queryParams.orgIdList = _getMyProviderAndAgencyIdList( [RDStore.OR_PROVIDER] )
-//                break
-//            case 'my-agency':
-//                queryParams.orgIdList = _getMyProviderAndAgencyIdList( [RDStore.OR_AGENCY] )
 //                break
 //            case 'my-providerAndAgency':
 //                queryParams.orgIdList = _getMyProviderAndAgencyIdList( [RDStore.OR_PROVIDER, RDStore.OR_AGENCY] )
