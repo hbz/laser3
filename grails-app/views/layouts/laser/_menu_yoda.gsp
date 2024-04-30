@@ -90,8 +90,8 @@
 %{--                        ${message(code:'menu.admin.syncManagement.reload')} <i class="dropdown icon"></i>--}%
 %{--                    </div>--}%
 %{--                    <div class="menu" role="menu">--}%
-                        <ui:link addItemAttributes="true" controller="yoda" action="reloadWekbOrg" params="[componentType:GlobalSourceSyncService.ORG_TYPE_PROVIDER]" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.reloadProvider')}</ui:link>
-                        <ui:link addItemAttributes="true" controller="yoda" action="reloadWekbOrg" params="[componentType:GlobalSourceSyncService.ORG_TYPE_VENDOR]" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.reloadAgencies')}</ui:link>
+                        <ui:link addItemAttributes="true" controller="yoda" action="reloadWekbProvider" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.reloadProvider')}</ui:link>
+                        <ui:link addItemAttributes="true" controller="yoda" action="reloadWekbVendor" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.reloadAgencies')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="reloadWekbPlatform" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.reloadPlatform')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'globalUID', objType:'issueEntitlement']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateGlobalUID')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'identifier']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateIdentifiers')}</ui:link>

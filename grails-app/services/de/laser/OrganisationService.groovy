@@ -254,26 +254,6 @@ class OrganisationService {
     }
 
     /**
-     * Gets a (filtered) map of provider records from the we:kb
-     * @param params the request parameters
-     * @param result a result generics map, containing also configuration params for the request
-     * @return a {@link Map} of structure [providerUUID: providerRecord] containing the request results
-     */
-    Map<String, Map> getWekbOrgRecords(GrailsParameterMap params, Map result) {
-        Map<String, Map> records = [:], queryParams = [componentType: 'Org']
-        if (params.curatoryGroup || params.providerRole) {
-            if (params.curatoryGroup)
-                queryParams.curatoryGroupExact = params.curatoryGroup.replaceAll('&', 'ampersand').replaceAll('\\+', '%2B').replaceAll(' ', '%20')
-            if (params.providerRole)
-                queryParams.role = RefdataValue.get(params.providerRole).value.replaceAll(' ', '%20')
-        }
-        Map<String, Object> wekbResult = gokbService.doQuery(result, [max: 10000, offset: 0], queryParams)
-        if(wekbResult.recordsCount > 0)
-            records.putAll(wekbResult.records.collectEntries { Map wekbRecord -> [wekbRecord.uuid, wekbRecord] })
-        records
-    }
-
-    /**
      * Gets all namespaces which have a validation pattern defined
      * @return a {@link Map} containing namespaces with validations in structure:
      * {

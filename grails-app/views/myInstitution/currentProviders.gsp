@@ -11,34 +11,6 @@
                 <ui:exportDropdownItem>
                     <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.PROVIDERS]"/>
                 </ui:exportDropdownItem>
-                <%--
-                <g:if test="${filterSet}">
-                    <ui:exportDropdownItem>
-                        <g:link class="item js-open-confirm-modal"
-                                data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
-                                data-confirm-term-how="ok" controller="myInstitution" action="currentProviders"
-                                params="${params+[exportXLS:true]}">
-                            ${message(code:'default.button.exports.xls')}
-                        </g:link>
-                    </ui:exportDropdownItem>
-                    <ui:exportDropdownItem>
-                        <g:link class="item js-open-confirm-modal"
-                                data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
-                                data-confirm-term-how="ok" controller="myInstitution" action="currentProviders"
-                                params="${params+[format:'csv']}">
-                            ${message(code:'default.button.exports.csv')}
-                        </g:link>
-                    </ui:exportDropdownItem>
-                </g:if>
-                <g:else>
-                    <ui:exportDropdownItem>
-                        <g:link class="item" action="currentProviders" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
-                    </ui:exportDropdownItem>
-                    <ui:exportDropdownItem>
-                        <g:link class="item" action="currentProviders" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
-                    </ui:exportDropdownItem>
-                </g:else>
-                --%>
             </ui:exportDropdown>
             <ui:actionsDropdown>
                 <ui:actionsDropdownItem data-ui="modal" id="copyMailAddresses" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
@@ -52,35 +24,34 @@
 
     <ui:filter>
         <g:form action="currentProviders" method="get" class="ui form">
-            <laser:render template="/templates/filter/orgFilter"
+            <laser:render template="/templates/filter/providerFilter"
                       model="[
                               propList: propList,
-                              orgRoles: orgRoles,
-                              tmplConfigShow: [['name', 'property&value'], ['privateContacts', 'role', 'isMyX']],
+                              tmplConfigShow: [['name', 'property&value'], ['privateContacts', 'isMyX']],
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>
     </ui:filter>
 
     <div class="la-clear-before">
-        <g:if test="${orgList}">
-        <laser:render template="/templates/filter/orgFilterTable"
-                  model="[orgList: orgList,
-                          tmplShowCheckbox: false,
-                          tmplConfigShow: ['lineNumber', 'sortname', 'name', 'altname', /*'numberOfSubscriptions',*/ 'currentSubscriptions', 'marker', 'isWekbCurated']
-                  ]"/>
+        <g:if test="${provList}">
+            <laser:render template="/templates/filter/providerFilterTable"
+                      model="[provList: provList,
+                              tmplShowCheckbox: false,
+                              tmplConfigShow: ['lineNumber', 'sortname', 'name', 'altname', 'currentSubscriptions', 'marker', 'isWekbCurated']
+                      ]"/>
         </g:if>
         <g:else>
             <g:if test="${filterSet}">
-                <br /><strong><g:message code="filter.result.empty.object" args="${[message(code:"default.ProviderAgency.label")]}"/></strong>
+                <br /><strong><g:message code="filter.result.empty.object" args="${[message(code:"default.provider.label")]}"/></strong>
             </g:if>
             <g:else>
-                <br /><strong><g:message code="result.empty.object" args="${[message(code:"default.ProviderAgency.label")]}"/></strong>
+                <br /><strong><g:message code="result.empty.object" args="${[message(code:"default.provider.plural")]}"/></strong>
             </g:else>
         </g:else>
     </div>
 
-    <laser:render template="/templates/copyEmailaddresses" model="[orgList: orgList]"/>
+    <laser:render template="/templates/copyEmailaddresses" model="[orgList: provList]"/>
 
     <ui:paginate total="${orgListTotal}" params="${params}" max="${max}" offset="${offset}" />
 

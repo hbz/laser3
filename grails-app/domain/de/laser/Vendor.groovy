@@ -60,7 +60,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
             supportedLibrarySystems: 'vendor',
             electronicBillings: 'vendor',
             invoiceDispatchs: 'vendor',
-            electronicDeliveryDelays: 'vendor',
+            electronicDeliveryDelays: 'vendor'
     ]
 
     static hasMany = [
@@ -154,7 +154,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
 
     @Override
     boolean isDeleted() {
-        return RDStore.ORG_STATUS_REMOVED.id == status.id
+        return RDStore.VENDOR_STATUS_REMOVED.id == status.id
     }
 
     @Override
@@ -181,9 +181,9 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
     int compareTo(Vendor v) {
         int result = sortname <=> v.sortname
         if(!result)
-            name <=> v.name
+            result = name <=> v.name
         if(!result)
-            id <=> v.id
+            result = id <=> v.id
         result
     }
 
@@ -197,14 +197,18 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         v.sortname = agency.sortname
         v.gokbId = agency.gokbId //for the case vendors have already recorded as orgs by sync
         v.homepage = agency.url
-        if(agency.status == RDStore.ORG_STATUS_CURRENT)
-            v.status = RDStore.VENDOR_STATUS_CURRENT
-        if(agency.status == RDStore.ORG_STATUS_DELETED)
-            v.status = RDStore.VENDOR_STATUS_DELETED
-        if(agency.status == RDStore.ORG_STATUS_RETIRED)
-            v.status = RDStore.VENDOR_STATUS_RETIRED
-        if(agency.status == RDStore.ORG_STATUS_REMOVED)
-            v.status = RDStore.VENDOR_STATUS_REMOVED
+        switch(agency.status) {
+            case RDStore.ORG_STATUS_CURRENT: v.status = RDStore.VENDOR_STATUS_CURRENT
+                break
+            case RDStore.ORG_STATUS_DELETED: v.status = RDStore.VENDOR_STATUS_DELETED
+                break
+            case RDStore.ORG_STATUS_RETIRED: v.status = RDStore.VENDOR_STATUS_RETIRED
+                break
+            case RDStore.ORG_STATUS_REMOVED: v.status = RDStore.VENDOR_STATUS_REMOVED
+                break
+            default: v.status = RDStore.VENDOR_STATUS_CURRENT
+                break
+        }
         v.dateCreated = agency.dateCreated
         agency.contacts.each { Contact c ->
             c.vendor = v
@@ -246,7 +250,11 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
             vp.lastUpdated = op.lastUpdated
             vp.save()
         }
-        v.save()
+        if(!v.save()) {
+            log.error(v.getErrors().getAllErrors().toListString())
+            null
+        }
+        else v
     }
 
     /**

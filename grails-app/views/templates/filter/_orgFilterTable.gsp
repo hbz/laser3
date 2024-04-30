@@ -583,40 +583,6 @@
                     </div>
                 </td>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('currentSubscriptions')}">
-                <td>
-                    <g:if test="${actionName == 'currentProviders'}">
-                        <%
-                            if (params.filterPvd && params.filterPvd != "" && params.list('filterPvd')){
-                                (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(
-                                        [org: org, actionName: actionName, status: RDStore.SUBSCRIPTION_CURRENT.id, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null, providers: params.list('filterPvd')]
-                                    )
-                            } else {
-                                (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(
-                                        [org: org, actionName: actionName, status: RDStore.SUBSCRIPTION_CURRENT.id, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null]
-                                    )
-                            }
-                            List<Subscription> currentSubscriptions = Subscription.executeQuery("select s " + base_qry, qry_params)
-                        %>
-                        <g:if test="${currentSubscriptions}">
-                            <ul class="la-simpleList">
-                                <g:each in="${currentSubscriptions}" var="sub">
-                                    <li><g:link controller="subscription" action="show" id="${sub.id}">${sub}</g:link></li>
-                                </g:each>
-                            </ul>
-                        </g:if>
-                    </g:if>
-                    <g:elseif test="${actionName == 'currentVendors'}">
-                        <g:if test="${currentSubscriptions}">
-                            <ul class="la-simpleList">
-                                <g:each in="${currentSubscriptions.get(org.id)}" var="sub">
-                                    <li><g:link controller="subscription" action="show" id="${sub.id}">${sub}</g:link></li>
-                                </g:each>
-                            </ul>
-                        </g:if>
-                    </g:elseif>
-                </td>
-            </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSurveys')}">
                     <td class="center aligned">
                         <div class="la-flexbox">

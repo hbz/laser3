@@ -167,6 +167,11 @@ class RDStore {
     public final static RefdataValue PLATFORM_STATUS_DELETED    = getRefdataValue('Deleted', RDConstants.PLATFORM_STATUS)
     public final static RefdataValue PLATFORM_STATUS_REMOVED    = getRefdataValue('Removed', RDConstants.PLATFORM_STATUS)
 
+    public final static RefdataValue PROVIDER_STATUS_CURRENT     = getRefdataValue('Current', RDConstants.PROVIDER_STATUS)
+    public final static RefdataValue PROVIDER_STATUS_DELETED     = getRefdataValue('Deleted', RDConstants.PROVIDER_STATUS)
+    public final static RefdataValue PROVIDER_STATUS_REMOVED     = getRefdataValue('Removed', RDConstants.PROVIDER_STATUS)
+    public final static RefdataValue PROVIDER_STATUS_RETIRED     = getRefdataValue('Retired', RDConstants.PROVIDER_STATUS)
+
     public final static RefdataValue PRS_FUNC_CONTACT_PRS               = getRefdataValue('Contact Person', RDConstants.PERSON_FUNCTION)
     public final static RefdataValue PRS_FUNC_FC_BILLING_ADDRESS        = getRefdataValue('Functional Contact Billing Adress', RDConstants.PERSON_FUNCTION)
     public final static RefdataValue PRS_FUNC_FC_DELIVERY_ADDRESS       = getRefdataValue('Functional Contact Delivery Address', RDConstants.PERSON_FUNCTION)

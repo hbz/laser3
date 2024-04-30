@@ -55,18 +55,19 @@
 
         <ui:filter>
             <g:form action="listProvider" method="get" class="ui form">
-                <laser:render template="/templates/filter/orgFilter"
+                <laser:render template="/templates/filter/providerFilter"
                           model="[
-                                  tmplConfigShow: [['name', 'identifier'], ['curatoryGroup', 'orgStatus'], ['providerRole', 'isMyX']],
+                                  tmplConfigShow: [['name', 'identifier'], ['curatoryGroup', 'curatoryGroupType', 'provStatus'], ['isMyX']],
                                   tmplConfigFormFilter: true
                           ]"/>
             </g:form>
         </ui:filter>
         <div class="la-clear-before">
             <g:if test="${orgList}">
-                <laser:render template="/templates/filter/orgFilterTable"
-                      model="[orgList: orgList,
+                <laser:render template="/templates/filter/providerFilterTable"
+                      model="[providerList: providerList,
                               currentProviderIdList: currentProviderIdList,
+                              apiSource: wekbApi,
                               tmplShowCheckbox: false,
                               tmplConfigShow: ['lineNumber', 'sortname', 'name', 'altname', 'platform', 'isMyX', 'marker', 'isWekbCurated']
                       ]"/>

@@ -37,6 +37,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
             lic:    License,
             org:    Org,
             pkg:    Package,
+            provider: Provider,
             sub:    Subscription,
             tipp:   TitleInstancePackagePlatform
     ]
@@ -53,6 +54,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
 	  	lic         (nullable:true)
 	  	org         (nullable:true)
 	  	pkg         (nullable:true)
+        provider    (nullable:true)
 	  	sub         (nullable:true)
 	  	tipp        (nullable:true)
         instanceOf  (nullable: true)
@@ -71,6 +73,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         lic   column:'id_lic_fk', index: 'id_lic_idx'
         org   column:'id_org_fk', index: 'id_org_idx'
         pkg   column:'id_pkg_fk', index: 'id_pkg_idx'
+        provider column:'id_provider_fk', index: 'id_provider_idx'
         sub   column:'id_sub_fk', index: 'id_sub_idx'
         tipp  column:'id_tipp_fk', index: 'id_tipp_idx'
         instanceOf column: 'id_instance_of_fk', index: 'id_instanceof_idx'
@@ -286,6 +289,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
 
         name = object instanceof License ?  'lic' : name
         name = object instanceof Org ?      'org' : name
+        name = object instanceof Provider ? 'provider' : name
         name = object instanceof Package ?  'pkg' : name
         name = object instanceof Subscription ?                 'sub' :  name
         name = object instanceof TitleInstancePackagePlatform ? 'tipp' : name

@@ -37,7 +37,7 @@
                           break
                       case GlobalSourceSyncService.RECTYPE_PLATFORM: component = "Platform"
                           break
-                      case GlobalSourceSyncService.RECTYPE_ORG: component = "Org"
+                      case GlobalSourceSyncService.RECTYPE_PROVIDER: component = "Org"
                           break
                       case GlobalSourceSyncService.RECTYPE_TIPP: component = "TitleInstancePackagePlatform"
                           break
