@@ -47,11 +47,19 @@
 
 <g:if test="${(surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED, RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED])}">
     <ui:greySegment>
+        <g:if test="${surveyConfig.pickAndChoose}">
+            <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'finishedDate', 'surveyTitlesCount', 'surveyProperties', 'commentOnlyForOwner']}"/>
+        </g:if>
+        <g:else>
+            <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'surveyProperties', 'commentOnlyForOwner']}"/>
+        </g:else>
 
-        <laser:render template="evaluationParticipantsView" model="[showCheckbox: true,
+
+        <laser:render template="evaluationParticipantsView" model="[showCheckboxForParticipantsHasAccess: true,
+                                                                    showCheckboxForParticipantsHasNoAccess: true,
                                                                 showTransferFields: true,
                                                                 processAction: 'processTransferParticipants',
-                                                                tmplConfigShow   : ['lineNumber', 'name', (surveyConfig.pickAndChoose ? 'finishedDate' : ''), (surveyConfig.pickAndChoose ? 'surveyTitlesCount' : ''), 'surveyProperties', 'commentOnlyForOwner']]"/>
+                                                                tmplConfigShow   : tmplConfigShowList]"/>
 
     </ui:greySegment>
 </g:if>

@@ -844,7 +844,7 @@ class SurveyController {
             }
         }else {
             ctrlResult.result
-            redirect(action: 'surveyCostItems', id: ctrlResult.surveyInfo.id, params: params)
+            redirect(action: 'surveyCostItems', id: ctrlResult.result.surveyInfo.id, params: params)
             return
         }
 
@@ -960,7 +960,7 @@ class SurveyController {
                 if (params.filename) {
                     filename = params.filename
                 } else {
-                    filename = message + "_" + ctrlResult.surveyConfig.getSurveyName() + "_${datetoday}"
+                    filename = message + "_" + ctrlResult.result.surveyConfig.getSurveyName() + "_${datetoday}"
                 }
 
                 Map<String, Object> selectedFieldsRaw = params.findAll { it -> it.toString().startsWith('iex:') }

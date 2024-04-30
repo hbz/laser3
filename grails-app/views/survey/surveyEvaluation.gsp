@@ -76,8 +76,16 @@
 
 </div>
 <div class="ui bottom attached tab segment active">
-    <laser:render template="evaluationParticipantsView" model="[showCheckbox: false,
-                                                        tmplConfigShow   : ['lineNumber', 'name', (surveyConfig.pickAndChoose ? 'finishedDate' : ''), (surveyConfig.pickAndChoose ? 'surveyTitlesCount' : ''), (surveyConfig.pickAndChoose ? 'uploadTitleListDoc' : ''), 'surveyProperties', 'commentOnlyForOwner', (surveyConfig.pickAndChoose ? 'downloadTitleList' : '')]]"/>
+    <g:if test="${surveyConfig.pickAndChoose}">
+        <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'finishedDate', 'surveyTitlesCount', 'uploadTitleListDoc', 'surveyProperties', 'commentOnlyForOwner', 'downloadTitleList']}"/>
+    </g:if>
+    <g:else>
+        <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'surveyProperties', 'commentOnlyForOwner',]}"/>
+    </g:else>
+
+    <laser:render template="evaluationParticipantsView" model="[showCheckboxForParticipantsHasAccess: false,
+                                                                showCheckboxForParticipantsHasNoAccess: false,
+                                                        tmplConfigShow   : tmplConfigShowList]"/>
 </div>
 
 

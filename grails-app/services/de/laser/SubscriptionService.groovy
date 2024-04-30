@@ -2808,7 +2808,7 @@ join sub.orgRelations or_sub where
                 }
             }
         }
-        sourceSub.getAgencies().each { agency ->
+        sourceSub.getVendors().each { agency ->
             RefdataValue refdataValue = RDStore.PRS_RESP_SPEC_SUB_EDITOR
 
             Person.getPublicByOrgAndObjectResp(agency, sourceSub, 'Specific subscription editor').each { prs ->

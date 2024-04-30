@@ -38,6 +38,7 @@ import de.laser.finance.CostItem
 import de.laser.finance.Order
 import de.laser.helper.Params
 import de.laser.interfaces.CalculatedType
+import de.laser.properties.PropertyDefinitionGroup
 import de.laser.storage.PropertyStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyConfigProperties
@@ -339,6 +340,8 @@ class SurveyControllerService {
             result.selectedSubParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsr.query, fsr.queryParams, params)
 
             result.selectedCostItemElementID = params.selectedCostItemElementID ?: RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+
+            result.countCostItems = CostItem.executeQuery('select count(*) from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ct.costItemElement is not null and ct.costItemElement = :costItemElement', [costItemElement: RefdataValue.get(result.selectedCostItemElementID), status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig])[0]
 
             if (result.selectedSubParticipants && (params.sortOnCostItemsDown || params.sortOnCostItemsUp) && !params.sort) {
                 List<Subscription> orgSubscriptions = result.surveyConfig.orgSubscriptions()
@@ -3927,7 +3930,7 @@ class SurveyControllerService {
                         newParentSub.getProviders().each { provider ->
                             new OrgRole(org: provider, sub: memberSub, roleType: RDStore.OR_PROVIDER).save()
                         }
-                        newParentSub.getAgencies().each { provider ->
+                        newParentSub.getVendors().each { provider ->
                             new OrgRole(org: provider, sub: memberSub, roleType: RDStore.OR_AGENCY).save()
                         }
                     } else {
