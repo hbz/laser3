@@ -2,6 +2,7 @@ package de.laser.reporting.report.myInstitution.config
 
 import de.laser.Org
 import de.laser.Platform
+import de.laser.Vendor
 import de.laser.storage.RDConstants
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 
@@ -27,22 +28,23 @@ class PackageXCfg extends BaseConfig {
                             'file'                      : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
                             'openAccess'                : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
                             'packageStatus'             : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
-                            'subscriptionStatus'        : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_SUBSCRIPTION_STATUS, spec: BaseConfig.FIELD_IS_MULTIPLE ],
+                            'subscriptionStatus'        : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_SUBSCRIPTION_STATUS, spec: BaseConfig.FIELD_IS_MULTIPLE ],
                             'paymentType'               : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
-                            'nominalPlatform'           : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_PACKAGE_PLATFORM, spec: BaseConfig.FIELD_IS_MULTIPLE ],
+                            'nominalPlatform'           : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_PACKAGE_PLATFORM, spec: BaseConfig.FIELD_IS_MULTIPLE ],
+                            'vendor'                    : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_PACKAGE_VENDOR, spec: BaseConfig.FIELD_IS_MULTIPLE ],
 //                            'orProvider'                : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_PACKAGE_OR_PROVIDER, spec: BaseConfig.FIELD_IS_MULTIPLE ],
                             'scope'                     : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ]
                     ],
                     filter : [
                             default: [
                                     [ 'contentType', 'packageStatus' ],
-                                    [ 'file', /* 'orProvider', */ 'nominalPlatform' ],
+                                    [ 'file', /* 'orProvider', */ 'nominalPlatform', 'vendor' ],
                                     [ 'breakable', 'scope' ],
                                     [ 'paymentType', 'openAccess']
                             ],
                             my: [
                                     [ 'contentType',  'subscriptionStatus', 'packageStatus' ],
-                                    [ 'file', /* 'orProvider', */ 'nominalPlatform' ],
+                                    [ 'file', /* 'orProvider', */ 'nominalPlatform', 'vendor' ],
                                     [ 'breakable', 'scope' ],
                                     [ 'paymentType', 'openAccess']
                             ]
@@ -81,6 +83,11 @@ class PackageXCfg extends BaseConfig {
 //                                            chartLabels         : [ 'x.providers.1', 'x.providers.2' ]
 //                                    ],
                                     'package-x-platform' : [    // TODO - moved from query !
+                                            detailsTemplate     : 'package',
+                                            chartTemplate       : 'generic',
+                                            chartLabels         : []
+                                    ],
+                                    'package-x-vendor' : [
                                             detailsTemplate     : 'package',
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
@@ -167,6 +174,28 @@ class PackageXCfg extends BaseConfig {
                                             'platform-primaryUrl' :         [ '@' ],    // KEY_PLATFORM -> distribution
                                             'platform-status' :             [ 'generic.plt.status' ],
                                             'platform-*' :                  [ 'generic.all' ]
+                                    ]
+                            ]
+                    ]
+            ],
+
+            vendor : [
+                    meta : [
+                            class:  Vendor,
+                            cfgKey: BaseConfig.KEY_PACKAGE
+                    ],
+                    source : [
+                            'filter-restricting-vendor'
+                    ],
+                    fields : [ ],
+                    filter : [
+                            default : []
+                    ],
+                    query : [
+                            default : [
+                                    vendor : [
+                                            'vendor-status' :           [ 'generic.vendor.status' ],
+                                            'vendor-*' :                [ 'generic.all' ]
                                     ]
                             ]
                     ]

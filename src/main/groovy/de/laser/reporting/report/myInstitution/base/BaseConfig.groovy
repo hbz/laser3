@@ -4,6 +4,7 @@ import de.laser.ContextService
 import de.laser.License
 import de.laser.Org
 import de.laser.Package
+import de.laser.PackageVendor
 import de.laser.Platform
 import de.laser.RefdataCategory
 import de.laser.Subscription
@@ -83,6 +84,7 @@ class BaseConfig {
     static String CI_GENERIC_PACKAGE_OR_PROVIDER        = 'package$orgRole$provider'    // IE, PKG
     static String CI_GENERIC_PACKAGE_PLATFORM           = 'package$platform'            // IE, PKG
     static String CI_GENERIC_PACKAGE_STATUS             = 'package$packageStatus'       // IE, PKG, PLT
+    static String CI_GENERIC_PACKAGE_VENDOR             = 'package$vendor'              // PKG
     static String CI_GENERIC_PLATFORM_SERVICEPROVIDER   = 'platform$serviceProvider'    // PLT
     static String CI_GENERIC_PLATFORM_SOFTWAREPROVIDER  = 'platform$softwareProvider'   // PLT
     static String CI_GENERIC_PLATFORM_ORG               = 'platform$org'                // PLT
@@ -339,6 +341,16 @@ class BaseConfig {
             return [
                     label: messageSource.getMessage('reporting.cfg.query.package.package-packageStatus', null, locale),
                     from: RefdataCategory.getAllRefdataValues(RDConstants.PACKAGE_STATUS)
+            ]
+        }
+        else if (key == CI_GENERIC_PACKAGE_VENDOR) {
+            return [
+                    label: messageSource.getMessage('vendor', null, locale),
+                    from: PackageVendor.executeQuery('select distinct pv.vendor from PackageVendor pv').collect{[
+                            id: it.id,
+                            value_de: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
+                            value_en: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
+                    ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
             ]
         }
         else if (key == CI_GENERIC_PLATFORM_ORG) {

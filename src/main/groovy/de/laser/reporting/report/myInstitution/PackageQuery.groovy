@@ -7,6 +7,7 @@ import de.laser.Platform
 import de.laser.Package
 import de.laser.RefdataValue
 import de.laser.Subscription
+import de.laser.Vendor
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.reporting.report.ElasticSearchHelper
@@ -420,7 +421,31 @@ class PackageQuery extends BaseQuery {
                 handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_DATA_LABEL, noDataList, result)
                 _handleGenericNoCounterpartData_TMP(params.query, orphanedIdList, result)
             }
+            else if (params.query in ['package-x-vendor']) {
 
+                result.data = idList ? Vendor.executeQuery(
+                        'select ven.id, ven.name, count(*) from PackageVendor pv join pv.vendor ven where ven.id in (:vendorIdList) and pv.pkg.id in (:idList) group by ven.id order by ven.name',
+                        [vendorIdList: BaseFilter.getCachedFilterIdList('vendor', params), idList: idList]
+                ) : []
+
+                result.data.eachWithIndex { d, i ->
+                    List<Long> pkgIdList = Package.executeQuery(
+                            'select pkg.id from PackageVendor pv join pv.pkg pkg where pkg.id in (:idList) and pv.vendor.id = :d order by pkg.name',
+                            [idList: idList, d: d[0]]
+                    )
+                    result.dataDetails.add([
+                            query : params.query,
+                            id    : d[0],
+                            label : d[1],
+                            idList: pkgIdList
+                    ])
+                }
+
+                List<Long> noDataList = idList ? Package.executeQuery(
+                        'select distinct pkg.id from Package pkg where pkg.id in (:idList) and not exists (select pv from PackageVendor pv where pv.pkg.id = pkg.id)', [idList: idList]
+                ) : []
+                handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_VENDOR_LABEL, noDataList, result)
+            }
         }
         result
     }

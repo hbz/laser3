@@ -6,6 +6,7 @@ import de.laser.Package
 import de.laser.Platform
 import de.laser.RefdataValue
 import de.laser.Subscription
+import de.laser.Vendor
 import de.laser.helper.Params
 import de.laser.storage.BeanStore
 import de.laser.utils.DateUtils
@@ -143,6 +144,15 @@ class PackageFilter extends BaseFilter {
 
                         filterLabelValue = RefdataValue.getAll(pList).collect{ it.getI10n('value') }
                     }
+                    else if (p == 'vendor') {
+                        Long[] pList = Params.getLongList(params, key)
+
+                        queryParts.add('PackageVendor pv')
+                        whereParts.add('pv.pkg = pkg and pv.vendor.id in (:p' + (++pCount) + ')')
+                        queryParams.put('p' + pCount, pList)
+
+                        filterLabelValue = Vendor.getAll(pList).collect{ it.name }
+                    }
                     else {
                         log.info ' --- ' + pType + ' not implemented --- '
                     }
@@ -177,6 +187,9 @@ class PackageFilter extends BaseFilter {
                 if (pk == 'platform') {
                     _handleInternalPlatformFilter(pk, filterResult)
                 }
+                else if (pk == 'vendor') {
+                    _handleInternalVendorFilter(pk, filterResult)
+                }
             }
         }
 
@@ -208,5 +221,15 @@ class PackageFilter extends BaseFilter {
 
         String query = queryBase + ' where ' + whereParts.join(' and ')
         filterResult.data.put( partKey + 'IdList', queryParams.packageIdList ? Platform.executeQuery(query, queryParams) : [] )
+    }
+
+    static void _handleInternalVendorFilter(String partKey, Map<String, Object> filterResult) {
+        String queryBase = 'select distinct (pv.vendor.id) from PackageVendor pv join pv.pkg pkg'
+        List<String> whereParts = [ 'pkg.id in (:packageIdList)' ]
+
+        Map<String, Object> queryParams = [ packageIdList: filterResult.data.packageIdList ]
+
+        String query = queryBase + ' where ' + whereParts.join(' and ')
+        filterResult.data.put( partKey + 'IdList', queryParams.packageIdList ? Vendor.executeQuery(query, queryParams) : [] )
     }
 }

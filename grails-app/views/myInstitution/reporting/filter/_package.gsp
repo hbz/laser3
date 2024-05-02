@@ -56,6 +56,11 @@
             <input type="hidden" name="filter:provider_source" value="filter-restricting-provider" />
         </g:if>
 
+        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).vendor}" />
+        <g:if test="${config}">
+            <input type="hidden" name="filter:vendor_source" value="filter-restricting-vendor" />
+        </g:if>
+
         <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).platform}" />
         <g:if test="${config}">
             <input type="hidden" name="filter:platform_source" value="filter-restricting-platform" />
