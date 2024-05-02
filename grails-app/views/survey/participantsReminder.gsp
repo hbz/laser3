@@ -53,12 +53,19 @@
     <div class="sixteen wide stretched column">
 
         <ui:greySegment>
+            <g:if test="${surveyConfig.pickAndChoose}">
+                <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'finishedDate', 'surveyTitlesCount', 'surveyProperties', 'commentOnlyForOwner', 'reminderMailDate']}"/>
+            </g:if>
+            <g:else>
+                <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'surveyProperties', 'commentOnlyForOwner', 'reminderMailDate']}"/>
+            </g:else>
 
-                <laser:render template="evaluationParticipantsView" model="[showCheckbox: true,
+                <laser:render template="evaluationParticipantsView" model="[showCheckboxForParticipantsHasAccess: true,
+                                                                            showCheckboxForParticipantsHasNoAccess: false,
                                                                         showOpenParticipantsAgainButtons: true,
                                                                         processAction: 'createOwnMail',
                                                                         processController: 'mail',
-                                                                        tmplConfigShow   : ['lineNumber', 'name', (surveyConfig.pickAndChoose ? 'finishedDate' : ''), (surveyConfig.pickAndChoose ? 'surveyTitlesCount' : ''), 'surveyProperties', 'commentOnlyForOwner', 'reminderMailDate']]"/>
+                                                                        tmplConfigShow   : tmplConfigShowList]"/>
 
         </ui:greySegment>
 

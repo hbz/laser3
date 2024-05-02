@@ -205,7 +205,7 @@
           on: 'submit',
           inline: true,
           fields: {
-
+        <g:if test="${orgId && orgId != contextOrg || orgList}">
             org: {
               identifier: 'org',
               rules: [
@@ -215,6 +215,7 @@
                 }
               ]
             },
+        </g:if>
             typeId: {
               identifier: 'typeId',
               rules: [

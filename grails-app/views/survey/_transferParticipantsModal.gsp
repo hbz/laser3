@@ -102,7 +102,7 @@
                             <label for="transferProviderAgency"><g:message
                                     code="surveyInfo.transferParticipants.transferProviderAgency"
                                     args="${superOrgType}"/>
-                            <g:set var="providerAgency" value="${providers + agencies}"/>
+                            <g:set var="providerAgency" value="${providers + vendors}"/>
                             (${providerAgency ? providerAgency.name.join(', ') : ''})
                             </label>
                         </div>

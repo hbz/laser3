@@ -31,15 +31,16 @@
                         <laser:render template="/platform/platformStatsDetails" model="[wekbServerUnavailable: wekbServerUnavailable, platformInstanceRecord: platform]"/>
                         <table class="ui celled table">
                             <tr>
-                                <th><g:message code="default.usage.consortiaTableHeader"/></th>
+                                <th><g:message code="default.institution"/></th>
                                 <th>Customer ID</th>
                                 <th>Requestor ID/API-Key</th>
-                                <th>Abruf o.k.?</th>
+                                <th><g:message code="default.usage.sushiCallCheck.header"/></th>
+                                <th><g:message code="default.actions.label"/></th>
                             </tr>
                             <g:each in="${Subscription.executeQuery('select new map(sub.id as memberSubId, org.sortname as memberName, org.id as memberId, ci as customerIdentifier) from CustomerIdentifier ci, OrgRole oo join oo.org org join oo.sub sub where ci.customer = org and sub.instanceOf = :parent and oo.roleType in (:subscrRoles) and ci.platform.gokbId = :platform order by ci.customer.sortname asc', [parent: subscription, platform: platform.uuid, subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])}" var="row">
                                 <tr>
                                     <td>
-                                        <g:link action="stats" id="${row.memberSubId}">${row.memberName}</g:link>
+                                        <g:link controller="organisation" action="show" id="${row.memberId}">${row.memberName}</g:link>
                                     </td>
                                     <td>
                                         <ui:xEditable owner="${row.customerIdentifier}" field="value"/>
@@ -49,6 +50,9 @@
                                     </td>
                                     <td id="${genericOIDService.getHtmlOID(row.customerIdentifier)}" class="sushiConnectionCheck" data-org="${row.memberId}" data-platform="${platform.id}" data-customerId="${row.customerIdentifier.value}" data-requestorId="${row.customerIdentifier.requestorKey}">
 
+                                    </td>
+                                    <td>
+                                        <g:link class="ui icon primary button la-modern-button" action="stats" id="${row.memberSubId}" role="button" aria-label="${message(code: 'default.usage.consortiaTableHeader')}"><i class="icon chart bar outline"></i></g:link>
                                     </td>
                                 </tr>
                             </g:each>
