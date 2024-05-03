@@ -15,8 +15,6 @@ import grails.web.servlet.mvc.GrailsParameterMap
 
 class SubscriptionQuery extends BaseQuery {
 
-    static List<String> PROPERTY_QUERY = [ 'select p.id, p.value_de, count(*) ', ' group by p.id, p.value_de order by p.value_de' ]
-
     static Map<String, Object> query(GrailsParameterMap params) {
 
         ContextService contextService = BeanStore.getContextService()
