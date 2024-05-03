@@ -146,4 +146,34 @@ class BaseFilter {
         Map<String, Object> esRecords = params?.filterCache?.data?.get(prefix + 'ESRecords')
         return esRecords ?: [:]
     }
+
+    static void handleSubsetFilter(String configKey, Map<String, Object> filterResult, GrailsParameterMap params) {
+
+        BaseConfig.getCurrentConfig( configKey ).each { c ->
+            if (c.getKey() != 'base') {
+                switch (c.getValue().meta.class) {
+                    case Org:
+                        println configKey + ' _handleSubsetOrgFilter()'
+                        _handleSubsetOrgFilter(configKey, filterResult, params)
+                        break;
+                    case de.laser.Package:
+                        println configKey + ' _handleSubsetPackageFilter()'
+                        _handleSubsetPackageFilter(configKey, filterResult, params)
+                        break;
+                    case Platform:
+                        println configKey + ' _handleSubsetPlatformFilter()'
+                        _handleSubsetPlatformFilter(configKey, filterResult, params)
+                        break;
+                    case Subscription:
+                        println configKey + ' _handleSubsetSubscriptionFilter()'
+                        _handleSubsetSubscriptionFilter(configKey, filterResult, params)
+                        break;
+                    case Vendor:
+                        println configKey + ' _handleSubsetVendorFilter()'
+                        _handleSubsetVendorFilter(configKey, filterResult, params)
+                        break;
+                }
+            }
+        }
+    }
 }

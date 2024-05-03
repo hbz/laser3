@@ -137,7 +137,7 @@ class PackageXCfg extends BaseConfig {
 //                            cfgKey: BaseConfig.KEY_PACKAGE
 //                    ],
 //                    source : [
-//                            'filter-restricting-provider'
+//                            'filter-subset-provider'
 //                    ],
 //                    fields : [ ],
 //                    filter : [
@@ -159,7 +159,7 @@ class PackageXCfg extends BaseConfig {
                             cfgKey: BaseConfig.KEY_PACKAGE
                     ],
                     source : [
-                            'filter-restricting-platform'
+                            'filter-subset-platform'
                     ],
                     fields : [ ],
                     filter : [
@@ -185,7 +185,7 @@ class PackageXCfg extends BaseConfig {
                             cfgKey: BaseConfig.KEY_PACKAGE
                     ],
                     source : [
-                            'filter-restricting-vendor'
+                            'filter-subset-vendor'
                     ],
                     fields : [ ],
                     filter : [

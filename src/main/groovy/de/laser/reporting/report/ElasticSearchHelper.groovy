@@ -21,7 +21,7 @@ import org.grails.web.json.JSONObject
 @Slf4j
 class ElasticSearchHelper {
 
-    public static final int ELASTICSEARCH_CHUNKSIZE = 500
+    public static final int ELASTICSEARCH_CHUNKSIZE = 1000
     public static final String ELASTICSEARCH_IS_NOT_REACHABLE = 'elasticSearchIsNotReachable'
     public static final String IGNORE_FILTER = 'ignoreFilter'
 

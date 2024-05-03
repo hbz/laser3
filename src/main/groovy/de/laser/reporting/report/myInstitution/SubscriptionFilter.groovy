@@ -180,19 +180,20 @@ class SubscriptionFilter extends BaseFilter {
 
         filterResult.data.put('subscriptionIdList', queryParams.subscriptionIdList ? Subscription.executeQuery( query, queryParams ) : [])
 
-        // -- SUB --
+        // --- subset ---
 
-//        println BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).keySet() -- TODO it.meta.class
+//        handleSubsetFilter(BaseConfig.KEY_SUBSCRIPTION, filterResult, params)
+
         BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).keySet().each{ pk ->
             if (pk != 'base') {
                 if (pk == 'memberSubscription') {
-                    _handleInternalSubFilter(params, pk, filterResult)
+                    _handleSubsetSubscriptionFilter(pk, filterResult, params)
                 }
                 else if (pk == 'vendor') {
-                    _handleInternalVendorFilter(params, pk, filterResult)
+                    _handleSubsetVendorFilter(pk, filterResult, params)
                 }
                 else {
-                    _handleInternalOrgFilter(params, pk, filterResult)
+                    _handleSubsetOrgFilter(pk, filterResult, params)
                 }
             }
         }
@@ -205,7 +206,7 @@ class SubscriptionFilter extends BaseFilter {
         filterResult
     }
 
-    static void _handleInternalSubFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
+    static void _handleSubsetSubscriptionFilter(String partKey, Map<String, Object> filterResult, GrailsParameterMap params) {
 
         String filterSource = getCurrentFilterSource(params, partKey)
         filterResult.labels.put(partKey, [source: BaseConfig.getSourceLabel(BaseConfig.KEY_SUBSCRIPTION, filterSource)])
@@ -333,7 +334,7 @@ class SubscriptionFilter extends BaseFilter {
         filterResult.data.put( partKey + 'IdList', queryParams.subscriptionIdList ? Subscription.executeQuery(query, queryParams) : [] )
     }
 
-    static void _handleInternalOrgFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
+    static void _handleSubsetOrgFilter(String partKey, Map<String, Object> filterResult, GrailsParameterMap params) {
 
         String filterSource = getCurrentFilterSource(params, partKey)
         if (!filterSource) { return /* e.g. inst-sub-local */ }
@@ -482,7 +483,7 @@ class SubscriptionFilter extends BaseFilter {
         filterResult.data.put( partKey + 'IdList', queryParams.subscriptionIdList ? Org.executeQuery(query, queryParams) : [] )
     }
 
-    static void _handleInternalVendorFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
+    static void _handleSubsetVendorFilter(String partKey, Map<String, Object> filterResult, GrailsParameterMap params) {
 
         String filterSource = getCurrentFilterSource(params, partKey)
         if (!filterSource) { return /* e.g. inst-sub-local */ }

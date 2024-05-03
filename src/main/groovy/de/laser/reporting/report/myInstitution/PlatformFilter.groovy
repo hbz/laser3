@@ -191,13 +191,15 @@ class PlatformFilter extends BaseFilter {
         List<Long> platformIdList = queryParams.platformIdList ? Platform.executeQuery( query, queryParams ) : []
         filterResult.data.put(BaseConfig.KEY_PLATFORM + 'IdList', platformIdList)
 
-        // -- SUB --
+        // --- subset ---
 
-        BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).keySet().each{ pk ->
-            if (pk == 'provider') {
-                _handleInternalOrgFilter(pk, filterResult)
-            }
-        }
+//        handleSubsetFilter(BaseConfig.KEY_PLATFORM, filterResult, null)
+
+//        BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).keySet().each{ pk ->
+//            if (pk == 'provider') {
+//                _handleSubsetOrgFilter(pk, filterResult)
+//            }
+//        }
 
         // -- ES --
 
@@ -206,7 +208,7 @@ class PlatformFilter extends BaseFilter {
         filterResult
     }
 
-    static void _handleInternalOrgFilter(String partKey, Map<String, Object> filterResult) {
+    static void _handleSubsetOrgFilter(String partKey, Map<String, Object> filterResult) {
         String query = 'select distinct (plt.org.id) from Platform plt where plt.id in (:platformIdList)'
         Map<String, Object> queryParams = [ platformIdList: filterResult.data.platformIdList ]
 

@@ -174,21 +174,23 @@ class PackageFilter extends BaseFilter {
         List<Long> packageIdList = queryParams.packageIdList ? Package.executeQuery( query, queryParams ) : []
         filterResult.data.put(BaseConfig.KEY_PACKAGE + 'IdList', packageIdList)
 
-        // -- SUB --
+        // --- subset ---
 
         // println filterResult.data.get('packageIdList')
+
+//        handleSubsetFilter(BaseConfig.KEY_PACKAGE, filterResult, null)
 
         BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).keySet().each{ pk ->
             if (pk != 'base') {
 //                if (pk == 'provider') {
-//                    _handleInternalOrgFilter(pk, filterResult)
+//                    _handleSubsetOrgFilter(pk, filterResult)
 //                }
 //                else
                 if (pk == 'platform') {
-                    _handleInternalPlatformFilter(pk, filterResult)
+                    _handleSubsetPlatformFilter(pk, filterResult)
                 }
                 else if (pk == 'vendor') {
-                    _handleInternalVendorFilter(pk, filterResult)
+                    _handleSubsetVendorFilter(pk, filterResult)
                 }
             }
         }
@@ -203,7 +205,7 @@ class PackageFilter extends BaseFilter {
         filterResult
     }
 
-//    static void _handleInternalOrgFilter(String partKey, Map<String, Object> filterResult) {
+//    static void _handleSubsetOrgFilter(String partKey, Map<String, Object> filterResult) {
 //        String queryBase = 'select distinct (org.id) from OrgRole ro join ro.pkg pkg join ro.org org'
 //        List<String> whereParts = [ 'pkg.id in (:packageIdList)', 'ro.roleType in (:roleTypes)' ]
 //
@@ -213,7 +215,7 @@ class PackageFilter extends BaseFilter {
 //        filterResult.data.put( partKey + 'IdList', queryParams.packageIdList ? Org.executeQuery(query, queryParams) : [] )
 //    }
 
-    static void _handleInternalPlatformFilter(String partKey, Map<String, Object> filterResult) {
+    static void _handleSubsetPlatformFilter(String partKey, Map<String, Object> filterResult) {
         String queryBase = 'select distinct (plt.id) from Package pkg join pkg.nominalPlatform plt'
         List<String> whereParts = [ 'pkg.id in (:packageIdList)' ]
 
@@ -223,7 +225,7 @@ class PackageFilter extends BaseFilter {
         filterResult.data.put( partKey + 'IdList', queryParams.packageIdList ? Platform.executeQuery(query, queryParams) : [] )
     }
 
-    static void _handleInternalVendorFilter(String partKey, Map<String, Object> filterResult) {
+    static void _handleSubsetVendorFilter(String partKey, Map<String, Object> filterResult) {
         String queryBase = 'select distinct (pv.vendor.id) from PackageVendor pv join pv.pkg pkg'
         List<String> whereParts = [ 'pkg.id in (:packageIdList)' ]
 

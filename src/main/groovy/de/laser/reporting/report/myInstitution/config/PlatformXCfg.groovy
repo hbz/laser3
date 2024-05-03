@@ -118,7 +118,7 @@ class PlatformXCfg extends BaseConfig {
 //                            cfgKey: BaseConfig.KEY_PLATFORM
 //                    ],
 //                    source : [
-//                            'filter-restricting-provider'
+//                            'filter-subset-provider'
 //                    ],
 //                    fields : [ ],
 //                    filter : [

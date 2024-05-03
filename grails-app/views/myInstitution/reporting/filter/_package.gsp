@@ -53,17 +53,17 @@
 
         <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).provider}" />
         <g:if test="${config}">
-            <input type="hidden" name="filter:provider_source" value="filter-restricting-provider" />
+            <input type="hidden" name="filter:provider_source" value="filter-subset-provider" />
         </g:if>
 
         <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).vendor}" />
         <g:if test="${config}">
-            <input type="hidden" name="filter:vendor_source" value="filter-restricting-vendor" />
+            <input type="hidden" name="filter:vendor_source" value="filter-subset-vendor" />
         </g:if>
 
         <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).platform}" />
         <g:if test="${config}">
-            <input type="hidden" name="filter:platform_source" value="filter-restricting-platform" />
+            <input type="hidden" name="filter:platform_source" value="filter-subset-platform" />
         </g:if>
 
 <laser:script file="${this.getGroovyPageFileName()}">

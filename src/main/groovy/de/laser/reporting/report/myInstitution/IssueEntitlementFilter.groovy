@@ -177,19 +177,23 @@ class IssueEntitlementFilter extends BaseFilter {
 
         filterResult.data.put(BaseConfig.KEY_ISSUEENTITLEMENT + 'IdList', _handleLargeQuery(query, queryParams, 'issueEntitlementIdList').take( TMP_QUERY_CONSTRAINT ))
 
+        // --- subset ---
+
+//        handleSubsetFilter(BaseConfig.KEY_ISSUEENTITLEMENT, filterResult, null)
+
         BaseConfig.getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT ).keySet().each{ pk ->
             if (pk != 'base') {
                 if (pk == 'subscription') {
-                    _handleInternalSubscriptionFilter(pk, filterResult)
+                    _handleSubsetSubscriptionFilter(pk, filterResult)
                 }
                 else if (pk == 'package') {
-                    _handleInternalPackageFilter(pk, filterResult)
+                    _handleSubsetPackageFilter(pk, filterResult)
                 }
                 else if (pk == 'provider') {
-                    _handleInternalOrgFilter(pk, filterResult)
+                    _handleSubsetOrgFilter(pk, filterResult)
                 }
                 else if (pk == 'platform') {
-                    _handleInternalPlatformFilter(pk, filterResult)
+                    _handleSubsetPlatformFilter(pk, filterResult)
                 }
             }
         }
@@ -205,7 +209,7 @@ class IssueEntitlementFilter extends BaseFilter {
         filterResult
     }
 
-    static void _handleInternalSubscriptionFilter(String partKey, Map<String, Object> filterResult) {
+    static void _handleSubsetSubscriptionFilter(String partKey, Map<String, Object> filterResult) {
         String queryBase = 'select distinct(ie.subscription.id) from IssueEntitlement ie'
         List<String> whereParts = [ 'ie.id in (:issueEntitlementIdList)' ]
 
@@ -215,7 +219,7 @@ class IssueEntitlementFilter extends BaseFilter {
         filterResult.data.put( partKey + 'IdList', queryParams.issueEntitlementIdList ? _handleLargeQuery(query, queryParams, 'issueEntitlementIdList') : [] )
     }
 
-    static void _handleInternalPackageFilter(String partKey, Map<String, Object> filterResult) {
+    static void _handleSubsetPackageFilter(String partKey, Map<String, Object> filterResult) {
         String queryBase = 'select distinct (pkg.id) from SubscriptionPackage subPkg join subPkg.pkg pkg join subPkg.subscription sub join sub.issueEntitlements ie'
         List<String> whereParts = [ 'ie.id in (:issueEntitlementIdList)' ]
 
@@ -225,7 +229,7 @@ class IssueEntitlementFilter extends BaseFilter {
         filterResult.data.put( partKey + 'IdList', queryParams.issueEntitlementIdList ? _handleLargeQuery(query, queryParams, 'issueEntitlementIdList') : [] )
     }
 
-    static void _handleInternalOrgFilter(String partKey, Map<String, Object> filterResult) {
+    static void _handleSubsetOrgFilter(String partKey, Map<String, Object> filterResult) {
         String queryBase = 'select distinct (org.id) from OrgRole ro join ro.pkg pkg join ro.org org'
         List<String> whereParts = [ 'pkg.id in (:packageIdList)', 'ro.roleType in (:roleTypes)' ]
 
@@ -235,7 +239,7 @@ class IssueEntitlementFilter extends BaseFilter {
         filterResult.data.put( partKey + 'IdList', queryParams.packageIdList ? _handleLargeQuery(query, queryParams, 'packageIdList') : [] )
     }
 
-    static void _handleInternalPlatformFilter(String partKey, Map<String, Object> filterResult) {
+    static void _handleSubsetPlatformFilter(String partKey, Map<String, Object> filterResult) {
         String queryBase = 'select distinct (plt.id) from Package pkg join pkg.nominalPlatform plt'
         List<String> whereParts = [ 'pkg.id in (:packageIdList)' ]
 

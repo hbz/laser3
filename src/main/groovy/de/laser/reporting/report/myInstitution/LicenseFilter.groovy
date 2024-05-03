@@ -170,15 +170,17 @@ class LicenseFilter extends BaseFilter {
 
         filterResult.data.put( 'licenseIdList', queryParams.licenseIdList ? License.executeQuery( query, queryParams ) : [] )
 
-        // -- SUB --
-//        println BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).keySet() -- TODO it.meta.class
+        // --- subset ---
+
+//        handleSubsetFilter(BaseConfig.KEY_LICENSE, filterResult, params)
+
         BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).keySet().each{ pk ->
             if (pk != 'base') {
                 if (pk == 'vendor') {
-                    _handleInternalVendorFilter(params, pk, filterResult)
+                    _handleSubsetVendorFilter(pk, filterResult, params)
                 }
                 else {
-                    _handleInternalOrgFilter(params, pk, filterResult)
+                    _handleSubsetOrgFilter(pk, filterResult, params)
                 }
             }
         }
@@ -190,7 +192,7 @@ class LicenseFilter extends BaseFilter {
         filterResult
     }
 
-    static void _handleInternalOrgFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
+    static void _handleSubsetOrgFilter(String partKey, Map<String, Object> filterResult, GrailsParameterMap params) {
 
         String filterSource = getCurrentFilterSource(params, partKey)
         if (!filterSource) { return /* e.g. inst-lic-local */ }
@@ -323,7 +325,7 @@ class LicenseFilter extends BaseFilter {
         filterResult.data.put( partKey + 'IdList', queryParams.licenseIdList ? Org.executeQuery(query, queryParams) : [] )
     }
 
-    static void _handleInternalVendorFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
+    static void _handleSubsetVendorFilter(String partKey, Map<String, Object> filterResult, GrailsParameterMap params) {
 
         String filterSource = getCurrentFilterSource(params, partKey)
         if (!filterSource) { return }
