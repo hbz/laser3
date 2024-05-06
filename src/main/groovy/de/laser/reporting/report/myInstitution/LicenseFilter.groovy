@@ -172,18 +172,7 @@ class LicenseFilter extends BaseFilter {
 
         // --- subset ---
 
-//        handleSubsetFilter(BaseConfig.KEY_LICENSE, filterResult, params)
-
-        BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).keySet().each{ pk ->
-            if (pk != 'base') {
-                if (pk == 'vendor') {
-                    _handleSubsetVendorFilter(pk, filterResult, params)
-                }
-                else {
-                    _handleSubsetOrgFilter(pk, filterResult, params)
-                }
-            }
-        }
+        handleExpandoSubsetFilter(this, BaseConfig.KEY_LICENSE, filterResult, params)
 
 //        println 'licenses >> ' + result.licenseIdList.size()
 //        println 'member >> ' + result.memberIdList.size()
@@ -318,7 +307,7 @@ class LicenseFilter extends BaseFilter {
 
         String query = queryBase + ' where ' + whereParts.join(' and ')
 
-//        println 'LicenseFilter.handleInternalOrgFilter() -->'
+//        println 'LicenseFilter.handleSubsetOrgFilter() -->'
 //        println query
 //        println queryParams
 
@@ -407,7 +396,7 @@ class LicenseFilter extends BaseFilter {
 
         String query = queryBase + ' where ' + whereParts.join(' and ')
 
-//        println 'LicenseFilter.handleInternalVendorFilter() -->'
+//        println 'LicenseFilter.handleSubsetVendorFilter() -->'
 //        println query
 //        println queryParams
         filterResult.data.put( partKey + 'IdList', queryParams.licenseIdList ? Vendor.executeQuery(query, queryParams) : [] )

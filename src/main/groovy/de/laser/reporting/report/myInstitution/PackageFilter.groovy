@@ -178,22 +178,7 @@ class PackageFilter extends BaseFilter {
 
         // println filterResult.data.get('packageIdList')
 
-//        handleSubsetFilter(BaseConfig.KEY_PACKAGE, filterResult, null)
-
-        BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).keySet().each{ pk ->
-            if (pk != 'base') {
-//                if (pk == 'provider') {
-//                    _handleSubsetOrgFilter(pk, filterResult)
-//                }
-//                else
-                if (pk == 'platform') {
-                    _handleSubsetPlatformFilter(pk, filterResult)
-                }
-                else if (pk == 'vendor') {
-                    _handleSubsetVendorFilter(pk, filterResult)
-                }
-            }
-        }
+        handleExpandoSubsetFilter(this, BaseConfig.KEY_PACKAGE, filterResult, null)
 
         // -- ES --
 

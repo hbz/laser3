@@ -193,13 +193,7 @@ class PlatformFilter extends BaseFilter {
 
         // --- subset ---
 
-//        handleSubsetFilter(BaseConfig.KEY_PLATFORM, filterResult, null)
-
-//        BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).keySet().each{ pk ->
-//            if (pk == 'provider') {
-//                _handleSubsetOrgFilter(pk, filterResult)
-//            }
-//        }
+        handleExpandoSubsetFilter(this, BaseConfig.KEY_PLATFORM, filterResult, null)
 
         // -- ES --
 

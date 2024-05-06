@@ -182,21 +182,7 @@ class SubscriptionFilter extends BaseFilter {
 
         // --- subset ---
 
-//        handleSubsetFilter(BaseConfig.KEY_SUBSCRIPTION, filterResult, params)
-
-        BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).keySet().each{ pk ->
-            if (pk != 'base') {
-                if (pk == 'memberSubscription') {
-                    _handleSubsetSubscriptionFilter(pk, filterResult, params)
-                }
-                else if (pk == 'vendor') {
-                    _handleSubsetVendorFilter(pk, filterResult, params)
-                }
-                else {
-                    _handleSubsetOrgFilter(pk, filterResult, params)
-                }
-            }
-        }
+        handleExpandoSubsetFilter(this, BaseConfig.KEY_SUBSCRIPTION, filterResult, params)
 
 //        println 'subscriptions >> ' + result.subscriptionIdList.size()
 //        println 'member >> ' + result.memberIdList.size()
@@ -327,7 +313,7 @@ class SubscriptionFilter extends BaseFilter {
 
         String query = queryBase + ' where ' + whereParts.join(' and ')
 
-//        println 'SubscriptionFilter.handleInternalSubFilter() -->'
+//        println 'SubscriptionFilter.handleSubsetSubFilter() -->'
 //        println query
 //        println queryParams
 
@@ -477,7 +463,7 @@ class SubscriptionFilter extends BaseFilter {
 
         String query = queryBase + ' where ' + whereParts.join(' and ')
 
-//        println 'SubscriptionFilter.handleInternalOrgFilter() -->'
+//        println 'SubscriptionFilter.handleSubsetOrgFilter() -->'
 //        println query
 //        println queryParams
         filterResult.data.put( partKey + 'IdList', queryParams.subscriptionIdList ? Org.executeQuery(query, queryParams) : [] )
@@ -577,7 +563,7 @@ class SubscriptionFilter extends BaseFilter {
 
         String query = queryBase + ' where ' + whereParts.join(' and ')
 
-//        println 'SubscriptionFilter.handleInternalVendorFilter() -->'
+//        println 'SubscriptionFilter.handleSubsetVendorFilter() -->'
 //        println query
 //        println queryParams
         filterResult.data.put( partKey + 'IdList', queryParams.subscriptionIdList ? Vendor.executeQuery(query, queryParams) : [] )

@@ -179,24 +179,7 @@ class IssueEntitlementFilter extends BaseFilter {
 
         // --- subset ---
 
-//        handleSubsetFilter(BaseConfig.KEY_ISSUEENTITLEMENT, filterResult, null)
-
-        BaseConfig.getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT ).keySet().each{ pk ->
-            if (pk != 'base') {
-                if (pk == 'subscription') {
-                    _handleSubsetSubscriptionFilter(pk, filterResult)
-                }
-                else if (pk == 'package') {
-                    _handleSubsetPackageFilter(pk, filterResult)
-                }
-                else if (pk == 'provider') {
-                    _handleSubsetOrgFilter(pk, filterResult)
-                }
-                else if (pk == 'platform') {
-                    _handleSubsetPlatformFilter(pk, filterResult)
-                }
-            }
-        }
+        handleExpandoSubsetFilter(this, BaseConfig.KEY_ISSUEENTITLEMENT, filterResult, null)
 
         // -- ES --
 

@@ -147,31 +147,24 @@ class BaseFilter {
         return esRecords ?: [:]
     }
 
-    static void handleSubsetFilter(String configKey, Map<String, Object> filterResult, GrailsParameterMap params) {
+    static void handleExpandoSubsetFilter(Object filter, String configKey, Map<String, Object> filterResult, GrailsParameterMap params) {
 
         BaseConfig.getCurrentConfig( configKey ).each { c ->
-            if (c.getKey() != 'base') {
-                switch (c.getValue().meta.class) {
-                    case Org:
-                        println configKey + ' _handleSubsetOrgFilter()'
-                        _handleSubsetOrgFilter(configKey, filterResult, params)
-                        break;
-                    case de.laser.Package:
-                        println configKey + ' _handleSubsetPackageFilter()'
-                        _handleSubsetPackageFilter(configKey, filterResult, params)
-                        break;
-                    case Platform:
-                        println configKey + ' _handleSubsetPlatformFilter()'
-                        _handleSubsetPlatformFilter(configKey, filterResult, params)
-                        break;
-                    case Subscription:
-                        println configKey + ' _handleSubsetSubscriptionFilter()'
-                        _handleSubsetSubscriptionFilter(configKey, filterResult, params)
-                        break;
-                    case Vendor:
-                        println configKey + ' _handleSubsetVendorFilter()'
-                        _handleSubsetVendorFilter(configKey, filterResult, params)
-                        break;
+            String partKey = c.getKey()
+            if (partKey != 'base') {
+                String subsetClass = c.getValue().meta.class.simpleName
+                String subsetFilter = '_handleSubset' + subsetClass + 'Filter'
+
+                if (filter.metaClass.respondsTo(filter, subsetFilter, [String, Map<String, Object>, GrailsParameterMap])) {
+                    println 'Reporting: called ' + configKey + '.' + subsetFilter + '(GPM) @ ' + partKey
+                    filter."${subsetFilter}"(partKey, filterResult, params)
+                }
+                else if (filter.metaClass.respondsTo(filter, subsetFilter)) {
+                    println 'Reporting: called ' + configKey + '.' + subsetFilter + ' @ ' + partKey
+                    filter."${subsetFilter}"(partKey, filterResult)
+                }
+                else {
+                    println 'Reporting: Subset Filter NOT FOUND ' + configKey + '.' + subsetFilter + ' @ ' + partKey
                 }
             }
         }
