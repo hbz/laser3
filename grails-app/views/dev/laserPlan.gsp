@@ -44,7 +44,7 @@
             content: "\f0d6";
         }
         .mk-reporting:before {
-            content: "\f200";
+            content: "\f201";
         }
         .mk-testSystem:before {
             content: "\e90f";
@@ -112,7 +112,7 @@
             </td>
 
             <td>
-            <g:if test="${mpg1 == 'licence'}">
+            <g:if test="${mpg1 == 'licence' }">
                     <button id="${mpg1}" class="ui icon blue button la-modern-button la-modal" >
                         <i class="film icon"></i>
                     </button>
@@ -140,6 +140,17 @@
                          <i class="film icon"></i>
                      </button>
                  </g:if>
+                 <g:if test="${mpg2 === 'ie'}">
+                     <button id="${mpg2}" class="ui icon blue button la-modern-button la-modal" >
+                         <i class="film icon"></i>
+                     </button>
+                 </g:if>
+                 <g:if test="${mpg2 === 'reporting'}">
+                     <button id="${mpg2}" class="ui icon blue button la-modern-button la-modal" >
+                         <i class="film icon"></i>
+                     </button>
+                 </g:if>
+
              </td>
              <td class="four wide center aligned">
 
@@ -247,7 +258,7 @@
 </table>
 
     <g:each in="${mappingColsPro+mappingColsBasic}" var="mpg5" >
-        <g:if test="${mpg5 in ['propertiesUse','licence']}">
+        <g:if test="${mpg5 in ['propertiesUse','licence', 'ie', 'reporting']}">
             <laser:script file="${this.getGroovyPageFileName()}">
                 $('#${mpg5}').click(function(){
                     $.modal({
