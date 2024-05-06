@@ -1,8 +1,13 @@
 <%@ page import="de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.survey.SurveyResult" %>
 <laser:htmlStart message="surveyShow.label" serviceInjection="true"/>
 
-%{-- help sidebar --}%
-<laser:render template="/templates/flyouts/dateCreatedLastUpdated" model="[obj: surveyInfo]"/>
+<ui:debugInfo>
+    <div style="padding: 1em 0;">
+        <p>surveyInfo.dateCreated: ${surveyInfo.dateCreated}</p>
+        <p>surveyInfo.lastUpdated: ${surveyInfo.lastUpdated}</p>
+    </div>
+</ui:debugInfo>
+
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
@@ -114,6 +119,11 @@
 
                         </g:if>
 
+                        <dl>
+                            <dt class="control-label">${message(code: 'surveyconfig.packageSurvey.label')}</dt>
+                            <dd><ui:xEditableBoolean owner="${surveyConfig}" field="packageSurvey"/></dd>
+                        </dl>
+
                         <g:if test="${surveyInfo.type == RDStore.SURVEY_TYPE_TITLE_SELECTION}">
                             <dl>
                                 <dt class="control-label">${message(code: 'surveyconfig.pickAndChoosePerpetualAccess.label')}</dt>
@@ -224,18 +234,7 @@
         <br />
         <br />
 
-        <g:form action="setSurveyWorkFlowInfos" method="post" class="ui form"
-                params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, setSurveyWorkFlowInfo: 'setSurveyConfigFinish']">
 
-            <div class="ui right floated compact segment">
-                <div class="ui checkbox">
-                    <input type="checkbox" onchange="this.form.submit()"
-                           name="configFinish" ${surveyConfig.configFinish ? 'checked' : ''}>
-                    <label><g:message code="surveyconfig.configFinish.label"/></label>
-                </div>
-            </div>
-
-        </g:form>
 
     </div><!-- .twelve -->
 

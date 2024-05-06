@@ -69,13 +69,13 @@
                 </div>
             </g:if>
 
-            %{-- dateCreated & lastUpdated panel --}%
+         %{--   --}%%{-- dateCreated & lastUpdated panel --}%%{--
 
             <g:if test="${(actionName=='show')}">
                 <div class="item la-cb-action">
                     <button class="ui icon button la-toggle-ui" id="dateCreatedLastUpdated-toggle"><i class="calendar alternative icon"></i></button>
                 </div>
-            </g:if>
+            </g:if>--}%
 
             %{-- subscription transfer --}%
 

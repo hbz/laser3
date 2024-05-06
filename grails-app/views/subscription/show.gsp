@@ -3,10 +3,12 @@
 
 %{-- flyouts --}%
 <laser:render template="/templates/flyouts/help/subscription_show"/>
-<laser:render template="/templates/flyouts/dateCreatedLastUpdated" model="[obj: subscription]"/>
+
 
 <ui:debugInfo>
     <div style="padding: 1em 0;">
+        <p>sub.dateCreated: ${subscription.dateCreated}</p>
+        <p>sub.lastUpdated: ${subscription.lastUpdated}</p>
         <p>sub.type: ${subscription.type}</p>
 
         <p>sub.getSubscriberRespConsortia(): ${subscription.getSubscriberRespConsortia()}</p>
