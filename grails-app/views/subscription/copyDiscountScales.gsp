@@ -257,9 +257,9 @@
                                         <g:link controller="organisation" action="show"
                                                 id="${org.id}">${org.name}</g:link><br />
                                     </g:each>
-                                    <g:each in="${s.agencies}" var="org">
-                                        <g:link controller="organisation" action="show"
-                                                id="${org.id}">${org.name} (${message(code: 'default.agency.label')})</g:link><br />
+                                    <g:each in="${s.vendors}" var="vendor">
+                                        <g:link controller="vendor" action="show"
+                                                id="${vendor.id}">${vendor.name} (${message(code: 'default.agency.label')})</g:link><br />
                                     </g:each>
                                 </td>
                                 <td>

@@ -36,7 +36,8 @@
             <g:set var="sumCostItems" value="${sumCostItems + ctByCostItemElement.value.size()}"/>
             <tr>
                 <td>${i + 1}</td>
-                <td>${costItemElement.getI10n('value')}</td>
+                <td><g:link controller="survey" action="$actionName"
+                            params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, selectedCostItemElementID: costItemElement.id]}">${costItemElement.getI10n('value')}</g:link></td>
                 <td><g:link controller="survey" action="$actionName"
                             params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, selectedCostItemElementID: costItemElement.id]}">${ctByCostItemElement.value.size()}</g:link></td>
                 <td><g:formatNumber number="${sumCostInBillingCurrencyByElement}" minFractionDigits="2"

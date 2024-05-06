@@ -316,6 +316,16 @@
                                     </div>
                                 </g:if>
                             </g:if>
+
+                            <g:if test="${SurveyOrg.findByOrgAndSurveyConfig(Org.get(participant.id), surveyConfig)}">
+                                <br>
+                                <br>
+
+                                <div class="ui icon"
+                                     data-tooltip="${message(code: 'surveyParticipants.selectedParticipants')}">
+                                    <i class="bordered colored chart pie icon"></i>
+                                </div>
+                            </g:if>
                         </td>
                     </tr>
                 </g:each>

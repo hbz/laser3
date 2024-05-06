@@ -1,4 +1,4 @@
-<g:if test="${listMuliYearsSub.size() > 0}">
+<g:if test="${listMuliYearsSub && listMuliYearsSub.size() > 0}">
     <table class="ui celled sortable table la-js-responsive-table la-table" id="parentSubscription">
         <thead>
         <tr>
@@ -90,7 +90,7 @@
 
         </g:if>
 
-        <g:if test="${parentSuccessorSubscription.getDerivedNonHiddenSubscribers().size() > 0}">
+        <g:if test="${parentSuccessorSubscription && parentSuccessorSubscription.getDerivedNonHiddenSubscribers().size() > 0}">
             <g:link controller="subscription" action="copyElementsIntoSubscription" id="${parentSubscription.id}"
                     params="[sourceObjectId: genericOIDService.getOID(parentSubscription), targetObjectId: genericOIDService.getOID(parentSuccessorSubscription), isRenewSub: true, fromSurvey: true]"
                     class="ui button ">

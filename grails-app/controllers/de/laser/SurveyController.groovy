@@ -126,9 +126,9 @@ class SurveyController {
             params.validOnYear = [newYear]
         }
 
-        prf.setBenchmark("after surveyYears and before current org ids of providers and agencies")
+        prf.setBenchmark("after surveyYears and before current org ids of providers and vendors")
         result.providers = orgTypeService.getCurrentOrgsOfProvidersAndAgencies( (Org) result.institution )
-        prf.setBenchmark("after providers and agencies and before subscriptions")
+        prf.setBenchmark("after providers and vendors and before subscriptions")
         result.subscriptions = Subscription.executeQuery("select DISTINCT s.name from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                 " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIA, 'activeInst': result.institution])
         prf.setBenchmark("after subscriptions and before survey config query")
@@ -844,7 +844,7 @@ class SurveyController {
             }
         }else {
             ctrlResult.result
-            redirect(action: 'surveyCostItems', id: ctrlResult.surveyInfo.id, params: params)
+            redirect(action: 'surveyCostItems', id: ctrlResult.result.surveyInfo.id, params: params)
             return
         }
 
@@ -960,7 +960,7 @@ class SurveyController {
                 if (params.filename) {
                     filename = params.filename
                 } else {
-                    filename = message + "_" + ctrlResult.surveyConfig.getSurveyName() + "_${datetoday}"
+                    filename = message + "_" + ctrlResult.result.surveyConfig.getSurveyName() + "_${datetoday}"
                 }
 
                 Map<String, Object> selectedFieldsRaw = params.findAll { it -> it.toString().startsWith('iex:') }

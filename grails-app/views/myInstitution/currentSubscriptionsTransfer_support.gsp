@@ -382,11 +382,11 @@
                                 </g:link>
                                 <br/>
                             </g:each>
-                            <g:each in="${s.agencies}" var="org">
-                                <g:link controller="organisation" action="show" id="${org.id}">
-                                    ${fieldValue(bean: org, field: "name")}
-                                    <g:if test="${org.sortname}">
-                                        <br/> (${fieldValue(bean: org, field: "sortname")})
+                            <g:each in="${s.vendors}" var="vendor">
+                                <g:link controller="vendor" action="show" id="${vendor.id}">
+                                    ${fieldValue(bean: vendor, field: "name")}
+                                    <g:if test="${vendor.sortname}">
+                                        <br/> (${fieldValue(bean: vendor, field: "sortname")})
                                     </g:if> (${message(code: 'default.agency.label')})
                                 </g:link>
                                 <br/>

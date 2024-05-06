@@ -121,9 +121,6 @@
                                         <div class="la-flexbox la-minor-object">
                                             <i class="icon balance scale la-list-icon"></i>
                                             <g:link controller="license" action="show" id="${license.id}">
-                                                <g:if test="${license._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION}">
-                                                    <i class="icon users la-list-icon la-popup-tooltip la-delay" data-content="${message(code: 'license.member')}"></i>
-                                                </g:if>
                                                 ${license.reference}
                                             </g:link><br />
                                         </div>

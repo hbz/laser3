@@ -1,6 +1,8 @@
-<%@ page import="de.laser.ExportClickMeService; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.storage.RDStore; de.laser.Subscription" %>
 <laser:htmlStart message="subscription.details.financials.label" />
 
+<laser:render template="/templates/flyouts/help/subscription_show"/>
+<laser:render template="/templates/flyouts/dateCreatedLastUpdated" model="[obj: subscription]"/>
         <laser:serviceInjection />
         <g:set var="own" value="${financialData.own}"/>
         <g:set var="cons" value="${financialData.cons}"/>
@@ -90,7 +92,15 @@
         </ui:h1HeaderWithIcon>
         <ui:totalNumber class="la-numberHeader" total="${total.join(' / ')}"/>
         <ui:anualRings mapping="subfinance" object="${subscription}" controller="finance" action="index" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+        <g:if test="${subscription._getCalculatedType() == Subscription.TYPE_CONSORTIAL}">
+            <g:set var="previous" value="${subscription._getCalculatedPrevious()}"/>
+            <g:set var="successor" value="${subscription._getCalculatedSuccessor()}"/>
+            <laser:render template="/subscription/subscriptionTransferInfo" model="${[calculatedSubList: successor + [subscription] + previous]}"/>
+        </g:if>
 
+        <g:if test="${editable && subscription.getConsortia()?.id == contextService.getOrg().id}">
+            <laser:render template="/templates/flyouts/subscriptionMembers" model="[subscription: subscription]"/>
+        </g:if>
         <laser:render template="/subscription/${customerTypeService.getNavTemplatePath()}" model="${[subscription:subscription, params:(params << [id:subscription.id, showConsortiaFunctions:showConsortiaFunctions])]}"/>
 
         <g:if test="${showConsortiaFunctions}">

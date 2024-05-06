@@ -16,7 +16,7 @@
             <thead>
             <tr>
                 <th class="three wide">${message(code: 'consortium.member')}</th>
-                <th class="four wide">${message(code: 'default.provider.label')} : ${message(code: 'platform.label')}</th>
+                <th class="four wide">${message(code: 'platform.label')}</th>
                 <th class="three wide">${message(code: 'org.customerIdentifier')}</th>
                 <th class="three wide">${message(code: 'org.requestorKey')}</th>
                 <th class="two wide">${message(code: 'default.note.label')}</th>
@@ -36,7 +36,7 @@
                 %>
                 <tr>
                     <td><g:link controller="organisation" action="show" id="${pair.customer.id}">${pair.customer.sortname ?: pair.customer.name}</g:link></td>
-                    <td><g:link controller="organisation" action="show" id="${pair.getProvider().id}">${pair.getProvider()}</g:link>: <g:link controller="platform" action="show" id="${pair.platform.id}">${pair.platform.name}</g:link></td>
+                    <td><g:link controller="platform" action="show" id="${pair.platform.id}">${pair.platform.name}</g:link></td>
                     <td><ui:xEditable owner="${pair}" field="value" overwriteEditable="${overwriteEditable_ci}" /></td>
                     <td><ui:xEditable owner="${pair}" field="requestorKey" overwriteEditable="${overwriteEditable_ci}" /></td>
                     <td><ui:xEditable owner="${pair}" field="note" overwriteEditable="${overwriteEditable_ci}" /></td>
