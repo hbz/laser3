@@ -3,26 +3,27 @@ package de.laser.reporting.report.myInstitution
 import de.laser.ContextService
 import de.laser.Org
 import de.laser.auth.Role
-import de.laser.storage.BeanStore
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
+import de.laser.storage.BeanStore
 import grails.web.servlet.mvc.GrailsParameterMap
 
-class OrganisationQuery extends BaseQuery {
+class ProviderQuery extends BaseQuery {
 
     static Map<String, Object> query(GrailsParameterMap params) {
 
         ContextService contextService = BeanStore.getContextService()
 
-        //println 'OrganisationQuery.query()'
+        //println 'ProviderQuery.query()'
         //println params
 
         Map<String, Object> result = getEmptyResult( params.query, params.chart )
 
         def (String prefix, String suffix) = params.query.split('-') // only simply cfg.query
         List<Long> idList = BaseFilter.getCachedFilterIdList(prefix, params)
+//        List<Long> orphanedIdList = BaseFilter.getCachedFilterIdList(prefix + 'Orphaned', params)
 
-        //println 'OrganisationQuery.query() -> ' + params.query + ' : ' + suffix
+        //println 'ProviderQuery.query() -> ' + params.query + ' : ' + suffix
 
         if (! idList) {
         }
@@ -30,11 +31,19 @@ class OrganisationQuery extends BaseQuery {
 
             handleGenericAllQuery(
                     params.query,
-                    'select o.name, o.name, count(o.name) from Org o where o.id in (:idList) group by o.name order by o.name',
-                    'select o.id from Org o where o.id in (:idList) and o.name = :d order by o.id',
+                    'select pro.name, pro.name, count(pro.name) from Provider pro where pro.id in (:idList) group by pro.name order by pro.name',
+                    'select pro.id from Provider pro where pro.id in (:idList) and pro.name = :d order by pro.id',
                     idList,
                     result
             )
+//            handleGenericAllSignOrphanedQuery(
+//                    params.query,
+//                    'select pro.id, pro.name, 1, false from Provider pro where pro.id in (:idList) order by pro.name',
+//                    'select pro.id from Provider pro where pro.id in (:idList) and pro.name = :d order by pro.id',
+//                    idList,
+//                    orphanedIdList,
+//                    result
+//            )
         }
         else if ( suffix in ['libraryType', 'region', 'country', 'libraryNetwork', 'funderType', 'funderHskType']) {
 
@@ -122,9 +131,9 @@ class OrganisationQuery extends BaseQuery {
 
         handleGenericRefdataQuery(
                 query,
-                PROPERTY_QUERY[0] + 'from Org o join o.' + refdata + ' p where o.id in (:idList)' + PROPERTY_QUERY[1],
-                'select o.id from Org o join o.' + refdata + ' p where o.id in (:idList) and p.id = :d order by o.name',
-                'select distinct o.id from Org o where o.id in (:idList) and o.' + refdata + ' is null',
+                PROPERTY_QUERY[0] + 'from Provider pro join pro.' + refdata + ' p where pro.id in (:idList)' + PROPERTY_QUERY[1],
+                'select pro.id from Provider pro join pro.' + refdata + ' p where pro.id in (:idList) and p.id = :d order by pro.name',
+                'select distinct pro.id from Provider pro where pro.id in (:idList) and pro.' + refdata + ' is null',
                 idList,
                 result
         )

@@ -7,8 +7,6 @@ import grails.web.servlet.mvc.GrailsParameterMap
 
 class CostItemQuery extends BaseQuery {
 
-    static List<String> PROPERTY_QUERY = [ 'select p.id, p.value_de, count(*) ', ' group by p.id, p.value_de order by p.value_de' ]
-
     static Map<String, Object> query(GrailsParameterMap params) {
 
         Map<String, Object> result = getEmptyResult( params.query, params.chart )

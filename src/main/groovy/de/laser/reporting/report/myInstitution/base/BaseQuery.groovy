@@ -30,8 +30,11 @@ class BaseQuery {
     static String NO_PLATFORM_LABEL          = 'noPlatform.label'
     static String NO_PLATFORM_PROVIDER_LABEL = 'noPlatformProvider.label'
     static String NO_PROVIDER_LABEL          = 'noProvider.label'
+    static String NO_VENDOR_LABEL            = 'noVendor.label'
     static String NO_STARTDATE_LABEL         = 'noStartDate.label'
     static String NO_ENDDATE_LABEL           = 'noEndDate.label'
+
+    static List<String> PROPERTY_QUERY       = [ 'select p.id, p.value_de, count(*) ', ' group by p.id, p.value_de order by p.value_de' ]
 
     static def NO_DATA_ID           = null
     static int NO_COUNTERPART_ID    = 0 // dyn.neg.values for unmapped es refdata

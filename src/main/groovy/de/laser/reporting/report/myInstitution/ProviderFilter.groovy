@@ -1,90 +1,44 @@
 package de.laser.reporting.report.myInstitution
 
 import de.laser.ContextService
-import de.laser.Org
 import de.laser.OrgSetting
 import de.laser.RefdataValue
+import de.laser.Vendor
 import de.laser.auth.Role
-import de.laser.storage.BeanStore
-import de.laser.utils.DateUtils
-import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
+import de.laser.storage.BeanStore
+import de.laser.storage.RDStore
+import de.laser.utils.DateUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 
-class OrganisationFilter extends BaseFilter {
+class ProviderFilter extends BaseFilter {
 
     static Map<String, Object> filter(GrailsParameterMap params) {
         // notice: params is cloned
         Map<String, Object> filterResult = [ labels: [:], data: [:] ]
 
-        List<String> queryParts         = [ 'select distinct (org.id) from Org org']
-        List<String> whereParts         = [ 'where org.id in (:orgIdList)']
-        Map<String, Object> queryParams = [ orgIdList: [] ]
+        List<String> queryParts         = [ 'select distinct (pro.id) from Provider pro']
+        List<String> whereParts         = [ 'where pro.id in (:providerIdList)']
+        Map<String, Object> queryParams = [ providerIdList: [] ]
 
         ContextService contextService = BeanStore.getContextService()
 
-        String filterSource = getCurrentFilterSource(params, 'org')
-        filterResult.labels.put('base', [source: BaseConfig.getSourceLabel(BaseConfig.KEY_ORGANISATION, filterSource)])
+        String filterSource = getCurrentFilterSource(params, 'provider')
+        filterResult.labels.put('base', [source: BaseConfig.getSourceLabel(BaseConfig.KEY_PROVIDER, filterSource)])
 
         switch (filterSource) {
-            case 'all-org':
-                queryParams.orgIdList = Org.executeQuery(
-                        'select o.id from Org o where (o.status is null or o.status != :orgStatus)',
-                        [orgStatus: RDStore.ORG_STATUS_DELETED]
-                )
+            case 'all-provider':
+                queryParams.providerIdList = _getAllProviderIdList()
                 break
-            case 'all-consortium':
-                queryParams.orgIdList = Org.executeQuery(
-                        'select o.id from Org o where exists (select ot from o.orgType ot where ot = :orgType) and (o.status is null or o.status != :orgStatus)',
-                        [orgType: RDStore.OT_CONSORTIUM, orgStatus: RDStore.ORG_STATUS_DELETED]
-                )
-                break
-            case 'all-inst':
-                queryParams.orgIdList = Org.executeQuery(
-                        'select o.id from Org o where (o.status is null or o.status != :orgStatus) and exists (select ot from o.orgType ot where ot = :orgType)',
-                        [orgStatus: RDStore.ORG_STATUS_DELETED, orgType: RDStore.OT_INSTITUTION]
-                )
-                break
-            case 'my-inst':
-                queryParams.orgIdList = Org.executeQuery(
-                        'select o.id from Org as o, Combo as c where c.fromOrg = o and c.toOrg = :org and c.type = :comboType and (o.status is null or o.status != :orgStatus)',
-                        [org: contextService.getOrg(), orgStatus: RDStore.ORG_STATUS_DELETED, comboType: RDStore.COMBO_TYPE_CONSORTIUM]
-                )
-                break
-            case 'my-consortium':
-                queryParams.orgIdList = Org.executeQuery( '''
-select distinct(consOr.org.id) from OrgRole consOr 
-    join consOr.sub sub join sub.orgRelations subOr 
-where (consOr.roleType = :consRoleType) 
-    and (sub = subOr.sub and subOr.org = :org and subOr.roleType in (:subRoleTypes))
-    and (consOr.org.status is null or consOr.org.status != :orgStatus)  ''',
-                        [
-                                org: contextService.getOrg(), orgStatus: RDStore.ORG_STATUS_DELETED,
-                                subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS],
-                                consRoleType: RDStore.OR_SUBSCRIPTION_CONSORTIA
-                        ]
-                )
-
-                queryParams.orgIdList.addAll( Org.executeQuery( '''
-select distinct(consOr.org.id) from OrgRole consOr 
-    join consOr.lic lic join lic.orgRelations licOr 
-where (consOr.roleType = :consRoleType) 
-    and (lic = licOr.lic and licOr.org = :org and licOr.roleType in (:licRoleTypes))
-    and (consOr.org.status is null or consOr.org.status != :orgStatus)  ''',
-                        [
-                                org: contextService.getOrg(), orgStatus: RDStore.ORG_STATUS_DELETED,
-                                licRoleTypes: [RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS],
-                                consRoleType: RDStore.OR_LICENSING_CONSORTIUM
-                        ]
-                ) )
-                queryParams.orgIdList = queryParams.orgIdList.unique()
+            case 'my-provider':
+                queryParams.providerIdList = _getMyProviderIdList()
                 break
         }
 
-        String cmbKey = BaseConfig.FILTER_PREFIX + 'org_'
+        String cmbKey = BaseConfig.FILTER_PREFIX + 'provider_'
         int pCount = 0
 
         getCurrentFilterKeys(params, cmbKey).each { key ->
@@ -92,26 +46,26 @@ where (consOr.roleType = :consRoleType)
 
             if (params.get(key)) {
                 String p = key.replaceFirst(cmbKey,'')
-                String pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base, p)
+                String pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_PROVIDER ).base, p)
 
                 def filterLabelValue
 
                 // --> properties generic
                 if (pType == BaseConfig.FIELD_TYPE_PROPERTY) {
-                    if (Org.getDeclaredField(p).getType() == Date) {
+                    if (Vendor.getDeclaredField(p).getType() == Date) {
 
                         String modifier = getDateModifier( params.get(key + '_modifier') )
 
-                        whereParts.add( 'org.' + p + ' ' + modifier + ' :p' + (++pCount) )
+                        whereParts.add( 'pro.' + p + ' ' + modifier + ' :p' + (++pCount) )
                         queryParams.put( 'p' + pCount, DateUtils.parseDateGeneric(params.get(key)) )
 
                         filterLabelValue = getDateModifier(params.get(key + '_modifier')) + ' ' + params.get(key)
                     }
-                    else if (Org.getDeclaredField(p).getType() in [boolean, Boolean]) {
+                    else if (Vendor.getDeclaredField(p).getType() in [boolean, Boolean]) {
                         RefdataValue rdv = RefdataValue.get(params.long(key))
 
-                        if (rdv == RDStore.YN_YES)     { whereParts.add( 'org.' + p + ' is true' ) }
-                        else if (rdv == RDStore.YN_NO) { whereParts.add( 'org.' + p + ' is false' ) }
+                        if (rdv == RDStore.YN_YES)     { whereParts.add( 'pro.' + p + ' is true' ) }
+                        else if (rdv == RDStore.YN_NO) { whereParts.add( 'pro.' + p + ' is false' ) }
 
                         filterLabelValue = rdv.getI10n('value')
                     }
@@ -122,7 +76,7 @@ where (consOr.roleType = :consRoleType)
                 }
                 // --> refdata generic
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA) {
-                    whereParts.add( 'org.' + p + '.id = :p' + (++pCount) )
+                    whereParts.add( 'pro.' + p + '.id = :p' + (++pCount) )
                     queryParams.put( 'p' + pCount, params.long(key) )
 
                     filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
@@ -181,22 +135,56 @@ where (consOr.roleType = :consRoleType)
                 }
 
                 if (filterLabelValue) {
-                    filterResult.labels.get('base').put(p, [label: GenericHelper.getFieldLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base, p), value: filterLabelValue])
+                    filterResult.labels.get('base').put(p, [label: GenericHelper.getFieldLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_PROVIDER ).base, p), value: filterLabelValue])
                 }
             }
         }
 
         String query = queryParts.unique().join(' , ') + ' ' + whereParts.join(' and ')
 
-//        println 'OrganisationFilter.filter() -->'
+//        println 'ProviderFilter.filter() -->'
 //        println query
 //        println queryParams
 //        println whereParts
 
-        filterResult.data.put('orgIdList', queryParams.orgIdList ? Org.executeQuery( query, queryParams ) : [])
+        filterResult.data.put('providerIdList', queryParams.providerIdList ? Vendor.executeQuery( query, queryParams ) : [])
 
-//        println 'orgs >> ' + result.orgIdList.size()
+//        println 'providers >> ' + result.providerIdList.size()
 
         filterResult
+    }
+
+    static List<Long> _getAllProviderIdList() {
+
+        List<Long> idList = Vendor.executeQuery(
+                'select pro.id from Provider pro where (pro.status is null or pro.status != :providerStatus)',
+                [providerStatus: RDStore.VENDOR_STATUS_DELETED]
+        )
+
+        idList
+    }
+
+    static List<Long> _getMyProviderIdList() { // TODO TODO TODO
+
+        ContextService contextService = BeanStore.getContextService()
+
+        List<Long> idList = Vendor.executeQuery(
+                'select pro.id from Provider pro where (pro.status is null or pro.status != :providerStatus)',
+                [providerStatus: RDStore.VENDOR_STATUS_DELETED]
+        )
+
+//        List<Long> idList = Org.executeQuery( '''
+//            select distinct(ven.vendor.id) from VendorRole ven
+//                join ven.sub sub
+//                join sub.orgRelations subOr
+//            where (sub = subOr.sub and subOr.org = :org and subOr.roleType in (:subRoleTypes))
+//                and (prov.org.status is null or prov.org.status != :orgStatus)
+//            ''',
+//            [
+//                    org: contextService.getOrg(), vendorStatus: RDStore.VENDOR_STATUS_DELETED,
+//                    subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]
+//            ]
+//        )
+        idList
     }
 }

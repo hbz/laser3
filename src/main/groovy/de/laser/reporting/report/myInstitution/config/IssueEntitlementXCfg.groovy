@@ -111,7 +111,7 @@ class IssueEntitlementXCfg extends BaseConfig {
                             cfgKey: BaseConfig.KEY_PACKAGE
                     ],
                     source : [
-                            'filter-restricting-package'
+                            'filter-subset-package'
                     ],
                     fields: [
                             'packageStatus': [ type: BaseConfig.FIELD_TYPE_REFDATA ]
@@ -138,7 +138,7 @@ class IssueEntitlementXCfg extends BaseConfig {
                             cfgKey: BaseConfig.KEY_ISSUEENTITLEMENT
                     ],
                     source : [
-                            'filter-restricting-provider'
+                            'filter-subset-provider'
                     ],
                     fields : [ ],
                     filter : [
@@ -160,7 +160,7 @@ class IssueEntitlementXCfg extends BaseConfig {
                             cfgKey: BaseConfig.KEY_ISSUEENTITLEMENT
                     ],
                     source : [
-                            'filter-restricting-platform'
+                            'filter-subset-platform'
                     ],
                     fields : [ ],
                     filter : [

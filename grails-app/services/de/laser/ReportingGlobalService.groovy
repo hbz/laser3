@@ -53,8 +53,14 @@ class ReportingGlobalService {
         else if (params.filter == BaseConfig.KEY_PLATFORM) {
             doFilterPlatform(result, params.clone() as GrailsParameterMap)
         }
+        else if (params.filter == BaseConfig.KEY_PROVIDER) {
+            doFilterProvider(result, params.clone() as GrailsParameterMap)
+        }
         else if (params.filter == BaseConfig.KEY_SUBSCRIPTION) {
             doFilterSubscription(result, params.clone() as GrailsParameterMap)
+        }
+        else if (params.filter == BaseConfig.KEY_VENDOR) {
+            doFilterVendor(result, params.clone() as GrailsParameterMap)
         }
     }
 
@@ -111,15 +117,12 @@ class ReportingGlobalService {
 
         result.filterResult = OrganisationFilter.filter(params)
 
-        if (params.get('filter:org_source').endsWith('-providerAndAgency')) {
-            result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query.providerAndAgency )
-        }
-        else if (params.get('filter:org_source').endsWith('-provider')) {
+        if (params.get('filter:org_source').endsWith('-provider')) { // TODO
             result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query.provider )
         }
-        else if (params.get('filter:org_source').endsWith('-agency')) {
-            result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query.agency )
-        }
+//        else if (params.get('filter:org_source').endsWith('-agency')) {
+//            result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query.agency )
+//        }
         else {
             result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query.default )
         }
@@ -158,6 +161,17 @@ class ReportingGlobalService {
         result.cfgDistributionList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base.distribution )
     }
 
+    void doFilterProvider (Map<String, Object> result, GrailsParameterMap params) { // TODO
+
+//        result.filterResult = ProviderFilter.filter(params)
+//
+//        //result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_PROVIDER ).base.query.default )
+//        BaseConfig.getCurrentConfig( BaseConfig.KEY_PROVIDER ).keySet().each{ pk ->
+//            result.cfgQueryList.putAll(BaseConfig.getCurrentConfig(BaseConfig.KEY_PROVIDER).get(pk).query.default)
+//        }
+//        result.cfgDistributionList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_PROVIDER ).base.distribution )
+    }
+
     /**
      * Prepares the subscription filter and writes the result to the result map
      * @param result the result map
@@ -177,6 +191,17 @@ class ReportingGlobalService {
             result.cfgQueryList.remove('consortium') // ?
         }
         result.cfgDistributionList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).base.distribution )
+    }
+
+    void doFilterVendor (Map<String, Object> result, GrailsParameterMap params) {
+
+        result.filterResult = VendorFilter.filter(params)
+
+        //result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_VENDOR ).base.query.default )
+        BaseConfig.getCurrentConfig( BaseConfig.KEY_VENDOR ).keySet().each{ pk ->
+            result.cfgQueryList.putAll(BaseConfig.getCurrentConfig(BaseConfig.KEY_VENDOR).get(pk).query.default)
+        }
+        result.cfgDistributionList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_VENDOR ).base.distribution )
     }
 
     // ----- 2 - chart
@@ -235,7 +260,7 @@ class ReportingGlobalService {
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
                 }
             }
-            else if (prefix in ['org', 'member', 'consortium', 'provider', 'agency', 'licensor']) {
+            else if (prefix in ['org', 'member', 'consortium', /*'provider', 'agency', */ 'licensor']) {
                 result.putAll( OrganisationQuery.query(clone) )
                 result.labels.tooltip = getTooltipLabels(clone)
 
@@ -251,7 +276,6 @@ class ReportingGlobalService {
                 result.labels.tooltip = getTooltipLabels(clone)
 
                 if (suffix in ['*']) {
-                    //println 'ReportingGlobalService KEY_PACKAGE *'
                     result.labels.chart = [BaseConfig.getLabel('reporting.chart.chartLabel.counterpart.label'), BaseConfig.getLabel('reporting.chart.chartLabel.noCounterpart.label')]
                     result.tmpl = TMPL_PATH_CHART + 'generic_signOrphaned'
                 }
@@ -267,7 +291,6 @@ class ReportingGlobalService {
                 result.labels.tooltip = getTooltipLabels(clone)
 
                 if (suffix in ['*']) {
-                    //println 'ReportingGlobalService KEY_PLATFORM *'
                     result.labels.chart = [BaseConfig.getLabel('reporting.chart.chartLabel.counterpart.label'), BaseConfig.getLabel('reporting.chart.chartLabel.noCounterpart.label')]
                     result.tmpl = TMPL_PATH_CHART + 'generic_signOrphaned'
                 }
@@ -276,6 +299,15 @@ class ReportingGlobalService {
 
                     result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getDistributionLabel(BaseConfig.KEY_PLATFORM, 'chartLabel.' + it) }
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
+                }
+            }
+            else if (prefix in [ BaseConfig.KEY_PROVIDER ]) { // TODO
+                result.putAll( ProviderQuery.query(clone) )
+                result.labels.tooltip = getTooltipLabels(clone)
+
+                if (suffix in ['*']) {
+                    result.labels.chart = [BaseConfig.getLabel('reporting.chart.chartLabel.counterpart.label'), BaseConfig.getLabel('reporting.chart.chartLabel.noCounterpart.label')]
+//                    result.tmpl = TMPL_PATH_CHART + 'generic_signOrphaned'
                 }
             }
             else if (prefix in [ BaseConfig.KEY_SUBSCRIPTION, 'memberSubscription' ]) {
@@ -287,6 +319,15 @@ class ReportingGlobalService {
 
                     result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getDistributionLabel(BaseConfig.KEY_SUBSCRIPTION, 'chartLabel.' + it)  }
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
+                }
+            }
+            else if (prefix in [ BaseConfig.KEY_VENDOR ]) {
+                result.putAll( VendorQuery.query(clone) )
+                result.labels.tooltip = getTooltipLabels(clone)
+
+                if (suffix in ['*']) {
+                    result.labels.chart = [BaseConfig.getLabel('reporting.chart.chartLabel.counterpart.label'), BaseConfig.getLabel('reporting.chart.chartLabel.noCounterpart.label')]
+//                    result.tmpl = TMPL_PATH_CHART + 'generic_signOrphaned'
                 }
             }
 
@@ -323,7 +364,7 @@ class ReportingGlobalService {
                     return
                 }
             }
-            //println 'ReportingGlobalService.doChartDetails() -> filter: ' + params.filter + ', prefix:' + prefix + ', suffix:' + suffix
+//            println 'ReportingGlobalService.doChartDetails() -> filter: ' + params.filter + ', prefix:' + prefix + ', suffix:' + suffix
             Map<String, Object> cfg = BaseConfig.getCurrentConfigByFilter( params.filter )
 
             if (cfg) {
@@ -355,8 +396,14 @@ class ReportingGlobalService {
                     else if (tmpl == BaseConfig.KEY_PLATFORM) {
                         result.list = Platform.executeQuery('select plt from Platform plt where plt.id in (:idList) order by plt.name', [idList: idList])
                     }
+                    else if (tmpl == BaseConfig.KEY_PROVIDER) { // TODO
+//                        result.list = Vendor.executeQuery('select v from Vendor v where v.id in (:idList) order by v.sortname, v.name', [idList: idList])
+                    }
                     else if (tmpl == BaseConfig.KEY_SUBSCRIPTION) {
                         result.list = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
+                    }
+                    else if (tmpl == BaseConfig.KEY_VENDOR) {
+                        result.list = Vendor.executeQuery('select v from Vendor v where v.id in (:idList) order by v.sortname, v.name', [idList: idList])
                     }
                 }
                 else {
@@ -365,13 +412,13 @@ class ReportingGlobalService {
                     if (prefix in [ BaseConfig.KEY_COSTITEM ]) {
                         result.list = idList ? CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idList) order by ci.costTitle', [idList: idList]) : []
                     }
-                    else if (prefix == BaseConfig.KEY_ISSUEENTITLEMENT) {
-                        result.list = License.executeQuery('select ie from IssueEntitlement ie where ie.id in (:idList) order by ie.tipp.sortname', [idList: idList])
+                    else if (prefix in [ BaseConfig.KEY_ISSUEENTITLEMENT ]) {
+                        result.list = idList ? License.executeQuery('select ie from IssueEntitlement ie where ie.id in (:idList) order by ie.tipp.sortname', [idList: idList]) : []
                     }
                     else if (prefix in [ BaseConfig.KEY_LICENSE ]) {
                         result.list = idList ? License.executeQuery('select l from License l where l.id in (:idList) order by l.sortableReference, l.reference', [idList: idList]) : []
                     }
-                    else if (prefix in [ 'licensor', 'org', 'member', 'consortium', 'provider', 'agency' ]) {
+                    else if (prefix in [ 'licensor', 'org', 'member', 'consortium', /*'provider', 'agency' */]) {
                         result.list = idList ? Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList]) : []
                         result.tmpl = TMPL_PATH_DETAILS + BaseConfig.KEY_ORGANISATION
                     }
@@ -381,9 +428,15 @@ class ReportingGlobalService {
                     else if (prefix in [ BaseConfig.KEY_PLATFORM ]) {
                         result.list = idList ? Platform.executeQuery('select plt from Platform plt where plt.id in (:idList) order by plt.name', [idList: idList]) : []
                     }
+                    else if (prefix in [ BaseConfig.KEY_PROVIDER ]) {
+                        result.list = [] // TODO -- Vendor.executeQuery('select v from Vendor v where v.id in (:idList) order by v.sortname, v.name', [idList: idList])
+                    }
                     else if (prefix in [ BaseConfig.KEY_SUBSCRIPTION, 'memberSubscription' ]) {
                         result.list = idList ? Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList]) : []
                         result.tmpl = TMPL_PATH_DETAILS + BaseConfig.KEY_SUBSCRIPTION
+                    }
+                    else if (prefix in [ BaseConfig.KEY_VENDOR ]) {
+                        result.list = idList ? Vendor.executeQuery('select v from Vendor v where v.id in (:idList) order by v.sortname, v.name', [idList: idList]) : []
                     }
                 }
             }

@@ -4,14 +4,12 @@ import de.laser.ContextService
 import de.laser.License
 import de.laser.Org
 import de.laser.Package
+import de.laser.PackageVendor
 import de.laser.Platform
 import de.laser.RefdataCategory
 import de.laser.Subscription
 import de.laser.SubscriptionsQueryService
 import de.laser.auth.Role
-import de.laser.storage.BeanStore
-import de.laser.storage.RDConstants
-import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.myInstitution.config.CostItemXCfg
@@ -22,8 +20,13 @@ import de.laser.reporting.report.myInstitution.config.OrganisationConsCfg
 import de.laser.reporting.report.myInstitution.config.OrganisationInstCfg
 import de.laser.reporting.report.myInstitution.config.PackageXCfg
 import de.laser.reporting.report.myInstitution.config.PlatformXCfg
+import de.laser.reporting.report.myInstitution.config.ProviderXCfg
 import de.laser.reporting.report.myInstitution.config.SubscriptionConsCfg
 import de.laser.reporting.report.myInstitution.config.SubscriptionInstCfg
+import de.laser.reporting.report.myInstitution.config.VendorXCfg
+import de.laser.storage.BeanStore
+import de.laser.storage.RDConstants
+import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
 import groovy.util.logging.Slf4j
 import org.springframework.context.MessageSource
@@ -48,7 +51,9 @@ class BaseConfig {
     static String KEY_ORGANISATION              = 'organisation'
     static String KEY_PACKAGE                   = 'package'
     static String KEY_PLATFORM                  = 'platform'
+    static String KEY_PROVIDER                  = 'provider'
     static String KEY_SUBSCRIPTION              = 'subscription'
+    static String KEY_VENDOR                    = 'vendor'
 
     static String FILTER_PREFIX                 = 'filter:'
     static String FILTER_SOURCE_POSTFIX         = '_source'
@@ -75,10 +80,14 @@ class BaseConfig {
     static String CI_GENERIC_STARTDATE_LIMIT    = 'startDateLimit'
     static String CI_GENERIC_SUBJECT_GROUP      = 'subjectGroup'
 
+    static String CI_GENERIC_INVOICING_FORMAT     = 'electronicBillings'
+    static String CI_GENERIC_INVOICING_DISPATCH   = 'invoiceDispatchs'
+
     static String CI_GENERIC_IE_STATUS                  = 'issueEntitlement$status'     // IE
     static String CI_GENERIC_PACKAGE_OR_PROVIDER        = 'package$orgRole$provider'    // IE, PKG
     static String CI_GENERIC_PACKAGE_PLATFORM           = 'package$platform'            // IE, PKG
     static String CI_GENERIC_PACKAGE_STATUS             = 'package$packageStatus'       // IE, PKG, PLT
+    static String CI_GENERIC_PACKAGE_VENDOR             = 'package$vendor'              // PKG
     static String CI_GENERIC_PLATFORM_SERVICEPROVIDER   = 'platform$serviceProvider'    // PLT
     static String CI_GENERIC_PLATFORM_SOFTWAREPROVIDER  = 'platform$softwareProvider'   // PLT
     static String CI_GENERIC_PLATFORM_ORG               = 'platform$org'                // PLT
@@ -90,11 +99,20 @@ class BaseConfig {
     static String CI_CTX_IE_SUBSCRIPTION        = 'issueEntitlement$subscription'       // IE
 
     static List<String> FILTER = [
-            KEY_ORGANISATION, KEY_SUBSCRIPTION, KEY_LICENSE, KEY_PACKAGE, KEY_PLATFORM //, KEY_ISSUEENTITLEMENT // 'costItem'
+            KEY_ORGANISATION,
+            KEY_SUBSCRIPTION,
+            KEY_LICENSE,
+            KEY_VENDOR,
+            // KEY_PROVIDER,
+            KEY_PACKAGE,
+            KEY_PLATFORM,
+            // KEY_ISSUEENTITLEMENT,
+            // 'costItem'
     ]
 
     static List<String> CHARTS = [
-            CHART_BAR, CHART_PIE
+            CHART_BAR,
+            CHART_PIE
     ]
 
     /**
@@ -116,10 +134,12 @@ class BaseConfig {
         }
         else if (key == KEY_PACKAGE) { PackageXCfg }
         else if (key == KEY_PLATFORM) { PlatformXCfg }
+        else if (key == KEY_PROVIDER) { ProviderXCfg }
         else if (key == KEY_SUBSCRIPTION) {
             if (BaseDetailsExport.ctxConsortium()) { SubscriptionConsCfg }
             else if (BaseDetailsExport.ctxInst()) { SubscriptionInstCfg }
         }
+        else if (key == KEY_VENDOR) { VendorXCfg }
     }
 
     /**
@@ -176,7 +196,7 @@ class BaseConfig {
         Map<String, Object> cfg = [:]
         // println '|--- BaseConfig.getCurrentConfigByFilterAndPrefix( ' + filter + ' )'
 
-        if (filter in [ KEY_COSTITEM, KEY_ISSUEENTITLEMENT, KEY_LICENSE, KEY_ORGANISATION, KEY_PACKAGE, KEY_PLATFORM, KEY_SUBSCRIPTION ]) {
+        if (filter in [ KEY_COSTITEM, KEY_ISSUEENTITLEMENT, KEY_LICENSE, KEY_ORGANISATION, KEY_PACKAGE, KEY_PLATFORM, KEY_PROVIDER, KEY_SUBSCRIPTION, KEY_VENDOR ]) {
             cfg = getCurrentConfig( filter )
         }
         else if (filter in ['org']) {
@@ -187,34 +207,6 @@ class BaseConfig {
         }
         cfg
     }
-
-//    static Map<String, Object> getCurrentConfigByPrefix(String prefix) {
-//        Map<String, Object> cfg = [:]
-//
-//        if (prefix in [ KEY_COSTITEM ]) {
-//            cfg = getCurrentConfig( BaseConfig.KEY_COSTITEM )
-//        }
-//        else if (prefix in [ KEY_ISSUEENTITLEMENT ]) {
-//            cfg = getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT )
-//        }
-//        else if (prefix in [ KEY_LICENSE, 'licensor' ]) {
-//            cfg = getCurrentConfig( BaseConfig.KEY_LICENSE )
-//        }
-//        else if (prefix in ['org']) {
-//            cfg = getCurrentConfig( BaseConfig.KEY_ORGANISATION )
-//        }
-//        else if (prefix in [ KEY_PACKAGE ]) {
-//            cfg = getCurrentConfig( BaseConfig.KEY_PACKAGE )
-//        }
-//        else if (prefix in [ KEY_PLATFORM]) {
-//            cfg = getCurrentConfig( BaseConfig.KEY_PLATFORM )
-//        }
-//        else if (prefix in [ KEY_SUBSCRIPTION, 'memberSubscription', 'member', 'consortium', 'provider', 'agency' ]) {
-//            cfg = getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION )
-//        }
-//
-//        cfg
-//    }
 
     /**
      * Substitution call for {@link #getCustomImplRefdata(java.lang.String, java.lang.Class)}, without configuration class
@@ -356,6 +348,16 @@ class BaseConfig {
                     from: RefdataCategory.getAllRefdataValues(RDConstants.PACKAGE_STATUS)
             ]
         }
+        else if (key == CI_GENERIC_PACKAGE_VENDOR) {
+            return [
+                    label: messageSource.getMessage('vendor', null, locale),
+                    from: PackageVendor.executeQuery('select distinct pv.vendor from PackageVendor pv').collect{[
+                            id: it.id,
+                            value_de: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
+                            value_en: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
+                    ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
+            ]
+        }
         else if (key == CI_GENERIC_PLATFORM_ORG) {
             return [
                     label: messageSource.getMessage('platform.provider', null, locale),
@@ -382,6 +384,18 @@ class BaseConfig {
             return [
                     label: messageSource.getMessage('subscription.status.label', null, locale),
                     from: RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)
+            ]
+        }
+        else if (key == CI_GENERIC_INVOICING_FORMAT) {
+            return [
+                    label: messageSource.getMessage('vendor.invoicing.formats.label', null, locale),
+                    from: RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_FORMAT)
+            ]
+        }
+        else if (key == CI_GENERIC_INVOICING_DISPATCH) {
+            return [
+                    label: messageSource.getMessage('vendor.invoicing.dispatch.label', null, locale),
+                    from: RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_DISPATCH)
             ]
         }
         else if (key == CI_CTX_PROPERTY_KEY) {

@@ -31,8 +31,14 @@
                                 <g:elseif test="${meta.filter == BaseConfig.KEY_PLATFORM}">
                                     <i class="ui icon cloud" aria-hidden="true"></i>
                                 </g:elseif>
+                                <g:elseif test="${meta.filter == BaseConfig.KEY_PROVIDER}">
+                                    <i class="ui icon university" aria-hidden="true"></i>
+                                </g:elseif>
                                 <g:elseif test="${meta.filter == BaseConfig.KEY_SUBSCRIPTION}">
                                     <i class="ui icon balance scale" aria-hidden="true"></i>
+                                </g:elseif>
+                                <g:elseif test="${meta.filter == BaseConfig.KEY_VENDOR}">
+                                    <i class="ui icon shipping fast" aria-hidden="true"></i>
                                 </g:elseif>
                                 <g:else>
                                     <i class="ui icon question" aria-hidden="true"></i>
@@ -101,8 +107,14 @@
                                 <g:elseif test="${fav.filter == BaseConfig.KEY_PLATFORM}">
                                     <i class="ui icon cloud" aria-hidden="true"></i>
                                 </g:elseif>
+                                <g:elseif test="${fav.filter == BaseConfig.KEY_PROVIDER}">
+                                    <i class="ui icon university" aria-hidden="true"></i>
+                                </g:elseif>
                                 <g:elseif test="${fav.filter == BaseConfig.KEY_SUBSCRIPTION}">
                                     <i class="ui icon balance scale" aria-hidden="true"></i>
+                                </g:elseif>
+                                <g:elseif test="${fav.filter == BaseConfig.KEY_VENDOR}">
+                                    <i class="ui icon shipping fast" aria-hidden="true"></i>
                                 </g:elseif>
                                 <g:else>
                                     <i class="ui icon question" aria-hidden="true"></i>

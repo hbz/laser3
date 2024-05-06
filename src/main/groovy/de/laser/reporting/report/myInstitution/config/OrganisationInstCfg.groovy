@@ -14,17 +14,11 @@ class OrganisationInstCfg extends BaseConfig {
                     ],
                     source : [
                             'all-consortium',
-                            'all-provider',
-                            'all-agency',
-                            'all-providerAndAgency',
                             'my-consortium',
-                            'my-provider',
-                            'my-agency',
-                            'my-providerAndAgency'
                     ],
                     fields : [
                             'country'           : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
-                            'region'            : [type: BaseConfig.FIELD_TYPE_REFDATA, spec: BaseConfig.FIELD_IS_VIRTUAL ],
+                            'region'            : [ type: BaseConfig.FIELD_TYPE_REFDATA, spec: BaseConfig.FIELD_IS_VIRTUAL ],
                             'customerType'      : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'eInvoice'          : [ type: BaseConfig.FIELD_TYPE_PROPERTY ],
                             'funderHskType'     : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
@@ -39,9 +33,6 @@ class OrganisationInstCfg extends BaseConfig {
                             default : [
                                     [ 'country', 'region' ],
                                     [ 'libraryNetwork',  'orgType' ]
-                            ],
-                            provider : [ // TODO : provider != agency
-                                    // all disabled
                             ]
                     ],
                     query : [
@@ -57,21 +48,6 @@ class OrganisationInstCfg extends BaseConfig {
                                            'org-funderType' :       [ 'generic.org.funderType' ],
                                            'org-funderHskType' :    [ 'generic.org.funderHskType' ],
                                            'org-*' :                [ 'generic.all' ]
-                                    ]
-                            ],
-                            providerAndAgency : [
-                                    org : [
-                                            'org-orgType': [ 'generic.org.orgType' ]
-                                    ]
-                            ],
-                            provider : [
-                                    org : [
-                                            'org-orgType': [ 'generic.org.orgType' ]
-                                    ]
-                            ],
-                            agency : [
-                                    org : [
-                                            'org-orgType': [ 'generic.org.orgType' ]
                                     ]
                             ]
                     ],

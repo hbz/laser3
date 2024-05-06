@@ -123,7 +123,7 @@ class MyInstitutionController  {
         if (params.init) {
             result.filter = params.filter
             result.xhr = true
-            render template: '/myInstitution/reporting/filter/form', model: result
+            render template: '/myInstitution/reporting/filter/filter_form', model: result
             return
         }
         else if (params.filter) {
@@ -151,7 +151,7 @@ class MyInstitutionController  {
 
             PageRenderer groovyPageRenderer = BeanStore.getGroovyPageRenderer()
             cacheMap.filterCache.result = groovyPageRenderer.render(
-                    template: '/myInstitution/reporting/query/filterResult',
+                    template: '/myInstitution/reporting/query/query_filterResult',
                     model: [ filter: params.filter, filterResult: result.filterResult ]
             ).replaceAll('\\s+', ' ').trim()
 

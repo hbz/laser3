@@ -18,6 +18,9 @@
     <g:if test="${filterResult.data.licensorIdList.size()}">
         ${message(code: 'reporting.filter.result.and.licensor', args: [filterResult.data.licensorIdList.size()])}
     </g:if>
+    <g:if test="${filterResult.data.vendorIdList}">
+        ${message(code: 'reporting.filter.result.and.vendor', args: [filterResult.data.vendorIdList.size()])}
+    </g:if>
     ${message(code: 'reporting.filter.result.end')}
 </g:elseif>
 
@@ -40,6 +43,10 @@
     ${message(code: 'reporting.filter.result.platform', args: [filterResult.data.platformIdList.size(), filterResult.data.platformESRecords.size()])}
 </g:elseif>
 
+<g:elseif test="${filter == BaseConfig.KEY_PROVIDER}">
+    ${message(code: 'reporting.filter.result.provider', args: [filterResult.data.providerIdList.size()])}
+</g:elseif>
+
 <g:elseif test="${filter == BaseConfig.KEY_SUBSCRIPTION}">
     ${message(code: 'reporting.filter.result.subscription.part', args: [filterResult.data.subscriptionIdList.size()])}
     <g:if test="${filterResult.data.memberSubscriptionIdList}">
@@ -54,9 +61,12 @@
     <g:if test="${filterResult.data.providerIdList}">
         ${message(code: 'reporting.filter.result.and.provider', args: [filterResult.data.providerIdList.size()])}
     </g:if>
-    <g:if test="${filterResult.data.agencyIdList}">
-        ${message(code: 'reporting.filter.result.and.agency', args: [filterResult.data.agencyIdList.size()])}
+    <g:if test="${filterResult.data.vendorIdList}">
+        ${message(code: 'reporting.filter.result.and.vendor', args: [filterResult.data.vendorIdList.size()])}
     </g:if>
     ${message(code: 'reporting.filter.result.end')}
 </g:elseif>
 
+<g:elseif test="${filter == BaseConfig.KEY_VENDOR}">
+    ${message(code: 'reporting.filter.result.vendor', args: [filterResult.data.vendorIdList.size()])}
+</g:elseif>

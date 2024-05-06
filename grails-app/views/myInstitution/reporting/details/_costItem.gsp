@@ -1,7 +1,7 @@
 <%@ page import="de.laser.storage.RDStore; de.laser.finance.CostItem" %>
 <laser:serviceInjection />
 
-<laser:render template="/myInstitution/reporting/details/top" />
+<laser:render template="/myInstitution/reporting/details/details_top" />
 
 <div class="ui segment">
     <table class="ui table la-js-responsive-table la-table compact">

@@ -1,7 +1,7 @@
 <%@ page import="de.laser.Subscription; de.laser.reporting.report.myInstitution.base.BaseDetails; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.storage.RDStore; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.LicenseProperty;" %>
 <laser:serviceInjection />
 
-<laser:render template="/myInstitution/reporting/details/top" />
+<laser:render template="/myInstitution/reporting/details/details_top" />
 
 <div class="ui segment">
     <table class="ui table la-js-responsive-table la-table compact">

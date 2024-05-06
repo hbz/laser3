@@ -1,8 +1,8 @@
-<%@page import="de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.License" %>
+<%@page import="de.laser.reporting.report.myInstitution.base.BaseConfig;" %>
 <laser:serviceInjection/>
 
 <g:if test="${filterResult}">
-    <g:set var="validFilterResult" value="${filterResult.data.licenseIdList || filterResult.data.licensorIdList}" />
+    <g:set var="validFilterResult" value="${filterResult.data.vendorIdList}" />
 
     <g:if test="${validFilterResult}">
         <ui:msg class="positive" noClose="true">
@@ -16,7 +16,6 @@
     <laser:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterResult.labels]}" />
 
     <g:if test="${validFilterResult}">
-        <laser:render template="/myInstitution/reporting/query/query_form" model="${[cfgKey: "${BaseConfig.KEY_LICENSE}"]}" />
+        <laser:render template="/myInstitution/reporting/query/query_form" model="${[cfgKey: "${BaseConfig.KEY_VENDOR}"]}" />
     </g:if>
 </g:if>
-

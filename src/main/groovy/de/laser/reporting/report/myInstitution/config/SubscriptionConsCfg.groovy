@@ -2,6 +2,7 @@ package de.laser.reporting.report.myInstitution.config
 
 import de.laser.Org
 import de.laser.Subscription
+import de.laser.Vendor
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 
 class SubscriptionConsCfg extends BaseConfig {
@@ -85,6 +86,11 @@ class SubscriptionConsCfg extends BaseConfig {
                                              chartTemplate      : 'annual',
                                              chartLabels        : []
                                      ],
+                                     'subscription-x-vendor' : [
+                                            detailsTemplate     : 'subscription',
+                                            chartTemplate       : 'generic',
+                                            chartLabels         : []
+                                     ],
                                      'subscription-x-license' : [
                                              detailsTemplate     : 'subscription',
                                              chartTemplate       : 'generic',
@@ -95,27 +101,27 @@ class SubscriptionConsCfg extends BaseConfig {
                                              chartTemplate       : 'generic',
                                              chartLabels         : []
                                      ],
-                                     'subscription-x-provider' : [
-                                             detailsTemplate     : 'subscription',
-                                             chartTemplate       : 'generic',
-                                             chartLabels         : []
-                                     ],
-                                     'subscription-x-memberProvider' : [
-                                             detailsTemplate    : 'subscription',
-                                             chartTemplate      : 'generic',
-                                             chartLabels        : []
-                                     ],
+//                                     'subscription-x-provider' : [
+//                                             detailsTemplate     : 'subscription',
+//                                             chartTemplate       : 'generic',
+//                                             chartLabels         : []
+//                                     ],
+//                                     'subscription-x-memberProvider' : [
+//                                             detailsTemplate    : 'subscription',
+//                                             chartTemplate      : 'generic',
+//                                             chartLabels        : []
+//                                     ],
 //                                     'subscription-x-memberCost-TODO' : [
 //                                             label              : 'Anbieter → Lizenz → Teilnehmerkosten',
 //                                             detailsTemplate    : 'TODO',
 //                                             chartTemplate      : 'generic',
 //                                             chartLabels        : []
 //                                     ],
-                                     'subscription-x-platform' : [
-                                             detailsTemplate     : 'subscription',
-                                             chartTemplate       : '2axis2values_nonMatches',
-                                             chartLabels         : [ 'x.platforms.1', 'x.platforms.2' ]
-                                     ],
+//                                     'subscription-x-platform' : [
+//                                             detailsTemplate     : 'subscription',
+//                                             chartTemplate       : '2axis2values_nonMatches',
+//                                             chartLabels         : [ 'x.platforms.1', 'x.platforms.2' ]
+//                                     ],
                                      'subscription-x-memberSubscription' : [
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : 'generic',
@@ -228,58 +234,56 @@ class SubscriptionConsCfg extends BaseConfig {
                     ]
             ],
 
-            provider : [
+            vendor : [
                     meta : [
-                            class:  Org,
+                            class:  Vendor,
                             cfgKey: BaseConfig.KEY_SUBSCRIPTION
                     ],
                     source : [
-                            'depending-provider'
+                            'depending-vendor'
                     ],
                     fields : [
-                            'country'   : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
-                            'region'    : [type: BaseConfig.FIELD_TYPE_REFDATA, spec: BaseConfig.FIELD_IS_VIRTUAL ],
-                            'orgType'   : [ type: BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE ]
+                            'status'    : [ type: BaseConfig.FIELD_TYPE_REFDATA ]
                     ],
                     filter : [
                             default : []
                     ],
                     query : [
                             default : [
-                                    provider : [
-                                            'provider-orgType' : [ 'generic.org.orgType' ],
-                                            'provider-*' :       [ 'generic.all' ]
-                                            //'provider-country',
-                                            //'provider-region'
-                                    ]
-                            ]
-                    ]
-            ],
-
-            agency : [
-                    meta : [
-                            class:  Org,
-                            cfgKey: BaseConfig.KEY_SUBSCRIPTION
-                    ],
-                    source : [
-                            'depending-agency'
-                    ],
-                    fields : [
-                            'country'   : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
-                            'region'    : [type: BaseConfig.FIELD_TYPE_REFDATA, spec: BaseConfig.FIELD_IS_VIRTUAL ],
-                            'orgType'   : [ type: BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE ]
-                    ],
-                    filter : [
-                            default : []
-                    ],
-                    query : [
-                            default : [
-                                    agency : [
-                                            'agency-orgType' : [ 'generic.org.orgType' ],
-                                            'agency-*' :       [ 'generic.all' ],
+                                    vendor : [
+                                            'vendor-status' :   [ 'generic.vendor.status' ],
+                                            'vendor-*' :        [ 'generic.all' ],
                                     ]
                             ]
                     ]
             ]
+
+//            provider : [
+//                    meta : [
+//                            class:  Org,
+//                            cfgKey: BaseConfig.KEY_SUBSCRIPTION
+//                    ],
+//                    source : [
+//                            'depending-provider'
+//                    ],
+//                    fields : [
+//                            'country'   : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
+//                            'region'    : [type: BaseConfig.FIELD_TYPE_REFDATA, spec: BaseConfig.FIELD_IS_VIRTUAL ],
+//                            'orgType'   : [ type: BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE ]
+//                    ],
+//                    filter : [
+//                            default : []
+//                    ],
+//                    query : [
+//                            default : [
+//                                    provider : [
+//                                            'provider-orgType' : [ 'generic.org.orgType' ],
+//                                            'provider-*' :       [ 'generic.all' ]
+//                                            //'provider-country',
+//                                            //'provider-region'
+//                                    ]
+//                            ]
+//                    ]
+//            ],
     ]
 }
