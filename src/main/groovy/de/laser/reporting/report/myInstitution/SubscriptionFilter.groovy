@@ -484,18 +484,6 @@ class SubscriptionFilter extends BaseFilter {
         List<String> whereParts = [ 'vr.subscription.id in (:subscriptionIdList)' ]
         Map<String, Object> queryParams = [ 'subscriptionIdList': filterResult.data.subscriptionIdList ]
 
-//        if (partKey == 'member') {
-//            queryParams.put( 'roleTypes', [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN] ) // TODO <- RDStore.OR_SUBSCRIBER
-//            // check ONLY members
-//            queryParams.subscriptionIdList = filterResult.data.get('memberSubscriptionIdList') // if memberSubscription filter is set
-//        }
-//        if (partKey == 'consortium') {
-//            queryParams.put( 'roleTypes', [RDStore.OR_SUBSCRIPTION_CONSORTIA] )
-//        }
-//        if (partKey == 'provider') {
-//            queryParams.put( 'roleTypes', [RDStore.OR_PROVIDER] )
-//        }
-
         String cmbKey = BaseConfig.FILTER_PREFIX + partKey + '_'
         int pCount = 0
 
@@ -548,6 +536,7 @@ class SubscriptionFilter extends BaseFilter {
                 }
                 // --> custom filter implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
+                    log.info ' --- ' + pType +' not implemented --- '
                 }
 
                 if (filterLabelValue) {

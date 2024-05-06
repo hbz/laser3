@@ -48,9 +48,6 @@ class OrganisationFilter extends BaseFilter {
                         [orgStatus: RDStore.ORG_STATUS_DELETED, orgType: RDStore.OT_INSTITUTION]
                 )
                 break
-//            case 'all-provider':
-//                queryParams.orgIdList = _getAllProviderAndAgencyIdList( [RDStore.OT_PROVIDER] )
-//                break
             case 'my-inst':
                 queryParams.orgIdList = Org.executeQuery(
                         'select o.id from Org as o, Combo as c where c.fromOrg = o and c.toOrg = :org and c.type = :comboType and (o.status is null or o.status != :orgStatus)',
@@ -85,9 +82,6 @@ where (consOr.roleType = :consRoleType)
                 ) )
                 queryParams.orgIdList = queryParams.orgIdList.unique()
                 break
-//            case 'my-provider':
-//                queryParams.orgIdList = _getMyProviderAndAgencyIdList( [RDStore.OR_PROVIDER] )
-//                break
         }
 
         String cmbKey = BaseConfig.FILTER_PREFIX + 'org_'
@@ -205,14 +199,4 @@ where (consOr.roleType = :consRoleType)
 
         filterResult
     }
-
-//    static List<Long> _getAllProviderAndAgencyIdList(List orgTypes) {
-//
-//        List<Long> idList = Org.executeQuery(
-//                'select o.id from Org o where (o.status is null or o.status != :orgStatus) and exists (select ot from o.orgType ot where ot in (:orgTypes))',
-//                [orgStatus: RDStore.ORG_STATUS_DELETED, orgTypes: orgTypes]
-//        )
-//        idList
-//    }
-//
 }

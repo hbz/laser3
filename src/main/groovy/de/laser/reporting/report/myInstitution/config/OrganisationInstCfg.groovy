@@ -14,9 +14,7 @@ class OrganisationInstCfg extends BaseConfig {
                     ],
                     source : [
                             'all-consortium',
-//                            'all-provider',
                             'my-consortium',
-//                            'my-provider'
                     ],
                     fields : [
                             'country'           : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
@@ -35,9 +33,6 @@ class OrganisationInstCfg extends BaseConfig {
                             default : [
                                     [ 'country', 'region' ],
                                     [ 'libraryNetwork',  'orgType' ]
-                            ],
-                            provider : [ // TODO : provider != agency
-                                    // all disabled
                             ]
                     ],
                     query : [
@@ -54,12 +49,7 @@ class OrganisationInstCfg extends BaseConfig {
                                            'org-funderHskType' :    [ 'generic.org.funderHskType' ],
                                            'org-*' :                [ 'generic.all' ]
                                     ]
-                            ],
-//                            provider : [
-//                                    org : [
-//                                            'org-orgType': [ 'generic.org.orgType' ]
-//                                    ]
-//                            ],
+                            ]
                     ],
                     distribution : [
                             default : [

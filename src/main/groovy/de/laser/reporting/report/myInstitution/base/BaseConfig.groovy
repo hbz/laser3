@@ -105,7 +105,9 @@ class BaseConfig {
             KEY_VENDOR,
             // KEY_PROVIDER,
             KEY_PACKAGE,
-            KEY_PLATFORM //, KEY_ISSUEENTITLEMENT // 'costItem'
+            KEY_PLATFORM,
+            // KEY_ISSUEENTITLEMENT,
+            // 'costItem'
     ]
 
     static List<String> CHARTS = [

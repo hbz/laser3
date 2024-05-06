@@ -381,6 +381,7 @@ class LicenseFilter extends BaseFilter {
                 }
                 // --> custom filter implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
+                    log.info ' --- ' + pType +' not implemented --- '
                 }
 
                 if (filterLabelValue) {

@@ -15,9 +15,7 @@ class OrganisationConsCfg extends BaseConfig {
                     source : [
                             'all-org',
                             'all-inst',
-//                            'all-provider',
                             'my-inst',
-//                            'my-provider',
                     ],
                     fields : [
                             'country'           : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
@@ -41,10 +39,7 @@ class OrganisationConsCfg extends BaseConfig {
                                     [ 'orgType', 'eInvoice' ],
                                     [ 'customerType', 'legalInfo' ],
                                     [ 'propertyKey', 'propertyValue' ]
-                            ],
-//                            provider : [ // TODO : provider != agency
-//                                    // all disabled
-//                            ]
+                            ]
                     ],
                     query : [
                             default : [
@@ -60,12 +55,7 @@ class OrganisationConsCfg extends BaseConfig {
                                             'org-funderHskType' :   [ 'generic.org.funderHskType' ],
                                             'org-*' :               [ 'generic.all' ]
                                     ]
-                            ],
-//                            provider : [
-//                                    org : [
-//                                            'org-orgType': [ 'generic.org.orgType' ]
-//                                    ]
-//                            ],
+                            ]
                     ],
                     distribution : [
                             default : [

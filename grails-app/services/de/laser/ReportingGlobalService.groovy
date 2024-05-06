@@ -117,7 +117,7 @@ class ReportingGlobalService {
 
         result.filterResult = OrganisationFilter.filter(params)
 
-        if (params.get('filter:org_source').endsWith('-provider')) {
+        if (params.get('filter:org_source').endsWith('-provider')) { // TODO
             result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query.provider )
         }
 //        else if (params.get('filter:org_source').endsWith('-agency')) {
@@ -161,7 +161,7 @@ class ReportingGlobalService {
         result.cfgDistributionList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base.distribution )
     }
 
-    void doFilterProvider (Map<String, Object> result, GrailsParameterMap params) {
+    void doFilterProvider (Map<String, Object> result, GrailsParameterMap params) { // TODO
 
 //        result.filterResult = ProviderFilter.filter(params)
 //
@@ -301,7 +301,7 @@ class ReportingGlobalService {
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
                 }
             }
-            else if (prefix in [ BaseConfig.KEY_PROVIDER ]) {
+            else if (prefix in [ BaseConfig.KEY_PROVIDER ]) { // TODO
                 result.putAll( ProviderQuery.query(clone) )
                 result.labels.tooltip = getTooltipLabels(clone)
 

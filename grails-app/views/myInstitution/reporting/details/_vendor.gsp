@@ -4,7 +4,6 @@
 
 <laser:render template="/myInstitution/reporting/details/details_top" />
 
-### ${list} ###
 <div class="ui segment">
     <table class="ui table la-js-responsive-table la-table compact">
         <thead>
