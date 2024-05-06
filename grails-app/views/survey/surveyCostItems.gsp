@@ -50,6 +50,32 @@
 <br />
 
 <g:if test="${surveyConfig}">
+    <ui:modal id="bulkCostItemsUpload" message="menu.institutions.financeImport"
+              refreshModal="true"
+              msgSave="${g.message(code: 'menu.institutions.financeImport')}">
+
+        <g:form action="processSurveyCostItemsBulkWithUpload" controller="survey" method="post" class="ui form" enctype="multipart/form-data"
+                params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
+
+            <g:link controller="survey" action="templateForSurveyCostItemsBulkWithUpload" params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
+                <p>${message(code:'myinst.financeImport.template')}</p>
+            </g:link>
+
+            <div class="ui field">
+                <div class="ui action input">
+                    <input type="text" readonly="readonly"
+                           placeholder="${message(code: 'template.addDocument.selectFile')}">
+                    <input type="file" name="costItemsFile" accept="text/tab-separated-values"
+                           style="display: none;">
+                    <div class="ui icon button">
+                        <i class="attach icon"></i>
+                    </div>
+                </div>
+            </div>
+
+        </g:form>
+    </ui:modal>
+
     <div class="ui grid">
 
         <div class="sixteen wide stretched column">
@@ -89,7 +115,15 @@
                         <g:message code="surveyCostItems.createInitialCostItem"/>
                     </button>
                 </g:if>
-            </div>
+
+                <br>
+                <br>
+                <a class="ui right floated button" data-ui="modal" href="#bulkCostItemsUpload"><g:message code="menu.institutions.financeImport"/></a>
+                <br>
+                <br>
+            </div
+
+
 
             <br />
             <br />
@@ -395,7 +429,18 @@ JSPC.app.addForAllSurveyCostItem = function(orgsIDs) {
                                 JSPC.app.isClicked = false;
                             }, 800);
                         }
-                    }
+                    };
+
+
+        $('.action .icon.button').click(function () {
+             $(this).parent('.action').find('input:file').click();
+         });
+
+         $('input:file', '.ui.action.input').on('change', function (e) {
+             var name = e.target.files[0].name;
+             $('input:text', $(e.target).parent()).val(name);
+         });
+
 
 </laser:script>
 

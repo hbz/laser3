@@ -8,12 +8,14 @@ import de.laser.ContextService
 import de.laser.CopyElementsService
 import de.laser.DocContext
 import de.laser.DocstoreService
+import de.laser.EscapeService
 import de.laser.ExportClickMeService
 import de.laser.FilterService
 import de.laser.FinanceService
 import de.laser.GenericOIDService
 import de.laser.GlobalService
 import de.laser.Identifier
+import de.laser.IdentifierNamespace
 import de.laser.License
 import de.laser.Links
 import de.laser.LinksGenerationService
@@ -37,11 +39,13 @@ import de.laser.Vendor
 import de.laser.VendorRole
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.finance.CostItem
+import de.laser.finance.CostItemElementConfiguration
 import de.laser.finance.Order
 import de.laser.helper.Params
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.storage.PropertyStore
+import de.laser.storage.RDConstants
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyConfigProperties
 import de.laser.SurveyController
@@ -64,11 +68,13 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.time.TimeCategory
 
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.context.MessageSource
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.web.multipart.MultipartFile
 
 import java.text.NumberFormat
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.Year
 import java.util.concurrent.ExecutorService
@@ -85,6 +91,7 @@ class SurveyControllerService {
     ContextService contextService
     CopyElementsService copyElementsService
     DocstoreService docstoreService
+    EscapeService escapeService
     ExecutorService executorService
     ExportClickMeService exportClickMeService
     GenericOIDService genericOIDService
@@ -552,6 +559,268 @@ class SurveyControllerService {
             params.remove('percentOnOldPrice')
             params.remove('percentOnSurveyPrice')
             params.remove('ciec')
+
+            [result: result, status: STATUS_OK]
+        }
+    }
+
+    Map<String, Object> processSurveyCostItemsBulkWithUpload(GrailsParameterMap params) {
+        Map<String, Object> result = getResultGenericsAndCheckAccess(params)
+        if (!result) {
+            [result: null, status: STATUS_ERROR]
+        } else {
+            if(params.costItemsFile?.filename) {
+
+                MultipartFile importFile = params.costItemsFile
+
+                Map<String, IdentifierNamespace> namespaces = [gnd : IdentifierNamespace.findByNsAndNsType('gnd_org_nr', Org.class.name),
+                                                               isil: IdentifierNamespace.findByNsAndNsType('ISIL', Org.class.name),
+                                                               ror : IdentifierNamespace.findByNsAndNsType('ROR ID', Org.class.name),
+                                                               wib : IdentifierNamespace.findByNsAndNsType('wibid', Org.class.name)]
+                String encoding = UniversalDetector.detectCharset(importFile.getInputStream())
+
+                if(encoding in ["UTF-8", "WINDOWS-1252"]) {
+                    List<String> rows = importFile.getInputStream().getText(encoding).split('\n')
+                    List<String> headerRow = rows.remove(0).split('\t')
+                    Map<String, Integer> colMap = [:]
+
+                    headerRow.eachWithIndex { String headerCol, int c ->
+                        if (headerCol.startsWith("\uFEFF"))
+                            headerCol = headerCol.substring(1)
+                        switch (headerCol.toLowerCase().trim()) {
+                            case "gnd-nr": colMap.gndCol = c
+                                break
+                            case "isil": colMap.isilCol = c
+                                break
+                            case "ror-id": colMap.rorCol = c
+                                break
+                            case "wib-id": colMap.wibCol = c
+                                break
+                            case ["kundennummer", "customer identifier"]: colMap.customerIdentifier = c
+                                break
+                            case ["bezeichnung", "title"]: colMap.title = c
+                                break
+                            case "element": colMap.element = c
+                                break
+                            case ["kostenvorzeichen", "cost item sign"]: colMap.costItemSign = c
+                                break
+                            case "status": colMap.status = c
+                                break
+                            case ["rechnungssumme", "invoice total"]: colMap.invoiceTotal = c
+                                break
+                            case ["währung", "waehrung", "currency"]: colMap.currency = c
+                                break
+                            case ["steuerbar", "tax type"]: colMap.taxType = c
+                                break
+                            case ["steuersatz", "tax rate"]: colMap.taxRate = c
+                                break
+                            case ["datum von", "date from"]: colMap.dateFrom = c
+                                break
+                            case ["datum bis", "date to"]: colMap.dateTo = c
+                                break
+                            case ["anmerkung", "description"]: colMap.description = c
+                                break
+                            default: log.info("unhandled parameter type ${headerCol}, ignoring ...")
+                                break
+                        }
+                    }
+
+                    int processCount = 0
+                    int matchCount = 0
+                    int costItemsCreatedCount = 0
+                    rows.eachWithIndex { String row, Integer r ->
+                        log.debug("now processing entry ${r}")
+                        List<String> cols = row.split('\t', -1)
+                        Org match = null
+                        if (colMap.wibCol >= 0 && cols[colMap.wibCol] != null && !cols[colMap.wibCol].trim().isEmpty()) {
+                            List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.status != :removed', [value: cols[colMap.wibCol].trim(), ns: namespaces.wib, removed: RDStore.TIPP_STATUS_REMOVED])
+                            if (matchList.size() == 1)
+                                match = matchList[0] as Org
+                        }
+                        if (!match && colMap.isilCol >= 0 && cols[colMap.isilCol] != null && !cols[colMap.isilCol].trim().isEmpty()) {
+                            List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.status != :removed', [value: cols[colMap.isilCol].trim(), ns: namespaces.isil, removed: RDStore.TIPP_STATUS_REMOVED])
+                            if (matchList.size() == 1)
+                                match = matchList[0] as Org
+                        }
+                        if (!match && colMap.gndCol >= 0 && cols[colMap.gndCol] != null && !cols[colMap.gndCol].trim().isEmpty()) {
+                            List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.status != :removed', [value: cols[colMap.gndCol].trim(), ns: namespaces.gnd, removed: RDStore.TIPP_STATUS_REMOVED])
+                            if (matchList.size() == 1)
+                                match = matchList[0] as Org
+                        }
+                        if (!match && colMap.rorCol >= 0 && cols[colMap.rorCol] != null && !cols[colMap.rorCol].trim().isEmpty()) {
+                            List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.status != :removed', [value: cols[colMap.rorCol].trim(), ns: namespaces.ror, removed: RDStore.TIPP_STATUS_REMOVED])
+                            if (matchList.size() == 1)
+                                match = matchList[0] as Org
+                        }
+
+                        if (!match && colMap.customerIdentifier >= 0 && cols[colMap.customerIdentifier] != null && !cols[colMap.customerIdentifier].trim().isEmpty()) {
+                            List matchList =  Org.executeQuery('select ci.customer from CustomerIdentifier ci join ci.platform plat where ci.value = :customerIdentifier and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription.instanceOf = :subscription)', [customerIdentifier: cols[colMap.customerIdentifier].trim(), subscription: result.surveyConfig.subscription])
+                            if (matchList.size() == 1)
+                                match = matchList[0] as Org
+                        }
+
+                        processCount++
+                        if (match) {
+                            matchCount++
+
+                            SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(match, result.surveyConfig)
+                            boolean createCostItem = false
+
+                            if (surveyOrg) {
+                                RefdataValue cost_item_element
+                                if (colMap.element != null) {
+                                    String elementKey = cols[colMap.element]
+                                    if (elementKey) {
+                                        cost_item_element = RefdataValue.getByValueAndCategory(elementKey, RDConstants.COST_ITEM_ELEMENT)
+                                        if (!cost_item_element)
+                                            cost_item_element = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.COST_ITEM_ELEMENT, elementKey)
+                                    }
+                                }
+
+                                if (cost_item_element) {
+                                    if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElement(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element)) {
+                                        createCostItem = true
+                                    }
+                                } else {
+                                    if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg, RDStore.COST_ITEM_DELETED)) {
+                                        createCostItem = true
+                                    }
+                                }
+
+                                if (createCostItem) {
+                                    CostItem costItem = new CostItem(owner: result.contextOrg,
+                                                                    surveyOrg: surveyOrg,
+                                                                    costItemElement: cost_item_element)
+
+                                    if (cost_item_element && (cols[colMap.costItemSign] == null || cols[colMap.costItemSign] == "")) {
+                                        costItem.costItemElementConfiguration = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(cost_item_element, result.contextOrg).elementSign
+                                    }
+
+                                    if (colMap.currency != null) {
+                                        String currencyKey = cols[colMap.currency]
+                                        if (currencyKey) {
+                                            RefdataValue currency = RefdataValue.getByValueAndCategory(currencyKey, "Currency")
+                                            if (currency)
+                                                costItem.billingCurrency = currency
+                                            if (currency == RDStore.CURRENCY_EUR)
+                                                costItem.currencyRate = 1
+                                        }
+                                    }
+                                    if (colMap.description != null) {
+                                        costItem.costDescription = cols[colMap.description]
+                                    }
+                                    if (colMap.title != null) {
+                                        costItem.costTitle = cols[colMap.title]
+                                    }
+                                    if (colMap.invoiceTotal != null && cols[colMap.invoiceTotal] != null) {
+                                        try {
+                                            costItem.costInBillingCurrency = escapeService.parseFinancialValue(cols[colMap.invoiceTotal])
+                                        }
+                                        catch (NumberFormatException e) {
+                                            log.error("costInBillingCurrency NumberFormatException: " + e.printStackTrace())
+                                        }
+                                        catch (NullPointerException | ParseException e) {
+                                            log.error("costInBillingCurrency NullPointerException | ParseException: " + e.printStackTrace())
+                                        }
+                                    }
+                                    if (colMap.taxType != null && cols[colMap.taxType] != null) {
+                                        String taxTypeKey = cols[colMap.taxType].toLowerCase()
+                                        int taxRate = 0
+                                        if (cols[colMap.taxRate]) {
+                                            try {
+                                                taxRate = Integer.parseInt(cols[colMap.taxRate])
+                                            }
+                                            catch (Exception e) {
+                                                log.error("non-numeric tax rate parsed")
+                                            }
+                                        }
+                                        if (taxTypeKey) {
+                                            CostItem.TAX_TYPES taxKey
+                                            switch (taxRate) {
+                                                case 5: taxKey = CostItem.TAX_TYPES.TAXABLE_5
+                                                    break
+                                                case 7: taxKey = CostItem.TAX_TYPES.TAXABLE_7
+                                                    break
+                                                case 16: taxKey = CostItem.TAX_TYPES.TAXABLE_16
+                                                    break
+                                                case 19: taxKey = CostItem.TAX_TYPES.TAXABLE_19
+                                                    break
+                                                default:
+                                                    RefdataValue taxType = RefdataValue.getByValueAndCategory(taxTypeKey, RDConstants.TAX_TYPE)
+                                                    if (!taxType)
+                                                        taxType = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.TAX_TYPE, taxTypeKey)
+                                                    switch (taxType) {
+                                                        case RDStore.TAX_TYPE_NOT_TAXABLE: taxKey = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
+                                                            break
+                                                        case RDStore.TAX_TYPE_NOT_APPLICABLE: taxKey = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
+                                                            break
+                                                        case RDStore.TAX_TYPE_TAXABLE_EXEMPT: taxKey = CostItem.TAX_TYPES.TAX_EXEMPT
+                                                            break
+                                                        case RDStore.TAX_TYPE_TAX_CONTAINED_19: taxKey = CostItem.TAX_TYPES.TAX_CONTAINED_19
+                                                            break
+                                                        case RDStore.TAX_TYPE_TAX_CONTAINED_7: taxKey = CostItem.TAX_TYPES.TAX_CONTAINED_7
+                                                            break
+                                                        case RDStore.TAX_TYPE_REVERSE_CHARGE: taxKey = CostItem.TAX_TYPES.TAX_REVERSE_CHARGE
+                                                            break
+                                                    }
+                                                    break
+                                            }
+                                            if (taxKey)
+                                                costItem.taxKey = taxKey
+                                        }
+                                    }
+                                    if (colMap.status != null) {
+                                        String statusKey = cols[colMap.status]
+                                        RefdataValue status
+                                        if (statusKey) {
+                                            status = RefdataValue.getByValueAndCategory(statusKey, RDConstants.COST_ITEM_STATUS)
+                                            if (!status)
+                                                status = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.COST_ITEM_STATUS, statusKey)
+                                        }
+                                        costItem.costItemStatus = status
+                                    }
+                                    if (colMap.costItemSign != null && cols[colMap.costItemSign] != null) {
+                                        String elementSign = cols[colMap.costItemSign]
+                                        if (elementSign) {
+                                            RefdataValue ciec = RefdataValue.getByValueAndCategory(elementSign, RDConstants.COST_CONFIGURATION)
+                                            if (!ciec)
+                                                ciec = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.COST_CONFIGURATION, elementSign)
+
+                                            costItem.costItemElementConfiguration = ciec
+                                        }
+                                    }
+
+                                    if (colMap.dateFrom != null) {
+                                        Date startDate = DateUtils.parseDateGeneric(cols[colMap.dateFrom])
+                                        if (startDate)
+                                            costItem.startDate = startDate
+                                    }
+
+                                    if (colMap.dateTo != null) {
+                                        Date endDate = DateUtils.parseDateGeneric(cols[colMap.dateTo])
+                                        if (endDate)
+                                            costItem.endDate = endDate
+                                    }
+
+                                    if(costItem.save()){
+                                        costItemsCreatedCount++
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+
+                    result.processCount = processCount
+                    result.matchCount = matchCount
+                    result.costItemsCreatedCount = costItemsCreatedCount
+                }
+                else
+                {
+                    Object[] args = [encoding]
+                    result.error = messageSource.getMessage('default.import.error.wrongCharset', args, result.locale)
+                }
+            }
 
             [result: result, status: STATUS_OK]
         }
