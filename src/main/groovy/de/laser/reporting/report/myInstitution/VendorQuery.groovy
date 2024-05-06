@@ -47,6 +47,16 @@ class VendorQuery extends BaseQuery {
 
             _processSimpleRefdataQuery(params.query, suffix, idList, result)
         }
+        else if ( suffix in ['individualInvoiceDesign', 'managementOfCredits', 'paperInvoice', 'processingOfCompensationPayments' ]) {
+
+            handleGenericBooleanQuery(
+                    params.query,
+                    'select v.' + suffix + ', v.' + suffix + ', count(*) from Vendor v where v.id in (:idList) group by v.' + suffix,
+                    'select v.id from Vendor v where v.id in (:idList) and v.' + suffix + ' = :d order by v.name',
+                    idList,
+                    result
+            )
+        }
         else if ( suffix in ['x']) {
 
             if (params.query in ['vendor-x-property']) {

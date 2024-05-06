@@ -84,18 +84,32 @@ class VendorFilter extends BaseFilter {
                 // --> custom filter implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
 
-                    if (p == BaseConfig.CI_CTX_PROPERTY_KEY) {
-                        Long pValue = params.long('filter:vendor_propertyValue')
+                    if (p == BaseConfig.CI_GENERIC_INVOICING_FORMAT) {
+                        queryParts.add('ElectronicBilling elb')
+                        whereParts.add('elb.vendor = ven and elb.invoicingFormat.id = :p' + (++pCount))
+                        queryParams.put('p' + pCount, params.long(key))
 
-                        String pq = getPropertyFilterSubQuery(
-                                'VendorProperty', 'ven',
-                                params.long(key),
-                                pValue,
-                                queryParams
-                        )
-                        whereParts.add( '(exists (' + pq + '))' )
-                        filterLabelValue = PropertyDefinition.get(params.long(key)).getI10n('name') + ( pValue ? ': ' + RefdataValue.get( pValue ).getI10n('value') : '')
+                        filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
+                    else if (p == BaseConfig.CI_GENERIC_INVOICING_DISPATCH) {
+                        queryParts.add('InvoiceDispatch dsp')
+                        whereParts.add('dsp.vendor = ven and dsp.invoiceDispatch.id = :p' + (++pCount))
+                        queryParams.put('p' + pCount, params.long(key))
+
+                        filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
+                    }
+//                    if (p == BaseConfig.CI_CTX_PROPERTY_KEY) {
+//                        Long pValue = params.long('filter:vendor_propertyValue')
+//
+//                        String pq = getPropertyFilterSubQuery(
+//                                'VendorProperty', 'ven',
+//                                params.long(key),
+//                                pValue,
+//                                queryParams
+//                        )
+//                        whereParts.add( '(exists (' + pq + '))' )
+//                        filterLabelValue = PropertyDefinition.get(params.long(key)).getI10n('name') + ( pValue ? ': ' + RefdataValue.get( pValue ).getI10n('value') : '')
+//                    }
                 }
 
                 if (filterLabelValue) {

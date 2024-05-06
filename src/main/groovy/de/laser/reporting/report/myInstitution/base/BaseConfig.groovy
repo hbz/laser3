@@ -80,6 +80,9 @@ class BaseConfig {
     static String CI_GENERIC_STARTDATE_LIMIT    = 'startDateLimit'
     static String CI_GENERIC_SUBJECT_GROUP      = 'subjectGroup'
 
+    static String CI_GENERIC_INVOICING_FORMAT     = 'electronicBillings'
+    static String CI_GENERIC_INVOICING_DISPATCH   = 'invoiceDispatchs'
+
     static String CI_GENERIC_IE_STATUS                  = 'issueEntitlement$status'     // IE
     static String CI_GENERIC_PACKAGE_OR_PROVIDER        = 'package$orgRole$provider'    // IE, PKG
     static String CI_GENERIC_PACKAGE_PLATFORM           = 'package$platform'            // IE, PKG
@@ -379,6 +382,18 @@ class BaseConfig {
             return [
                     label: messageSource.getMessage('subscription.status.label', null, locale),
                     from: RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)
+            ]
+        }
+        else if (key == CI_GENERIC_INVOICING_FORMAT) {
+            return [
+                    label: messageSource.getMessage('vendor.invoicing.formats.label', null, locale),
+                    from: RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_FORMAT)
+            ]
+        }
+        else if (key == CI_GENERIC_INVOICING_DISPATCH) {
+            return [
+                    label: messageSource.getMessage('vendor.invoicing.dispatch.label', null, locale),
+                    from: RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_DISPATCH)
             ]
         }
         else if (key == CI_CTX_PROPERTY_KEY) {

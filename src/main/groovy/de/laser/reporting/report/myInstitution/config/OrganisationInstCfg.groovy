@@ -20,7 +20,7 @@ class OrganisationInstCfg extends BaseConfig {
                     ],
                     fields : [
                             'country'           : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
-                            'region'            : [type: BaseConfig.FIELD_TYPE_REFDATA, spec: BaseConfig.FIELD_IS_VIRTUAL ],
+                            'region'            : [ type: BaseConfig.FIELD_TYPE_REFDATA, spec: BaseConfig.FIELD_IS_VIRTUAL ],
                             'customerType'      : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'eInvoice'          : [ type: BaseConfig.FIELD_TYPE_PROPERTY ],
                             'funderHskType'     : [ type: BaseConfig.FIELD_TYPE_REFDATA ],

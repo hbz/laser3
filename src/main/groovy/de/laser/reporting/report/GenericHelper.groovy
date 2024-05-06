@@ -90,7 +90,11 @@ class GenericHelper {
 
         MessageSource messageSource = BeanStore.getMessageSource()
         Locale locale = LocaleUtils.getCurrentLocale()
-
+//
+//        if (field?.label) {
+//            println 'GenericHelper.getFieldLabel() overrides ' + field.label
+//            label = messageSource.getMessage(field.label as String, null, locale)
+//        }
         if (type in [BaseConfig.FIELD_TYPE_PROPERTY, BaseDetailsExport.FIELD_TYPE_PROPERTY] ) {
             // ReportingTagLib:filterProperty
 

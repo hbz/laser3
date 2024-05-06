@@ -155,7 +155,7 @@ class BaseFilter {
                 String subsetClass = c.getValue().meta.class.simpleName
                 String subsetFilter = '_handleSubset' + subsetClass + 'Filter'
 
-                if (filter.metaClass.respondsTo(filter, subsetFilter, [String, Map<String, Object>, GrailsParameterMap])) {
+                if (filter.metaClass.respondsTo(filter, subsetFilter).findAll{ it.parameterTypes.length == 3 }) {
                     println 'Reporting: called ' + configKey + '.' + subsetFilter + '(GPM) @ ' + partKey
                     filter."${subsetFilter}"(partKey, filterResult, params)
                 }
