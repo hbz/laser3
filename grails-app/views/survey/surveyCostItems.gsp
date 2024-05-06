@@ -61,6 +61,7 @@
                 <p>${message(code:'myinst.financeImport.template')}</p>
             </g:link>
 
+            <br>
             <div class="ui field">
                 <div class="ui action input">
                     <input type="text" readonly="readonly"
