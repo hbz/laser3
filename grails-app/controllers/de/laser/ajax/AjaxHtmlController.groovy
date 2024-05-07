@@ -24,6 +24,7 @@ import de.laser.License
 import de.laser.LinksGenerationService
 import de.laser.Org
 import de.laser.OrgRole
+import de.laser.Provider
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.ReportingFilter
@@ -47,6 +48,7 @@ import de.laser.Task
 import de.laser.TaskService
 import de.laser.TitleInstancePackagePlatform
 import de.laser.UserSetting
+import de.laser.Vendor
 import de.laser.annotations.DebugInfo
 import de.laser.auth.User
 import de.laser.ctrl.LicenseControllerService
@@ -360,31 +362,31 @@ class AjaxHtmlController {
     }
 
     /**
-     * Retrieves a list of provider and agency {@link Org}s for table view
-     * @return the result of {@link de.laser.ControlledListService#getProvidersAgencies(grails.web.servlet.mvc.GrailsParameterMap)}
+     * Retrieves a list of {@link Provider}s for table view
+     * @return the result of {@link de.laser.ControlledListService#getProviders(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupProviders() {
-        Map<String, Object> model = [:], result = controlledListService.getProvidersAgencies(params)
-        model.orgList = result.results
+        Map<String, Object> model = [:], result = controlledListService.getProviders(params)
+        model.providerList = result.results
         model.tmplShowCheckbox = true
         model.tmplConfigShow = ['sortname', 'name', 'altname', 'isWekbCurated']
         model.fixedHeader = 'la-ignore-fixed'
-        render template: "/templates/filter/orgFilterTable", model: model
+        render template: "/templates/filter/providerFilterTable", model: model
     }
 
     /**
-     * Retrieves a list of provider and agency {@link Org}s for table view
+     * Retrieves a list of {@link Vendor}s for table view
      * @return the result of {@link de.laser.ControlledListService#getVendors(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
     def lookupVendors() {
         Map<String, Object> model = [:], result = controlledListService.getVendors(params)
-        model.orgList = result.results
+        model.vendorList = result.results
         model.tmplShowCheckbox = true
         model.tmplConfigShow = ['sortname', 'name', 'isWekbCurated']
         model.fixedHeader = 'la-ignore-fixed'
-        render template: "/templates/filter/orgFilterTable", model: model
+        render template: "/templates/filter/vendorFilterTable", model: model
     }
 
     /**

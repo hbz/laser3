@@ -46,6 +46,7 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
             addresses: Address,
             propertySet: ProviderProperty,
             altnames: AlternativeName,
+            documents: DocContext,
             ids: Identifier,
             electronicBillings: ElectronicBilling,
             invoiceDispatchs: InvoiceDispatch,
@@ -56,6 +57,9 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
             contacts: 'provider',
             addresses: 'provider',
             propertySet: 'owner',
+            altnames: 'provider',
+            documents: 'provider',
+            ids: 'provider',
             invoicingVendors: 'provider',
             electronicBillings: 'provider',
             invoiceDispatchs: 'provider'
@@ -187,6 +191,10 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
         }
         p.retirementDate = provider.retirementDate
         p.dateCreated = provider.dateCreated
+        if(!p.save()) {
+            log.error(p.getErrors().getAllErrors().toListString())
+            null
+        }
         provider.altnames.each { AlternativeName altName ->
             altName.provider = p
             altName.org = null
@@ -202,6 +210,21 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
             a.org = null
             a.save()
         }
+        provider.documents.each { DocContext dc ->
+            dc.provider = p
+            dc.org = null
+            dc.save()
+        }
+        DocContext.findAllByTargetOrg(provider).each { DocContext dc ->
+            dc.provider = p
+            dc.targetOrg = null
+            dc.save()
+        }
+        provider.altnames.each { AlternativeName a ->
+            a.provider = p
+            a.org = null
+            a.save()
+        }
         PersonRole.findAllByOrg(provider).each { PersonRole pr ->
             pr.provider = p
             pr.org = null
@@ -211,6 +234,11 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
             m.prov = p
             m.org = null
             m.save()
+        }
+        Task.findAllByOrg(provider).each { Task t ->
+            t.provider = p
+            t.org = null
+            t.save()
         }
         OrgProperty.findAllByOwner(provider).each { OrgProperty op ->
             ProviderProperty pp = new ProviderProperty()
@@ -232,11 +260,7 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
             pp.lastUpdated = op.lastUpdated
             pp.save()
         }
-        if(!p.save()) {
-            log.error(p.getErrors().getAllErrors().toListString())
-            null
-        }
-        else p
+        p
     }
 
     boolean hasElectronicBilling(String ebB) {

@@ -460,6 +460,12 @@ class WorkflowService {
         else if (obj instanceof Org) {
             WfChecklist.executeQuery('select count(wf) from WfChecklist wf where wf.org = :org and wf.owner = :ctxOrg', [org: obj, ctxOrg: owner])[0]
         }
+        else if (obj instanceof Provider) {
+            WfChecklist.executeQuery('select count(wf) from WfChecklist wf where wf.provider = :provider and wf.owner = :ctxOrg', [provider: obj, ctxOrg: owner])[0]
+        }
+        else if (obj instanceof Vendor) {
+            WfChecklist.executeQuery('select count(wf) from WfChecklist wf where wf.vendor = :vendor and wf.owner = :ctxOrg', [vendor: obj, ctxOrg: owner])[0]
+        }
         else {
             return 0
         }

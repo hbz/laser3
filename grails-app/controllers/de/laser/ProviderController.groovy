@@ -4,6 +4,7 @@ import de.laser.annotations.DebugInfo
 import de.laser.auth.User
 import de.laser.properties.PropertyDefinition
 import de.laser.remote.ApiSource
+import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
 import de.laser.utils.PdfUtils
@@ -21,6 +22,7 @@ class ProviderController {
     FilterService filterService
     GokbService gokbService
     ProviderService providerService
+    WorkflowService workflowService
 
     public static final Map<String, String> CHECK404_ALTERNATIVES = [
             'list' : 'menu.public.all_providers'
@@ -50,7 +52,6 @@ class ProviderController {
         Map<String, Object> result = [:]
         result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
         result.user        = contextService.getUser()
-        result.editable    = contextService.is_ORG_COM_EDITOR_or_ROLEADMIN()
 
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         result.wekbApi = apiSource
@@ -109,8 +110,8 @@ class ProviderController {
             if (f2Set) { providerListTotal = providerListTotal.findAll { f2Result.contains(it.id) } }
         }
 
-        result.orgListTotal = providerListTotal.size()
-        result.orgList      = providerListTotal.drop((int) result.offset).take((int) result.max)
+        result.providerListTotal = providerListTotal.size()
+        result.providerList      = providerListTotal.drop((int) result.offset).take((int) result.max)
 
         String message = message(code: 'export.all.providers') as String
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -159,5 +160,22 @@ class ProviderController {
         else {
             result
         }
+    }
+
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
+    def show() {
+        Map<String, Object> result = providerService.getResultGenericsAndCheckAccess(params)
+
+        if (! result) {
+            response.sendError(401)
+            return
+        }
+        if(result.error)
+            flash.error = result.error //to display we:kb's eventual 404
+        workflowService.executeCmdAndUpdateResult(result, params)
+        result
     }
 }

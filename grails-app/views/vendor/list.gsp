@@ -21,7 +21,7 @@
 
         <ui:filter>
             <g:form action="list" method="get" class="ui form">
-                <laser:render template="/templates/filter/orgFilter"
+                <laser:render template="/templates/filter/vendorFilter"
                           model="[
                                   tmplConfigShow: [['name', 'venStatus'], ['supportedLibrarySystems', 'electronicBillings', 'invoiceDispatchs'], ['curatoryGroup', 'curatoryGroupType']],
                                   tmplConfigFormFilter: true
@@ -30,7 +30,7 @@
         </ui:filter>
         <div class="la-clear-before">
             <g:if test="${vendorList}">
-                <laser:render template="/templates/filter/orgFilterTable"
+                <laser:render template="/templates/filter/vendorFilterTable"
                       model="[orgList: vendorList,
                               tmplShowCheckbox: false,
                               tmplConfigShow: ['lineNumber', 'sortname', 'name', 'platform', 'marker', 'isWekbCurated']

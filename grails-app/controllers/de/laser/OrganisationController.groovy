@@ -941,8 +941,6 @@ class OrganisationController  {
 
         result.availableOrgTypes = RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE)-RDStore.OT_CONSORTIUM
         result.missing = [:]
-        if(result.error)
-            flash.error = result.error //to display we:kb's eventual 404
 
         if(result.inContextOrg && result.institution.eInvoice) {
             Identifier leitID = result.institution.getLeitID()
@@ -974,20 +972,20 @@ class OrganisationController  {
             }
         }
 
-        if(!result.isProviderOrAgency){
+        //if(!result.isProviderOrAgency){
             result.orgInstance.createCoreIdentifiersIfNotExist()
-        }
+        //}
+        /*
+        TODO move to ProviderController.show()
         else {
             Set<Package> packages = []
             OrgRole.executeQuery('select oo from OrgRole oo where oo.org = :org and exists(select sp from SubscriptionPackage sp join sp.subscription s join s.orgRelations ooo where ooo.org = :ctx and sp.pkg = oo.pkg)', [ctx: result.institution, org: result.orgInstance]).each { OrgRole oo ->
                 packages << oo.pkg
             }
-            /*
             ATTEMPT! Tendancy goes over to link packages with providers, not as much titles with packages. If data gets missing, this query must be reconsidered and reactivated!
             OrgRole.executeQuery('select oo from OrgRole oo where oo.org = :org and oo.tipp in (select ie.tipp from IssueEntitlement ie join ie.subscription s join s.orgRelations ooo where ooo.org = :ctx)', [ctx: result.institution, org: result.orgInstance]).each { OrgRole oo ->
                 packages << oo.tipp.pkg
             }
-            */
             result.packages = packages.sort { Package pkg -> pkg.sortname }
             //may become a performance bottleneck - SUBJECT OF OBSERVATION!
             String subConsortialFilter = '', licConsortialFilter = ''
@@ -1000,6 +998,7 @@ class OrganisationController  {
             result.licLinks = OrgRole.executeQuery('select distinct(oo.lic) from OrgRole oo join oo.lic l where oo.org = :org and exists(select ooo from OrgRole ooo where l = ooo.lic and ooo.org = :ctx)'+licConsortialFilter+' order by l.reference, l.startDate, l.endDate',[org: result.orgInstance, ctx: result.institution])
             result.currentLicensesCount = OrgRole.executeQuery('select distinct(oo.lic) from OrgRole oo join oo.lic l where l.status = :current and oo.org = :org and exists(select li from Links li where li.sourceLicense = l and li.destinationSubscription in (select s from OrgRole oos join oos.sub s where oos.org = :ctx and s.status = :subCurrent'+subConsortialFilter+')) and exists(select ooo from OrgRole ooo where l = ooo.lic and ooo.org = :ctx)'+licConsortialFilter+' order by l.reference, l.startDate, l.endDate',[org: result.orgInstance, ctx: result.institution, subCurrent: RDStore.SUBSCRIPTION_CURRENT, current: RDStore.LICENSE_CURRENT]).size()
         }
+        */
 
         if (result.orgInstance.createdBy) {
 			result.createdByOrgGeneralContacts = PersonRole.executeQuery(

@@ -28,7 +28,8 @@ class AlternativeName implements CalculatedLastUpdated, Comparable {
         pkg: Package,
         platform: Platform,
         provider: Provider,
-        org: Org
+        org: Org,
+        vendor: Vendor
     ]
 
     static constraints = {
@@ -37,6 +38,7 @@ class AlternativeName implements CalculatedLastUpdated, Comparable {
         platform (nullable: true)
         provider (nullable: true)
         org (nullable: true)
+        vendor (nullable: true)
         lastUpdated (nullable: true)
         lastUpdatedCascading (nullable: true)
     }
@@ -50,6 +52,7 @@ class AlternativeName implements CalculatedLastUpdated, Comparable {
         platform              column: 'altname_plat_fk'
         provider              column: 'altname_prov_fk'
         org                   column: 'altname_org_fk'
+        vendor                column: 'altname_vendor_fk'
         dateCreated           column: 'altname_date_created'
         lastUpdated           column: 'altname_last_updated'
         lastUpdatedCascading  column: 'altname_last_updated_cascading'

@@ -639,24 +639,13 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('platform')}">
                 <td>
-                    <g:if test="${org instanceof Org}">
-                        <g:each in="${org.platforms}" var="platform">
-                            <g:if test="${platform.gokbId != null}">
-                                <ui:wekbIconLink type="platform" gokbId="${platform.gokbId}" />
-                            </g:if>
-                            <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
-                            <br />
-                        </g:each>
-                    </g:if>
-                    <g:elseif test="${org instanceof Vendor}">
-                        <g:each in="${vendorService.getSubscribedPlatforms(org, institution)}" var="platform">
-                            <g:if test="${platform.gokbId != null}">
-                                <ui:wekbIconLink type="platform" gokbId="${platform.gokbId}" />
-                            </g:if>
-                            <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
-                            <br />
-                        </g:each>
-                    </g:elseif>
+                    <g:each in="${org.platforms}" var="platform">
+                        <g:if test="${platform.gokbId != null}">
+                            <ui:wekbIconLink type="platform" gokbId="${platform.gokbId}" />
+                        </g:if>
+                        <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
+                        <br />
+                    </g:each>
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('type')}">

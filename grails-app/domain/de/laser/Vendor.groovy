@@ -56,7 +56,9 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
             contacts: 'vendor',
             addresses: 'vendor',
             packages: 'vendor',
+            altnames: 'vendor',
             propertySet: 'owner',
+            documents: 'vendor',
             supportedLibrarySystems: 'vendor',
             electronicBillings: 'vendor',
             invoiceDispatchs: 'vendor',
@@ -66,8 +68,10 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
     static hasMany = [
             contacts: Contact,
             addresses: Address,
-            propertySet: VendorProperty,
             packages: PackageVendor,
+            altnames: AlternativeName,
+            propertySet: VendorProperty,
+            documents: DocContext,
             supportedLibrarySystems: LibrarySystem,
             electronicBillings: ElectronicBilling,
             invoiceDispatchs: InvoiceDispatch,
@@ -116,7 +120,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
 
     @Transient
     int getProvidersCount(){
-        Org.executeQuery("select count(*) from Org o where o in (select oo.org from OrgRole oo join oo.pkg as pkg join pkg.vendors pv where pv.vendor = :vendor)", [vendor: this])[0]
+        Provider.executeQuery("select count(distinct pkg.provider) from Package pkg join pkg.vendors pv where pv.vendor = :vendor", [vendor: this])[0]
     }
 
     @Override
@@ -210,12 +214,26 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
                 break
         }
         v.dateCreated = agency.dateCreated
+        if(!v.save()) {
+            log.error(v.getErrors().getAllErrors().toListString())
+            null
+        }
         agency.contacts.each { Contact c ->
             c.vendor = v
             c.org = null
             c.save()
         }
         agency.addresses.each { Address a ->
+            a.vendor = v
+            a.org = null
+            a.save()
+        }
+        agency.documents.each { DocContext dc ->
+            dc.vendor = v
+            dc.org = null
+            dc.save()
+        }
+        agency.altnames.each { AlternativeName a ->
             a.vendor = v
             a.org = null
             a.save()
@@ -229,6 +247,11 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
             m.ven = v
             m.org = null
             m.save()
+        }
+        Task.findAllByOrg(agency).each { Task t ->
+            t.vendor = v
+            t.org = null
+            t.save()
         }
         OrgProperty.findAllByOwner(agency).each { OrgProperty op ->
             VendorProperty vp = new VendorProperty()
@@ -250,11 +273,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
             vp.lastUpdated = op.lastUpdated
             vp.save()
         }
-        if(!v.save()) {
-            log.error(v.getErrors().getAllErrors().toListString())
-            null
-        }
-        else v
+        v
     }
 
     /**

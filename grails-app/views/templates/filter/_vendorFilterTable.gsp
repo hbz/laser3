@@ -4,6 +4,13 @@
 <table id="${tableID ?: ''}" class="ui sortable celled la-js-responsive-table la-table table ${fixedHeader ?: ''}">
     <thead>
         <tr>
+            <g:if test="${tmplShowCheckbox}">
+                <th>
+                    <g:if test="${vendorList}">
+                        <g:checkBox name="vendorListToggler" id="vendorListToggler" checked="false"/>
+                    </g:if>
+                </th>
+            </g:if>
             <g:each in="${tmplConfigShow}" var="tmplConfigItem" status="i">
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('lineNumber')}">
                     <th>${message(code: 'sidewide.number')}</th>
@@ -38,6 +45,12 @@
     </thead>
     <tbody>
         <g:each in="${vendorList}" var="vendor" status="i">
+
+            <g:if test="${tmplShowCheckbox}">
+                <td>
+                    <g:checkBox id="selectedVendors_${vendor.id}" name="selectedVendors" value="${vendor.id}" checked="false"/>
+                </td>
+            </g:if>
 
             <g:each in="${tmplConfigShow}" var="tmplConfigItem">
 
@@ -81,6 +94,7 @@
                         </g:if>
                     </td>
                 </g:if>
+
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('currentSubscriptions')}">
                     <td>
                         <g:if test="${currentSubscriptions}">
@@ -90,6 +104,18 @@
                                 </g:each>
                             </ul>
                         </g:if>
+                    </td>
+                </g:if>
+
+                <g:if test="${tmplConfigItem.equalsIgnoreCase('platform')}">
+                    <td>
+                        <g:each in="${vendorService.getSubscribedPlatforms(vendor, institution)}" var="platform">
+                            <g:if test="${platform.gokbId != null}">
+                                <ui:wekbIconLink type="platform" gokbId="${platform.gokbId}" />
+                            </g:if>
+                            <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
+                            <br />
+                        </g:each>
                     </td>
                 </g:if>
 

@@ -2,7 +2,6 @@ package de.laser
 
 import de.laser.annotations.DebugInfo
 import de.laser.config.ConfigDefaults
-import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.utils.AppUtils
 import de.laser.helper.DatabaseInfo
@@ -48,14 +47,15 @@ class AdminController  {
     FilterService filterService
     GenericOIDService genericOIDService
     GlobalSourceSyncService globalSourceSyncService
+    GokbService gokbService
     MailService mailService
-    OrganisationService organisationService
     PackageService packageService
     PropertyService propertyService
+    ProviderService providerService
     RefdataService refdataService
     SessionFactory sessionFactory
     StatsSyncService statsSyncService
-    GokbService gokbService
+    VendorService vendorService
 
     /**
      * Empty call, loads empty admin dashboard
@@ -767,14 +767,27 @@ class AdminController  {
     }
 
     /**
-     * Call to view a list of organisations which may be merged. Currently only providers and agencies are being supported
+     * Call to view a list of providers which may be merged
      * because of possible conflicts with the user data registered to institutions
      */
     @Secured(['ROLE_ADMIN'])
-    def mergeOrganisations() {
+    def mergeProviders() {
         Map<String, Object> result = [:]
         if(params.containsKey('source') && params.containsKey('target')) {
-            result = organisationService.mergeOrganisations(genericOIDService.resolveOID(params.source), genericOIDService.resolveOID(params.target), false)
+            result = providerService.mergeProviders(genericOIDService.resolveOID(params.source), genericOIDService.resolveOID(params.target), false)
+        }
+        result
+    }
+
+    /**
+     * Call to view a list of providers which may be merged
+     * because of possible conflicts with the user data registered to institutions
+     */
+    @Secured(['ROLE_ADMIN'])
+    def mergeVendors() {
+        Map<String, Object> result = [:]
+        if(params.containsKey('source') && params.containsKey('target')) {
+            result = vendorService.mergeVendors(genericOIDService.resolveOID(params.source), genericOIDService.resolveOID(params.target), false)
         }
         result
     }

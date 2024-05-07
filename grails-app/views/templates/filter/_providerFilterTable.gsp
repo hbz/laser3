@@ -6,8 +6,8 @@
     <tr>
         <g:if test="${tmplShowCheckbox}">
             <th>
-                <g:if test="${orgList}">
-                    <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
+                <g:if test="${providerList}">
+                    <g:checkBox name="providerListToggler" id="providerListToggler" checked="false"/>
                 </g:if>
             </th>
         </g:if>
@@ -55,6 +55,12 @@
     </thead>
     <tbody>
     <g:each in="${providerList}" var="provider" status="i">
+
+        <g:if test="${tmplShowCheckbox}">
+            <td>
+                <g:checkBox id="selectedProviders_${provider.id}" name="selectedProviders" value="${provider.id}" checked="false"/>
+            </td>
+        </g:if>
 
         <g:each in="${tmplConfigShow}" var="tmplConfigItem">
 

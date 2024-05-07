@@ -74,10 +74,10 @@
             </g:if>
             <g:else>
                 <g:if test="${filterSet}">
-                    <br /><strong><g:message code="filter.result.empty.object" args="${[message(code:"default.ProviderAgency.label")]}"/></strong>
+                    <br /><strong><g:message code="filter.result.empty.object" args="${[message(code:"default.provider.label")]}"/></strong>
                 </g:if>
                 <g:else>
-                    <br /><strong><g:message code="result.empty.object" args="${[message(code:"default.ProviderAgency.label")]}"/></strong>
+                    <br /><strong><g:message code="result.empty.object" args="${[message(code:"default.provider.label")]}"/></strong>
                 </g:else>
             </g:else>
         </div>

@@ -1602,6 +1602,15 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         } else log.warn("contact submitted without content type, rejecting contact")
                     }
                 }
+                if(vendorRecord.altname) {
+                    List<String> oldAltNames = vendor.altnames.collect { AlternativeName altname -> altname.name }
+                    vendorRecord.altname.each { String newAltName ->
+                        if(!oldAltNames.contains(newAltName)) {
+                            if(!AlternativeName.construct([vendor: vendor, name: newAltName]))
+                                throw new SyncException("error on creating new alternative name for provider ${vendor}")
+                        }
+                    }
+                }
                 List<String> supportedLibrarySystemsB = vendorRecord.supportedLibrarySystems.collect { slsB -> slsB.supportedLibrarySystem },
                         electronicBillingsB = vendorRecord.electronicBillings.collect { ebB -> ebB.electronicBilling },
                         invoiceDispatchsB = vendorRecord.invoiceDispatchs.collect { idiB -> idiB.invoiceDispatch },
