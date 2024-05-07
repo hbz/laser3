@@ -3666,7 +3666,7 @@ class SurveyControllerService {
             result.participationProperty = PropertyStore.SURVEY_PROPERTY_PARTICIPATION
 
             result.properties = SurveyConfigProperties.findAllBySurveyPropertyNotEqualAndSurveyConfig(result.participationProperty, result.surveyConfig)?.surveyProperty
-            result.properties.addAll()
+        
 
             result.multiYearTermFiveSurvey = null
             result.multiYearTermFourSurvey = null
