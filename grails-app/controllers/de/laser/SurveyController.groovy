@@ -48,6 +48,7 @@ class SurveyController {
     CopyElementsService copyElementsService
     DocstoreService docstoreService
     ExportClickMeService exportClickMeService
+    ExportService exportService
     GenericOIDService genericOIDService
     FilterService filterService
     FinanceControllerService financeControllerService
@@ -848,6 +849,92 @@ class SurveyController {
             return
         }
 
+
+    }
+
+    /**
+     *
+     * @return a redirect to the referer
+     */
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
+    })
+    Map<String, Object> processSurveyCostItemsBulkWithUpload() {
+        Map<String, Object> ctrlResult = surveyControllerService.processSurveyCostItemsBulkWithUpload(params)
+        if (ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+        } else {
+            flash.error = ctrlResult.result.error
+
+            if(ctrlResult.result.processCount > 0){
+                flash.message = message(code: 'surveyCostItems.fileUpload.process', args: [ctrlResult.result.matchCount, ctrlResult.result.processCount, ctrlResult.result.costItemsCreatedCount])
+            }
+
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+    }
+
+    @DebugInfo(isInstUser_or_ROLEADMIN = [], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.isInstUser_or_ROLEADMIN()
+    })
+    def templateForSurveyCostItemsBulkWithUpload() {
+        log.debug("templateForSurveyCostItemsBulkWithUpload :: ${params}")
+        Map<String, Object> ctrlResult = surveyControllerService.getResultGenericsAndCheckAccess(params)
+
+        String filename = "template_cost_import"
+
+        ArrayList titles = ["WIB-ID", "ISIL", "ROR-ID", "GND-NR"]
+        titles.addAll([message(code: 'org.customerIdentifier'),
+                       message(code: 'financials.costItemElement'),
+                       message(code: 'default.status.label'),
+                       message(code: 'myinst.financeImport.elementSign'),
+                       message(code: 'myinst.financeImport.invoiceTotal'), message(code: 'default.currency.label'), message(code: 'myinst.financeImport.taxRate'), message(code: 'myinst.financeImport.taxType'),
+                       message(code: 'myinst.financeImport.dateFrom'), message(code: 'myinst.financeImport.dateTo'), message(code: 'myinst.financeImport.title'), message(code: 'myinst.financeImport.description')])
+
+        ArrayList rowData = []
+        ArrayList row
+        SurveyOrg.findAllBySurveyConfig(ctrlResult.surveyConfig).each { SurveyOrg surveyOrg ->
+            row = []
+            row.add(surveyOrg.org.getIdentifierByType('wibid')?.value)
+            row.add(surveyOrg.org.getIdentifierByType('ISIL')?.value)
+            row.add(surveyOrg.org.getIdentifierByType('ROR ID')?.value)
+            row.add(surveyOrg.org.getIdentifierByType('gnd_org_nr')?.value)
+
+            if(ctrlResult.surveyConfig.subscription){
+                row.add(Platform.executeQuery('select ci.value from CustomerIdentifier ci join ci.platform plat where ci.value != null and ci.customer = (:customer) and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription.instanceOf = :subscription)', [customer: surveyOrg.org, subscription: ctrlResult.surveyConfig.subscription]).join(', '))
+            }else{
+                row.add('')
+            }
+
+            row.add(RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.getI10n('value'))
+            row.add(RDStore.COST_ITEM_ACTUAL.getI10n('value'))
+            row.add(RDStore.CIEC_POSITIVE.getI10n('value'))
+            row.add('')
+            row.add('EUR')
+            row.add('')
+            row.add('')
+            row.add('')
+            row.add('')
+            row.add('')
+            row.add('')
+            row.add('')
+            rowData.add(row)
+        }
+
+        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.tsv\"")
+        response.contentType = "text/csv"
+        ServletOutputStream out = response.outputStream
+        out.withWriter { writer ->
+            writer.write(exportService.generateSeparatorTableString(titles, rowData, '\t'))
+        }
+        out.close()
+        return
 
     }
 
