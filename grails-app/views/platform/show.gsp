@@ -1,8 +1,12 @@
 <%@ page import="de.laser.remote.ApiSource; de.laser.storage.RDConstants; de.laser.Platform; de.laser.RefdataValue; de.laser.utils.DateUtils;" %>
 <laser:htmlStart message="platform.details" />
 
-%{-- help sidebar --}%
-<laser:render template="/templates/flyouts/dateCreatedLastUpdated" model="[obj: platformInstance]"/>
+<ui:debugInfo>
+    <div style="padding: 1em 0;">
+        <p>platformInstance.dateCreated: ${platformInstance.dateCreated}</p>
+        <p>platformInstance.lastUpdated: ${platformInstance.lastUpdated}</p>
+    </div>
+</ui:debugInfo>
 
     <g:set var="entityName" value="${message(code: 'platform.label')}"/>
 

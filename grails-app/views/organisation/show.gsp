@@ -14,8 +14,14 @@
 
 <laser:htmlStart message="${isProviderOrAgency ? 'menu.institutions.provider.show' : 'menu.institutions.org.show'}" serviceInjection="true" />
 
-%{-- help sidebar --}%
-<laser:render template="/templates/flyouts/dateCreatedLastUpdated" model="[obj: orgInstance]"/>
+<ui:debugInfo>
+    <div style="padding: 1em 0;">
+        <p>orgInstance.dateCreated: ${orgInstance.dateCreated}</p>
+        <p>orgInstance.lastUpdated: ${orgInstance.lastUpdated}</p>
+    </div>
+</ui:debugInfo>
+
+
 <laser:render template="breadcrumb"
           model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView, consortialView: consortialView]}"/>
 

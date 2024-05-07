@@ -1,8 +1,12 @@
 <%@ page import="de.laser.utils.DateUtils; de.laser.config.ConfigMapper; de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.Package;de.laser.RefdataValue;org.springframework.web.servlet.support.RequestContextUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat; de.laser.PersonRole; de.laser.Contact" %>
 <laser:htmlStart message="package.details" serviceInjection="true"/>
 
-%{-- help sidebar --}%
-<laser:render template="/templates/flyouts/dateCreatedLastUpdated" model="[obj: packageInstance]"/>
+<ui:debugInfo>
+    <div style="padding: 1em 0;">
+        <p>packageInstance.dateCreated: ${packageInstance.dateCreated}</p>
+        <p>packageInstance.lastUpdated: ${packageInstance.lastUpdated}</p>
+    </div>
+</ui:debugInfo>
 
 <g:set var="locale" value="${RequestContextUtils.getLocale(request)}"/>
 
