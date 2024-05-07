@@ -3665,31 +3665,31 @@ class SurveyControllerService {
 
             result.participationProperty = PropertyStore.SURVEY_PROPERTY_PARTICIPATION
 
-            result.properties = []
-            result.properties.addAll(SurveyConfigProperties.findAllBySurveyPropertyNotEqualAndSurveyConfig(result.participationProperty, result.surveyConfig)?.surveyProperty)
+            result.properties = SurveyConfigProperties.findAllBySurveyPropertyNotEqualAndSurveyConfig(result.participationProperty, result.surveyConfig)?.surveyProperty
+        
 
             result.multiYearTermFiveSurvey = null
             result.multiYearTermFourSurvey = null
             result.multiYearTermThreeSurvey = null
             result.multiYearTermTwoSurvey = null
 
-            if (PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5.id in result.properties.id) {
+            if (result.properties && PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5.id in result.properties.id) {
                 result.multiYearTermFiveSurvey = PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5
                 result.properties.remove(result.multiYearTermFiveSurvey)
 
             }
 
-            if (PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4.id in result.properties.id) {
+            if (result.properties && PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4.id in result.properties.id) {
                 result.multiYearTermFourSurvey = PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4
                 result.properties.remove(result.multiYearTermFourSurvey)
 
             }
 
-            if (PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3.id in result.properties.id) {
+            if (result.properties && PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3.id in result.properties.id) {
                 result.multiYearTermThreeSurvey = PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3
                 result.properties.remove(result.multiYearTermThreeSurvey)
             }
-            if (PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2.id in result.properties.id) {
+            if (result.properties && PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2.id in result.properties.id) {
                 result.multiYearTermTwoSurvey = PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2
                 result.properties.remove(result.multiYearTermTwoSurvey)
 
