@@ -3706,7 +3706,7 @@ class SurveyControllerService {
             boolean addMembersOnlyToSuccesorSub = false
             Set<Subscription> successorSubs = result.parentSubscription._getCalculatedSuccessor()
             successorSubs.each { Subscription sub ->
-                if (sub == result.parentSuccessorSubscription) {
+                if (sub == result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()) {
                     addMembersOnlyToSuccesorSub = true
                 }
             }
@@ -3785,32 +3785,42 @@ class SurveyControllerService {
                             newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
                             newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 2.year) : null
                         }
-                        countNewSubs++
-                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProviderAgency, providersSelection, agenciesSelection))
-
+                        Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProviderAgency, providersSelection, agenciesSelection)
+                        if(subscription){
+                            countNewSubs++
+                            result.newSubs.addAll(subscription)
+                        }
                     } else if (selectedMultiYearCount in [1, 2, 3] && participantPropertyThree && participantPropertyThree.refValue?.id == RDStore.YN_YES.id) {
                         use(TimeCategory) {
                             newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
                             newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 3.year) : null
                         }
-                        countNewSubs++
-                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProviderAgency, providersSelection, agenciesSelection))
-
+                        Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProviderAgency, providersSelection, agenciesSelection)
+                        if(subscription){
+                            countNewSubs++
+                            result.newSubs.addAll(subscription)
+                        }
                     } else if (selectedMultiYearCount in [1, 2, 3, 4] && participantPropertyFour && participantPropertyFour.refValue?.id == RDStore.YN_YES.id) {
                         use(TimeCategory) {
                             newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
                             newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 4.year) : null
                         }
-                        countNewSubs++
-                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProviderAgency, providersSelection, agenciesSelection))
+                        Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProviderAgency, providersSelection, agenciesSelection)
+                        if(subscription){
+                            countNewSubs++
+                            result.newSubs.addAll(subscription)
+                        }
 
                     } else if (selectedMultiYearCount in [1, 2, 3, 4, 5] && participantPropertyFive && participantPropertyFive.refValue?.id == RDStore.YN_YES.id) {
                         use(TimeCategory) {
                             newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
                             newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 5.year) : null
                         }
-                        countNewSubs++
-                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProviderAgency, providersSelection, agenciesSelection))
+                        Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProviderAgency, providersSelection, agenciesSelection)
+                        if(subscription){
+                            countNewSubs++
+                            result.newSubs.addAll(subscription)
+                        }
 
                     } else {
                         if (addMembersOnlyToSuccesorSub) {
@@ -3818,8 +3828,12 @@ class SurveyControllerService {
                                 newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
                                 newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 1.year) : null
                             }
-                            countNewSubs++
-                            result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProviderAgency, providersSelection, agenciesSelection))
+                            Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProviderAgency, providersSelection, agenciesSelection)
+                            if(subscription){
+                                countNewSubs++
+                                result.newSubs.addAll(subscription)
+                            }
+
                         }
                     }
                 }
@@ -3830,8 +3844,12 @@ class SurveyControllerService {
                 if (sub.isCurrentMultiYearSubscriptionToParentSub()) {
                     Org org = sub.getSubscriberRespConsortia()
                     if (!(result.parentSuccessortParticipantsList && org.id in result.parentSuccessortParticipantsList.id)) {
-                        countNewSubs++
-                        result.newSubs.addAll(_processAddMember(sub, result.parentSuccessorSubscription, org, sub.startDate, sub.endDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProviderAgency, providersSelection, agenciesSelection))
+                        Subscription subscription = _processAddMember(sub, result.parentSuccessorSubscription, org, sub.startDate, sub.endDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProviderAgency, providersSelection, agenciesSelection)
+                        if(subscription){
+                            countNewSubs++
+                            result.newSubs.addAll(subscription)
+                        }
+
                     }
 
                 }
