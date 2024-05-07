@@ -146,4 +146,27 @@ class BaseFilter {
         Map<String, Object> esRecords = params?.filterCache?.data?.get(prefix + 'ESRecords')
         return esRecords ?: [:]
     }
+
+    static void handleExpandoSubsetFilter(Object filter, String configKey, Map<String, Object> filterResult, GrailsParameterMap params) {
+
+        BaseConfig.getCurrentConfig( configKey ).each { c ->
+            String partKey = c.getKey()
+            if (partKey != 'base') {
+                String subsetClass = c.getValue().meta.class.simpleName
+                String subsetFilter = '_handleSubset' + subsetClass + 'Filter'
+
+                if (filter.metaClass.respondsTo(filter, subsetFilter).findAll{ it.parameterTypes.length == 3 }) {
+                    // println 'Reporting: called ' + configKey + '.' + subsetFilter + '(GPM) @ ' + partKey
+                    filter."${subsetFilter}"(partKey, filterResult, params)
+                }
+                else if (filter.metaClass.respondsTo(filter, subsetFilter)) {
+                    // println 'Reporting: called ' + configKey + '.' + subsetFilter + ' @ ' + partKey
+                    filter."${subsetFilter}"(partKey, filterResult)
+                }
+                else {
+                    println 'Reporting: Subset Filter NOT FOUND ' + configKey + '.' + subsetFilter + ' @ ' + partKey
+                }
+            }
+        }
+    }
 }

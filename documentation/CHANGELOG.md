@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5670    30.04.2024  dev     3.4         Andreas Bug         Icon-Überbleibsel entfernt
+
+5641    30.04.2024  dev     3.4         Andreas Feature     Merkmale auch ohne Wert zu Teilnehmerlizenzen hinzufügen
+
+5634    30.04.2024  dev     3.4         Andreas Feature     Kontextleiste in die Kostenübersicht migriert
+
 5663    26.04.2024  dev     3.4         Andreas Feature     Neue Merkmalsdefinitionen aufgenommen
 
 5662    26.04.2024  dev     3.4         Andreas Feature     Neue Referenzwerte aufgenommen

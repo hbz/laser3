@@ -21,7 +21,7 @@ class PlatformXCfg extends BaseConfig {
                     fields: [
                             'name'                      : [ type: BaseConfig.FIELD_TYPE_PROPERTY /* blind */ ],
                             'primaryUrl'                : [ type: BaseConfig.FIELD_TYPE_PROPERTY ],
-                            'org'                       : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_PLATFORM_ORG, spec: BaseConfig.FIELD_IS_MULTIPLE ],
+//                            'org'                       : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_PLATFORM_ORG, spec: BaseConfig.FIELD_IS_MULTIPLE ],
                             'ipAuthentication'          : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
                             'passwordAuthentication'    : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
                             'proxySupported'            : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
@@ -38,13 +38,13 @@ class PlatformXCfg extends BaseConfig {
                     filter : [
                             default: [
                                     [ 'packageStatus', 'status'],
-                                    [ 'serviceProvider', 'softwareProvider', 'org'],
+                                    [ 'serviceProvider', 'softwareProvider' /*, 'org' */],
                                     [ 'ipAuthentication', 'shibbolethAuthentication', 'counterCertified' ],
                                     [ 'passwordAuthentication', 'proxySupported', 'statisticsFormat' ]
                             ],
                             my: [
                                     [ 'packageStatus', 'subscriptionStatus', 'status'],
-                                    [ 'serviceProvider', 'softwareProvider', 'org'],
+                                    [ 'serviceProvider', 'softwareProvider' /*, 'org' */],
                                     [ 'ipAuthentication', 'shibbolethAuthentication', 'counterCertified' ],
                                     [ 'passwordAuthentication', 'proxySupported', 'statisticsFormat' ]
                             ]
@@ -98,11 +98,11 @@ class PlatformXCfg extends BaseConfig {
                                                     'platform-statisticsUpdate'
                                             ]
                                     ],
-                                    'platform-x-org' : [       // TODO - moved from query !
-                                                               detailsTemplate     : 'platform',
-                                                               chartTemplate       : 'generic',
-                                                               chartLabels         : []
-                                    ],
+//                                    'platform-x-org' : [       // TODO - moved from query !
+//                                                               detailsTemplate     : 'platform',
+//                                                               chartTemplate       : 'generic',
+//                                                               chartLabels         : []
+//                                    ],
                                     'platform-x-primaryUrl' : [       // TODO - moved from query !
                                             detailsTemplate     : 'platform',
                                             chartTemplate       : 'generic',
@@ -112,33 +112,33 @@ class PlatformXCfg extends BaseConfig {
                     ]
             ],
 
-            provider : [
-                    meta : [
-                            class:  Org,
-                            cfgKey: BaseConfig.KEY_PLATFORM
-                    ],
-                    source : [
-                            'filter-restricting-provider'
-                    ],
-                    fields : [ ],
-                    filter : [
-                            default : []
-                    ],
-                    query : [
-                            default : [
-                                    platformOrg : [ // label
-                                            'provider-orgType' : [ 'generic.org.orgType' ],
-                                            'provider-*' :       [ 'generic.all' ]
-                                    ]
-                            ]
-                    ]
-            ],
+//            provider : [
+//                    meta : [
+//                            class:  Org,
+//                            cfgKey: BaseConfig.KEY_PLATFORM
+//                    ],
+//                    source : [
+//                            'filter-subset-provider'
+//                    ],
+//                    fields : [ ],
+//                    filter : [
+//                            default : []
+//                    ],
+//                    query : [
+//                            default : [
+//                                    platformOrg : [ // label
+//                                            'provider-orgType' : [ 'generic.org.orgType' ],
+//                                            'provider-*' :       [ 'generic.all' ]
+//                                    ]
+//                            ]
+//                    ]
+//            ],
     ]
 
     static Map<String, Map> CMB_ES_DT_CONFIG = [
 
             'name'                                  : [ dtc: true   ],
-            'org'                                   : [ dtc: true   ],    // TODO - move to query2 !?
+//            'org'                                   : [ dtc: true   ],    // TODO - move to query2 !?
             'primaryUrl'                            : [ dtc: true   ],    // TODO - move to query2 !?
             'serviceProvider'                       : [ dtc: false  ],
             'softwareProvider'                      : [ dtc: false  ],

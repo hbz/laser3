@@ -22,37 +22,37 @@
                 </g:each>
             </div>
 
-            <div class="filter-wrapper-provider">
-                <g:each in="${config.filter.provider}" var="cfgFilter">
-                    <div class="fields <uiReporting:numberToString number="${cfgFilter.size()}" min="2"/>">
-                        <g:each in="${cfgFilter}" var="field">
-                            <uiReporting:filterField config="${config}" field="${field}" />
-                        </g:each>
-                    </div>
-                </g:each>
-            </div>
+%{--            <div class="filter-wrapper-provider">--}%
+%{--                <g:each in="${config.filter.provider}" var="cfgFilter">--}%
+%{--                    <div class="fields <uiReporting:numberToString number="${cfgFilter.size()}" min="2"/>">--}%
+%{--                        <g:each in="${cfgFilter}" var="field">--}%
+%{--                            <uiReporting:filterField config="${config}" field="${field}" />--}%
+%{--                        </g:each>--}%
+%{--                    </div>--}%
+%{--                </g:each>--}%
+%{--            </div>--}%
         </div><!-- .tab -->
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('#filter\\:org_source').on( 'change', function(e) {
 
-        var $fwDefault = $('.filter-wrapper-default')
-        var $fwProvider = $('.filter-wrapper-provider')
+%{--        var $fwDefault = $('.filter-wrapper-default')--}%
+%{--        var $fwProvider = $('.filter-wrapper-provider')--}%
 
-        if (JSPC.helper.contains( ['all-provider', 'all-agency', 'all-providerAndAgency', 'my-provider', 'my-agency', 'my-providerAndAgency'], $(e.target).dropdown('get value') )) {
-            $fwDefault.find('*').attr('disabled', 'disabled');
-            $fwDefault.hide();
-            $fwProvider.find('*').removeAttr('disabled');
-            $fwProvider.show();
-        }
-        else {
-            $fwProvider.find('*').attr('disabled', 'disabled');
-            $fwProvider.hide();
-            $fwDefault.find('*').removeAttr('disabled');
-            $fwDefault.show();
-        }
+%{--        if (JSPC.helper.contains( ['all-provider', 'all-agency', 'all-providerAndAgency', 'my-provider', 'my-agency', 'my-providerAndAgency'], $(e.target).dropdown('get value') )) {--}%
+%{--            $fwDefault.find('*').attr('disabled', 'disabled');--}%
+%{--            $fwDefault.hide();--}%
+%{--            $fwProvider.find('*').removeAttr('disabled');--}%
+%{--            $fwProvider.show();--}%
+%{--        }--}%
+%{--        else {--}%
+%{--            $fwProvider.find('*').attr('disabled', 'disabled');--}%
+%{--            $fwProvider.hide();--}%
+%{--            $fwDefault.find('*').removeAttr('disabled');--}%
+%{--            $fwDefault.show();--}%
+%{--        }--}%
     })
 
-    $('#filter\\:org_source').trigger('change');
+%{--    $('#filter\\:org_source').trigger('change');--}%
 </laser:script>
 

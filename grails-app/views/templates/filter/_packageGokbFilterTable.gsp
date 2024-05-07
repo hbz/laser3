@@ -354,28 +354,10 @@
                         <td class="x">
                             <g:if test="${pkg}">
                                 <g:if test="${perpetuallySubscribed}">
-                                    <g:if test="${editable}">
-                                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'subscription.unmarkPerpetualAccess')}">
-                                            <g:link controller="subscription" action="removePermanentTitlesByPackage" params="${[pkg: pkg.id]}" class="ui icon negative button">
-                                                <i class="flag outline icon"></i>
-                                            </g:link>
-                                        </span>
-                                    </g:if>
-                                    <g:else>
-                                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'subscription.perpetuallySubscribed')}">
-                                            <i class="flag outline icon"></i>
-                                        </span>
-                                    </g:else>
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'subscription.perpetuallySubscribed')}">
+                                        <i class="flag outline icon"></i>
+                                    </span>
                                 </g:if>
-                                <g:else>
-                                    <g:if test="${editable}">
-                                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'subscription.markPerpetualAccess')}">
-                                            <g:link controller="subscription" action="setPermanentTitlesByPackage" params="${[pkg: pkg.id]}" class="ui icon positive button">
-                                                <i class="flag icon"></i>
-                                            </g:link>
-                                        </span>
-                                    </g:if>
-                                </g:else>
                             </g:if>
                         </td>
                     </g:if>

@@ -1,5 +1,5 @@
 <%--  model: [persons, restrictToOrg] --%>
-<%@ page import="de.laser.utils.LocaleUtils; de.laser.Org; de.laser.Person; de.laser.PersonRole; de.laser.I10nTranslation;" %>
+<%@ page import="de.laser.utils.LocaleUtils; de.laser.Org; de.laser.Vendor; de.laser.Person; de.laser.PersonRole; de.laser.I10nTranslation;" %>
 
 <g:set var="languageSuffix" value="${LocaleUtils.getCurrentLang()}"/>
 
@@ -77,16 +77,30 @@
 
     <%-- filter by model.restrictToOrg --%>
         <%
-            Set<PersonRole> pRoles = person.roleLinks.findAll { restrictToOrg ? (it.org == restrictToOrg) : it }?.sort { it.org.sortname }
+            Set<PersonRole> pRoles = person.roleLinks.findAll { restrictToOrg ? (it.org == restrictToOrg) : it }?.sort {
+                if(it.org)
+                    it.org.sortname
+                else if(it.vendor)
+                    it.vendor.sortname
+            }
 
-            List<PersonRole> pRolesSorted = []
+            List<PersonRole> pProvRolesSorted = [], pVenRolesSorted = []
             int countFunctions = 0
 
             pRoles.each { item ->
-                if (item.functionType) {
-                    pRolesSorted.add(countFunctions++, item)
-                } else {
-                    pRolesSorted.push(item)
+                if(item.org) {
+                    if (item.functionType) {
+                        pProvRolesSorted.add(countFunctions++, item)
+                    } else {
+                        pProvRolesSorted.push(item)
+                    }
+                }
+                else if(item.vendor) {
+                    if (item.functionType) {
+                        pVenRolesSorted.add(countFunctions++, item)
+                    } else {
+                        pVenRolesSorted.push(item)
+                    }
                 }
             }
         %>
@@ -107,13 +121,23 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('organisation')}">
             <td>
                 <div class="ui divided middle aligned list la-flex-list ">
-                    <g:each in="${pRolesSorted.groupBy  {it.org.id}}" var="orgId">
+                    <g:each in="${pProvRolesSorted.groupBy  {it.org.id}}" var="orgId">
                         <g:set var="org" value="${Org.get(orgId.key)}"/>
                         <div class="ui item ">
                                 <div class="la-flexbox">
                                     <i class="icon university la-list-icon"></i>
                                     <g:link controller="organisation" action="addressbook"
                                             id="${org.id}">${org.name} (${org.sortname})</g:link>
+                                </div>
+                        </div>
+                    </g:each>
+                    <g:each in="${pVenRolesSorted.groupBy  {it.vendor.id}}" var="venId">
+                        <g:set var="vendor" value="${Vendor.get(venId.key)}"/>
+                        <div class="ui item ">
+                                <div class="la-flexbox">
+                                    <i class="icon university la-list-icon"></i>
+                                    <g:link controller="vendor" action="addressbook"
+                                            id="${vendor.id}">${vendor.name} (${vendor.sortname})</g:link>
                                 </div>
                         </div>
                     </g:each>
@@ -124,7 +148,14 @@
                 <td>
                     <%-- filter by model.restrictToOrg --%>
                     <div class="ui divided middle aligned list la-flex-list ">
-                        <g:each in="${pRolesSorted.sort{it.functionType?.getI10n('value')}}" var="role">
+                        <g:each in="${pProvRolesSorted.sort{it.functionType?.getI10n('value')}}" var="role">
+                                <g:if test="${role.functionType}">
+                                    <div class="ui item ">
+                                        ${role.functionType.getI10n('value')}
+                                    </div>
+                                </g:if>
+                        </g:each>
+                        <g:each in="${pVenRolesSorted.sort{it.functionType?.getI10n('value')}}" var="role">
                                 <g:if test="${role.functionType}">
                                     <div class="ui item ">
                                         ${role.functionType.getI10n('value')}
@@ -138,7 +169,14 @@
                 <td>
                     <%-- filter by model.restrictToOrg --%>
                     <div class="ui divided middle aligned list la-flex-list ">
-                        <g:each in="${pRolesSorted.sort{it.positionType?.getI10n('value')}}" var="role">
+                        <g:each in="${pProvRolesSorted.sort{it.positionType?.getI10n('value')}}" var="role">
+                                <g:if test="${role.positionType}">
+                                    <div class="ui item ">
+                                    ${role.positionType.getI10n('value')}
+                                    </div>
+                                </g:if>
+                        </g:each>
+                        <g:each in="${pVenRolesSorted.sort{it.positionType?.getI10n('value')}}" var="role">
                                 <g:if test="${role.positionType}">
                                     <div class="ui item ">
                                     ${role.positionType.getI10n('value')}
@@ -152,7 +190,17 @@
                 <td>
                     <%-- filter by model.restrictToOrg --%>
                     <div class="ui divided middle aligned list la-flex-list ">
-                        <g:each in="${pRolesSorted.sort{it.functionType ? it.functionType?.getI10n('value') : it.positionType?.getI10n('value')}}" var="role">
+                        <g:each in="${pProvRolesSorted.sort{it.functionType ? it.functionType?.getI10n('value') : it.positionType?.getI10n('value')}}" var="role">
+                            <div class="ui item ">
+                                <g:if test="${role.functionType}">
+                                    ${role.functionType.getI10n('value')}
+                                </g:if>
+                                <g:if test="${role.positionType}">
+                                    (${role.positionType.getI10n('value')})
+                                </g:if>
+                            </div>
+                        </g:each>
+                        <g:each in="${pVenRolesSorted.sort{it.functionType ? it.functionType?.getI10n('value') : it.positionType?.getI10n('value')}}" var="role">
                             <div class="ui item ">
                                 <g:if test="${role.functionType}">
                                     ${role.functionType.getI10n('value')}

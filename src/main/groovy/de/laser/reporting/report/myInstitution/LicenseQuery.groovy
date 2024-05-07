@@ -1,14 +1,14 @@
 package de.laser.reporting.report.myInstitution
 
 import de.laser.ContextService
+import de.laser.License
+import de.laser.Vendor
 import de.laser.storage.BeanStore
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
 import grails.web.servlet.mvc.GrailsParameterMap
 
 class LicenseQuery extends BaseQuery {
-
-    static List<String> PROPERTY_QUERY = [ 'select p.id, p.value_de, count(*) ', ' group by p.id, p.value_de order by p.value_de' ]
 
     static Map<String, Object> query(GrailsParameterMap params) {
 
@@ -64,6 +64,29 @@ class LicenseQuery extends BaseQuery {
                         idList,
                         result
                 )
+            }
+            else if (params.query in ['license-x-vendor']) {
+
+                result.data = Vendor.executeQuery(
+                        'select v.id, v.name, count(*) from VendorRole vr join vr.vendor v where v.id in (:vendorIdList) and vr.license.id in (:idList) group by v.id order by v.name',
+                        [vendorIdList: BaseFilter.getCachedFilterIdList('vendor', params), idList: idList]
+                )
+                result.data.each { d ->
+                    result.dataDetails.add([
+                            query : params.query,
+                            id    : d[0],
+                            label : d[1],
+                            idList: License.executeQuery(
+                                    'select lic.id from VendorRole vr join vr.license lic join vr.vendor v where lic.id in (:idList) and v.id = :d order by lic.reference',
+                                    [idList: idList, d: d[0]]
+                            )
+                    ])
+                }
+
+                List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
+                List<Long> noDataList = nonMatchingIdList ? License.executeQuery('select lic.id from License lic where lic.id in (:idList)', [idList: nonMatchingIdList]) : []
+
+                handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_VENDOR_LABEL, noDataList, result)
             }
         }
 

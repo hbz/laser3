@@ -81,7 +81,7 @@
 
             <g:set var="isSubscriptionViewValid" value="${!(actionName.startsWith('copy') || actionName in ['renewEntitlementsWithSurvey', 'renewSubscription', 'emptySubscription'])}" />
 
-            <g:if test="${controllerName=='subscription' && subscription && isSubscriptionViewValid}">
+            <g:if test="${controllerName in ['finance', 'subscription'] && subscription && isSubscriptionViewValid}">
                 <g:if test="${editable && contextService.getOrg().isCustomerType_Consortium() && subscription._getCalculatedType() in [Subscription.TYPE_CONSORTIAL]}">
                     <div class="item la-cb-action">
                         <button class="ui icon button la-toggle-ui la-popup-tooltip la-delay" id="subscriptionTransfer-toggle"
@@ -94,7 +94,7 @@
 
             %{-- subscription members --}%
 
-            <g:if test="${controllerName == 'subscription' && subscription && isSubscriptionViewValid}">
+            <g:if test="${controllerName in ['finance', 'subscription'] && subscription && isSubscriptionViewValid}">
                 <g:if test="${editable && contextService.getOrg().isCustomerType_Consortium() && subscription.getConsortia()?.id == contextService.getOrg().id}">
                     <div class="item la-cb-action">
 %{--                        <button class="ui icon button la-toggle-ui la-popup-tooltip la-delay" id="subscriptionMembers-toggle"--}%
@@ -165,7 +165,7 @@
 
             %{-- linkify --}%
 
-            <g:if test="${controllerName == 'subscription' && subscription}">
+            <g:if test="${controllerName in ['finance', 'subscription'] && subscription}">
                 <g:set var="linkifyMap" value="${linksGenerationService.getSourcesAndDestinations(subscription, contextUser, RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE))}" />
 
                 <g:if test="${linkifyMap || subscription.instanceOf}">

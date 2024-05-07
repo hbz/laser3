@@ -4,7 +4,9 @@ import de.laser.License
 import de.laser.Org
 import de.laser.Platform
 import de.laser.Subscription
+import de.laser.Vendor
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.properties.VendorProperty
 import de.laser.storage.BeanStore
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.LicenseProperty
@@ -78,6 +80,13 @@ class BaseDetails {
                     "select sp from SubscriptionProperty sp join sp.type pd where sp.owner = :sub and pd.id = :pdId " +
                             "and (sp.isPublic = true or sp.tenant = :ctxOrg) and pd.descr like '%Property' ",
                     [sub: obj, pdId: pdId, ctxOrg: ctxOrg]
+            )
+        }
+        else if (obj instanceof Vendor) {
+            properties = VendorProperty.executeQuery(
+                    "select vp from VendorProperty vp join vp.type pd where vp.owner = :ven and pd.id = :pdId " +
+                            "and (vp.isPublic = true or vp.tenant = :ctxOrg) and pd.descr like '%Property' ",
+                    [ven: obj, pdId: pdId, ctxOrg: ctxOrg]
             )
         }
         properties

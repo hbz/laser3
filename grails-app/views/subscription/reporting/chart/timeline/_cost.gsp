@@ -114,7 +114,11 @@ JSPC.app.reporting.current.chart.option = {
                 let ci = new Intl.NumberFormat(JSPC.config.language, { style: 'currency', currency: 'EUR' }).format( v )
 
                 if (prev) {
-                    let perc = new Intl.NumberFormat(JSPC.config.language, { style: 'percent', maximumFractionDigits: 2, minimumFractionDigits: 2 }).format((v / prev[ params[i].seriesIndex + 2 ]))
+                    let perc = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'
+                    let delta = (v - prev[ params[i].seriesIndex + 2 ]) / prev[ params[i].seriesIndex + 2 ]
+                    if (delta) {
+                        perc = new Intl.NumberFormat(JSPC.config.language, { style: 'percent', maximumFractionDigits:2, minimumFractionDigits:2 }).format( delta )
+                    }
                     let marker = params[i].marker
                     if (!marker) {
                         marker = '<span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#d3dae3;"></span>'

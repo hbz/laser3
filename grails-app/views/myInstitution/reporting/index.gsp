@@ -126,7 +126,7 @@
 
         <div id="filter-wrapper">
             <g:if test="${filter}">
-                <laser:render template="/myInstitution/reporting/filter/form" />
+                <laser:render template="/myInstitution/reporting/filter/filter_form" />
             </g:if>
         </div>
 

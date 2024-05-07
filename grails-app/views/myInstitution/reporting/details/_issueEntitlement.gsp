@@ -1,7 +1,7 @@
 <%@ page import="de.laser.reporting.report.myInstitution.base.BaseDetails; de.laser.Org; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.storage.RDStore; de.laser.Subscription; de.laser.properties.PropertyDefinition; de.laser.properties.SubscriptionProperty;" %>
 <laser:serviceInjection />
 
-<laser:render template="/myInstitution/reporting/details/top" />
+<laser:render template="/myInstitution/reporting/details/details_top" />
 
 <div class="ui segment">
     <table class="ui table la-table compact">

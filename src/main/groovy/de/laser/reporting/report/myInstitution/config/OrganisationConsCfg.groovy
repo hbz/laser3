@@ -15,17 +15,11 @@ class OrganisationConsCfg extends BaseConfig {
                     source : [
                             'all-org',
                             'all-inst',
-                            'all-provider',
-                            'all-agency',
-                            'all-providerAndAgency',
                             'my-inst',
-                            'my-provider',
-                            'my-agency',
-                            'my-providerAndAgency'
                     ],
                     fields : [
                             'country'           : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
-                            'region'            : [type: BaseConfig.FIELD_TYPE_REFDATA, spec: BaseConfig.FIELD_IS_VIRTUAL ],
+                            'region'            : [ type: BaseConfig.FIELD_TYPE_REFDATA, spec: BaseConfig.FIELD_IS_VIRTUAL ],
                             'customerType'      : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'eInvoice'          : [ type: BaseConfig.FIELD_TYPE_PROPERTY ],
                             'funderHskType'     : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
@@ -45,9 +39,6 @@ class OrganisationConsCfg extends BaseConfig {
                                     [ 'orgType', 'eInvoice' ],
                                     [ 'customerType', 'legalInfo' ],
                                     [ 'propertyKey', 'propertyValue' ]
-                            ],
-                            provider : [ // TODO : provider != agency
-                                    // all disabled
                             ]
                     ],
                     query : [
@@ -63,21 +54,6 @@ class OrganisationConsCfg extends BaseConfig {
                                             'org-funderType' :      [ 'generic.org.funderType' ],
                                             'org-funderHskType' :   [ 'generic.org.funderHskType' ],
                                             'org-*' :               [ 'generic.all' ]
-                                    ]
-                            ],
-                            providerAndAgency : [
-                                    org : [
-                                            'org-orgType': [ 'generic.org.orgType' ]
-                                    ]
-                            ],
-                            provider : [
-                                    org : [
-                                            'org-orgType': [ 'generic.org.orgType' ]
-                                    ]
-                            ],
-                            agency : [
-                                    org : [
-                                            'org-orgType': [ 'generic.org.orgType' ]
                                     ]
                             ]
                     ],
