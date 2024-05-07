@@ -6912,10 +6912,18 @@ class ExportClickMeService {
     Map getClickMeFields(ClickMeConfig clickMeConfig, Map fields){
         if (clickMeConfig){
             Map clickMeConfigMap = JSON.parse(clickMeConfig.jsonConfig)
+            Set clickMeConfigMapKeys = clickMeConfigMap.keySet()
+
             fields.each { def field ->
                 field.value.fields.each{
-                    if(it.value && it.value.containsKey('defaultChecked')){
-                        it.value.defaultChecked = it.key in clickMeConfigMap ? true: false
+                    if(it.value ){
+                        if(it.value.containsKey('defaultChecked')) {
+                            it.value.defaultChecked = it.key.toString() in clickMeConfigMapKeys ? true : false
+                        }else {
+                            if(it.key.toString() in clickMeConfigMapKeys){
+                                it.value.defaultChecked = true
+                            }
+                        }
                     }
                 }
             }
