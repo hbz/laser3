@@ -191,10 +191,6 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
         }
         p.retirementDate = provider.retirementDate
         p.dateCreated = provider.dateCreated
-        if(!p.save()) {
-            log.error(p.getErrors().getAllErrors().toListString())
-            null
-        }
         provider.altnames.each { AlternativeName altName ->
             altName.provider = p
             altName.org = null
@@ -217,6 +213,7 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
         }
         DocContext.findAllByTargetOrg(provider).each { DocContext dc ->
             dc.provider = p
+            dc.org = null
             dc.targetOrg = null
             dc.save()
         }
@@ -229,6 +226,10 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
             pr.provider = p
             pr.org = null
             pr.save()
+        }
+        Person.findAllByTenant(provider).each { Person pe ->
+            pe.tenant = null
+            pe.save()
         }
         Marker.findAllByOrg(provider).each { Marker m ->
             m.prov = p
@@ -260,7 +261,11 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
             pp.lastUpdated = op.lastUpdated
             pp.save()
         }
-        p
+        if(!p.save()) {
+            log.error(p.getErrors().getAllErrors().toListString())
+            null
+        }
+        else p
     }
 
     boolean hasElectronicBilling(String ebB) {

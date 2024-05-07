@@ -214,10 +214,6 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
                 break
         }
         v.dateCreated = agency.dateCreated
-        if(!v.save()) {
-            log.error(v.getErrors().getAllErrors().toListString())
-            null
-        }
         agency.contacts.each { Contact c ->
             c.vendor = v
             c.org = null
@@ -233,6 +229,12 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
             dc.org = null
             dc.save()
         }
+        DocContext.findAllByTargetOrg(agency).each { DocContext dc ->
+            dc.vendor = v
+            dc.org = null
+            dc.targetOrg = null
+            dc.save()
+        }
         agency.altnames.each { AlternativeName a ->
             a.vendor = v
             a.org = null
@@ -242,6 +244,10 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
             pr.vendor = v
             pr.org = null
             pr.save()
+        }
+        Person.findAllByTenant(agency).each { Person pe ->
+            pe.tenant = null
+            pe.save()
         }
         Marker.findAllByOrg(agency).each { Marker m ->
             m.ven = v
@@ -273,7 +279,11 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
             vp.lastUpdated = op.lastUpdated
             vp.save()
         }
-        v
+        if(!v.save()) {
+            log.error(v.getErrors().getAllErrors().toListString())
+            null
+        }
+        else v
     }
 
     /**

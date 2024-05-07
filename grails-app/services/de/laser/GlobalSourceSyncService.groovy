@@ -1350,14 +1350,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
         else providerRecord = providerJSON
         log.info("provider record loaded, reconciling provider record for UUID ${providerRecord.uuid}")
         //first attempt
-        Provider provider = Org.findByGokbId(providerRecord.uuid)
+        Provider provider = Provider.findByGokbId(providerRecord.uuid)
         //attempt succeeded
         if(provider) {
             provider.name = providerRecord.name
         }
         //second attempt
         else if(!provider) {
-            provider = Org.findByNameAndGokbIdIsNull(providerRecord.name)
+            provider = Provider.findByNameAndGokbIdIsNull(providerRecord.name)
             //second attempt succeeded - map gokbId to provider who already exists
             if(provider)
                 provider.gokbId = providerRecord.uuid

@@ -77,7 +77,9 @@
 
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('isWekbCurated')}">
                     <td class="center aligned">
-                        <ui:wekbButtonLink type="vendor" gokbId="${vendor.gokbId}" />
+                        <g:if test="${vendor.gokbId}">
+                            <ui:wekbButtonLink type="vendor" gokbId="${vendor.gokbId}" />
+                        </g:if>
                     </td>
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('status')}">

@@ -5,18 +5,14 @@
     <ui:actionsDropdown>
         <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
         <g:if test="${editable}">
-            <g:if test="${actionName == 'users'}">
-                <div class="divider"></div>
-                <ui:actionsDropdownItem controller="user" action="create" message="user.create_new.label" params="[org: vendor.id]" />
-            </g:if>
-            <g:elseif test="${actionName == 'addressbook'}">
+            <g:if test="${actionName == 'addressbook'}">
                 <div class="divider"></div>
                 <g:if test="${editable}">
-                    <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForProviderAgency', ${vendor.id});"><g:message code="person.create_new.contactPersonForVendor.label"/></a>
-                    <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForProviderAgency', ${vendor.id});"><g:message code="address.add.address.label"/></a>
+                    <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForVendor', ${vendor.id});"><g:message code="person.create_new.contactPersonForVendor.label"/></a>
+                    <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForVendor', ${vendor.id});"><g:message code="address.add.addressForVendor.label"/></a>
                 </g:if>
                 <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
-            </g:elseif>
+            </g:if>
             <g:elseif test="${actionName == 'contacts'}">
                 <div class="divider"></div>
                 <g:if test="${editable}">
@@ -32,33 +28,14 @@
     <ui:actionsDropdown>
         <ui:actionsDropdownItem message="template.notes.add" data-ui="modal" href="#modalCreateNote"/>
 
-        <g:if test="${actionName in ['show', 'notes']}">
-        </g:if>
-        <g:elseif test="${actionName == 'ids'}">
-            <g:if test="${editable_identifier}">
-                <div class="divider"></div>
-                <a class="item" onclick="JSPC.app.IdContoller.createIdentifier(${orgInstance.id});">${message(code: 'identifier.create.new')}</a>
-            </g:if>
-            <g:if test="${hasAccessToCustomeridentifier}">
-                <g:if test="${editable_customeridentifier}">
-                    <a class="item" onclick="JSPC.app.IdContoller.createCustomerIdentifier(${orgInstance.id});">${message(code: 'org.customerIdentifier.create.new')}</a>
-                </g:if>
-            </g:if>
-        </g:elseif>
-        <g:elseif test="${actionName == 'addressbook'}">
+        <g:if test="${actionName == 'addressbook'}">
             <div class="divider"></div>
             <g:if test="${editable}">
-                <g:if test="${(institution.isCustomerType_Consortium()) && !isProviderOrAgency}">
-                    <a href="#createPersonModal" class="item" data-ui="modal"
-                       onclick="JSPC.app.personCreate('contactPersonForInstitution', ${orgInstance.id});"><g:message code="person.create_new.contactPersonForInstitution.label"/></a>
-                </g:if>
-                <g:if test="${isProviderOrAgency}">
-                    <a href="#createPersonModal" class="item" data-ui="modal"
-                       onclick="JSPC.app.personCreate('contactPersonForProviderAgency', ${orgInstance.id});"><g:message code="person.create_new.contactPersonForProviderAgency.label"/></a>
-                </g:if>
+                <a href="#createPersonModal" class="item" data-ui="modal"
+                   onclick="JSPC.app.personCreate('contactPersonForProviderAgency', ${vendor.id});"><g:message code="person.create_new.contactPersonForProviderAgency.label"/></a>
             </g:if>
             <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
-        </g:elseif>
+        </g:if>
         <g:elseif test="${actionName == 'contacts'}">
             <div class="divider"></div>
             <g:if test="${editable}">

@@ -557,6 +557,8 @@ class AjaxHtmlController {
         result.showAddresses = params.showAddresses == "true" ? true : ''
         result.addAddresses = params.showAddresses == "true" ? true : ''
         result.org = params.org ? Org.get(params.long('org')) : null
+        result.provider = params.provider ? Provider.get(params.long('provider')) : null
+        result.vendor = params.vendor ? Vendor.get(params.long('vendor')) : null
         result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_OA_CONTACT]
         if(result.contextOrg.isCustomerType_Consortium()){
             result.functions << RDStore.PRS_FUNC_GASCO_CONTACT
@@ -573,19 +575,36 @@ class AjaxHtmlController {
                     result.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id = :orgType ) and o.sector.id = :orgSector order by LOWER(o.sortname)", [orgSector: RDStore.O_SECTOR_HIGHER_EDU.id, orgType: RDStore.OT_INSTITUTION.id])
                 }
                 break
-            case 'contactPersonForProviderAgency':
-            case 'contactPersonForProviderAgencyPublic':
-                result.isPublic    = params.contactFor == 'contactPersonForProviderAgencyPublic'
+            case 'contactPersonForProvider':
+            case 'contactPersonForProviderPublic':
+                result.isPublic    = params.contactFor == 'contactPersonForProviderPublic'
                 Set<RefdataValue> excludes = [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FC_DELIVERY_ADDRESS]
                 if(params.existsWekbRecord)
                     excludes.addAll([RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_METADATA])
                 result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - excludes
                 result.positions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
-                if (result.org) {
-                    result.modalText = message(code: "person.create_new.contactPersonForProviderAgency.label") + ' (' + result.org.toString() + ')'
-                } else {
+                if (result.provider) {
+                    result.modalText = message(code: "person.create_new.contactPersonForProviderAgency.label") + ' (' + result.provider.sortname + ')'
+                }
+                else {
                     result.modalText = message(code: "person.create_new.contactPersonForProviderAgency.label")
-                    result.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id in (:orgType) ) and o.sector.id = :orgSector order by LOWER(o.sortname)", [orgSector: RDStore.O_SECTOR_PUBLISHER.id, orgType: [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]])
+                    result.provList = Provider.findAll([sort: 'sortname'])
+                }
+                break
+            case 'contactPersonForVendor':
+            case 'contactPersonForVendorPublic':
+                result.isPublic    = params.contactFor == 'contactPersonForVendorPublic'
+                Set<RefdataValue> excludes = [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FC_DELIVERY_ADDRESS]
+                if(params.existsWekbRecord)
+                    excludes.addAll([RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_METADATA])
+                result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - excludes
+                result.positions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
+                if (result.vendor) {
+                    result.modalText = message(code: "person.create_new.contactPersonForVendor.label") + ' (' + result.vendor.sortname + ')'
+                }
+                else {
+                    result.modalText = message(code: "person.create_new.contactPersonForVendor.label")
+                    result.venList = Vendor.findAll([sort: 'sortname'])
                 }
                 break
             case 'contactPersonForPublic':
