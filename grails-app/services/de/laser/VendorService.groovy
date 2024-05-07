@@ -279,6 +279,9 @@ class VendorService {
                     vendor.electronicDeliveryDelays.clear()
                     log.debug("${ElectronicDeliveryDelayNotification.executeUpdate('update ElectronicDeliveryDelayNotification eddn set eddn.vendor = :target where eddn.vendor = :source', genericParams)} electronic delivery delay notifications updated")
 
+                    // persons
+                    log.debug("${Person.executeUpdate('update Person p set p.vendor = :target where p.vendor = :source', genericParams)} persons updated")
+
                     // tasks
                     log.debug("${Task.executeUpdate('update Task t set t.vendor = :target where t.vendor = :source', genericParams)} tasks updated")
 

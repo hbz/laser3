@@ -233,6 +233,9 @@ class ProviderService {
                     provider.invoicingVendors.clear()
                     log.debug("${InvoicingVendor.executeUpdate('update InvoicingVendor iv set iv.provider = :target where iv.provider = :source', genericParams)} invoicing vendors updated")
 
+                    // persons
+                    log.debug("${Person.executeUpdate('update Person p set p.provider = :target where p.provider = :source', genericParams)} persons updated")
+
                     // tasks
                     log.debug("${Task.executeUpdate('update Task t set t.provider = :target where t.provider = :source', genericParams)} tasks updated")
 
