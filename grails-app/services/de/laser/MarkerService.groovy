@@ -25,21 +25,12 @@ class MarkerService {
         List<Marker> markers = []
         String sql
 
-        if (cls == Org.class) {
-            sql = 'where m.org != null'
-        }
-        else if (cls == Package.class) {
-            sql = 'where m.pkg != null'
-        }
-        else if (cls == Platform.class) {
-            sql = 'where m.plt != null'
-        }
-        else if (cls == Vendor.class) {
-            sql = 'where m.ven != null'
-        }
-        else if (cls == TitleInstancePackagePlatform.class) {
-            sql = 'where m.tipp != null'
-        }
+             if (cls == Org.class)      { sql = 'where m.org != null' }
+        else if (cls == Package.class)  { sql = 'where m.pkg != null' }
+        else if (cls == Platform.class) { sql = 'where m.plt != null' }
+        else if (cls == Provider.class) { sql = 'where m.prov != null' }
+        else if (cls == Vendor.class)   { sql = 'where m.ven != null' }
+        else if (cls == TitleInstancePackagePlatform.class) { sql = 'where m.tipp != null' }
 
         if (sql) {
             markers = Marker.executeQuery(
