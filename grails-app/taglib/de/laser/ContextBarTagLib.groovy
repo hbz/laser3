@@ -168,32 +168,34 @@ class ContextBarTagLib {
         MarkerSupport obj   = (attrs.org ?: attrs.package ?: attrs.platform ?: attrs.provider ?: attrs.vendor ?: attrs.tipp) as MarkerSupport
         Marker.TYPE mType   = attrs.type ? Marker.TYPE.get(attrs.type as String) : Marker.TYPE.UNKOWN // TODO
         boolean isMarked    = obj.isMarked(contextService.getUser(), mType)
-        String tt           = '?'
+        String tt           = ''
         String tt_list      = message(code: 'marker.' + mType.value)
 
         if (attrs.org) {
-            tt = isMarked ? 'Das Objekt ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
-                    : 'Anklicken, um das Objekt auf die ' + tt_list + ' zu setzen.'
+            tt = isMarked ? 'Das Objekt' : 'das Objekt'
         }
         else if (attrs.package) {
-            tt = isMarked ? 'Das Paket ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
-                    : 'Anklicken, um das Paket auf die ' + tt_list + ' zu setzen.'
+            tt = isMarked ? 'Das Paket' : 'das Paket'
         }
         else if (attrs.platform) {
-            tt = isMarked ? 'Der Plattform ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
-                    : 'Anklicken, um die Plattform auf die ' + tt_list + ' zu setzen.'
+            tt = isMarked ? 'Die Plattform' : 'die Plattform'
         }
         else if (attrs.provider) {
-            tt = isMarked ? 'Der Anbieter ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
-                    : 'Anklicken, um den Anbieter auf die ' + tt_list + ' zu setzen.'
+            tt = isMarked ? 'Der Anbieter' : 'den Anbieter'
         }
         else if (attrs.vendor) {
-            tt = isMarked ? 'Der Lieferant ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
-                    : 'Anklicken, um den Lieferanten auf die ' + tt_list + ' zu setzen.'
+            tt = isMarked ? 'Der Lieferant' : 'den Lieferanten'
         }
         else if (attrs.tipp) {
-            tt = isMarked ? 'Der Titel ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
-                    : 'Anklicken, um den Titel auf die ' + tt_list + ' zu setzen.'
+            tt = isMarked ? 'Der Titel' : 'den Titel'
+        }
+
+        if (tt) {
+            tt = isMarked   ? tt + ' ist auf der Beobachtungsliste (' + tt_list + '). Anklicken, um zu entfernen.'
+                            : 'Anklicken, um ' + tt + ' auf die Beobachtungsliste (' + tt_list + ') zu setzen.'
+        }
+        else {
+            tt = '???'
         }
 
         if (obj) {

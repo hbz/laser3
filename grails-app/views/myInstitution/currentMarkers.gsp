@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.convenience.Marker; de.laser.Org;de.laser.Vendor;de.laser.Package;de.laser.Platform;de.laser.TitleInstancePackagePlatform" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.convenience.Marker; de.laser.Org;de.laser.Vendor;de.laser.Package;de.laser.Platform;de.laser.Provider;de.laser.TitleInstancePackagePlatform" %>
 
 <laser:htmlStart message="menu.my.markers" serviceInjection="true"/>
 
@@ -42,14 +42,17 @@
                     <th class="one wide">${message(code:'sidewide.number')}</th>
                     <th class="ten wide">
                         <g:if test="${objCat.value.first() instanceof Org}">
-                            <i class="icon grey university la-list-icon"></i> ${message(code:'default.provider.label')}
+                            <i class="icon grey university la-list-icon"></i> ???
                         </g:if>
                         <g:elseif test="${objCat.value.first() instanceof Package}">
-                            <i class="icon grey gift la-list-icon"></i>  ${message(code:'package.label')}
+                            <i class="icon grey gift la-list-icon"></i> ${message(code:'package.label')}
                         </g:elseif>
                         <g:elseif test="${objCat.value.first() instanceof Platform}">
                             <i class="icon grey cloud la-list-icon"></i> ${message(code:'platform.label')}
                         </g:elseif>
+                        <g:if test="${objCat.value.first() instanceof Provider}">
+                            <i class="icon grey university la-list-icon"></i> ${message(code:'default.provider.label')}
+                        </g:if>
                         <g:elseif test="${objCat.value.first() instanceof Vendor}">
                             <i class="icon grey shipping fast la-list-icon"></i> ${message(code:'vendor')}
                         </g:elseif>
@@ -77,8 +80,8 @@
                                 </g:each>
                             </td>
                             <td class="center aligned">
-                                <g:if test="${obj.id in myXMap.currentProviderIdList}">
-                                    <ui:myXIcon tooltip="${message(code: 'menu.my.providers')}" color="yellow"/>
+                                <g:if test="${obj.id in myXMap.currentOrgIdList}">
+                                    <ui:myXIcon tooltip="???" color="yellow"/>
                                 </g:if>
                             </td>
                             <td>
@@ -113,6 +116,20 @@
                                 <ui:cbItemMarkerAction platform="${obj}" type="${markerType}" simple="true"/>
                             </td>
                         </g:elseif>
+                        <g:if test="${obj instanceof Provider}">
+                            <td>
+                                <g:link controller="provider" action="show" id="${obj.id}" target="_blank">${obj.name}</g:link>
+                            </td>
+                            <td></td>
+                            <td class="center aligned">
+                                <g:if test="${obj.id in myXMap.currentProviderIdList}">
+                                    <ui:myXIcon tooltip="${message(code: 'menu.my.providers')}" color="yellow"/>
+                                </g:if>
+                            </td>
+                            <td>
+                                <ui:cbItemMarkerAction org="${obj}" type="${markerType}" simple="true"/>
+                            </td>
+                        </g:if>
                         <g:elseif test="${obj instanceof Vendor}">
                             <td>
                                 <g:link controller="vendor" action="show" id="${obj.id}" target="_blank">${obj.name}</g:link>

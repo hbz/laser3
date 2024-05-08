@@ -30,7 +30,7 @@ class LinkTagLib {
     def wekbIconLink = { attrs, body ->
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         String href = ''
-        String label = ''
+        String label = 'Unbekannter Fehler'
 
         if (attrs.type == 'curatoryGroup') {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
@@ -40,10 +40,6 @@ class LinkTagLib {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
             label = message(code: 'default.provider.label') + ' in der we:kb aufrufen'
         }
-        else if (attrs.type == 'vendor') {
-            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
-            label = message(code: 'default.agency.label') + ' in der we:kb aufrufen'
-        }
         else if (attrs.type == 'package') {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
             label = message(code: 'package.label') + ' in der we:kb aufrufen'
@@ -52,6 +48,10 @@ class LinkTagLib {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
             label = message(code: 'platform.label') + ' in der we:kb aufrufen'
         }
+        else if (attrs.type == 'provider') {
+            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
+            label = message(code: 'default.provider.label') + ' in der we:kb aufrufen'
+        }
         else if (attrs.type == 'source') {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
             label = message(code: 'package.source.label') + ' in der we:kb aufrufen'
@@ -59,6 +59,10 @@ class LinkTagLib {
         else if (attrs.type == 'tipp') {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
             label = message(code: 'title.label') + ' in der we:kb aufrufen'
+        }
+        else if (attrs.type == 'vendor') {
+            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
+            label = message(code: 'default.agency.label') + ' in der we:kb aufrufen'
         }
         out << '<span class="la-popup-tooltip la-delay" data-position="top right" data-content="' + label + '" >&nbsp;'
         out << '<a href="' + href + '" target="_blank" aria-label="' + label + '">'
