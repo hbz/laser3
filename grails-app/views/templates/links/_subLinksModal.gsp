@@ -227,7 +227,7 @@
         }
         $("#providerFilter").dropdown({
             apiSettings: {
-                url: "<g:createLink controller="ajaxJson" action="lookupProvidersAgencies"/>?query={query}",
+                url: "<g:createLink controller="ajaxJson" action="lookupProviders"/>?query={query}",
                 cache: false
             },
             clearable: true,

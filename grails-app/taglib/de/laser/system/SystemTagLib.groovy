@@ -33,6 +33,7 @@ class SystemTagLib {
         g.set( var:'packageService',                bean:'packageService')
         g.set( var:'pendingChangeService',          bean:'pendingChangeService')
         g.set( var:'propertyService',               bean:'propertyService')
+        g.set( var:'providerService',               bean:'providerService' )
         g.set( var:'subscriptionsQueryService',     bean:'subscriptionsQueryService' )
         g.set( var:'subscriptionControllerService', bean:'subscriptionControllerService' )
         g.set( var:'subscriptionService',           bean:'subscriptionService' )

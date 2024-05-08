@@ -28423,6 +28423,29 @@ body[class*="platform"] .ui.icon.header .icon.la-object:before {
   content: "\f0c2";
 }
 
+body[class*="Provider"] .ui.icon.header .icon.la-object,
+body[class*="provider"] .ui.icon.header .icon.la-object {
+    display: inline-block;
+    background-color: rgba(166, 165, 165, 0.45);
+    border-color: #A6A5A572;
+}
+
+body[class*="Provider"] .ui.icon.header .icon.la-object:before,
+body[class*="provider"] .ui.icon.header .icon.la-object:before {
+    content: "\f2b5";
+}
+
+body[class*="Provider"] .la-objectIsMine,
+body[class*="provider"] .la-objectIsMine {
+    box-shadow: 0 0 0 0.1em #A6A5A572 inset !important;
+    color: #A6A5A572;
+}
+
+body[class*="Provider"] .ui.icon.header .icon.la-object:before,
+body[class*="provider"] .ui.icon.header .icon.la-object:before {
+    content: "\f2b5";
+}
+
 body[class*="Vendor"] .ui.icon.header .icon.la-object,
 body[class*="vendor"] .ui.icon.header .icon.la-object {
   display: inline-block;

@@ -2,6 +2,8 @@ package de.laser.traits
 
 import de.laser.DocContext
 import de.laser.OrgRole
+import de.laser.Provider
+import de.laser.ProviderRole
 import de.laser.VendorRole
 import de.laser.interfaces.ShareSupport
 import de.laser.storage.BeanStore
@@ -37,6 +39,9 @@ trait ShareableTrait {
         if (this instanceof OrgRole) {
             BeanStore.getShareService().addOrgRoleShareForTarget(this, target)
         }
+        if (this instanceof ProviderRole) {
+            BeanStore.getShareService().addProviderRoleShareForTarget(this, target)
+        }
         if (this instanceof VendorRole) {
             BeanStore.getShareService().addVendorRoleShareForTarget(this, target)
         }
@@ -56,6 +61,9 @@ trait ShareableTrait {
         if (this instanceof OrgRole) {
             BeanStore.getShareService().deleteOrgRoleShareForTarget(target)
         }
+        if (this instanceof ProviderRole) {
+            BeanStore.getShareService().deleteProviderRoleShareForTarget(target)
+        }
         if (this instanceof VendorRole) {
             BeanStore.getShareService().deleteVendorRoleShareForTarget(target)
         }
@@ -73,6 +81,9 @@ trait ShareableTrait {
         }
         if (this instanceof OrgRole) {
             OrgRole.executeUpdate('delete from OrgRole oorr where oorr.sharedFrom = :sf', [sf: this])
+        }
+        if (this instanceof ProviderRole) {
+            ProviderRole.executeUpdate('delete from ProviderRole pvr where pvr.sharedFrom = :sf', [sf: this])
         }
         if (this instanceof VendorRole) {
             VendorRole.executeUpdate('delete from VendorRole vr where vr.sharedFrom = :sf', [sf: this])

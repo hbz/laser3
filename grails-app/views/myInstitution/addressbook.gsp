@@ -43,10 +43,14 @@
         <g:if test="${editable}">
 
             <a href="#createPersonModal" class="item" data-ui="modal"
-               onclick="JSPC.app.personCreate('contactPersonForProviderAgency');"><g:message
-                    code="person.create_new.contactPersonForProviderAgency.label"/></a>
+               onclick="JSPC.app.personCreate('contactPersonForProvider');"><g:message
+                    code="person.create_new.contactPersonForProvider.label"/></a>
+            <a href="#createPersonModal" class="item" data-ui="modal"
+               onclick="JSPC.app.personCreate('contactPersonForVendor');"><g:message
+                    code="person.create_new.contactPersonForVendor.label"/></a>
 
-            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForProviderAgency');"><g:message code="address.add.addressForProviderAgency.label"/></a>
+            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForProvider');"><g:message code="address.add.addressForProvider.label"/></a>
+            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForVendor');"><g:message code="address.add.addressForVendor.label"/></a>
             <g:if test="${institution.isCustomerType_Consortium()}">
                 <a href="#createPersonModal" class="item" data-ui="modal"
                    onclick="JSPC.app.personCreate('contactPersonForInstitution');"><g:message

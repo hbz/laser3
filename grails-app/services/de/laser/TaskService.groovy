@@ -137,6 +137,26 @@ class TaskService {
     }
 
     /**
+     * Retrieves all tasks the given user created for the given organisation
+     * @param user the user whose tasks should be retrieved
+     * @param obj the organisation to which the tasks are attached
+     * @return a complete list of tasks
+     */
+    List<Task> getTasksByCreatorAndObject(User user, Provider obj) {
+        (user && obj) ?  Task.findAllByCreatorAndProvider(user, obj) : []
+    }
+
+    /**
+     * Retrieves all tasks the given user created for the given organisation
+     * @param user the user whose tasks should be retrieved
+     * @param obj the organisation to which the tasks are attached
+     * @return a complete list of tasks
+     */
+    List<Task> getTasksByCreatorAndObject(User user, Vendor obj) {
+        (user && obj) ?  Task.findAllByCreatorAndVendor(user, obj) : []
+    }
+
+    /**
      * Retrieves all tasks the given user created for the given subscription
      * @param user the user whose tasks should be retrieved
      * @param obj the subscription to which the tasks are attached
@@ -239,6 +259,12 @@ class TaskService {
                     break
                 case 'SurveyConfig':
                     tableName = 'surveyConfig'
+                    break
+                case 'Provider':
+                    tableName = 'provider'
+                    break
+                case 'Vendor':
+                    tableName = 'vendor'
                     break
             }
             String query = "select distinct(t) from Task t where ${tableName}=:obj and (responsibleUser=:user or responsibleOrg=:org) order by endDate"

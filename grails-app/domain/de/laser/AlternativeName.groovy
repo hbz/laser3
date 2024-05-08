@@ -27,14 +27,18 @@ class AlternativeName implements CalculatedLastUpdated, Comparable {
         tipp: TitleInstancePackagePlatform,
         pkg: Package,
         platform: Platform,
-        org: Org
+        provider: Provider,
+        org: Org,
+        vendor: Vendor
     ]
 
     static constraints = {
         tipp (nullable: true)
         pkg  (nullable: true)
         platform (nullable: true)
+        provider (nullable: true)
         org (nullable: true)
+        vendor (nullable: true)
         lastUpdated (nullable: true)
         lastUpdatedCascading (nullable: true)
     }
@@ -46,7 +50,9 @@ class AlternativeName implements CalculatedLastUpdated, Comparable {
         tipp                  column: 'altname_tipp_fk'
         pkg                   column: 'altname_pkg_fk'
         platform              column: 'altname_plat_fk'
+        provider              column: 'altname_prov_fk'
         org                   column: 'altname_org_fk'
+        vendor                column: 'altname_vendor_fk'
         dateCreated           column: 'altname_date_created'
         lastUpdated           column: 'altname_last_updated'
         lastUpdatedCascading  column: 'altname_last_updated_cascading'
@@ -92,7 +98,7 @@ class AlternativeName implements CalculatedLastUpdated, Comparable {
      * @return the new alternative name, null if no reference object has been specified
      */
     static AlternativeName construct(Map<String, Object> configMap) {
-        if(configMap.tipp || configMap.pkg || configMap.platform || configMap.org) {
+        if(configMap.tipp || configMap.pkg || configMap.platform || configMap.provider || configMap.org) {
             AlternativeName altName = new AlternativeName(name: configMap.name)
             if(configMap.tipp)
                 altName.tipp = configMap.tipp
@@ -100,6 +106,8 @@ class AlternativeName implements CalculatedLastUpdated, Comparable {
                 altName.pkg = configMap.pkg
             else if(configMap.platform)
                 altName.platform = configMap.platform
+            else if(configMap.provider)
+                altName.provider = configMap.provider
             else if(configMap.org)
                 altName.org = configMap.org
             if(!altName.save()) {

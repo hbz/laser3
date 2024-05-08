@@ -4,15 +4,16 @@
 
 <laser:render template="breadcrumb"/>
 
-<%--<ui:controlButtons>
+<ui:controlButtons>
     <laser:render template="${customerTypeService.getActionsTemplatePath()}" model="${[vendor: vendor, user: user]}"/>
-</ui:controlButtons>--%>
+</ui:controlButtons>
 
 <ui:h1HeaderWithIcon text="${vendor.name}" >
     <laser:render template="/templates/iconObjectIsMine" model="${[isMyVendor: isMyVendor]}"/>
 </ui:h1HeaderWithIcon>
 
-<%--<laser:render template="${customerTypeService.getNavTemplatePath()}" model="${[vendor: vendor, inContextOrg: inContextOrg, isProviderOrAgency: isProviderOrAgency]}"/>--%>
+<laser:render template="${customerTypeService.getNavTemplatePath()}" model="${[vendor: vendor, inContextOrg: inContextOrg]}"/>
+<%--<laser:render template="/templates/meta/identifier" model="${[object: vendor, editable: editable]}"/>--%>
 
 <ui:messages data="${flash}"/>
 <%-- <laser:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" /> --%>
@@ -34,7 +35,6 @@
                                     owner="${vendor}" field="name"/>
                         </dd>
                     </dl>
-                    <%--
                     <dl>
                         <dt><g:message code="org.altname.label" /></dt>
                         <dd>
@@ -82,13 +82,12 @@
                                     </div>
                                 </g:if>
                             </div>
-                            do not use if vendors can come only from we:kb
+                            <%--do not use if vendors can come only from we:kb--%>
                             <g:if test="${vendor.gokbId}">
                                 <input name="addAltname" id="addAltname" type="button" class="ui button addListValue" data-objtype="altname" value="${message(code: 'org.altname.add')}">
                             </g:if>
                         </dd>
                     </dl>
-                    --%>
                     <dl>
                         <dt><g:message code="vendor.homepage.label"/></dt>
                         <dd>
@@ -723,7 +722,7 @@
                     </div>
                 </div>
             </g:if>
-            %{--<laser:render template="/templates/sidebar/aside" model="${[ownobj: vendor, owntp: 'vendor']}"/>--}%
+            <laser:render template="/templates/sidebar/aside" model="${[ownobj: vendor, owntp: 'vendor']}"/>
         </div>
     </aside>
 </div>

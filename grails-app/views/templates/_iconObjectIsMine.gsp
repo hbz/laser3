@@ -12,8 +12,11 @@
   <g:if test="${isMyOrg}">
     <i class="icon circular star la-objectIsMine la-popup-tooltip la-delay" data-content="${message(code: 'license.relationship.org')}" data-position="left center" data-variation="tiny" ></i>
   </g:if>
+  <g:if test="${isMyProvider}">
+    <i class="icon circular star la-objectIsMine la-popup-tooltip la-delay" data-content="${message(code: 'license.relationship.provider')}" data-position="left center" data-variation="tiny" ></i>
+  </g:if>
   <g:if test="${isMyVendor}">
-    <i class="icon circular star la-objectIsMine la-popup-tooltip la-delay" data-content="${message(code: 'license.relationship.org')}" data-position="left center" data-variation="tiny" ></i>
+    <i class="icon circular star la-objectIsMine la-popup-tooltip la-delay" data-content="${message(code: 'license.relationship.vendor')}" data-position="left center" data-variation="tiny" ></i>
   </g:if>
 </span>
 

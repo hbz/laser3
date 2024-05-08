@@ -26,11 +26,11 @@
                             </div>
                             <div class="three wide column">
                                 <div>
-                                    <g:if test="${sp.pkg.contentProvider}">
+                                    <g:if test="${sp.pkg.provider}">
                                         <i aria-hidden="true" class="handshake grey outline icon la-popup-tooltip la-delay" data-content="${message(code: 'default.provider.label')}"></i>
-                                        <g:link controller="org" action="show" id="${sp.pkg.contentProvider.id}">${sp.pkg.contentProvider.name}</g:link>
-                                        <g:if test="${sp.pkg.contentProvider.url}"><ui:linkWithIcon href="${sp.pkg.contentProvider.url.startsWith('http') ? sp.pkg.contentProvider.url : 'http://' + sp.pkg.contentProvider.url}"/></g:if>
-                                        <g:if test="${sp.pkg.contentProvider.gokbId}"><ui:wekbIconLink type="org" gokbId="${sp.pkg.contentProvider.gokbId}"/></g:if>
+                                        <g:link controller="provider" action="show" id="${sp.pkg.provider.id}">${sp.pkg.provider.name}</g:link>
+                                        <g:if test="${sp.pkg.provider.url}"><ui:linkWithIcon href="${sp.pkg.provider.url.startsWith('http') ? sp.pkg.provider.homepage : 'http://' + sp.pkg.provider.homepage}"/></g:if>
+                                        <g:if test="${sp.pkg.provider.gokbId}"><ui:wekbIconLink type="provider" gokbId="${sp.pkg.provider.gokbId}"/></g:if>
                                     </g:if>
                                 </div>
                                 <g:each in="${sp.pkg.vendors}" var="pv">
@@ -571,8 +571,8 @@
             <g:each in="${subscription.packages.sort { it.pkg.name.toLowerCase() }}" var="subPkg">
                 <div class="item">
                     ${subPkg.pkg.name}
-                    <g:if test="${subPkg.pkg.contentProvider}">
-                        (${subPkg.pkg.contentProvider.name})
+                    <g:if test="${subPkg.pkg.provider}">
+                        (${subPkg.pkg.provider.name})
                     </g:if>:
                     <g:link controller="package" action="show" id="${subPkg.pkg.id}"><g:message
                             code="subscription.details.details.package.label"/></g:link>

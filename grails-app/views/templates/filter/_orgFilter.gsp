@@ -20,21 +20,7 @@
             <g:if test="${field.equalsIgnoreCase('name')}">
                 <div class="field">
                     <label for="orgNameContains">
-                        <g:if test="${actionName in ['listProvider', 'currentProviders']}">
-                            <g:message code="org.search.provider.contains"/>
-                            <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'org.search.provider.contains.tooltip')}">
-                                <i class="question circle icon"></i>
-                            </span>
-                        </g:if>
-                        <g:elseif test="${actionName in ['listVendor', 'currentVendors']}">
-                            <g:message code="org.search.vendor.contains"/>
-                            <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'org.search.provider.contains.tooltip')}">
-                                <i class="question circle icon"></i>
-                            </span>
-                        </g:elseif>
-                        <g:else>
-                            <g:message code="org.search.contains"/>
-                        </g:else>
+                        <g:message code="org.search.contains"/>
                     </label>
                     <input type="text" id="orgNameContains" name="orgNameContains"
                            placeholder="${message(code:'default.search.ph')}"
@@ -112,16 +98,6 @@
                             isMyXOptions.add([ id: 'ismyx_exclusive',   value: "${message(code:'filter.isMyX.exclusive', args:["${message(code:'menu.my.consortia')}"])}" ])
                             isMyXOptions.add([ id: 'ismyx_not',         value: "${message(code:'filter.isMyX.not')}" ])
                         }
-                        else if (actionName == 'listProvider') {
-                            isMyXOptions.add([ id: 'wekb_exclusive',    value: "${message(code:'filter.wekb.exclusive')}" ])
-                            isMyXOptions.add([ id: 'wekb_not',          value: "${message(code:'filter.wekb.not')}" ])
-                            isMyXOptions.add([ id: 'ismyx_exclusive',   value: "${message(code:'filter.isMyX.exclusive', args:["${message(code:'menu.my.providers')}"])}" ])
-                            isMyXOptions.add([ id: 'ismyx_not',         value: "${message(code:'filter.isMyX.not')}" ])
-                        }
-                        else if (actionName == 'currentProviders') {
-                            isMyXOptions.add([ id: 'wekb_exclusive',    value: "${message(code:'filter.wekb.exclusive')}" ])
-                            isMyXOptions.add([ id: 'wekb_not',          value: "${message(code:'filter.wekb.not')}" ])
-                        }
                     %>
                     <select id="isMyX" name="isMyX" class="ui selection fluid dropdown" multiple="">
                         <option value="">${message(code:'default.select.choose.label')}</option>
@@ -178,18 +154,6 @@
                 </div>
             </g:if>
 
-            <g:if test="${field.equalsIgnoreCase('venStatus')}">
-                <div class="field">
-                    <label for="venStatus">${message(code: 'default.status.label')}</label>
-                    <select id="venStatus" name="venStatus" multiple="" class="ui selection fluid dropdown">
-                        <option value=""><g:message code="default.select.choose.label"/></option>
-                        <g:each in="${RefdataCategory.getAllRefdataValues([RDConstants.VENDOR_STATUS])-RDStore.VENDOR_STATUS_REMOVED}" var="venStatus">
-                            <option <%=Params.getLongList(params, 'venStatus').contains(venStatus.id) ? 'selected="selected"' : ''%> value="${venStatus.id}">${venStatus.getI10n('value')}</option>
-                        </g:each>
-                    </select>
-                </div>
-            </g:if>
-
             <g:if test="${field.equalsIgnoreCase('role')}">
                 <div class="field">
                     <label for="orgRole">${message(code: 'org.orgRole.label')}</label>
@@ -203,24 +167,6 @@
                                   optionValue="value"
                                   value="${params.orgRole}"
                                   noSelection="${['':message(code:'default.select.choose.label')]}"/>
-                </div>
-            </g:if>
-
-            <g:if test="${field.equalsIgnoreCase('providerRole')}">
-                <div class="field">
-                    <label for="providerRole">${message(code: 'org.orgRole.label')}</label>
-                    <%
-                        Set<RefdataValue> providerRoles = [
-                                RDStore.OT_BROKER, RDStore.OT_CONTENT_PROVIDER, RDStore.OT_IMPRINT, RDStore.OT_ISSUING_BODY,
-                                RDStore.OT_LICENSEE, RDStore.OT_LICENSOR, RDStore.OT_PLATFORM_PROVIDER, RDStore.OT_PUBLISHER, RDStore.OT_VENDOR
-                        ]
-                    %>
-                    <select name="providerRole" id="providerRole" multiple="" class="ui fluid select dropdown search">
-                        <option value="">${message(code:'default.select.choose.label')}</option>
-                        <g:each in="${providerRoles}" var="providerRole">
-                            <option <%=Params.getLongList(params, 'providerRole').contains(providerRole.id) ? 'selected="selected"' : '' %> value="${providerRole.id}">${providerRole.value}</option>
-                        </g:each>
-                    </select>
                 </div>
             </g:if>
 
@@ -331,29 +277,6 @@
                     </select>
                 </div>
             </g:if>
-            <g:if test="${field.equalsIgnoreCase('curatoryGroup')}">
-                <div class="field">
-                    <label for="curatoryGroup">${message(code: 'package.curatoryGroup.label')}</label>
-                    <g:select class="ui fluid search select dropdown" name="curatoryGroup"
-                              from="${curatoryGroups.sort{it.name.toLowerCase()}}"
-                              optionKey="name"
-                              optionValue="name"
-                              value="${params.curatoryGroup}"
-                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
-                </div>
-            </g:if>
-            <g:if test="${field.equalsIgnoreCase('curatoryGroupType')}">
-                <div class="field">
-                    <label for="curatoryGroupType">${message(code: 'package.curatoryGroup.type')}</label>
-                    <g:select class="ui fluid search select dropdown" name="curatoryGroupType"
-                              from="${curatoryGroupTypes}"
-                              optionKey="value"
-                              optionValue="name"
-                              value="${params.curatoryGroupType}"
-                              noSelection="${['' : message(code:'default.select.choose.label')]}"
-                    />
-                </div>
-            </g:if>
             <g:if test="${field.equalsIgnoreCase('subscription')}">
                 <div class="field">
                     <label for="subscription">${message(code:'subscription')}</label>
@@ -458,48 +381,6 @@
                         <g:set var="indices" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.DISCOVERY_SYSTEM_INDEX])}" scope="request"/>
                         <g:each in="${indices}" var="rdv">
                             <option <%=Params.getLongList(params, 'discoverySystemsIndex').contains(rdv.id) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
-                        </g:each>
-                    </select>
-                </div>
-            </g:if>
-
-            <g:if test="${field.equalsIgnoreCase('supportedLibrarySystems')}">
-                <div class="field">
-                    <label for="qp_supportedLibrarySystems">${message(code: 'vendor.ordering.supportedLibrarySystems.label')}</label>
-                    <select name="qp_supportedLibrarySystems" id="qp_supportedLibrarySystems" multiple="multiple" class="ui search selection dropdown">
-                        <option value="">${message(code:'default.select.choose.label')}</option>
-                        <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_SUPPORTED_LIBRARY_SYSTEM)}" var="sls">
-                            <option <%=Params.getLongList(params, 'qp_supportedLibrarySystems').contains(sls.value) ? 'selected=selected"' : ''%> value="${sls.value}">
-                                ${sls.getI10n("value")}
-                            </option>
-                        </g:each>
-                    </select>
-                </div>
-            </g:if>
-
-            <g:if test="${field.equalsIgnoreCase('electronicBillings')}">
-                <div class="field">
-                    <label for="qp_electronicBillings">${message(code: 'vendor.invoicing.formats.label')}</label>
-                    <select name="qp_electronicBillings" id="qp_electronicBillings" multiple="multiple" class="ui search selection dropdown">
-                        <option value="">${message(code:'default.select.choose.label')}</option>
-                        <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_FORMAT)}" var="invoiceFormat">
-                            <option <%=Params.getLongList(params, 'qp_electronicBillings').contains(invoiceFormat.value) ? 'selected=selected"' : ''%> value="${invoiceFormat.value}">
-                                ${invoiceFormat.getI10n("value")}
-                            </option>
-                        </g:each>
-                    </select>
-                </div>
-            </g:if>
-
-            <g:if test="${field.equalsIgnoreCase('invoiceDispatchs')}">
-                <div class="field">
-                    <label for="qp_invoiceDispatchs">${message(code: 'vendor.invoicing.dispatch.label')}</label>
-                    <select name="qp_invoiceDispatchs" id="qp_invoiceDispatchs" multiple="multiple" class="ui search selection dropdown">
-                        <option value="">${message(code:'default.select.choose.label')}</option>
-                        <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_DISPATCH)}" var="invoiceDispatch">
-                            <option <%=Params.getLongList(params, 'qp_invoiceDispatchs').contains(invoiceDispatch.value) ? 'selected=selected"' : ''%> value="${invoiceDispatch.value}">
-                                ${invoiceDispatch.getI10n("value")}
-                            </option>
                         </g:each>
                     </select>
                 </div>

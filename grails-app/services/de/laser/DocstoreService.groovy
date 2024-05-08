@@ -148,6 +148,10 @@ class DocstoreService {
             instanceClause = 'dc.link = :instance'
         else if(instance instanceof Org)
             instanceClause = 'dc.org = :instance'
+        else if(instance instanceof Provider)
+            instanceClause = 'dc.provider = :instance'
+        else if(instance instanceof Vendor)
+            instanceClause = 'dc.vendor = :instance'
         else if(instance instanceof SurveyConfig)
             instanceClause = 'dc.surveyConfig = :instance'
         if(instanceClause) {
@@ -183,6 +187,12 @@ class DocstoreService {
         else if (objInstance instanceof Org) {
             query = "dc.org = :instance " + query
         }
+        else if (objInstance instanceof Provider) {
+            query = "dc.provider = :instance " + query
+        }
+        else if (objInstance instanceof Vendor) {
+            query = "dc.vendor = :instance " + query
+        }
         else if (objInstance instanceof SurveyConfig) {
             query = "dc.surveyConfig = :instance " + query
         }
@@ -216,6 +226,12 @@ class DocstoreService {
         else if (objInstance instanceof Org) {
             query = "dc.org = :instance " + query
         }
+        else if (objInstance instanceof Provider) {
+            query = "dc.provider = :instance " + query
+        }
+        else if (objInstance instanceof Vendor) {
+            query = "dc.vendor = :instance " + query
+        }
         else if (objInstance instanceof SurveyConfig) {
             query = "dc.surveyConfig = :instance " + query
         }
@@ -247,6 +263,12 @@ class DocstoreService {
         }
         else if (objInstance instanceof Org) {
             query = "dc.org = :instance " + query
+        }
+        else if (objInstance instanceof Provider) {
+            query = "dc.provider = :instance " + query
+        }
+        else if (objInstance instanceof Vendor) {
+            query = "dc.vendor = :instance " + query
         }
         else if (objInstance instanceof SurveyConfig) {
             query = "dc.surveyConfig = :instance " + query

@@ -22,7 +22,7 @@ class VendorController {
     VendorService vendorService
 
     public static final Map<String, String> CHECK404_ALTERNATIVES = [
-            'list' : 'menu.public.all_vendors',                // todo: check perms
+            'list' : 'menu.public.all_vendors'
     ]
 
     @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])

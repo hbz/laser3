@@ -12,6 +12,8 @@ import de.laser.survey.SurveyConfig
  * <ul>
  *     <li>{@link License}</li>
  *     <li>{@link Org}</li>
+ *     <li>{@link Provider}</li>
+ *     <li>{@link Vendor}</li>
  *     <li><s>{@link Package}</s> (is still included in the domain model but is disused)</li>
  *     <li>{@link Subscription}</li>
  *     <li>{@link SurveyConfig}</li>
@@ -22,6 +24,8 @@ class Task {
 
     License         license
     Org             org
+    Provider        provider
+    Vendor          vendor
     Subscription    subscription
     SurveyConfig    surveyConfig
 
@@ -45,6 +49,8 @@ class Task {
     static constraints = {
         license         (nullable:true)
         org             (nullable:true)
+        provider        (nullable:true)
+        vendor          (nullable:true)
         subscription    (nullable:true)
         surveyConfig    (nullable:true)
         title           (blank:false)
@@ -62,6 +68,8 @@ class Task {
 
         license         column:'tsk_lic_fk'
         org             column:'tsk_org_fk'
+        provider        column:'tsk_prov_fk'
+        vendor          column:'tsk_ven_fk'
         subscription    column:'tsk_sub_fk'
         surveyConfig    column:'tsk_sur_config_fk'
 
@@ -97,6 +105,10 @@ class Task {
             result << [controller: 'license', object: license]
         if (org)
             result << [controller: 'organisation', object: org]
+        if (provider)
+            result << [controller: 'provider', object: provider]
+        if (vendor)
+            result << [controller: 'vendor', object: vendor]
         if (subscription)
             result << [controller: 'subscription', object: subscription]
         if (surveyConfig)
@@ -118,6 +130,14 @@ class Task {
         else if (org) {
             displayArgs.controller = 'organisation'
             displayArgs.id = org.id
+        }
+        else if (provider) {
+            displayArgs.controller = 'provider'
+            displayArgs.id = provider.id
+        }
+        else if (vendor) {
+            displayArgs.controller = 'vendor'
+            displayArgs.id = vendor.id
         }
         else if (subscription) {
             displayArgs.controller = 'subscription'
@@ -141,6 +161,8 @@ class Task {
      * <ul>
      *     <li>{@link License#reference}</li>
      *     <li>{@link Org#name}</li>
+     *     <li>{@link Provider#name}</li>
+     *     <li>{@link Vendor#name}</li>
      *     <li>{@link Package#name}</li>
      *     <li>{@link Subscription#name}</li>
      *     <li>{@link de.laser.survey.SurveyInfo#name}</li>
@@ -153,6 +175,12 @@ class Task {
         }
         else if (org) {
             name = org.name
+        }
+        else if (provider) {
+            name = provider.name
+        }
+        else if (vendor) {
+            name = vendor.name
         }
         else if (subscription) {
             name = subscription.name

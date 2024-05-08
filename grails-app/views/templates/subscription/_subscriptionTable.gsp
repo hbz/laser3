@@ -141,7 +141,7 @@
                                     <div class="la-flexbox">
                                         <i class="icon gift la-list-icon"></i>
                                         <g:link controller="subscription" action="index" id="${s.id}" params="[pkgfilter: sp.pkg.id]"
-                                                title="${sp.pkg.contentProvider?.name}">
+                                                title="${sp.pkg.provider?.name}">
                                             ${sp.pkg.name}
                                         </g:link>
                                     </div>

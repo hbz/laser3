@@ -788,6 +788,15 @@ class AjaxJsonController {
     }
 
     /**
+     * Retrieves a list of vendors for dropdown display
+     * @return the result of {@link de.laser.ControlledListService#getVendors(grails.web.servlet.mvc.GrailsParameterMap)}
+     */
+    @Secured(['ROLE_USER'])
+    def lookupVendors() {
+        render controlledListService.getVendors(params) as JSON
+    }
+
+    /**
      * Retrieves a list of subscription packages for dropdown display
      * @return the result of {@link de.laser.ControlledListService#getSubscriptionPackages(grails.web.servlet.mvc.GrailsParameterMap)}
      */
@@ -998,13 +1007,13 @@ class AjaxJsonController {
      * Retrieves the selected organisation for the organisation merge table
      */
     @Secured(['ROLE_USER'])
-    def loadOrganisationForMerge() {
+    def loadProviderForMerge() {
         Map<String, Object> mergeInfo = [:]
         if(params.containsKey('source') && params.source.length() > 0) {
-            mergeInfo = organisationService.mergeOrganisations(genericOIDService.resolveOID(params.source), null, true)
+            mergeInfo = organisationService.mergeProviders(genericOIDService.resolveOID(params.source), null, true)
         }
         else if(params.containsKey('target') && params.target.length() > 0) {
-            mergeInfo = organisationService.mergeOrganisations(genericOIDService.resolveOID(params.target), null, true)
+            mergeInfo = organisationService.mergeProviders(genericOIDService.resolveOID(params.target), null, true)
         }
         render mergeInfo as JSON
     }
