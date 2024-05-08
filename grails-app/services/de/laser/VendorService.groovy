@@ -141,8 +141,8 @@ class VendorService {
                 }
                 toDelete << ar.id
             }
-            toDelete.collate(200).eachWithIndex { subSet, int i ->
-                log.debug("deleting records ${i*200}-${(i+1)*200}")
+            toDelete.collate(1000).eachWithIndex { subSet, int i ->
+                log.debug("deleting records ${i*1000}-${(i+1)*1000}")
                 OrgRole.executeUpdate('delete from OrgRole ar where ar.sharedFrom.id in (:toDelete)', [toDelete: subSet])
                 OrgRole.executeUpdate('delete from OrgRole ar where ar.id in (:toDelete)', [toDelete: subSet])
             }
