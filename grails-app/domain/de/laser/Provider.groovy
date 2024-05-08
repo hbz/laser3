@@ -16,7 +16,6 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
     String name
     String sortname //maps to abbreviatedName
     String gokbId
-    String globalUID
 
     String kbartDownloaderURL
     String metadataDownloaderURL
@@ -48,6 +47,8 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
             altnames: AlternativeName,
             documents: DocContext,
             ids: Identifier,
+            platforms: Platform,
+            packages: Package,
             electronicBillings: ElectronicBilling,
             invoiceDispatchs: InvoiceDispatch,
             invoicingVendors: InvoicingVendor
@@ -60,6 +61,8 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
             altnames: 'provider',
             documents: 'provider',
             ids: 'provider',
+            platforms: 'provider',
+            packages: 'provider',
             invoicingVendors: 'provider',
             electronicBillings: 'provider',
             invoiceDispatchs: 'provider'

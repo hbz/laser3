@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.auth.User
+import de.laser.helper.Params
 import de.laser.properties.ProviderProperty
 import de.laser.remote.ApiSource
 import de.laser.storage.RDStore
@@ -27,6 +28,45 @@ class ProviderService {
     static String RESULT_ERROR              = 'RESULT_ERROR'
 
     /**
+     * Gets the contact persons; optionally, a function type may be given as filter. Moreover, the request may be limited to public contacts only
+     * @param provider the {@link Provider} for which the contacts should be retrieved
+     * @param onlyPublic retrieve only public contacts?
+     * @param functionType the function type of the contacts to be requested
+     * @param exWekb should only contacts being retrieved which come from the provider itself (i.e. from we:kb)?
+     * @return a {@link List} of {@link Person}s matching to the function type
+     */
+    List<Person> getContactPersonsByFunctionType(Provider provider, Org contextOrg, boolean onlyPublic, RefdataValue functionType = null, boolean exWekb = false) {
+        Map<String, Object> queryParams = [provider: provider]
+        String functionTypeFilter = ''
+        if(functionType) {
+            functionTypeFilter = 'and pr.functionType = :functionType'
+            queryParams.functionType = functionType
+        }
+        if (onlyPublic) {
+            if(exWekb) {
+                Person.executeQuery(
+                        'select distinct p from Person as p inner join p.roleLinks pr where pr.provider = :provider '+functionTypeFilter+' and p.tenant = null',
+                        queryParams
+                )
+            }
+            else {
+                Person.executeQuery(
+                        'select distinct p from Person as p inner join p.roleLinks pr where pr.provider = :provider and p.isPublic = true and p.tenant != null '+functionTypeFilter,
+                        queryParams
+                )
+            }
+        }
+        else {
+            queryParams.ctx = contextOrg
+            Person.executeQuery(
+                    'select distinct p from Person as p inner join p.roleLinks pr where pr.provider = :provider ' + functionTypeFilter +
+                            ' and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) )',
+                    queryParams
+            )
+        }
+    }
+
+    /**
      * Gets a (filtered) map of provider records from the we:kb
      * @param params the request parameters
      * @param result a result generics map, containing also configuration params for the request
@@ -34,12 +74,29 @@ class ProviderService {
      */
     Map<String, Map> getWekbProviderRecords(GrailsParameterMap params, Map result) {
         Map<String, Map> records = [:], queryParams = [componentType: 'Org']
+        if(params.containsKey('nameContains'))
+            queryParams.q = params.nameContains
+
         if (params.curatoryGroup || params.providerRole) {
             if (params.curatoryGroup)
                 queryParams.curatoryGroupExact = params.curatoryGroup.replaceAll('&', 'ampersand').replaceAll('\\+', '%2B').replaceAll(' ', '%20')
             if (params.providerRole)
                 queryParams.role = RefdataValue.get(params.providerRole).value.replaceAll(' ', '%20')
         }
+        if(params.containsKey('provStatus')) {
+            queryParams.status = Params.getRefdataList(params, 'provStatus').value
+        }
+        else if(!params.containsKey('provStatus') && !params.containsKey('filterSet')) {
+            queryParams.status = "Current"
+            params.provStatus = RDStore.PROVIDER_STATUS_CURRENT.id
+        }
+
+        Set<String> directMappings = ['curatoryGroupType', 'qp_invoicingVendors', 'qp_electronicBillings', 'qp_invoiceDispatchs']
+        directMappings.each { String mapping ->
+            if(params.containsKey(mapping))
+                queryParams.put(mapping,params.get(mapping))
+        }
+
         Map<String, Object> wekbResult = gokbService.doQuery(result, [max: 10000, offset: 0], queryParams)
         if(wekbResult.recordsCount > 0)
             records.putAll(wekbResult.records.collectEntries { Map wekbRecord -> [wekbRecord.uuid, wekbRecord] })
@@ -138,8 +195,8 @@ class ProviderService {
         List prsLinks       = PersonRole.findAllByProvider(provider)
         List docContexts    = new ArrayList(provider.documents)
         List tasks          = Task.findAllByProvider(provider)
-        List platforms      = Platform.findAllByProvider(provider)
-        List packages       = Package.findAllByProvider(provider)
+        List platforms      = new ArrayList(provider.packages)
+        List packages       = new ArrayList(provider.platforms)
 
         List customProperties       = new ArrayList(provider.propertySet.findAll { it.type.tenant == null })
         List privateProperties      = new ArrayList(provider.propertySet.findAll { it.type.tenant != null })
@@ -270,6 +327,11 @@ class ProviderService {
         }
 
         result
+    }
+
+    boolean isMyProvider(Provider provider, Org contextOrg) {
+        int count = ProviderRole.executeQuery('select count(*) from OrgRole oo, ProviderRole pvr where (pvr.subscription = oo.sub or pvr.license = oo.lic) and oo.org = :context and pvr.provider = :provider', [provider: provider, context: contextOrg])[0]
+        count > 0
     }
 
     Map<String, Object> getResultGenericsAndCheckAccess(GrailsParameterMap params) {

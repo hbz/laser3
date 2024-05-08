@@ -32,7 +32,7 @@
             <div class="divider"></div>
             <g:if test="${editable}">
                 <a href="#createPersonModal" class="item" data-ui="modal"
-                   onclick="JSPC.app.personCreate('contactPersonForProviderAgency', ${vendor.id});"><g:message code="person.create_new.contactPersonForProviderAgency.label"/></a>
+                   onclick="JSPC.app.personCreate('contactPersonForAgency', ${vendor.id});"><g:message code="person.create_new.contactPersonForAgency.label"/></a>
             </g:if>
             <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
         </g:if>

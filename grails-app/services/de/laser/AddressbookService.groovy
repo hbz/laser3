@@ -119,6 +119,16 @@ class AddressbookService {
                 qParams << [name: "${params.vendor}"]
             }
         }
+        else if(params.containsKey('provider')) {
+            if (params.provider instanceof Provider) {
+                qParts << "pr.provider = :provider"
+                qParams << [provider: params.provider]
+            }
+            else if(params.provider instanceof String) {
+                qParts << "( genfunc_filter_matcher(pr.provider.name, :name) = true or genfunc_filter_matcher(pr.provider.sortname, :name) = true )"
+                qParams << [name: "${params.provider}"]
+            }
+        }
 
         if (params.function || params.position) {
             List<String> posParts = []
@@ -137,11 +147,6 @@ class AddressbookService {
         if (params.showOnlyContactPersonForInstitution || params.exportOnlyContactPersonForInstitution){
             qParts << "(exists (select roletype from pr.org.orgType as roletype where roletype.id = :instType ) and pr.org.sector.id = :instSector )"
             qParams << [instSector: RDStore.O_SECTOR_HIGHER_EDU.id, instType: RDStore.OT_INSTITUTION.id]
-        }
-
-        if (params.showOnlyContactPersonForProviderAgency || params.exportOnlyContactPersonForProviderAgency){
-            qParts << "(exists (select roletype from pr.org.orgType as roletype where roletype.id in (:orgType)) and pr.org.sector.id = :orgSector )"
-            qParams << [orgSector: RDStore.O_SECTOR_PUBLISHER.id, orgType: [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]]
         }
 
         String query = "SELECT distinct(p), ${params.sort} FROM Person AS p join p.roleLinks pr WHERE " + qParts.join(" AND ")

@@ -73,8 +73,8 @@ class VendorService {
     Map<String, Map> getWekbVendorRecords(GrailsParameterMap params, Map result) {
         Map<String, Map> records = [:], queryParams = [componentType: 'Vendor']
 
-        if(params.containsKey('orgNameContains'))
-            queryParams.q = params.orgNameContains
+        if(params.containsKey('nameContains'))
+            queryParams.q = params.nameContains
 
         if(params.containsKey('curatoryGroup'))
             queryParams.curatoryGroupExact = params.curatoryGroup.replaceAll('&','ampersand').replaceAll('\\+','%2B').replaceAll(' ','%20')

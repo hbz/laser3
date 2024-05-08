@@ -1364,14 +1364,17 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         //second attempt failed - create new provider if record is not deleted
         if(!provider) {
-            if(!(providerRecord.status in [Constants.PERMANENTLY_DELETED, 'Removed']))
+            if(!(providerRecord.status in [Constants.PERMANENTLY_DELETED, 'Removed'])) {
                 provider = new Provider(
                         name: providerRecord.name,
                         gokbId: providerRecord.uuid
                 )
+                provider.setGlobalUID()
+            }
         }
         //avoid creating new deleted entries
         if(provider) {
+            provider.status = RefdataValue.getByValueAndCategory(providerRecord.status, RDConstants.PROVIDER_STATUS)
             provider.sortname = providerRecord.abbreviatedName
             provider.homepage = providerRecord.homepage
             provider.metadataDownloaderURL = providerRecord.metadataDownloaderURL
@@ -1727,7 +1730,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @throws SyncException
      */
     void createOrUpdateSupport(Provider provider, Map<String, Object> supportProps) throws SyncException {
-        List<Person> personCheck = Person.executeQuery('select p from PersonRole pr join pr.prs p where p.tenant = null and pr.provider = :provider and p.isPublic = true and p.last_name = :type', [provider: provider, type: contactProps.rdType.getI10n("value")])
+        List<Person> personCheck = Person.executeQuery('select p from PersonRole pr join pr.prs p where p.tenant = null and pr.provider = :provider and p.isPublic = true and p.last_name = :type', [provider: provider, type: supportProps.rdType.getI10n("value")])
         Person personInstance
         if(!personCheck) {
             personInstance = new Person(isPublic: true, last_name: supportProps.rdType.getI10n("value"))
@@ -1738,7 +1741,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         else personInstance = personCheck[0]
         PersonRole personRole = PersonRole.findByPrsAndProviderAndFunctionType(personInstance, provider, supportProps.rdType)
         if(!personRole) {
-            personRole = new PersonRole(prs: personInstance, org: provider, functionType: supportProps.rdType)
+            personRole = new PersonRole(prs: personInstance, provider: provider, functionType: supportProps.rdType)
             if(!personRole.save()) {
                 throw new SyncException("Error on setting contact for ${provider}, concerning person role: ${personRole.getErrors().getAllErrors().toListString()}")
             }
@@ -1761,36 +1764,36 @@ class GlobalSourceSyncService extends AbstractLockableService {
     /**
      * Updates a contact for a given {@link Vendor}; overrides an eventually created one and creates if it does not exist
      * @param org the {@link Vendor} to which the given support address should be created/updated
-     * @param contactProps the configuration {@link Map} containing the address properties
+     * @param supportProps the configuration {@link Map} containing the address properties
      * @throws SyncException
      */
-    void createOrUpdateSupport(Vendor vendor, Map<String, Object> contactProps) throws SyncException {
-        List<Person> personCheck = Person.executeQuery('select p from PersonRole pr join pr.prs p where p.tenant = null and pr.vendor = :vendor and p.isPublic = true and p.last_name = :type', [vendor: vendor, type: contactProps.rdType.getI10n("value")])
+    void createOrUpdateSupport(Vendor vendor, Map<String, Object> supportProps) throws SyncException {
+        List<Person> personCheck = Person.executeQuery('select p from PersonRole pr join pr.prs p where p.tenant = null and pr.vendor = :vendor and p.isPublic = true and p.last_name = :type', [vendor: vendor, type: supportProps.rdType.getI10n("value")])
         Person personInstance
         if(!personCheck) {
-            personInstance = new Person(isPublic: true, last_name: contactProps.rdType.getI10n("value"))
+            personInstance = new Person(isPublic: true, last_name: supportProps.rdType.getI10n("value"))
             if(!personInstance.save()) {
                 throw new SyncException("Error on setting up contact for ${vendor}, concerning person instance: ${personInstance.getErrors().getAllErrors().toListString()}")
             }
         }
         else personInstance = personCheck[0]
-        PersonRole personRole = PersonRole.findByPrsAndVendorAndFunctionType(personInstance, vendor, contactProps.rdType)
+        PersonRole personRole = PersonRole.findByPrsAndVendorAndFunctionType(personInstance, vendor, supportProps.rdType)
         if(!personRole) {
-            personRole = new PersonRole(prs: personInstance, vendor: vendor, functionType: contactProps.rdType)
+            personRole = new PersonRole(prs: personInstance, vendor: vendor, functionType: supportProps.rdType)
             if(!personRole.save()) {
                 throw new SyncException("Error on setting contact for ${vendor}, concerning person role: ${personRole.getErrors().getAllErrors().toListString()}")
             }
         }
-        RefdataValue contentType = RefdataValue.getByValueAndCategory(contactProps.contentType, RDConstants.CONTACT_CONTENT_TYPE)
+        RefdataValue contentType = RefdataValue.getByValueAndCategory(supportProps.contentType, RDConstants.CONTACT_CONTENT_TYPE)
         Contact contact = new Contact(prs: personInstance, type: RDStore.CONTACT_TYPE_JOBRELATED)
-        if(contactProps.language)
-            contact.language = RefdataValue.getByValueAndCategory(contactProps.language, RDConstants.LANGUAGE_ISO) ?: null
+        if(supportProps.language)
+            contact.language = RefdataValue.getByValueAndCategory(supportProps.language, RDConstants.LANGUAGE_ISO) ?: null
         if(!contentType) {
-            log.error("Invalid contact type submitted: ${contactProps.contentType}")
+            log.error("Invalid contact type submitted: ${supportProps.contentType}")
         }
         else
             contact.contentType = contentType
-        contact.content = contactProps.content
+        contact.content = supportProps.content
         if(!contact.save()) {
             throw new SyncException("Error on setting contact for ${vendor}, concerning contact: ${contact.getErrors().getAllErrors().toListString()}")
         }

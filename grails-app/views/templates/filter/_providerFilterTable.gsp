@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyInfo; de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.Vendor; de.laser.remote.ApiSource; de.laser.AlternativeName; de.laser.RefdataCategory;" %>
+<%@ page import="de.laser.Platform; de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.Vendor; de.laser.remote.ApiSource; de.laser.AlternativeName; de.laser.RefdataCategory;" %>
 <laser:serviceInjection/>
 
 <table id="${tableID ?: ''}" class="ui sortable celled la-js-responsive-table la-table table ${fixedHeader ?: ''}">
@@ -114,7 +114,7 @@
 
             <g:if test="${tmplConfigItem.equalsIgnoreCase('isWekbCurated')}">
                 <td class="center aligned">
-                    <g:if test="${provider.gokbId != null}}">
+                    <g:if test="${provider.gokbId != null}">
                         <ui:wekbButtonLink type="org" gokbId="${provider.gokbId}" />
                     </g:if>
                 </td>
@@ -153,7 +153,7 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('platform')}">
                 <td>
-                    <g:each in="${provider.platforms}" var="platform">
+                    <g:each in="${Platform.findAllByProvider(provider)}" var="platform">
                         <g:if test="${platform.gokbId != null}">
                             <ui:wekbIconLink type="platform" gokbId="${platform.gokbId}" />
                         </g:if>
