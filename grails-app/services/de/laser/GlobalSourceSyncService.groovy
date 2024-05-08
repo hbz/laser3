@@ -1918,9 +1918,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
         }
 
-        if(pkgA.contentProvider) {
-            if (pkgA.contentProvider.name != pkgB.contentProvider.name) {
-                result.add([prop: 'nominalProvider', newValue: pkgB.contentProvider?.name, oldValue: pkgA.contentProvider?.name])
+        if(pkgA.provider) {
+            if (pkgA.provider.name != pkgB.provider.name) {
+                result.add([prop: 'nominalProvider', newValue: pkgB.provider?.name, oldValue: pkgA.provider?.name])
             }
         }
 

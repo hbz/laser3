@@ -343,8 +343,8 @@ class DataloadService {
 
                 //result.consortiaID = pkg.getConsortia()?.id
                 //result.consortiaName = pkg.getConsortia()?.name
-                result.providerId = pkg.getContentProvider()?.id
-                result.providerName = pkg.getContentProvider()?.name
+                result.providerId = pkg.provider?.id
+                result.providerName = pkg.provider?.name
 
                 result.isPublic = (pkg?.isPublic) ? 'Yes' : 'No'
 
@@ -551,8 +551,8 @@ class DataloadService {
                         // Defensive - it appears that there can be a SP without a package.
                         pgkinfo.pkgname = sp.pkg.name
                         pgkinfo.pkgid = sp.pkg.id
-                        pgkinfo.providerName = sp.pkg.contentProvider?.name
-                        pgkinfo.providerId = sp.pkg.contentProvider?.id
+                        pgkinfo.providerName = sp.pkg.provider?.name
+                        pgkinfo.providerId = sp.pkg.provider?.id
                         result.packages.add(pgkinfo)
                     }
                 }
