@@ -18,6 +18,7 @@ class OrganisationConsCfg extends BaseConfig {
                             'my-inst',
                     ],
                     fields : [
+                            'apiLevel'          : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'country'           : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
                             'region'            : [ type: BaseConfig.FIELD_TYPE_REFDATA, spec: BaseConfig.FIELD_IS_VIRTUAL ],
                             'customerType'      : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
@@ -47,6 +48,7 @@ class OrganisationConsCfg extends BaseConfig {
                                             'org-orgType' :         [ 'generic.org.orgType' ],
                                             'org-customerType' :    [ 'generic.org.customerType' ],
                                             'org-libraryType' :     [ 'generic.org.libraryType' ],
+                                            'org-apiLevel' :        [ 'generic.org.apiLevel' ],
                                             'org-country' :         [ 'generic.org.country' ],
                                             'org-region' :          [ 'generic.org.region' ],
                                             'org-subjectGroup' :    [ 'generic.org.subjectGroup' ],
@@ -68,7 +70,7 @@ class OrganisationConsCfg extends BaseConfig {
                                             detailsTemplate     : 'organisation',
                                             chartTemplate       : '2axis3values',
                                             chartLabels         : [ 'base', 'x.properties.2', 'x.properties.3' ]
-                                   ]
+                                   ],
                                     //'org-x-serverAccess' : 'Organisation nach Datenweitergabe',
                             ]
                     ]

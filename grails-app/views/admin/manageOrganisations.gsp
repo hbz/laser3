@@ -14,7 +14,7 @@
             <laser:render template="/templates/filter/orgFilter"
                       model="[
                               tmplConfigShow: [['name', 'identifier', 'type', 'customerType'],
-                                               ['discoverySystemsFrontend', 'discoverySystemsIndex'],
+                                               ['discoverySystemsFrontend', 'discoverySystemsIndex', 'apiLevel', 'serverAccess'],
                                                ['country&region', 'libraryNetwork', 'sector', 'libraryType']],
                               tmplConfigFormFilter: true
                       ]"/>
@@ -38,8 +38,8 @@
                     </span>
                 </th>
                 <th>
-                    ${message(code:'org.specialApiPermission.label')}
-                    <span class="la-popup-tooltip la-delay la-no-uppercase" data-position="right center" data-content="${message(code:'org.specialApiPermission.tooltip')}">
+                    ${message(code:'org.serverAccess.label')}
+                    <span class="la-popup-tooltip la-delay la-no-uppercase" data-position="right center" data-content="${message(code:'org.serverAccess.tooltip')}">
                         <i class="question circle icon popup"></i>
                     </span>
                 </th>
@@ -97,7 +97,9 @@
 
                             def gascoEntry = OrgSetting.get(org, OrgSetting.KEYS.GASCO_ENTRY)
                             if (gascoEntry != OrgSetting.SETTING_NOT_FOUND && gascoEntry.getValue()?.value == 'Yes') {
+                                println ' <span class="la-popup-tooltip la-delay" data-position="top right" data-content="' + message(code:'org.gascoEntry.label') + '">'
                                 println ' <i class="icon blue layer group"></i>'
+                                println ' </span>'
                                 gascoEntry = gascoEntry.getValue()
                             } else {
                                 gascoEntry = RDStore.YN_NO
@@ -126,7 +128,7 @@
 
                             def accessOA = OrgSetting.get(org, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS)
                             if (accessOA!= OrgSetting.SETTING_NOT_FOUND && accessOA.getValue()?.value == 'Yes') {
-                                println '<div><i class="ui icon lock open"></i> OAMontior</div>'
+                                println '<div><i class="ui icon lock open"></i> OAMonitor</div>'
                             }
 
                             def accessEZB = OrgSetting.get(org, OrgSetting.KEYS.EZB_SERVER_ACCESS)

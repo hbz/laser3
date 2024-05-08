@@ -2,6 +2,7 @@ package de.laser.reporting.report.myInstitution
 
 import de.laser.ContextService
 import de.laser.Org
+import de.laser.OrgSetting
 import de.laser.auth.Role
 import de.laser.storage.BeanStore
 import de.laser.reporting.report.myInstitution.base.BaseFilter
@@ -74,6 +75,32 @@ class OrganisationQuery extends BaseQuery {
             handleGenericNonMatchingData(
                     params.query,
                     'select distinct o.id from Org o where o.id in (:idList) and not exists (select oss from OrgSetting oss where oss.org = o and oss.key = \'CUSTOMER_TYPE\')',
+                    idList,
+                    result
+            )
+        }
+        else if (suffix in ['apiLevel']) {
+
+            result.data = OrgSetting.executeQuery(
+                    'select oss.strValue, oss.strValue, count(*) from OrgSetting oss join oss.org o where o.id in (:idList) and oss.key = \'API_LEVEL\' group by oss.strValue order by oss.strValue',
+                    [idList: idList]
+            )
+            result.data.each { d ->
+                d[0] = Math.abs(d[0].hashCode())
+
+                result.dataDetails.add([
+                        query : params.query,
+                        id    : d[0],
+                        label : d[1],
+                        idList: Org.executeQuery(
+                                'select o.id from Org o, OrgSetting oss where oss.org = o and o.id in (:idList) and oss.strValue = :d order by o.name',
+                                [idList: idList, d: d[1]]
+                        )
+                ])
+            }
+            handleGenericNonMatchingData(
+                    params.query,
+                    'select distinct o.id from Org o where o.id in (:idList) and not exists (select oss from OrgSetting oss where oss.org = o and oss.key = \'API_LEVEL\')',
                     idList,
                     result
             )

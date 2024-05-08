@@ -158,6 +158,16 @@ class FilterService {
             queryParams << [customerTypeList : Params.getLongList(params, 'customerType')]
             queryParams << [customerTypeKey  : OrgSetting.KEYS.CUSTOMER_TYPE]
         }
+        if (params.osApiLevel) {
+            query << "exists (select osApi from OrgSetting as osApi where osApi.org.id = o.id and osApi.key = :apiLevelKey and osApi.strValue in (:apiLevelList))"
+            queryParams << [apiLevelList : params.list('osApiLevel')]
+            queryParams << [apiLevelKey  : OrgSetting.KEYS.API_LEVEL]
+        }
+        if (params.osServerAccess) {
+            query << "exists (select osAcc from OrgSetting as osAcc where osAcc.org.id = o.id and osAcc.key in (:serverAccessKeys) and osAcc.rdValue = :serverAccessYes)"
+            queryParams << [serverAccessKeys : params.list('osServerAccess').collect{ OrgSetting.KEYS[it as String] }]
+            queryParams << [serverAccessYes  : RDStore.YN_YES]
+        }
 
         if (params.isLegallyObliged in ['yes', 'no']) {
             query << "o.legallyObligedBy " + (params.isLegallyObliged == 'yes' ? "is not null" : "is null")
