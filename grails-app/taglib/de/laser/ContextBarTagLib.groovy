@@ -165,10 +165,11 @@ class ContextBarTagLib {
 
     def cbItemMarkerAction = { attrs, body ->
 
-        MarkerSupport obj   = (attrs.org ?: attrs.package ?: attrs.platform ?: attrs.vendor) as MarkerSupport
-        boolean isMarked    = obj.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)
+        MarkerSupport obj   = (attrs.org ?: attrs.package ?: attrs.platform ?: attrs.vendor ?: attrs.tipp) as MarkerSupport
+        Marker.TYPE mType   = attrs.type ? Marker.TYPE.get(attrs.type as String) : Marker.TYPE.UNKOWN // TODO
+        boolean isMarked    = obj.isMarked(contextService.getUser(), mType)
         String tt           = '?'
-        String tt_list      = message(code: 'marker.WEKB_CHANGES')
+        String tt_list      = message(code: 'marker.' + mType.value)
 
         if (attrs.org) {
             tt = isMarked ? 'Der Anbieter ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
@@ -186,18 +187,22 @@ class ContextBarTagLib {
             tt = isMarked ? 'Der Lieferant ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
                     : 'Anklicken, um den Lieferanten auf die ' + tt_list + ' zu setzen.'
         }
+        else if (attrs.tipp) {
+            tt = isMarked ? 'Der Titel ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
+                    : 'Anklicken, um den Titel auf die ' + tt_list + ' zu setzen.'
+        }
 
         if (obj) {
             Map<String, Object> jsMap = [
                     controller:     'ajax',
                     action:         'toggleMarker',
-                    data:           '{oid:\'' + genericOIDService.getOID(obj) + '\', type:\'' + Marker.TYPE.WEKB_CHANGES + '\'}',
+                    data:           '{oid:\'' + genericOIDService.getOID(obj) + '\', type:\'' + mType + '\'}',
                     update:         '#marker-' + obj.id,
                     successFunc:    'tooltip.init(\'#marker-' + obj.id + '\')'
             ]
 
             if (attrs.simple) {
-                jsMap.data = '{oid:\'' + genericOIDService.getOID(obj) + '\', type:\'' + Marker.TYPE.WEKB_CHANGES + '\', simple: true}'
+                jsMap.data = '{oid:\'' + genericOIDService.getOID(obj) + '\', type:\'' + mType + '\', simple: true}'
                 String onClick = ui.remoteJsToggler(jsMap)
 
                 if (! attrs.ajax) {

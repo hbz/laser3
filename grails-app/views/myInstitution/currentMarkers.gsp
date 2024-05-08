@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.convenience.Marker; de.laser.Org;de.laser.Vendor;de.laser.Package;de.laser.Platform" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.convenience.Marker; de.laser.Org;de.laser.Vendor;de.laser.Package;de.laser.Platform;de.laser.TitleInstancePackagePlatform" %>
 
 <laser:htmlStart message="menu.my.markers" serviceInjection="true"/>
 
@@ -16,8 +16,8 @@
                 <g:select class="ui dropdown la-not-clearable" name="filterMarkerType"
                            required="required"
                            noSelection="${['' : message(code:'default.select.choose.label')]}"
-                           from="${[Marker.TYPE.WEKB_CHANGES]}"
-                           value="${filterMarkerType}"
+                           from="${[Marker.TYPE.WEKB_CHANGES, Marker.TYPE.TIPP_CHANGES,  Marker.TYPE.UNKOWN]}"
+                           value="${markerType.value}"
                            optionValue="${{message(code: 'marker.' + it.value)}}"
                            optionKey="${{it.value}}" />
 
@@ -53,6 +53,9 @@
                         <g:elseif test="${objCat.value.first() instanceof Vendor}">
                             <i class="icon grey shipping fast la-list-icon"></i> ${message(code:'vendor')}
                         </g:elseif>
+                        <g:elseif test="${objCat.value.first() instanceof TitleInstancePackagePlatform}">
+                            <i class="icon grey book la-list-icon"></i> ${message(code:'title')}
+                        </g:elseif>
                     </th>
                     <th class="three wide"></th>
                     <th class="one wide center aligned"><ui:myXIcon /></th>
@@ -79,7 +82,7 @@
                                 </g:if>
                             </td>
                             <td>
-                                <ui:cbItemMarkerAction org="${obj}" simple="true"/>
+                                <ui:cbItemMarkerAction org="${obj}" type="${markerType}" simple="true"/>
                             </td>
                         </g:if>
                         <g:elseif test="${obj instanceof Package}">
@@ -93,7 +96,7 @@
                                 </g:if>
                             </td>
                             <td>
-                                <ui:cbItemMarkerAction package="${obj}" simple="true"/>
+                                <ui:cbItemMarkerAction package="${obj}" type="${markerType}" simple="true"/>
                             </td>
                         </g:elseif>
                         <g:elseif test="${obj instanceof Platform}">
@@ -107,7 +110,7 @@
                                 </g:if>
                             </td>
                             <td>
-                                <ui:cbItemMarkerAction platform="${obj}" simple="true"/>
+                                <ui:cbItemMarkerAction platform="${obj}" type="${markerType}" simple="true"/>
                             </td>
                         </g:elseif>
                         <g:elseif test="${obj instanceof Vendor}">
@@ -121,7 +124,21 @@
                                 </g:if>
                             </td>
                             <td>
-                                <ui:cbItemMarkerAction vendor="${obj}" simple="true"/>
+                                <ui:cbItemMarkerAction vendor="${obj}" type="${markerType}" simple="true"/>
+                            </td>
+                        </g:elseif>
+                        <g:elseif test="${obj instanceof TitleInstancePackagePlatform}">
+                            <td>
+                                <g:link controller="tipp" action="show" id="${obj.id}" target="_blank">${obj.name}</g:link>
+                            </td>
+                            <td></td>
+                            <td class="center aligned">
+                                <g:if test="${obj.id in myXMap.currentTippIdList}">
+                                    <ui:myXIcon tooltip="${message(code: 'menu.my.titles')}" color="yellow"/>
+                                </g:if>
+                            </td>
+                            <td>
+                                <ui:cbItemMarkerAction tipp="${obj}" type="${markerType}" simple="true"/>
                             </td>
                         </g:elseif>
                     </tr>

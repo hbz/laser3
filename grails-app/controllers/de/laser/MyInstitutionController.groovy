@@ -3222,24 +3222,25 @@ class MyInstitutionController  {
         ctx.contextService.isInstUser_denySupport_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     def currentMarkers() {
-        log.debug 'currentMarkers()'
+//        log.debug 'currentMarkers()'
 
-        Marker.TYPE fMarkerType = Marker.TYPE.WEKB_CHANGES
+        Marker.TYPE markerType = Marker.TYPE.WEKB_CHANGES
         if (params.filterMarkerType) {
-            fMarkerType = Marker.TYPE.get(params.filterMarkerType)
+            markerType = Marker.TYPE.get(params.filterMarkerType)
         }
 
         // TODO -- permissions --
 
         Map<String, Object> result = [
                 myMarkedObjects: [
-                        org: markerService.getObjectsByClassAndType(Org.class, fMarkerType),
-                        pkg: markerService.getObjectsByClassAndType(Package.class, fMarkerType),
-                        plt: markerService.getObjectsByClassAndType(Platform.class, fMarkerType),
-                        ven: markerService.getObjectsByClassAndType(Vendor.class, fMarkerType)
+                        org: markerService.getObjectsByClassAndType(Org.class, markerType),
+                        pkg: markerService.getObjectsByClassAndType(Package.class, markerType),
+                        plt: markerService.getObjectsByClassAndType(Platform.class, markerType),
+                        ven: markerService.getObjectsByClassAndType(Vendor.class, markerType),
+                        tipp: markerService.getObjectsByClassAndType(TitleInstancePackagePlatform.class, markerType)
                 ],
-                myXMap:             markerService.getMyXMap(), // TODO
-                filterMarkerType:   fMarkerType.value
+                myXMap:         markerService.getMyXMap(), // TODO
+                markerType:     markerType
         ]
         result
     }

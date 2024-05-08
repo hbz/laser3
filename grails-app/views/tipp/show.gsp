@@ -10,8 +10,7 @@
 </ui:debugInfo>
 
 <ui:breadcrumbs>
-    <ui:crumb controller="package" action="show" id="${tipp.pkg.id}"
-                 text="${tipp.pkg.name} [${message(code: 'package.label')}]"/>
+    <ui:crumb controller="package" action="show" id="${tipp.pkg.id}" text="${tipp.pkg.name} [${message(code: 'package.label')}]"/>
     <ui:crumb text="${tipp.name} [${message(code: 'title.label')}]" class="active"/>
 </ui:breadcrumbs>
 
@@ -167,22 +166,21 @@
 
                 <br/>
                 <br/>
-                <g:link controller="package" action="current"
-                        id="${tipp.pkg?.id}">
-                    <g:message code="package.show.nav.current"/>: <g:message code="package.compare.overview.tipps"/> ${currentTippsCounts}</g:link>
+                <g:link controller="package" action="current" id="${tipp.pkg?.id}">
+                    <g:message code="package.show.nav.current"/>: <g:message code="package.compare.overview.tipps"/> ${currentTippsCounts}
+                </g:link>
                 <br/>
-                <g:link controller="package" action="planned"
-                        id="${tipp.pkg?.id}">
-                    <g:message code="package.show.nav.planned"/>: <g:message code="package.compare.overview.tipps"/> ${plannedTippsCounts}</g:link>
+                <g:link controller="package" action="planned" id="${tipp.pkg?.id}">
+                    <g:message code="package.show.nav.planned"/>: <g:message code="package.compare.overview.tipps"/> ${plannedTippsCounts}
+                </g:link>
                 <br/>
-                <g:link controller="package" action="expired"
-                        id="${tipp.pkg?.id}">
-                    <g:message code="package.show.nav.expired"/>: <g:message code="package.compare.overview.tipps"/> ${expiredTippsCounts}</g:link>
-
+                <g:link controller="package" action="expired" id="${tipp.pkg?.id}">
+                    <g:message code="package.show.nav.expired"/>: <g:message code="package.compare.overview.tipps"/> ${expiredTippsCounts}
+                </g:link>
                 <br/>
-                <g:link controller="package" action="deleted"
-                        id="${tipp.pkg?.id}">
-                    <g:message code="package.show.nav.deleted"/>: <g:message code="package.compare.overview.tipps"/> ${deletedTippsCounts}</g:link>
+                <g:link controller="package" action="deleted" id="${tipp.pkg?.id}">
+                    <g:message code="package.show.nav.deleted"/>: <g:message code="package.compare.overview.tipps"/> ${deletedTippsCounts}
+                </g:link>
 
                 <br/>
                 <br/>

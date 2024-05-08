@@ -34,6 +34,12 @@ class MarkerService {
         else if (cls == Platform.class) {
             sql = 'where m.plt != null'
         }
+        else if (cls == Vendor.class) {
+            sql = 'where m.ven != null'
+        }
+        else if (cls == TitleInstancePackagePlatform.class) {
+            sql = 'where m.tipp != null'
+        }
 
         if (sql) {
             markers = Marker.executeQuery(
@@ -65,6 +71,9 @@ class MarkerService {
         }
         else if (cls == Vendor.class) {
             sql = 'Vendor obj where m.ven = obj and m.type = :type and m.user = :user order by obj.sortname, obj.name'
+        }
+        else if (cls == TitleInstancePackagePlatform.class) {
+            sql = 'TitleInstancePackagePlatform obj where m.tipp = obj and m.type = :type and m.user = :user order by obj.sortname, obj.name'
         }
 
         if (sql) {
@@ -109,6 +118,8 @@ class MarkerService {
                 'and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted)) and ((tipp.status is null) or (tipp.status != :tippRemoved)) ',
                 [subIds: currentSubscriptionIdList, pkgDeleted: RDStore.PACKAGE_STATUS_DELETED, tippRemoved: RDStore.TIPP_STATUS_REMOVED]
         )
+
+        result.currentTippIdList = []
 
         result
     }

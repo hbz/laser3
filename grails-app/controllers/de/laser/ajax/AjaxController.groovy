@@ -1153,7 +1153,7 @@ class AjaxController {
 
         MarkerSupport obj   = genericOIDService.resolveOID(params.oid) as MarkerSupport
         User user           = contextService.getUser()
-        Marker.TYPE type    = Marker.TYPE.WEKB_CHANGES // TODO
+        Marker.TYPE type    = params.type ? Marker.TYPE.get(params.type) : Marker.TYPE.UNKOWN
 
         Map attrs = [ type: type, ajax: true ]
 
@@ -1170,6 +1170,9 @@ class AjaxController {
         }
         else if (obj instanceof Vendor) {
             attrs.vendor = obj
+        }
+        else if (obj instanceof TitleInstancePackagePlatform) {
+            attrs.tipp = obj
         }
 
         if (obj.isMarked(user, type)) {

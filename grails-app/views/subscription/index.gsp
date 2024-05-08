@@ -441,7 +441,6 @@
                                                 </div>
 
                                                 <div class="one wide column">
-
                                                     <span class="la-vertical-centered">${counter++}</span>
                                                 </div>
 
@@ -466,8 +465,7 @@
                                                 <div class="four wide column">
 
                                                     <!-- START TEMPLATE -->
-                                                    <laser:render template="/templates/identifier"
-                                                                  model="${[tipp: ie.tipp]}"/>
+                                                    <laser:render template="/templates/identifier" model="${[tipp: ie.tipp]}"/>
                                                     <!-- END TEMPLATE -->
                                                 </div>
 
@@ -484,8 +482,6 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-
-
                                                         </g:if>
                                                     </g:each>
                                                 </div>
@@ -493,11 +489,9 @@
                                                 <div class="one wide column">
                                                     <div class="ui right floated buttons">
                                                         <div class="right aligned wide column">
-
                                                         </div>
-
-                                                        <div class="ui icon blue button la-modern-button"><i
-                                                                class="ui angle double down icon"></i>
+                                                        <div class="ui icon blue button la-modern-button">
+                                                            <i class="ui angle double down icon"></i>
                                                         </div>
                                                         <g:if test="${editable}">
                                                             <g:if test="${subscription.ieGroups.size() > 0}">
@@ -530,15 +524,6 @@
 
                                         <div class="ui fluid segment content" data-ajaxTargetWrap="true">
                                             <div class="ui stackable grid" data-ajaxTarget="true">
-
-
-    %{--
-                                                <laser:render template="/templates/titles/title_long_accordion"
-                                                              model="${[ie         : ie, tipp: ie.tipp,
-                                                                        showPackage: showPackage, showPlattform: showPlattform, showCompact: showCompact, showEmptyFields: showEmptyFields]}"/>
-
-    --}%
-
 
                                                 <div class="three wide column">
                                                     <div class="ui list la-label-list">

@@ -887,10 +887,10 @@
                 <td class="center aligned">
                     <g:if test="${org.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
                         <g:if test="${org instanceof Org}">
-                            <ui:cbItemMarkerAction org="${org}" simple="true"/>
+                            <ui:cbItemMarkerAction org="${org}" type="${Marker.TYPE.WEKB_CHANGES}" simple="true"/>
                         </g:if>
                         <g:elseif test="${org instanceof Vendor}">
-                            <ui:cbItemMarkerAction vendor="${org}" simple="true"/>
+                            <ui:cbItemMarkerAction vendor="${org}" type="${Marker.TYPE.WEKB_CHANGES}" simple="true"/>
                         </g:elseif>
                     </g:if>
                 </td>

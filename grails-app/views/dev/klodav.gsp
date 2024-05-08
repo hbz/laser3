@@ -38,8 +38,8 @@
             <div class="content"> Anbieter (rocket)</div>
         </div>
         <div class="item">
-            <i class="icon large gifts"></i>
-            <div class="content"> Lieferanten (gifts)</div>
+            <i class="icon large boxes"></i>
+            <div class="content"> Lieferanten (boxes)</div>
         </div>
         <div class="item">
             <i class="icon large university"></i>

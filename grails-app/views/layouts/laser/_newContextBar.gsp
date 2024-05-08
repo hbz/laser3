@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.GenericOIDService; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.UserSetting; de.laser.auth.User; de.laser.auth.Role; de.laser.Org" %>
+<%@ page import="de.laser.convenience.Marker; de.laser.Subscription; de.laser.GenericOIDService; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.UserSetting; de.laser.auth.User; de.laser.auth.Role; de.laser.Org" %>
 <laser:serviceInjection />
 
 <nav id="contextBar" class="ui fixed menu" aria-label="${message(code:'wcag.label.modeNavigation')}">
@@ -69,14 +69,6 @@
                 </div>
             </g:if>
 
-         %{--   --}%%{-- dateCreated & lastUpdated panel --}%%{--
-
-            <g:if test="${(actionName=='show')}">
-                <div class="item la-cb-action">
-                    <button class="ui icon button la-toggle-ui" id="dateCreatedLastUpdated-toggle"><i class="calendar alternative icon"></i></button>
-                </div>
-            </g:if>--}%
-
             %{-- subscription transfer --}%
 
             <g:set var="isSubscriptionViewValid" value="${!(actionName.startsWith('copy') || actionName in ['renewEntitlementsWithSurvey', 'renewSubscription', 'emptySubscription'])}" />
@@ -144,22 +136,27 @@
 
             <g:if test="${controllerName == 'organisation'}">
                 <g:if test="${isProviderOrAgency}">
-                    <ui:cbItemMarkerAction org="${orgInstance}"/>
+                    <ui:cbItemMarkerAction org="${orgInstance}" type="${Marker.TYPE.WEKB_CHANGES}"/>
                 </g:if>
             </g:if>
             <g:elseif test="${controllerName == 'vendor'}">
                 <g:if test="${vendor}">
-                    <ui:cbItemMarkerAction vendor="${vendor}"/>
+                    <ui:cbItemMarkerAction vendor="${vendor}" type="${Marker.TYPE.WEKB_CHANGES}"/>
                 </g:if>
             </g:elseif>
             <g:elseif test="${controllerName == 'package'}">
                 <g:if test="${packageInstance}">
-                    <ui:cbItemMarkerAction package="${packageInstance}"/>
+                    <ui:cbItemMarkerAction package="${packageInstance}" type="${Marker.TYPE.WEKB_CHANGES}"/>
                 </g:if>
             </g:elseif>
             <g:elseif test="${controllerName == 'platform'}">
                 <g:if test="${platformInstance}">
-                    <ui:cbItemMarkerAction platform="${platformInstance}"/>
+                    <ui:cbItemMarkerAction platform="${platformInstance}" type="${Marker.TYPE.WEKB_CHANGES}"/>
+                </g:if>
+            </g:elseif>
+            <g:elseif test="${controllerName == 'tipp'}">
+                <g:if test="${tipp}">
+                    <ui:cbItemMarkerAction tipp="${tipp}" type="${Marker.TYPE.TIPP_CHANGES}"/>
                 </g:if>
             </g:elseif>
 
@@ -397,10 +394,6 @@
 
             $('#help-toggle').on('click', function() {
                 $('#help-content').flyout('toggle');
-            });
-
-            $('#dateCreatedLastUpdated-toggle').on('click', function() {
-                $('#dateCreatedLastUpdated-content').flyout('toggle');
             });
 
             $('#subscriptionMembers-toggle').on('click', function() {

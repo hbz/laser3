@@ -1,8 +1,11 @@
 package de.laser
 
 import de.laser.annotations.RefdataInfo
+import de.laser.auth.User
 import de.laser.base.AbstractBase
+import de.laser.convenience.Marker
 import de.laser.finance.PriceItem
+import de.laser.interfaces.MarkerSupport
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -35,7 +38,7 @@ import java.util.regex.Pattern
  * @see Platform
  * @see IssueEntitlement
  */
-class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTrait*/ {
+class TitleInstancePackagePlatform extends AbstractBase implements MarkerSupport /*implements AuditableTrait*/ {
 
 //  @Transient
 //  def messageSource
@@ -572,5 +575,24 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
         result
     }
 
+    @Override
+    boolean isMarked(User user, Marker.TYPE type) {
+        Marker.findByTippAndUserAndType(this, user, type) ? true : false
+    }
+
+    @Override
+    void setMarker(User user, Marker.TYPE type) {
+        if (!isMarked(user, type)) {
+            Marker m = new Marker(tipp: this, user: user, type: type)
+            m.save()
+        }
+    }
+
+    @Override
+    void removeMarker(User user, Marker.TYPE type) {
+        withTransaction {
+            Marker.findByTippAndUserAndType(this, user, type).delete(flush:true)
+        }
+    }
 }
 
