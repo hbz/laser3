@@ -6,7 +6,7 @@
 
 %{-- help sidebar --}%
 <laser:render template="/templates/flyouts/dateCreatedLastUpdated" model="[obj: provider]"/>
-<laser:render template="breadcrumb" model="${[provider: provider]}"/>
+<laser:render template="breadcrumb"/>
 
 <ui:controlButtons>
     <laser:render template="${customerTypeService.getActionsTemplatePath()}" model="${[provider: provider, user: user]}"/>
@@ -16,7 +16,7 @@
     <laser:render template="/templates/iconObjectIsMine" model="${[isMyProvider: isMyProvider]}"/>
 </ui:h1HeaderWithIcon>
 
-<ui:anualRings object="${provider}" controller="organisation" action="show" navNext="${navNextProvider}"
+<ui:anualRings object="${provider}" controller="provider" action="show" navNext="${navNextProvider}"
                navPrev="${navPrevProvider}"/>
 
 <laser:render template="${customerTypeService.getNavTemplatePath()}" model="${[provider: provider]}"/>
@@ -115,7 +115,7 @@
                                     data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
                                     data_confirm_term_how="ok"
                                     class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                    owner="${provider}" type="url" field="url"  overwriteEditable="${editable && provider.gokbId}"/>
+                                    owner="${provider}" type="url" field="homepage"  overwriteEditable="${editable && provider.gokbId}"/>
                             <g:if test="${provider.homepage}">
                                 <ui:linkWithIcon href="${provider.homepage}" />
                             </g:if>
@@ -192,7 +192,7 @@
                             <g:message code="vendor.invoicing.compensationPayments.label" />
                         </dt>
                         <dd>
-                            ${RefdataValue.displayBoolean(vendor.processingOfCompensationPayments)}
+                            ${RefdataValue.displayBoolean(provider.processingOfCompensationPayments)}
                         </dd>
                     </dl>
                     <dl>
@@ -312,7 +312,7 @@
                                     </div>
                                     <div class="item">
                                         <strong><g:message code="package.plural" /></strong>
-                                        &nbsp;<div class="ui blue circular label">${packages.size()}</div>
+                                        &nbsp;<div class="ui blue circular label">${provider.packages.size()}</div>
                                     </div>
                                     <div class="item">
                                         <strong><g:message code="subscription.plural" /></strong>
@@ -342,7 +342,7 @@
                                 <p class="ui header">%{--<i class="icon gift"></i>--}% <g:message code="package.plural" /></p>
 
                                 <div class="ui divided middle aligned selection list la-flex-list">
-                                    <g:each in="${packages}" var="pkg">
+                                    <g:each in="${provider.packages}" var="pkg">
                                         <div class="ui item">
                                             <div class="content la-space-right">
                                                 <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link>
@@ -557,194 +557,13 @@
                                             <i aria-hidden="true" class="plus icon"></i>
                                         </a>
                                     </g:if>
-%{--                                    <g:elseif test="${isProviderOrAgency}">--}%
-%{--                                        <a href="#createPersonModal" class="ui icon button blue la-modern-button createContact" id="contactPersonForProviderAgencyPublic" data-ui="modal">--}%
-%{--                                            <i aria-hidden="true" class="plus icon"></i>--}%
-%{--                                        </a>--}%
-%{--                                    </g:elseif>--}%
                                 </div>
                             </div>
                         </div>
-
-                            <%--
-                            <g:if test="${(provider.id == institution.id && user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR'))}">
-                                <g:link action="contacts" controller="organisation" params="[id: provider.id, tab: 'contacts']"
-                                        class="ui button">${message('code': 'org.edit.contactsAndAddresses')}</g:link>
-                            </g:if>
-                            --%>
                         <g:if test="${PersonRole.executeQuery('select pr from Person p join p.roleLinks pr where pr.provider = :provider and ((p.isPublic = false and p.tenant = :ctx) or p.isPublic = true)', [provider: provider, ctx: institution]) ||
                                 Address.executeQuery('select a from Address a where a.provider = :provider and (a.tenant = :ctx or a.tenant = null)', [provider: provider, ctx: institution])}">
                             <table class="ui compact table">
-                                <g:if test="${!isProviderOrAgency}">
-                                    <tr>
-                                        <td>
-                                            <div class="ui segment la-timeLineSegment-contact">
-                                                <div class="la-timeLineGrid">
-                                                    <div class="ui grid">
-                                                        <g:set var="persons" value="${provider.getContactPersonsByFunctionType(true, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS)}"/>
-                                                        <g:each in="${persons}" var="prs">
-                                                            <div class="row">
-                                                                <div class="two wide column">
-                                                                    <g:if test="${provider}">
-                                                                        <a target="_blank" href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/orgContent/' + provider.gokbId : '#'}"><i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
-                                                                    </g:if>
-                                                                    <g:elseif test="${prs.isPublic}">
-                                                                        <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
-                                                                    </g:elseif>
-                                                                    <g:else>
-                                                                        <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
-                                                                    </g:else>
-                                                                </div>
-                                                                <div class="fourteen wide column">
-                                                                    <div class="ui label">${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}</div>
-                                                                    <div class="ui header">${prs}</div>
-                                                                    <g:each in="${prs.roleLinks}" var="personRole">
-                                                                        <g:if test="${personRole.org.id == provider.id && personRole.positionType}">
-                                                                            ${personRole.positionType.getI10n('value')}
-                                                                        </g:if>
-                                                                        <g:elseif test="${personRole.org.id == provider.id && personRole.responsibilityType && (personRole.sub?.status == RDStore.SUBSCRIPTION_CURRENT || personRole.lic?.status == RDStore.LICENSE_CURRENT)}">
-                                                                            ${personRole.responsibilityType.getI10n('value')}
-                                                                        </g:elseif>
-                                                                    </g:each>
-                                                                    <g:if test="${prs.contacts}">
-                                                                        <g:each in="${prs.contacts.toSorted()}" var="contact">
-                                                                            <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
-                                                                                <laser:render template="/templates/cpa/contact" model="${[
-                                                                                        overwriteEditable   : false,
-                                                                                        contact             : contact,
-                                                                                        tmplShowDeleteButton: false
-                                                                                ]}"/>
-                                                                            </g:if>
-                                                                        </g:each>
-                                                                    </g:if>
-                                                                    <%--<g:each in="${prs.addresses.sort { it.type.each{it?.getI10n('value') }}}" var="address">
-                                                                            <laser:render template="/templates/cpa/address"
-                                                                                          model="${[address: address, tmplShowDeleteButton: false, editable: false]}"/>
-                                                                    </g:each>--%>
-                                                                </div>
-                                                            </div>
-                                                        </g:each>
-                                                        <g:set var="persons" value="${provider.getContactPersonsByFunctionType(true, RDStore.PRS_FUNC_FC_BILLING_ADDRESS)}"/>
-                                                        <g:each in="${persons}" var="prs">
-                                                            <div class="row">
-                                                                <div class="two wide column">
-                                                                    <g:if test="${prs.isPublic}">
-                                                                        <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
-                                                                    </g:if>
-                                                                    <g:else>
-                                                                        <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
-                                                                    </g:else>
-                                                                </div>
-                                                                <div class="fourteen wide column">
-                                                                    <div class="ui label">${RDStore.PRS_FUNC_FC_BILLING_ADDRESS.getI10n('value')}</div>
-                                                                    <div class="ui header">${prs}</div>
-                                                                    <g:each in="${prs.roleLinks}" var="personRole">
-                                                                        <g:if test="${personRole.org.id == provider.id && personRole.positionType}">
-                                                                            ${personRole.positionType.getI10n('value')}
-                                                                        </g:if>
-                                                                        <g:elseif test="${personRole.org.id == provider.id && personRole.responsibilityType && (personRole.sub?.status == RDStore.SUBSCRIPTION_CURRENT || personRole.lic?.status == RDStore.LICENSE_CURRENT)}">
-                                                                            ${personRole.responsibilityType.getI10n('value')}
-                                                                        </g:elseif>
-                                                                    </g:each>
-                                                                    <g:if test="${prs.contacts}">
-                                                                        <g:each in="${prs.contacts.toSorted()}" var="contact">
-                                                                            <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
-                                                                                <laser:render template="/templates/cpa/contact" model="${[
-                                                                                        overwriteEditable   : false,
-                                                                                        contact             : contact,
-                                                                                        tmplShowDeleteButton: false
-                                                                                ]}"/>
-                                                                            </g:if>
-                                                                        </g:each>
-                                                                    </g:if>
-                                                                    <%--<g:each in="${prs.addresses.sort { it.type.each{it?.getI10n('value') }}}" var="address">
-                                                                            <laser:render template="/templates/cpa/address"
-                                                                                          model="${[address: address, tmplShowDeleteButton: false, editable: false]}"/>
-                                                                    </g:each>--%>
-                                                                </div>
-                                                            </div>
-                                                        </g:each>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <%
-                                        provider.addresses.each { Address a ->
-                                            a.type.each { type ->
-                                                String typeName = type.getI10n('value')
-                                                typeNames.add(typeName)
-                                                if(!a.tenant) {
-                                                    List addresses = publicTypeAddressMap.get(typeName) ?: []
-                                                    addresses.add(a)
-                                                    publicTypeAddressMap.put(typeName, addresses)
-                                                }
-                                                else if(a.tenant.id == institution.id) {
-                                                    List addresses = privateTypeAddressMap.get(typeName) ?: []
-                                                    addresses.add(a)
-                                                    privateTypeAddressMap.put(typeName, addresses)
-                                                }
-                                            }
-                                        }
-                                    %>
-                                    <g:if test="${publicTypeAddressMap}">
-                                        <tr>
-                                            <td>
-                                                <div class="ui segment la-timeLineSegment-contact">
-                                                    <div class="la-timeLineGrid">
-                                                        <div class="ui grid">
-                                                            <g:each in="${typeNames}" var="typeName">
-                                                                <% List publicAddresses = publicTypeAddressMap.get(typeName) %>
-                                                                <g:if test="${publicAddresses}">
-                                                                    <div class="row">
-                                                                        <div class="two wide column">
-
-                                                                        </div>
-                                                                        <div class="fourteen wide column">
-                                                                            <div class="ui label">${typeName}</div>
-                                                                            <g:each in="${publicAddresses}" var="a">
-                                                                                <g:if test="${a.org}">
-                                                                                    <laser:render template="/templates/cpa/address" model="${[
-                                                                                            hideAddressType     : true,
-                                                                                            address             : a,
-                                                                                            tmplShowDeleteButton: false,
-                                                                                            controller          : 'org',
-                                                                                            action              : 'show',
-                                                                                            id                  : provider.id,
-                                                                                            editable            : false
-                                                                                    ]}"/>
-                                                                                </g:if>
-                                                                            </g:each>
-                                                                        </div>
-                                                                    </div>
-                                                                </g:if>
-                                                            </g:each>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </g:if>
-                                </g:if>
-                                    <g:set var="providerContacts" value="${provider.getContactPersonsByFunctionType(true, null, provider.gokbId != null)}"/>
-                                    <%--
-                                    <g:if test="${isProviderOrAgency && contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ) && !provider.gokbId}">
-                                        <tr>
-                                            <td>
-                                                <a href="#createPersonModal" class="ui button" data-ui="modal"
-                                                   onclick="JSPC.app.personCreate('contactPersonForProviderAgencyPublic', ${provider.id}, '&supportType=${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.id}');"><g:message
-                                                        code="personFormModalTechnichalSupport"/></a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <a href="#createPersonModal" class="ui button" data-ui="modal"
-                                                   onclick="JSPC.app.personCreate('contactPersonForProviderAgencyPublic', ${provider.id}, '&supportType=${RDStore.PRS_FUNC_SERVICE_SUPPORT.id}');"><g:message
-                                                        code="personFormModalServiceSupport"/></a>
-                                            </td>
-                                        </tr>
-                                    </g:if>
-                                    --%>
+                                <g:set var="providerContacts" value="${providerService.getContactPersonsByFunctionType(provider, institution, true, null, true)}"/>
                                     <tr>
                                         <td>
                                             <g:if test="${providerContacts}">
@@ -755,7 +574,7 @@
                                                                 <div class="row">
                                                                     <div class="two wide column">
                                                                         <g:if test="${provider}">
-                                                                            <a target="_blank" href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/orgContent/' + provider.gokbId : '#'}"><i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
+                                                                            <a target="_blank" href="${wekbApi.editUrl ? wekbApi.editUrl + '/public/orgContent/' + provider.gokbId : '#'}"><i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
                                                                         </g:if>
                                                                         <g:elseif test="${prs.isPublic}">
                                                                             <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
@@ -792,7 +611,7 @@
                     </div>
                 </div>
             </div>
-            <g:if test="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) && !inContextOrg}">
+            <g:if test="${institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()}">
                 <div id="container-contacts">
                     <div class="ui card">
                         <div class="content">
@@ -802,16 +621,9 @@
                                         <g:message code="org.contactpersons.and.addresses.my"/>
                                     </div>
                                     <div class="right aligned four wide column">
-                                        <g:if test="${isProviderOrAgency}">
-                                            <a href="#createPersonModal" class="ui icon button blue la-modern-button createContact" id="contactPersonForProviderAgency" data-ui="modal">
-                                                <i aria-hidden="true" class="plus icon"></i>
-                                            </a>
-                                        </g:if>
-                                        <g:else>
-                                            <a href="#createPersonModal" class="ui icon button blue la-modern-button createContact" id="contactPersonForInstitution" data-ui="modal">
-                                                <i aria-hidden="true" class="plus icon"></i>
-                                            </a>
-                                        </g:else>
+                                        <a href="#createPersonModal" class="ui icon button blue la-modern-button createContact" id="contactPersonForProvider" data-ui="modal">
+                                            <i aria-hidden="true" class="plus icon"></i>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -850,24 +662,6 @@
                                                                             </g:if>
                                                                         </g:each>
                                                                     </g:if>
-                                                                    <%--<g:each in="${person.addresses.sort { it.type.each{it?.getI10n('value') }}}" var="address">
-                                                                            <laser:render template="/templates/cpa/address"
-                                                                                          model="${[address: address, tmplShowDeleteButton: false, editable: false]}"/>
-                                                                    </g:each>
-                                                                    <laser:render template="/templates/cpa/person_full_details" model="${[
-                                                                                    person                 : person,
-                                                                                    personContext          : provider,
-                                                                                    tmplShowDeleteButton   : true,
-                                                                                    tmplShowFunctions      : false,
-                                                                                    tmplShowPositions      : true,
-                                                                                    tmplShowResponsiblities: true,
-                                                                                    tmplConfigShow         : ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax', 'address'],
-                                                                                    controller             : 'organisation',
-                                                                                    action                 : 'show',
-                                                                                    id                     : provider.id,
-                                                                                    editable               : false,
-                                                                                    noSelection            : true
-                                                                        ]}"/>--%>
                                                                 </div>
                                                             </div>
                                                         </g:each>

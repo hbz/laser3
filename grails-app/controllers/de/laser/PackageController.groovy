@@ -197,7 +197,7 @@ class PackageController {
         result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(result.contextOrg)
 
         // restrict visible for templates/links/orgLinksAsList
-        result.visibleOrgs = packageInstance.orgs
+        result.visibleOrgs = packageInstance.provider
         //result.visibleOrgs.sort { it.org.sortname }
 
         List<RefdataValue> roleTypes = [RDStore.OR_SUBSCRIBER]

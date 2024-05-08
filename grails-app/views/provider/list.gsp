@@ -63,10 +63,9 @@
             </g:form>
         </ui:filter>
         <div class="la-clear-before">
-            <g:if test="${orgList}">
+            <g:if test="${providerList}">
                 <laser:render template="/templates/filter/providerFilterTable"
                       model="[providerList: providerList,
-                              currentProviderIdList: currentProviderIdList,
                               apiSource: wekbApi,
                               tmplShowCheckbox: false,
                               tmplConfigShow: ['lineNumber', 'sortname', 'name', 'altname', 'platform', 'isMyX', 'marker', 'isWekbCurated']
