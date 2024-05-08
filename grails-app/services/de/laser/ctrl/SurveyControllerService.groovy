@@ -2565,8 +2565,11 @@ class SurveyControllerService {
                                     startDate: params.copySurvey.copyDates ? baseSurveyInfo.startDate : null,
                                     endDate: params.copySurvey.copyDates ? baseSurveyInfo.endDate : null,
                                     comment: params.copySurvey.copyComment ? baseSurveyInfo.comment : null,
-                                    isMandatory: params.copySurvey.copyMandatory ? baseSurveyInfo.isMandatory : false,
-                                    owner: contextService.getOrg()
+                                    isMandatory: (baseSurveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL) ? (SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(sub, true) ? (params.copySurvey.copyMandatory ? baseSurveyInfo.isMandatory : false) : true) : (params.copySurvey.copyMandatory ? baseSurveyInfo.isMandatory : false),
+                                    owner: contextService.getOrg(),
+                                    isSubscriptionSurvey: (baseSurveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL) ? (SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(sub, true) ? false : true) : false,
+                                    license: params.copySurvey.copyLicense ? baseSurveyInfo.license : null,
+                                    provider: params.copySurvey.copyProvider ? baseSurveyInfo.provider : null,
                             ).save()
 
                             SurveyConfig newSurveyConfig = new SurveyConfig(
@@ -2575,7 +2578,10 @@ class SurveyControllerService {
                                     surveyInfo: newSurveyInfo,
                                     comment: params.copySurvey.copySurveyConfigComment ? baseSurveyConfig.comment : null,
                                     commentForNewParticipants: params.copySurvey.copySurveyConfigCommentForNewParticipants ? baseSurveyConfig.commentForNewParticipants : null,
-                                    configOrder: newSurveyInfo.surveyConfigs ? newSurveyInfo.surveyConfigs.size() + 1 : 1
+                                    configOrder: newSurveyInfo.surveyConfigs ? newSurveyInfo.surveyConfigs.size() + 1 : 1,
+                                    subSurveyUseForTransfer: (baseSurveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL) ? (SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(sub, true) ? false : true) : false,
+                                    scheduledStartDate: params.copySurvey.copyScheduledDates ? baseSurveyConfig.scheduledStartDate : null,
+                                    scheduledEndDate: params.copySurvey.copyScheduledDates ? baseSurveyConfig.scheduledEndDate : null,
                             ).save()
 
                             surveyService.copySurveyConfigCharacteristic(baseSurveyConfig, newSurveyConfig, params)

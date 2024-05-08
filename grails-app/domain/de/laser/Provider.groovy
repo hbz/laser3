@@ -87,6 +87,8 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
         dateCreated column: 'prov_date_created'
         lastUpdated column: 'prov_last_updated'
         lastUpdatedCascading column: 'prov_last_updated_cascading'
+        platforms sort:'name', order:'asc', batchSize: 10
+        packages sort:'name', order:'asc', batchSize: 10
     }
 
     static constraints = {
@@ -212,13 +214,19 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
         provider.documents.each { DocContext dc ->
             dc.provider = p
             dc.org = null
-            dc.save()
+            if(!dc.save())
+                log.debug(dc.getErrors().getAllErrors().toListString())
+        }
+        Platform.findAllByOrg(provider).each { Platform pl ->
+            pl.provider = p
+            pl.save()
         }
         DocContext.findAllByTargetOrg(provider).each { DocContext dc ->
             dc.provider = p
             dc.org = null
             dc.targetOrg = null
-            dc.save()
+            if(!dc.save())
+                log.debug(dc.getErrors().getAllErrors().toListString())
         }
         provider.altnames.each { AlternativeName a ->
             a.provider = p

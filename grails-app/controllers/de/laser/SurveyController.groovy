@@ -1646,7 +1646,7 @@ class SurveyController {
             ctrlResult.result
 
             if(ctrlResult.result.targetSubs) {
-                redirect controller: 'survey', action: 'currentSurveysConsortia', params: [ids: ctrlResult.result.newSurveyIds]
+                redirect controller: 'survey', action: 'currentSurveysConsortia', params: [validOnYear: 'all' ,ids: ctrlResult.result.newSurveyIds]
                 return
             }else {
                 redirect controller: 'survey', action: 'show', params: [id: ctrlResult.result.newSurveyInfo.id, surveyConfigID: ctrlResult.result.newSurveyConfig.id]

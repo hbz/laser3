@@ -129,6 +129,10 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
             params.org = target
             instanceFilter = 'pr.org = :org'
         }
+        else if(target instanceof Provider) {
+            params.provider = target
+            instanceFilter = 'pr.provider = :provider'
+        }
         else if(target instanceof Vendor) {
             params.vendor = target
             instanceFilter = 'pr.vendor = :vendor'
@@ -224,6 +228,10 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
                 p.org = target
                 targetClause = 'and pr.org = :org '
             }
+            else if(target instanceof Provider) {
+                p.provider = target
+                targetClause = 'and pr.provider = :provider '
+            }
             else if(target instanceof Vendor) {
                 p.vendor = target
                 targetClause = 'and pr.vendor = :vendor '
@@ -267,6 +275,10 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
             targetClause = 'pr.org = :org'
             queryParams.org = target
         }
+        else if(target instanceof Provider) {
+            targetClause = 'pr.provider = :provider'
+            queryParams.provider = target
+        }
         else if(target instanceof Vendor) {
             targetClause = 'pr.vendor = :vendor'
             queryParams.vendor = target
@@ -296,6 +308,10 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
         if (target instanceof Org) {
             p << ['org': target]
             targetClause = 'and pr.org = :org'
+        }
+        else if (target instanceof Provider) {
+            p << ['provider': target]
+            targetClause = 'and pr.provider = :provider'
         }
         else if (target instanceof Vendor) {
             p << ['vendor': target]

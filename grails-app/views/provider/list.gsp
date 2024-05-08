@@ -54,7 +54,7 @@
         <ui:messages data="${flash}" />
 
         <ui:filter>
-            <g:form action="listProvider" method="get" class="ui form">
+            <g:form action="list" method="get" class="ui form">
                 <laser:render template="/templates/filter/providerFilter"
                           model="[
                                   tmplConfigShow: [['name', 'identifier'], ['curatoryGroup', 'curatoryGroupType', 'provStatus'], ['isMyX']],
@@ -80,7 +80,7 @@
                 </g:else>
             </g:else>
         </div>
-        <ui:paginate total="${orgListTotal}" params="${params}" max="${max}" offset="${offset}" />
+        <ui:paginate total="${providersTotal}" params="${params}" max="${max}" offset="${offset}" />
 
         <g:render template="/clickMe/export/js"/>
 <laser:htmlEnd />

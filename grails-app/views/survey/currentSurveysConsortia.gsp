@@ -365,6 +365,15 @@
                             aria-label="${message(code: 'ariaLabel.change.universal')}">
                         <i class="pencil icon"></i>
                     </g:link>
+
+                    <g:if test="${editable}">
+                        <g:link controller="survey" action="copySurvey" id="${surveyInfo.id}"
+                                params="[surveyConfigID: surveyConfig.id]"
+                                class="ui icon blue button la-modern-button">
+                            <i class="icon copy"></i>
+                            </div>
+                        </g:link>
+                    </g:if>
                 </td>
 
 
