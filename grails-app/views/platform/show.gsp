@@ -26,8 +26,6 @@
     <laser:render template="/templates/iconObjectIsMine" model="${[isMyPlatform: isMyPlatform]}"/>
 </ui:h1HeaderWithIcon>
 
-%{--<ui:cbItemMarkerAction platform="${platformInstance}"/>--}%
-
 <laser:render template="/templates/meta/identifier" model="${[object: platformInstance, editable: false]}"/>
 
 <ui:messages data="${flash}"/>

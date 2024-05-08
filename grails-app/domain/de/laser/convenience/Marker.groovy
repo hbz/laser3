@@ -4,6 +4,7 @@ import de.laser.Org
 import de.laser.Package
 import de.laser.Platform
 import de.laser.Provider
+import de.laser.TitleInstancePackagePlatform
 import de.laser.Vendor
 import de.laser.auth.User
 
@@ -17,7 +18,7 @@ class Marker {
      * as dummy value
      */
     static enum TYPE {
-        WEKB_CHANGES ("WEKB_CHANGES"), UNKOWN ("UNKOWN")
+        WEKB_CHANGES ("WEKB_CHANGES"), TIPP_CHANGES ("TIPP_CHANGES"), UNKOWN ("UNKOWN")
 
         TYPE(String value) {
             this.value = value
@@ -40,11 +41,12 @@ class Marker {
     Date lastUpdated
 
     static belongsTo = [
-            org:    Org, //to be migrated to provider
-            prov:   Provider,
-            pkg:    Package,
+            org:    Org,
             plt:    Platform,
+            pkg:    Package,
+            prov:   Provider,
             ven:    Vendor,
+            tipp:   TitleInstancePackagePlatform,
             user:   User
     ]
 
@@ -53,10 +55,11 @@ class Marker {
         version     column:'mkr_version'
 
         org         column:'mkr_org_fk'
-        prov        column:'mkr_prov_fk'
-        pkg         column:'mkr_pkg_fk'
         plt         column:'mkr_plt_fk'
+        pkg         column:'mkr_pkg_fk'
+        prov        column:'mkr_prov_fk'
         ven         column:'mkr_ven_fk'
+        tipp        column:'mkr_tipp_fk'
 
         user        column:'mkr_user_fk', index: 'mkr_user_idx'
         type        column:'mkr_type_enum'
@@ -67,9 +70,10 @@ class Marker {
 
     static constraints = {
         org         (nullable:true)
-        prov        (nullable:true)
-        pkg         (nullable:true)
         plt         (nullable:true)
+        pkg         (nullable:true)
+        prov        (nullable:true)
         ven         (nullable:true)
+        tipp        (nullable:true)
     }
 }

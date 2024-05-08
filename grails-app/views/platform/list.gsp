@@ -96,8 +96,7 @@
 								</td>
 								<td class="center aligned">
 									<g:if test="${platformInstance && platformInstance.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
-%{--										<ui:markerIcon type="WEKB_CHANGES" color="purple" />--}%
-										<ui:cbItemMarkerAction package="${platformInstance}" simple="true"/>
+										<ui:cbItemMarkerAction platform="${platformInstance}" type="${Marker.TYPE.WEKB_CHANGES}" simple="true"/>
 									</g:if>
 								</td>
 								<td>
