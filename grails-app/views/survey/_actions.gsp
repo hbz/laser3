@@ -14,14 +14,14 @@
                 <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />
                 <div class="divider"></div>
 
-                <g:if test="${surveyInfo.type.id != RDStore.SURVEY_TYPE_RENEWAL.id}">
-                    <ui:actionsDropdownItem controller="survey" action="copySurvey" params="[id: params.id]"
-                                               message="copySurvey.label"/>
 
-                    <ui:actionsDropdownItem controller="survey" action="copyElementsIntoSurvey" params="[sourceObjectId: genericOIDService.getOID(surveyConfig)]"
-                                               message="survey.copyElementsIntoSurvey"/>
-                    <div class="ui divider"></div>
-                </g:if>
+            <ui:actionsDropdownItem controller="survey" action="copySurvey" params="[id: params.id]"
+                                    message="copySurvey.label"/>
+
+            <ui:actionsDropdownItem controller="survey" action="copyElementsIntoSurvey" params="[sourceObjectId: genericOIDService.getOID(surveyConfig)]"
+                                    message="survey.copyElementsIntoSurvey"/>
+            <div class="ui divider"></div>
+
 
                 <g:if test="${surveyInfo && (surveyInfo.status.id == RDStore.SURVEY_READY.id) && surveyInfo.checkOpenSurvey()}">
                     <ui:actionsDropdownItem controller="survey" action="setStatus" params="[id: params.id, newStatus: 'processBackInProcessingSurvey']"
