@@ -81,7 +81,14 @@ class MarkerService {
      * @return a {@link Map} of {@link de.laser.Package} IDs and {@link Platform} IDs to which there exists a link from a {@link Subscription} (= are subscribed by the context institution)
      */
     Map<String, List> getMyXMap() {
-        Map<String, List> result = [:]
+        Map<String, List> result = [
+                currentOrgIdList : [], // todo
+                currentProviderIdList : [],
+                currentVendorIdList : [],
+                currentPlatformIdList : [],
+                currentPackageIdList : [],
+                currentTippIdList : [] // todo
+        ]
 
         // todo
         result.currentProviderIdList = orgTypeService.getCurrentOrgsOfProvidersAndAgencies(contextService.getOrg()).collect{ it.id }
@@ -113,8 +120,6 @@ class MarkerService {
                 'and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted)) and ((tipp.status is null) or (tipp.status != :tippRemoved)) ',
                 [subIds: currentSubscriptionIdList, pkgDeleted: RDStore.PACKAGE_STATUS_DELETED, tippRemoved: RDStore.TIPP_STATUS_REMOVED]
         )
-
-        result.currentTippIdList = [] // todo
 
         result
     }
