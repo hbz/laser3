@@ -16,7 +16,9 @@
     ${message(code: 'copySurvey.label')}:
     <g:link controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]">
         ${surveyConfig.getConfigNameShort()}
-    </g:link>
+    </g:link>  <div class="ui label survey-${surveyInfo.type.value}">
+    ${surveyInfo.type.getI10n('value')}
+</div>
 </h2>
 
 <ui:messages data="${flash}"/>
@@ -89,6 +91,56 @@
                         </g:if>
                     </td>
                 </tr>
+
+                <tr>
+                    <td><g:checkBox name="copySurvey.copySurveyConfigCommentForNewParticipants" value="${true}"/></td>
+                    <td><g:message code="copySurvey.copySurveyConfigCommentForNewParticipants"/></td>
+                    <td>
+                        <g:if test="${surveyConfig.commentForNewParticipants}">
+                            <textarea class="la-textarea-resize-vertical" readonly="readonly" rows="15">${surveyConfig.commentForNewParticipants}</textarea>
+                        </g:if>
+                    </td>
+                </tr>
+                <g:if test="${surveyInfo.type in [RDStore.SURVEY_TYPE_SUBSCRIPTION, RDStore.SURVEY_TYPE_RENEWAL, RDStore.SURVEY_TYPE_TITLE_SELECTION]}">
+                <tr>
+                    <td><g:checkBox name="copySurvey.copyScheduledDates" value="${true}"/></td>
+                    <td>${message(code: 'copySurvey.copyScheduledDates')}</td>
+                    <td>
+                        ${message(code: 'copySurvey.copyScheduledDates.startDate')}:&nbsp;<g:if
+                                test="${!surveyConfig.scheduledStartDate}">-</g:if><g:formatDate date="${surveyConfig.scheduledStartDate}"
+                                                                                      format="${message(code: 'default.date.format.notime')}"/> &nbsp
+                        ${message(code: 'copySurvey.copyScheduledDates.endDate')}:&nbsp;<g:if
+                                test="${!surveyConfig.scheduledEndDate}">-</g:if><g:formatDate date="${surveyConfig.scheduledEndDate}"
+                                                                                    format="${message(code: 'default.date.format.notime')}"/>
+                    </td>
+                </tr>
+                </g:if>
+
+                <g:if test="${surveyInfo.type == RDStore.SURVEY_TYPE_INTEREST}">
+                <tr>
+                    <td><g:checkBox name="copySurvey.copyLicense" value="${true}"/></td>
+                    <td><g:message code="copySurvey.copyLicense"/></td>
+                    <td>
+                        <g:if test="${surveyInfo.license}">
+                            <g:link controller="license" action="show" id="${surveyInfo.license.id}">
+                                ${surveyInfo.license.reference} (${surveyInfo.license.status.getI10n("value")})
+                            </g:link>
+                        </g:if>
+                    </td>
+                </tr>
+
+                    <tr>
+                        <td><g:checkBox name="copySurvey.copyProvider" value="${true}"/></td>
+                        <td><g:message code="copySurvey.copyProvider"/></td>
+                        <td>
+                            <g:if test="${surveyInfo.provider}">
+                                <g:link controller="provider" action="show" id="${surveyInfo.provider.id}">
+                                    ${surveyInfo.provider.name}
+                                </g:link>
+                            </g:if>
+                        </td>
+                    </tr>
+                </g:if>
 
                 <tr>
                     <td><g:checkBox name="copySurvey.copySurveyConfigCommentForNewParticipants" value="${true}"/></td>
@@ -408,9 +460,13 @@
                     <g:each in="${subscriptions}" var="s" status="i">
                         <g:if test="${!s.instanceOf}">
                             <g:set var="childSubIds" value="${Subscription.executeQuery('select s.id from Subscription s where s.instanceOf = :parent',[parent:s])}"/>
+
+                            <g:set var="editableAll" value="${editable && contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO ) && (surveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL && SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNotNull(s).size() == 0 || surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL)}"/>
                             <tr>
                                 <td>
-                                    <g:checkBox name="targetSubs" value="${s.id}" checked="false"/>
+                                    <g:if test="${editableAll}">
+                                        <g:checkBox name="targetSubs" value="${s.id}" checked="false"/>
+                                    </g:if>
                                 </td>
                                 <td class="center aligned">
                                     ${(params.int('offset') ?: 0) + i + 1}
@@ -498,7 +554,7 @@
                                 </td>
 
                                 <td class="x">
-                                    <g:if test="${editable && contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )}">
+                                    <g:if test="${editableAll}">
                                         <g:link class="ui icon positive button la-popup-tooltip la-delay"
                                                 data-content="${message(code: 'survey.toggleSurveySub.add.label', args: [SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNotNull(s).size(), SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNull(s).size()])}"
                                                 controller="survey" action="copySurvey"

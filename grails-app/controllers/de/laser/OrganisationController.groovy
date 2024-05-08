@@ -1578,11 +1578,20 @@ class OrganisationController  {
         visiblePersons.each { Person p ->
             Contact mail = Contact.findByPrsAndContentType(p, RDStore.CCT_EMAIL)
             if(mail) {
-                Set<String> mails = emailAddresses.get(p.roleLinks.org[0])
-                if(!mails)
-                    mails = []
-                mails << mail.content
-                emailAddresses.put(p.roleLinks.org[0], mails)
+                String oid
+                if(p.roleLinks.org[0]) {
+                    oid = genericOIDService.getOID(p.roleLinks.org[0])
+                }
+                else if(p.roleLinks.vendor[0]) {
+                    oid = genericOIDService.getOID(p.roleLinks.vendor[0])
+                }
+                if(oid) {
+                    Set<String> mails = emailAddresses.get(oid)
+                    if(!mails)
+                        mails = []
+                    mails << mail.content
+                    emailAddresses.put(oid, mails)
+                }
             }
         }
         result.emailAddresses = emailAddresses
@@ -2003,11 +2012,20 @@ class OrganisationController  {
         visiblePersons.each { Person p ->
             Contact mail = Contact.findByPrsAndContentType(p, RDStore.CCT_EMAIL)
             if(mail) {
-                Set<String> mails = emailAddresses.get(p.roleLinks.org[0])
-                if(!mails)
-                    mails = []
-                mails << mail.content
-                emailAddresses.put(p.roleLinks.org[0], mails)
+                String oid
+                if(p.roleLinks.org[0]) {
+                    oid = genericOIDService.getOID(p.roleLinks.org[0])
+                }
+                else if(p.roleLinks.vendor[0]) {
+                    oid = genericOIDService.getOID(p.roleLinks.vendor[0])
+                }
+                if(oid) {
+                    Set<String> mails = emailAddresses.get(oid)
+                    if(!mails)
+                        mails = []
+                    mails << mail.content
+                    emailAddresses.put(oid, mails)
+                }
             }
         }
         result.emailAddresses = emailAddresses
