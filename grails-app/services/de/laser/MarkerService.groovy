@@ -69,6 +69,9 @@ class MarkerService {
         else if (cls == Platform.class) {
             sql = 'Platform obj where m.plt = obj and m.type = :type and m.user = :user order by obj.normname, obj.name'
         }
+        else if (cls == Provider.class) {
+            sql = 'Provider obj where m.plt = obj and m.type = :type and m.user = :user order by obj.sortname, obj.name'
+        }
         else if (cls == Vendor.class) {
             sql = 'Vendor obj where m.ven = obj and m.type = :type and m.user = :user order by obj.sortname, obj.name'
         }
@@ -89,6 +92,7 @@ class MarkerService {
     Map<String, List> getMyXMap() {
         Map<String, List> result = [:]
 
+        // todo
         result.currentProviderIdList = orgTypeService.getCurrentOrgsOfProvidersAndAgencies(contextService.getOrg()).collect{ it.id }
 
         result.currentPackageIdList = SubscriptionPackage.executeQuery(
@@ -119,7 +123,7 @@ class MarkerService {
                 [subIds: currentSubscriptionIdList, pkgDeleted: RDStore.PACKAGE_STATUS_DELETED, tippRemoved: RDStore.TIPP_STATUS_REMOVED]
         )
 
-        result.currentTippIdList = []
+        result.currentTippIdList = [] // todo
 
         result
     }

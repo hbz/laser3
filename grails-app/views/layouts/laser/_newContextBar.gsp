@@ -134,7 +134,7 @@
 
             %{-- marker --}%
 
-            <g:if test="${controllerName == 'organisation'}">
+            <g:if test="${controllerName == 'organisation'}"> %{-- TODO remove --}%
                 <g:if test="${isProviderOrAgency}">
                     <ui:cbItemMarkerAction org="${orgInstance}" type="${Marker.TYPE.WEKB_CHANGES}"/>
                 </g:if>
@@ -152,6 +152,11 @@
             <g:elseif test="${controllerName == 'platform'}">
                 <g:if test="${platformInstance}">
                     <ui:cbItemMarkerAction platform="${platformInstance}" type="${Marker.TYPE.WEKB_CHANGES}"/>
+                </g:if>
+            </g:elseif>
+            <g:elseif test="${controllerName == 'provider'}">
+                <g:if test="${provider}">
+                    <ui:cbItemMarkerAction provider="${provider}" type="${Marker.TYPE.WEKB_CHANGES}"/>
                 </g:if>
             </g:elseif>
             <g:elseif test="${controllerName == 'tipp'}">
