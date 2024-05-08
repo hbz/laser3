@@ -48,7 +48,7 @@ class WekbNewsService {
         }
         Map result = ttl1800.get('wekbNews') as Map
 
-        ['org', 'vendor', 'platform', 'package'].each { type ->
+        ['package', 'platform', 'provider', 'vendor'].each { type ->
             ['all', 'created', 'deleted'].each { lst -> // ensure lists
                 if (! result[type][lst] && result[type][lst] != []) {
                     result[type][lst] = []
@@ -63,43 +63,43 @@ class WekbNewsService {
             }
         }
 
-        List<String> orgList    = result.org.all.collect{ it.id }
-        List<String> venList    = result.vendor.all.collect{ it.id }
         List<String> pkgList    = result.package.all.collect{ it.id }
         List<String> pltList    = result.platform.all.collect{ it.id }
+        List<String> prvList    = result.provider.all.collect{ it.id }
+        List<String> venList    = result.vendor.all.collect{ it.id }
 
         Map<String, List> myXMap = markerService.getMyXMap()
 
-        result.org.my           = myXMap.currentProviderIdList.intersect(orgList)
-        result.vendor.my        = myXMap.currentVendorIdList.intersect(venList)
         result.package.my       = myXMap.currentPackageIdList.intersect(pkgList)
         result.platform.my      = myXMap.currentPlatformIdList.intersect(pltList)
+        result.provider.my      = myXMap.currentProviderIdList.intersect(prvList)
+        result.vendor.my        = myXMap.currentVendorIdList.intersect(venList)
 
-        result.org.marker       = markerService.getObjectsByClassAndType(Org.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(orgList)
-        result.vendor.marker    = markerService.getObjectsByClassAndType(Vendor.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(venList)
         result.package.marker   = markerService.getObjectsByClassAndType(Package.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(pkgList)
         result.platform.marker  = markerService.getObjectsByClassAndType(Platform.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(pltList)
+        result.provider.marker  = markerService.getObjectsByClassAndType(Provider.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(prvList)
+        result.vendor.marker    = markerService.getObjectsByClassAndType(Vendor.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(venList)
 
         try {
-            result.counts.all       = result.org.count          + result.vendor.count           + result.platform.count             + result.package.count
-            result.counts.inLaser   = result.org.countInLaser   + result.vendor.countInLaser    + result.platform.countInLaser      + result.package.countInLaser
-            result.counts.my        = result.org.my.size()      + result.vendor.my.size()       + result.platform.my.size()         + result.package.my.size()
-            result.counts.marker    = result.org.marker.size()  + result.vendor.marker.size()   + result.platform.marker.size()     + result.package.marker.size()
-            result.counts.created   = result.org.created.size() + result.vendor.created.size()  + result.platform.created.size()    + result.package.created.size()
-            result.counts.updated   = result.org.countUpdated   + result.vendor.countUpdated    + result.platform.countUpdated      + result.package.countUpdated
-            result.counts.deleted   = result.org.deleted.size() + result.vendor.deleted.size()  + result.platform.deleted.size()    + result.package.deleted.size()
+            result.counts.all       = result.package.count          + result.platform.count           + result.provider.count             + result.vendor.count
+            result.counts.inLaser   = result.package.countInLaser   + result.platform.countInLaser    + result.provider.countInLaser      + result.vendor.countInLaser
+            result.counts.my        = result.package.my.size()      + result.platform.my.size()       + result.provider.my.size()         + result.vendor.my.size()
+            result.counts.marker    = result.package.marker.size()  + result.platform.marker.size()   + result.provider.marker.size()     + result.vendor.marker.size()
+            result.counts.created   = result.package.created.size() + result.platform.created.size()  + result.provider.created.size()    + result.vendor.created.size()
+            result.counts.updated   = result.package.countUpdated   + result.platform.countUpdated    + result.provider.countUpdated      + result.vendor.countUpdated
+            result.counts.deleted   = result.package.deleted.size() + result.platform.deleted.size()  + result.provider.deleted.size()    + result.vendor.deleted.size()
         }
         catch (Exception e) {
             log.error 'failed getCurrentNews() -> ' + e.getMessage()
 
             // debug
-            println " count             ${result.org.count} - ${result.vendor.count} - ${result.platform.count} - ${result.package.count}"
-            println " countInLaser      ${result.org.countInLaser} - ${result.vendor.countInLaser} - ${result.platform.countInLaser} - ${result.package.countInLaser}"
-            println " countUpdated      ${result.org.countUpdated} - ${result.vendor.countUpdated} - ${result.platform.countUpdated} - ${result.package.countUpdated}"
-            println " my.size()         ${result.org.my?.size()} - ${result.vendor.my?.size()} - ${result.platform.my?.size()} - ${result.package.my?.size()}"
-            println " marker.size()     ${result.org.marker?.size()} - ${result.vendor.marker?.size()} - ${result.platform.marker?.size()} - ${result.package.marker?.size()}"
-            println " created.size()    ${result.org.created?.size()} - ${result.vendor.created?.size()} - ${result.platform.created?.size()} - ${result.package.created?.size()}"
-            println " deleted.size()    ${result.org.deleted?.size()} - ${result.vendor.deleted?.size()} - ${result.platform.deleted?.size()} - ${result.package.deleted?.size()}"
+            println " count             ${result.package.count} - ${result.platform.count} - ${result.provider.count} - ${result.vendor.count}"
+            println " countInLaser      ${result.package.countInLaser} - ${result.platform.countInLaser} - ${result.provider.countInLaser} - ${result.vendor.countInLaser}"
+            println " countUpdated      ${result.package.countUpdated} - ${result.platform.countUpdated} - ${result.provider.countUpdated} - ${result.vendor.countUpdated}"
+            println " my.size()         ${result.package.my?.size()} - ${result.platform.my?.size()} - ${result.provider.my?.size()} - ${result.vendor.my?.size()}"
+            println " marker.size()     ${result.package.marker?.size()} - ${result.platform.marker?.size()} - ${result.provider.marker?.size()} - ${result.vendor.marker?.size()}"
+            println " created.size()    ${result.package.created?.size()} - ${result.platform.created?.size()} - ${result.provider.created?.size()} - ${result.vendor.created?.size()}"
+            println " deleted.size()    ${result.package.deleted?.size()} - ${result.platform.deleted?.size()} - ${result.provider.deleted?.size()} - ${result.vendor.deleted?.size()}"
             return [:]
         }
         result
@@ -151,7 +151,7 @@ class WekbNewsService {
         result = [
                 query       : [ days: days, changedSince: DateUtils.getLocalizedSDF_noTime().format(frame), call: DateUtils.getLocalizedSDF_noZ().format(new Date()) ],
                 counts      : [ : ],
-                org         : [ count: 0, countInLaser: 0, countUpdated: 0, created: [], deleted: [], all: [] ],
+                provider    : [ count: 0, countInLaser: 0, countUpdated: 0, created: [], deleted: [], all: [] ],
                 vendor      : [ count: 0, countInLaser: 0, countUpdated: 0, created: [], deleted: [], all: [] ],
                 platform    : [ count: 0, countInLaser: 0, countUpdated: 0, created: [], deleted: [], all: [] ],
                 package     : [ count: 0, countInLaser: 0, countUpdated: 0, created: [], deleted: [], all: [] ]
@@ -180,13 +180,24 @@ class WekbNewsService {
                     it.remove('sortname')
                     it.remove('status')
 
-                    if (key == 'org') {
-                        Org o = Org.findByGokbId(it.uuid)
-                        it.id = o?.id
-                        it.globalUID = o?.globalUID
+//                    if (key == 'org') {
+//                        Org o = Org.findByGokbId(it.uuid)
+//                        it.id = o?.id
+//                        it.globalUID = o?.globalUID
+//                    }
+//                    else
+                    if (key == 'package') {
+                        Package p = Package.findByGokbId(it.uuid)
+                        it.id = p?.id
+                        it.globalUID = p?.globalUID
                     }
                     else if (key == 'platform') {
                         Platform p = Platform.findByGokbId(it.uuid)
+                        it.id = p?.id
+                        it.globalUID = p?.globalUID
+                    }
+                    else if (key == 'provider') {
+                        Provider p = Provider.findByGokbId(it.uuid)
                         it.id = p?.id
                         it.globalUID = p?.globalUID
                     }
@@ -194,11 +205,6 @@ class WekbNewsService {
                         Vendor v = Vendor.findByGokbId(it.uuid)
                         it.id = v?.id
                         it.globalUID = v?.globalUID
-                    }
-                    else if (key == 'package') {
-                        Package p = Package.findByGokbId(it.uuid)
-                        it.id = p?.id
-                        it.globalUID = p?.globalUID
                     }
 
                     if (it.globalUID) { result[key].countInLaser++ }
@@ -210,17 +216,20 @@ class WekbNewsService {
             }
         }
 
-        Map orgMap = gokbService.executeQuery(apiUrl, base + [componentType: 'Org'])
-        process(orgMap as Map, 'org')
+//        Map orgMap = gokbService.executeQuery(apiUrl, base + [componentType: 'Org'])
+//        process(orgMap as Map, 'org')
 
-        Map vendorMap = gokbService.executeQuery(apiUrl, base + [componentType: 'Vendor'])
-        process(vendorMap as Map, 'vendor')
+        Map packageMap = gokbService.executeQuery(apiUrl, base + [componentType: 'Package'])
+        process(packageMap as Map, 'package')
 
         Map platformMap = gokbService.executeQuery(apiUrl, base + [componentType: 'Platform'])
         process(platformMap as Map, 'platform')
 
-        Map packageMap = gokbService.executeQuery(apiUrl, base + [componentType: 'Package'])
-        process(packageMap as Map, 'package')
+        Map providerMap = gokbService.executeQuery(apiUrl, base + [componentType: 'Org'])
+        process(providerMap as Map, 'provider')
+
+        Map vendorMap = gokbService.executeQuery(apiUrl, base + [componentType: 'Vendor'])
+        process(vendorMap as Map, 'vendor')
 
         result
     }

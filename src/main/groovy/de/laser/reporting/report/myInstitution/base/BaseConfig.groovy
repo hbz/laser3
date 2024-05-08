@@ -102,10 +102,10 @@ class BaseConfig {
             KEY_ORGANISATION,
             KEY_SUBSCRIPTION,
             KEY_LICENSE,
+//            KEY_PROVIDER,
             KEY_VENDOR,
-            // KEY_PROVIDER,
-            KEY_PACKAGE,
             KEY_PLATFORM,
+            KEY_PACKAGE,
             // KEY_ISSUEENTITLEMENT,
             // 'costItem'
     ]

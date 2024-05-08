@@ -123,8 +123,8 @@
         <g:each in="${subscription.packages.sort { it.pkg.name.toLowerCase() }}" var="subPkg">
             <div class="item">
                 ${subPkg.pkg.name}
-                <g:if test="${subPkg.pkg.contentProvider}">
-                    (${subPkg.pkg.contentProvider.name})
+                <g:if test="${subPkg.pkg.provider}">
+                    (${subPkg.pkg.provider.name})
                 </g:if>:
                 <g:link controller="package" action="show" id="${subPkg.pkg.id}"><g:message
                         code="subscription.details.details.package.label"/></g:link>

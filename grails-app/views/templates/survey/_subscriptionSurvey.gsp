@@ -470,8 +470,8 @@
                                                             <g:link controller="package" action="show"
                                                                     id="${sp.pkg.id}">${sp.pkg.name}</g:link>
 
-                                                            <g:if test="${sp.pkg.contentProvider}">
-                                                                (${sp.pkg.contentProvider.name})
+                                                            <g:if test="${sp.pkg.provider}">
+                                                                (${sp.pkg.provider.name})
                                                             </g:if>
                                                         </td>
                                                         <td class="right aligned">

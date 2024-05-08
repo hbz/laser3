@@ -134,21 +134,11 @@
 
             %{-- marker --}%
 
-            <g:if test="${controllerName == 'organisation'}"> %{-- TODO remove --}%
-                <g:if test="${isProviderOrAgency}">
-                    <ui:cbItemMarkerAction org="${orgInstance}" type="${Marker.TYPE.WEKB_CHANGES}"/>
-                </g:if>
-            </g:if>
-            <g:elseif test="${controllerName == 'vendor'}">
-                <g:if test="${vendor}">
-                    <ui:cbItemMarkerAction vendor="${vendor}" type="${Marker.TYPE.WEKB_CHANGES}"/>
-                </g:if>
-            </g:elseif>
-            <g:elseif test="${controllerName == 'package'}">
+            <g:if test="${controllerName == 'package'}">
                 <g:if test="${packageInstance}">
                     <ui:cbItemMarkerAction package="${packageInstance}" type="${Marker.TYPE.WEKB_CHANGES}"/>
                 </g:if>
-            </g:elseif>
+            </g:if>
             <g:elseif test="${controllerName == 'platform'}">
                 <g:if test="${platformInstance}">
                     <ui:cbItemMarkerAction platform="${platformInstance}" type="${Marker.TYPE.WEKB_CHANGES}"/>
@@ -162,6 +152,11 @@
             <g:elseif test="${controllerName == 'tipp'}">
                 <g:if test="${tipp}">
                     <ui:cbItemMarkerAction tipp="${tipp}" type="${Marker.TYPE.TIPP_CHANGES}"/>
+                </g:if>
+            </g:elseif>
+            <g:elseif test="${controllerName == 'vendor'}">
+                <g:if test="${vendor}">
+                    <ui:cbItemMarkerAction vendor="${vendor}" type="${Marker.TYPE.WEKB_CHANGES}"/>
                 </g:if>
             </g:elseif>
 
