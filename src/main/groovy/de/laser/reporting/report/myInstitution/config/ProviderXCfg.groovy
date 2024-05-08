@@ -1,6 +1,6 @@
 package de.laser.reporting.report.myInstitution.config
 
-import de.laser.Vendor
+import de.laser.Provider
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 
 class ProviderXCfg extends BaseConfig {
@@ -9,7 +9,7 @@ class ProviderXCfg extends BaseConfig {
 
             base : [
                     meta : [
-                            class:  Vendor, // TODO
+                            class:  Provider, // TODO
                             cfgKey: BaseConfig.KEY_PROVIDER
                     ],
                     source : [

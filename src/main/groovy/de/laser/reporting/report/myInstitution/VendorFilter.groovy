@@ -1,11 +1,9 @@
 package de.laser.reporting.report.myInstitution
 
 import de.laser.ContextService
-import de.laser.OrgSetting
 import de.laser.RefdataValue
 import de.laser.Vendor
-import de.laser.auth.Role
-import de.laser.properties.PropertyDefinition
+import de.laser.annotations.UnstableFeature
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
@@ -13,7 +11,10 @@ import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
 import grails.web.servlet.mvc.GrailsParameterMap
+import groovy.util.logging.Slf4j
 
+@UnstableFeature
+@Slf4j
 class VendorFilter extends BaseFilter {
 
     static Map<String, Object> filter(GrailsParameterMap params) {
@@ -80,6 +81,10 @@ class VendorFilter extends BaseFilter {
                     queryParams.put( 'p' + pCount, params.long(key) )
 
                     filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
+                }
+                // --> refdata join tables
+                else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
+                    log.info ' --- ' + pType +' not implemented --- '
                 }
                 // --> custom filter implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {

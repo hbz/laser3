@@ -2,12 +2,14 @@ package de.laser.reporting.report.myInstitution
 
 import de.laser.ContextService
 import de.laser.Org
+import de.laser.annotations.UnstableFeature
 import de.laser.auth.Role
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
 import de.laser.storage.BeanStore
 import grails.web.servlet.mvc.GrailsParameterMap
 
+@UnstableFeature
 class ProviderQuery extends BaseQuery {
 
     static Map<String, Object> query(GrailsParameterMap params) {
