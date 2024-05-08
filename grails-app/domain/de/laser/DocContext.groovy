@@ -20,7 +20,9 @@ class DocContext implements ShareableTrait, Comparable {
         subscription:   Subscription,
         link:           Links,
         org:            Org,
-        surveyConfig:   SurveyConfig
+        surveyConfig:   SurveyConfig,
+        provider:       Provider,
+        vendor:         Vendor
     ]
 
     @RefdataInfo(cat = RDConstants.DOCUMENT_CONTEXT_STATUS)
@@ -47,6 +49,8 @@ class DocContext implements ShareableTrait, Comparable {
           license column:'dc_lic_fk', index:'doc_lic_idx'
      subscription column:'dc_sub_fk', index:'doc_sub_idx'
               org column:'dc_org_fk', index:'doc_org_idx'
+         provider column:'dc_prov_fk', index:'doc_prov_idx'
+           vendor column:'dc_ven_fk', index:'doc_ven_idx'
              link column:'dc_link_fk'
      globannounce column:'dc_is_global'
            status column:'dc_status_fk'
@@ -65,6 +69,8 @@ class DocContext implements ShareableTrait, Comparable {
         license     (nullable:true)
         subscription(nullable:true)
         org         (nullable:true)
+        provider    (nullable:true)
+        vendor      (nullable:true)
         link        (nullable:true)
         domain      (nullable:true, blank:false)
         status      (nullable:true)

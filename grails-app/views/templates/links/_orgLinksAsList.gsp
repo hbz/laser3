@@ -1,6 +1,5 @@
 <%@ page import="de.laser.PersonRole; de.laser.RefdataValue; de.laser.Person; de.laser.Contact; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
 <laser:serviceInjection />
-<g:set var="wekbAPI" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
 <table class="ui compact table">
     <g:each in="${roleLinks.sort{it.roleType.id}}" var="role">
         <g:if test="${role.org}">
@@ -11,9 +10,6 @@
                         <g:if test="${role.roleType.value == RDStore.OR_SUBSCRIPTION_CONSORTIA.value}">
                             <i class="la-list-icon la-popup-tooltip la-delay la-consortia icon" data-content="${message(code:'consortium')}"></i>
                         </g:if>
-                        <g:elseif test="${role.roleType.value==RDStore.OR_PROVIDER.value}">
-                            <i class="la-list-icon la-popup-tooltip la-delay handshake outline icon" data-content="${message(code:'default.provider.label')}"></i>
-                        </g:elseif>
                         <g:link controller="organisation" action="show" id="${role.org.id}">
                             ${role.org.name}
                         </g:link>
@@ -46,17 +42,6 @@
                                     </g:link>
                                 </span>
                             </g:else>
-                        </g:if>
-                        <g:if test="${! role.isShared && ! role.sharedFrom}">
-                            <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.unlinkProviderAgency')}">
-                                <g:link class="ui negative icon button la-modern-button la-selectable-button js-open-confirm-modal" controller="ajax" action="delOrgRole" id="${role.id}"
-                                    data-confirm-tokenMsg = "${message(code:'confirm.dialog.unlink.provider-agency.subscription')}"
-                                    data-confirm-term-how = "unlink"
-                                    role="button"
-                                    aria-label="${message(code:'ariaLabel.unlink.provider-agency.subscription')}">
-                                    <i class="unlink icon"></i>
-                                </g:link>
-                            </span>
                         </g:if>
 
                         <g:if test="${!role.isShared && role.sharedFrom}">
@@ -127,29 +112,12 @@
                                         </g:each>
                                         <%--<g:if test="${roleObject instanceof de.laser.Package}">--%>
                                         <%
-                                            Set<Person> techSupports = [], serviceSupports = [], metadataContacts = []
-                                            boolean contactsExWekb = false
-                                            if(role.org.gokbId) {
-                                                contactsExWekb = true
-                                                techSupports.addAll(Person.getPublicByOrgAndFunc(role.org, 'Technical Support', role.org))
-                                                serviceSupports.addAll(Person.getPublicByOrgAndFunc(role.org, 'Service Support', role.org))
-                                                metadataContacts.addAll(Person.getPublicByOrgAndFunc(role.org, 'Metadata Contact', role.org))
-                                            }
-                                            else {
-                                                techSupports.addAll(Person.getPublicByOrgAndFunc(role.org, 'Technical Support'))
-                                                serviceSupports.addAll(Person.getPublicByOrgAndFunc(role.org, 'Service Support'))
-                                                metadataContacts.addAll(Person.getPublicByOrgAndFunc(role.org, 'Metadata Contact'))
-                                            }
+                                            Set<Person> techSupports = Person.getPublicByOrgAndFunc(role.org, 'Technical Support'), serviceSupports = Person.getPublicByOrgAndFunc(role.org, 'Service Support'), metadataContacts = Person.getPublicByOrgAndFunc(role.org, 'Metadata Contact')
                                         %>
                                             <g:each in="${techSupports}" var="func">
                                                 <div class="row">
                                                     <div class="two wide column">
-                                                        <g:if test="${contactsExWekb}">
-                                                            <a target="_blank" href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/orgContent/' + role.org.gokbId : '#'}"><i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
-                                                        </g:if>
-                                                        <g:else>
-                                                            <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
-                                                        </g:else>
+                                                        <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                     </div>
                                                     <div class="thirteen wide column">
                                                         <div class="ui  label">
@@ -174,12 +142,7 @@
                                             <g:each in="${serviceSupports}" var="func">
                                                 <div class="row">
                                                     <div class="two wide column">
-                                                        <g:if test="${contactsExWekb}">
-                                                            <a target="_blank" href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/orgContent/' + role.org.gokbId : '#'}"><i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
-                                                        </g:if>
-                                                        <g:else>
-                                                            <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
-                                                        </g:else>
+                                                        <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                     </div>
                                                     <div class="thirteen wide column">
                                                         <div class="ui  label">
@@ -204,12 +167,7 @@
                                             <g:each in="${metadataContacts}" var="func">
                                                 <div class="row">
                                                     <div class="two wide column">
-                                                        <g:if test="${contactsExWekb}">
-                                                            <a target="_blank" href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/orgContent/' + role.org.gokbId : '#'}"><i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
-                                                        </g:if>
-                                                        <g:else>
-                                                            <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
-                                                        </g:else>
+                                                        <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                     </div>
                                                     <div class="thirteen wide column">
                                                         <div class="ui  label">

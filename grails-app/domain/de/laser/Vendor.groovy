@@ -56,18 +56,22 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
             contacts: 'vendor',
             addresses: 'vendor',
             packages: 'vendor',
+            altnames: 'vendor',
             propertySet: 'owner',
+            documents: 'vendor',
             supportedLibrarySystems: 'vendor',
             electronicBillings: 'vendor',
             invoiceDispatchs: 'vendor',
-            electronicDeliveryDelays: 'vendor',
+            electronicDeliveryDelays: 'vendor'
     ]
 
     static hasMany = [
             contacts: Contact,
             addresses: Address,
-            propertySet: VendorProperty,
             packages: PackageVendor,
+            altnames: AlternativeName,
+            propertySet: VendorProperty,
+            documents: DocContext,
             supportedLibrarySystems: LibrarySystem,
             electronicBillings: ElectronicBilling,
             invoiceDispatchs: InvoiceDispatch,
@@ -116,7 +120,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
 
     @Transient
     int getProvidersCount(){
-        Org.executeQuery("select count(*) from Org o where o in (select oo.org from OrgRole oo join oo.pkg as pkg join pkg.vendors pv where pv.vendor = :vendor)", [vendor: this])[0]
+        Provider.executeQuery("select count(distinct pkg.provider) from Package pkg join pkg.vendors pv where pv.vendor = :vendor", [vendor: this])[0]
     }
 
     @Override
@@ -154,7 +158,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
 
     @Override
     boolean isDeleted() {
-        return RDStore.ORG_STATUS_REMOVED.id == status.id
+        return RDStore.VENDOR_STATUS_REMOVED.id == status.id
     }
 
     @Override
@@ -181,9 +185,9 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
     int compareTo(Vendor v) {
         int result = sortname <=> v.sortname
         if(!result)
-            name <=> v.name
+            result = name <=> v.name
         if(!result)
-            id <=> v.id
+            result = id <=> v.id
         result
     }
 
@@ -197,14 +201,18 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         v.sortname = agency.sortname
         v.gokbId = agency.gokbId //for the case vendors have already recorded as orgs by sync
         v.homepage = agency.url
-        if(agency.status == RDStore.ORG_STATUS_CURRENT)
-            v.status = RDStore.VENDOR_STATUS_CURRENT
-        if(agency.status == RDStore.ORG_STATUS_DELETED)
-            v.status = RDStore.VENDOR_STATUS_DELETED
-        if(agency.status == RDStore.ORG_STATUS_RETIRED)
-            v.status = RDStore.VENDOR_STATUS_RETIRED
-        if(agency.status == RDStore.ORG_STATUS_REMOVED)
-            v.status = RDStore.VENDOR_STATUS_REMOVED
+        switch(agency.status) {
+            case RDStore.ORG_STATUS_CURRENT: v.status = RDStore.VENDOR_STATUS_CURRENT
+                break
+            case RDStore.ORG_STATUS_DELETED: v.status = RDStore.VENDOR_STATUS_DELETED
+                break
+            case RDStore.ORG_STATUS_RETIRED: v.status = RDStore.VENDOR_STATUS_RETIRED
+                break
+            case RDStore.ORG_STATUS_REMOVED: v.status = RDStore.VENDOR_STATUS_REMOVED
+                break
+            default: v.status = RDStore.VENDOR_STATUS_CURRENT
+                break
+        }
         v.dateCreated = agency.dateCreated
         agency.contacts.each { Contact c ->
             c.vendor = v
@@ -216,15 +224,40 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
             a.org = null
             a.save()
         }
+        agency.documents.each { DocContext dc ->
+            dc.vendor = v
+            dc.org = null
+            dc.save()
+        }
+        DocContext.findAllByTargetOrg(agency).each { DocContext dc ->
+            dc.vendor = v
+            dc.org = null
+            dc.targetOrg = null
+            dc.save()
+        }
+        agency.altnames.each { AlternativeName a ->
+            a.vendor = v
+            a.org = null
+            a.save()
+        }
         PersonRole.findAllByOrg(agency).each { PersonRole pr ->
             pr.vendor = v
             pr.org = null
             pr.save()
         }
+        Person.findAllByTenant(agency).each { Person pe ->
+            pe.tenant = null
+            pe.save()
+        }
         Marker.findAllByOrg(agency).each { Marker m ->
             m.ven = v
             m.org = null
             m.save()
+        }
+        Task.findAllByOrg(agency).each { Task t ->
+            t.vendor = v
+            t.org = null
+            t.save()
         }
         OrgProperty.findAllByOwner(agency).each { OrgProperty op ->
             VendorProperty vp = new VendorProperty()
@@ -246,7 +279,11 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
             vp.lastUpdated = op.lastUpdated
             vp.save()
         }
-        v.save()
+        if(!v.save()) {
+            log.error(v.getErrors().getAllErrors().toListString())
+            null
+        }
+        else v
     }
 
     /**

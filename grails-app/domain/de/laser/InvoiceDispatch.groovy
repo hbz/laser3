@@ -6,6 +6,7 @@ import de.laser.storage.RDConstants
 class InvoiceDispatch implements Comparable<InvoiceDispatch> {
 
     Vendor vendor
+    Provider provider
 
     @RefdataInfo(cat = RDConstants.VENDOR_INVOICING_DISPATCH)
     RefdataValue invoiceDispatch
@@ -14,16 +15,22 @@ class InvoiceDispatch implements Comparable<InvoiceDispatch> {
         id column: 'idi_id'
         version column: 'idi_version'
         vendor column: 'idi_vendor_fk'
+        provider column: 'idi_provider_fk'
         invoiceDispatch column: 'idi_invoice_dispatch_rv_fk'
+    }
+
+    static constraints = {
+        vendor (nullable: true)
+        provider (nullable: true)
     }
 
     @Override
     int compareTo(InvoiceDispatch idi) {
         int result = invoiceDispatch <=> idi.invoiceDispatch
-        if(!result)
-            result = vendor.sortname <=> idi.vendor.sortname
-        if(!result)
-            result = vendor.name <=> idi.vendor.name
+        if(!result && vendor && idi.vendor)
+            result = vendor <=> idi.vendor
+        if(!result && provider && idi.provider)
+            result = provider <=> idi.provider
         result
     }
 }

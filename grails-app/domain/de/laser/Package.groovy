@@ -52,6 +52,7 @@ class Package extends AbstractBaseWithCalculatedLastUpdated implements MarkerSup
     boolean isPublic = false
 
     Platform nominalPlatform
+    Provider provider
     Date startDate
     Date endDate
     Set pendingChanges
@@ -66,7 +67,6 @@ class Package extends AbstractBaseWithCalculatedLastUpdated implements MarkerSup
     Date lastUpdatedCascading
 
 static hasMany = [  tipps:     TitleInstancePackagePlatform,
-                    orgs:      OrgRole,
                     vendors:   PackageVendor,
                     prsLinks:  PersonRole,
                     subscriptions:  SubscriptionPackage,
@@ -77,7 +77,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                     altnames: AlternativeName]
 
   static mappedBy = [tipps:     'pkg',
-                     orgs:      'pkg',
                      prsLinks:  'pkg',
                      subscriptions: 'pkg',
                      pendingChanges: 'pkg',
@@ -101,6 +100,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                breakable column:'pkg_breakable_rv_fk'
               consistent column:'pkg_consistent_rv_fk'
          nominalPlatform column:'pkg_nominal_platform_fk'
+                provider column:'pkg_provider_fk' //was orgRole with pkg != null
                startDate column:'pkg_start_date',   index:'pkg_dates_idx'
                  endDate column:'pkg_end_date',     index:'pkg_dates_idx'
                 isPublic column:'pkg_is_public'
@@ -114,7 +114,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                  lastUpdated column: 'pkg_last_updated'
         lastUpdatedCascading column: 'pkg_last_updated_cascading'
 
-            orgs            batchSize: 10
             prsLinks        batchSize: 10
             subscriptions   batchSize: 10
             ids             sort: 'ns', batchSize: 10
@@ -127,6 +126,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                contentType (nullable:true)
              packageStatus (nullable:true)
            nominalPlatform (nullable:true)
+                  provider (nullable:true) //because of initial migration holes
                  breakable (nullable:true)
                 consistent (nullable:true)
                  startDate (nullable:true)
@@ -158,6 +158,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
      * @return the {@link Org} linked to this package by {@link OrgRole} of type Content Provider or Provider
      */
   @Transient
+  @Deprecated
   Org getContentProvider() {
     Org result = orgs.find { OrgRole or ->
       or.roleType in [RDStore.OR_CONTENT_PROVIDER, RDStore.OR_PROVIDER]

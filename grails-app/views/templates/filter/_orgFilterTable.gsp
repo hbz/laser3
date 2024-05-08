@@ -583,40 +583,6 @@
                     </div>
                 </td>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('currentSubscriptions')}">
-                <td>
-                    <g:if test="${actionName == 'currentProviders'}">
-                        <%
-                            if (params.filterPvd && params.filterPvd != "" && params.list('filterPvd')){
-                                (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(
-                                        [org: org, actionName: actionName, status: RDStore.SUBSCRIPTION_CURRENT.id, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null, providers: params.list('filterPvd')]
-                                    )
-                            } else {
-                                (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(
-                                        [org: org, actionName: actionName, status: RDStore.SUBSCRIPTION_CURRENT.id, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null]
-                                    )
-                            }
-                            List<Subscription> currentSubscriptions = Subscription.executeQuery("select s " + base_qry, qry_params)
-                        %>
-                        <g:if test="${currentSubscriptions}">
-                            <ul class="la-simpleList">
-                                <g:each in="${currentSubscriptions}" var="sub">
-                                    <li><g:link controller="subscription" action="show" id="${sub.id}">${sub}</g:link></li>
-                                </g:each>
-                            </ul>
-                        </g:if>
-                    </g:if>
-                    <g:elseif test="${actionName == 'currentVendors'}">
-                        <g:if test="${currentSubscriptions}">
-                            <ul class="la-simpleList">
-                                <g:each in="${currentSubscriptions.get(org.id)}" var="sub">
-                                    <li><g:link controller="subscription" action="show" id="${sub.id}">${sub}</g:link></li>
-                                </g:each>
-                            </ul>
-                        </g:if>
-                    </g:elseif>
-                </td>
-            </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSurveys')}">
                     <td class="center aligned">
                         <div class="la-flexbox">
@@ -673,24 +639,13 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('platform')}">
                 <td>
-                    <g:if test="${org instanceof Org}">
-                        <g:each in="${org.platforms}" var="platform">
-                            <g:if test="${platform.gokbId != null}">
-                                <ui:wekbIconLink type="platform" gokbId="${platform.gokbId}" />
-                            </g:if>
-                            <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
-                            <br />
-                        </g:each>
-                    </g:if>
-                    <g:elseif test="${org instanceof Vendor}">
-                        <g:each in="${vendorService.getSubscribedPlatforms(org, institution)}" var="platform">
-                            <g:if test="${platform.gokbId != null}">
-                                <ui:wekbIconLink type="platform" gokbId="${platform.gokbId}" />
-                            </g:if>
-                            <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
-                            <br />
-                        </g:each>
-                    </g:elseif>
+                    <g:each in="${org.platforms}" var="platform">
+                        <g:if test="${platform.gokbId != null}">
+                            <ui:wekbIconLink type="platform" gokbId="${platform.gokbId}" />
+                        </g:if>
+                        <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
+                        <br />
+                    </g:each>
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('type')}">

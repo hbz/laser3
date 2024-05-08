@@ -219,18 +219,6 @@ class OrganisationControllerService {
 
         if (params.id) {
             result.orgInstance = Org.get(params.id)
-            if(result.orgInstance.gokbId) {
-                ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-                result.editUrl = apiSource.editUrl.endsWith('/') ? apiSource.editUrl : apiSource.editUrl+'/'
-                Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: result.orgInstance.gokbId])
-                if (queryResult.error && queryResult.error == 404) {
-                    result.error = messageSource.getMessage('wekb.error.404', null, LocaleUtils.getCurrentLocale())
-                }
-                else if (queryResult) {
-                    List records = queryResult.result
-                    result.orgInstanceRecord = records ? records[0] : [:]
-                }
-            }
             result.editable = controller._checkIsEditable(user, result.orgInstance)
             result.inContextOrg = result.orgInstance.id == org.id
             //this is a flag to check whether the page has been called for a consortia or inner-organisation member
@@ -274,7 +262,7 @@ class OrganisationControllerService {
         int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.orgInstance).size()
         int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.orgInstance).size()
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
-
+        result.docsCount        = docstoreService.getDocsCount(result.orgInstance, result.contextOrg)
         result.notesCount       = docstoreService.getNotesCount(result.orgInstance, result.contextOrg)
         result.checklistCount   = workflowService.getWorkflowCount(result.orgInstance, result.contextOrg)
 
@@ -284,7 +272,6 @@ class OrganisationControllerService {
         result.navNextOrg = nav.nextLink
         result.targetCustomerType = result.orgInstance.getCustomerType()
         result.allOrgTypeIds = result.orgInstance.getAllOrgTypeIds()
-        result.isProviderOrAgency = (RDStore.OT_PROVIDER.id in result.allOrgTypeIds) || (RDStore.OT_AGENCY.id in result.allOrgTypeIds)
         result
     }
 }

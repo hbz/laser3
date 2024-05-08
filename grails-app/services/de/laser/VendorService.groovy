@@ -2,9 +2,11 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.helper.Params
+import de.laser.properties.ProviderProperty
 import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.traces.DeletedObject
 import de.laser.utils.SwissKnife
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -13,8 +15,15 @@ import grails.web.servlet.mvc.GrailsParameterMap
 class VendorService {
 
     ContextService contextService
+    DocstoreService docstoreService
     DeletionService deletionService
     GokbService gokbService
+    TaskService taskService
+    WorkflowService workflowService
+
+    static String RESULT_BLOCKED            = 'RESULT_BLOCKED'
+    static String RESULT_SUCCESS            = 'RESULT_SUCCESS'
+    static String RESULT_ERROR              = 'RESULT_ERROR'
 
     /**
      * Gets the contact persons; optionally, a function type may be given as filter. Moreover, the request may be limited to public contacts only
@@ -97,32 +106,28 @@ class VendorService {
      */
     void migrateVendors() {
         Org.withTransaction { ts ->
-            Set<Org> agencies = Org.executeQuery('select o from Org o join o.orgType ot where ot = :agency', [agency: RDStore.OT_AGENCY])
-            agencies.each { Org agency ->
-                Vendor.convertFromAgency(agency)
-                agency.orgType.remove(RDStore.OT_AGENCY)
-                agency.save()
-            }
-            Set<OrgRole> agencyRelations = OrgRole.findAllByRoleTypeAndIsShared(RDStore.OR_AGENCY, false)
+            Set<OrgRole> agencyRelations = OrgRole.findAllByRoleType(RDStore.OR_AGENCY)
+            Set<Long> toDelete = []
             agencyRelations.each { OrgRole ar ->
                 Vendor v = Vendor.findByGlobalUID(ar.org.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
                 if(!v) {
                     v = Vendor.convertFromAgency(ar.org)
-                    ar.org.orgType.remove(RDStore.OT_AGENCY)
-                    ar.org.save()
                 }
                 if(ar.sub || ar.lic) {
-                    VendorRole vr = new VendorRole(vendor: v)
+                    VendorRole vr = new VendorRole(vendor: v, isShared: ar.isShared)
                     if(ar.sub)
                         vr.subscription = ar.sub
                     if(ar.lic)
                         vr.license = ar.lic
                     if(vr.save()) {
                         if(ar.isShared) {
-                            if(ar.sub)
+                            if(ar.sub) {
                                 vr.addShareForTarget_trait(ar.sub)
-                            if(ar.lic)
+                            }
+                            if(ar.lic) {
                                 vr.addShareForTarget_trait(ar.lic)
+                            }
+                            //log.debug("${OrgRole.executeUpdate('delete from OrgRole oorr where oorr.sharedFrom = :sf', [sf: ar])} shares deleted")
                         }
                         log.debug("processed: ${vr.vendor}:${vr.subscription}:${vr.license} ex ${ar.org}:${ar.sub}:${ar.lic}")
                     }
@@ -134,15 +139,179 @@ class VendorService {
                         log.debug("processed: ${pv.vendor}:${pv.pkg} ex ${ar.org}:${ar.pkg}")
                     else log.error(pv.errors.getAllErrors().toListString())
                 }
-                ar.delete()
+                toDelete << ar.id
+            }
+            toDelete.collate(500).eachWithIndex { subSet, int i ->
+                log.debug("deleting records ${i*500}-${(i+1)*500}")
+                OrgRole.executeUpdate('delete from OrgRole ar where ar.sharedFrom.id in (:toDelete)', [toDelete: subSet])
+                OrgRole.executeUpdate('delete from OrgRole ar where ar.id in (:toDelete)', [toDelete: subSet])
             }
             ts.flush()
+            Set<Org> agencies = Org.executeQuery('select o from Org o join o.orgType ot where ot = :agency', [agency: RDStore.OT_AGENCY])
             agencies.each { Org agency ->
+                OrgRole.executeUpdate('delete from OrgRole oo where oo.org = :agency and oo.roleType not in (:toKeep)', [agency: agency, toKeep: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER, RDStore.OR_LICENSOR, RDStore.OR_AGENCY]])
                 Map<String, Object> delResult = deletionService.deleteOrganisation(agency, null, false)
-                if(delResult.deletable == false)
-                    log.info("objects pending; ${agency.name}:${agency.id} could not be deleted")
+                if(delResult.deletable == false) {
+                    log.info("${agency.name}:${agency.id} could not be deleted. Pending: ${delResult.info.findAll{ info -> info[1].size() > 0 && info[2] == DeletionService.FLAG_BLOCKER }.toListString()}")
+                    agency.orgType.remove(RDStore.OT_AGENCY)
+                    agency.save()
+                }
             }
         }
+    }
+
+    /**
+     * Merges the given two vendors; displays eventual attached objects
+     * @param vendor the vendor which should be merged
+     * @param replacement the vendor to merge with
+     * @param dryRun should the merge avoided and only information be fetched?
+     * @return a map returning the information about the organisation
+     */
+    Map<String, Object> mergeVendors(Vendor vendor, Vendor replacement, boolean dryRun) {
+
+        Map<String, Object> result = [:]
+
+        // gathering references
+
+        List vendorLinks       = VendorRole.findAllByVendor(vendor)
+
+        List addresses      = new ArrayList(vendor.addresses)
+        List contacts       = new ArrayList(vendor.contacts)
+
+        List prsLinks       = VendorRole.findAllByVendor(vendor)
+        List docContexts    = new ArrayList(vendor.documents)
+        List tasks          = Task.findAllByVendor(vendor)
+        List packages       = PackageVendor.findAllByVendor(vendor)
+
+        List customProperties       = new ArrayList(vendor.propertySet.findAll { it.type.tenant == null })
+        List privateProperties      = new ArrayList(vendor.propertySet.findAll { it.type.tenant != null })
+
+        // collecting information
+
+        result.info = []
+
+        //result.info << ['Links: Orgs', links, FLAG_BLOCKER]
+
+        //result.info << ['Identifikatoren', ids]
+        result.info << ['VendorRoles', vendorLinks]
+
+        result.info << ['Adressen', addresses]
+        result.info << ['Kontaktdaten', contacts]
+        result.info << ['Personen', prsLinks]
+        result.info << ['Aufgaben', tasks]
+        result.info << ['Dokumente', docContexts]
+        result.info << ['Packages', packages]
+
+        result.info << ['Allgemeine Merkmale', customProperties]
+        result.info << ['Private Merkmale', privateProperties]
+
+
+        // checking constraints and/or processing
+
+        result.mergeable = true
+
+        if (dryRun || ! result.mergeable) {
+            return result
+        }
+        else {
+            Vendor.withTransaction { status ->
+
+                try {
+                    Map<String, Object> genericParams = [source: vendor, target: replacement]
+                    /* identifiers
+                    vendor.ids.clear()
+                    ids.each { Identifier id ->
+                        id.provider = replacement
+                        id.save()
+                    }
+                    */
+
+                    vendorLinks.each { VendorRole vr ->
+                        Map<String, Object> checkParams = [target: replacement]
+                        String targetClause = ''
+                        if(vr.subscription) {
+                            targetClause = 'vr.subscription = :sub'
+                            checkParams.sub = vr.subscription
+                        }
+                        else if(vr.license) {
+                            targetClause = 'vr.license = :lic'
+                            checkParams.lic = vr.license
+                        }
+                        List vendorRoleCheck = OrgRole.executeQuery('select vr from VendorRole vr where vr.provider = :target and '+targetClause, checkParams)
+                        if(!vendorRoleCheck) {
+                            vr.vendor = replacement
+                            vr.save()
+                        }
+                        else {
+                            vr.delete()
+                        }
+                    }
+
+                    // addresses
+                    vendor.addresses.clear()
+                    log.debug("${Address.executeUpdate('update Address a set a.vendor = :target where a.org = :source', genericParams)} addresses updated")
+
+                    // contacts
+                    vendor.contacts.clear()
+                    log.debug("${Contact.executeUpdate('update Contact c set c.vendor = :target where c.org = :source', genericParams)} contacts updated")
+
+                    // custom properties
+                    vendor.propertySet.clear()
+                    log.debug("${ProviderProperty.executeUpdate('update VendorProperty vp set vp.owner = :target where vp.owner = :source', genericParams)} properties updated")
+
+                    // documents
+                    vendor.documents.clear()
+                    log.debug("${DocContext.executeUpdate('update DocContext dc set dc.vendor = :target where dc.vendor = :source', genericParams)} document contexts updated")
+
+                    // supported library systems
+                    vendor.supportedLibrarySystems.clear()
+                    log.debug("${DocContext.executeUpdate('update LibrarySystem ls set ls.vendor = :target where ls.vendor = :source', genericParams)} supported library systems updated")
+
+                    // electronic billings
+                    vendor.electronicBillings.clear()
+                    log.debug("${ElectronicBilling.executeUpdate('update ElectronicBilling eb set eb.vendor = :target where eb.vendor = :source', genericParams)} electronic billings updated")
+
+                    // invoice dispatchs
+                    vendor.invoiceDispatchs.clear()
+                    log.debug("${InvoiceDispatch.executeUpdate('update InvoiceDispatch idi set idi.vendor = :target where idi.vendor = :source', genericParams)} invoice dispatchs updated")
+
+                    // electronic delivery delay notifications
+                    vendor.electronicDeliveryDelays.clear()
+                    log.debug("${ElectronicDeliveryDelayNotification.executeUpdate('update ElectronicDeliveryDelayNotification eddn set eddn.vendor = :target where eddn.vendor = :source', genericParams)} electronic delivery delay notifications updated")
+
+                    // persons
+                    log.debug("${Person.executeUpdate('update Person p set p.vendor = :target where p.vendor = :source', genericParams)} persons updated")
+
+                    // tasks
+                    log.debug("${Task.executeUpdate('update Task t set t.vendor = :target where t.vendor = :source', genericParams)} tasks updated")
+
+                    // platforms
+                    log.debug("${Platform.executeUpdate('update Platform p set p.vendor = :target where p.vendor = :source', genericParams)} platforms updated")
+
+                    // alternative names
+                    vendor.altnames.clear()
+                    log.debug("${AlternativeName.executeUpdate('update AlternativeName alt set alt.vendor = :target where alt.vendor = :source', genericParams)} alternative names updated")
+                    AlternativeName.construct([name: vendor.name, vendor: replacement])
+
+                    vendor.delete()
+
+                    DeletedObject.withTransaction {
+                        DeletedObject.construct(vendor)
+                    }
+                    status.flush()
+
+                    result.status = RESULT_SUCCESS
+                }
+                catch (Exception e) {
+                    log.error 'error while merging provider ' + vendor.id + ' .. rollback: ' + e.message
+                    e.printStackTrace()
+                    status.setRollbackOnly()
+                    result.status = RESULT_ERROR
+                }
+            }
+        }
+
+        result
     }
 
     boolean isMyVendor(Vendor vendor, Org contextOrg) {
@@ -162,7 +331,18 @@ class VendorService {
         User contextUser = contextService.getUser()
         Map<String, Object> result = [user: contextUser,
                                       institution: contextOrg,
+                                      contextOrg: contextOrg, //for templates
                                       wekbApi: ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)]
+        if(params.id) {
+            result.vendor = Vendor.get(params.id)
+            int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.vendor).size()
+            int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.vendor).size()
+            result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
+            result.docsCount        = docstoreService.getDocsCount(result.vendor, result.institution)
+            result.notesCount       = docstoreService.getNotesCount(result.vendor, result.institution)
+            //result.checklistCount   = workflowService.getWorkflowCount(result.vendor, result.institution) TODO
+        }
+
         SwissKnife.setPaginationParams(result, params, contextUser)
         result
     }

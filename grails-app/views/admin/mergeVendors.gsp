@@ -1,28 +1,28 @@
-<laser:htmlStart message="menu.admin.mergeOrganisations" serviceInjection="true"/>
+<laser:htmlStart message="menu.admin.mergeVendors" serviceInjection="true"/>
 
-    <ui:h1HeaderWithIcon message="menu.admin.mergeOrganisations" />
+    <ui:h1HeaderWithIcon message="menu.admin.mergeVendors" />
 
     <g:if test="${mergeResult}">
-        <g:if test="${mergeResult.status == orgnaisationService.RESULT_SUCCESS}">
+        <g:if test="${mergeResult.status == vendorService.RESULT_SUCCESS}">
             <ui:msg class="positive" message="deletion.success.msg" />
         </g:if>
         <g:else>
-            <g:if test="${mergeResult.status == organisationService.RESULT_BLOCKED}">
+            <g:if test="${mergeResult.status == vendorService.RESULT_BLOCKED}">
                 <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.subscription" />
             </g:if>
-            <g:if test="${mergeResult.status == organisationService.RESULT_ERROR}">
+            <g:if test="${mergeResult.status == vendorService.RESULT_ERROR}">
                 <ui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
             </g:if>
         </g:else>
     </g:if>
 
         <%-- --%>
-    <g:form controller="admin" action="mergeOrganisations">
+    <g:form controller="admin" action="mergeProviders">
         <table class="ui celled la-js-responsive-table la-table compact table">
             <thead>
                 <tr>
                     <th colspan="3">
-                        <label for="source">${message(code: 'default.agency.provider.plural.label')}</label>
+                        <label for="source">${message(code: 'default.agency.plural.label')}</label>
                         <div class="ui search selection fluid dropdown org" id="source">
                             <input type="hidden" name="source"/>
                             <div class="default text"><g:message code="default.select.source.label"/></div>
@@ -30,7 +30,7 @@
                         </div>
                     </th>
                     <th colspan="3">
-                        <label for="target">${message(code: 'default.agency.provider.plural.label')}</label>
+                        <label for="target">${message(code: 'default.agency.plural.label')}</label>
                         <div class="ui search selection fluid dropdown org" id="target">
                             <input type="hidden" name="target"/>
                             <div class="default text"><g:message code="default.select.target.label"/></div>
@@ -58,7 +58,7 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="6"><g:submitButton name="validate" class="ui button primary" value="Gewählte Einrichtungen zusammenführen"/></td>
+                    <td colspan="6"><g:submitButton name="validate" class="ui button primary" value="Gewählte Lieferanten zusammenführen"/></td>
                 </tr>
             </tfoot>
         </table>
@@ -68,7 +68,7 @@
         $('.org').each(function() {
             $(this).dropdown({
                 apiSettings: {
-                    url: '<g:createLink controller="ajaxJson" action="lookupProvidersAgencies"/>?query={query}&displayWekbFlag=true',
+                    url: '<g:createLink controller="ajaxJson" action="lookupVendors"/>?query={query}&displayWekbFlag=true',
                     cache: false
                 },
                 clearable: true,
@@ -128,7 +128,7 @@
                 };
             }
             $.ajax({
-                url: '<g:createLink controller="ajaxJson" action="loadOrganisationForMerge"/>',
+                url: '<g:createLink controller="ajaxJson" action="loadProviderForMerge"/>',
                 data: data,
                 success: success
             });

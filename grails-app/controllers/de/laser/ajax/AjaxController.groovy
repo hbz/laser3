@@ -647,7 +647,7 @@ class AjaxController {
     def addVendorRole() {
         def owner  = genericOIDService.resolveOID(params.parent)
 
-        Set<Vendor> vendors = Vendor.findAllByIdInList(params.list('selectedOrgs')) //because of reuse of orgFilterTable
+        Set<Vendor> vendors = Vendor.findAllByIdInList(params.list('selectedVendors'))
         vendors.each{ vendorToLink ->
             boolean duplicateVendorRole = false
 
@@ -695,6 +695,66 @@ class AjaxController {
             owner.updateShare(vr)
         }
         vr.delete()
+
+        redirect(url: request.getHeader('referer'))
+    }
+
+    /**
+     * Adds a relation link from a given object to a {@link Provider}
+     */
+    @Secured(['ROLE_USER'])
+    @Transactional
+    def addProviderRole() {
+        def owner  = genericOIDService.resolveOID(params.parent)
+
+        Set<Provider> providers = Vendor.findAllByIdInList(params.list('selectedProviders'))
+        providers.each{ providerToLink ->
+            boolean duplicateProviderRole = false
+
+            if(params.recip_prop == 'subscription') {
+                duplicateProviderRole = ProviderRole.findAllBySubscriptionAndProvider(owner, providerToLink) ? true : false
+            }
+            else if(params.recip_prop == 'license') {
+                duplicateProviderRole = ProviderRole.findAllByLicenseAndProvider(owner, providerToLink) ? true : false
+            }
+
+            if(! duplicateProviderRole) {
+                ProviderRole new_link = new ProviderRole(provider: providerToLink)
+                new_link[params.recip_prop] = owner
+
+                if (new_link.save()) {
+                    // log.debug("Org link added")
+                    if (owner instanceof ShareSupport && owner.checkSharePreconditions(new_link)) {
+                        new_link.isShared = true
+                        new_link.save()
+
+                        owner.updateShare(new_link)
+                    }
+                } else {
+                    log.error("Problem saving new provider link ..")
+                    new_link.errors.each { e ->
+                        log.error( e.toString() )
+                    }
+                }
+            }
+        }
+        redirect(url: request.getHeader('referer'))
+    }
+
+    /**
+     * Deletes the given relation link between a {@link Provider} its target
+     */
+    @Secured(['ROLE_USER'])
+    @Transactional
+    def delProviderRole() {
+        ProviderRole pvr = ProviderRole.get(params.id)
+
+        def owner = pvr.getOwner()
+        if (owner instanceof ShareSupport && pvr.isShared) {
+            pvr.isShared = false
+            owner.updateShare(pvr)
+        }
+        pvr.delete()
 
         redirect(url: request.getHeader('referer'))
     }

@@ -3,6 +3,7 @@ package de.laser.convenience
 import de.laser.Org
 import de.laser.Package
 import de.laser.Platform
+import de.laser.Provider
 import de.laser.Vendor
 import de.laser.auth.User
 
@@ -39,7 +40,8 @@ class Marker {
     Date lastUpdated
 
     static belongsTo = [
-            org:    Org,
+            org:    Org, //to be migrated to provider
+            prov:   Provider,
             pkg:    Package,
             plt:    Platform,
             ven:    Vendor,
@@ -51,6 +53,7 @@ class Marker {
         version     column:'mkr_version'
 
         org         column:'mkr_org_fk'
+        prov        column:'mkr_prov_fk'
         pkg         column:'mkr_pkg_fk'
         plt         column:'mkr_plt_fk'
         ven         column:'mkr_ven_fk'
@@ -64,6 +67,7 @@ class Marker {
 
     static constraints = {
         org         (nullable:true)
+        prov        (nullable:true)
         pkg         (nullable:true)
         plt         (nullable:true)
         ven         (nullable:true)

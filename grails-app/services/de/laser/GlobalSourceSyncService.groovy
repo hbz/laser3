@@ -32,7 +32,7 @@ import java.util.concurrent.ExecutorService
  * <ol start="0">
  *  <li>{@link #RECTYPE_PACKAGE}</li>
  *  <li>{@link #RECTYPE_PLATFORM}</li>
- *  <li>{@link #RECTYPE_ORG}</li>
+ *  <li>{@link #RECTYPE_PROVIDER}</li>
  *  <li>{@link #RECTYPE_TIPP}</li>
  *  <li>{@link #RECTYPE_VENDOR}</li>
  * </ol>
@@ -50,13 +50,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
     static final long RECTYPE_PACKAGE = 0
     static final long RECTYPE_PLATFORM = 1
-    static final long RECTYPE_ORG = 2
+    static final long RECTYPE_PROVIDER = 2
     static final long RECTYPE_TIPP = 3
     static final long RECTYPE_VENDOR = 4
     static final int MAX_CONTENT_LENGTH = 1024 * 1024 * 100
     static final int MAX_TIPP_COUNT_PER_PAGE = 20000
-    static final String ORG_TYPE_PROVIDER = 'Org'
-    static final String ORG_TYPE_VENDOR = 'Vendor'
 
     Map<String, RefdataValue> titleMedium = [:],
             tippStatus = [:],
@@ -125,7 +123,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                 */
                 switch(source.rectype) {
-                    case RECTYPE_ORG: componentType = 'Org'
+                    case RECTYPE_PROVIDER: componentType = 'Org'
                         break
                     case RECTYPE_VENDOR: componentType = 'Vendor'
                         break
@@ -332,7 +330,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         defineMapFields()
             long rectype
             switch(componentType) {
-                case 'Org': rectype = RECTYPE_ORG
+                case 'Org': rectype = RECTYPE_PROVIDER
                     break
                 case 'Package': rectype = RECTYPE_PACKAGE
                     break
@@ -457,10 +455,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                 platform.save()
                                             }
                                             break
-                                        case 'Org': List<Org> orgs = Org.findAllByGokbIdInList(wekbRecords.keySet().toList())
-                                            log.debug("from current page, ${orgs.size()} providers exist in LAS:eR")
-                                            orgs.eachWithIndex { Org provider, int idx ->
-                                                log.debug("now processing org ${idx} with uuid ${provider.gokbId}, total entry: ${offset+idx}")
+                                        case 'Org': List<Provider> providers = Provider.findAllByGokbIdInList(wekbRecords.keySet().toList())
+                                            log.debug("from current page, ${providers.size()} providers exist in LAS:eR")
+                                            providers.eachWithIndex { Provider provider, int idx ->
+                                                log.debug("now processing provider ${idx} with uuid ${provider.gokbId}, total entry: ${offset+idx}")
                                                 switch(dataToLoad) {
                                                     case "identifier":
                                                         List identifiers = wekbRecords.get(provider.gokbId).identifiers
@@ -625,7 +623,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     log.debug("-------------- processing page ${result.currentPage} out of ${result.lastPage} ------------------")
                     if(result.count > 0) {
                         switch (source.rectype) {
-                            case RECTYPE_ORG:
+                            case RECTYPE_PROVIDER:
                                 result.records.each { record ->
                                     record.platforms.each { Map platformData ->
                                         try {
@@ -636,7 +634,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                             SystemEvent.createEvent("GSSS_JSON_WARNING",[platformRecordKey:platformData.uuid])
                                         }
                                     }
-                                    createOrUpdateOrg(record)
+                                    createOrUpdateProvider(record)
                                 }
                                 break
                             case RECTYPE_PACKAGE:
@@ -714,7 +712,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         else if(result.count > 0 && result.count < MAX_TIPP_COUNT_PER_PAGE) {
             switch (source.rectype) {
-                case RECTYPE_ORG:
+                case RECTYPE_PROVIDER:
                     result.records.each { record ->
                         record.platforms.each { Map platformData ->
                             try {
@@ -725,7 +723,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 SystemEvent.createEvent("GSSS_JSON_WARNING",[platformRecordKey:platformData.uuid])
                             }
                         }
-                        createOrUpdateOrg(record)
+                        createOrUpdateProvider(record)
                     }
                     break
                 case RECTYPE_PACKAGE:
@@ -1205,9 +1203,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             if(nominalPlatform)
                                 newPackageProps.nominalPlatform = nominalPlatform
                         }
-                        if(packageRecord.providerUuid) {
-                            newPackageProps.contentProvider = Org.findByGokbId(packageRecord.providerUuid)
-                        }
                         /*
                         Set<Map<String,Object>> pkgPropDiffs = getPkgPropDiff(result, newPackageProps)
                         if(pkgPropDiffs) {
@@ -1249,8 +1244,19 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             try {
                                 Map<String, Object> providerRecord = fetchRecordJSON(false,[uuid:packageRecord.providerUuid])
                                 if(providerRecord && !providerRecord.error) {
-                                    Org provider = createOrUpdateOrg(providerRecord)
-                                    setupOrgRole([org: provider,pkg: result, roleTypeCheckup: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER], definiteRoleType: RDStore.OR_PROVIDER])
+                                    Provider provider = Provider.findByGokbId(packageRecord.providerUuid)
+                                    if(!provider) {
+                                        Map<String, Object> providerData = fetchRecordJSON(false,[uuid: packageRecord.providerUuid])
+                                        if(providerData && !providerData.error)
+                                            provider = createOrUpdateProvider(providerData)
+                                        else if(providerData && providerData.error == 404) {
+                                            throw new SyncException("we:kb server is currently down")
+                                        }
+                                        else {
+                                            throw new SyncException("Provider loading failed for ${packageRecord.providerUuid}")
+                                        }
+                                    }
+                                    result.provider = provider
                                 }
                                 else if(providerRecord && providerRecord.error == 404) {
                                     log.error("we:kb server is down")
@@ -1265,6 +1271,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         }
                         if(packageRecord.vendors) {
                             try {
+                                PackageVendor.executeUpdate('delete from PackageVendor pv where pv.pkg = :pkg', [pkg: result])
                                 packageRecord.vendors.each { Map vendorData ->
                                     Map<String, Object> vendorRecord = fetchRecordJSON(false,[uuid:vendorData.vendorUuid])
                                     if(vendorRecord && !vendorRecord.error) {
@@ -1332,67 +1339,68 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * Was formerly in the {@link Org} domain class; deployed for better maintainability
      * Checks for a given UUID if the provider exists, otherwise, it will be created
      *
-     * @param providerUUID the GOKb UUID or JSON record of the given provider {@link Org}
+     * @param providerUUID the GOKb UUID or JSON record of the given {@link Provider}
      * @return the updated provider record
      * @throws SyncException
      */
-    Org createOrUpdateOrg(Map<String,Object> orgJSON) throws SyncException {
-        Map orgRecord
-        if(orgJSON.records)
-            orgRecord = orgJSON.records[0]
-        else orgRecord = orgJSON
-        log.info("org record loaded, reconciling org record for UUID ${orgRecord.uuid}")
+    Provider createOrUpdateProvider(Map<String,Object> providerJSON) throws SyncException {
+        Map providerRecord
+        if(providerJSON.records)
+            providerRecord = providerJSON.records[0]
+        else providerRecord = providerJSON
+        log.info("provider record loaded, reconciling provider record for UUID ${providerRecord.uuid}")
         //first attempt
-        Org org = Org.findByGokbId(orgRecord.uuid)
+        Provider provider = Provider.findByGokbId(providerRecord.uuid)
         //attempt succeeded
-        if(org) {
-            org.name = orgRecord.name
+        if(provider) {
+            provider.name = providerRecord.name
         }
         //second attempt
-        else if(!org) {
-            org = Org.findByNameAndGokbIdIsNull(orgRecord.name)
+        else if(!provider) {
+            provider = Provider.findByNameAndGokbIdIsNull(providerRecord.name)
             //second attempt succeeded - map gokbId to provider who already exists
-            if(org)
-                org.gokbId = orgRecord.uuid
+            if(provider)
+                provider.gokbId = providerRecord.uuid
         }
-        //second attempt failed - create new org if record is not deleted
-        if(!org) {
-            if(!(orgRecord.status in [Constants.PERMANENTLY_DELETED, 'Removed']))
-                org = new Org(
-                        name: orgRecord.name,
-                        gokbId: orgRecord.uuid
+        //second attempt failed - create new provider if record is not deleted
+        if(!provider) {
+            if(!(providerRecord.status in [Constants.PERMANENTLY_DELETED, 'Removed']))
+                provider = new Provider(
+                        name: providerRecord.name,
+                        gokbId: providerRecord.uuid
                 )
         }
         //avoid creating new deleted entries
-        if(org) {
-            org.sortname = orgRecord.abbreviatedName
-            org.url = orgRecord.homepage
-            if((org.status == RDStore.ORG_STATUS_CURRENT || !org.status) && orgRecord.status == RDStore.ORG_STATUS_RETIRED.value) {
+        if(provider) {
+            provider.sortname = providerRecord.abbreviatedName
+            provider.homepage = providerRecord.homepage
+            provider.metadataDownloaderURL = providerRecord.metadataDownloaderURL
+            provider.kbartDownloaderURL = providerRecord.kbartDownloaderURL
+            provider.paperInvoice = providerRecord.paperInvoice == RDStore.YN_YES.value
+            provider.managementOfCredits = providerRecord.managementOfCredits == RDStore.YN_YES.value
+            provider.processingOfCompensationPayments = providerRecord.processingOfCompensationPayments == RDStore.YN_YES.value
+            provider.individualInvoiceDesign = providerRecord.individualInvoiceDesign == RDStore.YN_YES.value
+            if((provider.status == RDStore.PROVIDER_STATUS_CURRENT || !provider.status) && providerRecord.status == RDStore.PROVIDER_STATUS_RETIRED.value) {
                 //value is not implemented in we:kb yet
-                if(orgRecord.retirementDate) {
-                    org.retirementDate = DateUtils.parseDateGeneric(orgRecord.retirementDate)
+                if(providerRecord.retirementDate) {
+                    provider.retirementDate = DateUtils.parseDateGeneric(providerRecord.retirementDate)
                 }
-                else org.retirementDate = new Date()
+                else provider.retirementDate = new Date()
             }
-            org.status = orgStatus.get(orgRecord.status)
-            if(!org.sector)
-                org.sector = RDStore.O_SECTOR_PUBLISHER
-            if(org.save()) {
-                if(!org.getAllOrgTypeIds().contains(RDStore.OT_PROVIDER.id))
-                    org.addToOrgType(RDStore.OT_PROVIDER)
-                if(orgRecord.contacts) {
+            if(provider.save()) {
+                if(providerRecord.contacts) {
                     List<String> typeNames = contactTypes.values().collect { RefdataValue cct -> cct.getI10n("value") }
                     typeNames.addAll(contactTypes.keySet())
-                    List<Person> oldPersons = Person.executeQuery('select p from Person p join p.roleLinks pr where p.tenant = :provider and p.isPublic = true and p.last_name in (:contactTypes) and :provider in (pr.org)',[provider: org, contactTypes: typeNames])
+                    List<Person> oldPersons = Person.executeQuery('select p from Person p join p.roleLinks pr where p.tenant = null and p.isPublic = true and p.last_name in (:contactTypes) and :provider in (pr.provider)',[provider: provider, contactTypes: typeNames])
                     List<Long> funcTypes = contactTypes.values().collect { RefdataValue cct -> cct.id }
                     oldPersons.each { Person old ->
-                        PersonRole.executeUpdate('delete from PersonRole pr where pr.org = :provider and pr.prs = :oldPerson and pr.functionType.id in (:funcTypes)', [provider: org, oldPerson: old, funcTypes: funcTypes])
+                        PersonRole.executeUpdate('delete from PersonRole pr where pr.provider = :provider and pr.prs = :oldPerson and pr.functionType.id in (:funcTypes)', [provider: provider, oldPerson: old, funcTypes: funcTypes])
                         Contact.executeUpdate('delete from Contact c where c.prs = :oldPerson', [oldPerson: old])
-                        if(PersonRole.executeQuery('select count(pr) from PersonRole pr where pr.prs = :oldPerson and pr.org = :provider and (pr.functionType.id not in (:funcTypes) or pr.functionType = null)', [provider: org, oldPerson: old, funcTypes: funcTypes])[0] == 0) {
+                        if(PersonRole.executeQuery('select count(pr) from PersonRole pr where pr.prs = :oldPerson and pr.provider = :provider and (pr.functionType.id not in (:funcTypes) or pr.functionType = null)', [provider: provider, oldPerson: old, funcTypes: funcTypes])[0] == 0) {
                             Person.executeUpdate('delete from Person p where p = :oldPerson', [oldPerson: old])
                         }
                     }
-                    orgRecord.contacts.findAll{ Map<String, String> cParams -> cParams.content != null }.each { contact ->
+                    providerRecord.contacts.findAll{ Map<String, String> cParams -> cParams.content != null }.each { contact ->
                         switch(contact.type) {
                             case "Metadata Contact":
                                 contact.rdType = RDStore.PRS_FUNC_METADATA
@@ -1403,58 +1411,94 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             case "Technical Support":
                                 contact.rdType = RDStore.PRS_FUNC_TECHNICAL_SUPPORT
                                 break
-                            default: log.warn("unhandled additional property type for ${org.gokbId}: ${contact.name}")
+                            default: log.warn("unhandled additional property type for ${provider.gokbId}: ${contact.name}")
                                 break
                         }
                         if(contact.rdType && contact.contentType != null) {
-                            createOrUpdateSupport(org, contact)
+                            createOrUpdateSupport(provider, contact)
                         }
                         else log.warn("contact submitted without content type, rejecting contact")
                     }
                 }
-                if(orgRecord.altname) {
-                    List<String> oldAltNames = org.altnames.collect { AlternativeName altname -> altname.name }
-                    orgRecord.altname.each { String newAltName ->
+                if(providerRecord.altname) {
+                    List<String> oldAltNames = provider.altnames.collect { AlternativeName altname -> altname.name }
+                    providerRecord.altname.each { String newAltName ->
                         if(!oldAltNames.contains(newAltName)) {
-                            if(!AlternativeName.construct([org: org, name: newAltName]))
-                                throw new SyncException("error on creating new alternative name for provider ${org}")
+                            if(!AlternativeName.construct([provider: provider, name: newAltName]))
+                                throw new SyncException("error on creating new alternative name for provider ${provider}")
                         }
                     }
                 }
-                orgRecord.platforms.each { Map platformData ->
+                /*
+                structure not provided in we:kb
+                providerRecord.platforms.each { Map platformData ->
                     Platform plat = Platform.findByGokbId(platformData.uuid)
                     if(!plat)
                         plat = createOrUpdatePlatform(platformData.uuid)
                     if(plat) {
-                        plat.org = org
+                        plat.org = provider
                         plat.save()
                     }
                 }
-                orgRecord.packages.each { Map packageData ->
+                providerRecord.packages.each { Map packageData ->
                     Package pkg = Package.findByGokbId(packageData.packageUuid)
                     if(pkg) {
-                        setupOrgRole([org: org, pkg: pkg, roleTypeCheckup: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER], definiteRoleType: RDStore.OR_PROVIDER])
+                        setupOrgRole([org: provider, pkg: pkg, roleTypeCheckup: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER], definiteRoleType: RDStore.OR_PROVIDER])
                     }
                 }
-                if(orgRecord.identifiers) {
-                    if(org.ids) {
-                        Identifier.executeUpdate('delete from Identifier i where i.org = :org',[org:org]) //damn those wrestlers ...
+                */
+                if(providerRecord.identifiers) {
+                    if(provider.ids) {
+                        Identifier.executeUpdate('delete from Identifier i where i.provider = :provider',[provider: provider]) //damn those wrestlers ...
                     }
-                    orgRecord.identifiers.each { id ->
+                    providerRecord.identifiers.each { id ->
                         if(!(id.namespace.toLowerCase() in ['originediturl','uri'])) {
-                            Identifier.construct([namespace: id.namespace, value: id.value, name_de: id.namespaceName, reference: org, isUnique: false, nsType: Org.class.name])
+                            Identifier.construct([namespace: id.namespace, value: id.value, name_de: id.namespaceName, reference: provider, isUnique: false, nsType: Provider.class.name])
                         }
                     }
                 }
-                if(source.rectype == RECTYPE_ORG) {
-                    Date lastUpdatedTime = DateUtils.parseDateGeneric(orgRecord.lastUpdatedDisplay)
+                List<String> electronicBillingsB = providerRecord.electronicBillings.collect { ebB -> ebB.electronicBilling },
+                             invoiceDispatchsB = providerRecord.invoiceDispatchs.collect { idiB -> idiB.invoiceDispatch },
+                             invoicingVendorsB = providerRecord.invoicingVendors.collect { ivB -> ivB.vendorUuid }
+                provider.electronicBillings.each { ElectronicBilling ebA ->
+                    if(!electronicBillingsB.contains(ebA.invoicingFormat.value))
+                        ebA.delete()
+                }
+                electronicBillingsB.each { String ebB ->
+                    if(!provider.hasElectronicBilling(ebB)) {
+                        new ElectronicBilling(provider: provider, invoicingFormat: RefdataValue.getByValueAndCategory(ebB, RDConstants.VENDOR_INVOICING_FORMAT)).save()
+                    }
+                }
+                provider.invoiceDispatchs.each { InvoiceDispatch idiA ->
+                    if(!invoiceDispatchsB.contains(idiA.invoiceDispatch.value))
+                        idiA.delete()
+                }
+                invoiceDispatchsB.each { String idiB ->
+                    if(!provider.hasInvoiceDispatch(idiB)) {
+                        new InvoiceDispatch(provider: provider, invoiceDispatch: RefdataValue.getByValueAndCategory(idiB, RDConstants.VENDOR_INVOICING_DISPATCH)).save()
+                    }
+                }
+                if(provider.invoicingVendors) {
+                    provider.invoicingVendors.each { InvoicingVendor ivA ->
+                        if(!(ivA.vendor.gokbId in invoicingVendorsB))
+                            ivA.delete()
+                    }
+                }
+                providerRecord.invoicingVendors.each { Map vendorData ->
+                    Vendor v = Package.findByGokbId(vendorData.vendorUuid)
+                    if(v) {
+                        setupInvoicingVendor(provider, v)
+                    }
+                }
+                if(source.rectype == RECTYPE_PROVIDER) {
+                    Date lastUpdatedTime = DateUtils.parseDateGeneric(providerRecord.lastUpdatedDisplay)
                     if(lastUpdatedTime.getTime() > maxTimestamp) {
                         maxTimestamp = lastUpdatedTime.getTime()
                     }
                 }
-                org
+                provider
             }
-            else throw new SyncException(org.errors)
+            else throw new SyncException(provider.errors)
         }
 
     }
@@ -1558,16 +1602,32 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         } else log.warn("contact submitted without content type, rejecting contact")
                     }
                 }
+                if(vendorRecord.altname) {
+                    List<String> oldAltNames = vendor.altnames.collect { AlternativeName altname -> altname.name }
+                    vendorRecord.altname.each { String newAltName ->
+                        if(!oldAltNames.contains(newAltName)) {
+                            if(!AlternativeName.construct([vendor: vendor, name: newAltName]))
+                                throw new SyncException("error on creating new alternative name for provider ${vendor}")
+                        }
+                    }
+                }
+                List<String> supportedLibrarySystemsB = vendorRecord.supportedLibrarySystems.collect { slsB -> slsB.supportedLibrarySystem },
+                        electronicBillingsB = vendorRecord.electronicBillings.collect { ebB -> ebB.electronicBilling },
+                        invoiceDispatchsB = vendorRecord.invoiceDispatchs.collect { idiB -> idiB.invoiceDispatch },
+                        electronicDeliveryDelaysB = vendorRecord.electronicDeliveryDelays.collect { eddnB -> eddnB.electronicDeliveryDelay },
+                        packagesB = vendorRecord.packages.collect { pkgB -> pkgB.packageUuid }
+                if(vendor.packages) {
+                    vendor.packages.each { PackageVendor pvA ->
+                        if(!(pvA.pkg.gokbId in packagesB))
+                            pvA.delete()
+                    }
+                }
                 vendorRecord.packages.each { Map packageData ->
                     Package pkg = Package.findByGokbId(packageData.packageUuid)
                     if(pkg) {
                         setupPkgVendor(vendor, pkg)
                     }
                 }
-                List<String> supportedLibrarySystemsB = vendorRecord.supportedLibrarySystems.collect { slsB -> slsB.supportedLibrarySystem },
-                        electronicBillingsB = vendorRecord.electronicBillings.collect { ebB -> ebB.electronicBilling },
-                        invoiceDispatchsB = vendorRecord.invoiceDispatchs.collect { idiB -> idiB.invoiceDispatch },
-                        electronicDeliveryDelaysB = vendorRecord.electronicDeliveryDelays.collect { eddnB -> eddnB.electronicDeliveryDelay }
                 vendor.supportedLibrarySystems.each { LibrarySystem lsA ->
                     if(!supportedLibrarySystemsB.contains(lsA.librarySystem.value))
                         lsA.delete()
@@ -1626,49 +1686,19 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param tipp the title to check against
      * @throws SyncException
      */
+    @Deprecated
     void lookupOrCreateTitlePublisher(Map<String,Object> publisherParams, TitleInstancePackagePlatform tipp) throws SyncException {
         if(publisherParams.gokbId && publisherParams.gokbId instanceof String) {
             Map<String, Object> publisherData = fetchRecordJSON(false, [uuid: publisherParams.gokbId])
             if(publisherData && !publisherData.error) {
-                Org publisher = createOrUpdateOrg(publisherData)
-                setupOrgRole([org: publisher, tipp: tipp, roleTypeCheckup: [RDStore.OR_PUBLISHER,RDStore.OR_CONTENT_PROVIDER], definiteRoleType: RDStore.OR_PUBLISHER])
+                Org publisher = createOrUpdateProvider(publisherData)
+                //setupProviderRole([org: publisher, tipp: tipp, roleTypeCheckup: [RDStore.OR_PUBLISHER, RDStore.OR_CONTENT_PROVIDER], definiteRoleType: RDStore.OR_PUBLISHER])
             }
             else if(publisherData && publisherData.error) throw new SyncException("we:kb server is down")
             else throw new SyncException("Provider record loading failed for ${publisherParams.gokbId}")
         }
         else {
             throw new SyncException("Org submitted without UUID! No checking possible!")
-        }
-    }
-
-    /**
-     * Connects an {@link Org} to a {@link TitleInstancePackagePlatform} or a {@link Package}, linking a provider to its title or package
-     * @param configMap the {@link Map} specifying the connection parameters
-     * @throws SyncException
-     */
-    void setupOrgRole(Map configMap) throws SyncException {
-        OrgRole role
-        def reference
-        if(configMap.tipp) {
-            reference = configMap.tipp
-            role = OrgRole.findByTippAndRoleTypeInList(reference, configMap.roleTypeCheckup)
-        }
-        else if(configMap.pkg) {
-            reference = configMap.pkg
-            role = OrgRole.findByPkgAndRoleTypeInList(reference, configMap.roleTypeCheckup)
-        }
-        if(reference) {
-            if(!role) {
-                role = new OrgRole(roleType: configMap.definiteRoleType, isShared: false)
-                role.setReference(reference)
-            }
-            role.org = configMap.org
-            if(!role.save()) {
-                throw new SyncException("Error on saving org role: ${role.getErrors().getAllErrors().toListString()}")
-            }
-        }
-        else {
-            throw new SyncException("reference missing! Config map is: ${configMap.toMapString()}")
         }
     }
 
@@ -1681,25 +1711,36 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
     }
 
+    void setupInvoicingVendor(Provider provider, Vendor vendor) throws SyncException {
+        InvoicingVendor iv = InvoicingVendor.findByVendorAndProvider(vendor, provider)
+        if(!iv) {
+            iv = new InvoicingVendor(vendor: vendor, provider: provider)
+            if(!iv.save())
+                throw new SyncException("Error on saving vendor-package link: ${iv.getErrors().getAllErrors().toListString()}")
+        }
+    }
+
     /**
-     * Updates a technical or service support for a given provider {@link Org}; overrides an eventually created one and creates if it does not exist
-     * @param org the provider/agency {@link Org} to which the given support address should be created/updated
+     * Updates a technical or service support for a given {@link Provider}; overrides an eventually created one and creates if it does not exist
+     * @param provider the {@link Provider} to which the given support address should be created/updated
      * @param supportProps the configuration {@link Map} containing the support address properties
      * @throws SyncException
      */
-    void createOrUpdateSupport(Org org, Map<String, String> supportProps) throws SyncException {
-        Person personInstance = Person.findByTenantAndIsPublicAndLast_name(org, true, supportProps.rdType.getI10n("value"))
-        if(!personInstance) {
-            personInstance = new Person(tenant: org, isPublic: true, last_name: supportProps.rdType.getI10n("value"))
+    void createOrUpdateSupport(Provider provider, Map<String, Object> supportProps) throws SyncException {
+        List<Person> personCheck = Person.executeQuery('select p from PersonRole pr join pr.prs p where p.tenant = null and pr.provider = :provider and p.isPublic = true and p.last_name = :type', [provider: provider, type: contactProps.rdType.getI10n("value")])
+        Person personInstance
+        if(!personCheck) {
+            personInstance = new Person(isPublic: true, last_name: supportProps.rdType.getI10n("value"))
             if(!personInstance.save()) {
-                throw new SyncException("Error on setting up contact for ${org}, concerning person instance: ${personInstance.getErrors().getAllErrors().toListString()}")
+                throw new SyncException("Error on setting up contact for ${provider}, concerning person instance: ${personInstance.getErrors().getAllErrors().toListString()}")
             }
         }
-        PersonRole personRole = PersonRole.findByPrsAndOrgAndFunctionType(personInstance, org, supportProps.rdType)
+        else personInstance = personCheck[0]
+        PersonRole personRole = PersonRole.findByPrsAndProviderAndFunctionType(personInstance, provider, supportProps.rdType)
         if(!personRole) {
-            personRole = new PersonRole(prs: personInstance, org: org, functionType: supportProps.rdType)
+            personRole = new PersonRole(prs: personInstance, org: provider, functionType: supportProps.rdType)
             if(!personRole.save()) {
-                throw new SyncException("Error on setting contact for ${org}, concerning person role: ${personRole.getErrors().getAllErrors().toListString()}")
+                throw new SyncException("Error on setting contact for ${provider}, concerning person role: ${personRole.getErrors().getAllErrors().toListString()}")
             }
         }
         RefdataValue contentType = RefdataValue.getByValueAndCategory(supportProps.contentType, RDConstants.CONTACT_CONTENT_TYPE)
@@ -1713,7 +1754,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             contact.contentType = contentType
         contact.content = supportProps.content
         if(!contact.save()) {
-            throw new SyncException("Error on setting contact for ${org}, concerning contact: ${contact.getErrors().getAllErrors().toListString()}")
+            throw new SyncException("Error on setting contact for ${provider}, concerning contact: ${contact.getErrors().getAllErrors().toListString()}")
         }
     }
 
@@ -1723,7 +1764,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param contactProps the configuration {@link Map} containing the address properties
      * @throws SyncException
      */
-    void createOrUpdateSupport(Vendor vendor, Map<String, String> contactProps) throws SyncException {
+    void createOrUpdateSupport(Vendor vendor, Map<String, Object> contactProps) throws SyncException {
         List<Person> personCheck = Person.executeQuery('select p from PersonRole pr join pr.prs p where p.tenant = null and pr.vendor = :vendor and p.isPublic = true and p.last_name = :type', [vendor: vendor, type: contactProps.rdType.getI10n("value")])
         Person personInstance
         if(!personCheck) {
@@ -1787,11 +1828,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 if(platformRecord.primaryUrl)
                     platform.primaryUrl = new URL(platformRecord.primaryUrl)
                 if(platformRecord.providerUuid) {
-                    Org provider = Org.findByGokbId(platformRecord.providerUuid)
+                    Provider provider = Provider.findByGokbId(platformRecord.providerUuid)
                     if(!provider) {
                         Map<String, Object> providerData = fetchRecordJSON(false,[uuid: platformRecord.providerUuid])
                         if(providerData && !providerData.error)
-                            provider = createOrUpdateOrg(providerData)
+                            provider = createOrUpdateProvider(providerData)
                         else if(providerData && providerData.error == 404) {
                             throw new SyncException("we:kb server is currently down")
                         }
@@ -1799,7 +1840,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             throw new SyncException("Provider loading failed for ${platformRecord.providerUuid}")
                         }
                     }
-                    platform.org = provider
+                    platform.provider = provider
                 }
                 /*
                 TEST: create linking from provider to platform, not from platform to provider! Platforms should exist also without titles!
@@ -1974,6 +2015,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                 }
             }
+            /*
+            not provided by we:kb structure
             if(tippB.titlePublishers) {
                 if(tippA.publishers) {
                     OrgRole.executeUpdate('delete from OrgRole oo where oo.tipp = :tippA',[tippA:tippA])
@@ -1982,6 +2025,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     lookupOrCreateTitlePublisher([name: publisher.name, gokbId: publisher.uuid], tippA)
                 }
             }
+            */
             if(tippB.coverages) {
                 if(tippA.coverages) {
                     TIPPCoverage.executeUpdate('delete from TIPPCoverage tc where tc.tipp = :tipp',[tipp: tippA])
@@ -2186,9 +2230,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 if(!priceItem.save())
                     throw new SyncException("Error on saving price data: ${priceItem.errors}")
             }
+            /*
+            structure not provided in we:kb
             tippData.titlePublishers.each { publisher ->
                 lookupOrCreateTitlePublisher([name: publisher.name, gokbId: publisher.uuid], newTIPP)
             }
+            */
             tippData.identifiers.each { idB ->
                 if(idB.namespace.toLowerCase() != 'originediturl') {
                     Identifier.construct([namespace: idB.namespace, value: idB.value, name_de: idB.namespaceName, reference: newTIPP, isUnique: false, nsType: TitleInstancePackagePlatform.class.name])

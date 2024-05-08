@@ -49,17 +49,6 @@
                 });
             }, searchDelay);
         });
-        /*obsolete because dropdown does not deliver sufficient information
-            //{query} is correct; this is the semantic ui query syntax containing the filter string
-            $("#orm_orgOid_${tmplModalID}").dropdown({
-                apiSettings: {
-                    url: "<g:createLink controller="ajaxJson" action="lookupProvidersAgencies"/>?&query={query}",
-                    cache: false
-                },
-                clearable: true,
-                minCharacters: 1
-            });
-        */
     </laser:script>
 </ui:modal>
 

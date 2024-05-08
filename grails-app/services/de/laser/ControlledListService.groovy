@@ -1455,16 +1455,24 @@ class ControlledListService {
      */
     Map getProviders(GrailsParameterMap params) {
         Org institution = contextService.getOrg()
-        String consortiumFilter = "", orgNameFilter = ""
+        String consortiumFilter = "", providerNameFilter = "", qryString
         Map qryParams = [context: institution]
         if(institution.isCustomerType_Consortium())
             consortiumFilter = "and sub.instanceOf is null"
         if (params.query) {
-            orgNameFilter = " and (genfunc_filter_matcher(org.name, :query) = true or genfunc_filter_matcher(org.sortname, :query) = true) "
+            providerNameFilter = " and (genfunc_filter_matcher(p.name, :query) = true or genfunc_filter_matcher(p.sortname, :query) = true or exists (select alt from p.altnames alt where genfunc_filter_matcher(alt.name, :query) = true)) "
             qryParams.query = params.query
         }
-        String qryString = "select new map(concat('${Org.class.name}:',org.id) as value,org.name as name) from SubscriptionPackage sp join sp.pkg pkg join pkg.orgs oo join oo.org org where sp.subscription in (select sub from OrgRole os join os.sub sub where os.org = :context ${consortiumFilter}) ${orgNameFilter} group by org.id order by org.sortname asc"
-        [results: Org.executeQuery(qryString, qryParams)]
+        if(params.tableView) {
+            qryString = "select p from SubscriptionPackage sp join sp.pkg pkg join pkg.provider p where sp.subscription in (select sub from OrgRole os join os.sub sub where os.org = :context ${consortiumFilter}) ${providerNameFilter} group by p.id order by p.sortname asc"
+        }
+        else {
+            if(params.displayWekbFlag)
+                qryString = "select new map(concat('${Provider.class.name}:',p.id) as value,case when p.gokbId != null then concat(p.name,' (we:kb)') else p.name as name) from Provider p ${providerNameFilter} order by p.sortname asc"
+            else
+                qryString = "select new map(concat('${Provider.class.name}:',p.id) as value,p.name as name) from SubscriptionPackage sp join sp.pkg pkg join pkg.provider p where sp.subscription in (select sub from OrgRole os join os.sub sub where os.org = :context ${consortiumFilter}) ${providerNameFilter} group by p.id order by p.sortname asc"
+        }
+        [results: Provider.executeQuery(qryString, qryParams)]
     }
 
     /**
@@ -1479,14 +1487,18 @@ class ControlledListService {
         if(institution.isCustomerType_Consortium())
             consortiumFilter = "and sub.instanceOf is null"
         if (params.query) {
-            vendorNameFilter = " and (genfunc_filter_matcher(vendor.name, :query) = true or genfunc_filter_matcher(vendor.sortname, :query) = true) "
+            vendorNameFilter = "(genfunc_filter_matcher(vendor.name, :query) = true or genfunc_filter_matcher(vendor.sortname, :query) = true) "
             qryParams.query = params.query
         }
         if(params.tableView) {
             qryString = "select vendor from PackageVendor pv join pv.vendor vendor, SubscriptionPackage sp join sp.pkg pkg where sp.pkg = pv.pkg and sp.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context ${consortiumFilter}) ${vendorNameFilter} group by vendor.id order by vendor.sortname asc"
         }
-        else
-            qryString = "select new map(concat('${Vendor.class.name}:',vendor.id) as value,vendor.name as name) from PackageVendor pv join pv.vendor vendor, SubscriptionPackage sp join sp.pkg pkg where sp.pkg = pv.pkg and sp.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context ${consortiumFilter}) ${vendorNameFilter} group by vendor.id order by vendor.sortname asc"
+        else {
+            if(params.displayWekbFlag)
+                qryString = "select new map(concat('${Vendor.class.name}:',vendor.id) as value,case when vendor.gokbId != null then concat(vendor.name,' (we:kb)') else vendor.name as name) from Vendor vendor ${vendorNameFilter} order by vendor.sortname asc"
+            else
+                qryString = "select new map(concat('${Vendor.class.name}:',vendor.id) as value,vendor.name as name) from PackageVendor pv join pv.vendor vendor, SubscriptionPackage sp join sp.pkg pkg where sp.pkg = pv.pkg and sp.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context ${consortiumFilter}) and ${vendorNameFilter} group by vendor.id order by vendor.sortname asc"
+        }
         [results: Vendor.executeQuery(qryString, qryParams)]
     }
 }

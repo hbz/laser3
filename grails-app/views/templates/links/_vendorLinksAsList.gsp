@@ -63,7 +63,7 @@
                                     <i class="address plus icon"></i>
                                 </button>
 
-                        <laser:render template="/templates/links/orgLinksAsListAddPrsModal"
+                        <laser:render template="/templates/links/vendorLinksAsListAddPrsModal"
                                   model="['cssId': cssId,
                                           'orgRole': role,
                                           'roleObject': roleObject,

@@ -39,14 +39,14 @@ class VendorRole implements ShareableTrait, Comparable<VendorRole> {
     }
 
     @Override
-    int compareTo(VendorRole v) {
-        int result = vendor.sortname <=> v.vendor.sortname
-        if(!result && subscription && v.subscription)
-            result = subscription.name <=> v.subscription.name
-        else if(!result && license && v.license)
-            result = license.reference <=> v.license.reference
+    int compareTo(VendorRole vr) {
+        int result = vendor <=> vr.vendor
+        if(!result && subscription && vr.subscription)
+            result = subscription.name <=> vr.subscription.name
+        else if(!result && license && vr.license)
+            result = license.reference <=> vr.license.reference
         if(!result)
-            id <=> v.id
+            id <=> vr.id
         result
     }
 }

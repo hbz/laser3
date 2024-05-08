@@ -78,6 +78,7 @@ class YodaController {
     FormService formService
     GokbService gokbService
     GlobalSourceSyncService globalSourceSyncService
+    ProviderService providerService
     def quartzScheduler
     RenewSubscriptionService renewSubscriptionService
     StatsSyncService statsSyncService
@@ -922,11 +923,11 @@ class YodaController {
      * if no match is being found for the given we:kb ID, a new record will be created!
      */
     @Secured(['ROLE_YODA'])
-    def reloadWekbOrg() {
+    def reloadWekbProvider() {
         if(!globalSourceSyncService.running) {
             log.debug("start reloading ...")
             executorService.execute({
-                Thread.currentThread().setName("GlobalDataUpdate_Org")
+                Thread.currentThread().setName("GlobalDataUpdate_Provider")
                 globalSourceSyncService.reloadData('Org')
                 yodaService.expungeRemovedComponents(Org.class.name)
             })
@@ -977,6 +978,12 @@ class YodaController {
             log.debug("process running, lock is set!")
         }
         redirect controller: 'platform', action: 'list'
+    }
+
+    @Secured(['ROLE_YODA'])
+    def migrateProviders() {
+        providerService.migrateProviders()
+        redirect controller: 'myInstitution', action: 'dashboard'
     }
 
     @Secured(['ROLE_YODA'])

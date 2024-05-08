@@ -19,23 +19,8 @@ import org.apache.commons.lang3.StringUtils
 
 /**
  * An organisation record.
- * Organisations may represent in LAS:eR:
- * <ol>
- *     <li>academic institutions</li>
- *     <li>commercial organisations: editors or publishing houses</li>
- * </ol>
- * Institutions may be: university or public libraries, research organisations, or other academic institutions.
- * Above that, organisations may be editors, providers, publishers, agencies. They are called by the super term "organisations".
- * The main difference between organisations and institutions is that institutions may have user accounts linked to them whereas publishers, agencies etc. are not supposed to have such.
- * There are above that several ways to distinguish technically an organisation from an institution:
- * <ul>
- *     <li>institutions have a customer type</li>
- *     <li>the organisational types are different, see {@link RDConstants#ORG_TYPE}</li>
- *     <li>a well maintained institution record has the sector set to 'Academic' while (other) organisations are usually set to 'Commercial'</li>
- *     <li>institutions are linked with different org role types to other objects than other organisations are (see the controlled list under {@link RDConstants#ORGANISATIONAL_ROLE} for the role types)</li>
- *     <li>institution metadata is maintained in LAS:eR directly whereas providers should curate themselves in we:kb; organisations thus have a we:kb-ID (stored as {@link #gokbId}, naming is legacy) which serves as synchronisation
- *     key between the data in the two webapps</li>
- * </ul>
+ * Organisations represent in LAS:eR academic institutions.
+ * Institutions may be: university or public libraries, research organisations, or other academic institutions. Their customer status is being represented by a setting called CustomerType (see {@link de.laser.OrgSetting.KEYS#CUSTOMER_TYPE})
  * @see OrgRole
  * @see OrgSetting
  */
@@ -57,6 +42,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     String importSource         // "nationallizenzen.de", "edb des hbz"
     Date lastImportDate
 
+    @Deprecated
     String gokbId
     String comment
     String ipRange

@@ -20,10 +20,8 @@ class ElectronicDeliveryDelayNotification implements Comparable<ElectronicDelive
     @Override
     int compareTo(ElectronicDeliveryDelayNotification eddn) {
         int result = delayNotification <=> eddn.delayNotification
-        if(!result)
-            result = vendor.sortname <=> eddn.vendor.sortname
-        if(!result)
-            result = vendor.name <=> eddn.vendor.name
+        if(!result && vendor && eddn.vendor)
+            result = vendor <=> eddn.vendor
         result
     }
 }
