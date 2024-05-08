@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Params; de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.api.v0.ApiToolkit; de.laser.helper.Params; de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore" %>
 
 <%
     String lang = LocaleUtils.getCurrentLang()
@@ -77,6 +77,38 @@
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:each in="${[[id: 'value', value: message(code: 'org.customerIdentifier')], [id: 'requestorKey', value: message(code: 'org.requestorKey')]]}" var="cust">
                             <option <%=(params.list('customerIDNamespace').contains(cust.id)) ? 'selected="selected"' : '' %> value="${cust.id}">${cust.value}</option>
+                        </g:each>
+                    </select>
+                </div>
+            </g:if>
+
+            <g:if test="${field.equalsIgnoreCase('apiLevel')}">
+                <div class="field">
+                    <label for="osApiLevel">
+                        <g:message code="org.apiLevel.label"/>
+                    </label>
+                    <select id="osApiLevel" name="osApiLevel" multiple="multiple" class="ui dropdown multiple">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:each in="${ApiToolkit.getAllApiLevels()}" var="alf">
+                            <option <%=(params.list('osApiLevel').contains(alf)) ? 'selected="selected"' : '' %> value="${alf}">
+                                ${alf}
+                            </option>
+                        </g:each>
+                    </select>
+                </div>
+            </g:if>
+
+            <g:if test="${field.equalsIgnoreCase('serverAccess')}">
+                <div class="field">
+                    <label for="osServerAccess">
+                        <g:message code="org.serverAccess.label"/>
+                    </label>
+                    <select id="osServerAccess" name="osServerAccess" multiple="multiple"  class="ui dropdown multiple">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:each in="${[OrgSetting.KEYS.NATSTAT_SERVER_ACCESS, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS, OrgSetting.KEYS.EZB_SERVER_ACCESS]}" var="saf">
+                            <option <%=(params.list('osServerAccess').contains(saf.toString())) ? 'selected="selected"' : '' %> value="${saf}">
+                                ${message(code:'org.setting.' + saf)}
+                            </option>
                         </g:each>
                     </select>
                 </div>
