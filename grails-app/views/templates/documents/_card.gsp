@@ -111,7 +111,7 @@
                             </g:elseif>
 
                             <%-- 3 --%>
-                            <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton() && userService.hasFormalAffiliation(contextService.getUser(), docctx.owner.owner, 'INST_EDITOR')}">
+                            <g:if test="${!(ownobj instanceof Org) && !(ownobj instanceof Provider) && !(ownobj instanceof Vendor) && ownobj?.showUIShareButton() && userService.hasFormalAffiliation(contextService.getUser(), docctx.owner.owner, 'INST_EDITOR')}">
                                 <g:if test="${docctx?.isShared}">
                                     <span>
                                         <ui:remoteLink class="ui icon green button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay"

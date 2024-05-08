@@ -328,7 +328,7 @@
                                 <p class="ui header">%{--<i class="icon cloud"></i>--}% <g:message code="org.platforms.label" /></p>
 
                                 <div class="ui divided middle aligned selection list la-flex-list">
-                                    <g:each in="${provider.platforms}" var="platform">
+                                    <g:each in="${provider.platforms.unique()}" var="platform">
                                         <g:if test="${platform.status == RDStore.PLATFORM_STATUS_CURRENT}">
                                             <div class="ui item">
                                                 <div class="content la-space-right">

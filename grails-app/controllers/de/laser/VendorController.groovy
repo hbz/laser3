@@ -166,7 +166,7 @@ class VendorController {
             result.editable = false //hard set until it is not decided how to deal with current agencies
             result.subEditable = userService.hasFormalAffiliation_or_ROLEADMIN(result.user, result.institution, 'INST_EDITOR')
             result.isMyVendor = vendorService.isMyVendor(vendor, result.institution)
-            result.platforms = vendor.packages.pkg.nominalPlatform
+            result.platforms = vendor.packages.pkg.nominalPlatform.unique()
             String subscriptionConsortiumFilter = '', licenseConsortiumFilter = ''
             if(result.institution.isCustomerType_Consortium()) {
                 subscriptionConsortiumFilter = 'and s.instanceOf = null'
