@@ -57,7 +57,7 @@
                                     <i class="gift icon"></i>
                                     <g:link controller="package" action="show" target="_blank" id="${sp.pkg.id}">${sp.pkg.name}</g:link>
                                     <ui:debugInfo>PkgId: ${sp.pkg.id}</ui:debugInfo>
-                                    <g:if test="${sp.pkg.contentProvider}">(${sp.pkg.contentProvider.name})</g:if>
+                                    <g:if test="${sp.pkg.provider}">(${sp.pkg.provider.name})</g:if>
                                 </label>
                                 <div>
                                     <g:link controller="subscription" action="index" id="${sourceObject.id}"><strong>${message(code: 'issueEntitlement.countSubscription')}</strong> ${sp.getIssueEntitlementCountOfPackage()}</g:link>
@@ -97,7 +97,7 @@
                                     <i class="gift icon"></i>
                                     <g:link controller="packageDetails" action="show" target="_blank" id="${sp.pkg.id}">${sp.pkg.name}</g:link>
                                     <ui:debugInfo>PkgId: ${sp.pkg.id}</ui:debugInfo>
-                                    <g:if test="${sp.pkg.contentProvider}">(${sp.pkg.contentProvider.name})</g:if>
+                                    <g:if test="${sp.pkg.provider}">(${sp.pkg.provider.name})</g:if>
                                 </label>
                                 <div>
                                     <g:link controller="subscription" action="index" id="${targetObject?.id}"><strong>${message(code: 'issueEntitlement.countSubscription')}</strong> ${sp.getIssueEntitlementCountOfPackage()}</g:link>

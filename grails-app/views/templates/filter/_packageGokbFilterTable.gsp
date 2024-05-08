@@ -99,7 +99,7 @@
                 if(record.providerUuid)
                     org = Org.findByGokbId(record.providerUuid)
                 else
-                    org = pkg.getContentProvider()
+                    org = pkg.provider
                 if(record.nominalPlatformUuid)
                     plat = Platform.findByGokbId(record.nominalPlatformUuid)
                 else
