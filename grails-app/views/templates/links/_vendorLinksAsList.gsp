@@ -122,17 +122,11 @@
                                         <%
                                             Set<Person> techSupports = [], serviceSupports = [], metadataContacts = []
                                             boolean contactsExWekb = false
-                                            if(role.vendor.gokbId) {
+                                            if(role.vendor.gokbId)
                                                 contactsExWekb = true
-                                                techSupports.addAll(Person.getPublicByOrgAndFunc(role.vendor, 'Technical Support'))
-                                                serviceSupports.addAll(Person.getPublicByOrgAndFunc(role.vendor, 'Service Support'))
-                                                metadataContacts.addAll(Person.getPublicByOrgAndFunc(role.vendor, 'Metadata Contact'))
-                                            }
-                                            else {
-                                                techSupports.addAll(Person.getPublicByOrgAndFunc(role.vendor, 'Technical Support'))
-                                                serviceSupports.addAll(Person.getPublicByOrgAndFunc(role.vendor, 'Service Support'))
-                                                metadataContacts.addAll(Person.getPublicByOrgAndFunc(role.vendor, 'Metadata Contact'))
-                                            }
+                                            techSupports.addAll(Person.getPublicByOrgAndFunc(role.vendor, 'Technical Support'))
+                                            serviceSupports.addAll(Person.getPublicByOrgAndFunc(role.vendor, 'Service Support'))
+                                            metadataContacts.addAll(Person.getPublicByOrgAndFunc(role.vendor, 'Metadata Contact'))
                                         %>
                                             <g:each in="${techSupports}" var="func">
                                                 <div class="row">

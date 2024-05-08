@@ -3,10 +3,10 @@
 
 <ui:breadcrumbs>
     <g:if test="${isMyVendor}">
-        <ui:crumb message="menu.my.vendors" controller="myInstitution" action="currentProviders"/>
+        <ui:crumb message="menu.my.vendors" controller="myInstitution" action="currentVendors"/>
     </g:if>
     <g:else>
-        <ui:crumb message="menu.public.all_vendors" controller="organisation" action="listProvider"/>
+        <ui:crumb message="menu.public.all_vendors" controller="vendor" action="list"/>
     </g:else>
     <ui:crumb text="${vendor.dropdownNamingConvention(institution)}" class="active"/>
 </ui:breadcrumbs>

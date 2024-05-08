@@ -3,16 +3,12 @@
 <g:set var="wekbAPI" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
 <table class="ui compact table">
     <g:each in="${providerLinks}" var="role">
-            <g:set var="cssId" value="prsLinksModal-${role.provider.id}-${role.roleType.id}" />
+
+        <g:set var="cssId" value="prsLinksModal-${role.provider.id}" />
             <tr>
                 <td>
                     <span class="la-flexbox la-minor-object">
-                        <g:if test="${role.roleType.value == RDStore.OR_SUBSCRIPTION_CONSORTIA.value}">
-                            <i class="la-list-icon la-popup-tooltip la-delay la-consortia icon" data-content="${message(code:'consortium')}"></i>
-                        </g:if>
-                        <g:elseif test="${role.roleType.value==RDStore.OR_PROVIDER.value}">
-                            <i class="la-list-icon la-popup-tooltip la-delay handshake outline icon" data-content="${message(code:'default.provider.label')}"></i>
-                        </g:elseif>
+                        <i class="la-list-icon la-popup-tooltip la-delay handshake outline icon" data-content="${message(code:'default.provider.label')}"></i>
                         <g:link controller="provider" action="show" id="${role.provider.id}">
                             ${role.provider.name}
                         </g:link>
@@ -64,21 +60,6 @@
                             </span>
                         </g:if>
 
-                        <%--
-                        <g:if test="${showPersons}">
-                                <button class="ui icon button blue la-modern-button la-selectable-button la-popup-tooltip la-delay" data-ui="modal" data-href="#${cssId}" data-content="${message(code:'subscription.details.addNewContact')}">
-                                    <i class="address plus icon"></i>
-                                </button>
-
-                        <laser:render template="/templates/links/providerLinksAsListAddPrsModal"
-                                  model="['cssId': cssId,
-                                          'orgRole': role,
-                                          'roleObject': roleObject,
-                                          parent: genericOIDService.getOID(roleObject),
-                                          role: genericOIDService.getOID(modalPrsLinkRole)
-                                  ]"/>
-                        </g:if>
-                        --%>
                     </g:if>
                 </td>
 
@@ -132,15 +113,10 @@
                                             boolean contactsExWekb = false
                                             if(role.provider.gokbId) {
                                                 contactsExWekb = true
-                                                techSupports.addAll(Person.getPublicByOrgAndFunc(role.provider, 'Technical Support', role.provider))
-                                                serviceSupports.addAll(Person.getPublicByOrgAndFunc(role.provider, 'Service Support', role.provider))
-                                                metadataContacts.addAll(Person.getPublicByOrgAndFunc(role.provider, 'Metadata Contact', role.provider))
                                             }
-                                            else {
-                                                techSupports.addAll(Person.getPublicByOrgAndFunc(role.provider, 'Technical Support'))
-                                                serviceSupports.addAll(Person.getPublicByOrgAndFunc(role.provider, 'Service Support'))
-                                                metadataContacts.addAll(Person.getPublicByOrgAndFunc(role.provider, 'Metadata Contact'))
-                                            }
+                                            techSupports.addAll(Person.getPublicByOrgAndFunc(role.provider, 'Technical Support'))
+                                            serviceSupports.addAll(Person.getPublicByOrgAndFunc(role.provider, 'Service Support'))
+                                            metadataContacts.addAll(Person.getPublicByOrgAndFunc(role.provider, 'Metadata Contact'))
                                         %>
                                             <g:each in="${techSupports}" var="func">
                                                 <div class="row">
