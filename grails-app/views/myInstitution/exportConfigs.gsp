@@ -15,7 +15,7 @@
 <div class="ui grid">
     <div class="four wide left attached column">
         <div class="ui vertical fluid tabular menu">
-            <g:each in="${clickMeTypes}" var="clickMeTyp">
+            <g:each in="${clickMeTypes.sort{message(code: "clickMeConfig.clickMeType.${it}")}}" var="clickMeTyp">
                 <ui:tabsItem controller="myInstitution" action="exportConfigs"
                              params="${[tab: clickMeTyp]}" message="clickMeConfig.clickMeType.${clickMeTyp}" tab="${clickMeTyp}"
                              counts="${clickMeConfigsCount[clickMeTyp]}"/>
