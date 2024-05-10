@@ -111,43 +111,6 @@
     </ui:greySegment>
 </g:if>
 
-<div class="ui stackable grid">
-    <div class="sixteen wide column">
-
-        <div class="la-inline-lists">
-
-            <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
-
-                <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
-                                                                                  costItemSums        : costItemSums,
-                                                                                  subscription        : subscription,
-                                                                                  visibleOrgRelations : visibleOrgRelations,
-                                                                                  surveyResults       : surveyResults]"/>
-            </g:if>
-
-            <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
-
-                <laser:render template="/templates/survey/generalSurvey" model="[surveyConfig        : surveyConfig,
-                                                                             costItemSums        : costItemSums,
-                                                                             subscription        : surveyConfig.subscription,
-                                                                             tasks               : tasks,
-                                                                             visibleOrgRelations : visibleOrgRelations]"/>
-            </g:if>
-
-            <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
-
-                <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
-                                                                                  costItemSums        : costItemSums,
-                                                                                  subscription        : subscription,
-                                                                                  visibleOrgRelations : visibleOrgRelations,
-                                                                                  surveyResults       : surveyResults]"/>
-
-                <laser:render template="/templates/survey/entitlementSurvey"/>
-
-            </g:if>
-
-        </div>
-    </div>
-</div>
+<laser:render template="/templates/survey/participantView"/>
 
 <laser:htmlEnd />

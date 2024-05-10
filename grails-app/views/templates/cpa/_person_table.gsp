@@ -1,5 +1,5 @@
 <%--  model: [persons, restrictToOrg] --%>
-<%@ page import="de.laser.utils.LocaleUtils; de.laser.Org; de.laser.Vendor; de.laser.Person; de.laser.PersonRole; de.laser.I10nTranslation;" %>
+<%@ page import="de.laser.survey.SurveyOrg; de.laser.utils.LocaleUtils; de.laser.Org; de.laser.Vendor; de.laser.Person; de.laser.PersonRole; de.laser.I10nTranslation;" %>
 
 <g:set var="languageSuffix" value="${LocaleUtils.getCurrentLang()}"/>
 
@@ -65,11 +65,16 @@
     <g:if test="${tmplConfigItem.equalsIgnoreCase('showContacts') && showContacts}">
             <th>${message(code: 'person.contacts.label')}</th>
     </g:if>
+    <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyInvoicingInformation')}">
+        <th>${message(code: 'surveyOrg.person.selected')}</th>
+    </g:if>
     <%--<g:if test="${tmplConfigItem.equalsIgnoreCase('showAddresses') && showAddresses}">
             <th>${message(code: 'person.addresses.label')}</th>
     </g:if>--%>
 </g:each>
-        <th class="la-action-info">${message(code: 'default.actions.label')}</th>
+        <g:if test="${showOptions}">
+            <th class="la-action-info">${message(code: 'default.actions.label')}</th>
+        </g:if>
     </tr>
     </thead>
     <tbody>
@@ -226,6 +231,29 @@
                     </div>
                 </td>
             </g:if>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyInvoicingInformation')}">
+                <td>
+                        <g:if test="${editable}">
+                            <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndPerson(institution, surveyConfig, person)}">
+                                <g:link controller="myInstitution" action="setSurveyInvoicingInformation"
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setConcact: false, personId: person.id]">
+                                    <i class="check bordered large green icon"></i>
+                                </g:link>
+                            </g:if>
+                            <g:else>
+                                <g:link controller="myInstitution" action="setSurveyInvoicingInformation"
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setConcact: true, personId: person.id]">
+                                    <i class="close bordered large red icon"></i>
+                                </g:link>
+                            </g:else>
+                        </g:if>
+                        <g:else>
+                            <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndPerson(institution, surveyConfig, person)}">
+                                    <i class="check bordered large green icon"></i>
+                            </g:if>
+                        </g:else>
+                </td>
+            </g:if>
             <%--<g:if test="${tmplConfigItem.equalsIgnoreCase('showAddresses') && showAddresses}">
                 <td>
                     <div class="ui divided middle aligned list la-flex-list ">
@@ -240,6 +268,7 @@
                 </td>
             </g:if>--%>
         </g:each>
+        <g:if test="${showOptions}">
             <td class="x">
                 <g:if test="${editable}">
                     <button type="button" onclick="JSPC.app.editPerson(${person.id})" class="ui icon button blue la-modern-button"
@@ -261,6 +290,7 @@
                     </g:form>
                 </g:if>
             </td>
+        </g:if>
         </tr>
     </g:each>
     </tbody>

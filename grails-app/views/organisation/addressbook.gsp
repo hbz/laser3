@@ -85,6 +85,7 @@
             restrictToOrg : orgInstance,
             showContacts: true,
             showAddresses: true,
+            showOptions : true,
             tmplConfigShow: ['lineNumber', 'name', 'function', 'position',  'showContacts', 'showAddresses']
     ]}"/>
 
@@ -96,13 +97,11 @@
 <div class="ui bottom attached tab segment ${params.tab == 'addresses' ? 'active' : ''}" data-tab="addresses">
 
     <laser:render template="/templates/cpa/address_table" model="${[
-            hideAddressType     : true,
             addresses           : addresses,
             offset              : addressOffset,
             tmplShowDeleteButton: true,
-            controller          : 'org',
-            action              : 'show',
-            editable            : editable
+            editable            : editable,
+            showOptions : true
     ]}"/>
 
     <ui:paginate action="addressbook" controller="myInstitution" params="${params+[tab: 'addresses']}"
