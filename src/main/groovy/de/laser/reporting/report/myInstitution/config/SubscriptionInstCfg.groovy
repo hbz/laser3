@@ -79,11 +79,6 @@ class SubscriptionInstCfg extends BaseConfig {
                                              chartTemplate      : 'annual',
                                              chartLabels        : []
                                      ],
-                                     'subscription-x-vendor' : [
-                                             detailsTemplate     : 'subscription',
-                                             chartTemplate       : 'generic',
-                                             chartLabels         : []
-                                     ],
                                      'subscription-x-license' : [
                                              detailsTemplate     : 'subscription',
                                              chartTemplate       : 'generic',
@@ -94,11 +89,16 @@ class SubscriptionInstCfg extends BaseConfig {
                                              chartTemplate       : 'generic',
                                              chartLabels         : []
                                      ],
-//                                     'subscription-x-provider' : [
-//                                             detailsTemplate    : 'subscription',
-//                                             chartTemplate      : 'generic',
-//                                             chartLabels        : []
-//                                     ],
+                                     'subscription-x-provider' : [
+                                             detailsTemplate    : 'subscription',
+                                             chartTemplate      : 'generic',
+                                             chartLabels        : []
+                                     ],
+                                     'subscription-x-vendor' : [
+                                            detailsTemplate     : 'subscription',
+                                            chartTemplate       : 'generic',
+                                            chartLabels         : []
+                                    ],
 //                                     'subscription-x-platform' : [
 //                                             detailsTemplate    : 'subscription',
 //                                             chartTemplate      : '2axis2values_nonMatches',
