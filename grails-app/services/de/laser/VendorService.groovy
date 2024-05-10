@@ -73,8 +73,8 @@ class VendorService {
     Map<String, Map> getWekbVendorRecords(GrailsParameterMap params, Map result) {
         Map<String, Map> records = [:], queryParams = [componentType: 'Vendor']
 
-        if(params.containsKey('orgNameContains'))
-            queryParams.q = params.orgNameContains
+        if(params.containsKey('nameContains'))
+            queryParams.q = params.nameContains
 
         if(params.containsKey('curatoryGroup'))
             queryParams.curatoryGroupExact = params.curatoryGroup.replaceAll('&','ampersand').replaceAll('\\+','%2B').replaceAll(' ','%20')
@@ -141,8 +141,8 @@ class VendorService {
                 }
                 toDelete << ar.id
             }
-            toDelete.collate(500).eachWithIndex { subSet, int i ->
-                log.debug("deleting records ${i*500}-${(i+1)*500}")
+            toDelete.collate(1000).eachWithIndex { subSet, int i ->
+                log.debug("deleting records ${i*1000}-${(i+1)*1000}")
                 OrgRole.executeUpdate('delete from OrgRole ar where ar.sharedFrom.id in (:toDelete)', [toDelete: subSet])
                 OrgRole.executeUpdate('delete from OrgRole ar where ar.id in (:toDelete)', [toDelete: subSet])
             }

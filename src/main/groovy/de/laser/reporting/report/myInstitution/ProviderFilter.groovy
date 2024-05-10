@@ -1,11 +1,9 @@
 package de.laser.reporting.report.myInstitution
 
 import de.laser.ContextService
-import de.laser.OrgSetting
+import de.laser.Provider
 import de.laser.RefdataValue
-import de.laser.Vendor
-import de.laser.auth.Role
-import de.laser.properties.PropertyDefinition
+import de.laser.annotations.UnstableFeature
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
@@ -13,7 +11,10 @@ import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
 import grails.web.servlet.mvc.GrailsParameterMap
+import groovy.util.logging.Slf4j
 
+@UnstableFeature
+@Slf4j
 class ProviderFilter extends BaseFilter {
 
     static Map<String, Object> filter(GrailsParameterMap params) {
@@ -52,7 +53,7 @@ class ProviderFilter extends BaseFilter {
 
                 // --> properties generic
                 if (pType == BaseConfig.FIELD_TYPE_PROPERTY) {
-                    if (Vendor.getDeclaredField(p).getType() == Date) {
+                    if (Provider.getDeclaredField(p).getType() == Date) {
 
                         String modifier = getDateModifier( params.get(key + '_modifier') )
 
@@ -61,7 +62,7 @@ class ProviderFilter extends BaseFilter {
 
                         filterLabelValue = getDateModifier(params.get(key + '_modifier')) + ' ' + params.get(key)
                     }
-                    else if (Vendor.getDeclaredField(p).getType() in [boolean, Boolean]) {
+                    else if (Provider.getDeclaredField(p).getType() in [boolean, Boolean]) {
                         RefdataValue rdv = RefdataValue.get(params.long(key))
 
                         if (rdv == RDStore.YN_YES)     { whereParts.add( 'pro.' + p + ' is true' ) }
@@ -83,55 +84,11 @@ class ProviderFilter extends BaseFilter {
                 }
                 // --> refdata join tables
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
-
-                    if (p == BaseConfig.RDJT_GENERIC_ORG_TYPE) {
-                        whereParts.add('exists (select ot from org.orgType ot where ot = :p' + (++pCount) + ')')
-                        queryParams.put('p' + pCount, RefdataValue.get(params.long(key)))
-
-                        filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
-                    }
+                    log.info ' --- ' + pType +' not implemented --- '
                 }
                 // --> custom filter implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
-
-                    if (p == BaseConfig.CI_GENERIC_SUBJECT_GROUP) {
-                        queryParts.add('OrgSubjectGroup osg')
-                        whereParts.add('osg.org = org and osg.subjectGroup.id = :p' + (++pCount))
-                        queryParams.put('p' + pCount, params.long(key))
-
-                        filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
-                    }
-                    else if (p == BaseConfig.CI_GENERIC_LEGAL_INFO) {
-                        long li = params.long(key)
-                        whereParts.add( getLegalInfoQueryWhereParts(li) )
-
-                        Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(p)
-                        filterLabelValue = customRdv.get('from').find{ it.id == li }.value_de
-                    }
-                    else if (p == BaseConfig.CI_GENERIC_CUSTOMER_TYPE) {
-                        queryParts.add('OrgSetting oss')
-
-                        whereParts.add('oss.org = org and oss.key = :p' + (++pCount))
-                        queryParams.put('p' + pCount, OrgSetting.KEYS.CUSTOMER_TYPE)
-
-                        whereParts.add('oss.roleValue = :p' + (++pCount))
-                        queryParams.put('p' + pCount, Role.get(params.long(key)))
-
-                        Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(p)
-                        filterLabelValue = customRdv.get('from').find{ it.id == params.long(key) }.value_de
-                    }
-                    else if (p == BaseConfig.CI_CTX_PROPERTY_KEY) {
-                        Long pValue = params.long('filter:org_propertyValue')
-
-                        String pq = getPropertyFilterSubQuery(
-                                'OrgProperty', 'org',
-                                params.long(key),
-                                pValue,
-                                queryParams
-                        )
-                        whereParts.add( '(exists (' + pq + '))' )
-                        filterLabelValue = PropertyDefinition.get(params.long(key)).getI10n('name') + ( pValue ? ': ' + RefdataValue.get( pValue ).getI10n('value') : '')
-                    }
+                    log.info ' --- ' + pType +' not implemented --- '
                 }
 
                 if (filterLabelValue) {
@@ -147,7 +104,7 @@ class ProviderFilter extends BaseFilter {
 //        println queryParams
 //        println whereParts
 
-        filterResult.data.put('providerIdList', queryParams.providerIdList ? Vendor.executeQuery( query, queryParams ) : [])
+        filterResult.data.put('providerIdList', queryParams.providerIdList ? Provider.executeQuery( query, queryParams ) : [])
 
 //        println 'providers >> ' + result.providerIdList.size()
 
@@ -156,9 +113,9 @@ class ProviderFilter extends BaseFilter {
 
     static List<Long> _getAllProviderIdList() {
 
-        List<Long> idList = Vendor.executeQuery(
+        List<Long> idList = Provider.executeQuery(
                 'select pro.id from Provider pro where (pro.status is null or pro.status != :providerStatus)',
-                [providerStatus: RDStore.VENDOR_STATUS_DELETED]
+                [providerStatus: RDStore.PROVIDER_STATUS_DELETED]
         )
 
         idList
@@ -168,9 +125,9 @@ class ProviderFilter extends BaseFilter {
 
         ContextService contextService = BeanStore.getContextService()
 
-        List<Long> idList = Vendor.executeQuery(
+        List<Long> idList = Provider.executeQuery(
                 'select pro.id from Provider pro where (pro.status is null or pro.status != :providerStatus)',
-                [providerStatus: RDStore.VENDOR_STATUS_DELETED]
+                [providerStatus: RDStore.PROVIDER_STATUS_DELETED]
         )
 
 //        List<Long> idList = Org.executeQuery( '''

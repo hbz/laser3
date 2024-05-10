@@ -27,7 +27,7 @@
                     </label>
                     <input type="text" id="nameContains" name="nameContains"
                            placeholder="${message(code:'default.search.ph')}"
-                           value="${params.orgNameContains}"/>
+                           value="${params.nameContains}"/>
                 </div>
             </g:if>
 
@@ -178,7 +178,19 @@
                 </div>
             </g:if>
 
-
+            <g:if test="${field.equalsIgnoreCase('invoicingVendors')}">
+                <div class="field">
+                    <label for="qp_invoicingVendors">${message(code: 'vendor.invoicing.vendors.label')}</label>
+                    <select name="qp_invoicingVendors" id="qp_invoicingVendors" multiple="multiple" class="ui search selection dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:each in="${Vendor.findAll}" var="invoicingVendors">
+                            <option <%=Params.getLongList(params, 'qp_invoiceDispatchs').contains(invoiceDispatch.value) ? 'selected=selected"' : ''%> value="${invoiceDispatch.value}">
+                                ${invoiceDispatch.getI10n("value")}
+                            </option>
+                        </g:each>
+                    </select>
+                </div>
+            </g:if>
         </g:each>
     <g:if test="${numberOfFields > 1}">
         </div><!-- .fields -->

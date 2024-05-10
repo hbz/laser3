@@ -16,6 +16,6 @@
     </g:elseif>
 
     <g:if test="${contextCustomerType in ['ORG_INST_PRO','ORG_CONSORTIUM_BASIC','ORG_CONSORTIUM_PRO']}">
-        <ui:subNavItem controller="organisation" action="addressbook" params="${breadcrumbParams}" message="menu.institutions.myAddressbook"/>
+        <ui:subNavItem controller="provider" action="addressbook" message="menu.institutions.myAddressbook"/>
     </g:if>
 </ui:subNav>

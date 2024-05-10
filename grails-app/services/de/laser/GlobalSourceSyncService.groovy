@@ -1364,14 +1364,17 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         //second attempt failed - create new provider if record is not deleted
         if(!provider) {
-            if(!(providerRecord.status in [Constants.PERMANENTLY_DELETED, 'Removed']))
+            if(!(providerRecord.status in [Constants.PERMANENTLY_DELETED, 'Removed'])) {
                 provider = new Provider(
                         name: providerRecord.name,
                         gokbId: providerRecord.uuid
                 )
+                provider.setGlobalUID()
+            }
         }
         //avoid creating new deleted entries
         if(provider) {
+            provider.status = RefdataValue.getByValueAndCategory(providerRecord.status, RDConstants.PROVIDER_STATUS)
             provider.sortname = providerRecord.abbreviatedName
             provider.homepage = providerRecord.homepage
             provider.metadataDownloaderURL = providerRecord.metadataDownloaderURL
@@ -1485,7 +1488,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                 }
                 providerRecord.invoicingVendors.each { Map vendorData ->
-                    Vendor v = Package.findByGokbId(vendorData.vendorUuid)
+                    Vendor v = Vendor.findByGokbId(vendorData.vendorUuid)
+                    if(!v) {
+                        createOrUpdateVendor(vendorData.vendorUuid)
+                    }
                     if(v) {
                         setupInvoicingVendor(provider, v)
                     }
@@ -1505,176 +1511,184 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
     /**
      * Checks for a given UUID if the vendor / agency exists, otherwise, it will be created
-     * @param vendorJSON the JSON record of the given {@link Vendor}
+     * @param vendorInput the UUID or JSON record of the given {@link Vendor}
      * @return the updated vendor record
      * @throws SyncException
      */
-    Vendor createOrUpdateVendor(Map<String,Object> vendorJSON) throws SyncException {
-        Map vendorRecord
-        if(vendorJSON.records)
+    Vendor createOrUpdateVendor(vendorInput) throws SyncException {
+        Map vendorRecord, vendorJSON
+        if(vendorInput instanceof String) {
+            vendorJSON = fetchRecordJSON(false, [uuid: vendorInput])
             vendorRecord = vendorJSON.records[0]
-        else vendorRecord = vendorJSON
-        log.info("vendor record loaded, reconciling vendor record for UUID ${vendorRecord.uuid}")
-        //first attempt
-        Vendor vendor = Vendor.findByGokbId(vendorRecord.uuid)
-        //attempt succeeded
-        if(vendor) {
-            vendor.name = vendorRecord.name
         }
-        //second attempt
-        else if(!vendor) {
-            vendor = Vendor.findByNameAndGokbIdIsNull(vendorRecord.name)
-            //second attempt succeeded - map gokbId to provider who already exists
-            if(vendor)
-                vendor.gokbId = vendorRecord.uuid
+        else if(vendorInput instanceof Map) {
+            if(vendorInput.records)
+                vendorRecord = vendorInput.records[0]
+            else vendorRecord = vendorInput
         }
-        //second attempt failed - create new vendor if record is not deleted
-        if(!vendor) {
-            if(!(vendorRecord.status in [Constants.PERMANENTLY_DELETED, 'Removed'])) {
-                vendor = new Vendor(
-                        name: vendorRecord.name,
-                        gokbId: vendorRecord.uuid
-                )
-                vendor.setGlobalUID() //needed because beforeInsertHandler() is being executed after validation only!
+        if(vendorRecord) {
+            log.info("vendor record loaded, reconciling vendor record for UUID ${vendorRecord.uuid}")
+            //first attempt
+            Vendor vendor = Vendor.findByGokbId(vendorRecord.uuid)
+            //attempt succeeded
+            if(vendor) {
+                vendor.name = vendorRecord.name
             }
-        }
-        //avoid creating new deleted entries
-        if(vendor) {
-            vendor.sortname = vendorRecord.abbreviatedName
-            /*
-            if((vendor.status == RDStore.ORG_STATUS_CURRENT || !vendor.status) && vendorRecord.status == RDStore.ORG_STATUS_RETIRED.value) {
-                //value is not implemented in we:kb yet
-                if(vendorRecord.retirementDate) {
-                    vendor.retirementDate = DateUtils.parseDateGeneric(vendorRecord.retirementDate)
+            //second attempt
+            else if(!vendor) {
+                vendor = Vendor.findByNameAndGokbIdIsNull(vendorRecord.name)
+                //second attempt succeeded - map gokbId to provider who already exists
+                if(vendor)
+                    vendor.gokbId = vendorRecord.uuid
+            }
+            //second attempt failed - create new vendor if record is not deleted
+            if(!vendor) {
+                if(!(vendorRecord.status in [Constants.PERMANENTLY_DELETED, 'Removed'])) {
+                    vendor = new Vendor(
+                            name: vendorRecord.name,
+                            gokbId: vendorRecord.uuid
+                    )
+                    vendor.setGlobalUID() //needed because beforeInsertHandler() is being executed after validation only!
                 }
-                else vendor.retirementDate = new Date()
             }
-            */
-            vendor.status = RefdataValue.getByValueAndCategory(vendorRecord.status, RDConstants.VENDOR_STATUS)
-            vendor.homepage = vendorRecord.homepage
-            vendor.webShopOrders = vendorRecord.webShopOrders == RDStore.YN_YES.value
-            vendor.xmlOrders = vendorRecord.xmlOrders == RDStore.YN_YES.value
-            vendor.ediOrders = vendorRecord.ediOrders == RDStore.YN_YES.value
-            vendor.paperInvoice = vendorRecord.paperInvoice == RDStore.YN_YES.value
-            vendor.managementOfCredits = vendorRecord.managementOfCredits == RDStore.YN_YES.value
-            vendor.processingOfCompensationPayments = vendorRecord.processingOfCompensationPayments == RDStore.YN_YES.value
-            vendor.individualInvoiceDesign = vendorRecord.individualInvoiceDesign == RDStore.YN_YES.value
-            vendor.technicalSupport = vendorRecord.technicalSupport == RDStore.YN_YES.value
-            vendor.shippingMetadata = vendorRecord.shippingMetadata == RDStore.YN_YES.value
-            vendor.forwardingUsageStatisticsFromPublisher = vendorRecord.forwardingUsageStatisticsFromPublisher == RDStore.YN_YES.value
-            vendor.activationForNewReleases = vendorRecord.activationForNewReleases == RDStore.YN_YES.value
-            vendor.exchangeOfIndividualTitles = vendorRecord.exchangeOfIndividualTitles == RDStore.YN_YES.value
-            vendor.researchPlatformForEbooks = vendorRecord.researchPlatformForEbooks
-            vendor.prequalificationVOL = vendorRecord.prequalificationVOL == RDStore.YN_YES.value
-            vendor.prequalificationVOLInfo = vendorRecord.prequalificationVOLInfo
-            if(vendor.save()) {
-                if(vendorRecord.contacts) {
-                    List<String> typeNames = contactTypes.values().collect { RefdataValue cct -> cct.getI10n("value") }
-                    typeNames.addAll(contactTypes.keySet())
-                    List<Person> oldPersons = Person.executeQuery('select p from PersonRole pr join pr.prs p where pr.vendor = :vendor and p.tenant = null and p.isPublic = true and p.last_name in (:contactTypes)', [vendor: vendor, contactTypes: typeNames])
-                    List<Long> funcTypes = contactTypes.values().collect { RefdataValue cct -> cct.id }
-                    oldPersons.each { Person old ->
-                        PersonRole.executeUpdate('delete from PersonRole pr where pr.vendor = :vendor and pr.prs = :oldPerson and pr.functionType.id in (:funcTypes)', [vendor: vendor, oldPerson: old, funcTypes: funcTypes])
-                        Contact.executeUpdate('delete from Contact c where c.prs = :oldPerson', [oldPerson: old])
-                        if (PersonRole.executeQuery('select count(pr) from PersonRole pr where pr.prs = :oldPerson and pr.vendor = :vendor and (pr.functionType.id not in (:funcTypes) or pr.functionType = null)', [vendor: vendor, oldPerson: old, funcTypes: funcTypes])[0] == 0) {
-                            Person.executeUpdate('delete from Person p where p = :oldPerson', [oldPerson: old])
+            //avoid creating new deleted entries
+            if(vendor) {
+                vendor.sortname = vendorRecord.abbreviatedName
+                /*
+                if((vendor.status == RDStore.ORG_STATUS_CURRENT || !vendor.status) && vendorRecord.status == RDStore.ORG_STATUS_RETIRED.value) {
+                    //value is not implemented in we:kb yet
+                    if(vendorRecord.retirementDate) {
+                        vendor.retirementDate = DateUtils.parseDateGeneric(vendorRecord.retirementDate)
+                    }
+                    else vendor.retirementDate = new Date()
+                }
+                */
+                vendor.status = RefdataValue.getByValueAndCategory(vendorRecord.status, RDConstants.VENDOR_STATUS)
+                vendor.homepage = vendorRecord.homepage
+                vendor.webShopOrders = vendorRecord.webShopOrders == RDStore.YN_YES.value
+                vendor.xmlOrders = vendorRecord.xmlOrders == RDStore.YN_YES.value
+                vendor.ediOrders = vendorRecord.ediOrders == RDStore.YN_YES.value
+                vendor.paperInvoice = vendorRecord.paperInvoice == RDStore.YN_YES.value
+                vendor.managementOfCredits = vendorRecord.managementOfCredits == RDStore.YN_YES.value
+                vendor.processingOfCompensationPayments = vendorRecord.processingOfCompensationPayments == RDStore.YN_YES.value
+                vendor.individualInvoiceDesign = vendorRecord.individualInvoiceDesign == RDStore.YN_YES.value
+                vendor.technicalSupport = vendorRecord.technicalSupport == RDStore.YN_YES.value
+                vendor.shippingMetadata = vendorRecord.shippingMetadata == RDStore.YN_YES.value
+                vendor.forwardingUsageStatisticsFromPublisher = vendorRecord.forwardingUsageStatisticsFromPublisher == RDStore.YN_YES.value
+                vendor.activationForNewReleases = vendorRecord.activationForNewReleases == RDStore.YN_YES.value
+                vendor.exchangeOfIndividualTitles = vendorRecord.exchangeOfIndividualTitles == RDStore.YN_YES.value
+                vendor.researchPlatformForEbooks = vendorRecord.researchPlatformForEbooks
+                vendor.prequalificationVOL = vendorRecord.prequalificationVOL == RDStore.YN_YES.value
+                vendor.prequalificationVOLInfo = vendorRecord.prequalificationVOLInfo
+                if(vendor.save()) {
+                    if(vendorRecord.contacts) {
+                        List<String> typeNames = contactTypes.values().collect { RefdataValue cct -> cct.getI10n("value") }
+                        typeNames.addAll(contactTypes.keySet())
+                        List<Person> oldPersons = Person.executeQuery('select p from PersonRole pr join pr.prs p where pr.vendor = :vendor and p.tenant = null and p.isPublic = true and p.last_name in (:contactTypes)', [vendor: vendor, contactTypes: typeNames])
+                        List<Long> funcTypes = contactTypes.values().collect { RefdataValue cct -> cct.id }
+                        oldPersons.each { Person old ->
+                            PersonRole.executeUpdate('delete from PersonRole pr where pr.vendor = :vendor and pr.prs = :oldPerson and pr.functionType.id in (:funcTypes)', [vendor: vendor, oldPerson: old, funcTypes: funcTypes])
+                            Contact.executeUpdate('delete from Contact c where c.prs = :oldPerson', [oldPerson: old])
+                            if (PersonRole.executeQuery('select count(pr) from PersonRole pr where pr.prs = :oldPerson and pr.vendor = :vendor and (pr.functionType.id not in (:funcTypes) or pr.functionType = null)', [vendor: vendor, oldPerson: old, funcTypes: funcTypes])[0] == 0) {
+                                Person.executeUpdate('delete from Person p where p = :oldPerson', [oldPerson: old])
+                            }
+                        }
+                        vendorRecord.contacts.findAll { Map<String, String> cParams -> cParams.content != null }.each { contact ->
+                            switch (contact.type) {
+                                case "Invoicing Contact":
+                                    contact.rdType = RDStore.PRS_FUNC_INVOICING_CONTACT
+                                    break
+                                case "Metadata Contact":
+                                    contact.rdType = RDStore.PRS_FUNC_METADATA
+                                    break
+                                case "Service Support":
+                                    contact.rdType = RDStore.PRS_FUNC_SERVICE_SUPPORT
+                                    break
+                                case "Technical Support":
+                                    contact.rdType = RDStore.PRS_FUNC_TECHNICAL_SUPPORT
+                                    break
+                                default: log.warn("unhandled additional property type for ${vendor.gokbId}: ${contact.name}")
+                                    break
+                            }
+                            if (contact.rdType && contact.contentType != null) {
+                                createOrUpdateSupport(vendor, contact)
+                            } else log.warn("contact submitted without content type, rejecting contact")
                         }
                     }
-                    vendorRecord.contacts.findAll { Map<String, String> cParams -> cParams.content != null }.each { contact ->
-                        switch (contact.type) {
-                            case "Invoicing Contact":
-                                contact.rdType = RDStore.PRS_FUNC_INVOICING_CONTACT
-                                break
-                            case "Metadata Contact":
-                                contact.rdType = RDStore.PRS_FUNC_METADATA
-                                break
-                            case "Service Support":
-                                contact.rdType = RDStore.PRS_FUNC_SERVICE_SUPPORT
-                                break
-                            case "Technical Support":
-                                contact.rdType = RDStore.PRS_FUNC_TECHNICAL_SUPPORT
-                                break
-                            default: log.warn("unhandled additional property type for ${vendor.gokbId}: ${contact.name}")
-                                break
-                        }
-                        if (contact.rdType && contact.contentType != null) {
-                            createOrUpdateSupport(vendor, contact)
-                        } else log.warn("contact submitted without content type, rejecting contact")
-                    }
-                }
-                if(vendorRecord.altname) {
-                    List<String> oldAltNames = vendor.altnames.collect { AlternativeName altname -> altname.name }
-                    vendorRecord.altname.each { String newAltName ->
-                        if(!oldAltNames.contains(newAltName)) {
-                            if(!AlternativeName.construct([vendor: vendor, name: newAltName]))
-                                throw new SyncException("error on creating new alternative name for provider ${vendor}")
+                    if(vendorRecord.altname) {
+                        List<String> oldAltNames = vendor.altnames.collect { AlternativeName altname -> altname.name }
+                        vendorRecord.altname.each { String newAltName ->
+                            if(!oldAltNames.contains(newAltName)) {
+                                if(!AlternativeName.construct([vendor: vendor, name: newAltName]))
+                                    throw new SyncException("error on creating new alternative name for provider ${vendor}")
+                            }
                         }
                     }
-                }
-                List<String> supportedLibrarySystemsB = vendorRecord.supportedLibrarySystems.collect { slsB -> slsB.supportedLibrarySystem },
-                        electronicBillingsB = vendorRecord.electronicBillings.collect { ebB -> ebB.electronicBilling },
-                        invoiceDispatchsB = vendorRecord.invoiceDispatchs.collect { idiB -> idiB.invoiceDispatch },
-                        electronicDeliveryDelaysB = vendorRecord.electronicDeliveryDelays.collect { eddnB -> eddnB.electronicDeliveryDelay },
-                        packagesB = vendorRecord.packages.collect { pkgB -> pkgB.packageUuid }
-                if(vendor.packages) {
-                    vendor.packages.each { PackageVendor pvA ->
-                        if(!(pvA.pkg.gokbId in packagesB))
-                            pvA.delete()
+                    List<String> supportedLibrarySystemsB = vendorRecord.supportedLibrarySystems.collect { slsB -> slsB.supportedLibrarySystem },
+                                 electronicBillingsB = vendorRecord.electronicBillings.collect { ebB -> ebB.electronicBilling },
+                                 invoiceDispatchsB = vendorRecord.invoiceDispatchs.collect { idiB -> idiB.invoiceDispatch },
+                                 electronicDeliveryDelaysB = vendorRecord.electronicDeliveryDelays.collect { eddnB -> eddnB.electronicDeliveryDelay },
+                                 packagesB = vendorRecord.packages.collect { pkgB -> pkgB.packageUuid }
+                    if(vendor.packages) {
+                        vendor.packages.each { PackageVendor pvA ->
+                            if(!(pvA.pkg.gokbId in packagesB))
+                                pvA.delete()
+                        }
                     }
-                }
-                vendorRecord.packages.each { Map packageData ->
-                    Package pkg = Package.findByGokbId(packageData.packageUuid)
-                    if(pkg) {
-                        setupPkgVendor(vendor, pkg)
+                    vendorRecord.packages.each { Map packageData ->
+                        Package pkg = Package.findByGokbId(packageData.packageUuid)
+                        if(pkg) {
+                            setupPkgVendor(vendor, pkg)
+                        }
                     }
-                }
-                vendor.supportedLibrarySystems.each { LibrarySystem lsA ->
-                    if(!supportedLibrarySystemsB.contains(lsA.librarySystem.value))
-                        lsA.delete()
-                }
-                supportedLibrarySystemsB.each { String lsB ->
-                    if(!vendor.isLibrarySystemSupported(lsB)) {
-                        new LibrarySystem(vendor: vendor, librarySystem: RefdataValue.getByValueAndCategory(lsB, RDConstants.VENDOR_SUPPORTED_LIBRARY_SYSTEM)).save()
+                    vendor.supportedLibrarySystems.each { LibrarySystem lsA ->
+                        if(!supportedLibrarySystemsB.contains(lsA.librarySystem.value))
+                            lsA.delete()
                     }
-                }
-                vendor.electronicBillings.each { ElectronicBilling ebA ->
-                    if(!electronicBillingsB.contains(ebA.invoicingFormat.value))
-                        ebA.delete()
-                }
-                electronicBillingsB.each { String ebB ->
-                    if(!vendor.hasElectronicBilling(ebB)) {
-                        new ElectronicBilling(vendor: vendor, invoicingFormat: RefdataValue.getByValueAndCategory(ebB, RDConstants.VENDOR_INVOICING_FORMAT)).save()
+                    supportedLibrarySystemsB.each { String lsB ->
+                        if(!vendor.isLibrarySystemSupported(lsB)) {
+                            new LibrarySystem(vendor: vendor, librarySystem: RefdataValue.getByValueAndCategory(lsB, RDConstants.VENDOR_SUPPORTED_LIBRARY_SYSTEM)).save()
+                        }
                     }
-                }
-                vendor.invoiceDispatchs.each { InvoiceDispatch idiA ->
-                    if(!invoiceDispatchsB.contains(idiA.invoiceDispatch.value))
-                        idiA.delete()
-                }
-                invoiceDispatchsB.each { String idiB ->
-                    if(!vendor.hasInvoiceDispatch(idiB)) {
-                        new InvoiceDispatch(vendor: vendor, invoiceDispatch: RefdataValue.getByValueAndCategory(idiB, RDConstants.VENDOR_INVOICING_DISPATCH)).save()
+                    vendor.electronicBillings.each { ElectronicBilling ebA ->
+                        if(!electronicBillingsB.contains(ebA.invoicingFormat.value))
+                            ebA.delete()
                     }
-                }
-                vendor.electronicDeliveryDelays.each { ElectronicDeliveryDelayNotification eddnA ->
-                    if(!electronicDeliveryDelaysB.contains(eddnA.delayNotification.value))
-                        eddnA.delete()
-                }
-                electronicDeliveryDelaysB.each { String eddnB ->
-                    if(!vendor.hasElectronicDeliveryDelayNotification(eddnB)) {
-                        new ElectronicDeliveryDelayNotification(vendor: vendor, delayNotification: RefdataValue.getByValueAndCategory(eddnB, RDConstants.VENDOR_ELECTRONIC_DELIVERY_DELAY)).save()
+                    electronicBillingsB.each { String ebB ->
+                        if(!vendor.hasElectronicBilling(ebB)) {
+                            new ElectronicBilling(vendor: vendor, invoicingFormat: RefdataValue.getByValueAndCategory(ebB, RDConstants.VENDOR_INVOICING_FORMAT)).save()
+                        }
                     }
-                }
-                if(source.rectype == RECTYPE_VENDOR) {
-                    Date lastUpdatedTime = DateUtils.parseDateGeneric(vendorRecord.lastUpdatedDisplay)
-                    if(lastUpdatedTime.getTime() > maxTimestamp) {
-                        maxTimestamp = lastUpdatedTime.getTime()
+                    vendor.invoiceDispatchs.each { InvoiceDispatch idiA ->
+                        if(!invoiceDispatchsB.contains(idiA.invoiceDispatch.value))
+                            idiA.delete()
                     }
+                    invoiceDispatchsB.each { String idiB ->
+                        if(!vendor.hasInvoiceDispatch(idiB)) {
+                            new InvoiceDispatch(vendor: vendor, invoiceDispatch: RefdataValue.getByValueAndCategory(idiB, RDConstants.VENDOR_INVOICING_DISPATCH)).save()
+                        }
+                    }
+                    vendor.electronicDeliveryDelays.each { ElectronicDeliveryDelayNotification eddnA ->
+                        if(!electronicDeliveryDelaysB.contains(eddnA.delayNotification.value))
+                            eddnA.delete()
+                    }
+                    electronicDeliveryDelaysB.each { String eddnB ->
+                        if(!vendor.hasElectronicDeliveryDelayNotification(eddnB)) {
+                            new ElectronicDeliveryDelayNotification(vendor: vendor, delayNotification: RefdataValue.getByValueAndCategory(eddnB, RDConstants.VENDOR_ELECTRONIC_DELIVERY_DELAY)).save()
+                        }
+                    }
+                    if(source.rectype == RECTYPE_VENDOR) {
+                        Date lastUpdatedTime = DateUtils.parseDateGeneric(vendorRecord.lastUpdatedDisplay)
+                        if(lastUpdatedTime.getTime() > maxTimestamp) {
+                            maxTimestamp = lastUpdatedTime.getTime()
+                        }
+                    }
+                    vendor
                 }
-                vendor
+                else throw new SyncException(vendor.errors)
             }
-            else throw new SyncException(vendor.errors)
         }
-
+        else throw new SyncException("no vendor record loaded!")
     }
 
     /**
@@ -1727,7 +1741,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @throws SyncException
      */
     void createOrUpdateSupport(Provider provider, Map<String, Object> supportProps) throws SyncException {
-        List<Person> personCheck = Person.executeQuery('select p from PersonRole pr join pr.prs p where p.tenant = null and pr.provider = :provider and p.isPublic = true and p.last_name = :type', [provider: provider, type: contactProps.rdType.getI10n("value")])
+        List<Person> personCheck = Person.executeQuery('select p from PersonRole pr join pr.prs p where p.tenant = null and pr.provider = :provider and p.isPublic = true and p.last_name = :type', [provider: provider, type: supportProps.rdType.getI10n("value")])
         Person personInstance
         if(!personCheck) {
             personInstance = new Person(isPublic: true, last_name: supportProps.rdType.getI10n("value"))
@@ -1738,7 +1752,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         else personInstance = personCheck[0]
         PersonRole personRole = PersonRole.findByPrsAndProviderAndFunctionType(personInstance, provider, supportProps.rdType)
         if(!personRole) {
-            personRole = new PersonRole(prs: personInstance, org: provider, functionType: supportProps.rdType)
+            personRole = new PersonRole(prs: personInstance, provider: provider, functionType: supportProps.rdType)
             if(!personRole.save()) {
                 throw new SyncException("Error on setting contact for ${provider}, concerning person role: ${personRole.getErrors().getAllErrors().toListString()}")
             }
@@ -1761,36 +1775,36 @@ class GlobalSourceSyncService extends AbstractLockableService {
     /**
      * Updates a contact for a given {@link Vendor}; overrides an eventually created one and creates if it does not exist
      * @param org the {@link Vendor} to which the given support address should be created/updated
-     * @param contactProps the configuration {@link Map} containing the address properties
+     * @param supportProps the configuration {@link Map} containing the address properties
      * @throws SyncException
      */
-    void createOrUpdateSupport(Vendor vendor, Map<String, Object> contactProps) throws SyncException {
-        List<Person> personCheck = Person.executeQuery('select p from PersonRole pr join pr.prs p where p.tenant = null and pr.vendor = :vendor and p.isPublic = true and p.last_name = :type', [vendor: vendor, type: contactProps.rdType.getI10n("value")])
+    void createOrUpdateSupport(Vendor vendor, Map<String, Object> supportProps) throws SyncException {
+        List<Person> personCheck = Person.executeQuery('select p from PersonRole pr join pr.prs p where p.tenant = null and pr.vendor = :vendor and p.isPublic = true and p.last_name = :type', [vendor: vendor, type: supportProps.rdType.getI10n("value")])
         Person personInstance
         if(!personCheck) {
-            personInstance = new Person(isPublic: true, last_name: contactProps.rdType.getI10n("value"))
+            personInstance = new Person(isPublic: true, last_name: supportProps.rdType.getI10n("value"))
             if(!personInstance.save()) {
                 throw new SyncException("Error on setting up contact for ${vendor}, concerning person instance: ${personInstance.getErrors().getAllErrors().toListString()}")
             }
         }
         else personInstance = personCheck[0]
-        PersonRole personRole = PersonRole.findByPrsAndVendorAndFunctionType(personInstance, vendor, contactProps.rdType)
+        PersonRole personRole = PersonRole.findByPrsAndVendorAndFunctionType(personInstance, vendor, supportProps.rdType)
         if(!personRole) {
-            personRole = new PersonRole(prs: personInstance, vendor: vendor, functionType: contactProps.rdType)
+            personRole = new PersonRole(prs: personInstance, vendor: vendor, functionType: supportProps.rdType)
             if(!personRole.save()) {
                 throw new SyncException("Error on setting contact for ${vendor}, concerning person role: ${personRole.getErrors().getAllErrors().toListString()}")
             }
         }
-        RefdataValue contentType = RefdataValue.getByValueAndCategory(contactProps.contentType, RDConstants.CONTACT_CONTENT_TYPE)
+        RefdataValue contentType = RefdataValue.getByValueAndCategory(supportProps.contentType, RDConstants.CONTACT_CONTENT_TYPE)
         Contact contact = new Contact(prs: personInstance, type: RDStore.CONTACT_TYPE_JOBRELATED)
-        if(contactProps.language)
-            contact.language = RefdataValue.getByValueAndCategory(contactProps.language, RDConstants.LANGUAGE_ISO) ?: null
+        if(supportProps.language)
+            contact.language = RefdataValue.getByValueAndCategory(supportProps.language, RDConstants.LANGUAGE_ISO) ?: null
         if(!contentType) {
-            log.error("Invalid contact type submitted: ${contactProps.contentType}")
+            log.error("Invalid contact type submitted: ${supportProps.contentType}")
         }
         else
             contact.contentType = contentType
-        contact.content = contactProps.content
+        contact.content = supportProps.content
         if(!contact.save()) {
             throw new SyncException("Error on setting contact for ${vendor}, concerning contact: ${contact.getErrors().getAllErrors().toListString()}")
         }

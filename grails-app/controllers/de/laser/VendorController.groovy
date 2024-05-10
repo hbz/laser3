@@ -18,8 +18,10 @@ class VendorController {
 
     ExportClickMeService exportClickMeService
     GokbService gokbService
+    TaskService taskService
     UserService userService
     VendorService vendorService
+    WorkflowService workflowService
 
     public static final Map<String, String> CHECK404_ALTERNATIVES = [
             'list' : 'menu.public.all_vendors'
@@ -57,40 +59,40 @@ class VendorController {
                 [value: 'Other', name: message(code: 'package.curatoryGroup.other')]
         ]
         List<String> queryArgs = []
-        if(params.containsKey('orgNameContains')) {
-            queryArgs << "(genfunc_filter_matcher(o.name, :name) = true or genfunc_filter_matcher(o.sortname, :name) = true)"
-            queryParams.name = params.orgNameContains
+        if(params.containsKey('nameContains')) {
+            queryArgs << "(genfunc_filter_matcher(v.name, :name) = true or genfunc_filter_matcher(v.sortname, :name) = true)"
+            queryParams.name = params.nameContains
         }
         if(params.containsKey('venStatus')) {
-            queryArgs << "o.status in (:status)"
+            queryArgs << "v.status in (:status)"
             queryParams.status = Params.getRefdataList(params, 'venStatus')
         }
         else if(!params.containsKey('venStatus') && !params.containsKey('filterSet')) {
-            queryArgs << "o.status = :status"
+            queryArgs << "v.status = :status"
             queryParams.status = "Current"
             params.venStatus = RDStore.VENDOR_STATUS_CURRENT.id
         }
 
         if(params.containsKey('qp_supportedLibrarySystems')) {
-            queryArgs << "exists (select ls from o.supportedLibrarySystems ls where ls.librarySystem in (:librarySystems))"
+            queryArgs << "exists (select ls from v.supportedLibrarySystems ls where ls.librarySystem in (:librarySystems))"
             queryParams.put('librarySystems', Params.getRefdataList(params, 'qp_supportedLibrarySystems'))
         }
 
         if(params.containsKey('qp_electronicBillings')) {
-            queryArgs << "exists (select eb from o.electronicBillings eb where eb.invoiceFormat in (:electronicBillings))"
+            queryArgs << "exists (select eb from v.electronicBillings eb where eb.invoiceFormat in (:electronicBillings))"
             queryParams.put('electronicBillings', Params.getRefdataList(params, 'qp_electronicBillings'))
         }
 
         if(params.containsKey('qp_invoiceDispatchs')) {
-            queryArgs << "exists (select idi from o.invoiceDispatchs idi where idi.invoiceDispatch in (:invoiceDispatchs))"
+            queryArgs << "exists (select idi from v.invoiceDispatchs idi where idi.invoiceDispatch in (:invoiceDispatchs))"
             queryParams.put('invoiceDispatchs', Params.getRefdataList(params, 'qp_invoiceDispatchs'))
         }
 
         if(params.containsKey('curatoryGroup') || params.containsKey('curatoryGroupType')) {
-            queryArgs << "o.gokbId in (:wekbIds)"
+            queryArgs << "v.gokbId in (:wekbIds)"
             queryParams.wekbIds = result.wekbRecords.keySet()
         }
-        String vendorQuery = 'select o from Vendor o'
+        String vendorQuery = 'select v from Vendor v'
         if(queryArgs) {
             vendorQuery += ' where '+queryArgs.join(' and ')
         }
@@ -98,7 +100,7 @@ class VendorController {
             vendorQuery += " order by ${params.sort} ${params.order ?: 'asc'}, v.name ${params.order ?: 'asc'} "
         }
         else
-            vendorQuery += " order by o.sortname "
+            vendorQuery += " order by v.sortname "
         Set<Vendor> vendorsTotal = Vendor.executeQuery(vendorQuery, queryParams)
 
         String message = message(code: 'export.all.vendors') as String
@@ -164,12 +166,13 @@ class VendorController {
             result.editable = false //hard set until it is not decided how to deal with current agencies
             result.subEditable = userService.hasFormalAffiliation_or_ROLEADMIN(result.user, result.institution, 'INST_EDITOR')
             result.isMyVendor = vendorService.isMyVendor(vendor, result.institution)
-            result.platforms = vendor.packages.pkg.nominalPlatform
+            result.platforms = vendor.packages.pkg.nominalPlatform.unique()
             String subscriptionConsortiumFilter = '', licenseConsortiumFilter = ''
             if(result.institution.isCustomerType_Consortium()) {
                 subscriptionConsortiumFilter = 'and s.instanceOf = null'
                 licenseConsortiumFilter = 'and l.instanceOf = null'
             }
+            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, vendor)
             result.subLinks = VendorRole.executeQuery('select vr from VendorRole vr join vr.subscription s join s.orgRelations oo where vr.vendor = :vendor and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution])
             result.licLinks = VendorRole.executeQuery('select vr from VendorRole vr join vr.license l join l.orgRelations oo where vr.vendor = :vendor and l.status = :current and oo.org = :context '+licenseConsortiumFilter, [vendor: vendor, current: RDStore.LICENSE_CURRENT, context: result.institution])
             result.currentSubscriptionsCount = VendorRole.executeQuery('select count(vr) from VendorRole vr join vr.subscription s join s.orgRelations oo where vr.vendor = :vendor and oo.org = :context '+subscriptionConsortiumFilter, [vendor: vendor, context: result.institution])[0]

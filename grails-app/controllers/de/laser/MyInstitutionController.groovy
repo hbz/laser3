@@ -83,6 +83,7 @@ class MyInstitutionController  {
     OrgTypeService orgTypeService
     PackageService packageService
     PropertyService propertyService
+    ProviderService providerService
     ReportingGlobalService reportingGlobalService
     SubscriptionsQueryService subscriptionsQueryService
     SubscriptionService subscriptionService
@@ -867,60 +868,105 @@ class MyInstitutionController  {
         ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
     def currentProviders() {
-        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params), queryParams = [:]
 		Profiler prf = new Profiler()
 		prf.setBenchmark('init')
 
-        EhcacheWrapper cache = contextService.getOrgCache('MyInstitutionController/currentProviders')
-        List<Long> orgIds = []
-
-        if (cache.get('orgIds')) {
-            orgIds = cache.get('orgIds')
-            log.debug('orgIds from cache')
-        }
-        else {
-            orgIds = (orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( result.institution )).toList()
-            cache.put('orgIds', orgIds)
-        }
-
-        result.orgRoles    = [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
-        result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(result.institution)
+        result.propList    = PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr = :def and (pd.tenant is null or pd.tenant = :tenant) order by pd.name_de asc", [
+                def: PropertyDefinition.PRV_PROP,
+                tenant: result.institution
+        ])
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        params.sort = params.sort ?: " LOWER(o.sortname), LOWER(o.name)"
         params.subPerpetual = 'on'
-
-        GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
-        tmpParams.constraint_orgIds = orgIds
-
-        FilterService.Result fsr  = filterService.getOrgQuery(tmpParams)
+        List<String> queryArgs = []
 
         result.filterSet = params.filterSet ? true : false
         if (params.filterPropDef) {
-            Map<String, Object> efq = propertyService.evalFilterQuery(tmpParams, fsr.query, 'o', fsr.queryParams)
-            fsr.query = efq.query
-            fsr.queryParams = efq.queryParams as Map<String, Object>
+            Map<String, Object> efq = propertyService.evalFilterQuery(params, fsr.query, 'o', fsr.queryParams)
+            queryArgs << efq.query
+            queryParams = efq.queryParams as Map<String, Object>
         }
-        List<Org> orgListTotal = Org.findAll(fsr.query, fsr.queryParams)
+        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        result.wekbApi = apiSource
+        Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
+        if(queryCuratoryGroups.error == 404) {
+            result.error = message(code:'wekb.error.'+queryCuratoryGroups.error) as String
+        }
+        else {
+            if (queryCuratoryGroups) {
+                List recordsCuratoryGroups = queryCuratoryGroups.result
+                result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
+            }
+            else result.curatoryGroups = []
+        }
+        result.curatoryGroupTypes = [
+                [value: 'Provider', name: message(code: 'package.curatoryGroup.provider')],
+                [value: 'Vendor', name: message(code: 'package.curatoryGroup.vendor')],
+                [value: 'Other', name: message(code: 'package.curatoryGroup.other')]
+        ]
+        if(params.containsKey('nameContains')) {
+            queryArgs << "(genfunc_filter_matcher(p.name, :name) = true or genfunc_filter_matcher(p.sortname, :name) = true)"
+            queryParams.name = params.nameContains
+        }
+        if(params.containsKey('provStatus')) {
+            queryArgs << "p.status in (:status)"
+            queryParams.status = Params.getRefdataList(params, 'provStatus')
+        }
+        else if(!params.containsKey('provStatus') && !params.containsKey('filterSet')) {
+            queryArgs << "p.status = :status"
+            queryParams.status = "Current"
+            params.provStatus = RDStore.PROVIDER_STATUS_CURRENT.id
+        }
 
-        result.wekbRecords = organisationService.getWekbOrgRecords(params, result)
+        if(params.containsKey('qp_invoicingVendors')) {
+            queryArgs << "exists (select ls from p.invoicingVendors iv where iv.vendor in (:vendors))"
+            queryParams.put('vendors', Params.getRefdataList(params, 'qp_invoicingVendors'))
+        }
+
+        if(params.containsKey('qp_electronicBillings')) {
+            queryArgs << "exists (select eb from p.electronicBillings eb where eb.invoiceFormat in (:electronicBillings))"
+            queryParams.put('electronicBillings', Params.getRefdataList(params, 'qp_electronicBillings'))
+        }
+
+        if(params.containsKey('qp_invoiceDispatchs')) {
+            queryArgs << "exists (select idi from p.invoiceDispatchs idi where idi.invoiceDispatch in (:invoiceDispatchs))"
+            queryParams.put('invoiceDispatchs', Params.getRefdataList(params, 'qp_invoiceDispatchs'))
+        }
+
+        if(params.containsKey('curatoryGroup') || params.containsKey('curatoryGroupType')) {
+            queryArgs << "p.gokbId in (:wekbIds)"
+            queryParams.wekbIds = result.wekbRecords.keySet()
+        }
+        String providerQuery = 'select p from Provider p'
+        if(queryArgs) {
+            providerQuery += ' where '+queryArgs.join(' and ')
+        }
+        if(params.containsKey('sort')) {
+            providerQuery += " order by ${params.sort} ${params.order ?: 'asc'}, p.name ${params.order ?: 'asc'} "
+        }
+        else
+            providerQuery += " order by p.sortname "
+        List<Provider> providerListTotal = Provider.executeQuery(providerQuery, queryParams)
+
+        result.wekbRecords = providerService.getWekbProviderRecords(params, result)
 
         if (params.isMyX) {
             List<String> xFilter = params.list('isMyX')
             Set<Long> f1Result = []
 
             if (xFilter.contains('wekb_exclusive')) {
-                f1Result.addAll( orgListTotal.findAll {it.gokbId != null }.collect{ it.id } )
+                f1Result.addAll( providerListTotal.findAll {it.gokbId != null }.collect{ it.id } )
             }
             if (xFilter.contains('wekb_not')) {
-                f1Result.addAll( orgListTotal.findAll { it.gokbId == null }.collect{ it.id }  )
+                f1Result.addAll( providerListTotal.findAll { it.gokbId == null }.collect{ it.id }  )
             }
-            orgListTotal = orgListTotal.findAll { f1Result.contains(it.id) }
+            providerListTotal = providerListTotal.findAll { f1Result.contains(it.id) }
         }
 
-        result.orgListTotal = orgListTotal.size()
-        result.orgList = orgListTotal.drop((int) result.offset).take((int) result.max)
+        result.providersTotal = providerListTotal.size()
+        result.providerList = providerListTotal.drop((int) result.offset).take((int) result.max)
 
         String message = message(code: 'export.my.currentProviders') as String
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -932,27 +978,6 @@ class MyInstitutionController  {
 		List bm = prf.stopBenchmark()
 		result.benchMark = bm
 
-        /*if ( params.exportXLS ) {
-            try {
-                SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(orgListTotal, message, true, "xls")
-                // Write the output to a file
-
-                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                wb.write(response.outputStream)
-                response.outputStream.flush()
-                response.outputStream.close()
-                wb.dispose()
-
-                return
-            }
-            catch (Exception e) {
-                log.error("Problem",e);
-                response.sendError(HttpStatus.SC_INTERNAL_SERVER_ERROR)
-                return
-            }
-        }
-        else */
         Map<String, Object> selectedFields = [:]
         Set<String> contactSwitch = []
 
@@ -966,7 +991,7 @@ class MyInstitutionController  {
             contactSwitch.addAll(params.list("addressSwitch"))
             switch(params.fileformat) {
                 case 'xlsx':
-                    SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(orgListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.XLS, contactSwitch)
+                    SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportProviders(providerListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.XLS, contactSwitch)
 
                     response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
                     response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -980,12 +1005,12 @@ class MyInstitutionController  {
                     response.contentType = "text/csv"
                     ServletOutputStream out = response.outputStream
                     out.withWriter { writer ->
-                        writer.write((String) exportClickMeService.exportOrgs(orgListTotal,selectedFields, 'provider',ExportClickMeService.FORMAT.CSV,contactSwitch))
+                        writer.write((String) exportClickMeService.exportProviders(providerListTotal,selectedFields, 'provider',ExportClickMeService.FORMAT.CSV,contactSwitch))
                     }
                     out.close()
                     return
                 case 'pdf':
-                    Map<String, Object> pdfOutput = exportClickMeService.exportOrgs(orgListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.PDF, contactSwitch)
+                    Map<String, Object> pdfOutput = exportClickMeService.exportProviders(providerListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.PDF, contactSwitch)
 
                     byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
                     response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
@@ -3291,9 +3316,10 @@ class MyInstitutionController  {
         Map<String, Object> result = [
                 myMarkedObjects: [
                         org: markerService.getObjectsByClassAndType(Org.class, markerType),
-                        pkg: markerService.getObjectsByClassAndType(Package.class, markerType),
-                        plt: markerService.getObjectsByClassAndType(Platform.class, markerType),
+                        pro: markerService.getObjectsByClassAndType(Provider.class, markerType),
                         ven: markerService.getObjectsByClassAndType(Vendor.class, markerType),
+                        plt: markerService.getObjectsByClassAndType(Platform.class, markerType),
+                        pkg: markerService.getObjectsByClassAndType(Package.class, markerType),
                         tipp: markerService.getObjectsByClassAndType(TitleInstancePackagePlatform.class, markerType)
                 ],
                 myXMap:         markerService.getMyXMap(), // TODO

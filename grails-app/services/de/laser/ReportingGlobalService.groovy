@@ -163,13 +163,13 @@ class ReportingGlobalService {
 
     void doFilterProvider (Map<String, Object> result, GrailsParameterMap params) { // TODO
 
-//        result.filterResult = ProviderFilter.filter(params)
+        result.filterResult = ProviderFilter.filter(params)
 //
 //        //result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_PROVIDER ).base.query.default )
-//        BaseConfig.getCurrentConfig( BaseConfig.KEY_PROVIDER ).keySet().each{ pk ->
-//            result.cfgQueryList.putAll(BaseConfig.getCurrentConfig(BaseConfig.KEY_PROVIDER).get(pk).query.default)
-//        }
-//        result.cfgDistributionList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_PROVIDER ).base.distribution )
+        BaseConfig.getCurrentConfig( BaseConfig.KEY_PROVIDER ).keySet().each{ pk ->
+            result.cfgQueryList.putAll(BaseConfig.getCurrentConfig(BaseConfig.KEY_PROVIDER).get(pk).query.default)
+        }
+        result.cfgDistributionList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_PROVIDER ).base.distribution )
     }
 
     /**

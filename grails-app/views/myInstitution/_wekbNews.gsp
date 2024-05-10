@@ -28,17 +28,17 @@
                     <div class="ui fluid card" style="margin-bottom:0">
                         <div class="content">
                             <div class="header">
-                                <a href="#" class="wekb-flyout-trigger" data-preset="org,all">${message(code: 'default.provider.label')}%{--: ${wekbNews.org.count}--}%</a>
+                                <a href="#" class="wekb-flyout-trigger" data-preset="provider,all">${message(code: 'default.provider.label')}%{--: ${wekbNews.provider.count}--}%</a>
                                 <div class="right floated meta"><i class="icon university"></i></div>
                             </div>
                         </div>
                         <div class="content">
                             <div class="description">
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="org,created">Neu: ${wekbNews.org.created.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="org,updated">Geändert: ${wekbNews.org.countUpdated}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="org,deleted">Gelöscht: ${wekbNews.org.deleted.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="org,my"><i class="icon star"></i>${wekbNews.org.my.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="org,marker"><i class="icon bookmark"></i>${wekbNews.org.marker.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="provider,created">Neu: ${wekbNews.provider.created.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="provider,updated">Geändert: ${wekbNews.provider.countUpdated}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="provider,deleted">Gelöscht: ${wekbNews.provider.deleted.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="provider,my"><i class="icon star"></i>${wekbNews.provider.my.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="provider,marker"><i class="icon bookmark"></i>${wekbNews.provider.marker.size()}</a> <br/>
                             </div>
                         </div>
                     </div>
@@ -211,7 +211,7 @@
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
 
         tmplConfig = [
-                ['org',      wekbNews.org,        'default.provider.label',     'university',       'menu.my.providers'],
+                ['provider', wekbNews.provider,   'default.provider.label',     'university',       'menu.my.providers'],
                 ['vendor',   wekbNews.vendor,     'vendor.plural',              'shipping fast',    'menu.my.vendors'],
                 ['platform', wekbNews.platform,   'platform.plural',            'cloud',            'menu.my.platforms'],
                 ['package',  wekbNews.package,    'package.plural',             'gift',             'menu.my.packages']
@@ -228,7 +228,7 @@
         </p>
         <div class="filter" style="margin:0 2em 0.5em; text-align:right;">
             <div class="ui buttons mini">
-                <span class="ui button" data-obj="org">${message(code: 'default.provider.label')}: ${wekbNews.org.count}</span>
+                <span class="ui button" data-obj="provider">${message(code: 'default.provider.label')}: ${wekbNews.provider.count}</span>
                 <span class="ui button" data-obj="vendor">${message(code: 'vendor.plural')}: ${wekbNews.vendor.count}</span>
                 <span class="ui button" data-obj="platform">${message(code: 'platform.plural')}: ${wekbNews.platform.count}</span>
                 <span class="ui button" data-obj="package">${message(code: 'package.plural')}: ${wekbNews.package.count}</span>

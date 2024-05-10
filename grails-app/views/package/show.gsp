@@ -498,8 +498,8 @@ making obsolete package/actions
                     <div class="ui card">
                         <div class="content">
                             <h2 class="ui header">${message(code: 'default.ProviderAgency.label')}</h2>
-                            <laser:render template="/templates/links/orgLinksAsList"
-                                          model="${[roleLinks    : visibleOrgs,
+                            <laser:render template="/templates/links/providerLinksAsList"
+                                          model="${[providerLinks: [packageInstance],
                                                     roleObject   : packageInstance,
                                                     roleRespValue: 'Specific package editor',
                                                     editmode     : editable,

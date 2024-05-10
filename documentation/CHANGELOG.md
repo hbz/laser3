@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5674    08.05.2024  dev     3.4         David   Feature     Filter: API-Zugriff
+
 5670    30.04.2024  dev     3.4         Andreas Bug         Icon-Überbleibsel entfernt
 
 5641    30.04.2024  dev     3.4         Andreas Feature     Merkmale auch ohne Wert zu Teilnehmerlizenzen hinzufügen

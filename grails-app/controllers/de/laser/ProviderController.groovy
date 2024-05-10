@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.annotations.DebugInfo
 import de.laser.auth.User
+import de.laser.helper.Params
 import de.laser.properties.PropertyDefinition
 import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
@@ -22,7 +23,10 @@ class ProviderController {
     FilterService filterService
     GokbService gokbService
     ProviderService providerService
+    TaskService taskService
+    DocstoreService docstoreService
     WorkflowService workflowService
+    UserService userService
 
     public static final Map<String, String> CHECK404_ALTERNATIVES = [
             'list' : 'menu.public.all_providers'
@@ -49,9 +53,11 @@ class ProviderController {
         ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
     def list() {
-        Map<String, Object> result = [:]
-        result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
-        result.user        = contextService.getUser()
+        Map<String, Object> result = [institution: contextService.getOrg(), user: contextService.getUser()], queryParams = [:]
+        result.propList    = PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr = :def and (pd.tenant is null or pd.tenant = :tenant) order by pd.name_de asc", [
+                def: PropertyDefinition.PRV_PROP,
+                tenant: result.institution
+        ])
 
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         result.wekbApi = apiSource
@@ -71,18 +77,56 @@ class ProviderController {
                 [value: 'Vendor', name: message(code: 'package.curatoryGroup.vendor')],
                 [value: 'Other', name: message(code: 'package.curatoryGroup.other')]
         ]
+        List<String> queryArgs = []
+        result.wekbRecords = providerService.getWekbProviderRecords(params, result)
+        if(params.containsKey('nameContains')) {
+            queryArgs << "(genfunc_filter_matcher(p.name, :name) = true or genfunc_filter_matcher(p.sortname, :name) = true)"
+            queryParams.name = params.nameContains
+        }
+        if(params.containsKey('provStatus')) {
+            queryArgs << "p.status in (:status)"
+            queryParams.status = Params.getRefdataList(params, 'provStatus')
+        }
+        else if(!params.containsKey('provStatus') && !params.containsKey('filterSet')) {
+            queryArgs << "p.status = :status"
+            queryParams.status = "Current"
+            params.provStatus = RDStore.PROVIDER_STATUS_CURRENT.id
+        }
 
-        params.sort        = params.sort ?: " LOWER(o.sortname), LOWER(o.name)"
+        if(params.containsKey('qp_invoicingVendors')) {
+            queryArgs << "exists (select ls from p.invoicingVendors iv where iv.vendor in (:vendors))"
+            queryParams.put('vendors', Params.getRefdataList(params, 'qp_invoicingVendors'))
+        }
+
+        if(params.containsKey('qp_electronicBillings')) {
+            queryArgs << "exists (select eb from p.electronicBillings eb where eb.invoiceFormat in (:electronicBillings))"
+            queryParams.put('electronicBillings', Params.getRefdataList(params, 'qp_electronicBillings'))
+        }
+
+        if(params.containsKey('qp_invoiceDispatchs')) {
+            queryArgs << "exists (select idi from p.invoiceDispatchs idi where idi.invoiceDispatch in (:invoiceDispatchs))"
+            queryParams.put('invoiceDispatchs', Params.getRefdataList(params, 'qp_invoiceDispatchs'))
+        }
+
+        if(params.containsKey('curatoryGroup') || params.containsKey('curatoryGroupType')) {
+            queryArgs << "p.gokbId in (:wekbIds)"
+            queryParams.wekbIds = result.wekbRecords.keySet()
+        }
+        String providerQuery = 'select p from Provider p'
+        if(queryArgs) {
+            providerQuery += ' where '+queryArgs.join(' and ')
+        }
+        if(params.containsKey('sort')) {
+            providerQuery += " order by ${params.sort} ${params.order ?: 'asc'}, p.name ${params.order ?: 'asc'} "
+        }
+        else
+            providerQuery += " order by p.sortname "
+        Set<Provider> providersTotal = Provider.executeQuery(providerQuery, queryParams)
 
 
         result.filterSet = params.filterSet ? true : false
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
-
-        Set<Provider> providerListTotal = []
-        result.wekbRecords = providerService.getWekbProviderRecords(params, result)
-        if (params.curatoryGroup || params.curatoryGroupType)
-            providerListTotal = providerListTotal.findAll { Provider provider -> provider.gokbId in result.wekbRecords.keySet() }
 
         if (params.isMyX) {
             List<String> xFilter = params.list('isMyX')
@@ -90,28 +134,28 @@ class ProviderController {
             boolean   f1Set = false, f2Set = false
 
             if (xFilter.contains('ismyx_exclusive')) {
-                f1Result.addAll( providerListTotal.findAll { result.currentProviderIdList.contains( it.id ) }.collect{ it.id } )
+                f1Result.addAll( providersTotal.findAll { result.currentProviderIdList.contains( it.id ) }.collect{ it.id } )
                 f1Set = true
             }
             if (xFilter.contains('ismyx_not')) {
-                f1Result.addAll( providerListTotal.findAll { ! result.currentProviderIdList.contains( it.id ) }.collect{ it.id }  )
+                f1Result.addAll( providersTotal.findAll { ! result.currentProviderIdList.contains( it.id ) }.collect{ it.id }  )
                 f1Set = true
             }
             if (xFilter.contains('wekb_exclusive')) {
-                f2Result.addAll( providerListTotal.findAll { it.gokbId != null }.collect{ it.id } )
+                f2Result.addAll( providersTotal.findAll { it.gokbId != null }.collect{ it.id } )
                 f2Set = true
             }
             if (xFilter.contains('wekb_not')) {
-                f2Result.addAll( providerListTotal.findAll { it.gokbId == null }.collect{ it.id }  )
+                f2Result.addAll( providersTotal.findAll { it.gokbId == null }.collect{ it.id }  )
                 f2Set = true
             }
 
-            if (f1Set) { providerListTotal = providerListTotal.findAll { f1Result.contains(it.id) } }
-            if (f2Set) { providerListTotal = providerListTotal.findAll { f2Result.contains(it.id) } }
+            if (f1Set) { providersTotal = providersTotal.findAll { f1Result.contains(it.id) } }
+            if (f2Set) { providersTotal = providersTotal.findAll { f2Result.contains(it.id) } }
         }
 
-        result.providerListTotal = providerListTotal.size()
-        result.providerList      = providerListTotal.drop((int) result.offset).take((int) result.max)
+        result.providersTotal = providersTotal.size()
+        result.providerList   = providersTotal.drop((int) result.offset).take((int) result.max)
 
         String message = message(code: 'export.all.providers') as String
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -130,7 +174,7 @@ class ProviderController {
             contactSwitch.addAll(params.list("addressSwitch"))
             switch(params.fileformat) {
                 case 'xlsx':
-                    SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportProviders(providerListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.XLS, contactSwitch)
+                    SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportProviders(providersTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.XLS, contactSwitch)
                     response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
                     response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     wb.write(response.outputStream)
@@ -143,12 +187,12 @@ class ProviderController {
                     response.contentType = "text/csv"
                     ServletOutputStream out = response.outputStream
                     out.withWriter { writer ->
-                        writer.write((String) exportClickMeService.exportProviders(providerListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.CSV, contactSwitch))
+                        writer.write((String) exportClickMeService.exportProviders(providersTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.CSV, contactSwitch))
                     }
                     out.close()
                     return
                 case 'pdf':
-                    Map<String, Object> pdfOutput = exportClickMeService.exportProviders(providerListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.PDF, contactSwitch)
+                    Map<String, Object> pdfOutput = exportClickMeService.exportProviders(providersTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.PDF, contactSwitch)
 
                     byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
                     response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
@@ -175,7 +219,25 @@ class ProviderController {
         }
         if(result.error)
             flash.error = result.error //to display we:kb's eventual 404
-        workflowService.executeCmdAndUpdateResult(result, params)
+        if(params.containsKey('id')) {
+            Provider provider = Provider.get(params.id)
+            result.provider = provider
+            result.editable = false //hard set until it is not decided how to deal with current agencies
+            result.subEditable = userService.hasFormalAffiliation_or_ROLEADMIN(result.user, result.institution, 'INST_EDITOR')
+            result.isMyProvider = providerService.isMyProvider(provider, result.institution)
+            String subscriptionConsortiumFilter = '', licenseConsortiumFilter = ''
+            if(result.institution.isCustomerType_Consortium()) {
+                subscriptionConsortiumFilter = 'and s.instanceOf = null'
+                licenseConsortiumFilter = 'and l.instanceOf = null'
+            }
+            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, provider)
+            result.subLinks = ProviderRole.executeQuery('select pvr from ProviderRole pvr join pvr.subscription s join s.orgRelations oo where pvr.provider = :provider and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [provider: provider, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution])
+            result.licLinks = ProviderRole.executeQuery('select pvr from ProviderRole pvr join pvr.license l join l.orgRelations oo where pvr.provider = :provider and l.status = :current and oo.org = :context '+licenseConsortiumFilter, [provider: provider, current: RDStore.LICENSE_CURRENT, context: result.institution])
+            result.currentSubscriptionsCount = ProviderRole.executeQuery('select count(pvr) from ProviderRole pvr join pvr.subscription s join s.orgRelations oo where pvr.provider = :provider and oo.org = :context '+subscriptionConsortiumFilter, [provider: provider, context: result.institution])[0]
+            result.currentLicensesCount = ProviderRole.executeQuery('select count(pvr) from ProviderRole pvr join pvr.license l join l.orgRelations oo where pvr.provider = :provider and oo.org = :context '+licenseConsortiumFilter, [provider: provider, context: result.institution])[0]
+            result
+        }
+        //workflowService.executeCmdAndUpdateResult(result, params)
         result
     }
 }

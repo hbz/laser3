@@ -418,8 +418,8 @@
                 <div class="ui card">
                     <div class="content">
                         <h2 class="ui header">${message(code: 'default.provider.label')}</h2>
-                        <laser:render template="/templates/links/orgLinksAsList"
-                                  model="${[roleLinks    : visibleOrgRelations,
+                        <laser:render template="/templates/links/providerLinksAsList"
+                                  model="${[roleLinks    : providerRoles,
                                             roleObject   : subscription,
                                             roleRespValue: 'Specific subscription editor',
                                             editmode     : editable,
@@ -428,13 +428,10 @@
 
                         <div class="ui la-vertical buttons">
 
-                            <laser:render template="/templates/links/orgLinksSimpleModal"
+                            <laser:render template="/templates/links/providerLinksSimpleModal"
                                       model="${[linkType      : subscription.class.name,
                                                 parent        : genericOIDService.getOID(subscription),
-                                                property      : 'orgs',
-                                                recip_prop    : 'sub',
-                                                tmplRole      : RDStore.OR_PROVIDER,
-                                                tmplType      : RDStore.OT_PROVIDER,
+                                                recip_prop    : 'subscription',
                                                 tmplEntity    : message(code: 'subscription.details.linkProvider.tmplEntity'),
                                                 tmplText      : message(code: 'subscription.details.linkProvider.tmplText'),
                                                 tmplButtonText: message(code: 'subscription.details.linkProvider.tmplButtonText'),

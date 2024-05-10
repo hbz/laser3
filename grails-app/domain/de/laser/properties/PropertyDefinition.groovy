@@ -52,6 +52,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     public static final String ORG_CONF    = 'Organisation Config'
     public static final String PRS_PROP    = 'Person Property'
     public static final String PLA_PROP    = 'Platform Property'
+    public static final String PRV_PROP    = 'Provider Property'
     public static final String SUB_PROP    = 'Subscription Property'
     public static final String SVY_PROP    = 'Survey Property'
     public static final String VEN_PROP    = 'Vendor Property'
