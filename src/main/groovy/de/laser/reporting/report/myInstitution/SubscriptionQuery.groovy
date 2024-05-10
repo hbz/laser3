@@ -2,10 +2,7 @@ package de.laser.reporting.report.myInstitution
 
 import de.laser.ContextService
 import de.laser.License
-import de.laser.Org
-import de.laser.Platform
 import de.laser.Subscription
-import de.laser.TitleInstancePackagePlatform
 import de.laser.Vendor
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
@@ -362,8 +359,8 @@ class SubscriptionQuery extends BaseQuery {
 
         handleGenericRefdataQuery(
                 query,
-                PROPERTY_QUERY[0] + 'from Subscription s join s.' + refdata + ' p where s.id in (:idList)' + PROPERTY_QUERY[1],
-                'select s.id from Subscription s join s.' + refdata + ' p where s.id in (:idList) and p.id = :d order by s.name',
+                REFDATA_QUERY[0] + 'from Subscription s join s.' + refdata + ' ref where s.id in (:idList)' + REFDATA_QUERY[1],
+                'select s.id from Subscription s join s.' + refdata + ' ref where s.id in (:idList) and ref.id = :d order by s.name',
                 'select distinct s.id from Subscription s where s.id in (:idList) and s.'+ refdata + ' is null',
                 idList,
                 result

@@ -1,9 +1,7 @@
 package de.laser.reporting.report.myInstitution
 
 import de.laser.ContextService
-import de.laser.Org
 import de.laser.annotations.UnstableFeature
-import de.laser.auth.Role
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
 import de.laser.storage.BeanStore
@@ -83,8 +81,8 @@ class ProviderQuery extends BaseQuery {
 
         handleGenericRefdataQuery(
                 query,
-                PROPERTY_QUERY[0] + 'from Provider pro join pro.' + refdata + ' p where pro.id in (:idList)' + PROPERTY_QUERY[1],
-                'select pro.id from Provider pro join pro.' + refdata + ' p where pro.id in (:idList) and p.id = :d order by pro.name',
+                REFDATA_QUERY[0] + 'from Provider pro join pro.' + refdata + ' ref where pro.id in (:idList)' + REFDATA_QUERY[1],
+                'select pro.id from Provider pro join pro.' + refdata + ' ref where pro.id in (:idList) and ref.id = :d order by pro.name',
                 'select distinct pro.id from Provider pro where pro.id in (:idList) and pro.' + refdata + ' is null',
                 idList,
                 result

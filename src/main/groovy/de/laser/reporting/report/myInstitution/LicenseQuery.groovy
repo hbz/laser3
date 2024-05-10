@@ -97,8 +97,8 @@ class LicenseQuery extends BaseQuery {
 
         handleGenericRefdataQuery(
                 query,
-                PROPERTY_QUERY[0] + 'from License l join l.' + refdata + ' p where l.id in (:idList)' + PROPERTY_QUERY[1],
-                'select l.id from License l join l.' + refdata + ' p where l.id in (:idList) and p.id = :d order by l.reference',
+                REFDATA_QUERY[0] + 'from License l join l.' + refdata + ' ref where l.id in (:idList)' + REFDATA_QUERY[1],
+                'select l.id from License l join l.' + refdata + ' ref where l.id in (:idList) and ref.id = :d order by l.reference',
                 'select distinct l.id from License l where l.id in (:idList) and l.'+ refdata + ' is null',
                 idList,
                 result
