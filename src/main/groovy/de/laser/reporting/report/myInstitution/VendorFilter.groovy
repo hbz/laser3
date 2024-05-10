@@ -140,8 +140,9 @@ class VendorFilter extends BaseFilter {
     static List<Long> _getAllVendorIdList() {
 
         List<Long> idList = Vendor.executeQuery(
-                'select ven.id from Vendor ven where (ven.status is null or ven.status != :vendorStatus)',
-                [vendorStatus: RDStore.VENDOR_STATUS_DELETED]
+                'select ven.id from Vendor ven'
+//                'select ven.id from Vendor ven where (ven.status is null or ven.status != :vendorStatus)',
+//                [vendorStatus: RDStore.VENDOR_STATUS_DELETED]
         )
 
         idList
@@ -162,6 +163,7 @@ class VendorFilter extends BaseFilter {
                 subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]
             ]
         )
+        // and (vr.vendor.status is null or vr.vendor.status != :vendorStatus)
         idList
     }
 }
