@@ -1,3 +1,4 @@
+<%@ page import="de.laser.survey.SurveyOrg;" %>
 <laser:serviceInjection/>
 <table class="ui table la-js-responsive-table la-table">
     <colgroup>
@@ -19,7 +20,12 @@
         <th>
             ${message(code: 'address.label')}
         </th>
-        <th class="la-action-info">${message(code: 'default.actions.label')}</th>
+        <g:if test="${showSurveyInvoicingInformation}">
+            <th>${message(code: 'surveyOrg.address.selected')}</th>
+        </g:if>
+        <g:if test="${showOptions}">
+            <th class="la-action-info">${message(code: 'default.actions.label')}</th>
+        </g:if>
     </tr>
     </thead>
     <tbody>
@@ -86,24 +92,49 @@
                     </div>
                 </div>
             </td>
-            <td class="x">
-                <g:if test="${editable && tmplShowDeleteButton}">
-
-                    <button type="button" onclick="JSPC.app.editAddress(${address.id})" class="ui icon button blue la-modern-button"
-                            role="button"
-                            aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                        <i aria-hidden="true" class="write icon"></i>
-                    </button>
-                    <g:link class="ui negative button icon js-open-confirm-modal la-modern-button"
-                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.address.addressbook")}"
-                            data-confirm-term-how="delete"
-                            controller="ajax" action="delete" params="[cmd: 'deleteAddress', oid: genericOIDService.getOID(address)]"
-                            role="button"
-                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                        <i class="trash alternate outline icon"></i>
-                    </g:link>
+        <g:if test="${showSurveyInvoicingInformation}">
+            <td>
+                <g:if test="${editable}">
+                    <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndAddress(institution, surveyConfig, address)}">
+                        <g:link controller="myInstitution" action="setSurveyInvoicingInformation"
+                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setAddress: false, addressId: address.id]">
+                            <i class="check bordered large green icon"></i>
+                        </g:link>
+                    </g:if>
+                    <g:else>
+                        <g:link controller="myInstitution" action="setSurveyInvoicingInformation"
+                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setAddress: true, addressId: address.id]">
+                            <i class="close bordered large red icon"></i>
+                        </g:link>
+                    </g:else>
                 </g:if>
+                <g:else>
+                    <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndAddress(institution, surveyConfig, address)}">
+                        <i class="check bordered large green icon"></i>
+                    </g:if>
+                </g:else>
             </td>
+        </g:if>
+            <g:if test="${showOptions}">
+                <td class="x">
+                    <g:if test="${editable && tmplShowDeleteButton}">
+
+                        <button type="button" onclick="JSPC.app.editAddress(${address.id})" class="ui icon button blue la-modern-button"
+                                role="button"
+                                aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                            <i aria-hidden="true" class="write icon"></i>
+                        </button>
+                        <g:link class="ui negative button icon js-open-confirm-modal la-modern-button"
+                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.address.addressbook")}"
+                                data-confirm-term-how="delete"
+                                controller="ajax" action="delete" params="[cmd: 'deleteAddress', oid: genericOIDService.getOID(address)]"
+                                role="button"
+                                aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                            <i class="trash alternate outline icon"></i>
+                        </g:link>
+                    </g:if>
+                </td>
+            </g:if>
         </tr>
     </g:each>
     </tbody>
