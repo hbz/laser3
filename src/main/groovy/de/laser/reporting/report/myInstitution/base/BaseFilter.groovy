@@ -156,11 +156,11 @@ class BaseFilter {
                 String subsetFilter = '_handleSubset' + subsetClass + 'Filter'
 
                 if (filter.metaClass.respondsTo(filter, subsetFilter).findAll{ it.parameterTypes.length == 3 }) {
-                    // println 'Reporting: called ' + configKey + '.' + subsetFilter + '(GPM) @ ' + partKey
+                     println 'Reporting: called ' + configKey + '.' + subsetFilter + '(GPM) @ ' + partKey
                     filter."${subsetFilter}"(partKey, filterResult, params)
                 }
                 else if (filter.metaClass.respondsTo(filter, subsetFilter)) {
-                    // println 'Reporting: called ' + configKey + '.' + subsetFilter + ' @ ' + partKey
+                     println 'Reporting: called ' + configKey + '.' + subsetFilter + ' @ ' + partKey
                     filter."${subsetFilter}"(partKey, filterResult)
                 }
                 else {

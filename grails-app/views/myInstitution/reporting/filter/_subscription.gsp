@@ -146,27 +146,6 @@
 
         </g:if>
 
-%{--        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).agency}" />--}%
-%{--        <g:if test="${config}">--}%
-
-%{--            <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-6">--}%
-%{--                <div class="field">--}%
-%{--                    <label for="filter:agency_source">${message(code:'reporting.ui.global.filter.selection')}</label>--}%
-
-%{--                    <g:select name="filter:agency_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="${it}" optionValue="${{BaseConfig.getSourceLabel(config.meta.cfgKey, it)}}" value="${params.get('filter:agency_source')}" />--}%
-%{--                </div>--}%
-
-%{--                <g:each in="${config.filter.default}" var="cfgFilter">--}%
-%{--                    <div class="fields <uiReporting:numberToString number="${cfgFilter.size()}" min="2"/>">--}%
-%{--                        <g:each in="${cfgFilter}" var="field">--}%
-%{--                            <uiReporting:filterField config="${config}" field="${field}" key="agency" />--}%
-%{--                        </g:each>--}%
-%{--                    </div>--}%
-%{--                </g:each>--}%
-%{--            </div><!-- .tab -->--}%
-
-%{--        </g:if>--}%
-
         <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).vendor}" />
         <g:if test="${config}">
 

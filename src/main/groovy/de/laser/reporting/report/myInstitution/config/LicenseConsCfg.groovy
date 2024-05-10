@@ -2,6 +2,7 @@ package de.laser.reporting.report.myInstitution.config
 
 import de.laser.License
 import de.laser.Org
+import de.laser.Provider
 import de.laser.Vendor
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 
@@ -100,6 +101,30 @@ class LicenseConsCfg extends BaseConfig {
                     ]
             ],
 
+            provider : [
+                    meta : [
+                            class:  Provider,
+                            cfgKey: BaseConfig.KEY_LICENSE
+                    ],
+                    source : [
+                            'depending-provider'
+                    ],
+                    fields : [
+                            'status' : [ type: BaseConfig.FIELD_TYPE_REFDATA ]
+                    ],
+                    filter : [
+                            default : []
+                    ],
+                    query : [
+                            default : [
+                                    provider : [
+                                            'provider-status' :   [ 'generic.provider.status' ],
+                                            'provider-*' :        [ 'generic.all' ],
+                                    ]
+                            ]
+                    ]
+            ],
+
             vendor : [
                     meta : [
                             class:  Vendor,
@@ -109,7 +134,7 @@ class LicenseConsCfg extends BaseConfig {
                             'depending-vendor'
                     ],
                     fields : [
-                            'status'    : [ type: BaseConfig.FIELD_TYPE_REFDATA ]
+                            'status' : [ type: BaseConfig.FIELD_TYPE_REFDATA ]
                     ],
                     filter : [
                             default : []
