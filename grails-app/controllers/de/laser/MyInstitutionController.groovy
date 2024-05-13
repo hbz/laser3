@@ -181,7 +181,7 @@ class MyInstitutionController  {
         result.user = contextService.getUser()
         result.contextOrg = contextService.getOrg()
         SwissKnife.setPaginationParams(result, params, (User) result.user)
-
+        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.PLA_PROP], contextService.getOrg())
         Map<String, Object> subscriptionParams = [contextOrg:result.contextOrg, roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA]]
 
         String instanceFilter = "", subFilter = ""
@@ -238,6 +238,13 @@ class MyInstitutionController  {
             qry3 += "   or genfunc_filter_matcher(o.sortname, :query) = true"
             qry3 += ")"
             qryParams3.put('query', "${params.q}")
+        }
+
+        if (params.filterPropDef) {
+            result.filterSet = true
+            Map<String, Object> psq = propertyService.evalFilterQuery(params, qry3, 'p', qryParams3)
+            qry3 = psq.query
+            qryParams3.putAll(psq.queryParams)
         }
 
         if(params.provider) {
@@ -323,6 +330,8 @@ class MyInstitutionController  {
         }
         //}
 
+        /*
+        disused; we expect we:kb being the only source as of phone call from May 7th, '24
         if (params.isMyX) {
             List<String> xFilter = params.list('isMyX')
             Set<Long> f1Result = []
@@ -339,6 +348,7 @@ class MyInstitutionController  {
             }
             result.platformInstanceList = result.platformInstanceList.findAll { f1Result.contains(it.id) }
         }
+        */
 
         result.platformInstanceTotal = result.platformInstanceList.size()
         result.cachedContent = true

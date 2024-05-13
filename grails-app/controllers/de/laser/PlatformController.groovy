@@ -5,6 +5,7 @@ import de.laser.auth.User
 import de.laser.ctrl.PlatformControllerService
 import de.laser.annotations.DebugInfo
 import de.laser.helper.Params
+import de.laser.properties.PropertyDefinition
 import de.laser.remote.ApiSource
 import de.laser.storage.RDStore
 import de.laser.utils.SwissKnife
@@ -21,6 +22,7 @@ class PlatformController  {
     ContextService contextService
     GokbService gokbService
     PlatformControllerService platformControllerService
+    PropertyService propertyService
 
     //-----
 
@@ -62,7 +64,8 @@ class PlatformController  {
                 user: contextService.getUser(),
                 editUrl: apiSource.editUrl,
                 myPlatformIds: [],
-                flagContentGokb : true // gokbService.doQuery
+                flagContentGokb : true, // gokbService.doQuery
+                propList: PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.PLA_PROP], contextService.getOrg())
         ]
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
@@ -85,7 +88,7 @@ class PlatformController  {
         else if(!params.filterSet) {
             result.filterSet = true
             queryParams.status = "Current"
-            params.status = RDStore.PLATFORM_STATUS_CURRENT.id
+            params.platStatus = RDStore.PLATFORM_STATUS_CURRENT.id
         }
 
         if (params.ipSupport) {
@@ -205,10 +208,21 @@ class PlatformController  {
             if (f1Set) { wekbResultMap.records = wekbResultMap.records.findAll { f1Result.contains(it.uuid) } }
             if (f2Set) { wekbResultMap.records = wekbResultMap.records.findAll { f2Result.contains(it.uuid) } }
         }
+
+        if (params.filterPropDef) {
+            result.filterSet = true
+            String propQuery = "select p.gokbId from Platform p where p.gokbId in (:wekbIds)"
+            Map<String, Object> propParams = [wekbIds: wekbResultMap.records.collect { Map hit -> hit.uuid }]
+            Map<String, Object> psq = propertyService.evalFilterQuery(params, propQuery, 'p', propParams)
+            propQuery = psq.query
+            propParams.putAll(psq.queryParams)
+            wekbResultMap.records = wekbResultMap.records.findAll { Platform.executeQuery(propQuery, propParams).contains(it.uuid) }
+        }
         wekbResultMap.recordsCount = wekbResultMap.records.size()
         wekbResultMap.records      = wekbResultMap.records.drop((int) result.offset).take((int) result.max) // pagination
 
         result.putAll(wekbResultMap)
+
         result
     }
 
