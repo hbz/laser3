@@ -14,7 +14,7 @@ import groovy.util.logging.Slf4j
  * </ul>
  */
 @Slf4j
-class AlternativeName implements CalculatedLastUpdated, Comparable {
+class AlternativeName implements CalculatedLastUpdated, Comparable<AlternativeName> {
 
     Long id
     Long version
@@ -24,20 +24,24 @@ class AlternativeName implements CalculatedLastUpdated, Comparable {
     Date lastUpdatedCascading
 
     static belongsTo = [
-        tipp: TitleInstancePackagePlatform,
-        pkg: Package,
-        platform: Platform,
-        provider: Provider,
-        org: Org,
-        vendor: Vendor
+            license: License,
+            org: Org,
+            pkg: Package,
+            platform: Platform,
+            provider: Provider,
+            subscription: Subscription,
+            tipp: TitleInstancePackagePlatform,
+            vendor: Vendor
     ]
 
     static constraints = {
-        tipp (nullable: true)
+        license (nullable: true)
+        org (nullable: true)
         pkg  (nullable: true)
         platform (nullable: true)
         provider (nullable: true)
-        org (nullable: true)
+        subscription (nullable: true)
+        tipp (nullable: true)
         vendor (nullable: true)
         lastUpdated (nullable: true)
         lastUpdatedCascading (nullable: true)
@@ -47,11 +51,13 @@ class AlternativeName implements CalculatedLastUpdated, Comparable {
         id                    column: 'altname_id'
         version               column: 'altname_version'
         name                  column: 'altname_name', type: "text"
-        tipp                  column: 'altname_tipp_fk'
+        license               column: 'altname_lic_fk'
+        org                   column: 'altname_org_fk'
         pkg                   column: 'altname_pkg_fk'
         platform              column: 'altname_plat_fk'
         provider              column: 'altname_prov_fk'
-        org                   column: 'altname_org_fk'
+        subscription          column: 'altname_sub_fk'
+        tipp                  column: 'altname_tipp_fk'
         vendor                column: 'altname_vendor_fk'
         dateCreated           column: 'altname_date_created'
         lastUpdated           column: 'altname_last_updated'
@@ -64,8 +70,7 @@ class AlternativeName implements CalculatedLastUpdated, Comparable {
      * @return the name comparison result (-1, 0, 1)
      */
     @Override
-    int compareTo(Object o) {
-        AlternativeName altName2 = (AlternativeName) o
+    int compareTo(AlternativeName altName2) {
         name <=> altName2.name
     }
 
@@ -98,18 +103,22 @@ class AlternativeName implements CalculatedLastUpdated, Comparable {
      * @return the new alternative name, null if no reference object has been specified
      */
     static AlternativeName construct(Map<String, Object> configMap) {
-        if(configMap.tipp || configMap.pkg || configMap.platform || configMap.provider || configMap.org) {
+        if(configMap.license || configMap.org || configMap.pkg || configMap.platform || configMap.provider || configMap.subscription || configMap.tipp) {
             AlternativeName altName = new AlternativeName(name: configMap.name)
-            if(configMap.tipp)
-                altName.tipp = configMap.tipp
+            if(configMap.license)
+                altName.license = configMap.license
+            else if(configMap.org)
+                altName.org = configMap.org
             else if(configMap.pkg)
                 altName.pkg = configMap.pkg
             else if(configMap.platform)
                 altName.platform = configMap.platform
             else if(configMap.provider)
                 altName.provider = configMap.provider
-            else if(configMap.org)
-                altName.org = configMap.org
+            else if(configMap.subscription)
+                altName.subscription = configMap.subscription
+            else if(configMap.tipp)
+                altName.tipp = configMap.tipp
             if(!altName.save()) {
                 log.error("error on creating alternative name: ${altName.getErrors().getAllErrors().toListString()}")
             }
