@@ -127,21 +127,31 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def addObject() {
-        def resultObj, owner
+        def resultObj, owner = genericOIDService.resolveOID(params.owner)
         switch(params.object) {
-            case "altname": owner= Org.get(params.owner)
-                resultObj = AlternativeName.construct([org: owner, name: 'Unknown'])
+            case "altname": Map<String, Object> config = [name: 'Unknown']
+                if(owner instanceof License)
+                    config.license = owner
+                else if(owner instanceof Org)
+                    config.org = owner
+                else if(owner instanceof Provider)
+                    config.provider = owner
+                else if(owner instanceof Subscription)
+                    config.subscription = owner
+                else if(owner instanceof Vendor)
+                    config.vendor = owner
+                resultObj = AlternativeName.construct(config)
                 if(resultObj) {
                     render template: '/templates/ajax/newXEditable', model: [wrapper: params.object, ownObj: resultObj, objOID: genericOIDService.getOID(resultObj), field: "name", overwriteEditable: true]
                 }
                 break
-            case "frontend": owner= Org.get(params.owner)
+            case "frontend":
                 resultObj = new DiscoverySystemFrontend([org: owner, frontend: RDStore.GENERIC_NULL_VALUE]).save()
                 if(resultObj) {
                     render template: '/templates/ajax/newXEditable', model: [wrapper: params.object, ownObj: resultObj, objOID: genericOIDService.getOID(resultObj), field: "frontend", config: RDConstants.DISCOVERY_SYSTEM_FRONTEND, overwriteEditable: true]
                 }
                 break
-            case "index": owner= Org.get(params.owner)
+            case "index":
                 resultObj = new DiscoverySystemIndex([org: owner, index: RDStore.GENERIC_NULL_VALUE]).save()
                 if(resultObj) {
                     render template: '/templates/ajax/newXEditable', model: [wrapper: params.object, ownObj: resultObj, objOID: genericOIDService.getOID(resultObj), field: "index", config: RDConstants.DISCOVERY_SYSTEM_INDEX, overwriteEditable: true]

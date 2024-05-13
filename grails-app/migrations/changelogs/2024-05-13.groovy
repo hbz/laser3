@@ -15,4 +15,24 @@ databaseChangeLog = {
         }
     }
 
+    changeSet(author: "galffy (generated)", id: "1715584072160-2") {
+        addColumn(tableName: "alternative_name") {
+            column(name: "altname_lic_fk", type: "int8")
+        }
+    }
+
+    changeSet(author: "galffy (generated)", id: "1715584072160-3") {
+        addColumn(tableName: "alternative_name") {
+            column(name: "altname_sub_fk", type: "int8")
+        }
+    }
+
+    changeSet(author: "galffy (generated)", id: "1715584072160-4") {
+        addForeignKeyConstraint(baseColumnNames: "altname_sub_fk", baseTableName: "alternative_name", constraintName: "FK2oejcybkxjlsj63ommi1urleo", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "sub_id", referencedTableName: "subscription", validate: "true")
+    }
+
+    changeSet(author: "galffy (generated)", id: "1715584072160-5") {
+        addForeignKeyConstraint(baseColumnNames: "altname_lic_fk", baseTableName: "alternative_name", constraintName: "FKssa5eqadwoawymqr7b090efva", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "lic_id", referencedTableName: "license", validate: "true")
+    }
+
 }

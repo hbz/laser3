@@ -497,6 +497,8 @@ class MyInstitutionController  {
                     " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "+
                     " ) ) " +
                     " or exists ( select li.id from Links li where li.sourceLicense = l and li.linkType = :linkType and genfunc_filter_matcher(li.destinationSubscription.name, :name_filter) = true ) " +
+                    " or exists ( select altname.license from AlternativeName altname where altname.license = l and genfunc_filter_matcher(altname.name, :name_filter) = true ) " +
+                    " or exists ( select li.id from AlternativeName altname, Links li where altname.subscription = li.destinationSubscription and li.sourceLicense = l and li.linkType = :linkType and genfunc_filter_matcher(altname.name, :name_filter) = true ) " +
                     " ) "
             qry_params.name_filter = params['keyword-search']
             qry_params.licRoleTypes = [RDStore.OR_LICENSOR, RDStore.OR_LICENSING_CONSORTIUM]
