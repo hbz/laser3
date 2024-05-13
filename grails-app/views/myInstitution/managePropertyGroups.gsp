@@ -30,6 +30,7 @@
                 <table class="ui celled sortable table la-js-responsive-table la-table compact">
                     <thead>
                     <tr>
+                        <th><g:message code="default.order.label"/></th>
                         <th><g:message code="default.name.label"/></th>
                         <th><g:message code="propertyDefinitionGroup.table.header.description"/></th>
                         <th><g:message code="propertyDefinitionGroup.table.header.properties"/></th>
@@ -42,6 +43,9 @@
                     <tbody>
                     <g:each in="${typeEntry.value}" var="pdGroup">
                         <tr>
+                            <td>
+                                <ui:xEditable owner="${pdGroup}" field="order" />
+                            </td>
                             <td>
                                 <ui:xEditable owner="${pdGroup}" field="name" />
                             </td>

@@ -35,4 +35,10 @@ databaseChangeLog = {
         addForeignKeyConstraint(baseColumnNames: "altname_lic_fk", baseTableName: "alternative_name", constraintName: "FKssa5eqadwoawymqr7b090efva", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "lic_id", referencedTableName: "license", validate: "true")
     }
 
+    changeSet(author: "galffy (generated)", id: "1715584072160-6") {
+        addColumn(tableName: "property_definition_group") {
+            column(name: "pdg_order", type: "int8")
+        }
+    }
+
 }

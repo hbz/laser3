@@ -4359,7 +4359,7 @@ join sub.orgRelations or_sub where
                 break
         }
 
-        Set<PropertyDefinitionGroup> unorderedPdgs = PropertyDefinitionGroup.findAllByTenant(result.institution, [sort: 'name'])
+        Set<PropertyDefinitionGroup> unorderedPdgs = PropertyDefinitionGroup.executeQuery('select pdg from PropertyDefinitionGroup pdg where pdg.tenant = :tenant order by pdg.order asc, pdg.name asc', [tenant: result.institution])
         result.propDefGroups = [:]
         PropertyDefinition.AVAILABLE_GROUPS_DESCR.each { String propDefGroupType ->
             result.propDefGroups.put(propDefGroupType,unorderedPdgs.findAll { PropertyDefinitionGroup pdg -> pdg.ownerType == PropertyDefinition.getDescrClass(propDefGroupType)})
