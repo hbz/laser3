@@ -23,7 +23,7 @@
             <%--<th>${message(code:'accessPoint.plural')}</th>--%>
             <th>${message(code:'myinst.currentPlatforms.assignedSubscriptions')}</th>
             <th class="center aligned"><ui:markerIcon type="WEKB_CHANGES" /></th>
-            <th>${message(code:'org.isWekbCurated.label')}</th>
+            <%--<th>${message(code:'org.isWekbCurated.label')}</th>--%>
         </tr>
         </thead>
         <tbody>
@@ -87,7 +87,7 @@
                         <ui:cbItemMarkerAction platform="${platformInstance}" type="${Marker.TYPE.WEKB_CHANGES}" simple="true"/>
                     </g:if>
                 </td>
-                <td>
+                <%--<td>
                     <g:if test="${platformInstance.org}">
                         <div class="la-flexbox">
                             <g:if test="${platformInstance.org.gokbId != null && RDStore.OT_PROVIDER.id in platformInstance.org.getAllOrgTypeIds()}">
@@ -96,7 +96,7 @@
                         </div>
                     </g:if>
                 </td>
-                <%--<td class="center aligned">
+                <td class="center aligned">
                 </td>--%>
             </tr>
         </g:each>
