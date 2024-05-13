@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5679    13.05.2024  dev     3.4         Andreas Bug         Weiterleitung implementiert
+
 5674    08.05.2024  dev     3.4         David   Feature     Filter: API-Zugriff
 
 5670    30.04.2024  dev     3.4         Andreas Bug         Icon-Überbleibsel entfernt
