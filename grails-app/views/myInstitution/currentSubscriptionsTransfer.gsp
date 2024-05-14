@@ -718,7 +718,7 @@
                             </g:each>
                         </td>
 
-                        <g:set var="countModificationToCostInformationAfterRenewalDoc" value="${surveyUseForTransfer ? surveyService.countModificationToCostInformationAfterRenewalDoc(s) : 0}"/>
+                        <g:set var="countModificationToCostInformationAfterRenewalDoc" value="${surveyConfig ? surveyService.countModificationToCostInformationAfterRenewalDoc(s) : 0}"/>
 
                         <td class="${surveyConfig ? countModificationToCostInformationAfterRenewalDoc == 0 ? 'positive' : 'negative' : ''}">
                             <g:if test="${countModificationToCostInformationAfterRenewalDoc > 0}">
