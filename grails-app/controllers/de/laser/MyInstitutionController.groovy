@@ -181,7 +181,7 @@ class MyInstitutionController  {
         result.user = contextService.getUser()
         result.contextOrg = contextService.getOrg()
         SwissKnife.setPaginationParams(result, params, (User) result.user)
-
+        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.PLA_PROP], contextService.getOrg())
         Map<String, Object> subscriptionParams = [contextOrg:result.contextOrg, roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA]]
 
         String instanceFilter = "", subFilter = ""
@@ -238,6 +238,13 @@ class MyInstitutionController  {
             qry3 += "   or genfunc_filter_matcher(o.sortname, :query) = true"
             qry3 += ")"
             qryParams3.put('query', "${params.q}")
+        }
+
+        if (params.filterPropDef) {
+            result.filterSet = true
+            Map<String, Object> psq = propertyService.evalFilterQuery(params, qry3, 'p', qryParams3)
+            qry3 = psq.query
+            qryParams3.putAll(psq.queryParams)
         }
 
         if(params.provider) {
@@ -323,6 +330,8 @@ class MyInstitutionController  {
         }
         //}
 
+        /*
+        disused; we expect we:kb being the only source as of phone call from May 7th, '24
         if (params.isMyX) {
             List<String> xFilter = params.list('isMyX')
             Set<Long> f1Result = []
@@ -339,6 +348,7 @@ class MyInstitutionController  {
             }
             result.platformInstanceList = result.platformInstanceList.findAll { f1Result.contains(it.id) }
         }
+        */
 
         result.platformInstanceTotal = result.platformInstanceList.size()
         result.cachedContent = true
@@ -487,6 +497,8 @@ class MyInstitutionController  {
                     " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "+
                     " ) ) " +
                     " or exists ( select li.id from Links li where li.sourceLicense = l and li.linkType = :linkType and genfunc_filter_matcher(li.destinationSubscription.name, :name_filter) = true ) " +
+                    " or exists ( select altname.license from AlternativeName altname where altname.license = l and genfunc_filter_matcher(altname.name, :name_filter) = true ) " +
+                    " or exists ( select li.id from AlternativeName altname, Links li where altname.subscription = li.destinationSubscription and li.sourceLicense = l and li.linkType = :linkType and genfunc_filter_matcher(altname.name, :name_filter) = true ) " +
                     " ) "
             qry_params.name_filter = params['keyword-search']
             qry_params.licRoleTypes = [RDStore.OR_LICENSOR, RDStore.OR_LICENSING_CONSORTIUM]
@@ -2497,53 +2509,58 @@ class MyInstitutionController  {
             result.surveyResults << surre
         }
 
+        params.tab = params.tab ?: 'overview'
+
         result.ownerId = result.surveyInfo.owner?.id
 
         if(result.surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
-            result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(result.institution)
-            result.formalOrg = result.user.formalOrg as Org
-            // restrict visible for templates/links/orgLinksAsList
-            result.costItemSums = [:]
-            result.visibleOrgRelations = []
-            if(result.subscription) {
-                result.subscription.orgRelations.each { OrgRole or ->
-                    if (!(or.org.id == result.contextOrg.id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
-                        result.visibleOrgRelations << or
+
+            if(params.tab == 'overview') {
+
+                result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(result.institution)
+                result.formalOrg = result.user.formalOrg as Org
+                // restrict visible for templates/links/orgLinksAsList
+                result.costItemSums = [:]
+                result.visibleOrgRelations = []
+                if (result.subscription) {
+                    result.subscription.orgRelations.each { OrgRole or ->
+                        if (!(or.org.id == result.contextOrg.id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
+                            result.visibleOrgRelations << or
+                        }
                     }
+                    result.visibleOrgRelations.sort { it.org.sortname }
+
+                    //costs dataToDisplay
+                    result.dataToDisplay = ['subscr']
+                    result.offsets = [subscrOffset: 0]
+                    result.sortConfig = [subscrSort: 'sub.name', subscrOrder: 'asc']
+
+                    result.max = params.max ? Integer.parseInt(params.max) : result.user.getPageSizeOrDefault()
+                    //cost items
+                    //params.forExport = true
+                    LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
+                    if (costItems?.subscr) {
+                        result.costItemSums.subscrCosts = costItems.subscr.costItems
+                    }
+                    result.links = linksGenerationService.getSourcesAndDestinations(result.subscription, result.user)
                 }
-                result.visibleOrgRelations.sort { it.org.sortname }
 
-                //costs dataToDisplay
-                result.dataToDisplay = ['subscr']
-                result.offsets = [subscrOffset: 0]
-                result.sortConfig = [subscrSort: 'sub.name', subscrOrder: 'asc']
-
-                result.max = params.max ? Integer.parseInt(params.max) : result.user.getPageSizeOrDefault()
-                //cost items
-                //params.forExport = true
-                LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
-                if (costItems?.subscr) {
-                    result.costItemSums.subscrCosts = costItems.subscr.costItems
+                if (result.surveyConfig.subSurveyUseForTransfer) {
+                    result.successorSubscriptionParent = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
+                    result.subscriptionParent = result.surveyConfig.subscription
+                    Collection<AbstractPropertyWithCalculatedLastUpdated> props
+                    props = result.subscriptionParent.propertySet.findAll { it.type.tenant == null && (it.tenant?.id == result.surveyInfo.owner.id || (it.tenant?.id != result.surveyInfo.owner.id && it.isPublic)) }
+                    if (result.successorSubscriptionParent) {
+                        props += result.successorSubscriptionParent.propertySet.findAll { it.type.tenant == null && (it.tenant?.id == result.surveyInfo.owner.id || (it.tenant?.id != result.surveyInfo.owner.id && it.isPublic)) }
+                    }
+                    result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
                 }
-		        result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
-            }
 
-            if(result.surveyConfig.subSurveyUseForTransfer) {
-                result.successorSubscriptionParent = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
-                result.subscriptionParent = result.surveyConfig.subscription
-                Collection<AbstractPropertyWithCalculatedLastUpdated> props
-                props = result.subscriptionParent.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.surveyInfo.owner.id || (it.tenant?.id != result.surveyInfo.owner.id && it.isPublic))}
-                if(result.successorSubscriptionParent){
-                    props += result.successorSubscriptionParent.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.surveyInfo.owner.id || (it.tenant?.id != result.surveyInfo.owner.id && it.isPublic))}
-                }
-                result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
-            }
+                if (result.subscription && result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
 
-            if (result.subscription && result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
+                    result.previousSubscription = result.subscription._getCalculatedPreviousForSurvey()
 
-                result.previousSubscription = result.subscription._getCalculatedPreviousForSurvey()
-
-                /*result.previousIesListPriceSum = 0
+                    /*result.previousIesListPriceSum = 0
                 if(result.previousSubscription){
                     result.previousIesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
                             'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
@@ -2551,16 +2568,16 @@ class MyInstitutionController  {
 
                 }*/
 
-                result.sumListPriceSelectedIEsEUR = surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_EUR)
-                result.sumListPriceSelectedIEsUSD = surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_USD)
-                result.sumListPriceSelectedIEsGBP = surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_GBP)
+                    result.sumListPriceSelectedIEsEUR = surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_EUR)
+                    result.sumListPriceSelectedIEsUSD = surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_USD)
+                    result.sumListPriceSelectedIEsGBP = surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_GBP)
 
 
-                /* result.iesFixListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
+                    /* result.iesFixListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
                          'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
                          [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
-                result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
-                result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(result.subscription)
+                    result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
+                    result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(result.subscription)
 
 /*                if (result.surveyConfig.pickAndChoosePerpetualAccess) {
                     result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)
@@ -2569,7 +2586,16 @@ class MyInstitutionController  {
                 }*/
 
 
-                result.subscriber = result.subscription.getSubscriberRespConsortia()
+                    result.subscriber = result.subscription.getSubscriberRespConsortia()
+                }
+
+            }else {
+                result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, result.surveyConfig)
+                params.sort = params.sort ?: 'pr.org.sortname'
+                params.org = result.institution
+                result.visiblePersons = addressbookService.getVisiblePersons("contacts", params)
+                result.addresses = addressbookService.getVisibleAddresses("contacts", params)
+
             }
 
         }
@@ -2671,6 +2697,49 @@ class MyInstitutionController  {
             mailSendService.emailToSurveyParticipationByFinish(surveyInfo, result.institution)
         }
 
+
+        redirect(url: request.getHeader('referer'))
+    }
+
+
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
+    })
+    def setSurveyInvoicingInformation() {
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        SurveyInfo surveyInfo = SurveyInfo.get(params.id)
+        SurveyConfig surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID) : surveyInfo.surveyConfigs[0]
+
+        SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, surveyConfig)
+
+        if(params.personId)
+        {
+            if(params.setConcact == 'true'){
+                surveyOrg.person = Person.get(Long.valueOf(params.personId))
+            }
+            if(params.setConcact == 'false'){
+                surveyOrg.person = null
+            }
+            surveyOrg.save()
+        }
+
+        if(params.addressId)
+        {
+            if(params.setAddress == 'true'){
+                surveyOrg.address = Address.get(Long.valueOf(params.addressId))
+            }
+            if(params.setAddress == 'false'){
+                surveyOrg.address = null
+            }
+            surveyOrg.save()
+        }
 
         redirect(url: request.getHeader('referer'))
     }

@@ -991,13 +991,13 @@
         let url;
         let returnSelector;
         switch($(this).attr('data-objtype')) {
-            case 'altname': url = '<g:createLink controller="ajaxHtml" action="addObject" params="[object: 'altname', owner: orgInstance.id]"/>';
+            case 'altname': url = '<g:createLink controller="ajaxHtml" action="addObject" params="[object: 'altname', owner: genericOIDService.getOID(orgInstance)]"/>';
                 returnSelector = '#altnames';
                 break;
-            case 'frontend': url = '<g:createLink controller="ajaxHtml" action="addObject" params="[object: 'frontend', owner: orgInstance.id]"/>';
+            case 'frontend': url = '<g:createLink controller="ajaxHtml" action="addObject" params="[object: 'frontend', owner: genericOIDService.getOID(orgInstance)]"/>';
                 returnSelector = '#discoverySystemsFrontend';
                 break;
-            case 'index': url = '<g:createLink controller="ajaxHtml" action="addObject" params="[object: 'index', owner: orgInstance.id]"/>';
+            case 'index': url = '<g:createLink controller="ajaxHtml" action="addObject" params="[object: 'index', owner: genericOIDService.getOID(orgInstance)]"/>';
                 returnSelector = '#discoverySystemsIndex';
                 break;
         }

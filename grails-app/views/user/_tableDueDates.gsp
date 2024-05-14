@@ -60,12 +60,26 @@
                             <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Aufgabe">
                                 <i class="calendar check outline icon la-list-icon"></i>
                             </span>
-                            <a href="#" class="header" onclick="JSPC.app.editTask(${obj?.id});">${obj?.title}</a>
+                            <g:if test="${obj.subscription}">
+                                <g:link controller="subscription" action="show" id="${obj.subscription.id}">${obj.title}</g:link>
+                            </g:if>
+                            <g:elseif test="${obj.license}">
+                                <g:link controller="license" action="show" id="${obj.license.id}">${obj.title}</g:link>
+                            </g:elseif>
+                            <g:elseif test="${obj.org}">
+                                <g:link controller="organisation" action="show" id="${obj.org.id}">${obj.title}</g:link>
+                            </g:elseif>
+                            <g:elseif test="${obj.vendor}">
+                                <g:link controller="vendor" action="show" id="${obj.vendor.id}">${obj.title}</g:link>
+                            </g:elseif>
+                            <g:elseif test="${obj.provider}">
+                                <g:link controller="provider" action="show" id="${obj.provider.id}">${obj.title}</g:link>
+                            </g:elseif>
                         </g:elseif>
                         <g:elseif test="${obj instanceof AbstractPropertyWithCalculatedLastUpdated}">
                             <g:if test="${obj.owner instanceof Person}">
                                 <i class="icon address book la-list-icon"></i>
-                                <${obj.owner.first_name}&nbsp;${obj.owner.last_name}
+                                ${obj.owner.first_name}&nbsp;${obj.owner.last_name}
                             </g:if>
                             <g:elseif test="${obj.owner instanceof Subscription}">
                                 <i class="icon clipboard outline la-list-icon"></i>

@@ -70,6 +70,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     Date lastUpdatedCascading
 
     SortedSet ids
+    SortedSet altnames
 
     static transients = [
             'referenceConcatenated', 'licensingConsortium', 'licensor', 'licensee', 'providers', 'vendors',
@@ -84,7 +85,8 @@ class License extends AbstractBaseWithCalculatedLastUpdated
           orgRelations       :     OrgRole,
           prsLinks       :     PersonRole,
           derivedLicenses:    License,
-          propertySet    :   LicenseProperty
+          propertySet    :   LicenseProperty,
+          altnames       :   AlternativeName
   ]
 
   static mappedBy = [
@@ -95,7 +97,8 @@ class License extends AbstractBaseWithCalculatedLastUpdated
           orgRelations:      'lic',
           prsLinks:      'lic',
           derivedLicenses: 'instanceOf',
-          propertySet:  'owner'
+          propertySet:  'owner',
+          altnames: 'license'
   ]
 
   static mapping = {

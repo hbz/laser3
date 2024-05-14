@@ -1,9 +1,14 @@
 package de.laser.survey
 
+import de.laser.Address
 import de.laser.Org
 import de.laser.OrgRole
+import de.laser.Person
+import de.laser.RefdataValue
 import de.laser.Subscription
+import de.laser.annotations.RefdataInfo
 import de.laser.storage.BeanStore
+import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 
 /**
@@ -27,11 +32,24 @@ class SurveyOrg {
 
     boolean orgInsertedItself = false
 
+    Person person
+    Address address
+
+    @RefdataInfo(cat = RDConstants.E_INVOICE_PORTAL)
+    RefdataValue eInvoicePortal
+    String eInvoiceLeitwegId
+    String eInvoiceLeitkriterium
+
     static constraints = {
         ownerComment(nullable: true, blank: false)
         priceComment(nullable: true, blank: false)
         finishDate  (nullable:true)
         reminderMailDate (nullable:true)
+        person (nullable:true)
+        address (nullable:true)
+        eInvoicePortal(nullable:true)
+        eInvoiceLeitwegId(nullable:true)
+        eInvoiceLeitkriterium(nullable:true)
     }
 
     static mapping = {
@@ -48,6 +66,12 @@ class SurveyOrg {
         reminderMailDate column: 'surorg_reminder_mail_date'
 
         orgInsertedItself column: 'org_inserted_itself'
+
+        person column: 'surorg_person_fk'
+        address column: 'surorg_address_fk'
+        eInvoicePortal      column:'surorg_e_invoice_portal_fk'
+        eInvoiceLeitwegId column: 'surorg_e_invoice_leitweg_id'
+        eInvoiceLeitkriterium column: 'surorg_e_invoice_leitkriterium'
     }
 
     def afterDelete() {
