@@ -113,13 +113,21 @@ class PlatformFilter extends BaseFilter {
                 }
                 // --> custom implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
-                    if (p == 'org') {
+//                    if (p == 'org') {
+//                        Long[] pList = Params.getLongList(params, key)
+//
+//                        whereParts.add( 'plt.org.id in (:p' + (++pCount) + ')')
+//                        queryParams.put( 'p' + pCount, pList )
+//
+//                        filterLabelValue = Org.getAll(pList).collect{ it.name }
+//                    }
+                    if (p == 'provider') {
                         Long[] pList = Params.getLongList(params, key)
 
-                        whereParts.add( 'plt.org.id in (:p' + (++pCount) + ')')
+                        whereParts.add( 'plt.provider.id in (:p' + (++pCount) + ')')
                         queryParams.put( 'p' + pCount, pList )
 
-                        filterLabelValue = Org.getAll(pList).collect{ it.name }
+                        filterLabelValue = Provider.getAll(pList).collect{ it.name }
                     }
                     else if (p == 'serviceProvider') {
                         whereParts.add( 'plt.serviceProvider.id = :p' + (++pCount) )
@@ -202,10 +210,17 @@ class PlatformFilter extends BaseFilter {
         filterResult
     }
 
-    static void _handleSubsetOrgFilter(String partKey, Map<String, Object> filterResult) {
-        String query = 'select distinct (plt.org.id) from Platform plt where plt.id in (:platformIdList)'
+//    static void _handleSubsetOrgFilter(String partKey, Map<String, Object> filterResult) {
+//        String query = 'select distinct (plt.org.id) from Platform plt where plt.id in (:platformIdList)'
+//        Map<String, Object> queryParams = [ platformIdList: filterResult.data.platformIdList ]
+//
+//        filterResult.data.put( partKey + 'IdList', queryParams.platformIdList ? Org.executeQuery(query, queryParams) : [] )
+//    }
+
+    static void _handleSubsetProviderFilter(String partKey, Map<String, Object> filterResult) {
+        String query = 'select distinct (plt.provider.id) from Platform plt where plt.id in (:platformIdList)'
         Map<String, Object> queryParams = [ platformIdList: filterResult.data.platformIdList ]
 
-        filterResult.data.put( partKey + 'IdList', queryParams.platformIdList ? Org.executeQuery(query, queryParams) : [] )
+        filterResult.data.put( partKey + 'IdList', queryParams.platformIdList ? Provider.executeQuery(query, queryParams) : [] )
     }
 }
