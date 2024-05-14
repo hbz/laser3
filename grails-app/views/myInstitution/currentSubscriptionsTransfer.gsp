@@ -718,18 +718,17 @@
                             </g:each>
                         </td>
 
-                        <g:set var="surveyUseForTransfer" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(subscription, true)}"/>
                         <g:set var="countModificationToCostInformationAfterRenewalDoc" value="${surveyUseForTransfer ? surveyService.countModificationToCostInformationAfterRenewalDoc(s) : 0}"/>
 
-                        <td class="${surveyUseForTransfer ? countModificationToCostInformationAfterRenewalDoc == 0 ? 'positive' : 'negative' : ''}">
+                        <td class="${surveyConfig ? countModificationToCostInformationAfterRenewalDoc == 0 ? 'positive' : 'negative' : ''}">
                             <g:if test="${countModificationToCostInformationAfterRenewalDoc > 0}">
                                 <g:link class="ui label triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
-                                        params="[exportController: 'survey', exportAction: 'renewalEvaluation', exportParams: params, clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION, id: surveyUseForTransfer.surveyInfo.id, surveyConfigID: surveyUseForTransfer.id]">
+                                        params="[exportController: 'survey', exportAction: 'renewalEvaluation', exportParams: params, clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION, id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]">
                                     <i class="download icon"></i> ${countModificationToCostInformationAfterRenewalDoc}
                                 </g:link>
                             </g:if>
                             <g:else>
-                                <g:if test="${surveyUseForTransfer}">
+                                <g:if test="${surveyConfig}">
                                     ${countModificationToCostInformationAfterRenewalDoc}
                                 </g:if>
                             </g:else>
