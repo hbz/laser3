@@ -718,7 +718,7 @@
                             </g:each>
                         </td>
 
-                        <g:set var="surveyUseForTransfer" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(subscription, true)}"/>
+                        <g:set var="surveyUseForTransfer" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(s, true)}"/>
                         <g:set var="countModificationToCostInformationAfterRenewalDoc" value="${surveyUseForTransfer ? surveyService.countModificationToCostInformationAfterRenewalDoc(s) : 0}"/>
 
                         <td class="${surveyUseForTransfer ? countModificationToCostInformationAfterRenewalDoc == 0 ? 'positive' : 'negative' : ''}">
