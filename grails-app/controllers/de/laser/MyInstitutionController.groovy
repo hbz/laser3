@@ -36,6 +36,7 @@ import de.laser.utils.LocaleUtils
 import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
 import de.laser.workflow.WfChecklist
+import de.laser.workflow.WfCheckpoint
 import grails.gsp.PageRenderer
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
@@ -4288,6 +4289,25 @@ join sub.orgRelations or_sub where
                 result.createOrUpdate = message(code:'default.button.save.label')
                 render template: '/templates/properties/propertyGroupModal', model: result
                 return
+            case ['moveUp', 'moveDown']:
+                PropertyDefinitionGroup.withTransaction { TransactionStatus ts ->
+                    PropertyDefinitionGroup pdg = (PropertyDefinitionGroup) genericOIDService.resolveOID(params.oid)
+                    Set<PropertyDefinitionGroup> groupSet = PropertyDefinitionGroup.executeQuery('select pdg from PropertyDefinitionGroup pdg where pdg.ownerType = :objType and pdg.tenant = :tenant order by pdg.order', [objType: pdg.ownerType, tenant: result.institution])
+                    int idx = groupSet.findIndexOf { it.id == pdg.id }
+                    int pos = pdg.order
+                    PropertyDefinitionGroup pdg2
+
+                    if (params.cmd == 'moveUp')        { pdg2 = groupSet.getAt(idx-1) }
+                    else if (params.cmd == 'moveDown') { pdg2 = groupSet.getAt(idx+1) }
+
+                    if (pdg2) {
+                        pdg.order = pdg2.order
+                        pdg.save()
+                        pdg2.order = pos
+                        pdg2.save()
+                    }
+                }
+                break
             case 'delete':
                 PropertyDefinitionGroup pdg = (PropertyDefinitionGroup) genericOIDService.resolveOID(params.oid)
                 PropertyDefinitionGroup.withTransaction { TransactionStatus ts ->
@@ -4323,11 +4343,14 @@ join sub.orgRelations or_sub where
                         }
                         else {
                             if (params.name && ownerType) {
+                                //continue with testings - migration and new creation
+                                int position = PropertyDefinitionGroup.executeQuery('select max(pdg.order) from PropertyDefinitionGroup pdg where pdg.description = :objType and pdg.tenant = :tenant order by pdg.order', [objType: params.description, tenant: result.institution])[0]
                                 propDefGroup = new PropertyDefinitionGroup(
                                         name: params.name,
                                         description: params.description,
                                         tenant: result.institution,
                                         ownerType: ownerType,
+                                        order: Math.max(position, 0) + 1,
                                         isVisible: true
                                 )
                                 if (propDefGroup.save()) {
@@ -4359,7 +4382,7 @@ join sub.orgRelations or_sub where
                 break
         }
 
-        Set<PropertyDefinitionGroup> unorderedPdgs = PropertyDefinitionGroup.findAllByTenant(result.institution, [sort: 'name'])
+        Set<PropertyDefinitionGroup> unorderedPdgs = PropertyDefinitionGroup.executeQuery('select pdg from PropertyDefinitionGroup pdg where pdg.tenant = :tenant order by pdg.order asc', [tenant: result.institution])
         result.propDefGroups = [:]
         PropertyDefinition.AVAILABLE_GROUPS_DESCR.each { String propDefGroupType ->
             result.propDefGroups.put(propDefGroupType,unorderedPdgs.findAll { PropertyDefinitionGroup pdg -> pdg.ownerType == PropertyDefinition.getDescrClass(propDefGroupType)})
