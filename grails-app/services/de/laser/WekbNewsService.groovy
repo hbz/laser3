@@ -67,7 +67,7 @@ class WekbNewsService {
         List<String> prvList    = result.provider.all.collect{ it.id }
         List<String> venList    = result.vendor.all.collect{ it.id }
 
-        Map<String, List> myXMap = markerService.getMyXMap()
+        Map<String, List> myXMap = markerService.getMyCurrentXMap()
 
         result.package.my       = myXMap.currentPackageIdList.intersect(pkgList)
         result.platform.my      = myXMap.currentPlatformIdList.intersect(pltList)

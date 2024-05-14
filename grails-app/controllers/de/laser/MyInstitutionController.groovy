@@ -3335,7 +3335,7 @@ class MyInstitutionController  {
                         package:    markerService.getMyObjectsByClassAndType(Package.class, markerType),
                         tipp:       markerService.getMyObjectsByClassAndType(TitleInstancePackagePlatform.class, markerType)
                 ],
-                myXMap:         markerService.getMyXMap(), // TODO
+                myXMap:         markerService.getMyCurrentXMap(), // TODO
                 markerType:     markerType
         ]
         result

@@ -76,10 +76,17 @@
                         ${pkg.packageStatus?.getI10n('value')}
                     </uiReporting:detailsTableTD>
 
-                    <uiReporting:detailsTableTD config="${dtConfig}" field="orProvider">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="provider">
 
-                        <g:each in="${pkg.orgs.findAll{ it.roleType in [ RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER ]}}" var="ro">
-                            <g:link controller="org" action="show" id="${ro.org.id}" target="_blank">${ro.org.sortname ?: ro.org.name}</g:link><br />
+                        <g:if test="${pkg.provider}">
+                            <g:link controller="provider" action="show" id="${pkg.provider.id}" target="_blank">${pkg.provider.sortname ?: pkg.provider.sortname}</g:link>
+                        </g:if>
+                    </uiReporting:detailsTableTD>
+
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="vendor">
+
+                        <g:each in="${pkg.vendors}" var="pv">
+                            <g:link controller="vendor" action="show" id="${pv.vendor.id}" target="_blank">${pv.vendor.sortname ?: pv.vendor.name}</g:link><br />
                         </g:each>
                     </uiReporting:detailsTableTD>
 

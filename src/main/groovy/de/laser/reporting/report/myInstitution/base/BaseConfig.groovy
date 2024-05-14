@@ -6,6 +6,7 @@ import de.laser.Org
 import de.laser.Package
 import de.laser.PackageVendor
 import de.laser.Platform
+import de.laser.Provider
 import de.laser.RefdataCategory
 import de.laser.Subscription
 import de.laser.SubscriptionsQueryService
@@ -86,11 +87,12 @@ class BaseConfig {
     static String CI_GENERIC_IE_STATUS                  = 'issueEntitlement$status'     // IE
     static String CI_GENERIC_PACKAGE_OR_PROVIDER        = 'package$orgRole$provider'    // IE, PKG
     static String CI_GENERIC_PACKAGE_PLATFORM           = 'package$platform'            // IE, PKG
-    static String CI_GENERIC_PACKAGE_STATUS             = 'package$packageStatus'       // IE, PKG, PLT
+    static String CI_GENERIC_PACKAGE_PACKAGESTATUS      = 'package$packageStatus'       // IE, PKG, PLT
+    static String CI_GENERIC_PACKAGE_PROVIDER           = 'package$provider'            // PKG
     static String CI_GENERIC_PACKAGE_VENDOR             = 'package$vendor'              // PKG
     static String CI_GENERIC_PLATFORM_SERVICEPROVIDER   = 'platform$serviceProvider'    // PLT
     static String CI_GENERIC_PLATFORM_SOFTWAREPROVIDER  = 'platform$softwareProvider'   // PLT
-    static String CI_GENERIC_PLATFORM_ORG               = 'platform$org'                // PLT
+    static String CI_GENERIC_PLATFORM_PROVIDER          = 'platform$provider'           // PLT
     static String CI_GENERIC_SUBSCRIPTION_STATUS        = 'subscription$status'         // PKG, PLT, IE
 
     static String CI_CTX_PROPERTY_KEY           = 'propertyKey'
@@ -342,10 +344,20 @@ class BaseConfig {
                     ]}
             ]
         }
-        else if (key == CI_GENERIC_PACKAGE_STATUS) {
+        else if (key == CI_GENERIC_PACKAGE_PACKAGESTATUS) {
             return [
                     label: messageSource.getMessage('reporting.cfg.query.package.package-packageStatus', null, locale),
                     from: RefdataCategory.getAllRefdataValues(RDConstants.PACKAGE_STATUS)
+            ]
+        }
+        else if (key == CI_GENERIC_PACKAGE_PROVIDER) {
+            return [
+                    label: messageSource.getMessage('reporting.cfg.provider', null, locale),
+                    from: Provider.executeQuery('select distinct(pro) from Package pkg join pkg.provider pro').collect{[
+                            id: it.id,
+                            value_de: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
+                            value_en: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
+                    ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
             ]
         }
         else if (key == CI_GENERIC_PACKAGE_VENDOR) {
@@ -358,10 +370,10 @@ class BaseConfig {
                     ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
             ]
         }
-        else if (key == CI_GENERIC_PLATFORM_ORG) {
+        else if (key == CI_GENERIC_PLATFORM_PROVIDER) {
             return [
                     label: messageSource.getMessage('platform.provider', null, locale),
-                    from: Org.executeQuery('select distinct(org) from Platform plt join plt.org org').collect{[
+                    from: Provider.executeQuery('select distinct(pro) from Platform plt join plt.provider pro').collect{[
                             id: it.id,
                             value_de: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
                             value_en: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,

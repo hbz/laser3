@@ -153,6 +153,29 @@ class PlatformQuery extends BaseQuery {
 //            else if (params.query in ['platform-x-org']) {
 //                sharedQuery_platform_org()
 //            }
+            else if (params.query in ['platform-x-provider']) {
+
+                result.data = Provider.executeQuery(
+                        'select pro.id, pro.name, count(*) from Platform plt join plt.provider pro where pro.id in (:providerIdList) and plt.id in (:idList) group by pro.id order by pro.name',
+                        [providerIdList: BaseFilter.getCachedFilterIdList('provider', params), idList: idList]
+                )
+                result.data.each { d ->
+                    result.dataDetails.add([
+                            query : params.query,
+                            id    : d[0],
+                            label : d[1],
+                            idList: Platform.executeQuery(
+                                    'select plt.id from Platform plt join plt.provider pro where plt.id in (:idList) and pro.id = :d order by plt.name',
+                                    [idList: idList, d: d[0]]
+                            )
+                    ])
+                }
+
+                List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
+                List<Long> noDataList = nonMatchingIdList ? Platform.executeQuery('select plt.id from Platform plt where plt.id in (:idList)', [idList: nonMatchingIdList]) : []
+
+                handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_PROVIDER_LABEL, noDataList, result)
+            }
             else if (params.query in ['platform-x-primaryUrl']) {
                 sharedQuery_platform_primaryUrl()
             }

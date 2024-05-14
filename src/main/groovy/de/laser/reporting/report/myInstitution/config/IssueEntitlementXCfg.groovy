@@ -26,7 +26,7 @@ class IssueEntitlementXCfg extends BaseConfig {
                             'status'                        : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_IE_STATUS ],
                             'package'                       : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_CTX_IE_PACKAGE ],
                             'subscription'                  : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_CTX_IE_SUBSCRIPTION ],
-                            'packageStatus'                 : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_PACKAGE_STATUS ],
+                            'packageStatus'                 : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_PACKAGE_PACKAGESTATUS ],
                             'packageNominalPlatform'        : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_PACKAGE_PLATFORM ],
                             'orProvider'                    : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_PACKAGE_OR_PROVIDER ],
                             'subscriptionStatus'            : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_SUBSCRIPTION_STATUS ],

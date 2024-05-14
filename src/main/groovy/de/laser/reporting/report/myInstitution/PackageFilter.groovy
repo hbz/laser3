@@ -4,6 +4,7 @@ import de.laser.ContextService
 import de.laser.Org
 import de.laser.Package
 import de.laser.Platform
+import de.laser.Provider
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.Vendor
@@ -109,8 +110,7 @@ class PackageFilter extends BaseFilter {
                     if (p == 'nominalPlatform') {
                         Long[] pList = Params.getLongList(params, key)
 
-                        queryParts.add('Platform plt')
-                        whereParts.add('pkg.nominalPlatform = plt and plt.id in (:p' + (++pCount) + ')')
+                        whereParts.add('pkg.nominalPlatform.id in (:p' + (++pCount) + ')')
                         queryParams.put('p' + pCount, pList)
 
                         filterLabelValue = Platform.getAll(pList).collect{ it.name }
@@ -143,6 +143,14 @@ class PackageFilter extends BaseFilter {
                         queryParams.put('p' + pCount, contextService.getOrg())
 
                         filterLabelValue = RefdataValue.getAll(pList).collect{ it.getI10n('value') }
+                    }
+                    else if (p == 'provider') {
+                        Long[] pList = Params.getLongList(params, key)
+
+                        whereParts.add('pkg.provider.id in (:p' + (++pCount) + ')')
+                        queryParams.put('p' + pCount, pList)
+
+                        filterLabelValue = Provider.getAll(pList).collect{ it.name }
                     }
                     else if (p == 'vendor') {
                         Long[] pList = Params.getLongList(params, key)
@@ -208,6 +216,16 @@ class PackageFilter extends BaseFilter {
 
         String query = queryBase + ' where ' + whereParts.join(' and ')
         filterResult.data.put( partKey + 'IdList', queryParams.packageIdList ? Platform.executeQuery(query, queryParams) : [] )
+    }
+
+    static void _handleSubsetProviderFilter(String partKey, Map<String, Object> filterResult) {
+        String queryBase = 'select distinct (pro.id) from Package pkg join pkg.provider pro'
+        List<String> whereParts = [ 'pkg.id in (:packageIdList)' ]
+
+        Map<String, Object> queryParams = [ packageIdList: filterResult.data.packageIdList ]
+
+        String query = queryBase + ' where ' + whereParts.join(' and ')
+        filterResult.data.put( partKey + 'IdList', queryParams.packageIdList ? Provider.executeQuery(query, queryParams) : [] )
     }
 
     static void _handleSubsetVendorFilter(String partKey, Map<String, Object> filterResult) {
