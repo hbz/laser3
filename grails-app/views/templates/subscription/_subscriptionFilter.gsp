@@ -7,6 +7,9 @@
         <g:if test="${license}">
             <input type="hidden" name="id" value="${license.id}"/>
         </g:if>
+        <g:if test="${packageInstance}">
+            <input type="hidden" name="id" value="${packageInstance.id}"/>
+        </g:if>
         <g:if test="${actionName == 'subscriptionsManagement'}">
             <input type="hidden" name="tab" value="${params.tab}"/>
             <input type="hidden" name="propertiesFilterPropDef" value="${propertiesFilterPropDef}"/>

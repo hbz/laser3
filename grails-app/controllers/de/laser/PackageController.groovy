@@ -70,7 +70,7 @@ class PackageController {
     })
     def index() {
         Map<String, Object> result = [:]
-        result.user = contextService.getUser()
+
         SwissKnife.setPaginationParams(result, params, result.user)
         result.putAll(packageService.getWekbPackages(params.clone()))
         result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
@@ -183,21 +183,11 @@ class PackageController {
     def show() {
         Map<String, Object> result = packageService.getResultGenerics(params)
 
-        result.user = contextService.getUser()
-        Package packageInstance = result.packageInstance
-
-        result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_CURRENT])[0]
-        result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_EXPECTED])[0]
-        result.expiredTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_RETIRED])[0]
-        result.deletedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_DELETED])[0]
-        result.contextOrg = contextService.getOrg()
-        result.contextCustomerType = result.contextOrg.getCustomerType()
-
         result.modalPrsLinkRole = RDStore.PRS_RESP_SPEC_PKG_EDITOR
         result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(result.contextOrg)
 
         // restrict visible for templates/links/orgLinksAsList
-        result.visibleOrgs = packageInstance.provider
+        result.visibleOrgs = result.packageInstance.provider
         //result.visibleOrgs.sort { it.org.sortname }
 
         List<RefdataValue> roleTypes = [RDStore.OR_SUBSCRIBER]
@@ -205,26 +195,26 @@ class PackageController {
             roleTypes.addAll([RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS])
         }
 
-        SwissKnife.setPaginationParams(result, params, (User) result.user)
+
         params.max = result.max
 
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Date today = new Date()
         if (!params.asAt) {
-            if (packageInstance.startDate > today) {
-                params.asAt = sdf.format(packageInstance.startDate)
-            } else if (packageInstance.endDate < today && packageInstance.endDate) {
-                params.asAt = sdf.format(packageInstance.endDate)
+            if (result.packageInstance.startDate > today) {
+                params.asAt = sdf.format(result.packageInstance.startDate)
+            } else if (result.packageInstance.endDate < today && result.packageInstance.endDate) {
+                params.asAt = sdf.format(result.packageInstance.endDate)
             }
         }
 
         if (OrgSetting.get(result.contextOrg, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSetting) {
             result.statsWibid = result.contextOrg.getIdentifierByType('wibid')?.value
             result.usageMode = contextService.getOrg().isCustomerType_Consortium() ? 'package' : 'institution'
-            result.packageIdentifier = packageInstance.getIdentifierByType('isil')?.value
+            result.packageIdentifier = result.packageInstance.getIdentifierByType('isil')?.value
         }
 
-        Set<Subscription> gascoSubscriptions = Subscription.executeQuery('select s from SubscriptionPackage sp join sp.pkg pkg join sp.subscription s join s.propertySet prop where pkg = :pkg and prop.type = :gasco and prop.refValue = :yes', [pkg: packageInstance, gasco: PropertyStore.SUB_PROP_GASCO_ENTRY, yes: RDStore.YN_YES])
+        Set<Subscription> gascoSubscriptions = Subscription.executeQuery('select s from SubscriptionPackage sp join sp.pkg pkg join sp.subscription s join s.propertySet prop where pkg = :pkg and prop.type = :gasco and prop.refValue = :yes', [pkg: result.packageInstance, gasco: PropertyStore.SUB_PROP_GASCO_ENTRY, yes: RDStore.YN_YES])
         Map<Org, Map<String, Object>> gascoContacts = [:]
         PropertyDefinition gascoDisplayName = PropertyStore.SUB_PROP_GASCO_NEGOTIATOR_NAME
         gascoSubscriptions.each { Subscription s ->
@@ -248,7 +238,7 @@ class PackageController {
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         result.editUrl = apiSource.editUrl.endsWith('/') ? apiSource.editUrl : apiSource.editUrl+'/'
 
-        Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: packageInstance.gokbId])
+        Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: result.packageInstance.gokbId])
         if ((queryResult.error && queryResult.error == 404) || !queryResult) {
             flash.error = message(code:'wekb.error.404') as String
         }
@@ -256,22 +246,22 @@ class PackageController {
             List records = queryResult.result
             result.packageInstanceRecord = records ? records[0] : [:]
         }
-        if(packageInstance.nominalPlatform) {
+        if(result.packageInstance.nominalPlatform) {
             //record filled with LAS:eR and we:kb data
             Map<String, Object> platformInstanceRecord = [:]
-            queryResult = gokbService.executeQuery(apiSource.baseUrl+apiSource.fixToken+"/searchApi", [uuid: packageInstance.nominalPlatform.gokbId])
+            queryResult = gokbService.executeQuery(apiSource.baseUrl+apiSource.fixToken+"/searchApi", [uuid: result.packageInstance.nominalPlatform.gokbId])
             if(queryResult) {
                 List records = queryResult.result
                 if(records)
                     platformInstanceRecord.putAll(records[0])
-                platformInstanceRecord.name = packageInstance.nominalPlatform.name
-                platformInstanceRecord.status = packageInstance.nominalPlatform.status
-                platformInstanceRecord.org = packageInstance.nominalPlatform.org
-                platformInstanceRecord.id = packageInstance.nominalPlatform.id
-                platformInstanceRecord.primaryUrl = packageInstance.nominalPlatform.primaryUrl
+                platformInstanceRecord.name = result.packageInstance.nominalPlatform.name
+                platformInstanceRecord.status = result.packageInstance.nominalPlatform.status
+                platformInstanceRecord.org = result.packageInstance.nominalPlatform.org
+                platformInstanceRecord.id = result.packageInstance.nominalPlatform.id
+                platformInstanceRecord.primaryUrl = result.packageInstance.nominalPlatform.primaryUrl
             }
             result.platformInstanceRecord = platformInstanceRecord
-            result.platformInstance = packageInstance.nominalPlatform
+            result.platformInstance = result.packageInstance.nominalPlatform
         }
 
         result.flagContentGokb = true // gokbService.executeQuery
@@ -297,23 +287,21 @@ class PackageController {
         log.debug("current ${params}");
         Map<String, Object> result = packageService.getResultGenerics(params)
 
-        Package packageInstance = result.packageInstance
-
-        if (executorWrapperService.hasRunningProcess(packageInstance)) {
+        if (executorWrapperService.hasRunningProcess(result.packageInstance)) {
             result.processingpc = true
         }
         /*result.pendingChanges = PendingChange.executeQuery(
                 "select pc from PendingChange as pc where pc.pkg = :pkg and ( pc.status is null or pc.status = :status ) order by ts, payload",
-                [pkg: packageInstance, status: RDStore.PENDING_CHANGE_PENDING]
+                [pkg: result.packageInstance, status: RDStore.PENDING_CHANGE_PENDING]
         )*/
 
-        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        Map<String, Object> query = filterService.getTippQuery(params, [packageInstance])
+
+        Map<String, Object> query = filterService.getTippQuery(params, [result.packageInstance])
         result.filterSet = query.filterSet
 
 
-        String filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.current'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
+        String filename = "${escapeService.escapeString(result.packageInstance.name + '_' + message(code: 'package.show.nav.current'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
 
         result.filename = filename
         ArrayList<TitleInstancePackagePlatform> tipps = []
@@ -392,10 +380,6 @@ class PackageController {
         }
         else {
             List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
-            result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_CURRENT])[0]
-            result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_EXPECTED])[0]
-            result.expiredTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_RETIRED])[0]
-            result.deletedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_DELETED])[0]
             //we can be sure that no one will request more than 32768 entries ...
             result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: params.sort?: 'sortname', order: params.order]) : []
             result.num_tipp_rows = titlesList.size()
@@ -499,33 +483,26 @@ class PackageController {
         log.debug("planned_expired_deleted ${params}");
         Map<String, Object> result = packageService.getResultGenerics(params)
 
-        Package packageInstance = result.packageInstance
-        if (!packageInstance) {
+        if (!result.packageInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id]) as String
             redirect action: 'index'
             return
         }
 
-        result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_CURRENT])[0]
-        result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_EXPECTED])[0]
-        result.expiredTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_RETIRED])[0]
-        result.deletedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_DELETED])[0]
-
-        SwissKnife.setPaginationParams(result, params, (User) result.user)
         String filename
 
         if (func == "planned") {
             params.status = RDStore.TIPP_STATUS_EXPECTED.id
-            filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.planned'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
+            filename = "${escapeService.escapeString(result.packageInstance.name + '_' + message(code: 'package.show.nav.planned'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
         } else if (func == "expired") {
             params.status = RDStore.TIPP_STATUS_RETIRED.id
-            filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.expired'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
+            filename = "${escapeService.escapeString(result.packageInstance.name + '_' + message(code: 'package.show.nav.expired'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
         } else if (func == "deleted") {
             params.status = RDStore.TIPP_STATUS_DELETED.id
-            filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.deleted'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
+            filename = "${escapeService.escapeString(result.packageInstance.name + '_' + message(code: 'package.show.nav.deleted'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
         }
 
-        Map<String, Object> query = filterService.getTippQuery(params, [packageInstance])
+        Map<String, Object> query = filterService.getTippQuery(params, [result.packageInstance])
         result.filterSet = query.filterSet
 
         List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
@@ -618,19 +595,7 @@ class PackageController {
     })
     @Check404()
     def tippChanges() {
-        Map<String, Object> result = [:]
-
-        result.user = contextService.getUser()
-        Package packageInstance = Package.get(params.id)
-
-        result.packageInstance = packageInstance
-
-        SwissKnife.setPaginationParams(result, params, (User) result.user)
-
-        result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_CURRENT])[0]
-        result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_EXPECTED])[0]
-        result.expiredTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_RETIRED])[0]
-        result.deletedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_DELETED])[0]
+        Map<String, Object> result = packageService.getResultGenerics(params)
 
         Set<Long> packageHistory = []
 
@@ -639,10 +604,10 @@ class PackageController {
                query2 = 'select pc.id from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg = :pkg and pc.oid = null and pc.status = :history ',
                query3 = 'select pc.id from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg = :pkg and pc.oid = null and pc.status = :history '
 
-        packageHistory.addAll(PendingChange.executeQuery(query, [pkg: packageInstance, history: RDStore.PENDING_CHANGE_HISTORY]))
-        packageHistory.addAll(PendingChange.executeQuery(query1, [pkg: packageInstance, history: RDStore.PENDING_CHANGE_HISTORY]))
-        packageHistory.addAll(PendingChange.executeQuery(query2, [pkg: packageInstance, history: RDStore.PENDING_CHANGE_HISTORY]))
-        packageHistory.addAll(PendingChange.executeQuery(query3, [pkg: packageInstance, history: RDStore.PENDING_CHANGE_HISTORY]))
+        packageHistory.addAll(PendingChange.executeQuery(query, [pkg: result.packageInstance, history: RDStore.PENDING_CHANGE_HISTORY]))
+        packageHistory.addAll(PendingChange.executeQuery(query1, [pkg: result.packageInstance, history: RDStore.PENDING_CHANGE_HISTORY]))
+        packageHistory.addAll(PendingChange.executeQuery(query2, [pkg: result.packageInstance, history: RDStore.PENDING_CHANGE_HISTORY]))
+        packageHistory.addAll(PendingChange.executeQuery(query3, [pkg: result.packageInstance, history: RDStore.PENDING_CHANGE_HISTORY]))
 
         params.sort = params.sort ?: 'ts'
         params.order = params.order ?: 'desc'
@@ -747,5 +712,27 @@ class PackageController {
             redirect action: 'getDuplicatePackages'
             return
         }
+    }
+
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
+    @Check404()
+    def linkedSubscriptions() {
+        Map<String, Object> result = packageService.getResultGenerics(params)
+
+        params.max = result.max
+        result.tableConfig = ['showActions','showLicense']
+        if (! contextService.getOrg().isCustomerType_Support()) {
+            result.tableConfig << "showProviders"
+            result.tableConfig << "showVendors"
+        }
+        params.linkedPkg = result.packageInstance
+        result.institution = result.contextOrg
+        result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
+
+
+        result
     }
 }
