@@ -51,24 +51,12 @@ class MarkerService {
         List<MarkerSupport> objects = []
         String sql
 
-        if (cls == Org.class) {
-            sql = 'Org obj where m.org = obj and m.type = :type and m.user = :user order by obj.sortname, obj.name'
-        }
-        else if (cls == Package.class) {
-            sql = 'Package obj where m.pkg = obj and m.type = :type and m.user = :user order by obj.sortname, obj.name'
-        }
-        else if (cls == Platform.class) {
-            sql = 'Platform obj where m.plt = obj and m.type = :type and m.user = :user order by obj.normname, obj.name'
-        }
-        else if (cls == Provider.class) {
-            sql = 'Provider obj where m.prov = obj and m.type = :type and m.user = :user order by obj.sortname, obj.name'
-        }
-        else if (cls == Vendor.class) {
-            sql = 'Vendor obj where m.ven = obj and m.type = :type and m.user = :user order by obj.sortname, obj.name'
-        }
-        else if (cls == TitleInstancePackagePlatform.class) {
-            sql = 'TitleInstancePackagePlatform obj where m.tipp = obj and m.type = :type and m.user = :user order by obj.sortname, obj.name'
-        }
+             if (cls == Org.class)      { sql = 'Org obj where m.org = obj and m.type = :type and m.user = :user order by obj.sortname, obj.name' }
+        else if (cls == Package.class)  { sql = 'Package obj where m.pkg = obj and m.type = :type and m.user = :user order by obj.sortname, obj.name' }
+        else if (cls == Platform.class) { sql = 'Platform obj where m.plt = obj and m.type = :type and m.user = :user order by obj.normname, obj.name' }
+        else if (cls == Provider.class) { sql = 'Provider obj where m.prov = obj and m.type = :type and m.user = :user order by obj.sortname, obj.name' }
+        else if (cls == Vendor.class)   { sql = 'Vendor obj where m.ven = obj and m.type = :type and m.user = :user order by obj.sortname, obj.name' }
+        else if (cls == TitleInstancePackagePlatform.class) { sql = 'TitleInstancePackagePlatform obj where m.tipp = obj and m.type = :type and m.user = :user order by obj.sortname, obj.name' }
 
         if (sql) {
             objects = Marker.executeQuery('select obj from Marker m, ' + sql, [type: type, user: contextService.getUser()])
@@ -80,7 +68,7 @@ class MarkerService {
      * Builds a map of currently subscribed packages and platforms
      * @return a {@link Map} of {@link de.laser.Package} IDs and {@link Platform} IDs to which there exists a link from a {@link Subscription} (= are subscribed by the context institution)
      */
-    Map<String, List> getMyXMap() {
+    Map<String, List> getMyCurrentXMap() {
         Map<String, List> result = [
                 currentOrgIdList : [], // todo
                 currentProviderIdList : [],
@@ -90,36 +78,46 @@ class MarkerService {
                 currentTippIdList : [] // todo
         ]
 
+        String subStatusQuery = '(sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true))'
+
         result.currentPackageIdList = SubscriptionPackage.executeQuery(
-                'select distinct sp.pkg.id from SubscriptionPackage sp where sp.subscription in (select oo.sub from OrgRole oo join oo.sub sub where oo.org = :context and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true)))',
+                'select distinct sp.pkg.id from SubscriptionPackage sp where sp.subscription in (select oo.sub from OrgRole oo join oo.sub sub where oo.org = :context and ' + subStatusQuery + ')',
                 [context: contextService.getOrg(), current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED]
         )
 
-//        result.currentVendorIdList = Vendor.executeQuery(
-//                'select distinct vr.vendor from VendorRole vr, OrgRole oo join oo.sub sub where vr.subscription = sub and oo.org = :context and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true))',
-//                [context: contextService.getOrg(), current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED]
-//        )
-//
-        // todo - provider.status / sub.status / license.status
+        // todo - provider.status // oo.roleType
         result.currentProviderIdList = Provider.executeQuery(
-                'select distinct pr.provider.id from ProviderRole pr, OrgRole oo where (pr.subscription = oo.sub or pr.license = oo.lic) and oo.org = :context',
-                [context: contextService.getOrg()]
+                'select distinct pr.provider.id from ProviderRole pr, OrgRole oo where ('
+                + '(pr.subscription = oo.sub and (oo.sub.status = :subCurrent or (oo.sub.status = :subExpired and oo.sub.hasPerpetualAccess = true))) '
+                + 'or '
+                + '(pr.license = oo.lic and oo.lic.status = :licCurrent) '
+                + ') and oo.org = :context',
+                [context: contextService.getOrg(), subCurrent: RDStore.SUBSCRIPTION_CURRENT, subExpired: RDStore.SUBSCRIPTION_EXPIRED, licCurrent: RDStore.LICENSE_CURRENT]
         )
-        // todo - vendor.status / sub.status / licenses.status
+        // todo - vendor.status // oo.roleType
         result.currentVendorIdList = Vendor.executeQuery(
-                'select distinct vr.vendor.id from VendorRole vr, OrgRole oo where (vr.subscription = oo.sub or vr.license = oo.lic) and oo.org = :context',
-                [context: contextService.getOrg()]
+                'select distinct vr.vendor.id from VendorRole vr, OrgRole oo where ('
+                        + '(vr.subscription = oo.sub and (oo.sub.status = :subCurrent or (oo.sub.status = :subExpired and oo.sub.hasPerpetualAccess = true))) '
+                        + 'or '
+                        + '(vr.license = oo.lic and oo.lic.status = :licCurrent) '
+                        + ') and oo.org = :context',
+                [context: contextService.getOrg(), subCurrent: RDStore.SUBSCRIPTION_CURRENT, subExpired: RDStore.SUBSCRIPTION_EXPIRED, licCurrent: RDStore.LICENSE_CURRENT]
         )
 
-        // todo --
         List<Long> currentSubscriptionIdList = Subscription.executeQuery(
-                'select distinct s.id from OrgRole oo join oo.sub s where oo.org = :context and oo.roleType in (:roleTypes) and (s.status = :current or (s.status = :expired and s.hasPerpetualAccess = true))'
+                'select distinct s.id from OrgRole oo join oo.sub s where oo.org = :context and oo.roleType in (:roleTypes) and '
+                        + subStatusQuery
                         + (contextService.getOrg().isCustomerType_Consortium() ? ' and s.instanceOf = null' : ''),
-                [context: contextService.getOrg(), roleTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA], current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED]
+                [
+                        context:    contextService.getOrg(),
+                        roleTypes:  [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA],
+                        current:    RDStore.SUBSCRIPTION_CURRENT,
+                        expired:    RDStore.SUBSCRIPTION_EXPIRED
+                ]
         )
-        // println currentSubscriptionIdList.size()
 
-        result.currentPlatformIdList = Platform.executeQuery('select distinct p.id from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg, ' +
+        result.currentPlatformIdList = Platform.executeQuery(
+                'select distinct p.id from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg, ' +
                 'TitleInstancePackagePlatform tipp join tipp.platform p left join p.org o where tipp.pkg = pkg and s.id in (:subIds) ' +
                 'and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted)) and ((tipp.status is null) or (tipp.status != :tippRemoved)) ',
                 [subIds: currentSubscriptionIdList, pkgDeleted: RDStore.PACKAGE_STATUS_DELETED, tippRemoved: RDStore.TIPP_STATUS_REMOVED]
