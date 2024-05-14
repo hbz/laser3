@@ -323,7 +323,7 @@
                         Reminder
                     </th>
 
-                    <th colspan="2" class="la-smaller-table-head center aligned">
+                    <th colspan="3" class="la-smaller-table-head center aligned">
                         Renewal
                     </th>
 
@@ -358,6 +358,9 @@
                     <th scope="col" rowspan="2" class="center aligned two wide">
                         ${message(code: 'subscriptionsManagement.documents')}
                     </th>%{-- Documents--}%
+                    <th scope="col" rowspan="2" class="center aligned two wide">
+                      <g:message code="default.change.label"/>
+                    </th>
                 </tr>
                 <tr>
                     <g:sortableColumn scope="col" rowspan="1" class="la-smaller-table-head" params="${params}"
@@ -713,6 +716,23 @@
                                     </div>
                                 </g:if>
                             </g:each>
+                        </td>
+
+                        <g:set var="surveyUseForTransfer" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(subscription, true)}"/>
+                        <g:set var="countModificationToCostInformationAfterRenewalDoc" value="${surveyUseForTransfer ? surveyService.countModificationToCostInformationAfterRenewalDoc(s) : 0}"/>
+
+                        <td class="${surveyUseForTransfer ? countModificationToCostInformationAfterRenewalDoc == 0 ? 'positive' : 'negative' : ''}">
+                            <g:if test="${countModificationToCostInformationAfterRenewalDoc > 0}">
+                                <g:link class="ui label triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
+                                        params="[exportController: 'survey', exportAction: 'renewalEvaluation', exportParams: params, clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION, id: surveyUseForTransfer.surveyInfo.id, surveyConfigID: surveyUseForTransfer.id]">
+                                    <i class="download icon"></i> ${countModificationToCostInformationAfterRenewalDoc}
+                                </g:link>
+                            </g:if>
+                            <g:else>
+                                <g:if test="${surveyUseForTransfer}">
+                                    ${countModificationToCostInformationAfterRenewalDoc}
+                                </g:if>
+                            </g:else>
                         </td>
 
                         <td class="${s.participantTransferWithSurvey ? 'positive' : 'negative'}">

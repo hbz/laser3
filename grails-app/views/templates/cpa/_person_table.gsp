@@ -27,11 +27,16 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('showContacts') && showContacts}">
                 <col style="width: 277px;">
             </g:if>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyInvoicingInformation')}">
+                <col style="width:  118px;">
+            </g:if>
             <%--<g:if test="${tmplConfigItem.equalsIgnoreCase('showAddresses') && showAddresses}">
                 <col style="width: 332px;">
             </g:if>--%>
         </g:each>
-        <col style="width:  82px;">
+        <g:if test="${showOptions}">
+                <col style="width:  82px;">
+        </g:if>
     </colgroup>
     <thead>
     <tr>
@@ -233,8 +238,8 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyInvoicingInformation')}">
                 <td>
-                        <g:if test="${editable}">
-                            <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndPerson(institution, surveyConfig, person)}">
+                        <g:if test="${editable && actionName == 'myInstitution'}">
+                            <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndPerson(participant, surveyConfig, person)}">
                                 <g:link controller="myInstitution" action="setSurveyInvoicingInformation"
                                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setConcact: false, personId: person.id]">
                                     <i class="check bordered large green icon"></i>
@@ -248,7 +253,7 @@
                             </g:else>
                         </g:if>
                         <g:else>
-                            <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndPerson(institution, surveyConfig, person)}">
+                            <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndPerson(participant, surveyConfig, person)}">
                                     <i class="check bordered large green icon"></i>
                             </g:if>
                         </g:else>
