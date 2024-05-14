@@ -105,9 +105,9 @@ class MarkerService {
         )
 
         List<Long> currentSubscriptionIdList = Subscription.executeQuery(
-                'select distinct s.id from OrgRole oo join oo.sub s where oo.org = :context and oo.roleType in (:roleTypes) and '
+                'select distinct sub.id from OrgRole oo join oo.sub sub where oo.org = :context and oo.roleType in (:roleTypes) and '
                         + subStatusQuery
-                        + (contextService.getOrg().isCustomerType_Consortium() ? ' and s.instanceOf = null' : ''),
+                        + (contextService.getOrg().isCustomerType_Consortium() ? ' and sub.instanceOf = null' : ''),
                 [
                         context:    contextService.getOrg(),
                         roleTypes:  [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA],
