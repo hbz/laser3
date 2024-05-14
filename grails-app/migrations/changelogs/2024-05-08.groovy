@@ -52,4 +52,13 @@ databaseChangeLog = {
         addForeignKeyConstraint(baseColumnNames: "surorg_e_invoice_portal_fk", baseTableName: "survey_org", constraintName: "FKga099l0mn5ga9m5wsg7kd5l4f", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "rdv_id", referencedTableName: "refdata_value", validate: "true")
     }
 
+    changeSet(author: "djebeniani (modified)", id: "1715332331238-11") {
+        grailsChange {
+            change {
+                sql.execute("update property_definition set pd_name = 'Possible time of billing' where pd_hard_data = true and pd_name = 'Time of billing' and pd_type = 'java.lang.String'")
+            }
+            rollback {}
+        }
+    }
+
 }

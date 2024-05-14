@@ -4,19 +4,29 @@
 <div class="ui stackable grid">
     <div class="sixteen wide column">
 
+        <g:if test="${controllerName == 'survey'}">
+            <g:set var="parame" value="${[surveyConfigID: surveyConfig.id, participant: participant.id]}"/>
+            <g:set var="participant" value="${participant}"/>
+        </g:if>
+        <g:else>
+            <g:set var="parame" value="${[surveyConfigID: surveyConfig.id]}"/>
+            <g:set var="participant" value="${institution}"/>
+        </g:else>
+
+
         <div class="ui top attached stackable tabular la-tab-with-js menu">
             <g:link class="item ${params.tab == 'overview' ? 'active' : ''}"
-                    controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}"
-                    params="[surveyConfigID: surveyConfig.id, tab: 'overview']">
+                    controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
+                    params="${parame+[tab: 'overview']}">
 
                 ${message(code: 'default.overview.label')}
             </g:link>
 
             <g:link class="item ${params.tab == 'invoicingInformation' ? 'active' : ''}"
-                    controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}"
-                    params="[surveyConfigID: surveyConfig.id, tab: 'invoicingInformation']">
+                    controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
+                    params="${parame+[tab: 'invoicingInformation']}">
                 ${message(code: 'surveyOrg.invoicingInformation')}
-                <span class="ui floating blue circular label">${SurveyOrg.countByOrgAndSurveyConfigAndPersonIsNotNull(institution, surveyConfig)}/${SurveyOrg.countByOrgAndSurveyConfigAndAddressIsNotNull(institution, surveyConfig)}</span>
+                <span class="ui floating blue circular label">${SurveyOrg.countByOrgAndSurveyConfigAndPersonIsNotNull(participant, surveyConfig)}/${SurveyOrg.countByOrgAndSurveyConfigAndAddressIsNotNull(participant, surveyConfig)}</span>
             </g:link>
 
         </div>
@@ -29,12 +39,12 @@
                 <div class="ui top attached stackable tabular la-tab-with-js menu">
                     <a class="active item" data-tab="contacts">
                         ${message(code: 'surveyOrg.person.label')}
-                        <span class="ui floating blue circular label">${SurveyOrg.countByOrgAndSurveyConfigAndPersonIsNotNull(institution, surveyConfig)}</span>
+                        <span class="ui floating blue circular label">${SurveyOrg.countByOrgAndSurveyConfigAndPersonIsNotNull(participant, surveyConfig)}</span>
                     </a>
 
                     <a class="item" data-tab="addresses">
                         ${message(code: 'surveyOrg.address.label')}
-                        <span class="ui floating blue circular label">${SurveyOrg.countByOrgAndSurveyConfigAndAddressIsNotNull(institution, surveyConfig)}</span>
+                        <span class="ui floating blue circular label">${SurveyOrg.countByOrgAndSurveyConfigAndAddressIsNotNull(participant, surveyConfig)}</span>
                     </a>
 
                     <a class="item" data-tab="xRechnung">
@@ -45,7 +55,7 @@
 
                 <div class="ui bottom attached tab segment active" data-tab="contacts">
 
-                    <g:link controller="organisation" action="contacts" id="${institution.id}" class="ui right floated blue button">
+                    <g:link controller="organisation" action="contacts" id="${participant.id}" class="ui right floated blue button">
                         <g:message code="default.show.label" args="[message(code: 'org.publicContacts.label')]"/>
                     </g:link>
                     <br>
@@ -53,6 +63,7 @@
 
                     <laser:render template="/templates/cpa/person_table" model="${[
                             persons       : visiblePersons,
+                            participant   : participant,
                             showContacts  : true,
                             showAddresses : true,
                             showOptions   : false,
@@ -63,7 +74,7 @@
 
                 <div class="ui bottom attached tab segment" data-tab="addresses">
 
-                    <g:link controller="organisation" action="contacts" id="${institution.id}" class="ui right floated blue button">
+                    <g:link controller="organisation" action="contacts" id="${participant.id}" class="ui right floated blue button">
                         <g:message code="default.show.label" args="[message(code: 'org.publicContacts.label')]"/>
                     </g:link>
                     <br>
@@ -74,7 +85,8 @@
                             addresses                     : addresses,
                             editable                      : editable,
                             showSurveyInvoicingInformation: true,
-                            showOptions                   : false
+                            showOptions                   : false,
+                            participant   : participant
                     ]}"/>
 
                 </div>
