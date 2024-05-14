@@ -6,7 +6,9 @@ import de.laser.cache.EhcacheWrapper
 import de.laser.cache.SessionCacheWrapper
 import de.laser.convenience.Marker
 import de.laser.ctrl.MyInstitutionControllerService
+import de.laser.ctrl.SubscriptionControllerService
 import de.laser.ctrl.UserControllerService
+import de.laser.interfaces.CalculatedType
 import de.laser.remote.ApiSource
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
@@ -36,6 +38,7 @@ import de.laser.utils.LocaleUtils
 import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
 import de.laser.workflow.WfChecklist
+import grails.converters.JSON
 import grails.gsp.PageRenderer
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
@@ -86,6 +89,7 @@ class MyInstitutionController  {
     ProviderService providerService
     ReportingGlobalService reportingGlobalService
     SubscriptionsQueryService subscriptionsQueryService
+    SubscriptionControllerService subscriptionControllerService
     SubscriptionService subscriptionService
     SurveyService surveyService
     TaskService taskService
@@ -2509,13 +2513,13 @@ class MyInstitutionController  {
             result.surveyResults << surre
         }
 
-        params.tab = params.tab ?: 'overview'
+        params.viewTab = params.viewTab ?: 'overview'
 
         result.ownerId = result.surveyInfo.owner?.id
 
         if(result.surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
 
-            if(params.tab == 'overview') {
+            if(params.viewTab == 'overview') {
 
                 result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(result.institution)
                 result.formalOrg = result.user.formalOrg as Org
@@ -2589,13 +2593,86 @@ class MyInstitutionController  {
                     result.subscriber = result.subscription.getSubscriberRespConsortia()
                 }
 
-            }else {
+            }else if(params.viewTab == 'invoicingInformation') {
                 result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, result.surveyConfig)
                 params.sort = params.sort ?: 'pr.org.sortname'
                 params.org = result.institution
                 result.visiblePersons = addressbookService.getVisiblePersons("contacts", params)
                 result.addresses = addressbookService.getVisibleAddresses("contacts", params)
 
+            }else if(params.viewTab == 'stats') {
+                result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(result.institution)
+
+                if (params.error)
+                    result.error = params.error
+                if (params.reportType)
+                    result.putAll(subscriptionControllerService.loadFilterList(params))
+                ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+                result.flagContentGokb = true // gokbService.executeQuery
+                Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription in (:subscriptions)", [subscriptions: [result.subscription, result.subscription.instanceOf]])
+                result.platformInstanceRecords = [:]
+                result.platforms = subscribedPlatforms
+                result.platformsJSON = subscribedPlatforms.globalUID as JSON
+                result.keyPairs = [:]
+                if (!params.containsKey('tab'))
+                    params.tab = subscribedPlatforms[0].id.toString()
+                result.subscription.instanceOf.packages.each { SubscriptionPackage sp ->
+                    Platform platformInstance = sp.pkg.nominalPlatform
+                    if (result.subscription._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_LOCAL]) {
+                        //create dummies for that they may be xEdited - OBSERVE BEHAVIOR for eventual performance loss!
+                        CustomerIdentifier keyPair = CustomerIdentifier.findByPlatformAndCustomer(platformInstance, result.subscription.getSubscriberRespConsortia())
+                        if (!keyPair) {
+                            keyPair = new CustomerIdentifier(platform: platformInstance,
+                                    customer: result.subscription.getSubscriberRespConsortia(),
+                                    type: RDStore.CUSTOMER_IDENTIFIER_TYPE_DEFAULT,
+                                    owner: contextService.getOrg(),
+                                    isPublic: true)
+                            if (!keyPair.save()) {
+                                log.warn(keyPair.errors.getAllErrors().toListString())
+                            }
+                        }
+                        result.keyPairs.put(platformInstance.gokbId, keyPair)
+                    }
+                    Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
+                    if (queryResult.error && queryResult.error == 404) {
+                        result.wekbServerUnavailable = message(code: 'wekb.error.404')
+                    } else if (queryResult) {
+                        List records = queryResult.result
+                        if (records[0]) {
+                            records[0].lastRun = platformInstance.counter5LastRun ?: platformInstance.counter4LastRun
+                            records[0].id = platformInstance.id
+                            result.platformInstanceRecords[platformInstance.gokbId] = records[0]
+                            result.platformInstanceRecords[platformInstance.gokbId].wekbUrl = apiSource.editUrl + "/resource/show/${platformInstance.gokbId}"
+                            if (records[0].statisticsFormat == 'COUNTER' && records[0].counterR4SushiServerUrl == null && records[0].counterR5SushiServerUrl == null) {
+                                result.error = 'noSushiSource'
+                                ArrayList<Object> errorArgs = ["${apiSource.editUrl}/resource/show/${platformInstance.gokbId}", platformInstance.name]
+                                result.errorArgs = errorArgs.toArray()
+                            } else {
+                                CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriberRespConsortia(), platformInstance)
+                                if (!ci?.value) {
+                                    if (result.subscription._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_LOCAL])
+                                        result.error = 'noCustomerId.local'
+                                    else
+                                        result.error = 'noCustomerId'
+                                }
+                            }
+                        }
+                    }
+                    if (result.subscription._getCalculatedType() != CalculatedType.TYPE_CONSORTIAL) {
+                        result.reportTypes = []
+                        CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriberRespConsortia(), platformInstance)
+                        if (ci?.value) {
+                            Set allAvailableReports = subscriptionControllerService.getAvailableReports(result)
+                            if (allAvailableReports)
+                                result.reportTypes.addAll(allAvailableReports)
+                            else {
+                                result.error = 'noReportAvailable'
+                            }
+                        } else if (!ci?.value) {
+                            result.error = 'noCustomerId'
+                        }
+                    }
+                }
             }
 
         }
