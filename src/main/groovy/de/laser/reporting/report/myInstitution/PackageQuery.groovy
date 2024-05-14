@@ -5,6 +5,7 @@ import de.laser.Language
 import de.laser.Org
 import de.laser.Platform
 import de.laser.Package
+import de.laser.Provider
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.Vendor
@@ -164,8 +165,8 @@ class PackageQuery extends BaseQuery {
             }
             else if (params.query in ['package-x-provider']) {
 
-                result.data = idList ? Org.executeQuery(
-                        'select o.id, o.name, count(*) from Org o join o.links orgLink where o.id in (:providerIdList) and orgLink.pkg.id in (:idList) group by o.id order by o.name',
+                result.data = idList ? Provider.executeQuery(
+                        'select p.id, p.name, count(*) from Package pkg join pkg.provider p where p.id in (:providerIdList) and pkg.id in (:idList) group by p.id order by p.name',
                         [providerIdList: BaseFilter.getCachedFilterIdList('provider', params), idList: idList]
                 ) : []
 
@@ -175,27 +176,52 @@ class PackageQuery extends BaseQuery {
                             id    : d[0],
                             label : d[1],
                             idList: Package.executeQuery(
-                                    'select pkg.id from Package pkg join pkg.orgs ro join ro.org o where ro.roleType in (:prov) and pkg.id in (:idList) and o.id = :d order by pkg.name',
-                                    [idList: idList, prov: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER], d: d[0]]
-                            ),
-                            value2: Package.executeQuery(
-                                    'select pkg.id from Package pkg join pkg.orgs ro join ro.org o where ro.roleType = :prov and pkg.id in (:idList) and o.id = :d order by pkg.name',
-                                    [idList: idList, prov: RDStore.OR_CONTENT_PROVIDER, d: d[0]]
-                            ).size(),
-                            value1: Package.executeQuery(
-                                    'select pkg.id from Package pkg join pkg.orgs ro join ro.org o where ro.roleType = :prov and pkg.id in (:idList) and o.id = :d order by pkg.name',
-                                    [idList: idList, prov: RDStore.OR_PROVIDER, d: d[0]] // !!!!
-                            ).size()
+                                    'select pkg.id from Package pkg join pkg.provider p where pkg.id in (:idList) and p.id = :d order by pkg.name',
+                                    [idList: idList, d: d[0]]
+                            )
                     ])
                 }
 
                 List<Long> noDataList = Package.executeQuery(
-                        'select pkg.id from Package pkg where pkg.id in (:idList) and not exists (select ro from OrgRole ro where ro.roleType in (:prov) and ro.pkg.id = pkg.id) order by pkg.name',
-                        [idList: idList, prov: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER]]
+                        'select pkg.id from Package pkg where pkg.id in (:idList) and pkg.provider is null order by pkg.name', [idList: idList]
                 )
 
-                handleGenericNonMatchingData2Values_TMP(params.query, BaseQuery.NO_PROVIDER_LABEL, noDataList, result)
+                handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_PROVIDER_LABEL, noDataList, result)
             }
+//            else if (params.query in ['package-x-provider']) {
+//
+//                result.data = idList ? Org.executeQuery(
+//                        'select o.id, o.name, count(*) from Org o join o.links orgLink where o.id in (:providerIdList) and orgLink.pkg.id in (:idList) group by o.id order by o.name',
+//                        [providerIdList: BaseFilter.getCachedFilterIdList('provider', params), idList: idList]
+//                ) : []
+//
+//                result.data.each { d ->
+//                    result.dataDetails.add([
+//                            query : params.query,
+//                            id    : d[0],
+//                            label : d[1],
+//                            idList: Package.executeQuery(
+//                                    'select pkg.id from Package pkg join pkg.orgs ro join ro.org o where ro.roleType in (:prov) and pkg.id in (:idList) and o.id = :d order by pkg.name',
+//                                    [idList: idList, prov: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER], d: d[0]]
+//                            ),
+//                            value2: Package.executeQuery(
+//                                    'select pkg.id from Package pkg join pkg.orgs ro join ro.org o where ro.roleType = :prov and pkg.id in (:idList) and o.id = :d order by pkg.name',
+//                                    [idList: idList, prov: RDStore.OR_CONTENT_PROVIDER, d: d[0]]
+//                            ).size(),
+//                            value1: Package.executeQuery(
+//                                    'select pkg.id from Package pkg join pkg.orgs ro join ro.org o where ro.roleType = :prov and pkg.id in (:idList) and o.id = :d order by pkg.name',
+//                                    [idList: idList, prov: RDStore.OR_PROVIDER, d: d[0]] // !!!!
+//                            ).size()
+//                    ])
+//                }
+//
+//                List<Long> noDataList = Package.executeQuery(
+//                        'select pkg.id from Package pkg where pkg.id in (:idList) and not exists (select ro from OrgRole ro where ro.roleType in (:prov) and ro.pkg.id = pkg.id) order by pkg.name',
+//                        [idList: idList, prov: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER]]
+//                )
+//
+//                handleGenericNonMatchingData2Values_TMP(params.query, BaseQuery.NO_PROVIDER_LABEL, noDataList, result)
+//            }
             else if (params.query in ['package-x-platform']) {
 
                 sharedQuery_package_platform()
