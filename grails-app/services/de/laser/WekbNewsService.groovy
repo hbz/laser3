@@ -3,7 +3,6 @@ package de.laser
 import de.laser.cache.EhcacheWrapper
 import de.laser.convenience.Marker
 import de.laser.remote.ApiSource
-import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
 import grails.gorm.transactions.Transactional
 
@@ -75,10 +74,10 @@ class WekbNewsService {
         result.provider.my      = myXMap.currentProviderIdList.intersect(prvList)
         result.vendor.my        = myXMap.currentVendorIdList.intersect(venList)
 
-        result.package.marker   = markerService.getObjectsByClassAndType(Package.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(pkgList)
-        result.platform.marker  = markerService.getObjectsByClassAndType(Platform.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(pltList)
-        result.provider.marker  = markerService.getObjectsByClassAndType(Provider.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(prvList)
-        result.vendor.marker    = markerService.getObjectsByClassAndType(Vendor.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(venList)
+        result.package.marker   = markerService.getMyObjectsByClassAndType(Package.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(pkgList)
+        result.platform.marker  = markerService.getMyObjectsByClassAndType(Platform.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(pltList)
+        result.provider.marker  = markerService.getMyObjectsByClassAndType(Provider.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(prvList)
+        result.vendor.marker    = markerService.getMyObjectsByClassAndType(Vendor.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(venList)
 
         try {
             result.counts.all       = result.package.count          + result.platform.count           + result.provider.count             + result.vendor.count

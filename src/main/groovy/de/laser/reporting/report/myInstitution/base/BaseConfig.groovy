@@ -102,7 +102,7 @@ class BaseConfig {
             KEY_ORGANISATION,
             KEY_SUBSCRIPTION,
             KEY_LICENSE,
-//            KEY_PROVIDER,
+            KEY_PROVIDER,
             KEY_VENDOR,
             KEY_PLATFORM,
             KEY_PACKAGE,

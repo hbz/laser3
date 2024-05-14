@@ -88,7 +88,21 @@ class ProviderFilter extends BaseFilter {
                 }
                 // --> custom filter implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
-                    log.info ' --- ' + pType +' not implemented --- '
+
+                    if (p == BaseConfig.CI_GENERIC_INVOICING_FORMAT) {
+                        queryParts.add('ElectronicBilling elb')
+                        whereParts.add('elb.provider = pro and elb.invoicingFormat.id = :p' + (++pCount))
+                        queryParams.put('p' + pCount, params.long(key))
+
+                        filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
+                    }
+                    else if (p == BaseConfig.CI_GENERIC_INVOICING_DISPATCH) {
+                        queryParts.add('InvoiceDispatch dsp')
+                        whereParts.add('dsp.provider = pro and dsp.invoiceDispatch.id = :p' + (++pCount))
+                        queryParams.put('p' + pCount, params.long(key))
+
+                        filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
+                    }
                 }
 
                 if (filterLabelValue) {
@@ -114,8 +128,9 @@ class ProviderFilter extends BaseFilter {
     static List<Long> _getAllProviderIdList() {
 
         List<Long> idList = Provider.executeQuery(
-                'select pro.id from Provider pro where (pro.status is null or pro.status != :providerStatus)',
-                [providerStatus: RDStore.PROVIDER_STATUS_DELETED]
+                'select pro.id from Provider pro',
+//                'select pro.id from Provider pro where (pro.status is null or pro.status != :providerStatus)',
+//                [providerStatus: RDStore.PROVIDER_STATUS_DELETED]
         )
 
         idList
@@ -125,23 +140,18 @@ class ProviderFilter extends BaseFilter {
 
         ContextService contextService = BeanStore.getContextService()
 
-        List<Long> idList = Provider.executeQuery(
-                'select pro.id from Provider pro where (pro.status is null or pro.status != :providerStatus)',
-                [providerStatus: RDStore.PROVIDER_STATUS_DELETED]
+        List<Long> idList = Provider.executeQuery( '''
+            select distinct(pr.provider.id) from ProviderRole pr
+                join pr.subscription sub
+                join sub.orgRelations subOr
+            where (sub = subOr.sub and subOr.org = :org and subOr.roleType in (:subRoleTypes))
+            ''', [
+                org: contextService.getOrg(),
+//                providerStatus: RDStore.PROVIDER_STATUS_DELETED,
+                subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]
+            ]
         )
-
-//        List<Long> idList = Org.executeQuery( '''
-//            select distinct(ven.vendor.id) from VendorRole ven
-//                join ven.sub sub
-//                join sub.orgRelations subOr
-//            where (sub = subOr.sub and subOr.org = :org and subOr.roleType in (:subRoleTypes))
-//                and (prov.org.status is null or prov.org.status != :orgStatus)
-//            ''',
-//            [
-//                    org: contextService.getOrg(), vendorStatus: RDStore.VENDOR_STATUS_DELETED,
-//                    subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]
-//            ]
-//        )
+        // and (pr.provider.status is null or pr.provider.status != :providerStatus)
         idList
     }
 }

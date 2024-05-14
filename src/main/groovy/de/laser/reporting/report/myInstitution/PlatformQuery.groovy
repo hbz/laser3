@@ -164,8 +164,8 @@ class PlatformQuery extends BaseQuery {
 
         handleGenericRefdataQuery(
                 query,
-                PROPERTY_QUERY[0] + 'from Platform plt join plt.' + refdata + ' p where plt.id in (:idList)' + PROPERTY_QUERY[1],
-                'select plt.id from Platform plt join plt.' + refdata + ' p where plt.id in (:idList) and p.id = :d order by plt.name',
+                REFDATA_QUERY[0] + 'from Platform plt join plt.' + refdata + ' ref where plt.id in (:idList)' + REFDATA_QUERY[1],
+                'select plt.id from Platform plt join plt.' + refdata + ' ref where plt.id in (:idList) and ref.id = :d order by plt.name',
                 'select distinct plt.id from Platform plt where plt.id in (:idList) and plt.'+ refdata + ' is null',
                 idList,
                 result

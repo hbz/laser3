@@ -34,7 +34,7 @@ class BaseQuery {
     static String NO_STARTDATE_LABEL         = 'noStartDate.label'
     static String NO_ENDDATE_LABEL           = 'noEndDate.label'
 
-    static List<String> PROPERTY_QUERY       = [ 'select p.id, p.value_de, count(*) ', ' group by p.id, p.value_de order by p.value_de' ]
+    static List<String> REFDATA_QUERY = ['select ref.id, ref.value_de, count(*) ', ' group by ref.id, ref.value_de order by ref.value_de' ]
 
     static def NO_DATA_ID           = null
     static int NO_COUNTERPART_ID    = 0 // dyn.neg.values for unmapped es refdata

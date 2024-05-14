@@ -139,6 +139,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     SortedSet issueEntitlements
     SortedSet packages
     SortedSet ids
+    SortedSet altnames
 
   static hasMany = [
           ids                 : Identifier,
@@ -149,6 +150,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
           prsLinks            : PersonRole,
           derivedSubscriptions: Subscription,
           propertySet         : SubscriptionProperty,
+          altnames            : AlternativeName,
           costItems           : CostItem,
           ieGroups            : IssueEntitlementGroup,
           discountScales      : SubscriptionDiscountScale
@@ -163,7 +165,8 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                       prsLinks: 'sub',
                       derivedSubscriptions: 'instanceOf',
                       costItems: 'sub',
-                      propertySet: 'owner'
+                      propertySet: 'owner',
+                      altnames: 'subscription'
                       ]
 
     static transients = [

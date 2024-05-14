@@ -2,10 +2,8 @@ package de.laser.reporting.report.myInstitution
 
 import de.laser.ContextService
 import de.laser.License
-import de.laser.Org
-import de.laser.Platform
+import de.laser.Provider
 import de.laser.Subscription
-import de.laser.TitleInstancePackagePlatform
 import de.laser.Vendor
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
@@ -330,6 +328,29 @@ class SubscriptionQuery extends BaseQuery {
 
                 result.data = result.data.findAll { it[2] > 0 } // remove ms without matching m
             }
+            else if (params.query in ['subscription-x-provider']) {
+
+                result.data = Provider.executeQuery(
+                        'select pro.id, pro.name, count(*) from ProviderRole pr join pr.provider pro where pro.id in (:providerIdList) and pr.subscription.id in (:idList) group by pro.id order by pro.name',
+                        [providerIdList: BaseFilter.getCachedFilterIdList('provider', params), idList: idList]
+                )
+                result.data.each { d ->
+                    result.dataDetails.add([
+                            query : params.query,
+                            id    : d[0],
+                            label : d[1],
+                            idList: Subscription.executeQuery(
+                                    'select sub.id from ProviderRole pr join pr.subscription sub join pr.provider pro where sub.id in (:idList) and pro.id = :d order by sub.name',
+                                    [idList: idList, d: d[0]]
+                            )
+                    ])
+                }
+
+                List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
+                List<Long> noDataList = nonMatchingIdList ? Subscription.executeQuery('select sub.id from Subscription sub where sub.id in (:idList)', [idList: nonMatchingIdList]) : []
+
+                handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_PROVIDER_LABEL, noDataList, result)
+            }
             else if (params.query in ['subscription-x-vendor']) {
 
                 result.data = Vendor.executeQuery(
@@ -362,8 +383,8 @@ class SubscriptionQuery extends BaseQuery {
 
         handleGenericRefdataQuery(
                 query,
-                PROPERTY_QUERY[0] + 'from Subscription s join s.' + refdata + ' p where s.id in (:idList)' + PROPERTY_QUERY[1],
-                'select s.id from Subscription s join s.' + refdata + ' p where s.id in (:idList) and p.id = :d order by s.name',
+                REFDATA_QUERY[0] + 'from Subscription s join s.' + refdata + ' ref where s.id in (:idList)' + REFDATA_QUERY[1],
+                'select s.id from Subscription s join s.' + refdata + ' ref where s.id in (:idList) and ref.id = :d order by s.name',
                 'select distinct s.id from Subscription s where s.id in (:idList) and s.'+ refdata + ' is null',
                 idList,
                 result

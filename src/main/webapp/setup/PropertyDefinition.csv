@@ -332,7 +332,7 @@ Subscription Property,Tax exemption,Steuerbefreiung,Tax exemption,de.laser.Refda
 Subscription Property,Term of notice,Kündigungsfrist,Term of notice,de.laser.RefdataValue,y.n,,,,Kündigungsfrist.,,
 Subscription Property,Terms and conditions relevance,AGBs relevant,Terms and conditions relevance,de.laser.RefdataValue,y.n,,,,AGBs relevant?,,
 Subscription Property,Possible time of billing, möglicher Rechnungszeitpunkt,Possible time of billing,java.lang.String,,,,,möglicher Zeitpunkt der Rechnung,possible time of billing,
-Survey Property,Time of billing,Rechnungszeitpunkt,Time of billing,de.laser.RefdataValue,billingTime,,,,Zeitpunkt der Rechnung,Time of billing,
+Subscription Property,Time of billing,Rechnungszeitpunkt,Time of billing,de.laser.RefdataValue,billingTime,,,,Zeitpunkt der Rechnung,Time of billing,
 Subscription Property,Time span for testing,Testzeitraum,Time span for testing,java.lang.String,,,,,Wie lange ermöglicht der Anbieter einen kostenfreien Testzugriff?,,
 Subscription Property,WAYF information,WAYF-Hinweise,WAYF information,java.lang.String,,,,,WAYF-Hinweise ,WAYF information,
 Subscription Property,WAYF-URL,WAYF-URL,WAYF-URL,java.net.URL,,,,,WAYF-URL als Link zur Anmeldemaske bzw. direkt zur Ressource,WAYF-URL directing to login form or resource,

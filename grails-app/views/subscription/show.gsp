@@ -67,6 +67,56 @@
                 <div class="ui card la-time-card">
                     <div class="content">
                         <dl>
+                            <dt class="control-label"><g:message code="org.altname.label" /></dt>
+                            <dd>
+                                <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion">
+                                    <g:if test="${subscription.altnames}">
+                                        <div class="title" id="altname_title">
+                                            <div data-objId="${genericOIDService.getOID(subscription.altnames[0])}">
+                                                <ui:xEditable data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                              data_confirm_term_how="ok"
+                                                              class="js-open-confirm-modal-xEditable"
+                                                              owner="${subscription.altnames[0]}" field="name"/>
+                                                <g:if test="${editable}">
+                                                    <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: subscription.altnames[0].id]"
+                                                                   data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [subscription.altnames[0].name])}"
+                                                                   data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(subscription.altnames[0])}')">
+                                                        <i class="trash alternate outline icon"></i>
+                                                    </ui:remoteLink>
+                                                </g:if>
+                                            </div>
+                                            <i class="dropdown icon"></i>
+                                        </div>
+                                        <div class="content">
+                                            <g:each in="${subscription.altnames.drop(1)}" var="altname">
+                                                <div class="ui item" data-objId="${genericOIDService.getOID(altname)}">
+                                                    <div class="content la-space-right">
+                                                        <ui:xEditable
+                                                                data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                                data_confirm_term_how="ok"
+                                                                class="js-open-confirm-modal-xEditable"
+                                                                owner="${altname}" field="name" overwriteEditable="${editable}"/>
+                                                    </div>
+                                                    <g:if test="${editable}">
+                                                        <div class="content la-space-right">
+                                                            <div class="ui buttons">
+                                                                <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
+                                                                               data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
+                                                                               data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
+                                                                    <i class="trash alternate outline icon"></i>
+                                                                </ui:remoteLink>
+                                                            </div>
+                                                        </div>
+                                                    </g:if>
+                                                </div>
+                                            </g:each>
+                                        </div>
+                                    </g:if>
+                                </div>
+                                <input name="addAltname" id="addAltname" type="button" class="ui button addListValue" data-objtype="altname" value="${message(code: 'org.altname.add')}">
+                            </dd>
+                        </dl>
+                        <dl>
                             <dt class="control-label">${message(code: 'subscription.startDate.label')}</dt>
                             <dd><ui:xEditable owner="${subscription}" field="startDate" type="date" validation="datesCheck"/></dd>
                             <g:if test="${editable}">
@@ -509,6 +559,28 @@
 <div id="magicArea"></div>
 
 <laser:script file="${this.getGroovyPageFileName()}">
+
+    $('.addListValue').click(function() {
+        let url;
+        let returnSelector;
+        switch($(this).attr('data-objtype')) {
+            case 'altname': url = '<g:createLink controller="ajaxHtml" action="addObject" params="[object: 'altname', owner: genericOIDService.getOID(subscription)]"/>';
+                returnSelector = '#altnames';
+                break;
+        }
+
+        $.ajax({
+            url: url,
+            success: function(result) {
+                $(returnSelector).append(result);
+                r2d2.initDynamicUiStuff(returnSelector);
+                r2d2.initDynamicXEditableStuff(returnSelector);
+            }
+        });
+    });
+    JSPC.app.removeListValue = function(objId) {
+        $("div[data-objId='"+objId+"']").remove();
+    }
 
     JSPC.app.unlinkPackage = function(pkg_id) {
       var req_url = "${createLink(controller: 'subscription', action: 'unlinkPackage', params: [subscription: subscription.id])}&package="+pkg_id

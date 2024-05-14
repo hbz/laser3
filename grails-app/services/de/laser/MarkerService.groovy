@@ -47,7 +47,7 @@ class MarkerService {
      * @param type the type of marker to fetch - one of {@link Marker.TYPE}
      * @return a {@link List} of {@link MarkerSupport} bookmarks
      */
-    List<MarkerSupport> getObjectsByClassAndType(Class cls, Marker.TYPE type) {
+    List<MarkerSupport> getMyObjectsByClassAndType(Class cls, Marker.TYPE type) {
         List<MarkerSupport> objects = []
         String sql
 
@@ -61,7 +61,7 @@ class MarkerService {
             sql = 'Platform obj where m.plt = obj and m.type = :type and m.user = :user order by obj.normname, obj.name'
         }
         else if (cls == Provider.class) {
-            sql = 'Provider obj where m.plt = obj and m.type = :type and m.user = :user order by obj.sortname, obj.name'
+            sql = 'Provider obj where m.prov = obj and m.type = :type and m.user = :user order by obj.sortname, obj.name'
         }
         else if (cls == Vendor.class) {
             sql = 'Vendor obj where m.ven = obj and m.type = :type and m.user = :user order by obj.sortname, obj.name'
@@ -90,9 +90,6 @@ class MarkerService {
                 currentTippIdList : [] // todo
         ]
 
-        // todo
-        result.currentProviderIdList = orgTypeService.getCurrentOrgsOfProvidersAndAgencies(contextService.getOrg()).collect{ it.id }
-
         result.currentPackageIdList = SubscriptionPackage.executeQuery(
                 'select distinct sp.pkg.id from SubscriptionPackage sp where sp.subscription in (select oo.sub from OrgRole oo join oo.sub sub where oo.org = :context and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true)))',
                 [context: contextService.getOrg(), current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED]
@@ -102,8 +99,15 @@ class MarkerService {
 //                'select distinct vr.vendor from VendorRole vr, OrgRole oo join oo.sub sub where vr.subscription = sub and oo.org = :context and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true))',
 //                [context: contextService.getOrg(), current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED]
 //        )
+//
+        // todo - provider.status / sub.status / license.status
+        result.currentProviderIdList = Provider.executeQuery(
+                'select distinct pr.provider.id from ProviderRole pr, OrgRole oo where (pr.subscription = oo.sub or pr.license = oo.lic) and oo.org = :context',
+                [context: contextService.getOrg()]
+        )
+        // todo - vendor.status / sub.status / licenses.status
         result.currentVendorIdList = Vendor.executeQuery(
-                'select distinct vr.vendor from VendorRole vr, OrgRole oo join oo.sub sub where vr.subscription = sub and oo.org = :context',
+                'select distinct vr.vendor.id from VendorRole vr, OrgRole oo where (vr.subscription = oo.sub or vr.license = oo.lic) and oo.org = :context',
                 [context: contextService.getOrg()]
         )
 

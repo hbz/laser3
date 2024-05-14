@@ -1,6 +1,7 @@
 package de.laser.reporting.report.myInstitution.config
 
 import de.laser.Org
+import de.laser.Provider
 import de.laser.Subscription
 import de.laser.Vendor
 import de.laser.reporting.report.myInstitution.base.BaseConfig
@@ -78,11 +79,6 @@ class SubscriptionInstCfg extends BaseConfig {
                                              chartTemplate      : 'annual',
                                              chartLabels        : []
                                      ],
-                                     'subscription-x-vendor' : [
-                                             detailsTemplate     : 'subscription',
-                                             chartTemplate       : 'generic',
-                                             chartLabels         : []
-                                     ],
                                      'subscription-x-license' : [
                                              detailsTemplate     : 'subscription',
                                              chartTemplate       : 'generic',
@@ -93,11 +89,16 @@ class SubscriptionInstCfg extends BaseConfig {
                                              chartTemplate       : 'generic',
                                              chartLabels         : []
                                      ],
-//                                     'subscription-x-provider' : [
-//                                             detailsTemplate    : 'subscription',
-//                                             chartTemplate      : 'generic',
-//                                             chartLabels        : []
-//                                     ],
+                                     'subscription-x-provider' : [
+                                             detailsTemplate    : 'subscription',
+                                             chartTemplate      : 'generic',
+                                             chartLabels        : []
+                                     ],
+                                     'subscription-x-vendor' : [
+                                            detailsTemplate     : 'subscription',
+                                            chartTemplate       : 'generic',
+                                            chartLabels         : []
+                                    ],
 //                                     'subscription-x-platform' : [
 //                                             detailsTemplate    : 'subscription',
 //                                             chartTemplate      : '2axis2values_nonMatches',
@@ -152,6 +153,30 @@ class SubscriptionInstCfg extends BaseConfig {
                     ]
             ],
 
+            provider : [
+                    meta : [
+                            class:  Provider,
+                            cfgKey: BaseConfig.KEY_SUBSCRIPTION
+                    ],
+                    source : [
+                            'depending-provider'
+                    ],
+                    fields : [
+                            'status' : [ type: BaseConfig.FIELD_TYPE_REFDATA ]
+                    ],
+                    filter : [
+                            default : []
+                    ],
+                    query : [
+                            default : [
+                                    provider : [
+                                            'provider-status' :   [ 'generic.provider.status' ],
+                                            'provider-*' :        [ 'generic.all' ],
+                                    ]
+                            ]
+                    ]
+            ],
+
             vendor : [
                     meta : [
                             class:  Vendor,
@@ -161,7 +186,7 @@ class SubscriptionInstCfg extends BaseConfig {
                             'depending-vendor'
                     ],
                     fields : [
-                            'status'    : [ type: BaseConfig.FIELD_TYPE_REFDATA ]
+                            'status' : [ type: BaseConfig.FIELD_TYPE_REFDATA ]
                     ],
                     filter : [
                             default : []
@@ -176,32 +201,5 @@ class SubscriptionInstCfg extends BaseConfig {
                     ]
             ]
 
-//            provider : [
-//                    meta : [
-//                            class:  Org,
-//                            cfgKey: BaseConfig.KEY_SUBSCRIPTION
-//                    ],
-//                    source : [
-//                            'depending-provider'
-//                    ],
-//                    fields : [
-//                            'country'   : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
-//                            'region'    : [type: BaseConfig.FIELD_TYPE_REFDATA, spec: BaseConfig.FIELD_IS_VIRTUAL ],
-//                            'orgType'   : [ type: BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE ]
-//                    ],
-//                    filter : [
-//                            default : []
-//                    ],
-//                    query : [
-//                            default : [
-//                                    provider : [
-//                                               'provider-orgType' : [ 'generic.org.orgType'],
-//                                               'provider-*' :       [ 'generic.all']
-//                                              // 'provider-country'
-//                                              // 'provider-region'
-//                                    ]
-//                            ]
-//                    ]
-//            ],
     ]
 }
