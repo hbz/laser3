@@ -1,6 +1,7 @@
 package de.laser.ctrl
 
 import de.laser.AccessService
+import de.laser.AddressbookService
 import de.laser.AuditConfig
 import de.laser.CompareService
 import de.laser.ComparisonService
@@ -86,6 +87,7 @@ class SurveyControllerService {
     static final int STATUS_ERROR = 1
 
     AccessService accessService
+    AddressbookService addressbookService
     CompareService compareService
     ComparisonService comparisonService
     ContextService contextService
@@ -1851,7 +1853,12 @@ class SurveyControllerService {
 
             result.ownerId = result.surveyInfo.owner.id
 
+            params.tab = params.tab ?: 'overview'
+
             if (result.surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
+
+                if(params.tab == 'overview') {
+
                 result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(result.participant)
                 // restrict visible for templates/links/orgLinksAsList
                 result.visibleOrgRelations = []
@@ -1918,6 +1925,7 @@ class SurveyControllerService {
 
                     }
 
+
                 }
                 if (result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION]) {
                     if (!result.subscription) {
@@ -1945,6 +1953,14 @@ class SurveyControllerService {
                         }
                         result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
                     }
+                }
+                }else {
+                    result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
+                    params.sort = params.sort ?: 'pr.org.sortname'
+                    params.org = result.participant
+                    result.visiblePersons = addressbookService.getVisiblePersons("contacts", params)
+                    result.addresses = addressbookService.getVisibleAddresses("contacts", params)
+
                 }
             }
 

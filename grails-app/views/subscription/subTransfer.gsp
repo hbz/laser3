@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Doc; de.laser.DocContext; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.storage.RDStore; de.laser.survey.SurveyOrg" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.Doc; de.laser.DocContext; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.storage.RDStore; de.laser.survey.SurveyOrg" %>
 <laser:htmlStart message="subscription.details.subTransfer.label" serviceInjection="true"/>
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
@@ -72,6 +72,26 @@
                             <dt class="control-label">${message(code: 'subscription.renewalSentDate.label')}</dt>
                             <dd><ui:xEditable owner="${subscription}" field="renewalSentDate" type="date"
                                               validation="datesCheck"/></dd>
+                        </dl>
+
+                        <dl>
+                            <dt class="control-label">Renewal ${message(code: 'default.change.label')}</dt>
+                            <dd>
+                                <g:set var="surveyUseForTransfer" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(subscription, true)}"/>
+                                <g:set var="countModificationToCostInformationAfterRenewalDoc" value="${surveyUseForTransfer ? surveyService.countModificationToCostInformationAfterRenewalDoc(subscription) : 0}"/>
+
+                                    <g:if test="${countModificationToCostInformationAfterRenewalDoc > 0}">
+                                        <g:link class="ui label triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
+                                                params="[exportController: 'survey', exportAction: 'renewalEvaluation', exportParams: params, clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION, id: surveyUseForTransfer.surveyInfo.id, surveyConfigID: surveyUseForTransfer.id]">
+                                            <i class="download icon"></i> ${countModificationToCostInformationAfterRenewalDoc}
+                                        </g:link>
+                                    </g:if>
+                                    <g:else>
+                                        <g:if test="${surveyUseForTransfer}">
+                                            ${countModificationToCostInformationAfterRenewalDoc}
+                                        </g:if>
+                                    </g:else>
+                            </dd>
                         </dl>
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.participantTransferWithSurvey.label')}</dt>
@@ -351,5 +371,5 @@
 
 <div id="magicArea"></div>
 
-
+<g:render template="/clickMe/export/js"/>
 <laser:htmlEnd/>
