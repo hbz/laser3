@@ -1,6 +1,12 @@
 <%@ page import="de.laser.License; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.UserSetting" %>
 <laser:htmlStart text="Plan ">
     <style>
+        .ui.table thead tr:first-child > th {
+            top: 48px !important;
+        }
+        .ui.table thead tr:nth-child(2)>th {
+            top: 88px !important;
+        }
         .mk-licence:before {
             content: "\f328";
         }
@@ -86,179 +92,179 @@
     </style>
 
 </laser:htmlStart> %{-- </head><body>--}%
+<div class="ui stackable grid">
+    <div class="eleven wide column">
+        <h1 class="ui icon header la-clear-before left floated aligned la-positionRelative"><i class="icon blue icon la-laser la-object"></i> Das LAS:eR Lizenzmodell</h1>
 
-<h1 class="ui icon header la-clear-before left floated aligned la-positionRelative"><i class="icon blue icon la-laser la-object"></i> Die LAS:eR Vorteile</h1>
+        <table class="ui large  structured la-table table">
+            <thead>
+            <tr>
+                <th class="two wide" rowspan="2">Die LAS:eR Vorteile</th>
+                <th class="center aligned" colspan="2">Las:eR Mitgliedschaft</th>
+                <th class="center aligned"  rowspan="2">${message(code:'licensingModel.table.demo')}</th>
+            </tr>
+            <tr>
+                <th class="four wide center aligned">
+                    <h2 class="ui heading">Basic</h2>
+                    <a href="mailto:laser@hbz-nrw.de" class="ui huge first button" style="color: white">
+                        Beratungsgespäch vereinbaren<i class="right arrow icon"></i>
+                    </a>
+                </th>
+                <th class="four wide center aligned" style="background-color: #fffaf3;">
+                    <h2 class="ui heading">Pro</h2>
+                    <a href="mailto:laser@hbz-nrw.de" class="ui huge first button" style="color: white">
+                        Beratungsgespäch vereinbaren<i class="right arrow icon"></i>
+                    </a>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <g:each in="${mappingColsBasic}" var="mpg1">
+                <tr>
+                    <td class="four wide">
+                        <div class="la-flexbox la-minor-object">
+                            <i class="icon la-list-icon mk-${mpg1}"></i>
+                            ${message(code:"marketing.featureList.${mpg1}")}
+                        </div>
+                    </td>
+                    <td class="four wide center aligned">
+                        <i class="large green checkmark icon"></i>
+                    </td>
+                    <td class="four wide center aligned warning">
+                        <i class="large green checkmark icon"></i>
+                    </td>
+                    <td class="center aligned">
+                        <g:if test="${mpg1 == 'licence' }">
+                            <button id="${mpg1}" class="ui icon blue button la-modal">
+                                ${message(code:'licensingModel.button.watch')} <i class="film icon"></i>
+                            </button>
+                        </g:if>
+                        <g:if test="${mpg1 == 'asService' }">
+                            <button id="${mpg1}" class="ui icon blue button la-modal">
+                                ${message(code:'licensingModel.button.watch')} <i class="film icon"></i>
+                            </button>
+                        </g:if>
+                    </td>
+                </tr>
+            </g:each>
+            <g:each in="${mappingColsPro}" var="mpg2">
+                <tr>
+                    <td class="four wide">
+                        <div class="la-flexbox la-minor-object">
+                            <i class="icon la-list-icon mk-${mpg2}"></i>
+                            ${message(code:"marketing.featureList.${mpg2}")}
+                        </div>
+                    </td>
 
-<table class="ui large striped structured la-table table">
-    <thead>
-    <tr>
-        <th class="two wide" rowspan="2">Die LAS:eR Vorteile</th>
-        <th class="center aligned"  rowspan="2"></th>
-        <th class="center aligned" colspan="2">Las:eR</th>
-    </tr>
-    <tr>
-        <th class="four wide center aligned">Basic</th>
-        <th class="four wide center aligned">Pro</th>
-    </tr>
-    </thead>
-    <tbody>
-    <g:each in="${mappingColsBasic}" var="mpg1">
-        <tr>
-            <td class="four wide">
-                <div class="la-flexbox la-minor-object">
-                    <i class="icon la-list-icon mk-${mpg1}"></i>
-                    ${message(code:"marketing.featureList.${mpg1}")}
-                </div>
-            </td>
+                     <td class="four wide center aligned">
 
-            <td>
-            <g:if test="${mpg1 == 'licence' }">
-                    <button id="${mpg1}" class="ui icon blue button la-modern-button la-modal" >
-                        <i class="film icon"></i>
-                    </button>
-            </g:if>
-            </td>
-            <td class="four wide center aligned">
-                <i class="large green checkmark icon"></i>
-            </td>
-            <td class="four wide center aligned">
-                <i class="large green checkmark icon"></i>
-            </td>
-        </tr>
-    </g:each>
-    <g:each in="${mappingColsPro}" var="mpg2">
-        <tr>
-            <td class="four wide">
-                <div class="la-flexbox la-minor-object">
-                    <i class="icon la-list-icon mk-${mpg2}"></i>
-                    ${message(code:"marketing.featureList.${mpg2}")}
-                </div>
-            </td>
-             <td>
-                 <g:if test="${mpg2 === 'propertiesUse'}">
-                     <button id="${mpg2}" class="ui icon blue button la-modern-button la-modal" >
-                         <i class="film icon"></i>
-                     </button>
-                 </g:if>
-                 <g:if test="${mpg2 === 'ie'}">
-                     <button id="${mpg2}" class="ui icon blue button la-modern-button la-modal" >
-                         <i class="film icon"></i>
-                     </button>
-                 </g:if>
-                 <g:if test="${mpg2 === 'reporting'}">
-                     <button id="${mpg2}" class="ui icon blue button la-modern-button la-modal" >
-                         <i class="film icon"></i>
-                     </button>
-                 </g:if>
+                     </td>
+                    <td class="four wide center aligned warning">
+                        <i class="large green checkmark icon"></i>
+                    </td>
+                    <td class="center aligned">
+                        <g:if test="${mpg2 === 'propertiesUse'}">
+                            <button id="${mpg2}" class="ui icon blue button la-modal" >
+                                ${message(code:'licensingModel.button.watch')} <i class="film icon"></i>
+                            </button>
+                        </g:if>
+                        <g:if test="${mpg2 === 'ie'}">
+                            <button id="${mpg2}" class="ui icon blue button la-modal" >
+                                ${message(code:'licensingModel.button.watch')} <i class="film icon"></i>
+                            </button>
+                        </g:if>
+                        <g:if test="${mpg2 === 'reporting'}">
+                            <button id="${mpg2}" class="ui icon blue button la-modal" >
+                                ${message(code:'licensingModel.button.watch')} <i class="film icon"></i>
+                            </button>
+                        </g:if>
+                    </td>
+                </tr>
+            </g:each>
+            </tbody>
+        </table>
+        <h1 class="ui icon header la-clear-before left floated aligned la-positionRelative"><i class="icon blue icon la-laser la-object"></i>Der LAS:eR-Service</h1>
 
-             </td>
-             <td class="four wide center aligned">
+        <table class="ui large structured la-table table">
+            <thead>
+            <tr>
+                <th class="two wide" rowspan="2">Der LAS:eR-Service</th>
+                <th class="center aligned" colspan="2">Las:eR Mitgliedschaft</th>
+                <th class="center aligned"  rowspan="2">${message(code:'licensingModel.table.demo')}</th>
+            </tr>
+            <tr>
+                <th class="four wide center aligned">
+                    <h2 class="ui heading">Basic</h2>
+                    <a href="mailto:laser@hbz-nrw.de" class="ui huge first button" style="color: white">
+                        Beratungsgespäch vereinbaren<i class="right arrow icon"></i>
+                    </a>
+                </th>
+                <th class="four wide center aligned" style="background-color: #fffaf3;">
+                    <h2 class="ui heading">Pro</h2>
+                    <a href="mailto:laser@hbz-nrw.de" class="ui huge first button" style="color: white">
+                        Beratungsgespäch vereinbaren<i class="right arrow icon"></i>
+                    </a>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
 
-             </td>
-            <td class="four wide center aligned">
-                <i class="large green checkmark icon"></i>
-            </td>
-        </tr>
-    </g:each>
-    </tbody>
-    <tfooter>
-        <tr>
-            <td class="four wide">
+            <g:each in="${mappingColsServiceBasic}" var="mpg3">
+                <tr>
+                    <td class="four wide">
+                        <div class="la-flexbox la-minor-object">
+                            <i class="icon la-list-icon mk-${mpg3}"></i>
+                            ${message(code:"marketing.featureList.${mpg3}")}
+                        </div>
+                    </td>
+                    <td class="four wide center aligned">
+                        <i class="large green checkmark icon"></i>
+                    </td>
+                    <td class="four wide center aligned warning">
+                        <i class="large green checkmark icon"></i>
+                    </td>
+                    <td>
+                        <g:if test="${mpg3 === 'trainingFundamentals'}">
+                            <button id="${mpg3}" class="ui icon blue button la-modal" >
+                                ${message(code:'licensingModel.button.watch')} <i class="film icon"></i>
+                            </button>
+                        </g:if>
+                    </td>
+                </tr>
+            </g:each>
+            <g:each in="${mappingColsServicePro}" var="mpg4">
+                <tr>
+                    <td class="four wide">
+                        <div class="la-flexbox la-minor-object">
+                            <i class="icon la-list-icon mk-${mpg4}"></i>
+                            ${message(code:"marketing.featureList.${mpg4}")}
+                        </div>
+                    </td>
+                    <td class="four wide center aligned">
 
-            </td>
-            <td></td>
-            <td class="center aligned">
+                    </td>
+                    <td class="four wide center aligned warning">
+                        <i class="large green checkmark icon"></i>
+                    </td>
+                    <td>%{--
+                        <button class="ui icon blue button la-modal" >
+                            ${message(code:'licensingModel.button.watch')} <i class="film icon"></i>
+                        </button>--}%
+                    </td>
+                </tr>
+            </g:each>
+            </tbody>
 
-            </td>
-            <td class="center aligned">
-                <a href="mailto:laser@hbz-nrw.de" class="ui huge first button">
-                    Beratungsgespäch vereinbaren<i class="right arrow icon"></i>
-                </a>
-            </td>
-        </tr>
+        </table>
+    </div>
+    <aside class="five wide column la-sidekick">
+        <div class="ui one cards">test
+        </div>
+    </aside>
+</div>
+    <g:each in="${mappingColsPro+mappingColsBasic+mappingColsServiceBasic+mappingColsServicePro}" var="mpg5" >
+        <g:if test="${mpg5 in ['propertiesUse','asService','licence', 'ie', 'reporting','trainingFundamentals']}">
 
-    </tfooter>
-</table>
-<h1 class="ui icon header la-clear-before left floated aligned la-positionRelative"><i class="icon blue icon la-laser la-object"></i>Der LAS:eR-Service</h1>
-
-<table class="ui large striped structured la-table table">
-    <thead>
-    <tr>
-        <th class="two wide" rowspan="2">Der LAS:eR-Service</th>
-        <th class="center aligned"  rowspan="2"></th>
-        <th class="center aligned" colspan="2">Las:eR</th>
-    </tr>
-    <tr>
-        <th class="four wide center aligned">Basic</th>
-        <th class="four wide center aligned">Pro</th>
-    </tr>
-    </thead>
-    <tbody>
-
-    <g:each in="${mappingColsServiceBasic}" var="mpg3">
-        <tr>
-            <td class="four wide">
-                <div class="la-flexbox la-minor-object">
-                    <i class="icon la-list-icon mk-${mpg3}"></i>
-                    ${message(code:"marketing.featureList.${mpg3}")}
-                </div>
-            </td>
-            <td>
-               %{--     <button class="ui icon blue button la-modern-button la-modal" >
-                   <i class="film icon"></i>
-               </button>--}%
-            </td>
-            <td class="four wide center aligned">
-                <i class="large green checkmark icon"></i>
-            </td>
-            <td class="four wide center aligned">
-                <i class="large green checkmark icon"></i>
-            </td>
-        </tr>
-    </g:each>
-    <g:each in="${mappingColsServicePro}" var="mpg4">
-        <tr>
-            <td class="four wide">
-                <div class="la-flexbox la-minor-object">
-                    <i class="icon la-list-icon mk-${mpg4}"></i>
-                    ${message(code:"marketing.featureList.${mpg4}")}
-                </div>
-            </td>
-            <td>%{--
-                <button class="ui icon blue button la-modern-button la-modal" >
-                    <i class="film icon"></i>
-                </button>--}%
-            </td>
-            <td class="four wide center aligned">
-
-            </td>
-            <td class="four wide center aligned">
-                <i class="large green checkmark icon"></i>
-            </td>
-        </tr>
-    </g:each>
-    </tbody>
-    <tfooter>
-        <tr>
-            <td class="four wide">
-
-            </td>
-            <td></td>
-            <td class="center aligned">
-
-            </td>
-            <td class="center aligned">
-                <a href="mailto:laser@hbz-nrw.de" class="ui huge first button">
-                    Beratungsgespäch vereinbaren<i class="right arrow icon"></i>
-                </a>
-            </td>
-        </tr>
-
-    </tfooter>
-</table>
-
-    <g:each in="${mappingColsPro+mappingColsBasic}" var="mpg5" >
-        <g:if test="${mpg5 in ['propertiesUse','licence', 'ie', 'reporting']}">
             <laser:script file="${this.getGroovyPageFileName()}">
                 $('#${mpg5}').click(function(){
                     $.modal({
@@ -288,6 +294,15 @@
 
         </g:if>
     </g:each>
-
+<sec:ifAnyGranted roles="ROLE_USER">
+    <style>
+    .ui.table thead tr:first-child>th {
+        top: 90px!important;
+    }
+     .ui.table thead tr:nth-child(2)>th {
+         top: 130px!important;
+     }
+    </style>
+</sec:ifAnyGranted>
 
 <laser:htmlEnd />
