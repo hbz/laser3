@@ -31,8 +31,8 @@ class CostItemQuery extends BaseQuery {
 
         handleGenericRefdataQuery(
                 query,
-                PROPERTY_QUERY[0] + 'from CostItem ci join ci.' + refdata + ' p where ci.id in (:idList)' + PROPERTY_QUERY[1],
-                'select ci.id from CostItem ci join ci.' + refdata + ' p where ci.id in (:idList) and p.id = :d order by ci.costTitle',
+                REFDATA_QUERY[0] + 'from CostItem ci join ci.' + refdata + ' ref where ci.id in (:idList)' + REFDATA_QUERY[1],
+                'select ci.id from CostItem ci join ci.' + refdata + ' ref where ci.id in (:idList) and ref.id = :d order by ci.costTitle',
                 'select distinct ci.id from CostItem ci where ci.id in (:idList) and ci.'+ refdata + ' is null',
                 idList,
                 result

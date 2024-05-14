@@ -81,8 +81,8 @@ class VendorQuery extends BaseQuery {
 
         handleGenericRefdataQuery(
                 query,
-                PROPERTY_QUERY[0] + 'from Vendor v join v.' + refdata + ' p where v.id in (:idList)' + PROPERTY_QUERY[1],
-                'select v.id from Vendor v join v.' + refdata + ' p where v.id in (:idList) and p.id = :d order by v.name',
+                REFDATA_QUERY[0] + 'from Vendor v join v.' + refdata + ' ref where v.id in (:idList)' + REFDATA_QUERY[1],
+                'select v.id from Vendor v join v.' + refdata + ' ref where v.id in (:idList) and ref.id = :d order by v.name',
                 'select distinct v.id from Vendor v where v.id in (:idList) and v.' + refdata + ' is null',
                 idList,
                 result

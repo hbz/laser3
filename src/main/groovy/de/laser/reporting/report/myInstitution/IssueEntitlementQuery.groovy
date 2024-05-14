@@ -177,8 +177,8 @@ class IssueEntitlementQuery extends BaseQuery {
 
         handleGenericRefdataQuery(
                 query,
-                PROPERTY_QUERY[0] + 'from IssueEntitlement ie join ie.' + refdata + ' p where ie.id in (:idList)' + PROPERTY_QUERY[1],
-                'select ie.id from IssueEntitlement ie join ie.' + refdata + ' p where ie.id in (:idList) and p.id = :d order by ie.tipp.name',
+                REFDATA_QUERY[0] + 'from IssueEntitlement ie join ie.' + refdata + ' ref where ie.id in (:idList)' + REFDATA_QUERY[1],
+                'select ie.id from IssueEntitlement ie join ie.' + refdata + ' ref where ie.id in (:idList) and ref.id = :d order by ie.tipp.name',
                 'select distinct ie.id from IssueEntitlement ie where ie.id in (:idList) and ie.'+ refdata + ' is null',
                 idList,
                 result

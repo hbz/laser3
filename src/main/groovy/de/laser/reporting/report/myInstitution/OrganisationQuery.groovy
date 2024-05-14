@@ -45,8 +45,8 @@ class OrganisationQuery extends BaseQuery {
 
             handleGenericRefdataQuery(
                     params.query,
-                    PROPERTY_QUERY[0] + 'from Org o join o.orgType p where o.id in (:idList)' + PROPERTY_QUERY[1],
-                    'select o.id from Org o join o.orgType p where o.id in (:idList) and p.id = :d order by o.name',
+                    REFDATA_QUERY[0] + 'from Org o join o.orgType ref where o.id in (:idList)' + REFDATA_QUERY[1],
+                    'select o.id from Org o join o.orgType ref where o.id in (:idList) and ref.id = :d order by o.name',
                     'select distinct o.id from Org o where o.id in (:idList) and not exists (select ot from o.orgType ot)',
                     idList,
                     result
@@ -109,8 +109,8 @@ class OrganisationQuery extends BaseQuery {
 
             handleGenericRefdataQuery(
                     params.query,
-                    PROPERTY_QUERY[0] + 'from Org o join o.subjectGroup rt join rt.subjectGroup p where o.id in (:idList)' + PROPERTY_QUERY[1],
-                    'select o.id from Org o join o.subjectGroup rt join rt.subjectGroup p where o.id in (:idList) and p.id = :d order by o.name',
+                    REFDATA_QUERY[0] + 'from Org o join o.subjectGroup rt join rt.subjectGroup ref where o.id in (:idList)' + REFDATA_QUERY[1],
+                    'select o.id from Org o join o.subjectGroup rt join rt.subjectGroup ref where o.id in (:idList) and ref.id = :d order by o.name',
                     'select distinct o.id from Org o where o.id in (:idList) and not exists (select osg from OrgSubjectGroup osg where osg.org = o)',
                     idList,
                     result
@@ -149,8 +149,8 @@ class OrganisationQuery extends BaseQuery {
 
         handleGenericRefdataQuery(
                 query,
-                PROPERTY_QUERY[0] + 'from Org o join o.' + refdata + ' p where o.id in (:idList)' + PROPERTY_QUERY[1],
-                'select o.id from Org o join o.' + refdata + ' p where o.id in (:idList) and p.id = :d order by o.name',
+                REFDATA_QUERY[0] + 'from Org o join o.' + refdata + ' ref where o.id in (:idList)' + REFDATA_QUERY[1],
+                'select o.id from Org o join o.' + refdata + ' ref where o.id in (:idList) and ref.id = :d order by o.name',
                 'select distinct o.id from Org o where o.id in (:idList) and o.' + refdata + ' is null',
                 idList,
                 result

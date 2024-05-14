@@ -2,6 +2,7 @@ package de.laser.reporting.report.myInstitution.config
 
 import de.laser.License
 import de.laser.Org
+import de.laser.Provider
 import de.laser.Vendor
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 
@@ -65,6 +66,11 @@ class LicenseInstCfg extends BaseConfig {
                                              chartTemplate      : 'annual',
                                              chartLabels        : []
                                      ],
+                                     'license-x-provider' : [
+                                             detailsTemplate     : 'license',
+                                             chartTemplate       : 'generic',
+                                             chartLabels         : []
+                                     ],
                                      'license-x-vendor' : [
                                              detailsTemplate     : 'license',
                                              chartTemplate       : 'generic',
@@ -102,6 +108,30 @@ class LicenseInstCfg extends BaseConfig {
                     ]
             ],
 
+            provider : [
+                    meta : [
+                            class:  Provider,
+                            cfgKey: BaseConfig.KEY_LICENSE
+                    ],
+                    source : [
+                            'depending-provider'
+                    ],
+                    fields : [
+                            'status' : [ type: BaseConfig.FIELD_TYPE_REFDATA ]
+                    ],
+                    filter : [
+                            default : []
+                    ],
+                    query : [
+                            default : [
+                                    provider : [
+                                            'provider-status' :   [ 'generic.provider.status' ],
+                                            'provider-*' :        [ 'generic.all' ],
+                                    ]
+                            ]
+                    ]
+            ],
+
             vendor : [
                     meta : [
                             class:  Vendor,
@@ -111,7 +141,7 @@ class LicenseInstCfg extends BaseConfig {
                             'depending-vendor'
                     ],
                     fields : [
-                            'status'    : [ type: BaseConfig.FIELD_TYPE_REFDATA ]
+                            'status' : [ type: BaseConfig.FIELD_TYPE_REFDATA ]
                     ],
                     filter : [
                             default : []
