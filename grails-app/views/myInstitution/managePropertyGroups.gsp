@@ -22,11 +22,11 @@
 
     <div class="ui styled fluid accordion">
         <g:each in="${propDefGroups}" var="typeEntry">
-            <div class="title">
+            <div class="title ${params.ownerType == typeEntry.key ? 'active' : ''}">
                 <i class="dropdown icon"></i>
                 <g:message code="propertyDefinition.${typeEntry.key}.label"/>
             </div>
-            <div class="content">
+            <div class="content ${params.ownerType == typeEntry.key ? 'active' : ''}">
                 <table class="ui celled sortable table la-js-responsive-table la-table compact">
                     <thead>
                     <tr>
@@ -41,10 +41,37 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <g:each in="${typeEntry.value}" var="pdGroup">
+                    <g:each in="${typeEntry.value}" var="pdGroup" status="i">
+                        <g:set var="pdgOID" value="${genericOIDService.getOID(pdGroup)}" />
                         <tr>
                             <td>
-                                <ui:xEditable owner="${pdGroup}" field="order" />
+                                <g:if test="${i == 1 && propDefGroups.size() == 2}">%{-- override layout --}%
+                                    <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
+                                    <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveUp', oid:pdgOID, ownerType: typeEntry.key]}" class="ui icon button compact la-modern-button"
+                                            role="button">
+                                        <i class="icon arrow up"></i>
+                                    </g:link>
+                                </g:if>
+                                <g:else>
+                                    <g:if test="${i > 0}">
+                                        <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveUp', oid:pdgOID, ownerType: typeEntry.key]}" class="ui icon button compact la-modern-button"
+                                                role="button">
+                                            <i class="icon arrow up"></i>
+                                        </g:link>
+                                    </g:if>
+                                    <g:else>
+                                        <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
+                                    </g:else>
+                                    <g:if test="${i < propDefGroups.size()-1}">
+                                        <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveDown', oid:pdgOID, ownerType: typeEntry.key]}" class="ui icon button compact la-modern-button"
+                                                role="button">
+                                            <i class="icon arrow down"></i>
+                                        </g:link>
+                                    </g:if>
+                                    <g:else>
+                                        <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
+                                    </g:else>
+                                </g:else>
                             </td>
                             <td>
                                 <ui:xEditable owner="${pdGroup}" field="name" />
@@ -60,7 +87,6 @@
                             </td>
                             <g:if test="${editable}">
                                 <td class="x">
-                                    <g:set var="pdgOID" value="${genericOIDService.getOID(pdGroup)}" />
                                     <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'edit', oid:pdgOID]}" class="ui icon button blue la-modern-button trigger-modal"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.edit.universal')}">

@@ -485,7 +485,7 @@ class PropertyService {
         ]
 
         // ALL type depending groups without checking tenants or bindings
-        List<PropertyDefinitionGroup> groups = PropertyDefinitionGroup.executeQuery('select pdg from PropertyDefinitionGroup pdg where pdg.ownerType = :ownerType order by pdg.order asc, pdg.name asc', [ownerType: obj.class.name])
+        List<PropertyDefinitionGroup> groups = PropertyDefinitionGroup.executeQuery('select pdg from PropertyDefinitionGroup pdg where pdg.ownerType = :ownerType order by pdg.order asc', [ownerType: obj.class.name])
 
         if (isOrg || isPlt || isSur) {
             groups.each{ PropertyDefinitionGroup it ->

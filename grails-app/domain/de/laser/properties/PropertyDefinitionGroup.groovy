@@ -29,8 +29,8 @@ class PropertyDefinitionGroup {
     String description
     Org    tenant
     String ownerType // PropertyDefinition.[LIC_PROP, SUB_PROP, ORG_PROP]
-    // if manual ordering is wanted
-    Long order
+    // if manual ordering is wanted; non-primitive type because of initial null values which must be set by grailsChange
+    Integer order
 
     boolean isVisible = false // default value: will be overwritten by existing bindings
 
@@ -66,7 +66,6 @@ class PropertyDefinitionGroup {
         name        (blank: false)
         description (nullable: true,  blank: true)
         tenant      (nullable: true)
-        order       (nullable: true)
         ownerType   (blank: false)
         lastUpdated (nullable: true)
     }
