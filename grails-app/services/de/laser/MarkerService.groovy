@@ -100,14 +100,14 @@ class MarkerService {
 //                [context: contextService.getOrg(), current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED]
 //        )
 //
-        // todo - provider.status / sub.status / licenses
+        // todo - provider.status / sub.status / license.status
         result.currentProviderIdList = Provider.executeQuery(
-                'select distinct pr.provider from ProviderRole pr, OrgRole oo join oo.sub sub where pr.subscription = sub and oo.org = :context',
+                'select distinct pr.provider.id from ProviderRole pr, OrgRole oo where (pr.subscription = oo.sub or pr.license = oo.lic) and oo.org = :context',
                 [context: contextService.getOrg()]
         )
-        // todo - vendor.status / sub.status / licenses
+        // todo - vendor.status / sub.status / licenses.status
         result.currentVendorIdList = Vendor.executeQuery(
-                'select distinct vr.vendor from VendorRole vr, OrgRole oo join oo.sub sub where vr.subscription = sub and oo.org = :context',
+                'select distinct vr.vendor.id from VendorRole vr, OrgRole oo where (vr.subscription = oo.sub or vr.license = oo.lic) and oo.org = :context',
                 [context: contextService.getOrg()]
         )
 
