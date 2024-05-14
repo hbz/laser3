@@ -829,6 +829,80 @@ class SurveyController {
     }
 
     /**
+     * Lists the costs linked to the given survey, reflecting upcoming subscription costs
+     * @return a list of costs linked to the survey
+     */
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    Map<String,Object> surveyCostItemsPackages() {
+        Map<String,Object> ctrlResult = surveyControllerService.surveyCostItemsPackages(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+        }else {
+            ctrlResult.result
+        }
+
+    }
+
+    /**
+     * Call to list the potential package candidates for linking
+     * @return a list view of the packages in the we:kb ElasticSearch index or a redirect to an title list view
+     * if a package UUID has been submitted with the call
+     */
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+    })
+    def linkSurveyPackage() {
+        Map<String,Object> ctrlResult = surveyControllerService.linkSurveyPackage(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+            else {
+                flash.error = ctrlResult.result.error
+                ctrlResult.result
+            }
+        }
+        else {
+                flash.message = ctrlResult.result.message
+                ctrlResult.result
+        }
+    }
+
+    /**
+     * Call to list the potential package candidates for linking
+     * @return a list view of the packages in the we:kb ElasticSearch index or a redirect to an title list view
+     * if a package UUID has been submitted with the call
+     */
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+    })
+    def packages() {
+        Map<String,Object> ctrlResult = surveyControllerService.packages(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+            else {
+                flash.error = ctrlResult.result.error
+                ctrlResult.result
+            }
+        }
+        else {
+                ctrlResult.result
+            }
+    }
+
+    /**
      * Takes the given input and processes the change on the selected survey cost items
      * @return a redirect to the referer
      */

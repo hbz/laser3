@@ -3,10 +3,17 @@
 <table class="ui table la-js-responsive-table la-table">
     <colgroup>
         <col style="width:  15px;">
-        <col style="width: 236px;">
+        <g:if test="${tmplShowOrgName}">
+                <col style="width: 236px;">
+        </g:if>
         <col style="width: 118px;">
         <col style="width:  82px;">
-        <col style="width:  82px;">
+        <g:if test="${showSurveyInvoicingInformation}">
+                <col style="width:  82px;">
+        </g:if>
+        <g:if test="${showOptions}">
+            <col style="width:  82px;">
+        </g:if>
     </colgroup>
     <thead>
     <tr>
@@ -94,8 +101,8 @@
             </td>
         <g:if test="${showSurveyInvoicingInformation}">
             <td>
-                <g:if test="${editable}">
-                    <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndAddress(institution, surveyConfig, address)}">
+                <g:if test="${editable && actionName == 'myInstitution'}">
+                    <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndAddress(participant, surveyConfig, address)}">
                         <g:link controller="myInstitution" action="setSurveyInvoicingInformation"
                                 params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setAddress: false, addressId: address.id]">
                             <i class="check bordered large green icon"></i>
@@ -109,7 +116,7 @@
                     </g:else>
                 </g:if>
                 <g:else>
-                    <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndAddress(institution, surveyConfig, address)}">
+                    <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndAddress(participant, surveyConfig, address)}">
                         <i class="check bordered large green icon"></i>
                     </g:if>
                 </g:else>

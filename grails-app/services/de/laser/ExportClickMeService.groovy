@@ -90,7 +90,7 @@ class ExportClickMeService {
                                         SURVEY_COST_ITEMS, TIPPS, VENDORS
     ]
 
-    static Map<String, Object> EXPORT_RENEWAL_CONFIG = [
+    static Map<String, Object> EXPORT_SURVEY_RENEWAL_CONFIG = [
             //Wichtig: Hier bei dieser Config bitte drauf achten, welche Feld Bezeichnung gesetzt ist, 
             // weil die Felder von einer zusammengesetzten Map kommen. siehe SurveyControllerService -> renewalEvaluation
                     survey      : [
@@ -109,6 +109,11 @@ class ExportClickMeService {
                                     'costItem.costDescription'                  : [field: 'costItem.costDescription', label: 'Description', message: 'default.description.label'],
                                     'costItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
                                     'survey.ownerComment'                       : [field: null, label: 'Owner Comment', message: 'surveyResult.commentOnlyForOwner', defaultChecked: 'true'],
+                                    'survey.person'            : [field: null, label: 'Selected billing contact', message: 'surveyOrg.person.selected', defaultChecked: 'true'],
+                                    'survey.address'           : [field: null, label: 'Selected billing address', message: 'surveyOrg.address.selected', defaultChecked: 'true'],
+                                    'survey.eInvoicePortal'    : [field: null, label: 'Invoice receipt platform', message: 'surveyOrg.eInvoicePortal.label', defaultChecked: 'true'],
+                                    'survey.eInvoiceLeitwegId' : [field: null, label: ' Leit ID', message: 'surveyOrg.eInvoiceLeitwegId.label', defaultChecked: 'true'],
+                                    'survey.eInvoiceLeitkriterium' : [field: null, label: 'Leitkriterium', message: 'surveyOrg.eInvoiceLeitkriterium.label', defaultChecked: 'true'],
                             ]
                     ],
 
@@ -1521,7 +1526,13 @@ class ExportClickMeService {
                             'participant.name'            : [field: 'participant.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
                             'survey.ownerComment'        : [field: null, label: 'Owner Comment', message: 'surveyResult.commentOnlyForOwner', defaultChecked: 'true'],
                             'survey.finishDate'        : [field: null, label: 'Finish Date', message: 'surveyInfo.finishedDate', defaultChecked: 'true'],
-                            'survey.reminderMailDate'        : [field: null, label: 'Reminder Mail Date', message: 'surveyOrg.reminderMailDate'],
+                            'survey.reminderMailDate'  : [field: null, label: 'Reminder Mail Date', message: 'surveyOrg.reminderMailDate'],
+                            'survey.person'            : [field: null, label: 'Selected billing contact', message: 'surveyOrg.person.selected', defaultChecked: 'true'],
+                            'survey.address'           : [field: null, label: 'Selected billing address', message: 'surveyOrg.address.selected', defaultChecked: 'true'],
+                            'survey.eInvoicePortal'    : [field: null, label: 'Invoice receipt platform', message: 'surveyOrg.eInvoicePortal.label', defaultChecked: 'true'],
+                            'survey.eInvoiceLeitwegId' : [field: null, label: ' Leit ID', message: 'surveyOrg.eInvoiceLeitwegId.label', defaultChecked: 'true'],
+                            'survey.eInvoiceLeitkriterium' : [field: null, label: 'Leitkriterium', message: 'surveyOrg.eInvoiceLeitkriterium.label', defaultChecked: 'true'],
+
                     ]
             ],
 
@@ -1835,8 +1846,8 @@ class ExportClickMeService {
         Map<String, Object> exportFields = [:]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
-        EXPORT_RENEWAL_CONFIG.keySet().each {
-            EXPORT_RENEWAL_CONFIG.get(it).fields.each {
+        EXPORT_SURVEY_RENEWAL_CONFIG.keySet().each {
+            EXPORT_SURVEY_RENEWAL_CONFIG.get(it).fields.each {
                 exportFields.put(it.key, it.value)
             }
         }
@@ -1899,7 +1910,7 @@ class ExportClickMeService {
     Map<String, Object> getExportRenewalFieldsForUI(SurveyConfig surveyConfig, ClickMeConfig clickMeConfig = null) {
 
         Map<String, Object> fields = [:]
-        fields.putAll(EXPORT_RENEWAL_CONFIG)
+        fields.putAll(EXPORT_SURVEY_RENEWAL_CONFIG)
         Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
@@ -3542,7 +3553,7 @@ class ExportClickMeService {
             }
         }
 
-        saveClickMeConfig(selectedExportFields, "EXPORT_RENEWAL_CONFIG")
+        saveClickMeConfig(selectedExportFields, "EXPORT_SURVEY_RENEWAL_CONFIG")
 
         Integer maxCostItemsElements = 0
         maxCostItemsElements = CostItem.executeQuery('select count(*) from CostItem where surveyOrg in (select surOrg from SurveyOrg as surOrg where surveyConfig = :surveyConfig) group by costItemElement', [surveyConfig: renewalResult.surveyConfig]).size()
@@ -4862,6 +4873,41 @@ class ExportClickMeService {
                     }
                     row.add(createTableCell(format, reminderMailDate))
                 }
+                else if (fieldKey == 'survey.person') {
+                    String person = ""
+                    if (surveyOrg && surveyOrg.person && surveyOrg.person.contacts) {
+                        person = surveyOrg.person.contacts.collect {it.content}.join('; ')
+                    }
+                    row.add(createTableCell(format, person, surveyOrg && surveyService.modificationToCostInformation(surveyOrg) ? 'negative' : ''))
+                }
+                else if (fieldKey == 'survey.address') {
+                    String address = ""
+                    if (surveyOrg && surveyOrg.address) {
+                        address = _getAddress(surveyOrg.address, surveyOrg.org)
+                    }
+                    row.add(createTableCell(format, address, surveyOrg && surveyService.modificationToCostInformation(surveyOrg) ? 'negative' : ''))
+                }
+                else if (fieldKey == 'survey.eInvoicePortal') {
+                    String eInvoicePortal = ""
+                    if (surveyOrg && surveyOrg.eInvoicePortal) {
+                        eInvoicePortal = surveyOrg.eInvoicePortal.getI10n('value')
+                    }
+                    row.add(createTableCell(format, eInvoicePortal))
+                }
+                else if (fieldKey == 'survey.eInvoiceLeitwegId') {
+                    String eInvoiceLeitwegId = ""
+                    if (surveyOrg && surveyOrg.eInvoiceLeitwegId) {
+                        eInvoiceLeitwegId = surveyOrg.eInvoiceLeitwegId
+                    }
+                    row.add(createTableCell(format, eInvoiceLeitwegId))
+                }
+                else if (fieldKey == 'survey.eInvoiceLeitkriterium') {
+                    String eInvoiceLeitkriterium = ""
+                    if (surveyOrg && surveyOrg.eInvoiceLeitkriterium) {
+                        eInvoiceLeitkriterium = surveyOrg.eInvoiceLeitkriterium
+                    }
+                    row.add(createTableCell(format, eInvoiceLeitkriterium))
+                }
                 else if (fieldKey == 'survey.periodComment') {
                     String twoComment = participantResult.participantPropertyTwoComment ?: ' '
                     String threeComment = participantResult.participantPropertyThreeComment ?: ' '
@@ -5794,7 +5840,42 @@ class ExportClickMeService {
                         reminderMailDate = sdf.format(participantResult.surveyOrg.reminderMailDate)
                     }
                     row.add(createTableCell(format, reminderMailDate))
-                }else if (fieldKey == 'pickAndChoose') {
+                }  else if (fieldKey == 'survey.person') {
+                    String person = ""
+                    if (participantResult.surveyOrg.person && participantResult.surveyOrg.person.contacts) {
+                        person = participantResult.surveyOrg.person.contacts.collect {it.content}.join('; ')
+                    }
+                    row.add(createTableCell(format, person, surveyOrg && surveyService.modificationToCostInformation(surveyOrg) ? 'negative' : ''))
+                }
+                else if (fieldKey == 'survey.address') {
+                    String address = ""
+                    if (participantResult.surveyOrg && participantResult.surveyOrg.address) {
+                        address = _getAddress(participantResult.surveyOrg.address, participantResult.surveyOrg.org)
+                    }
+                    row.add(createTableCell(format, address, surveyOrg && surveyService.modificationToCostInformation(surveyOrg) ? 'negative' : ''))
+                }
+                else if (fieldKey == 'survey.eInvoicePortal') {
+                    String eInvoicePortal = ""
+                    if (participantResult.surveyOrg && participantResult.surveyOrg.eInvoicePortal) {
+                        eInvoicePortal = participantResult.surveyOrg.eInvoicePortal.getI10n('value')
+                    }
+                    row.add(createTableCell(format, eInvoicePortal))
+                }
+                else if (fieldKey == 'survey.eInvoiceLeitwegId') {
+                    String eInvoiceLeitwegId = ""
+                    if (participantResult.surveyOrg && participantResult.surveyOrg.eInvoiceLeitwegId) {
+                        eInvoiceLeitwegId = participantResult.surveyOrg.eInvoiceLeitwegId
+                    }
+                    row.add(createTableCell(format, eInvoiceLeitwegId))
+                }
+                else if (fieldKey == 'survey.eInvoiceLeitkriterium') {
+                    String eInvoiceLeitkriterium = ""
+                    if (participantResult.surveyOrg && participantResult.surveyOrg.eInvoiceLeitkriterium) {
+                        eInvoiceLeitkriterium = participantResult.surveyOrg.eInvoiceLeitkriterium
+                    }
+                    row.add(createTableCell(format, eInvoiceLeitkriterium))
+                }
+                else if (fieldKey == 'pickAndChoose') {
                     double sumListPriceSelectedIEsEUR = surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(participantResult.sub, participantResult.surveyConfig, RDStore.CURRENCY_EUR)
                     double sumListPriceSelectedIEsUSD = surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(participantResult.sub, participantResult.surveyConfig, RDStore.CURRENCY_USD)
                     double sumListPriceSelectedIEsGBP = surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(participantResult.sub, participantResult.surveyConfig, RDStore.CURRENCY_GBP)

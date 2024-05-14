@@ -20,32 +20,32 @@
 %{--            <g:elseif test="${query == 'org-x-identifier'}">--}%
 %{--                <th>${message(code:'identifier.label')}</th>--}%
 %{--            </g:elseif>--}%
-            <g:if test="${query.startsWith('provider-')}">
-                <th>${message(code:'org.platforms.label')}</th>
-                <th>${message(code:'wekb')}</th>
-            </g:if>
+
+%{--            <th>${message(code:'org.platforms.label')}</th>--}%
+            <th>${message(code:'vendor.homepage.label')}</th>
+            <th>${message(code:'wekb')}</th>
             %{--<th></th>--}%
         </tr>
         </thead>
         <tbody>
-            <g:each in="${list}" var="org" status="i">
+            <g:each in="${list}" var="provider" status="i">
                 <tr>
                     <td>${i + 1}.</td>
-                    <td>${org.sortname}</td>
+                    <td>${provider.sortname}</td>
                     <td>
-                        <g:link controller="provider" action="show" id="${org.id}" target="_blank">${org.name}</g:link>
+                        <g:link controller="provider" action="show" id="${provider.id}" target="_blank">${provider.name}</g:link>
                     </td>
 %{--                    <g:if test="${query == 'org-country'}">--}%
 %{--                        <td>--}%
 %{--                            ${org.region?.getI10n('value')}--}%
 %{--                        </td>--}%
 %{--                    </g:if>--}%
-                    <g:if test="${query == 'org-x-property'}">
+                    <g:if test="${query == 'provider-x-property'}">
                         <td>
-                            <uiReporting:objectProperties owner="${org}" tenant="${contextService.getOrg()}" propDefId="${id}" />
+                            <uiReporting:objectProperties owner="${provider}" tenant="${contextService.getOrg()}" propDefId="${id}" />
                         </td>
                     </g:if>
-%{--                    <g:elseif test="${query == 'org-x-identifier'}">--}%
+%{--                    <g:elseif test="${query == 'provider-x-identifier'}">--}%
 %{--                        <td>--}%
 %{--                            <%--}%
 %{--                                List<Identifier> identList = Identifier.findAllByOrgAndNs(org, IdentifierNamespace.get(id))--}%
@@ -53,23 +53,26 @@
 %{--                            %>--}%
 %{--                        </td>--}%
 %{--                    </g:elseif>--}%
-                    <g:if test="${query.startsWith('provider-')}">
-                        <td>
-                            <g:each in="${org.platforms}" var="plt">
-                                <g:link controller="platform" action="show" id="${plt.id}" target="_blank">${plt.name}</g:link><br/>
-                            </g:each>
-                        </td>
-                        <td>
-                            <g:if test="${wekb?.baseUrl && org.gokbId}">
-                                <a href="${wekb.baseUrl + '/resource/show/' + org.gokbId}" target="_blank">
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'reporting.chart.result.link.unchecked.label')}"
-                                            data-position="top right">
-                                        <i class="icon external alternate grey"></i>
-                                    </span>
-                                </a>
-                            </g:if>
-                        </td>
-                    </g:if>
+%{--                    <td>--}%
+%{--                            <g:each in="${org.platforms}" var="plt">--}%
+%{--                                <g:link controller="platform" action="show" id="${plt.id}" target="_blank">${plt.name}</g:link><br/>--}%
+%{--                            </g:each>--}%
+%{--                    </td>--}%
+                    <td>
+                        <g:if test="${provider.homepage}">
+                            <a href="${provider.homepage}" target="_blank"> ${provider.homepage} </a>
+                        </g:if>
+                    </td>
+                    <td>
+                        <g:if test="${wekb?.baseUrl && provider.gokbId}">
+                            <a href="${wekb.baseUrl + '/resource/show/' + provider.gokbId}" target="_blank">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'reporting.chart.result.link.unchecked.label')}"
+                                        data-position="top right">
+                                    <i class="icon external alternate grey"></i>
+                                </span>
+                            </a>
+                        </g:if>
+                    </td>
                 </tr>
             </g:each>
         </tbody>

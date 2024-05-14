@@ -2,6 +2,7 @@ package de.laser.reporting.report.myInstitution
 
 import de.laser.ContextService
 import de.laser.License
+import de.laser.Provider
 import de.laser.Vendor
 import de.laser.storage.BeanStore
 import de.laser.reporting.report.myInstitution.base.BaseFilter
@@ -65,6 +66,29 @@ class LicenseQuery extends BaseQuery {
                         result
                 )
             }
+            else if (params.query in ['license-x-provider']) {
+
+                result.data = Provider.executeQuery(
+                        'select pro.id, pro.name, count(*) from ProviderRole pr join pr.provider pro where pro.id in (:providerIdList) and pr.license.id in (:idList) group by pro.id order by pro.name',
+                        [providerIdList: BaseFilter.getCachedFilterIdList('provider', params), idList: idList]
+                )
+                result.data.each { d ->
+                    result.dataDetails.add([
+                            query : params.query,
+                            id    : d[0],
+                            label : d[1],
+                            idList: License.executeQuery(
+                                    'select lic.id from ProviderRole pr join pr.license lic join pr.provider pro where lic.id in (:idList) and pro.id = :d order by lic.reference',
+                                    [idList: idList, d: d[0]]
+                            )
+                    ])
+                }
+
+                List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
+                List<Long> noDataList = nonMatchingIdList ? License.executeQuery('select lic.id from License lic where lic.id in (:idList)', [idList: nonMatchingIdList]) : []
+
+                handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_PROVIDER_LABEL, noDataList, result)
+            }
             else if (params.query in ['license-x-vendor']) {
 
                 result.data = Vendor.executeQuery(
@@ -97,8 +121,8 @@ class LicenseQuery extends BaseQuery {
 
         handleGenericRefdataQuery(
                 query,
-                PROPERTY_QUERY[0] + 'from License l join l.' + refdata + ' p where l.id in (:idList)' + PROPERTY_QUERY[1],
-                'select l.id from License l join l.' + refdata + ' p where l.id in (:idList) and p.id = :d order by l.reference',
+                REFDATA_QUERY[0] + 'from License l join l.' + refdata + ' ref where l.id in (:idList)' + REFDATA_QUERY[1],
+                'select l.id from License l join l.' + refdata + ' ref where l.id in (:idList) and ref.id = :d order by l.reference',
                 'select distinct l.id from License l where l.id in (:idList) and l.'+ refdata + ' is null',
                 idList,
                 result

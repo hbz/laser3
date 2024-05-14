@@ -127,7 +127,7 @@
                                 </g:if>
                             </td>
                             <td>
-                                <ui:cbItemMarkerAction org="${obj}" type="${markerType}" simple="true"/>
+                                <ui:cbItemMarkerAction provider="${obj}" type="${markerType}" simple="true"/>
                             </td>
                         </g:if>
                         <g:elseif test="${obj instanceof Vendor}">

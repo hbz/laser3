@@ -4,6 +4,7 @@ import de.laser.License
 import de.laser.LicenseService
 import de.laser.Org
 import de.laser.OrgSetting
+import de.laser.Provider
 import de.laser.RefdataValue
 import de.laser.Vendor
 import de.laser.auth.Role
@@ -401,5 +402,94 @@ class LicenseFilter extends BaseFilter {
 //        println query
 //        println queryParams
         filterResult.data.put( partKey + 'IdList', queryParams.licenseIdList ? Vendor.executeQuery(query, queryParams) : [] )
+    }
+
+    static void _handleSubsetProviderFilter(String partKey, Map<String, Object> filterResult, GrailsParameterMap params) {
+
+        String filterSource = getCurrentFilterSource(params, partKey)
+        if (!filterSource) { return }
+
+        filterResult.labels.put(partKey, [source: BaseConfig.getSourceLabel(BaseConfig.KEY_LICENSE, filterSource)])
+
+        if (! filterResult.data.get('licenseIdList')) {
+            filterResult.data.put( partKey + 'IdList', [] )
+        }
+
+        String queryBase = 'select distinct (pro.id) from ProviderRole pr join pr.provider pro'
+        List<String> whereParts = [ 'pr.license.id in (:licenseIdList)' ]
+        Map<String, Object> queryParams = [ 'licenseIdList': filterResult.data.licenseIdList ]
+
+        String cmbKey = BaseConfig.FILTER_PREFIX + partKey + '_'
+        int pCount = 0
+
+        getCurrentFilterKeys(params, cmbKey).each { key ->
+            List<String> validPartKeys = ['provider']
+
+            if (params.get(key)) {
+                String p = key.replaceFirst(cmbKey,'')
+                String pType
+
+                if (partKey in validPartKeys) {
+                    pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).get( partKey ), p)
+                }
+
+                def filterLabelValue
+
+                // --> properties generic
+                if (pType == BaseConfig.FIELD_TYPE_PROPERTY) {
+
+                    if (Provider.getDeclaredField(p).getType() == Date) {
+
+                        String modifier = getDateModifier( params.get(key + '_modifier') )
+
+                        whereParts.add( 'pro.' + p + ' ' + modifier + ' :p' + (++pCount) )
+                        queryParams.put( 'p' + pCount, DateUtils.parseDateGeneric(params.get(key)) )
+
+                        filterLabelValue = getDateModifier(params.get(key + '_modifier')) + ' ' + params.get(key)
+                    }
+                    else if (Provider.getDeclaredField(p).getType() in [boolean, Boolean]) {
+                        RefdataValue rdv = RefdataValue.get(params.long(key))
+
+                        if (rdv == RDStore.YN_YES)     { whereParts.add( 'pro.' + p + ' is true' ) }
+                        else if (rdv == RDStore.YN_NO) { whereParts.add( 'pro.' + p + ' is false' ) }
+
+                        filterLabelValue = rdv.getI10n('value')
+                    }
+                    else {
+                        whereParts.add( 'pro.' + p + ' = :p' + (++pCount) )
+                        queryParams.put( 'p' + pCount, params.get(key) )
+
+                        filterLabelValue = params.get(key)
+                    }
+                }
+                // --> refdata generic
+                else if (pType == BaseConfig.FIELD_TYPE_REFDATA) {
+                    whereParts.add( 'pro.' + p + '.id = :p' + (++pCount) )
+                    queryParams.put( 'p' + pCount, params.long(key) )
+
+                    filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
+                }
+                // --> custom filter implementation
+                else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
+                    log.info ' --- ' + pType +' not implemented --- '
+                }
+
+                if (filterLabelValue) {
+                    if (partKey in validPartKeys) {
+                        filterResult.labels.get(partKey).put( p, [
+                                label: GenericHelper.getFieldLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).get( partKey ), p),
+                                value: filterLabelValue
+                        ] )
+                    }
+                }
+            }
+        }
+
+        String query = queryBase + ' where ' + whereParts.join(' and ')
+
+//        println 'LicenseFilter.handleSubsetProviderFilter() -->'
+//        println query
+//        println queryParams
+        filterResult.data.put( partKey + 'IdList', queryParams.licenseIdList ? Provider.executeQuery(query, queryParams) : [] )
     }
 }

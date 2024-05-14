@@ -452,8 +452,8 @@ class PackageQuery extends BaseQuery {
 
         handleGenericRefdataQuery(
                 query,
-                PROPERTY_QUERY[0] + 'from Package pkg join pkg.' + refdata + ' p where pkg.id in (:idList)' + PROPERTY_QUERY[1],
-                'select pkg.id from Package pkg join pkg.' + refdata + ' p where pkg.id in (:idList) and p.id = :d order by pkg.name',
+                REFDATA_QUERY[0] + 'from Package pkg join pkg.' + refdata + ' ref where pkg.id in (:idList)' + REFDATA_QUERY[1],
+                'select pkg.id from Package pkg join pkg.' + refdata + ' ref where pkg.id in (:idList) and ref.id = :d order by pkg.name',
                 'select distinct pkg.id from Package pkg where pkg.id in (:idList) and pkg.'+ refdata + ' is null',
                 idList,
                 result
