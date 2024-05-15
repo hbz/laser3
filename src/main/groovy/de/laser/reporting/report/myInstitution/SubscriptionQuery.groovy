@@ -2,8 +2,10 @@ package de.laser.reporting.report.myInstitution
 
 import de.laser.ContextService
 import de.laser.License
+import de.laser.Platform
 import de.laser.Provider
 import de.laser.Subscription
+import de.laser.TitleInstancePackagePlatform
 import de.laser.Vendor
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
@@ -182,6 +184,52 @@ class SubscriptionQuery extends BaseQuery {
 //
 //                handleGenericNonMatchingData2Values_TMP(params.query, BaseQuery.NO_PLATFORM_LABEL, noDataList, result)
 //            }
+            else if (params.query in ['subscription-x-platform']) {
+
+                // TODO
+                // TODO subscription > subscriptionPackage > package > platform ?
+                // TODO
+
+                result.data = Platform.executeQuery(
+                        'select plt.id, plt.name, count(*) from ProviderRole pr join pr.provider pro join pro.platforms plt where pro.id in (:providerIdList) and pr.subscription.id in (:idList) group by plt.id order by plt.name',
+                        [providerIdList: BaseFilter.getCachedFilterIdList('provider', params), idList: idList]
+                )
+                result.data.eachWithIndex { d, i ->
+                    List<Long> subIdList = Subscription.executeQuery(
+                            'select s.id from ProviderRole pr join pr.subscription s join pr.provider pro join pro.platforms plt where s.id in (:idList) and plt.id = :d order by s.name',
+                            [idList: idList, d: d[0]]
+                    )
+                    List<Long> positiveList = []
+
+                    // Subscriptions with existing tipps -> platform
+                    subIdList.each { subId ->
+                        List<Long> pltIdList = TitleInstancePackagePlatform.executeQuery(
+                                'select distinct tipp.platform.id from IssueEntitlement ie join ie.tipp tipp where ie.subscription.id = :subId and ie.status = :status ',
+                                [subId: subId, status: RDStore.TIPP_STATUS_CURRENT]
+                        )
+                        if (pltIdList[0] == d[0]) {
+                            positiveList.add(subId)
+                        }
+                    }
+
+                    result.dataDetails.add([
+                            query : params.query,
+                            id    : d[0],
+                            label : d[1],
+                            idList: Subscription.executeQuery(
+                                    'select s.id from ProviderRole pr join pr.subscription s join pr.provider pro join pro.platforms plt where s.id in (:idList) and plt.id = :d order by s.name',
+                                    [idList: idList, d: d[0]]
+                            ),
+                            value2: positiveList.size(),
+                            value1: (subIdList - positiveList).size()
+                    ])
+                }
+
+                List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
+                List<Long> noDataList = nonMatchingIdList ? Subscription.executeQuery('select s.id from Subscription s where s.id in (:idList)', [idList: nonMatchingIdList]) : []
+
+                handleGenericNonMatchingData2Values_TMP(params.query, BaseQuery.NO_PLATFORM_LABEL, noDataList, result)
+            }
             else if (params.query in ['subscription-x-license']) {
 
                 result.data = License.executeQuery(
@@ -330,6 +378,10 @@ class SubscriptionQuery extends BaseQuery {
             }
             else if (params.query in ['subscription-x-provider']) {
 
+                // TODO
+                // TODO subscription > subscriptionPackage > package > provider ?
+                // TODO
+
                 result.data = Provider.executeQuery(
                         'select pro.id, pro.name, count(*) from ProviderRole pr join pr.provider pro where pro.id in (:providerIdList) and pr.subscription.id in (:idList) group by pro.id order by pro.name',
                         [providerIdList: BaseFilter.getCachedFilterIdList('provider', params), idList: idList]
@@ -352,6 +404,10 @@ class SubscriptionQuery extends BaseQuery {
                 handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_PROVIDER_LABEL, noDataList, result)
             }
             else if (params.query in ['subscription-x-vendor']) {
+
+                // TODO
+                // TODO subscription > subscriptionPackage > package > packageVendor > vendor ?
+                // TODO
 
                 result.data = Vendor.executeQuery(
                         'select v.id, v.name, count(*) from VendorRole vr join vr.vendor v where v.id in (:vendorIdList) and vr.subscription.id in (:idList) group by v.id order by v.name',

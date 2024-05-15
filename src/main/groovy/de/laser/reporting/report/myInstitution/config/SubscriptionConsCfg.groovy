@@ -118,11 +118,11 @@ class SubscriptionConsCfg extends BaseConfig {
 //                                             chartTemplate      : 'generic',
 //                                             chartLabels        : []
 //                                     ],
-//                                     'subscription-x-platform' : [
-//                                             detailsTemplate     : 'subscription',
-//                                             chartTemplate       : '2axis2values_nonMatches',
-//                                             chartLabels         : [ 'x.platforms.1', 'x.platforms.2' ]
-//                                     ],
+                                     'subscription-x-platform' : [
+                                             detailsTemplate     : 'subscription',
+                                             chartTemplate       : '2axis2values_nonMatches',
+                                             chartLabels         : [ 'x.platforms.1', 'x.platforms.2' ]
+                                     ],
                                      'subscription-x-memberSubscription' : [
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : 'generic',
