@@ -37,23 +37,10 @@ class PackageFilter extends BaseFilter {
 
         switch (filterSource) {
             case 'all-pkg':
-                queryParams.packageIdList = Package.executeQuery( 'select pkg.id from Package pkg' )
-//                queryParams.packageIdList = Package.executeQuery( 'select pkg.id from Package pkg where pkg.packageStatus != :pkgStatus',
-//                        [pkgStatus: RDStore.PACKAGE_STATUS_DELETED]
-//                )
+                queryParams.packageIdList = _getAllPackageIdList()
                 break
             case 'my-pkg':
-                List<Long> subIdList = Subscription.executeQuery(
-                        "select s.id from Subscription s join s.orgRelations ro where (ro.roleType in (:roleTypes) and ro.org = :ctx)",
-                        [roleTypes: [ RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS ], ctx: contextService.getOrg()])
-
-                queryParams.packageIdList = Package.executeQuery(
-                        'select distinct subPkg.pkg.id from SubscriptionPackage subPkg where subPkg.subscription.id in (:subIdList)', [subIdList: subIdList]
-                )
-//                queryParams.packageIdList = Package.executeQuery(
-//                        'select distinct subPkg.pkg.id from SubscriptionPackage subPkg where subPkg.subscription.id in (:subIdList) and subPkg.pkg.packageStatus != :pkgStatus',
-//                        [subIdList: subIdList, pkgStatus: RDStore.PACKAGE_STATUS_DELETED]
-//                )
+                queryParams.packageIdList = _getMyPackageIdList()
                 break
         }
 
@@ -236,5 +223,32 @@ class PackageFilter extends BaseFilter {
 
         String query = queryBase + ' where ' + whereParts.join(' and ')
         filterResult.data.put( partKey + 'IdList', queryParams.packageIdList ? Vendor.executeQuery(query, queryParams) : [] )
+    }
+
+    static List<Long> _getAllPackageIdList() {
+
+        List<Long> idList = Package.executeQuery( 'select pkg.id from Package pkg' )
+//                queryParams.packageIdList = Package.executeQuery( 'select pkg.id from Package pkg where pkg.packageStatus != :pkgStatus',
+//                        [pkgStatus: RDStore.PACKAGE_STATUS_DELETED]
+//                )
+        idList
+    }
+
+    static List<Long> _getMyPackageIdList() {
+
+        ContextService contextService = BeanStore.getContextService()
+
+        List<Long> subIdList = Subscription.executeQuery(
+                "select s.id from Subscription s join s.orgRelations ro where (ro.roleType in (:roleTypes) and ro.org = :ctx)",
+                [roleTypes: [ RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS ], ctx: contextService.getOrg()])
+
+        List<Long> idList = Package.executeQuery(
+                'select distinct subPkg.pkg.id from SubscriptionPackage subPkg where subPkg.subscription.id in (:subIdList)', [subIdList: subIdList]
+        )
+//                queryParams.packageIdList = Package.executeQuery(
+//                        'select distinct subPkg.pkg.id from SubscriptionPackage subPkg where subPkg.subscription.id in (:subIdList) and subPkg.pkg.packageStatus != :pkgStatus',
+//                        [subIdList: subIdList, pkgStatus: RDStore.PACKAGE_STATUS_DELETED]
+//                )
+        idList
     }
 }
