@@ -68,7 +68,21 @@ class PlatformController  {
                 propList: PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.PLA_PROP], contextService.getOrg())
         ]
         SwissKnife.setPaginationParams(result, params, (User) result.user)
-
+        Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
+        if(queryCuratoryGroups.code == 404) {
+            result.error = message(code: 'wekb.error.'+queryCuratoryGroups.error) as String
+        }
+        else {
+            if (queryCuratoryGroups) {
+                List recordsCuratoryGroups = queryCuratoryGroups.result
+                result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
+            }
+        }
+        result.curatoryGroupTypes = [
+                [value: 'Provider', name: message(code: 'package.curatoryGroup.provider')],
+                [value: 'Vendor', name: message(code: 'package.curatoryGroup.vendor')],
+                [value: 'Other', name: message(code: 'package.curatoryGroup.other')]
+        ]
         Map queryParams = [componentType: "Platform"]
 
         if(params.q) {
@@ -106,6 +120,15 @@ class PlatformController  {
         if(params.counterSushiSupport) {
             result.filterSet = true
             queryParams.counterSushiSupport = params.list('counterSushiSupport') //ask David about proper convention
+        }
+        if (params.curatoryGroup) {
+            result.filterSet = true
+            queryParams.curatoryGroupExact = params.curatoryGroup
+        }
+
+        if (params.curatoryGroupType) {
+            result.filterSet = true
+            queryParams.curatoryGroupType = params.curatoryGroupType
         }
 
         // overridden pagination - all uuids are required

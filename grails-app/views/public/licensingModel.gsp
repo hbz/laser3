@@ -258,8 +258,7 @@
         </table>
     </div>
     <aside class="five wide column la-sidekick">
-        <div class="ui one cards">test
-        </div>
+
     </aside>
 </div>
     <g:each in="${mappingColsPro+mappingColsBasic+mappingColsServiceBasic+mappingColsServicePro}" var="mpg5" >
