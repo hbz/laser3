@@ -394,7 +394,8 @@ class BaseConfig {
         }
         else if (key == CI_GENERIC_PLATFORM_PROVIDER) {
             return [
-                    label: messageSource.getMessage('platform.provider', null, locale),
+//                    label: messageSource.getMessage('reporting.cfg.provider', null, locale),
+                    label: messageSource.getMessage('reporting.cfg.platformProvider', null, locale),
                     from: Provider.executeQuery('select distinct pro from Platform plt join plt.provider pro').collect{[
                             id: it.id,
                             value_de: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,

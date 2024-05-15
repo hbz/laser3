@@ -21,8 +21,7 @@ class PlatformXCfg extends BaseConfig {
                     fields: [
                             'name'                      : [ type: BaseConfig.FIELD_TYPE_PROPERTY /* blind */ ],
                             'primaryUrl'                : [ type: BaseConfig.FIELD_TYPE_PROPERTY ],
-                            'provider'                  : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PLATFORM_PROVIDER, spec: BaseConfig.FIELD_IS_MULTIPLE ],
-//                            'org'                       : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PLATFORM_ORG, spec: BaseConfig.FIELD_IS_MULTIPLE ],
+                            'provider'          : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PLATFORM_PROVIDER, spec: BaseConfig.FIELD_IS_MULTIPLE ],
                             'ipAuthentication'          : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
                             'passwordAuthentication'    : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
                             'proxySupported'            : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
@@ -38,14 +37,14 @@ class PlatformXCfg extends BaseConfig {
                     ],
                     filter : [
                             default: [
-                                    [ 'packageStatus', 'status'],
-                                    [ 'serviceProvider', 'softwareProvider', 'provider' /*, 'org' */],
+                                    [ 'packageStatus', 'status' ],
+                                    [ 'serviceProvider', 'softwareProvider', 'provider' ],
                                     [ 'ipAuthentication', 'shibbolethAuthentication', 'counterCertified' ],
                                     [ 'passwordAuthentication', 'proxySupported', 'statisticsFormat' ]
                             ],
                             my: [
-                                    [ 'packageStatus', 'subscriptionStatus', 'status'],
-                                    [ 'serviceProvider', 'softwareProvider', 'provider' /*, 'org' */],
+                                    [ 'packageStatus', 'subscriptionStatus', 'status' ],
+                                    [ 'serviceProvider', 'softwareProvider', 'provider' ],
                                     [ 'ipAuthentication', 'shibbolethAuthentication', 'counterCertified' ],
                                     [ 'passwordAuthentication', 'proxySupported', 'statisticsFormat' ]
                             ]
@@ -53,7 +52,6 @@ class PlatformXCfg extends BaseConfig {
                     query : [
                             default: [
                                     platform : [
-                                           // 'platform-org',   // TODO - moved to distribution !
                                             'platform-serviceProvider' :            [ '@' ],
                                             'platform-softwareProvider' :           [ '@' ],
                                             'platform-status' :                     [ '@' ],
@@ -99,11 +97,6 @@ class PlatformXCfg extends BaseConfig {
                                                     'platform-statisticsUpdate'
                                             ]
                                     ],
-//                                    'platform-x-org' : [       // TODO - moved from query !
-//                                                               detailsTemplate     : 'platform',
-//                                                               chartTemplate       : 'generic',
-//                                                               chartLabels         : []
-//                                    ],
                                     'platform-x-provider' : [
                                             detailsTemplate     : 'platform',
                                             chartTemplate       : 'generic',
@@ -139,7 +132,6 @@ class PlatformXCfg extends BaseConfig {
     static Map<String, Map> CONFIG_DTC_ES = [
 
             'name'                                  : [ dtc: true   ],
-//            'org'                                   : [ dtc: true   ],    // TODO - move to query2 !?
             'provider'                              : [ dtc: true   ],    // TODO - move to query2 !?
             'primaryUrl'                            : [ dtc: true   ],    // TODO - move to query2 !?
             'serviceProvider'                       : [ dtc: false  ],

@@ -121,7 +121,7 @@ class PlatformFilter extends BaseFilter {
 //
 //                        filterLabelValue = Org.getAll(pList).collect{ it.name }
 //                    }
-                    if (p == 'provider') {
+                    if (p == 'provider') { // reporting.cfg.provider != reporting.cfg.platformProvider
                         Long[] pList = Params.getLongList(params, key)
 
                         whereParts.add( 'plt.provider.id in (:p' + (++pCount) + ')')
