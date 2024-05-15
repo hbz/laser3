@@ -289,7 +289,7 @@ class NavigationTagLib {
         }
         else {
             if (userService.hasAffiliation_or_ROLEADMIN(contextService.getUser(), contextService.getOrg(), attrs.instRole as String)) {
-                out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" data-content="' + message(code:'tooltip.onlyFullMembership') + '" role="menuitem">' + linkBody + '</div>'
+                out << '<div class="item disabled  la-popup-tooltip la-delay" data-position="left center"  data-html="<div class=\'header\'>' + message(code:'tooltip.onlyFullMembership') + '</div><div class=\'content\'><div class=\'ui button\'>' + message(code:'landingpage.hero.button.licensingModel') + '</div></div>" role="menuitem">' + linkBody + '</div>'
             }
 //            else out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" role="menuitem">' + linkBody + '</div>'
         }
