@@ -168,8 +168,8 @@ class PlatformXCfg extends BaseConfig {
             'platform-counterR4SushiApiSupported'   : [ dtc: false, es: true,               export: true, label: 'platform.stats.counter.r4sushi',        rdc: RDConstants.Y_N ],
             'platform-counterR5SushiApiSupported'   : [ dtc: false, es: true,               export: true, label: 'platform.stats.counter.r5sushi',        rdc: RDConstants.Y_N ],
 
-            '_?_propertyLocal'                      : [ dtc: true   ],  // virtual, optional, fixed position
-            '_+_lastUpdated'                        : [ dtc: true   ],  // virtual
-            '_+_wekb'                               : [ dtc: true   ],  // virtual
+            '_dtField_?_propertyLocal'              : [ dtc: true   ],  // virtual, optional, fixed position
+            '_dtField_lastUpdated'                  : [ dtc: true   ],  // virtual
+            '_dtField_wekb'                         : [ dtc: true   ],  // virtual
     ]
 }

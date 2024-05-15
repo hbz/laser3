@@ -222,7 +222,7 @@ class PackageXCfg extends BaseConfig {
 //            'orProvider'                : [ dtc: true  ],
             'nominalPlatform'           : [ dtc: true  ],
             'file'                      : [ dtc: false ],
-            '_+_currentTitles'          : [ dtc: true  ],    // virtual
+            '_dtField_currentTitles'    : [ dtc: true  ],    // virtual
 
             'package-breakable'         : [ dtc: false, es: true, filter: true, export: true, label: 'package.breakable',             rdc: RDConstants.PACKAGE_BREAKABLE ],
             'package-paymentType'       : [ dtc: false, es: true, filter: true, export: true, label: 'package.paymentType.label',     rdc: RDConstants.PAYMENT_TYPE ],
@@ -239,7 +239,7 @@ class PackageXCfg extends BaseConfig {
             'package-descriptionURL'    : [ dtc: false, es: true,               export: true, label: 'default.url.label' ],
             'package-x-curatoryGroup'   : [ dtc: false, es: true,               export: true, label: 'package.curatoryGroup.label',   mapping: 'curatoryGroups' ],
             'package-x-archivingAgency' : [ dtc: false, es: true,               export: true, label: 'package.archivingAgency.label', mapping: 'packageArchivingAgencies' ],
-            '_+_lastUpdated'            : [ dtc: true  ],    // virtual
-            '_+_wekb'                   : [ dtc: true  ],    // virtual
+            '_dtField_lastUpdated'      : [ dtc: true  ],    // virtual
+            '_dtField_wekb'             : [ dtc: true  ],    // virtual
     ]
 }
