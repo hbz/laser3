@@ -78,12 +78,6 @@ class PackageXCfg extends BaseConfig {
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
                                     ],
-//                                    'package-x-provider' : [
-//                                            detailsTemplate     : 'package',
-//                                            chartTemplate       : '2axis2values_nonMatches',
-//                                            chartLabels         : [ 'x.providers.1', 'x.providers.2' ]
-//                                    ],
-
                                     'package-x-platform' : [    // TODO - moved from query !
                                             detailsTemplate     : 'package',
                                             chartTemplate       : 'generic',
@@ -94,6 +88,11 @@ class PackageXCfg extends BaseConfig {
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
                                     ],
+//                                    'package-x-provider' : [
+//                                            detailsTemplate     : 'package',
+//                                            chartTemplate       : '2axis2values_nonMatches',
+//                                            chartLabels         : [ 'x.providers.1', 'x.providers.2' ]
+//                                    ],
                                     'package-x-vendor' : [
                                             detailsTemplate     : 'package',
                                             chartTemplate       : 'generic',
@@ -209,7 +208,7 @@ class PackageXCfg extends BaseConfig {
             ]
     ]
 
-    static Map<String, Map> CMB_ES_DT_CONFIG = [ // dynamic table config
+    static Map<String, Map> CONFIG_DTC_ES = [ // dynamic table config
 
             'name'                      : [ dtc: true  ],
             'sortname'                  : [ dtc: false ],

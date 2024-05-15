@@ -232,7 +232,7 @@ class ReportingTagLib {
             out << '</td>'
         }
         else {
-            out << '### ' + attrs.field + ' ###'
+            out << '### unkown field: ' + attrs.field + ' ###'
         }
     }
 

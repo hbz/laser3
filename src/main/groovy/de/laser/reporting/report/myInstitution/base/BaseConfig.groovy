@@ -152,8 +152,8 @@ class BaseConfig {
     static Map<String, Map> getCurrentConfigDetailsTable(String key) {
         Class config = getCurrentConfigClass(key)
 
-        if (config && config.getDeclaredFields().collect { it.getName() }.contains('CMB_ES_DT_CONFIG')) {
-            config.CMB_ES_DT_CONFIG.subMap( config.CMB_ES_DT_CONFIG.findResults { it.value.containsKey('dtc') ? it.key : null } )
+        if (config && config.getDeclaredFields().collect { it.getName() }.contains('CONFIG_DTC_ES')) {
+            config.CONFIG_DTC_ES.subMap( config.CONFIG_DTC_ES.findResults { it.value.containsKey('dtc') ? it.key : null } )
         } else {
             [:]
         }
@@ -167,8 +167,8 @@ class BaseConfig {
     static Map<String, Map> getCurrentConfigElasticsearchData(String key) {
         Class config = getCurrentConfigClass(key)
 
-        if (config && config.getDeclaredFields().collect { it.getName() }.contains('CMB_ES_DT_CONFIG')) {
-            config.CMB_ES_DT_CONFIG.subMap( config.CMB_ES_DT_CONFIG.findResults { it.value.containsKey('es') ? it.key : null } )
+        if (config && config.getDeclaredFields().collect { it.getName() }.contains('CONFIG_DTC_ES')) {
+            config.CONFIG_DTC_ES.subMap( config.CONFIG_DTC_ES.findResults { it.value.containsKey('es') ? it.key : null } )
         } else {
             [:]
         }

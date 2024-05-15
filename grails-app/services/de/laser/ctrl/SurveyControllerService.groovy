@@ -52,7 +52,6 @@ import de.laser.remote.ApiSource
 import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
 import de.laser.survey.SurveyConfig
-import de.laser.survey.SurveyConfigPackage
 import de.laser.survey.SurveyConfigProperties
 import de.laser.SurveyController
 import de.laser.survey.SurveyInfo

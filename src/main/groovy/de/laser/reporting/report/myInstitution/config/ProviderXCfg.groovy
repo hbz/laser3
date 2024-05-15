@@ -9,7 +9,7 @@ class ProviderXCfg extends BaseConfig {
 
             base : [
                     meta : [
-                            class:  Provider, // TODO
+                            class:  Provider,
                             cfgKey: BaseConfig.KEY_PROVIDER
                     ],
                     source : [
@@ -48,7 +48,13 @@ class ProviderXCfg extends BaseConfig {
                             ]
                     ],
                     distribution : [
-                            default : [:]
+                            default : [
+                                    'provider-x-property' : [
+                                            detailsTemplate     : 'provider',
+                                            chartTemplate       : '2axis3values',
+                                            chartLabels         : [ 'base', 'x.properties.2', 'x.properties.3' ]
+                                    ],
+                            ]
                     ]
             ]
     ]

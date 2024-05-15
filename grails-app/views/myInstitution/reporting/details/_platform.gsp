@@ -54,10 +54,10 @@
                         <g:link controller="platform" action="show" id="${plt.id}" target="_blank">${plt.name}</g:link>
                     </uiReporting:detailsTableTD>
 
-                    <uiReporting:detailsTableTD config="${dtConfig}" field="org">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="provider">
 
-                        <g:if test="${plt.org}">
-                            <g:link controller="org" action="show" id="${plt.org.id}" target="_blank">${plt.org.sortname ?: plt.org.name}</g:link>
+                        <g:if test="${plt.provider}">
+                            <g:link controller="provider" action="show" id="${plt.provider.id}" target="_blank">${plt.provider.sortname ?: plt.proviproviderder.name}</g:link>
                         </g:if>
                     </uiReporting:detailsTableTD>
 

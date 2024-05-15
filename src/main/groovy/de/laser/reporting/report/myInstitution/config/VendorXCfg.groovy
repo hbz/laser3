@@ -48,19 +48,13 @@ class VendorXCfg extends BaseConfig {
                             ]
                     ],
                     distribution : [
-                            default : [:]
-//                            default : [
-//                                    'vendor-x-electronicBillings' : [
-//                                            detailsTemplate     : 'vendor',
-//                                            chartTemplate       : '2axis2values_nonMatches',
-//                                            chartLabels         : [ 'base', 'x.electronicBillings' ]
-//                                    ],
-//                                    'vendor-x-invoiceDispatchs' : [
-//                                            detailsTemplate     : 'vendor',
-//                                            chartTemplate       : '2axis2values_nonMatches',
-//                                            chartLabels         : [ 'base', 'x.invoiceDispatchs' ]
-//                                    ],
-//                            ]
+                            default : [
+                                    'vendor-x-property' : [
+                                            detailsTemplate     : 'vendor',
+                                            chartTemplate       : '2axis3values',
+                                            chartLabels         : [ 'base', 'x.properties.2', 'x.properties.3' ]
+                                    ]
+                            ]
                     ]
             ]
     ]

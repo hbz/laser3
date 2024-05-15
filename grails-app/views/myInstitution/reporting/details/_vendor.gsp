@@ -10,12 +10,9 @@
         <tr>
             <th></th>
             <th>${message(code:'org.sortname.label')}</th>
-            %{-- TODO --}%<th>${labels.first().trim() in ['Verteilung', 'Distribution'] ? 'Name' : labels.first().trim()}</th>%{-- TODO --}%
-%{--            <g:if test="${query == 'org-country'}">--}%
-%{--                <th>${message(code:'org.region.label')}</th>--}%
-%{--            </g:if>--}%
+            <th>${labels.first().trim() in ['Verteilung', 'Distribution'] ? 'Name' : labels.first().trim()}</th>%{-- TODO --}%
             <g:if test="${query == 'vendor-x-property'}">
-%{--                <th>${message(code:'reporting.details.property.value')}</th>--}%
+                <th>${message(code:'reporting.details.property.value')}</th>
             </g:if>
             <th>${message(code:'vendor.homepage.label')}</th>
             <th>${message(code:'wekb')}</th>
@@ -29,17 +26,11 @@
                     <td>
                         <g:link controller="vendor" action="show" id="${vendor.id}" target="_blank">${vendor.name}</g:link>
                     </td>
-%{--                    <g:if test="${query == 'org-country'}">--}%
-%{--                        <td>--}%
-%{--                            ${org.region?.getI10n('value')}--}%
-%{--                        </td>--}%
-%{--                    </g:if>--}%
                     <g:if test="${query == 'vendor-x-property'}">
                         <td>
                             <uiReporting:objectProperties owner="${vendor}" tenant="${contextService.getOrg()}" propDefId="${id}" />
                         </td>
                     </g:if>
-
                     <td>
                         <g:if test="${vendor.homepage}">
                             <a href="${vendor.homepage}" target="_blank"> ${vendor.homepage} </a>

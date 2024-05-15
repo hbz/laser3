@@ -141,10 +141,11 @@ class PlatformXCfg extends BaseConfig {
             ],
     ]
 
-    static Map<String, Map> CMB_ES_DT_CONFIG = [
+    static Map<String, Map> CONFIG_DTC_ES = [
 
             'name'                                  : [ dtc: true   ],
 //            'org'                                   : [ dtc: true   ],    // TODO - move to query2 !?
+            'provider'                              : [ dtc: true   ],    // TODO - move to query2 !?
             'primaryUrl'                            : [ dtc: true   ],    // TODO - move to query2 !?
             'serviceProvider'                       : [ dtc: false  ],
             'softwareProvider'                      : [ dtc: false  ],
