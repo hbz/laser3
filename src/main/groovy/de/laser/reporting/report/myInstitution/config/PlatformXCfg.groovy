@@ -133,8 +133,12 @@ class PlatformXCfg extends BaseConfig {
                     query : [
                             default : [
                                     provider : [
-                                            'provider-status' :  [ 'generic.provider.status' ],
-                                            'provider-*' :       [ 'generic.all' ]
+                                            'provider-paperInvoice' :                       [ 'generic.provider.paperInvoice' ],
+                                            'provider-managementOfCredits' :                [ 'generic.provider.managementOfCredits' ],
+                                            'provider-processingOfCompensationPayments' :   [ 'generic.provider.processingOfCompensationPayments' ],
+                                            'provider-individualInvoiceDesign' :            [ 'generic.provider.individualInvoiceDesign' ],
+                                            'provider-status' :                             [ 'generic.provider.status' ],
+                                            'provider-*' :                                  [ 'generic.all' ]
                                     ]
                             ]
                     ]

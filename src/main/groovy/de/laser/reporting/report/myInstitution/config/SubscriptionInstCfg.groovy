@@ -165,13 +165,19 @@ class SubscriptionInstCfg extends BaseConfig {
                             'status' : [ type: BaseConfig.FIELD_TYPE_REFDATA ]
                     ],
                     filter : [
-                            default : []
+                            default : [
+                                    [ 'status' ],
+                            ]
                     ],
                     query : [
                             default : [
                                     provider : [
-                                            'provider-status' :   [ 'generic.provider.status' ],
-                                            'provider-*' :        [ 'generic.all' ],
+                                            'provider-paperInvoice' :                       [ 'generic.provider.paperInvoice' ],
+                                            'provider-managementOfCredits' :                [ 'generic.provider.managementOfCredits' ],
+                                            'provider-processingOfCompensationPayments' :   [ 'generic.provider.processingOfCompensationPayments' ],
+                                            'provider-individualInvoiceDesign' :            [ 'generic.provider.individualInvoiceDesign' ],
+                                            'provider-status' :                             [ 'generic.provider.status' ],
+                                            'provider-*' :                                  [ 'generic.all' ]
                                     ]
                             ]
                     ]
@@ -189,17 +195,22 @@ class SubscriptionInstCfg extends BaseConfig {
                             'status' : [ type: BaseConfig.FIELD_TYPE_REFDATA ]
                     ],
                     filter : [
-                            default : []
+                            default : [
+                                    [ 'status' ],
+                            ]
                     ],
                     query : [
                             default : [
                                     vendor : [
-                                            'vendor-status' :   [ 'generic.vendor.status' ],
-                                            'vendor-*' :        [ 'generic.all' ],
+                                            'vendor-paperInvoice' :                     [ 'generic.vendor.paperInvoice' ],
+                                            'vendor-managementOfCredits' :              [ 'generic.vendor.managementOfCredits' ],
+                                            'vendor-processingOfCompensationPayments' : [ 'generic.vendor.processingOfCompensationPayments' ],
+                                            'vendor-individualInvoiceDesign' :          [ 'generic.vendor.individualInvoiceDesign' ],
+                                            'vendor-status' :                           [ 'generic.vendor.status' ],
+                                            'vendor-*' :                                [ 'generic.all' ],
                                     ]
                             ]
                     ]
             ]
-
     ]
 }
