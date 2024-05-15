@@ -58,6 +58,9 @@ class IconTagLib {
             case 'marker':
                 icon = 'bordered inverted purple bookmark la-object-extended'
                 break
+            case 'package':
+                icon = 'bordered la-package la-object-extended'
+                break
             case 'search':
                 icon = 'search'
                 break

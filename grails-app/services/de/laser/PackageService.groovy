@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.auth.User
 import de.laser.finance.CostItem
 import de.laser.oap.OrgAccessPointLink
 import de.laser.remote.ApiSource
@@ -289,6 +290,16 @@ class PackageService {
         result.contextCustomerType = result.contextOrg.getCustomerType()
         int relationCheck = SubscriptionPackage.executeQuery('select count(sp) from SubscriptionPackage sp where sp.pkg = :pkg and sp.subscription in (select oo.sub from OrgRole oo join oo.sub sub where oo.org = :context and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true)))', [pkg: result.packageInstance, context: result.contextOrg, current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED])[0]
         result.isMyPkg = relationCheck > 0
+
+        result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: result.packageInstance, status: RDStore.TIPP_STATUS_CURRENT])[0]
+        result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: result.packageInstance, status: RDStore.TIPP_STATUS_EXPECTED])[0]
+        result.expiredTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: result.packageInstance, status: RDStore.TIPP_STATUS_RETIRED])[0]
+        result.deletedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: result.packageInstance, status: RDStore.TIPP_STATUS_DELETED])[0]
+        result.contextOrg = contextService.getOrg()
+        result.contextCustomerType = result.contextOrg.getCustomerType()
+
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+
         result
     }
 }
