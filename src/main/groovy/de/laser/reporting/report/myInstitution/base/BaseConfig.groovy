@@ -117,6 +117,28 @@ class BaseConfig {
             CHART_PIE
     ]
 
+    static Map<String, Object> GENERIC_PROVIDER_QUERY_DEFAULT = [
+        provider : [
+            'provider-paperInvoice' :                       [ 'generic.provider.paperInvoice' ],
+            'provider-managementOfCredits' :                [ 'generic.provider.managementOfCredits' ],
+            'provider-processingOfCompensationPayments' :   [ 'generic.provider.processingOfCompensationPayments' ],
+            'provider-individualInvoiceDesign' :            [ 'generic.provider.individualInvoiceDesign' ],
+            'provider-status' :                             [ 'generic.provider.status' ],
+            'provider-*' :                                  [ 'generic.all' ]
+        ]
+    ]
+
+    static Map<String, Object> GENERIC_VENDOR_QUERY_DEFAULT = [
+        vendor : [
+            'vendor-paperInvoice' :                         [ 'generic.vendor.paperInvoice' ],
+            'vendor-managementOfCredits' :                  [ 'generic.vendor.managementOfCredits' ],
+            'vendor-processingOfCompensationPayments' :     [ 'generic.vendor.processingOfCompensationPayments' ],
+            'vendor-individualInvoiceDesign' :              [ 'generic.vendor.individualInvoiceDesign' ],
+            'vendor-status' :                               [ 'generic.vendor.status' ],
+            'vendor-*' :                                    [ 'generic.all' ],
+        ]
+    ]
+
     /**
      * Determines the configuration class for the given object type key
      * @param key the object type key

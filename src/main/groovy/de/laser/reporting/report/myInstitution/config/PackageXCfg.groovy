@@ -145,7 +145,7 @@ class PackageXCfg extends BaseConfig {
                     source : [
                             'filter-subset-platform'
                     ],
-                    fields : [ ],
+                    fields : [],
                     filter : [
                             default : []
                     ],
@@ -171,21 +171,12 @@ class PackageXCfg extends BaseConfig {
                     source : [
                             'filter-subset-provider'
                     ],
-                    fields : [ ],
+                    fields : [],
                     filter : [
                             default : []
                     ],
                     query : [
-                            default : [
-                                    provider : [
-                                            'provider-paperInvoice' :                       [ 'generic.provider.paperInvoice' ],
-                                            'provider-managementOfCredits' :                [ 'generic.provider.managementOfCredits' ],
-                                            'provider-processingOfCompensationPayments' :   [ 'generic.provider.processingOfCompensationPayments' ],
-                                            'provider-individualInvoiceDesign' :            [ 'generic.provider.individualInvoiceDesign' ],
-                                            'provider-status' :                             [ 'generic.provider.status' ],
-                                            'provider-*' :                                  [ 'generic.all' ]
-                                    ]
-                            ]
+                            default : BaseConfig.GENERIC_PROVIDER_QUERY_DEFAULT
                     ]
             ],
 
@@ -197,21 +188,12 @@ class PackageXCfg extends BaseConfig {
                     source : [
                             'filter-subset-vendor'
                     ],
-                    fields : [ ],
+                    fields : [],
                     filter : [
                             default : []
                     ],
                     query : [
-                            default : [
-                                    vendor : [
-                                            'vendor-paperInvoice' :                     [ 'generic.vendor.paperInvoice' ],
-                                            'vendor-managementOfCredits' :              [ 'generic.vendor.managementOfCredits' ],
-                                            'vendor-processingOfCompensationPayments' : [ 'generic.vendor.processingOfCompensationPayments' ],
-                                            'vendor-individualInvoiceDesign' :          [ 'generic.vendor.individualInvoiceDesign' ],
-                                            'vendor-status' :                           [ 'generic.vendor.status' ],
-                                            'vendor-*' :                                [ 'generic.all' ],
-                                    ]
-                            ]
+                            default : BaseConfig.GENERIC_VENDOR_QUERY_DEFAULT
                     ]
             ]
     ]
