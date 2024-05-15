@@ -1,8 +1,8 @@
 package de.laser.reporting.report.myInstitution.config
 
 import de.laser.IssueEntitlement
-import de.laser.Org
 import de.laser.Platform
+import de.laser.Provider
 import de.laser.Subscription
 import de.laser.annotations.UnstableFeature
 import de.laser.reporting.report.myInstitution.base.BaseConfig
@@ -23,19 +23,19 @@ class IssueEntitlementXCfg extends BaseConfig {
                             'my-ie'
                     ],
                     fields: [
-                            'status'                        : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_IE_STATUS ],
-                            'package'                       : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_CTX_IE_PACKAGE ],
-                            'subscription'                  : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_CTX_IE_SUBSCRIPTION ],
-                            'packageStatus'                 : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_PACKAGE_PACKAGESTATUS ],
-                            'packageNominalPlatform'        : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_PACKAGE_PLATFORM ],
-                            'orProvider'                    : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_PACKAGE_OR_PROVIDER ],
-                            'subscriptionStatus'            : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_SUBSCRIPTION_STATUS ],
+                            'status'                        : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_IE_STATUS ],
+                            'package'                       : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_CTX_IE_PACKAGE ],
+                            'subscription'                  : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_CTX_IE_SUBSCRIPTION ],
+                            'packageStatus'                 : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PACKAGE_PACKAGESTATUS ],
+                            'packageNominalPlatform'        : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PACKAGE_PLATFORM ],
+//                            'orProvider'                    : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PACKAGE_OR_PROVIDER ],
+                            'subscriptionStatus'            : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_SUBSCRIPTION_STATUS ],
                     ],
                     filter : [
                             default: [
                                     [ 'packageStatus', 'subscriptionStatus', 'status' ],
                                     [ 'package', 'subscription' ],
-                                    [ 'orProvider', 'packageNominalPlatform' ]
+                                    [ /*'orProvider',*/ 'packageNominalPlatform' ]
                             ]
                     ],
                     query : [
@@ -134,7 +134,7 @@ class IssueEntitlementXCfg extends BaseConfig {
 
             provider : [
                     meta : [
-                            class:  Org,
+                            class:  Provider,
                             cfgKey: BaseConfig.KEY_ISSUEENTITLEMENT
                     ],
                     source : [
@@ -147,7 +147,7 @@ class IssueEntitlementXCfg extends BaseConfig {
                     query : [
                             default : [
                                     provider : [
-                                            'provider-orgType' : [ 'generic.org.orgType' ],
+                                            'provider-status' :  [ 'generic.provider.status' ],
                                             'provider-*' :       [ 'generic.all' ]
                                     ]
                             ]
@@ -169,7 +169,8 @@ class IssueEntitlementXCfg extends BaseConfig {
                     query : [
                             default : [
                                     platform : [
-                                            'platform-x-org' :      [ '@' ],       // KEY_PLATFORM -> distribution
+                                            'platform-x-provider' : [ '@' ],       // KEY_PLATFORM -> distribution
+//                                            'platform-x-org' :      [ '@' ],       // KEY_PLATFORM -> distribution
                                             'platform-status' :     [ 'generic.plt.status' ],
                                     //        'nominalPlatform-serviceProvider' : [ '@' ],
                                     //        'nominalPlatform-softwareProvider' : [ '@' ],

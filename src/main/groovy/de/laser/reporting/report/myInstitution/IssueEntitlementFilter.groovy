@@ -116,19 +116,19 @@ class IssueEntitlementFilter extends BaseFilter {
 
                         filterLabelValue = Platform.get(params.long(key)).name
                     }
-                    else if (p == 'orProvider') {
-                        queryParts.add('TitleInstancePackagePlatform tipp')
-                        queryParts.add('Package pkg')  // status !!
-                        queryParts.add('OrgRole ro')
-
-                        whereParts.add('ie.tipp = tipp and tipp.pkg = ro.pkg and ro.org.id = :p' + (++pCount))
-                        queryParams.put('p' + pCount, params.long(key))
-
-                        whereParts.add('ro.roleType in (:p'  + (++pCount) + ')')
-                        queryParams.put('p' + pCount, [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER])
-
-                        filterLabelValue = Org.get(params.long(key)).name
-                    }
+//                    else if (p == 'orProvider') {
+//                        queryParts.add('TitleInstancePackagePlatform tipp')
+//                        queryParts.add('Package pkg')  // status !!
+//                        queryParts.add('OrgRole ro')
+//
+//                        whereParts.add('ie.tipp = tipp and tipp.pkg = ro.pkg and ro.org.id = :p' + (++pCount))
+//                        queryParams.put('p' + pCount, params.long(key))
+//
+//                        whereParts.add('ro.roleType in (:p'  + (++pCount) + ')')
+//                        queryParams.put('p' + pCount, [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER])
+//
+//                        filterLabelValue = Org.get(params.long(key)).name
+//                    }
                     else if (p == 'status') {
                         whereParts.add( 'ie.status.id = :p' + (++pCount) )
                         queryParams.put( 'p' + pCount, params.long(key) )
@@ -212,15 +212,15 @@ class IssueEntitlementFilter extends BaseFilter {
         filterResult.data.put( partKey + 'IdList', queryParams.issueEntitlementIdList ? _handleLargeQuery(query, queryParams, 'issueEntitlementIdList') : [] )
     }
 
-    static void _handleSubsetOrgFilter(String partKey, Map<String, Object> filterResult) {
-        String queryBase = 'select distinct (org.id) from OrgRole ro join ro.pkg pkg join ro.org org'
-        List<String> whereParts = [ 'pkg.id in (:packageIdList)', 'ro.roleType in (:roleTypes)' ]
-
-        Map<String, Object> queryParams = [ packageIdList: filterResult.data.packageIdList, roleTypes: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER] ]
-
-        String query = queryBase + ' where ' + whereParts.join(' and ')
-        filterResult.data.put( partKey + 'IdList', queryParams.packageIdList ? _handleLargeQuery(query, queryParams, 'packageIdList') : [] )
-    }
+//    static void _handleSubsetOrgFilter(String partKey, Map<String, Object> filterResult) {
+//        String queryBase = 'select distinct (org.id) from OrgRole ro join ro.pkg pkg join ro.org org'
+//        List<String> whereParts = [ 'pkg.id in (:packageIdList)', 'ro.roleType in (:roleTypes)' ]
+//
+//        Map<String, Object> queryParams = [ packageIdList: filterResult.data.packageIdList, roleTypes: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER] ]
+//
+//        String query = queryBase + ' where ' + whereParts.join(' and ')
+//        filterResult.data.put( partKey + 'IdList', queryParams.packageIdList ? _handleLargeQuery(query, queryParams, 'packageIdList') : [] )
+//    }
 
     static void _handleSubsetPlatformFilter(String partKey, Map<String, Object> filterResult) {
         String queryBase = 'select distinct (plt.id) from Package pkg join pkg.nominalPlatform plt'

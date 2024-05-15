@@ -28,12 +28,12 @@ class PackageXCfg extends BaseConfig {
                             'file'                      : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
                             'openAccess'                : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
                             'packageStatus'             : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
-                            'subscriptionStatus'        : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_SUBSCRIPTION_STATUS, spec: BaseConfig.FIELD_IS_MULTIPLE ],
+                            'subscriptionStatus'        : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_SUBSCRIPTION_STATUS, spec: BaseConfig.FIELD_IS_MULTIPLE ],
                             'paymentType'               : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
-                            'nominalPlatform'           : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_PACKAGE_PLATFORM, spec: BaseConfig.FIELD_IS_MULTIPLE ],
-                            'provider'                  : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_PACKAGE_PROVIDER, spec: BaseConfig.FIELD_IS_MULTIPLE ],
-                            'vendor'                    : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_PACKAGE_VENDOR, spec: BaseConfig.FIELD_IS_MULTIPLE ],
-//                            'orProvider'                : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_PACKAGE_OR_PROVIDER, spec: BaseConfig.FIELD_IS_MULTIPLE ],
+                            'nominalPlatform'           : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PACKAGE_PLATFORM, spec: BaseConfig.FIELD_IS_MULTIPLE ],
+                            'provider'                  : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PACKAGE_PROVIDER, spec: BaseConfig.FIELD_IS_MULTIPLE ],
+                            'vendor'                    : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PACKAGE_VENDOR, spec: BaseConfig.FIELD_IS_MULTIPLE ],
+//                            'orProvider'                : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PACKAGE_OR_PROVIDER, spec: BaseConfig.FIELD_IS_MULTIPLE ],
                             'scope'                     : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ]
                     ],
                     filter : [
