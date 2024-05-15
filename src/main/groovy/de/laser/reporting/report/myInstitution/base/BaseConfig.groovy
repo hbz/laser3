@@ -85,7 +85,7 @@ class BaseConfig {
     static String CI_GENERIC_INVOICING_DISPATCH   = 'invoiceDispatchs'
 
     static String CI_GENERIC_IE_STATUS                  = 'issueEntitlement$status'     // IE
-    static String CI_GENERIC_PACKAGE_OR_PROVIDER        = 'package$orgRole$provider'    // IE, PKG
+//    static String CI_GENERIC_PACKAGE_OR_PROVIDER        = 'package$orgRole$provider'    // IE, PKG
     static String CI_GENERIC_PACKAGE_PLATFORM           = 'package$platform'            // IE, PKG
     static String CI_GENERIC_PACKAGE_PACKAGESTATUS      = 'package$packageStatus'       // IE, PKG, PLT
     static String CI_GENERIC_PACKAGE_PROVIDER           = 'package$provider'            // PKG
@@ -152,8 +152,8 @@ class BaseConfig {
     static Map<String, Map> getCurrentConfigDetailsTable(String key) {
         Class config = getCurrentConfigClass(key)
 
-        if (config && config.getDeclaredFields().collect { it.getName() }.contains('CMB_ES_DT_CONFIG')) {
-            config.CMB_ES_DT_CONFIG.subMap( config.CMB_ES_DT_CONFIG.findResults { it.value.containsKey('dtc') ? it.key : null } )
+        if (config && config.getDeclaredFields().collect { it.getName() }.contains('CONFIG_DTC_ES')) {
+            config.CONFIG_DTC_ES.subMap( config.CONFIG_DTC_ES.findResults { it.value.containsKey('dtc') ? it.key : null } )
         } else {
             [:]
         }
@@ -167,8 +167,8 @@ class BaseConfig {
     static Map<String, Map> getCurrentConfigElasticsearchData(String key) {
         Class config = getCurrentConfigClass(key)
 
-        if (config && config.getDeclaredFields().collect { it.getName() }.contains('CMB_ES_DT_CONFIG')) {
-            config.CMB_ES_DT_CONFIG.subMap( config.CMB_ES_DT_CONFIG.findResults { it.value.containsKey('es') ? it.key : null } )
+        if (config && config.getDeclaredFields().collect { it.getName() }.contains('CONFIG_DTC_ES')) {
+            config.CONFIG_DTC_ES.subMap( config.CONFIG_DTC_ES.findResults { it.value.containsKey('es') ? it.key : null } )
         } else {
             [:]
         }
@@ -322,17 +322,17 @@ class BaseConfig {
                         ]}
             ]
         }
-        else if (key == CI_GENERIC_PACKAGE_OR_PROVIDER) {
-            return [
-                    label: messageSource.getMessage('default.provider.label', null, locale),
-                    from: Org.executeQuery('select distinct(org) from Org org join org.orgType ot where ot in (:otList)',
-                            [ otList: [RDStore.OT_PROVIDER] ]).collect{[
-                            id: it.id,
-                            value_de: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
-                            value_en: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
-                    ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
-            ]
-        }
+//        else if (key == CI_GENERIC_PACKAGE_OR_PROVIDER) {
+//            return [
+//                    label: messageSource.getMessage('default.provider.label', null, locale),
+//                    from: Org.executeQuery('select distinct(org) from Org org join org.orgType ot where ot in (:otList)',
+//                            [ otList: [RDStore.OT_PROVIDER] ]).collect{[
+//                            id: it.id,
+//                            value_de: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
+//                            value_en: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
+//                    ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
+//            ]
+//        }
         else if (key == CI_GENERIC_PACKAGE_PLATFORM) {
             return [
                     label: messageSource.getMessage('platform.label', null, locale),
@@ -353,7 +353,7 @@ class BaseConfig {
         else if (key == CI_GENERIC_PACKAGE_PROVIDER) {
             return [
                     label: messageSource.getMessage('reporting.cfg.provider', null, locale),
-                    from: Provider.executeQuery('select distinct(pro) from Package pkg join pkg.provider pro').collect{[
+                    from: Provider.executeQuery('select distinct pro from Package pkg join pkg.provider pro').collect{[
                             id: it.id,
                             value_de: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
                             value_en: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
@@ -373,7 +373,7 @@ class BaseConfig {
         else if (key == CI_GENERIC_PLATFORM_PROVIDER) {
             return [
                     label: messageSource.getMessage('platform.provider', null, locale),
-                    from: Provider.executeQuery('select distinct(pro) from Platform plt join plt.provider pro').collect{[
+                    from: Provider.executeQuery('select distinct pro from Platform plt join plt.provider pro').collect{[
                             id: it.id,
                             value_de: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
                             value_en: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,

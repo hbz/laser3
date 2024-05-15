@@ -10,17 +10,10 @@
         <tr>
             <th></th>
             <th>${message(code:'org.sortname.label')}</th>
-            %{-- TODO --}%<th>${labels.first().trim() in ['Verteilung', 'Distribution'] ? 'Name' : labels.first().trim()}</th>%{-- TODO --}%
-%{--            <g:if test="${query == 'org-country'}">--}%
-%{--                <th>${message(code:'org.region.label')}</th>--}%
-%{--            </g:if>--}%
-            <g:if test="${query == 'org-x-property'}">
+            <th>${labels.first().trim() in ['Verteilung', 'Distribution'] ? 'Name' : labels.first().trim()}</th>%{-- TODO --}%
+            <g:if test="${query == 'provider-x-property'}">
                 <th>${message(code:'reporting.details.property.value')}</th>
             </g:if>
-%{--            <g:elseif test="${query == 'org-x-identifier'}">--}%
-%{--                <th>${message(code:'identifier.label')}</th>--}%
-%{--            </g:elseif>--}%
-
 %{--            <th>${message(code:'org.platforms.label')}</th>--}%
             <th>${message(code:'vendor.homepage.label')}</th>
             <th>${message(code:'wekb')}</th>
@@ -35,24 +28,11 @@
                     <td>
                         <g:link controller="provider" action="show" id="${provider.id}" target="_blank">${provider.name}</g:link>
                     </td>
-%{--                    <g:if test="${query == 'org-country'}">--}%
-%{--                        <td>--}%
-%{--                            ${org.region?.getI10n('value')}--}%
-%{--                        </td>--}%
-%{--                    </g:if>--}%
                     <g:if test="${query == 'provider-x-property'}">
                         <td>
                             <uiReporting:objectProperties owner="${provider}" tenant="${contextService.getOrg()}" propDefId="${id}" />
                         </td>
                     </g:if>
-%{--                    <g:elseif test="${query == 'provider-x-identifier'}">--}%
-%{--                        <td>--}%
-%{--                            <%--}%
-%{--                                List<Identifier> identList = Identifier.findAllByOrgAndNs(org, IdentifierNamespace.get(id))--}%
-%{--                                println identList.collect{ it.value ?: null }.findAll().join(' ,<br/>') // removing empty and null values--}%
-%{--                            %>--}%
-%{--                        </td>--}%
-%{--                    </g:elseif>--}%
 %{--                    <td>--}%
 %{--                            <g:each in="${org.platforms}" var="plt">--}%
 %{--                                <g:link controller="platform" action="show" id="${plt.id}" target="_blank">${plt.name}</g:link><br/>--}%
