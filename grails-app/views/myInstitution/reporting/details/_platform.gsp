@@ -57,7 +57,7 @@
                     <uiReporting:detailsTableTD config="${dtConfig}" field="provider">
 
                         <g:if test="${plt.provider}">
-                            <g:link controller="provider" action="show" id="${plt.provider.id}" target="_blank">${plt.provider.sortname ?: plt.proviproviderder.name}</g:link>
+                            <g:link controller="provider" action="show" id="${plt.provider.id}" target="_blank">${plt.provider.sortname ?: plt.provider.name}</g:link>
                         </g:if>
                     </uiReporting:detailsTableTD>
 
