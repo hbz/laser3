@@ -39,7 +39,8 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
             pkg:    Package,
             provider: Provider,
             sub:    Subscription,
-            tipp:   TitleInstancePackagePlatform
+            tipp:   TitleInstancePackagePlatform,
+            vendor: Vendor
     ]
 
 	static constraints = {
@@ -57,6 +58,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         provider    (nullable:true)
 	  	sub         (nullable:true)
 	  	tipp        (nullable:true)
+        vendor      (nullable:true)
         instanceOf  (nullable: true)
 
         lastUpdated (nullable: true)
@@ -76,6 +78,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         provider column:'id_provider_fk', index: 'id_provider_idx'
         sub   column:'id_sub_fk', index: 'id_sub_idx'
         tipp  column:'id_tipp_fk', index: 'id_tipp_idx'
+        vendor column:'id_vendor_fk', index: 'id_vendor_idx'
         instanceOf column: 'id_instance_of_fk', index: 'id_instanceof_idx'
 
         dateCreated column: 'id_date_created'
@@ -243,17 +246,21 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
      * <ul>
      *     <li>{@link License}</li>
      *     <li>{@link Org}</li>
+     *     <li>{@link Provider}</li>
      *     <li>{@link Package}</li>
      *     <li>{@link Subscription}</li>
      *     <li>{@link TitleInstancePackagePlatform}</li>
+     *     <li>{@link Vendor}</li>
      * </ul>
      */
     void setReference(def owner) {
         lic  = owner instanceof License ? owner : lic
         org  = owner instanceof Org ? owner : org
+        provider  = owner instanceof Provider ? owner : provider
         pkg  = owner instanceof Package ? owner : pkg
         sub  = owner instanceof Subscription ? owner : sub
         tipp = owner instanceof TitleInstancePackagePlatform ? owner : tipp
+        vendor  = owner instanceof Vendor ? owner : vendor
     }
 
     /**
@@ -264,7 +271,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         int refCount = 0
         def ref
 
-        List<String> fks = ['lic', 'org', 'pkg', 'sub', 'tipp']
+        List<String> fks = ['lic', 'org', 'provider', 'pkg', 'sub', 'tipp', 'vendor']
         fks.each { fk ->
             if (this."${fk}") {
                 refCount++
@@ -293,6 +300,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         name = object instanceof Package ?  'pkg' : name
         name = object instanceof Subscription ?                 'sub' :  name
         name = object instanceof TitleInstancePackagePlatform ? 'tipp' : name
+        name = object instanceof Vendor ? 'vendor' : name
 
         name
     }

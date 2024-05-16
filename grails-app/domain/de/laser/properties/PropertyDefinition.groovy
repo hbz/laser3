@@ -580,11 +580,12 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     /**
      * Retrieves all property definitions defined for organisations; returned are all public ones and those defined by the context institution
      * @param contextOrg the context institution whose own property definitions should be returned
+     * @param ownerType the type of property definition, defaulting to {@link PropertyDefinition#ORG_PROP}
      * @return a {@link List} of matching property definitions
      */
-    static List<PropertyDefinition> findAllPublicAndPrivateOrgProp(Org contextOrg){
-        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and (pd.tenant is null or pd.tenant = :tenant) order by pd.name_de asc", [
-                        defList: [PropertyDefinition.ORG_PROP],
+    static List<PropertyDefinition> findAllPublicAndPrivateOrgProp(Org contextOrg, String ownerType = PropertyDefinition.ORG_PROP){
+        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr = :ownerType and (pd.tenant is null or pd.tenant = :tenant) order by pd.name_de asc", [
+                        ownerType: ownerType,
                         tenant: contextOrg
                     ])
     }

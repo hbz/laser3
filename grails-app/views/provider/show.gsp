@@ -1,4 +1,4 @@
-<%@ page import="de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.ProviderLink; de.laser.Contact; de.laser.remote.ApiSource" %>
 
 <g:set var="entityName" value="${message(code: 'default.provider.label')}"/>
 
@@ -228,7 +228,7 @@
                     </dl>
                     <g:if test="${provider.status == RDStore.PROVIDER_STATUS_RETIRED}">
                         <dl>
-                            <dt>${message(code: 'org.retirementDate.label')}</dt>
+                            <dt>${message(code: 'provider.retirementDate.label')}</dt>
                             <dd>
                                 <g:formatDate date="${provider.retirementDate}" format="${message(code: 'default.date.format.notime')}"/>
                             </dd>
@@ -237,25 +237,24 @@
                 </div>
             </div><!-- .card -->
 
-            <%--
             <g:if test="${links || editable}">
                 <div class="ui card">
                     <div class="content">
-                        <h2 class="ui header"><g:message code="org.retirementLinking.label"/></h2>
+                        <h2 class="ui header"><g:message code="provider.retirementLinking.label"/></h2>
                         <g:if test="${links}">
                             <table class="ui three column table">
                                 <g:each in="${links}" var="row">
                                     <%
-                                        String[] linkTypes = RDStore.COMBO_TYPE_FOLLOWS.getI10n('value').split('\\|')
+                                        String[] linkTypes = RDStore.PROVIDER_LINK_FOLLOWS.getI10n('value').split('\\|')
                                         int perspectiveIndex
                                         Org pair
-                                        if(provider == row.fromOrg) {
+                                        if(provider == row.from) {
                                             perspectiveIndex = 0
-                                            pair = row.toOrg
+                                            pair = row.to
                                         }
-                                        else if(provider == row.toOrg) {
+                                        else if(provider == row.to) {
                                             perspectiveIndex = 1
-                                            pair = row.fromOrg
+                                            pair = row.from
                                         }
                                     %>
                                     <g:if test="${pair != null}">
@@ -265,9 +264,9 @@
                                             <g:if test="${editable}">
                                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.unlink')}">
                                                     <g:link class="ui negative icon button la-modern-button la-selectable-button js-open-confirm-modal"
-                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
+                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.general")}"
                                                             data-confirm-term-how="unlink"
-                                                            action="unlinkOrg" params="[id: provider.id, combo: row.id]"
+                                                            action="unlinkProviderVendor" params="[id: provider.id, combo: row.id]"
                                                             role="button"
                                                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                                                         <i class="unlink icon"></i>
@@ -282,10 +281,10 @@
                         <g:if test="${editable}">
                             <div class="ui la-vertical buttons">
                                 <%
-                                    Map<String,Object> model = [tmplText:message(code: 'org.linking.addLink'),
+                                    Map<String,Object> model = [tmplText:message(code: 'provider.linking.addLink'),
                                                                 tmplID:'addLink',
-                                                                tmplButtonText:message(code: 'org.linking.addLink'),
-                                                                tmplModalID:'org_add_link',
+                                                                tmplButtonText:message(code: 'provider.linking.addLink'),
+                                                                tmplModalID:'provider_add_link',
                                                                 editmode: editable,
                                                                 linkInstanceType: Combo.class.name,
                                                                 context: provider
@@ -298,7 +297,6 @@
                     </div>
                 </div>
             </g:if>
-            --%>
 
             <div class="ui card">
                     <div class="content">

@@ -10,6 +10,8 @@ import de.laser.traces.DeletedObject
 import de.laser.utils.SwissKnife
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.hibernate.Session
+import org.springframework.transaction.TransactionStatus
 
 @Transactional
 class VendorService {
@@ -105,57 +107,105 @@ class VendorService {
      * Changes agencies ({@link Org}s defined as such) into {@link Vendor}s
      */
     void migrateVendors() {
-        Org.withTransaction { ts ->
+        Org.withTransaction { TransactionStatus ts ->
+            Set<Combo> agencyCombos = Combo.executeQuery('select c from Combo c, Org o join o.orgType ot where (c.fromOrg = o or c.toOrg = o) and ot = :agency', [agency: RDStore.OT_AGENCY])
+            agencyCombos.each { Combo ac ->
+                VendorLink vl = new VendorLink(type: RDStore.PROVIDER_LINK_FOLLOWS)
+                vl.from = Vendor.convertFromAgency(ac.fromOrg)
+                vl.to = Vendor.convertFromAgency(ac.toOrg)
+                vl.dateCreated = ac.dateCreated
+                if(vl.save()) {
+                    ac.delete()
+                }
+                else {
+                    log.error(vl.getErrors().getAllErrors().toListString())
+                }
+            }
+            ts.flush()
+            Set<PersonRole> agencyContacts = PersonRole.executeQuery('select pr from PersonRole pr join pr.org o join o.orgType ot where ot = :agency', [agency: RDStore.OT_AGENCY])
+            agencyContacts.each { PersonRole pr ->
+                Provider p = Provider.findByGlobalUID(pr.org.globalUID.replace(Org.class.simpleName.toLowerCase(), Provider.class.simpleName.toLowerCase()))
+                if (!p) {
+                    p = Provider.convertFromOrg(pr.org)
+                }
+                pr.provider = p
+                pr.org = null
+                pr.save()
+            }
+            ts.flush()
+            Set<DocContext> docOrgContexts = DocContext.executeQuery('select dc from DocContext dc where dc.org.orgType = :agency', [agency: RDStore.OT_AGENCY])
+            docOrgContexts.each { DocContext dc ->
+                Vendor v = Vendor.findByGlobalUID(dc.org.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
+                if (!v) {
+                    v = Vendor.convertFromAgency(dc.org)
+                }
+                if(dc.targetOrg == dc.org)
+                    dc.targetOrg = null
+                dc.org = null
+                dc.vendor = v
+                dc.save()
+            }
+            ts.flush()
+            Set<DocContext> docTargetOrgContexts = DocContext.executeQuery('select dc from DocContext dc where dc.targetOrg.orgType = :agency', [agency: RDStore.OT_AGENCY])
+            docTargetOrgContexts.each { DocContext dc ->
+                Vendor v = Vendor.findByGlobalUID(dc.org.globalUID.replace(Org.class.simpleName.toLowerCase(), Provider.class.simpleName.toLowerCase()))
+                if (!v) {
+                    v = Vendor.convertFromAgency(dc.org)
+                }
+                dc.targetOrg = null
+                dc.org = null
+                dc.vendor = v
+                dc.save()
+            }
+            ts.flush()
             Set<OrgRole> agencyRelations = OrgRole.findAllByRoleType(RDStore.OR_AGENCY)
             Set<Long> toDelete = []
             agencyRelations.each { OrgRole ar ->
                 Vendor v = Vendor.findByGlobalUID(ar.org.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
-                if(!v) {
+                if (!v) {
                     v = Vendor.convertFromAgency(ar.org)
                 }
-                if(ar.sub || ar.lic) {
+                if (ar.sub || ar.lic) {
                     VendorRole vr = new VendorRole(vendor: v, isShared: ar.isShared)
-                    if(ar.sub)
+                    if (ar.sub)
                         vr.subscription = ar.sub
-                    if(ar.lic)
+                    if (ar.lic)
                         vr.license = ar.lic
-                    if(vr.save()) {
-                        if(ar.isShared) {
-                            if(ar.sub) {
+                    if (vr.save()) {
+                        if (ar.isShared) {
+                            if (ar.sub) {
                                 vr.addShareForTarget_trait(ar.sub)
                             }
-                            if(ar.lic) {
+                            if (ar.lic) {
                                 vr.addShareForTarget_trait(ar.lic)
                             }
                             //log.debug("${OrgRole.executeUpdate('delete from OrgRole oorr where oorr.sharedFrom = :sf', [sf: ar])} shares deleted")
                         }
                         log.debug("processed: ${vr.vendor}:${vr.subscription}:${vr.license} ex ${ar.org}:${ar.sub}:${ar.lic}")
-                    }
-                    else log.error(vr.errors.getAllErrors().toListString())
-                }
-                else if(ar.pkg) {
+                    } else log.error(vr.errors.getAllErrors().toListString())
+                } else if (ar.pkg) {
                     PackageVendor pv = new PackageVendor(vendor: v, pkg: ar.pkg)
-                    if(pv.save())
+                    if (pv.save())
                         log.debug("processed: ${pv.vendor}:${pv.pkg} ex ${ar.org}:${ar.pkg}")
                     else log.error(pv.errors.getAllErrors().toListString())
                 }
-                toDelete << ar.id
+                ar.delete()
             }
-            toDelete.collate(1000).eachWithIndex { subSet, int i ->
-                log.debug("deleting records ${i*1000}-${(i+1)*1000}")
+            toDelete.collate(50000).eachWithIndex { subSet, int i ->
+                log.debug("deleting records ${i * 50000}-${(i + 1) * 50000}")
                 OrgRole.executeUpdate('delete from OrgRole ar where ar.sharedFrom.id in (:toDelete)', [toDelete: subSet])
                 OrgRole.executeUpdate('delete from OrgRole ar where ar.id in (:toDelete)', [toDelete: subSet])
             }
             ts.flush()
-            Set<Org> agencies = Org.executeQuery('select o from Org o join o.orgType ot where ot = :agency', [agency: RDStore.OT_AGENCY])
-            agencies.each { Org agency ->
-                OrgRole.executeUpdate('delete from OrgRole oo where oo.org = :agency and oo.roleType not in (:toKeep)', [agency: agency, toKeep: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER, RDStore.OR_LICENSOR, RDStore.OR_AGENCY]])
-                Map<String, Object> delResult = deletionService.deleteOrganisation(agency, null, false)
-                if(delResult.deletable == false) {
-                    log.info("${agency.name}:${agency.id} could not be deleted. Pending: ${delResult.info.findAll{ info -> info[1].size() > 0 && info[2] == DeletionService.FLAG_BLOCKER }.toListString()}")
-                    agency.orgType.remove(RDStore.OT_AGENCY)
-                    agency.save()
-                }
+        }
+        Set<Org> agencies = Org.executeQuery('select o from Org o join o.orgType ot where ot = :agency', [agency: RDStore.OT_AGENCY])
+        agencies.each { Org agency ->
+            OrgRole.executeUpdate('delete from OrgRole oo where oo.org = :agency and oo.roleType not in (:toKeep)', [agency: agency, toKeep: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER, RDStore.OR_LICENSOR, RDStore.OR_AGENCY]])
+            Map<String, Object> delResult = deletionService.deleteOrganisation(agency, null, false)
+            if(delResult.deletable == false) {
+                log.info("${agency.name}:${agency.id} could not be deleted. Pending: ${delResult.info.findAll{ info -> info[1].size() > 0 && info[2] == DeletionService.FLAG_BLOCKER }.toListString()}")
+                agency.removeFromOrgType(RDStore.OT_AGENCY)
+                agency.save()
             }
         }
     }

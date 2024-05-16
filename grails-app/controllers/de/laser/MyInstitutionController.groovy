@@ -927,7 +927,7 @@ class MyInstitutionController  {
             queryParams.status = Params.getRefdataList(params, 'provStatus')
         }
         else if(!params.containsKey('provStatus') && !params.containsKey('filterSet')) {
-            queryArgs << "p.status = :status"
+            queryArgs << "p.status.value = :status"
             queryParams.status = "Current"
             params.provStatus = RDStore.PROVIDER_STATUS_CURRENT.id
         }
@@ -1114,11 +1114,11 @@ class MyInstitutionController  {
                 }
                 else query += ' and s.hasPerpetualAccess = true '
             }
-            query += ')' //opened in line 1041 or 1045
+            query += ')' //opened in line 1100 or 1105
             if(params.subPerpetualAccess == RDStore.YN_NO)
                 query += ' and s.hasPerpetualAccess = false '
         }
-        else query += ')' //opened in line 1041 or 1045
+        else query += ')' //opened in line 1100 or 1105
 
         String consortiumFilter = ''
         if(result.showConsortiaFunctions)

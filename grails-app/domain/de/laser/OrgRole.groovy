@@ -78,7 +78,7 @@ class OrgRole implements ShareableTrait {
    startDate column:'or_start_date'
      endDate column:'or_end_date'
     isShared column:'or_is_shared'
-  sharedFrom column:'or_shared_from_fk'
+  sharedFrom column:'or_shared_from_fk',index:'or_shared_from_idx'
          org sort: 'name', order: 'asc'
 
       dateCreated column: 'or_date_created'
