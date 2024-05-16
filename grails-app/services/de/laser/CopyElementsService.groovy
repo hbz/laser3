@@ -136,8 +136,8 @@ class CopyElementsService {
             }
 
             // restrict visible for templates/links/orgLinksAsList
-            result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(sourceObject)
-            result.target_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(targetObject)
+            result.source_visibleProviders = subscriptionService.getVisibleProviders(sourceObject)
+            result.target_visibleProviders = subscriptionService.getVisibleProviders(targetObject)
             result.source_visibleVendors = subscriptionService.getVisibleVendors(sourceObject)
             result.target_visibleVendors = subscriptionService.getVisibleVendors(targetObject)
 
@@ -152,8 +152,8 @@ class CopyElementsService {
 
         if (sourceObject instanceof License) {
             // restrict visible for templates/links/orgLinksAsList
-            result.source_visibleOrgRelations = licenseService.getVisibleOrgRelations(sourceObject)
-            result.target_visibleOrgRelations = licenseService.getVisibleOrgRelations(targetObject)
+            result.source_visibleProviders = licenseService.getVisibleProviders(sourceObject)
+            result.target_visibleProviders = licenseService.getVisibleProviders(targetObject)
             result.source_visibleVendors = licenseService.getVisibleVendors(sourceObject)
             result.target_visibleVendors = licenseService.getVisibleVendors(targetObject)
 

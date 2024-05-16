@@ -230,20 +230,20 @@
                     </g:if>
                 </tr>
             </g:if>
-            <g:if test="${sourceObject.hasProperty("orgRelations") && !contextService.getOrg().isCustomerType_Support()}">
+            <g:if test="${!contextService.getOrg().isCustomerType_Support()}">
                 <tr data-type="takeOrgRelations" data-element="copyObject.takeOrgRelations">
                     <td data-element="source">
                         <div>
-                <g:if test="${!source_visibleOrgRelations}">
-                    <strong><i class="university icon"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.organisations.label")}:
+                <g:if test="${!source_visibleProviders}">
+                    <strong><i class="handshake icon"></i>&nbsp;${message(code: "default.provider.label")}:
                     </strong>
                 </g:if>
-                <g:each in="${source_visibleOrgRelations}" var="source_role">
-                    <g:if test="${source_role.org}">
+                <g:each in="${source_visibleProviders}" var="source_role">
+                    <g:if test="${source_role.provider}">
                         <div data-oid="${genericOIDService.getOID(source_role)}" class="la-multi-sources">
                             <strong><i class="university icon"></i>&nbsp;${source_role.roleType.getI10n("value")}:</strong>
-                            <g:link controller="organisation" action="show" target="_blank" id="${source_role.org.id}">
-                                ${source_role.org.name}
+                            <g:link controller="provider" action="show" target="_blank" id="${source_role.provider.id}">
+                                ${source_role.provider.name}
                             </g:link>
                             <br />
                         </div>
@@ -253,8 +253,8 @@
             </td>
                 <g:if test="${isConsortialObjects}">
                     <td class="center aligned">
-                        <g:each in="${source_visibleOrgRelations}" var="source_role">
-                            <g:if test="${source_role.org}">
+                        <g:each in="${source_visibleProviders}" var="source_role">
+                            <g:if test="${source_role.provider}">
                                 <div class="ui checkbox la-toggle-radio la-share">
                                     <input class="ui checkbox" type="checkbox" name="toggleShareOrgRoles"
                                            value="${source_role.class.name}:${source_role.id}" ${source_role.isShared ? 'checked' : ''}/>
@@ -268,8 +268,8 @@
 %{--    TODO : markup fail            </td>--}%
             %{--AKTIONEN:--}%
                 <td class="center aligned">
-                    <g:each in="${source_visibleOrgRelations}" var="source_role">
-                        <g:if test="${source_role.org}">
+                    <g:each in="${source_visibleProviders}" var="source_role">
+                        <g:if test="${source_role.provider}">
                             <div class="ui checkbox la-toggle-radio la-replace">
                                 <g:checkBox name="copyObject.takeOrgRelations" data-action="copy" value="${genericOIDService.getOID(source_role)}" checked="${true}"/>
                             </div>
@@ -280,18 +280,18 @@
                 <g:if test="${!copyObject}">
                     <td data-element="target">
                         <div>
-                            <g:if test="${!target_visibleOrgRelations}">
-                                <strong><i class="university icon"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.organisations.label")}:
+                            <g:if test="${!target_visibleProviders}">
+                                <strong><i class="handshake icon"></i>&nbsp;${message(code: "default.provider.label")}:
                                 </strong>
                             </g:if>
-                            <g:each in="${target_visibleOrgRelations}" var="target_role">
-                                <g:if test="${target_role.org}">
+                            <g:each in="${target_visibleProviders}" var="target_role">
+                                <g:if test="${target_role.provider}">
                                     <div data-oid="${genericOIDService.getOID(target_role)}">
                                         <strong><i class="university icon"></i>&nbsp;${target_role.roleType.getI10n("value")}:
                                         </strong>
-                                        <g:link controller="organisation" action="show" target="_blank"
-                                                id="${target_role.org.id}">
-                                            ${target_role.org.name}
+                                        <g:link controller="provider" action="show" target="_blank"
+                                                id="${target_role.provider.id}">
+                                            ${target_role.provider.name}
                                         </g:link>
                                         <g:if test="${isConsortialObjects}">
                                             <div class="right aligned wide column">
@@ -317,8 +317,8 @@
                         </div>
                     </td>
                     <td>
-                        <g:each in="${target_visibleOrgRelations}" var="target_role">
-                            <g:if test="${target_role.org}">
+                        <g:each in="${target_visibleProviders}" var="target_role">
+                            <g:if test="${target_role.provider}">
                                 <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
                                     <g:checkBox name="copyObject.deleteOrgRelations" data-action="delete" value="${genericOIDService.getOID(target_role)}" checked="${false}"/>
                                 </div>
@@ -427,16 +427,16 @@
                             <strong>
                                 <i class="address card icon"></i> ${message(code: 'subscription.specificSubscriptionEditors')}:
                             </strong>
-                            <g:each in="${source_visibleOrgRelations}" var="source_role">
-                                <g:if test="${source_role.org}">
-                                    <g:if test="${Person.getPublicByOrgAndObjectResp(source_role.org, sourceObject, 'Specific subscription editor') ||
-                                            Person.getPrivateByOrgAndObjectRespFromAddressbook(source_role.org, sourceObject, 'Specific subscription editor', contextService.getOrg())}">
+                            <g:each in="${source_visibleProviders}" var="source_role">
+                                <g:if test="${source_role.provider}">
+                                    <g:if test="${Person.getPublicByOrgAndObjectResp(source_role.provider, sourceObject, 'Specific subscription editor') ||
+                                            Person.getPrivateByOrgAndObjectRespFromAddressbook(source_role.provider, sourceObject, 'Specific subscription editor', contextService.getOrg())}">
 
                                     <%-- public --%>
-                                        <g:each in="${Person.getPublicByOrgAndObjectResp(source_role.org, sourceObject, 'Specific subscription editor')}"
+                                        <g:each in="${Person.getPublicByOrgAndObjectResp(source_role.provider, sourceObject, 'Specific subscription editor')}"
                                                 var="resp">
 
-                                            <div data-oid="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.org, 'Specific subscription editor'))}"
+                                            <div data-oid="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.provider, 'Specific subscription editor'))}"
                                                  class="la-multi-sources">
                                                 <span class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'address.public')}"
@@ -445,18 +445,18 @@
                                                 </span>
                                                 ${resp}
                                                 (<strong><i
-                                                    class="university icon"></i>&nbsp;${source_role.roleType.getI10n("value")}:
+                                                    class="handshake icon"></i>&nbsp;${source_role.roleType.getI10n("value")}:
                                             </strong>
-                                                <g:link controller="organisation" action="show" target="_blank"
-                                                        id="${source_role.org.id}">${source_role.org.name}</g:link>)
+                                                <g:link controller="provider" action="show" target="_blank"
+                                                        id="${source_role.provider.id}">${source_role.provider.name}</g:link>)
                                             </div>
                                             <br />
                                         </g:each>
                                     <%-- public --%>
                                     <%-- private --%>
-                                        <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(source_role.org, sourceObject, 'Specific subscription editor', contextService.getOrg())}"
+                                        <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(source_role.provider, sourceObject, 'Specific subscription editor', contextService.getOrg())}"
                                                 var="resp">
-                                            <div data-oid="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.org, 'Specific subscription editor'))}"
+                                            <div data-oid="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.provider, 'Specific subscription editor'))}"
                                                  class="la-multi-sources">
                                                 <span class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'address.private')}"
@@ -467,8 +467,8 @@
                                                 (<strong><i
                                                     class="university icon"></i>&nbsp;${source_role.roleType.getI10n("value")}:
                                             </strong>
-                                                <g:link controller="organisation" action="show" target="_blank"
-                                                        id="${source_role.org.id}">${source_role.org.name}</g:link>)
+                                                <g:link controller="provider" action="show" target="_blank"
+                                                        id="${source_role.provider.id}">${source_role.provider.name}</g:link>)
                                             </div>
                                             <br />
                                         </g:each><%-- private --%>
@@ -484,29 +484,29 @@
 
                 %{--AKTIONEN:--}%
                     <td class="center aligned">
-                        <g:each in="${source_visibleOrgRelations}" var="source_role">
-                            <g:if test="${source_role.org}">
+                        <g:each in="${source_visibleProviders}" var="source_role">
+                            <g:if test="${source_role.provider}">
                             <%-- public --%>
-                                <g:if test="${Person.getPublicByOrgAndObjectResp(source_role.org, sourceObject, 'Specific subscription editor')}">
-                                    <g:each in="${Person.getPublicByOrgAndObjectResp(source_role.org, sourceObject, 'Specific subscription editor')}"
+                                <g:if test="${Person.getPublicByOrgAndObjectResp(source_role.provider, sourceObject, 'Specific subscription editor')}">
+                                    <g:each in="${Person.getPublicByOrgAndObjectResp(source_role.provider, sourceObject, 'Specific subscription editor')}"
                                             var="resp">
                                         <div class="ui checkbox la-toggle-radio la-replace">
                                             <g:checkBox name="subscription.takeSpecificSubscriptionEditors"
                                                         data-action="copy"
-                                                        value="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.org, 'Specific subscription editor'))}"
+                                                        value="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.provider, 'Specific subscription editor'))}"
                                                         checked="${true}"/>
                                         </div>
                                         <br />
                                     </g:each>
                                 </g:if><%-- public --%>
                             <%-- private --%>
-                                <g:if test="${Person.getPrivateByOrgAndObjectRespFromAddressbook(source_role.org, sourceObject, 'Specific subscription editor', contextService.getOrg())}">
-                                    <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(source_role.org, sourceObject, 'Specific subscription editor', contextService.getOrg())}"
+                                <g:if test="${Person.getPrivateByOrgAndObjectRespFromAddressbook(source_role.provider, sourceObject, 'Specific subscription editor', contextService.getOrg())}">
+                                    <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(source_role.provider, sourceObject, 'Specific subscription editor', contextService.getOrg())}"
                                             var="resp">
                                         <div class="ui checkbox la-toggle-radio la-replace">
                                             <g:checkBox name="subscription.takeSpecificSubscriptionEditors"
                                                         data-action="copy"
-                                                        value="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.org, 'Specific subscription editor'))}"
+                                                        value="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.provider, 'Specific subscription editor'))}"
                                                         checked="${true}"/>
                                         </div>
                                         <br />
@@ -521,15 +521,15 @@
                                 <strong>
                                     <i class="address card icon"></i> ${message(code: 'subscription.specificSubscriptionEditors')}:
                                 </strong>
-                                <g:each in="${target_visibleOrgRelations}" var="target_role">
-                                    <g:if test="${target_role.org}">
-                                        <g:if test="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.org, targetObject, 'Specific subscription editor', contextService.getOrg()) ||
-                                                Person.getPublicByOrgAndObjectResp(target_role.org, targetObject, 'Specific subscription editor')}">
+                                <g:each in="${target_visibleProviders}" var="target_role">
+                                    <g:if test="${target_role.provider}">
+                                        <g:if test="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.provider, targetObject, 'Specific subscription editor', contextService.getOrg()) ||
+                                                Person.getPublicByOrgAndObjectResp(target_role.provider, targetObject, 'Specific subscription editor')}">
                                         <%-- public --%>
-                                            <g:each in="${Person.getPublicByOrgAndObjectResp(target_role.org, targetObject, 'Specific subscription editor')}"
+                                            <g:each in="${Person.getPublicByOrgAndObjectResp(target_role.provider, targetObject, 'Specific subscription editor')}"
                                                     var="resp">
 
-                                                <div data-oid="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.org, 'Specific subscription editor'))}"
+                                                <div data-oid="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.provider, 'Specific subscription editor'))}"
                                                      class="la-multi-sources">
                                                     <span class="la-popup-tooltip la-delay"
                                                           data-content="${message(code: 'address.public')}"
@@ -538,19 +538,19 @@
                                                     </span>
                                                     ${resp}
                                                     (<strong><i
-                                                        class="university icon"></i>&nbsp;${target_role.roleType.getI10n("value")}:
+                                                        class="handshake icon"></i>&nbsp;${target_role.roleType.getI10n("value")}:
                                                 </strong>
-                                                    <g:link controller="organisation" action="show" target="_blank"
-                                                            id="${target_role.org.id}">${target_role.org.name}</g:link>)
+                                                    <g:link controller="provider" action="show" target="_blank"
+                                                            id="${target_role.provider.id}">${target_role.provider.name}</g:link>)
                                                 </div>
                                                 <br />
                                             </g:each>
                                         <%-- public --%>
                                         <%-- private --%>
 
-                                            <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.org, targetObject, 'Specific subscription editor', contextService.getOrg())}"
+                                            <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.provider, targetObject, 'Specific subscription editor', contextService.getOrg())}"
                                                     var="resp">
-                                                <div data-oid="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.org, 'Specific subscription editor'))}"
+                                                <div data-oid="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.provider, 'Specific subscription editor'))}"
                                                      class="la-multi-sources">
                                                     <span class="la-popup-tooltip la-delay"
                                                           data-content="${message(code: 'address.private')}"
@@ -561,8 +561,8 @@
                                                     (<strong><i
                                                         class="university icon"></i>&nbsp;${target_role.roleType.getI10n("value")}:
                                                 </strong>
-                                                    <g:link controller="organisation" action="show" target="_blank"
-                                                            id="${target_role.org.id}">${target_role.org.name}</g:link>)
+                                                    <g:link controller="provider" action="show" target="_blank"
+                                                            id="${target_role.provider.id}">${target_role.provider.name}</g:link>)
                                                 </div>
                                                 <br />
                                             </g:each>
@@ -573,30 +573,30 @@
                             </div>
                         </td>
                         <td>
-                            <g:each in="${target_visibleOrgRelations}" var="target_role">
-                                <g:if test="${target_role.org}">
+                            <g:each in="${target_visibleProviders}" var="target_role">
+                                <g:if test="${target_role.provider}">
 
                                 <%-- public --%>
-                                    <g:if test="${Person.getPublicByOrgAndObjectResp(target_role.org, sourceObject, 'Specific subscription editor')}">
-                                        <g:each in="${Person.getPublicByOrgAndObjectResp(target_role.org, sourceObject, 'Specific subscription editor')}"
+                                    <g:if test="${Person.getPublicByOrgAndObjectResp(target_role.provider, sourceObject, 'Specific subscription editor')}">
+                                        <g:each in="${Person.getPublicByOrgAndObjectResp(target_role.provider, sourceObject, 'Specific subscription editor')}"
                                                 var="resp">
                                             <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
                                                 <g:checkBox name="subscription.deleteSpecificSubscriptionEditors"
                                                             data-action="delete"
-                                                            value="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.org, 'Specific subscription editor'))}"
+                                                            value="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.provider, 'Specific subscription editor'))}"
                                                             checked="${false}"/>
                                             </div>
                                             <br />
                                         </g:each>
                                     </g:if><%-- public --%>
                                 <%-- private --%>
-                                    <g:if test="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.org, sourceObject, 'Specific subscription editor', contextService.getOrg())}">
-                                        <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.org, sourceObject, 'Specific subscription editor', contextService.getOrg())}"
+                                    <g:if test="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.provider, sourceObject, 'Specific subscription editor', contextService.getOrg())}">
+                                        <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.provider, sourceObject, 'Specific subscription editor', contextService.getOrg())}"
                                                 var="resp">
                                             <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
                                                 <g:checkBox name="subscription.deleteSpecificSubscriptionEditors"
                                                             data-action="delete"
-                                                            value="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.org, 'Specific subscription editor'))}"
+                                                            value="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.provider, 'Specific subscription editor'))}"
                                                             checked="${false}"/>
                                             </div>
                                             <br />
