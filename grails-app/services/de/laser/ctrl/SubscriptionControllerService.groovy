@@ -4101,10 +4101,8 @@ class SubscriptionControllerService {
                     return null
                 }
             }
-            Set<Long> excludes = [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id]
-            if(result.institution.isCustomerType_Consortium())
-                excludes << RDStore.OR_SUBSCRIPTION_CONSORTIA.id
-            result.visibleOrgRelations = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType.id in excludes) }.sort { OrgRole oo -> oo.org.sortname }
+
+            result.providerRoles = subscriptionService.getVisibleProviders(result.subscription)
             result.vendorRoles = subscriptionService.getVisibleVendors(result.subscription)
         }
         else {

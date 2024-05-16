@@ -370,17 +370,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
                 newTargets.each{ sub ->
                     log.debug('adding for: ' + sub)
-
-                    // ERMS-1185
-                    if (sharedObject.roleType in [RDStore.OR_AGENCY, RDStore.OR_PROVIDER]) {
-                        List<OrgRole> existingOrgRoles = OrgRole.findAll{
-                            sub == sub && roleType == sharedObject.roleType && org == sharedObject.org
-                        }
-                        if (existingOrgRoles) {
-                            log.debug('found existing orgRoles, deleting: ' + existingOrgRoles)
-                            existingOrgRoles.each{ OrgRole tmp -> tmp.delete() }
-                        }
-                    }
                     sharedObject.addShareForTarget_trait(sub)
                 }
             }
@@ -402,6 +391,28 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                     if (existingVendorRoles) {
                         log.debug('found existing vendorRoles, deleting: ' + existingVendorRoles)
                         existingVendorRoles.each{ VendorRole tmp -> tmp.delete() }
+                    }
+                    sharedObject.addShareForTarget_trait(sub)
+                }
+            }
+            else {
+                sharedObject.deleteShare_trait()
+            }
+        }
+        if (sharedObject instanceof ProviderRole) {
+            if (sharedObject.isShared) {
+                List<Subscription> newTargets = Subscription.findAllByInstanceOf(this)
+                log.debug('found targets: ' + newTargets)
+
+                newTargets.each{ sub ->
+                    log.debug('adding for: ' + sub)
+
+                    List<ProviderRole> existingProviderRoles = ProviderRole.findAll{
+                        subscription == sub && provider == sharedObject.provider
+                    }
+                    if (existingProviderRoles) {
+                        log.debug('found existing vendorRoles, deleting: ' + existingProviderRoles)
+                        existingProviderRoles.each{ ProviderRole tmp -> tmp.delete() }
                     }
                     sharedObject.addShareForTarget_trait(sub)
                 }
@@ -493,21 +504,21 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
-     * Retrieves all organisation linked as providers to this subscription
-     * @return a {@link List} of {@link Org}s linked as provider
+     * Retrieves all providers linked to this subscription
+     * @return a {@link List} of {@link Provider}s
      */
-    List<Org> getProviders() {
-        Org.executeQuery('select og.org from OrgRole og where og.sub =:sub and og.roleType = :provider order by og.org.sortname ',
-            [sub: this, provider: RDStore.OR_PROVIDER])
+    List<Provider> getProviders() {
+        Provider.executeQuery('select pr.provider from ProviderRole pr where pr.subscription =:sub order by pr.provider.sortname ',
+            [sub: this])
     }
 
     /**
-     * Retrieves all organisation linked as providers to this subscription
-     * @return a sorted {@link List} of {@link Org}s linked as provider
+     * Retrieves all providers linked to this subscription
+     * @return a sorted {@link List} of {@link Provider}s
      */
-    List<Org> getSortedProviders(String order) {
-        Org.executeQuery('select og.org from OrgRole og where og.sub =:sub and og.roleType = :provider order by og.org.sortname '+order,
-            [sub: this, provider: RDStore.OR_PROVIDER])
+    List<Provider> getSortedProviders(String order) {
+        Provider.executeQuery('select pr.provider from ProviderRole pr where pr.subscription =:sub order by pr.provider.sortname '+order,
+            [sub: this])
     }
 
     /**

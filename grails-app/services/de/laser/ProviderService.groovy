@@ -173,23 +173,33 @@ class ProviderService {
                     p = Provider.convertFromOrg(or.org)
                 }
                 if (or.sub && !ProviderRole.findByProviderAndSubscription(p, or.sub)) {
-                    ProviderRole pr = new ProviderRole(provider: p, subscription: or.sub, isShared: or.isShared)
-                    if (pr.save()) {
-                        if (or.isShared) {
-                            pr.addShareForTarget_trait(or.sub)
-                            //log.debug("${OrgRole.executeUpdate('delete from OrgRole oorr where oorr.sharedFrom = :sf', [sf: or])} shares deleted")
+                    if (!or.sharedFrom) {
+                        ProviderRole pr = new ProviderRole(provider: p, subscription: or.sub, isShared: or.isShared)
+                        if (pr.save()) {
+                            if(pr.isShared) {
+                                List<Subscription> newTargets = Subscription.findAllByInstanceOf(pr.subscription)
+                                newTargets.each{ Subscription sub ->
+                                    pr.addShareForTarget_trait(sub)
+                                }
+                            }
+                            log.debug("processed: ${pr.provider}:${pr.subscription} ex ${or.org}:${or.sub}")
                         }
-                        log.debug("processed: ${pr.provider}:${pr.subscription} ex ${or.org}:${or.sub}")
-                    } else log.error(pr.errors.getAllErrors().toListString())
+                        else log.error(pr.errors.getAllErrors().toListString())
+                    }
                 } else if (or.lic && !ProviderRole.findByProviderAndLicense(p, or.lic)) {
-                    ProviderRole pr = new ProviderRole(provider: p, license: or.lic, isShared: or.isShared)
-                    if (pr.save()) {
-                        if (or.isShared) {
-                            pr.addShareForTarget_trait(or.lic)
-                            //log.debug("${OrgRole.executeUpdate('delete from OrgRole oorr where oorr.sharedFrom = :sf', [sf: or])} shares deleted")
+                    if (!or.sharedFrom) {
+                        ProviderRole pr = new ProviderRole(provider: p, license: or.lic, isShared: or.isShared)
+                        if (pr.save()) {
+                            if(pr.isShared) {
+                                List<License> newTargets = License.findAllByInstanceOf(pr.license)
+                                newTargets.each{ License lic ->
+                                    pr.addShareForTarget_trait(lic)
+                                }
+                            }
+                            log.debug("processed: ${pr.provider}:${pr.license} ex ${or.org}:${or.lic}")
                         }
-                        log.debug("processed: ${pr.provider}:${pr.license} ex ${or.org}:${or.lic}")
-                    } else log.error(pr.errors.getAllErrors().toListString())
+                        else log.error(pr.errors.getAllErrors().toListString())
+                    }
                 } else if (or.pkg) {
                     Package pkg = or.pkg
                     pkg.provider = p

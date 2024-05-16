@@ -7,7 +7,7 @@
         <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
     </ui:controlButtons>
 
-    <ui:h1HeaderWithIcon visibleOrgRelations="${visibleOrgRelations}">
+    <ui:h1HeaderWithIcon visibleProviders="${providerRoles}">
         <ui:xEditable owner="${license}" field="reference" id="reference"/>
     </ui:h1HeaderWithIcon>
 

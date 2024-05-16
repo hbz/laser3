@@ -174,10 +174,16 @@ class VendorService {
                     if (vr.save()) {
                         if (ar.isShared) {
                             if (ar.sub) {
-                                vr.addShareForTarget_trait(ar.sub)
+                                List<Subscription> newTargets = Subscription.findAllByInstanceOf(vr.subscription)
+                                newTargets.each{ Subscription sub ->
+                                    vr.addShareForTarget_trait(sub)
+                                }
                             }
                             if (ar.lic) {
-                                vr.addShareForTarget_trait(ar.lic)
+                                List<License> newTargets = License.findAllByInstanceOf(vr.license)
+                                newTargets.each{ License lic ->
+                                    vr.addShareForTarget_trait(lic)
+                                }
                             }
                             //log.debug("${OrgRole.executeUpdate('delete from OrgRole oorr where oorr.sharedFrom = :sf', [sf: ar])} shares deleted")
                         }

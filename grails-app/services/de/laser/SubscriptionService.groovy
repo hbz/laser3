@@ -976,6 +976,17 @@ join sub.orgRelations or_sub where
     }
 
     /**
+     * Retrieves all visible provider links for the given subscription
+     * @param subscription the subscription to retrieve the relations from
+     * @return a sorted list of visible relations
+     */
+    SortedSet<ProviderRole> getVisibleProviders(Subscription subscription) {
+        SortedSet<ProviderRole> visibleProviderRelations = new TreeSet<ProviderRole>()
+        visibleProviderRelations.addAll(ProviderRole.executeQuery('select pr from ProviderRole pr join pr.provider p where pr.subscription = :subscription order by p.sortname', [subscription: subscription]))
+        visibleProviderRelations
+    }
+
+    /**
      * Retrieves all visible vendor links for the given subscription
      * @param subscription the subscription to retrieve the relations from
      * @return a sorted list of visible relations

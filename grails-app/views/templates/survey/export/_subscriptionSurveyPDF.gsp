@@ -134,23 +134,31 @@
             </dd>
         </dl>
 
-        <g:if test="${visibleOrgRelations}">
+        <g:if test="${visibleProviders}">
 
             <br/>
             <br/>
-            <g:each in="${visibleOrgRelations}" var="role">
-                <g:if test="${role.org}">
+            <g:each in="${visibleProviders}" var="role">
                     <h2>
-                        <g:if test="${role.roleType.value == RDStore.OR_PROVIDER.value}">
-                            ${message(code: 'default.provider.label')}
-                        </g:if>
-                        <g:elseif test="${role.roleType.value == RDStore.OR_AGENCY.value}">
-                            ${message(code: 'default.agency.label')}
-                        </g:elseif>
+                        ${message(code: 'default.provider.label')}
                     </h2>
-                    <g:link absolute="true" controller="organisation" action="show"
-                            id="${role.org.id}">${role.org.name}</g:link>
-                </g:if>
+                    <g:link absolute="true" controller="provider" action="show"
+                            id="${role.provider.id}">${role.provider.name}</g:link>
+            </g:each>
+
+            <br/>
+            <br/>
+        </g:if>
+        <g:if test="${visibleVendors}">
+
+            <br/>
+            <br/>
+            <g:each in="${visibleVendors}" var="role">
+                    <h2>
+                        ${message(code: 'default.agency.label')}
+                    </h2>
+                    <g:link absolute="true" controller="vendor" action="show"
+                            id="${role.vendor.id}">${role.vendor.name}</g:link>
             </g:each>
 
             <br/>

@@ -93,9 +93,9 @@ class LicenseControllerService {
         result.navNextLicense = links.nextLink
         // restrict visible for templates/links/orgLinksAsList - done by Andreas Gálffy
         String i10value = LocaleUtils.getLocalizedAttributeName('value')
-        result.visibleOrgRelations = OrgRole.executeQuery(
-                "select oo from OrgRole oo where oo.lic = :license and oo.org != :context and oo.roleType not in (:roleTypes) order by oo.roleType." + i10value + " asc, oo.org.sortname asc, oo.org.name asc",
-                [license:result.license,context:result.institution,roleTypes:[RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS]]
+        result.visibleProrivers = OrgRole.executeQuery(
+                "select pr from ProviderRole pr join pr.provider p where pr.license = :license order by p.sortname",
+                [license:result.license]
         )
 
         result.visibleVendors = OrgRole.executeQuery(

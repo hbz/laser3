@@ -233,7 +233,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     void updateShare(ShareableTrait sharedObject) {
         log.debug('updateShare: ' + sharedObject)
 
-        if (sharedObject instanceof DocContext || sharedObject instanceof OrgRole || sharedObject instanceof VendorRole) {
+        if (sharedObject instanceof DocContext || sharedObject instanceof OrgRole || sharedObject instanceof VendorRole || sharedObject instanceof ProviderRole) {
             if (sharedObject.isShared) {
                 List<License> newTargets = License.findAllByInstanceOf(this)
                 log.debug('found targets: ' + newTargets)

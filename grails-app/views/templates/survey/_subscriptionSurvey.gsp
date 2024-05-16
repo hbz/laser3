@@ -482,10 +482,22 @@
                                             </table>
                                         </g:if>--}%
 
-                                        <g:if test="${visibleOrgRelations}">
+                                        <g:if test="${visibleProviders}">
 
-                                            <laser:render template="/templates/links/orgLinksAsList"
-                                                      model="${[roleLinks    : visibleOrgRelations,
+                                            <laser:render template="/templates/links/providerLinksAsList"
+                                                      model="${[roleLinks    : visibleProviders,
+                                                                roleObject   : subscription,
+                                                                roleRespValue: 'Specific subscription editor',
+                                                                editmode     : false,
+                                                                showPersons  : false
+                                                      ]}"/>
+
+                                        </g:if>
+
+                                        <g:if test="${visibleVendors}">
+
+                                            <laser:render template="/templates/links/vendorLinksAsList"
+                                                      model="${[roleLinks    : visibleVendors,
                                                                 roleObject   : subscription,
                                                                 roleRespValue: 'Specific subscription editor',
                                                                 editmode     : false,
