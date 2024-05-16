@@ -99,7 +99,7 @@ class SubscriptionInstCfg extends BaseConfig {
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
                                     ],
-                                     'subscription-x-platform' : [
+                                     'subscription-x-platform' : [ // TODO
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : '2axis2values_nonMatches',
                                              chartLabels        : [ 'x.platforms.1', 'x.platforms.2' ]

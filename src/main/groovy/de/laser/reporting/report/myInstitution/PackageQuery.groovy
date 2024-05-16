@@ -188,40 +188,6 @@ class PackageQuery extends BaseQuery {
 
                 handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_PROVIDER_LABEL, noDataList, result)
             }
-//            else if (params.query in ['package-x-provider']) {
-//
-//                result.data = idList ? Org.executeQuery(
-//                        'select o.id, o.name, count(*) from Org o join o.links orgLink where o.id in (:providerIdList) and orgLink.pkg.id in (:idList) group by o.id order by o.name',
-//                        [providerIdList: BaseFilter.getCachedFilterIdList('provider', params), idList: idList]
-//                ) : []
-//
-//                result.data.each { d ->
-//                    result.dataDetails.add([
-//                            query : params.query,
-//                            id    : d[0],
-//                            label : d[1],
-//                            idList: Package.executeQuery(
-//                                    'select pkg.id from Package pkg join pkg.orgs ro join ro.org o where ro.roleType in (:prov) and pkg.id in (:idList) and o.id = :d order by pkg.name',
-//                                    [idList: idList, prov: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER], d: d[0]]
-//                            ),
-//                            value2: Package.executeQuery(
-//                                    'select pkg.id from Package pkg join pkg.orgs ro join ro.org o where ro.roleType = :prov and pkg.id in (:idList) and o.id = :d order by pkg.name',
-//                                    [idList: idList, prov: RDStore.OR_CONTENT_PROVIDER, d: d[0]]
-//                            ).size(),
-//                            value1: Package.executeQuery(
-//                                    'select pkg.id from Package pkg join pkg.orgs ro join ro.org o where ro.roleType = :prov and pkg.id in (:idList) and o.id = :d order by pkg.name',
-//                                    [idList: idList, prov: RDStore.OR_PROVIDER, d: d[0]] // !!!!
-//                            ).size()
-//                    ])
-//                }
-//
-//                List<Long> noDataList = Package.executeQuery(
-//                        'select pkg.id from Package pkg where pkg.id in (:idList) and not exists (select ro from OrgRole ro where ro.roleType in (:prov) and ro.pkg.id = pkg.id) order by pkg.name',
-//                        [idList: idList, prov: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER]]
-//                )
-//
-//                handleGenericNonMatchingData2Values_TMP(params.query, BaseQuery.NO_PROVIDER_LABEL, noDataList, result)
-//            }
             else if (params.query in ['package-x-platform']) {
 
                 sharedQuery_package_platform()
@@ -229,16 +195,16 @@ class PackageQuery extends BaseQuery {
             else if (params.query in ['package-x-platformProvider']) {
 
                 // TODO
-//                result.data = idList ? Provider.executeQuery(
-//                        'select pro.id, pro.name, count(*) from Package pkg join pkg.nominalPlatform plt join plt.provider pro ' +
-//                        'where plt.id in (:platformIdList) and pro.id in (:providerIdList) and pkg.id in (:idList) group by pro.id order by pro.name',
-//                        [platformIdList: BaseFilter.getCachedFilterIdList('platform', params), providerIdList: BaseFilter.getCachedFilterIdList('provider', params), idList: idList]
-//                ) : []
                 result.data = idList ? Provider.executeQuery(
                         'select pro.id, pro.name, count(*) from Package pkg join pkg.nominalPlatform plt join plt.provider pro ' +
-                        'where plt.id in (:platformIdList) and pkg.id in (:idList) group by pro.id order by pro.name',
-                        [platformIdList: BaseFilter.getCachedFilterIdList('platform', params), idList: idList]
+                        'where plt.id in (:platformIdList) and pro.id in (:providerIdList) and pkg.id in (:idList) group by pro.id order by pro.name',
+                        [platformIdList: BaseFilter.getCachedFilterIdList('platform', params), providerIdList: BaseFilter.getCachedFilterIdList('provider', params), idList: idList]
                 ) : []
+//                result.data = idList ? Provider.executeQuery(
+//                        'select pro.id, pro.name, count(*) from Package pkg join pkg.nominalPlatform plt join plt.provider pro ' +
+//                        'where plt.id in (:platformIdList) and pkg.id in (:idList) group by pro.id order by pro.name',
+//                        [platformIdList: BaseFilter.getCachedFilterIdList('platform', params), idList: idList]
+//                ) : []
 
                 result.data.each { d ->
                     result.dataDetails.add([

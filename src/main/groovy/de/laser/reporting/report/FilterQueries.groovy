@@ -81,9 +81,13 @@ class FilterQueries {
                 'select distinct pro.id from SubscriptionPackage subPkg join subPkg.subscription sub join subPkg.pkg pkg join pkg.provider pro where sub.id in (:subIdList)',
                 [subIdList: subIdList]
         ) : []
+        List<Long> providerIdList3 = subIdList ? Platform.executeQuery(
+                'select distinct pro.id from SubscriptionPackage subPkg join subPkg.subscription sub join subPkg.pkg pkg join pkg.nominalPlatform plt join plt.provider pro where sub.id in (:subIdList)',
+                [subIdList: subIdList]
+        ) : []
 // providerStatus: RDStore.PROVIDER_STATUS_DELETED,
 // and (pr.provider.status is null or pr.provider.status != :providerStatus)
-        (providerIdList1 + providerIdList2).unique() as List<Long>
+        (providerIdList1 + providerIdList2 + providerIdList3).unique() as List<Long>
     }
 
     static List<Long> getAllVendorIdList() {
