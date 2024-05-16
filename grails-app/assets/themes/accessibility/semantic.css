@@ -55742,6 +55742,12 @@ Floated Menu / Item
          Theme Overrides
 *******************************/
 
+/* Disabled */
+
+.ui.ui.menu .item.disabled {
+  pointer-events: auto;
+}
+
 .ui.menu .item.la-logo-item {
   padding-left: 0;
 }
@@ -71258,7 +71264,8 @@ select.ui.dropdown {
 
 .ui.disabled.dropdown,
 .ui.dropdown .menu > .disabled.item {
-  pointer-events: auto!important;
+  pointer-events: auto;
+  cursor: help;
 }
 
 .la-small-dropdown {

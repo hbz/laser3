@@ -58,7 +58,8 @@
 /* Disabled */
 .ui.disabled.dropdown,
 .ui.dropdown .menu > .disabled.item {
-  pointer-events: auto!important;
+  pointer-events: auto;
+  cursor: help;
 }
 .la-small-dropdown {
     width: auto!important;

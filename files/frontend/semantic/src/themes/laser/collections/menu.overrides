@@ -1,3 +1,10 @@
+/* Disabled */
+.ui.ui.menu .item.disabled {
+  pointer-events: auto;
+  cursor: help;
+}
+
+
 
 .ui.menu{
   .item {
