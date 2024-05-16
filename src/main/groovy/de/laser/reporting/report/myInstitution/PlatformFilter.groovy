@@ -2,6 +2,7 @@ package de.laser.reporting.report.myInstitution
 
 import de.laser.*
 import de.laser.helper.Params
+import de.laser.reporting.report.FilterQueries
 import de.laser.storage.BeanStore
 import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
@@ -30,11 +31,10 @@ class PlatformFilter extends BaseFilter {
 
         switch (filterSource) {
             case 'all-plt':
-                queryParams.platformIdList = _getAllPlatformIdList()
+                queryParams.platformIdList = FilterQueries.getAllPlatformIdList()
                 break
             case 'my-plt':
-                queryParams.platformIdList = _getMyPlatformIdList()
-
+                queryParams.platformIdList = FilterQueries.getMyPlatformIdList()
 //                queryParams.platformIdList = Platform.executeQuery(
 //                        "select distinct plt.id from SubscriptionPackage subPkg join subPkg.subscription sub join subPkg.pkg pkg, " +
 //                        "TitleInstancePackagePlatform tipp join tipp.platform plt where tipp.pkg = pkg " +
@@ -206,50 +206,10 @@ class PlatformFilter extends BaseFilter {
         filterResult
     }
 
-//    static void _handleSubsetOrgFilter(String partKey, Map<String, Object> filterResult) {
-//        String query = 'select distinct (plt.org.id) from Platform plt where plt.id in (:platformIdList)'
-//        Map<String, Object> queryParams = [ platformIdList: filterResult.data.platformIdList ]
-//
-//        filterResult.data.put( partKey + 'IdList', queryParams.platformIdList ? Org.executeQuery(query, queryParams) : [] )
-//    }
-
     static void _handleSubsetProviderFilter(String partKey, Map<String, Object> filterResult) {
         String query = 'select distinct (plt.provider.id) from Platform plt where plt.id in (:platformIdList)'
         Map<String, Object> queryParams = [ platformIdList: filterResult.data.platformIdList ]
 
         filterResult.data.put( partKey + 'IdList', queryParams.platformIdList ? Provider.executeQuery(query, queryParams) : [] )
-    }
-
-    static List<Long> _getAllPlatformIdList() {
-
-        List<Long> idList = Platform.executeQuery( 'select plt.id from Platform plt')
-//                queryParams.platformIdList = Platform.executeQuery( 'select plt.id from Platform plt where plt.status != :status',
-//                        [status: RDStore.PLATFORM_STATUS_DELETED]
-//                )
-        idList
-    }
-
-    static List<Long> _getMyPlatformIdList() {
-
-        ContextService contextService = BeanStore.getContextService()
-
-        List<Long> subIdList = Subscription.executeQuery(
-                "select s.id from Subscription s join s.orgRelations ro where (ro.roleType in (:roleTypes) and ro.org = :ctx)",
-                [roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS], ctx: contextService.getOrg()])
-
-        List<Long> platformIdList1 = Platform.executeQuery(
-                'select distinct plt.id from ProviderRole pr join pr.subscription sub join pr.provider pro join pro.platforms plt where sub.id in (:subIdList)',
-                [subIdList: subIdList]
-        )
-        List<Long> platformIdList2 = Platform.executeQuery(
-                'select distinct plt.id from SubscriptionPackage subPkg join subPkg.subscription sub join subPkg.pkg pkg join pkg.nominalPlatform plt where sub.id in (:subIdList)',
-                [subIdList: subIdList]
-        )
-//                println 'platformIdList1 ' + platformIdList1.size()
-//                println 'platformIdList2 ' + platformIdList2.size()
-//                println '>>> ' + (platformIdList1 + platformIdList2).unique().size()
-
-        List<Long> idList = (platformIdList1 + platformIdList2).unique() as List<Long>
-        idList
     }
 }

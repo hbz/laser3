@@ -1,12 +1,11 @@
 package de.laser.reporting.report.myInstitution
 
 import de.laser.ContextService
-import de.laser.Platform
 import de.laser.Provider
 import de.laser.RefdataValue
-import de.laser.Subscription
 import de.laser.annotations.UnstableFeature
 import de.laser.reporting.report.GenericHelper
+import de.laser.reporting.report.FilterQueries
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.storage.BeanStore
@@ -34,10 +33,10 @@ class ProviderFilter extends BaseFilter {
 
         switch (filterSource) {
             case 'all-provider':
-                queryParams.providerIdList = _getAllProviderIdList()
+                queryParams.providerIdList = FilterQueries.getAllProviderIdList()
                 break
             case 'my-provider':
-                queryParams.providerIdList = _getMyProviderIdList()
+                queryParams.providerIdList = FilterQueries.getMyProviderIdList()
                 break
         }
 
@@ -125,54 +124,5 @@ class ProviderFilter extends BaseFilter {
 //        println 'providers >> ' + result.providerIdList.size()
 
         filterResult
-    }
-
-    static List<Long> _getAllProviderIdList() {
-
-        List<Long> idList = Provider.executeQuery(
-                'select pro.id from Provider pro',
-//                'select pro.id from Provider pro where (pro.status is null or pro.status != :providerStatus)',
-//                [providerStatus: RDStore.PROVIDER_STATUS_DELETED]
-        )
-
-        idList
-    }
-
-    static List<Long> _getMyProviderIdList() {
-
-        ContextService contextService = BeanStore.getContextService()
-
-        List<Long> subIdList = Subscription.executeQuery(
-                "select s.id from Subscription s join s.orgRelations ro where (ro.roleType in (:roleTypes) and ro.org = :ctx)",
-                [roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS], ctx: contextService.getOrg()])
-
-        List<Long> providerIdList1 = Platform.executeQuery(
-                'select distinct pro.id from ProviderRole pr join pr.subscription sub join pr.provider pro where sub.id in (:subIdList)',
-                [subIdList: subIdList]
-        )
-        List<Long> providerIdList2 = Platform.executeQuery(
-                'select distinct pro.id from SubscriptionPackage subPkg join subPkg.subscription sub join subPkg.pkg pkg join pkg.provider pro where sub.id in (:subIdList)',
-                [subIdList: subIdList]
-        )
-
-//        println 'providerIdList1 ' + providerIdList1.size()
-//        println 'providerIdList2 ' + providerIdList2.size()
-//        println '>>> ' + (providerIdList1 + providerIdList2).unique().size()
-//
-//        List<Long> idList = Provider.executeQuery( '''
-//            select distinct pr.provider.id from ProviderRole pr
-//                join pr.subscription sub
-//                join sub.orgRelations subOr
-//            where (sub = subOr.sub and subOr.org = :org and subOr.roleType in (:subRoleTypes))
-//            ''', [
-//                org: contextService.getOrg(),
-////                providerStatus: RDStore.PROVIDER_STATUS_DELETED,
-//                subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]
-//            ]
-//        )
-//        println 'idList ' + idList.size()
-        // and (pr.provider.status is null or pr.provider.status != :providerStatus)
-        List<Long> idList = (providerIdList1 + providerIdList2).unique() as List<Long>
-        idList
     }
 }
