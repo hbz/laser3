@@ -283,6 +283,14 @@ class MyInstitutionController  {
             result.filterSet = true
             queryParams.counterSushiSupport = params.list('counterSushiSupport') //ask David about proper convention
         }
+        if (params.curatoryGroup) {
+            result.filterSet = true
+            queryParams.curatoryGroupExact = params.curatoryGroup
+        }
+        if (params.curatoryGroupType) {
+            result.filterSet = true
+            queryParams.curatoryGroupType = params.curatoryGroupType
+        }
         List wekbIds = []
         Map<String, Object> wekbParams = params.clone()
         if(!wekbParams.containsKey('sort'))
