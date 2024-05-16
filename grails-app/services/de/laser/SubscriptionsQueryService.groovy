@@ -325,6 +325,13 @@ class SubscriptionsQueryService {
             }
         }
 
+        if (params.linkedPkg) {
+            base_qry += " and exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and sp.pkg = :linkedPkg) "
+            qry_params.put('linkedPkg', params.linkedPkg)
+        }
+
+
+
         if (params.referenceYears) {
             base_qry += " and s.referenceYear in (:referenceYears) "
             Set<Year> referenceYears = []

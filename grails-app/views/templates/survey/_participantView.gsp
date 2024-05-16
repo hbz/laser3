@@ -15,26 +15,41 @@
 
 
         <div class="ui top attached stackable tabular la-tab-with-js menu">
-            <g:link class="item ${params.tab == 'overview' ? 'active' : ''}"
+            <g:link class="item ${params.viewTab == 'overview' ? 'active' : ''}"
                     controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
-                    params="${parame+[tab: 'overview']}">
+                    params="${parame+[viewTab: 'overview']}">
 
                 ${message(code: 'default.overview.label')}
             </g:link>
 
-            <g:link class="item ${params.tab == 'invoicingInformation' ? 'active' : ''}"
+            <g:link class="item ${params.viewTab == 'invoicingInformation' ? 'active' : ''}"
                     controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
-                    params="${parame+[tab: 'invoicingInformation']}">
+                    params="${parame+[viewTab: 'invoicingInformation']}">
                 ${message(code: 'surveyOrg.invoicingInformation')}
                 <span class="ui floating blue circular label">${SurveyOrg.countByOrgAndSurveyConfigAndPersonIsNotNull(participant, surveyConfig)}/${SurveyOrg.countByOrgAndSurveyConfigAndAddressIsNotNull(participant, surveyConfig)}</span>
             </g:link>
+
+            <g:if test="${surveyConfig.subSurveyUseForTransfer && surveyConfig.subscription && surveyConfig.subscription.packages}">
+                <g:if test="${subscriptionService.areStatsAvailable(surveyConfig.subscription)}">
+                    <laser:javascript src="echarts.js"/>
+
+                    <g:link class="item ${params.viewTab == 'stats' ? 'active' : ''}"
+                            controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
+                            params="${parame+[viewTab: 'stats']}">
+                        ${message(code: 'default.stats.label')}
+                    </g:link>
+                </g:if>
+                <g:else>
+                    <div class="item disabled"><div class="la-popup-tooltip la-delay" data-content="${message(code: 'default.stats.noStatsForSubscription')}"><g:message code="default.stats.label"/></div></div>
+                </g:else>
+            </g:if>
 
         </div>
 
 
         <div class="ui bottom attached tab segment active">
 
-            <g:if test="${params.tab == 'invoicingInformation'}">
+            <g:if test="${params.viewTab == 'invoicingInformation'}">
 
                 <div class="ui top attached stackable tabular la-tab-with-js menu">
                     <a class="active item" data-tab="contacts">
@@ -147,7 +162,7 @@
 
             </g:if>
 
-            <g:if test="${params.tab == 'overview'}">
+            <g:if test="${params.viewTab == 'overview'}">
 
                 <div class="la-inline-lists">
                     <g:if test="${surveyInfo && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
@@ -178,6 +193,9 @@
                     </g:if>
 
                 </div>
+            </g:if>
+            <g:if test="${params.viewTab == 'stats'}">
+                <g:render template="/templates/stats/stats"/>
             </g:if>
         </div>
     </div>

@@ -311,7 +311,7 @@ class SubscriptionController {
     def generateReport() {
         if(!params.reportType) {
             Map<String, Object> errorMap = [error: message(code: "default.stats.error.noReportSelected")]
-            render template: '/templates/usageReport', model: errorMap
+            render template: '/templates/stats/usageReport', model: errorMap
         }
         else {
             Subscription sub = Subscription.get(params.id)
@@ -346,7 +346,7 @@ class SubscriptionController {
                     fos.flush()
                     fos.close()
                     wb.dispose()
-                    render template: '/templates/usageReport', model: fileResult
+                    render template: '/templates/stats/usageReport', model: fileResult
                 }
                 else {
                     Map<String, Object> errorMap
@@ -354,11 +354,11 @@ class SubscriptionController {
                         errorMap = [error: ctrlResult.error.code]
                     else
                         errorMap = [error: ctrlResult.error]
-                    render template: '/templates/usageReport', model: errorMap
+                    render template: '/templates/stats/usageReport', model: errorMap
                 }
             }
             else {
-                render template: '/templates/usageReport', model: fileResult
+                render template: '/templates/stats/usageReport', model: fileResult
             }
         }
     }
@@ -1827,11 +1827,11 @@ class SubscriptionController {
                         fileResult.remove('token')
                         fileResult.error = 202
                     }
-                    render template: '/templates/usageReport', model: fileResult
+                    render template: '/templates/stats/usageReport', model: fileResult
                     return
                 }
                 else {
-                    render template: '/templates/usageReport', model: fileResult
+                    render template: '/templates/stats/usageReport', model: fileResult
                     return
                 }
             }
@@ -1999,68 +1999,6 @@ class SubscriptionController {
         subscriptionService.addPendingChangeConfiguration(result.subscription, Package.get(params.pkg), params.clone())
         redirect(action:'show', params:[id:params.id])
     }
-
-    /* TODO Cost per use tab, still needed?
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
-    @Secured(closure = {
-    ctx.contextService.isInstUser_or_ROLEADMIN()
-    })
-    def costPerUse() {
-        Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-        if (!result) {
-            response.sendError(401); return
-        }
-        // Can we remove this block?
-        if (result.institution) {
-            result.subscriber_shortcode = result.institution.shortcode
-            result.institutional_usage_identifier = OrgSetting.get(result.institution, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
-        }
-
-        // Get a unique list of invoices
-        // select inv, sum(cost) from costItem as ci where ci.sub = x
-        log.debug("Get all invoices for sub ${result.subscription}");
-        result.costItems = []
-        CostItem.executeQuery(INVOICES_FOR_SUB_HQL, [sub: result.subscription]).each {
-
-            log.debug(it);
-
-            def cost_row = [invoice: it[0], total: it[2]]
-
-            cost_row.total_cost_for_sub = it[2];
-
-            if (it && (it[3]?.startDate) && (it[3]?.endDate)) {
-
-                log.debug("Total costs for sub : ${cost_row.total_cost_for_sub} period will be ${it[3]?.startDate} to ${it[3]?.endDate}");
-
-                def usage_str = Fact.executeQuery(TOTAL_USAGE_FOR_SUB_IN_PERIOD, [
-                        start   : it[3].startDate,
-                        end     : it[3].endDate,
-                        sub     : result.subscription,
-                        factType: 'STATS:JR1'])[0]
-
-                if (usage_str && usage_str.trim().length() > 0) {
-                    cost_row.total_usage_for_sub = Double.parseDouble(usage_str);
-                    if (cost_row.total_usage_for_sub > 0) {
-                        cost_row.overall_cost_per_use = cost_row.total_cost_for_sub / cost_row.total_usage_for_sub;
-                    } else {
-                        cost_row.overall_cost_per_use = 0;
-                    }
-                } else {
-                    cost_row.total_usage_for_sub = Double.parseDouble('0');
-                    cost_row.overall_cost_per_use = cost_row.total_usage_for_sub
-                }
-
-                // Work out what cost items appear under this subscription in the period given
-                cost_row.usage = Fact.executeQuery(USAGE_FOR_SUB_IN_PERIOD, [start: it[3].startDate, end: it[3].endDate, sub: result.subscription, jr1a: 'STATS:JR1'])
-                cost_row.billingCurrency = it[3].billingCurrency.value.take(3)
-                result.costItems.add(cost_row);
-            } else {
-                log.error("Invoice ${it} had no start or end date");
-            }
-        }
-
-        result
-    }*/
 
     //--------------------------------------------- renewal section ---------------------------------------------
 

@@ -29,6 +29,8 @@ class PropertyDefinitionGroup {
     String description
     Org    tenant
     String ownerType // PropertyDefinition.[LIC_PROP, SUB_PROP, ORG_PROP]
+    // if manual ordering is wanted; non-primitive type because of initial null values which must be set by grailsChange
+    Integer order
 
     boolean isVisible = false // default value: will be overwritten by existing bindings
 
@@ -50,6 +52,7 @@ class PropertyDefinitionGroup {
         name        column: 'pdg_name'
         description column: 'pdg_description',  type: 'text'
         tenant      column: 'pdg_tenant_fk',    index: 'pdg_tenant_idx'
+        order       column: 'pdg_order'
         ownerType   column: 'pdg_owner_type'
         isVisible   column: 'pdg_is_visible'
         lastUpdated     column: 'pdg_last_updated'
@@ -138,8 +141,12 @@ class PropertyDefinitionGroup {
 
         result.addAll(global)
         result.addAll(context)
-
-        result
+        result.sort { PropertyDefinitionGroup pdgA, PropertyDefinitionGroup pdgB ->
+            int cmp = pdgA.order <=> pdgB.order
+            if(!cmp)
+                cmp = pdgA.name <=> pdgB.name
+            cmp
+        }
     }
 
     /**

@@ -1,7 +1,7 @@
 package de.laser.reporting.report.myInstitution.config
 
-import de.laser.Org
 import de.laser.Platform
+import de.laser.Provider
 import de.laser.storage.RDConstants
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 
@@ -21,16 +21,17 @@ class PlatformXCfg extends BaseConfig {
                     fields: [
                             'name'                      : [ type: BaseConfig.FIELD_TYPE_PROPERTY /* blind */ ],
                             'primaryUrl'                : [ type: BaseConfig.FIELD_TYPE_PROPERTY ],
-//                            'org'                       : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_PLATFORM_ORG, spec: BaseConfig.FIELD_IS_MULTIPLE ],
+                            'provider'                  : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PLATFORM_PROVIDER, spec: BaseConfig.FIELD_IS_MULTIPLE ],
+//                            'org'                       : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PLATFORM_ORG, spec: BaseConfig.FIELD_IS_MULTIPLE ],
                             'ipAuthentication'          : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
                             'passwordAuthentication'    : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
                             'proxySupported'            : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
-                            'serviceProvider'           : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_PLATFORM_SERVICEPROVIDER ],
+                            'serviceProvider'           : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PLATFORM_SERVICEPROVIDER ],
                             'shibbolethAuthentication'  : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
-                            'softwareProvider'          : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_PLATFORM_SOFTWAREPROVIDER ],
+                            'softwareProvider'          : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PLATFORM_SOFTWAREPROVIDER ],
                             'status'                    : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
-                            'packageStatus'             : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_PACKAGE_STATUS ],
-                            'subscriptionStatus'        : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_SUBSCRIPTION_STATUS, spec: BaseConfig.FIELD_IS_MULTIPLE ],
+                            'packageStatus'             : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PACKAGE_PACKAGESTATUS ],
+                            'subscriptionStatus'        : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_SUBSCRIPTION_STATUS, spec: BaseConfig.FIELD_IS_MULTIPLE ],
                             'counterCertified'          : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
                             'statisticsFormat'          : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ]
                             //'type'                    : [ type: FIELD_TYPE_REFDATA ],
@@ -38,13 +39,13 @@ class PlatformXCfg extends BaseConfig {
                     filter : [
                             default: [
                                     [ 'packageStatus', 'status'],
-                                    [ 'serviceProvider', 'softwareProvider' /*, 'org' */],
+                                    [ 'serviceProvider', 'softwareProvider', 'provider' /*, 'org' */],
                                     [ 'ipAuthentication', 'shibbolethAuthentication', 'counterCertified' ],
                                     [ 'passwordAuthentication', 'proxySupported', 'statisticsFormat' ]
                             ],
                             my: [
                                     [ 'packageStatus', 'subscriptionStatus', 'status'],
-                                    [ 'serviceProvider', 'softwareProvider' /*, 'org' */],
+                                    [ 'serviceProvider', 'softwareProvider', 'provider' /*, 'org' */],
                                     [ 'ipAuthentication', 'shibbolethAuthentication', 'counterCertified' ],
                                     [ 'passwordAuthentication', 'proxySupported', 'statisticsFormat' ]
                             ]
@@ -103,6 +104,11 @@ class PlatformXCfg extends BaseConfig {
 //                                                               chartTemplate       : 'generic',
 //                                                               chartLabels         : []
 //                                    ],
+                                    'platform-x-provider' : [
+                                            detailsTemplate     : 'platform',
+                                            chartTemplate       : 'generic',
+                                            chartLabels         : []
+                                    ],
                                     'platform-x-primaryUrl' : [       // TODO - moved from query !
                                             detailsTemplate     : 'platform',
                                             chartTemplate       : 'generic',
@@ -112,33 +118,34 @@ class PlatformXCfg extends BaseConfig {
                     ]
             ],
 
-//            provider : [
-//                    meta : [
-//                            class:  Org,
-//                            cfgKey: BaseConfig.KEY_PLATFORM
-//                    ],
-//                    source : [
-//                            'filter-subset-provider'
-//                    ],
-//                    fields : [ ],
-//                    filter : [
-//                            default : []
-//                    ],
-//                    query : [
-//                            default : [
-//                                    platformOrg : [ // label
-//                                            'provider-orgType' : [ 'generic.org.orgType' ],
-//                                            'provider-*' :       [ 'generic.all' ]
-//                                    ]
-//                            ]
-//                    ]
-//            ],
+            provider : [
+                    meta : [
+                            class:  Provider,
+                            cfgKey: BaseConfig.KEY_PLATFORM
+                    ],
+                    source : [
+                            'filter-subset-provider'
+                    ],
+                    fields : [ ],
+                    filter : [
+                            default : []
+                    ],
+                    query : [
+                            default : [
+                                    provider : [
+                                            'provider-status' :  [ 'generic.provider.status' ],
+                                            'provider-*' :       [ 'generic.all' ]
+                                    ]
+                            ]
+                    ]
+            ],
     ]
 
-    static Map<String, Map> CMB_ES_DT_CONFIG = [
+    static Map<String, Map> CONFIG_DTC_ES = [
 
             'name'                                  : [ dtc: true   ],
 //            'org'                                   : [ dtc: true   ],    // TODO - move to query2 !?
+            'provider'                              : [ dtc: true   ],    // TODO - move to query2 !?
             'primaryUrl'                            : [ dtc: true   ],    // TODO - move to query2 !?
             'serviceProvider'                       : [ dtc: false  ],
             'softwareProvider'                      : [ dtc: false  ],
@@ -161,8 +168,8 @@ class PlatformXCfg extends BaseConfig {
             'platform-counterR4SushiApiSupported'   : [ dtc: false, es: true,               export: true, label: 'platform.stats.counter.r4sushi',        rdc: RDConstants.Y_N ],
             'platform-counterR5SushiApiSupported'   : [ dtc: false, es: true,               export: true, label: 'platform.stats.counter.r5sushi',        rdc: RDConstants.Y_N ],
 
-            '_?_propertyLocal'                      : [ dtc: true   ],  // virtual, optional, fixed position
-            '_+_lastUpdated'                        : [ dtc: true   ],  // virtual
-            '_+_wekb'                               : [ dtc: true   ],  // virtual
+            '_dtField_?_propertyLocal'              : [ dtc: true   ],  // virtual, optional, fixed position
+            '_dtField_lastUpdated'                  : [ dtc: true   ],  // virtual
+            '_dtField_wekb'                         : [ dtc: true   ],  // virtual
     ]
 }

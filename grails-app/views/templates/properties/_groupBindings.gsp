@@ -7,6 +7,7 @@
         <table class="ui compact la-js-responsive-table la-table-inCard table">
             <thead>
                 <tr>
+                    <th>#</th>
                     <th>Merkmalsgruppe</th>
                     <th></th>
                     <th>Voreinstellung</th>
@@ -18,8 +19,9 @@
                 </tr>
             </thead>
             <tbody>
-                <g:each in="${availPropDefGroups}" var="propDefGroup">
+                <g:each in="${availPropDefGroups}" var="propDefGroup" status="defaultOrder">
                     <tr>
+                        <td>${propDefGroup.order ?: defaultOrder}</td>
                         <td>
                             <strong>${propDefGroup.name}</strong>
 
@@ -115,7 +117,7 @@
             </tbody>
         </table>
 
-        <ui:msg class="info" text="Damit die Einstellungen wirksam werden, muss die Seite ggfs. neu geladen werden." noClose="true"/>
+        <ui:msg class="info" text="Damit die Einstellungen wirksam werden, muss die Seite ggf. neu geladen werden." noClose="true"/>
     </div><!-- #propDefGroupBindingConfig -->
 
 <laser:script file="${this.getGroovyPageFileName()}">

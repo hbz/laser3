@@ -118,7 +118,7 @@ class GenericHelper {
 
             //println 'GenericHelper.getFieldLabel() BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE, BaseDetailsExport.FIELD_TYPE_REFDATA_JOINTABLE ---> BaseConfig.getCustomImplRefdata()'
 
-            Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(field.customImplRdv ?: fieldName)
+            Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(field.customImpl ?: fieldName)
             label = customRdv.get('label')
         }
         else if (type in [BaseConfig.FIELD_TYPE_CUSTOM_IMPL, BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL] ) {
@@ -127,7 +127,7 @@ class GenericHelper {
             // println 'GenericHelper.getFieldLabel() BaseConfig.FIELD_TYPE_CUSTOM_IMPL ---> BaseConfig.getCustomImplRefdata( ' + fieldName + ') ' + field
             // println objConfig
 
-            Map<String, Object> rdv = BaseConfig.getCustomImplRefdata(field.customImplRdv ?: fieldName)
+            Map<String, Object> rdv = BaseConfig.getCustomImplRefdata(field.customImpl ?: fieldName)
             if (!rdv) {
                 log.warn '>> ' + fieldName + ' : ' + type + ' not found'
             }

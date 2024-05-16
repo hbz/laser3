@@ -16,7 +16,7 @@
                 Map<String, Map> esdConfig = BaseConfig.getCurrentConfigElasticsearchData( key )
                 Map<String, Map> dtConfig = BaseConfig.getCurrentConfigDetailsTable( key ).clone()
 
-                if (query != 'platform-x-property') { dtConfig.remove('_?_propertyLocal') }
+                if (query != 'platform-x-property') { dtConfig.remove('_dtField_?_propertyLocal') }
 
                 String wekbProperty
                 if (query == 'platform-x-propertyWekb') {
@@ -37,7 +37,7 @@
                         if (esdConfig.containsKey(k)) {
                             label = label + ' (we:kb)'
                         }
-                        else if (k == '_?_propertyLocal') {
+                        else if (k == '_dtField_?_propertyLocal') {
                             label = BaseDetailsExport.getExportLabel('x-property') +  ': ' + GlobalExportHelper.getQueryCache( token ).labels.labels[2]
                         }
 

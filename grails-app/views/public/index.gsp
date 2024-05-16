@@ -55,10 +55,9 @@
                             <h2 style="padding-bottom: 1rem;">
                                 ${message(code: 'landingpage.hero.h2')}
                             </h2>
-
-                            <a href="mailto:laser@hbz-nrw.de" class="ui huge secondary button">
-                                ${message(code: 'landingpage.hero.button')}<i class="right arrow icon"></i>
-                            </a>
+                            <g:link controller="public" action="licensingModel" class="ui massive white  button">
+                                ${message(code: 'landingpage.hero.button.licensingModel')}<i class="right arrow icon"></i>
+                            </g:link>
                         </div>
                     </div>
                 </div>

@@ -1,7 +1,7 @@
 package de.laser.reporting.report.myInstitution.config
 
-import de.laser.Org
 import de.laser.Platform
+import de.laser.Provider
 import de.laser.Vendor
 import de.laser.storage.RDConstants
 import de.laser.reporting.report.myInstitution.base.BaseConfig
@@ -28,23 +28,24 @@ class PackageXCfg extends BaseConfig {
                             'file'                      : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
                             'openAccess'                : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
                             'packageStatus'             : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
-                            'subscriptionStatus'        : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_SUBSCRIPTION_STATUS, spec: BaseConfig.FIELD_IS_MULTIPLE ],
+                            'subscriptionStatus'        : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_SUBSCRIPTION_STATUS, spec: BaseConfig.FIELD_IS_MULTIPLE ],
                             'paymentType'               : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
-                            'nominalPlatform'           : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_PACKAGE_PLATFORM, spec: BaseConfig.FIELD_IS_MULTIPLE ],
-                            'vendor'                    : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_PACKAGE_VENDOR, spec: BaseConfig.FIELD_IS_MULTIPLE ],
-//                            'orProvider'                : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImplRdv: BaseConfig.CI_GENERIC_PACKAGE_OR_PROVIDER, spec: BaseConfig.FIELD_IS_MULTIPLE ],
+                            'nominalPlatform'           : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PACKAGE_PLATFORM, spec: BaseConfig.FIELD_IS_MULTIPLE ],
+                            'provider'                  : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PACKAGE_PROVIDER, spec: BaseConfig.FIELD_IS_MULTIPLE ],
+                            'vendor'                    : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PACKAGE_VENDOR, spec: BaseConfig.FIELD_IS_MULTIPLE ],
+//                            'orProvider'                : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PACKAGE_OR_PROVIDER, spec: BaseConfig.FIELD_IS_MULTIPLE ],
                             'scope'                     : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ]
                     ],
                     filter : [
                             default: [
-                                    [ 'contentType', 'packageStatus' ],
-                                    [ 'file', /* 'orProvider', */ 'nominalPlatform', 'vendor' ],
+                                    [ 'contentType', 'file', 'packageStatus' ],
+                                    [  /* 'orProvider', */ 'nominalPlatform', 'provider', 'vendor' ],
                                     [ 'breakable', 'scope' ],
                                     [ 'paymentType', 'openAccess']
                             ],
                             my: [
-                                    [ 'contentType',  'subscriptionStatus', 'packageStatus' ],
-                                    [ 'file', /* 'orProvider', */ 'nominalPlatform', 'vendor' ],
+                                    [ 'contentType',  'file', 'subscriptionStatus', 'packageStatus' ],
+                                    [ /* 'orProvider', */ 'nominalPlatform', 'provider', 'vendor' ],
                                     [ 'breakable', 'scope' ],
                                     [ 'paymentType', 'openAccess']
                             ]
@@ -77,16 +78,21 @@ class PackageXCfg extends BaseConfig {
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
                                     ],
-//                                    'package-x-provider' : [
-//                                            detailsTemplate     : 'package',
-//                                            chartTemplate       : '2axis2values_nonMatches',
-//                                            chartLabels         : [ 'x.providers.1', 'x.providers.2' ]
-//                                    ],
                                     'package-x-platform' : [    // TODO - moved from query !
                                             detailsTemplate     : 'package',
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
                                     ],
+                                    'package-x-provider' : [
+                                            detailsTemplate     : 'package',
+                                            chartTemplate       : 'generic',
+                                            chartLabels         : []
+                                    ],
+//                                    'package-x-provider' : [
+//                                            detailsTemplate     : 'package',
+//                                            chartTemplate       : '2axis2values_nonMatches',
+//                                            chartLabels         : [ 'x.providers.1', 'x.providers.2' ]
+//                                    ],
                                     'package-x-vendor' : [
                                             detailsTemplate     : 'package',
                                             chartTemplate       : 'generic',
@@ -131,28 +137,6 @@ class PackageXCfg extends BaseConfig {
                     ]
             ],
 
-//            provider : [
-//                    meta : [
-//                            class:  Org,
-//                            cfgKey: BaseConfig.KEY_PACKAGE
-//                    ],
-//                    source : [
-//                            'filter-subset-provider'
-//                    ],
-//                    fields : [ ],
-//                    filter : [
-//                            default : []
-//                    ],
-//                    query : [
-//                            default : [
-//                                    provider : [
-//                                            'provider-orgType' : [ 'generic.org.orgType' ],
-//                                            'provider-*' :       [ 'generic.all' ],
-//                                    ]
-//                            ]
-//                    ]
-//            ],
-
             platform : [
                     meta : [
                             class:  Platform,
@@ -174,6 +158,28 @@ class PackageXCfg extends BaseConfig {
                                             'platform-primaryUrl' :         [ '@' ],    // KEY_PLATFORM -> distribution
                                             'platform-status' :             [ 'generic.plt.status' ],
                                             'platform-*' :                  [ 'generic.all' ]
+                                    ]
+                            ]
+                    ]
+            ],
+
+            provider : [
+                    meta : [
+                            class:  Provider,
+                            cfgKey: BaseConfig.KEY_PACKAGE
+                    ],
+                    source : [
+                            'filter-subset-provider'
+                    ],
+                    fields : [ ],
+                    filter : [
+                            default : []
+                    ],
+                    query : [
+                            default : [
+                                    provider : [
+                                            'provider-status' :  [ 'generic.provider.status' ],
+                                            'provider-*' :       [ 'generic.all' ]
                                     ]
                             ]
                     ]
@@ -202,7 +208,7 @@ class PackageXCfg extends BaseConfig {
             ]
     ]
 
-    static Map<String, Map> CMB_ES_DT_CONFIG = [
+    static Map<String, Map> CONFIG_DTC_ES = [ // dynamic table config
 
             'name'                      : [ dtc: true  ],
             'sortname'                  : [ dtc: false ],
@@ -211,10 +217,12 @@ class PackageXCfg extends BaseConfig {
             'contentType'               : [ dtc: false ],
 
             'packageStatus'             : [ dtc: false ],
+            'provider'                  : [ dtc: true ],
+            'vendor'                    : [ dtc: true ],
 //            'orProvider'                : [ dtc: true  ],
             'nominalPlatform'           : [ dtc: true  ],
             'file'                      : [ dtc: false ],
-            '_+_currentTitles'          : [ dtc: true  ],    // virtual
+            '_dtField_currentTitles'    : [ dtc: true  ],    // virtual
 
             'package-breakable'         : [ dtc: false, es: true, filter: true, export: true, label: 'package.breakable',             rdc: RDConstants.PACKAGE_BREAKABLE ],
             'package-paymentType'       : [ dtc: false, es: true, filter: true, export: true, label: 'package.paymentType.label',     rdc: RDConstants.PAYMENT_TYPE ],
@@ -231,7 +239,7 @@ class PackageXCfg extends BaseConfig {
             'package-descriptionURL'    : [ dtc: false, es: true,               export: true, label: 'default.url.label' ],
             'package-x-curatoryGroup'   : [ dtc: false, es: true,               export: true, label: 'package.curatoryGroup.label',   mapping: 'curatoryGroups' ],
             'package-x-archivingAgency' : [ dtc: false, es: true,               export: true, label: 'package.archivingAgency.label', mapping: 'packageArchivingAgencies' ],
-            '_+_lastUpdated'            : [ dtc: true  ],    // virtual
-            '_+_wekb'                   : [ dtc: true  ],    // virtual
+            '_dtField_lastUpdated'      : [ dtc: true  ],    // virtual
+            '_dtField_wekb'             : [ dtc: true  ],    // virtual
     ]
 }

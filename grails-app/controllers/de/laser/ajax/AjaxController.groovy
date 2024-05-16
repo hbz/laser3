@@ -2207,7 +2207,7 @@ class AjaxController {
                 ctrlResult.result.costPerUse.ownData = costPerUseOwn.costPerMetric
                 ctrlResult.result.ownCosts = costPerUseOwn.costsAllYears
             }
-            render template: "/subscription/costPerUse", model: ctrlResult.result
+            render template: "/templates/stats/costPerUse", model: ctrlResult.result
         }
         else [error: ctrlResult.error]
     }

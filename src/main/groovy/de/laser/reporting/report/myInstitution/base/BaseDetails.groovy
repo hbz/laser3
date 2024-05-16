@@ -136,16 +136,16 @@ class BaseDetails {
                 label = g.message(code: code)
 
                 if (label == code) {
-                    if (field == '_+_lastUpdated') {
+                    if (field == '_dtField_lastUpdated') {
                         label = g.message(code: 'default.lastUpdated.label')
                     }
-                    else if (field == '_+_wekb') {
+                    else if (field == '_dtField_wekb') {
                         label = g.message(code: 'wekb')
                     }
-                    else if (field == '_+_currentTitles') {
+                    else if (field == '_dtField_currentTitles') {
                         label = g.message(code: 'package.show.nav.current')
                     }
-                    else if (field == '_?_propertyLocal') {
+                    else if (field == '_dtField_?_propertyLocal') {
                         label = g.message(code: 'reporting.details.property.value')
                         //label = BaseDetailsExport.getMessage('x-property')
                     }

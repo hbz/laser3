@@ -11,6 +11,8 @@
 
 5675    14.05.2024  dev     3.4         David   Feature     We:kb-News: Anbieter
 
+5686    13.05.2024  dev     3.4         Andreas Feature     Sortierung der Merkmalsgruppen überschreiben
+
 5679    13.05.2024  dev     3.4         Andreas Bug         Weiterleitung implementiert
 
 5625    13.05.2024  dev     3.4         Andreas Feature     Alternativnamen für Lizenzen und Verträge
