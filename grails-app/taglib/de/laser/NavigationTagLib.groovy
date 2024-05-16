@@ -289,7 +289,12 @@ class NavigationTagLib {
         }
         else {
             if (userService.hasAffiliation_or_ROLEADMIN(contextService.getUser(), contextService.getOrg(), attrs.instRole as String)) {
-                out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" data-content="' + message(code:'tooltip.onlyFullMembership') + '" role="menuitem">' + linkBody + '</div>'
+                String href   = g.createLink([controller: 'public', action: 'licensingModel'])
+                out << '<div class="item disabled  la-popup-tooltip la-delay" data-position="left center" '
+                out <<  'data-html="' +
+                        '<div class=\'header\'>' + message(code:'tooltip.onlyFullMembership') + '</div><div class=\'content center aligned\'>'+
+                        '<a class=\'ui button\' href=\' ' + href + '\'>' + message(code:'licensingModel.button.to') + ' </a> </div>" '
+                out << 'role="menuitem">' + linkBody + '</div>'
             }
 //            else out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" role="menuitem">' + linkBody + '</div>'
         }
