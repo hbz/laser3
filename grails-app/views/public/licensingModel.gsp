@@ -94,7 +94,7 @@
 </laser:htmlStart> %{-- </head><body>--}%
 <div class="ui stackable grid">
     <div class="eleven wide column">
-        <h1 class="ui icon header la-clear-before left floated aligned la-positionRelative"><i class="icon blue icon la-laser la-object"></i> Das LAS:eR Lizenzmodell</h1>
+        <h1 class="ui icon header la-clear-before left floated aligned la-positionRelative"><i class="icon blue icon la-laser la-object"></i>Das LAS:eR Lizenzmodell: Vorteile</h1>
 
         <table class="ui large  structured la-table table">
             <thead>
@@ -183,7 +183,7 @@
             </g:each>
             </tbody>
         </table>
-        <h1 class="ui icon header la-clear-before left floated aligned la-positionRelative"><i class="icon blue icon la-laser la-object"></i>Der LAS:eR-Service</h1>
+        <h1 class="ui icon header la-clear-before left floated aligned la-positionRelative"><i class="icon blue icon la-laser la-object"></i>Das LAS:eR Lizenzmodell: Service</h1>
 
         <table class="ui large structured la-table table">
             <thead>
