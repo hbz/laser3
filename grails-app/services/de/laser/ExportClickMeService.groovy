@@ -2974,7 +2974,7 @@ class ExportClickMeService {
             }
         }
 
-        PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg(), PropertyDefinition.VEN_PROP).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
+        PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.VEN_PROP], contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
             exportFields.put("providerProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant?.id == contextOrg.id)])
         }
         contactTypes.each { RefdataValue contactType ->
@@ -3003,7 +3003,7 @@ class ExportClickMeService {
         fields.putAll(EXPORT_VENDOR_CONFIG)
         fields.vendorProperties.fields.clear()
         fields.myVendorProperties.fields.clear()
-        PropertyDefinition.findAllPublicAndPrivateOrgProp(contextOrg, PropertyDefinition.VEN_PROP).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
+        PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.VEN_PROP], contextOrg).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
             if(propertyDefinition.tenant?.id == contextOrg.id)
                 fields.myVendorProperties.fields << ["vendorProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: true]]
             else
@@ -3050,7 +3050,7 @@ class ExportClickMeService {
             exportFields.put("providerCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
         }
 
-        PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg(), PropertyDefinition.PRV_PROP).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
+        PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.PRV_PROP], contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
             exportFields.put("providerProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant?.id == contextOrg.id)])
         }
         contactTypes.each { RefdataValue contactType ->
@@ -3088,7 +3088,7 @@ class ExportClickMeService {
         }
         fields.providerProperties.fields.clear()
         fields.myProviderProperties.fields.clear()
-        PropertyDefinition.findAllPublicAndPrivateOrgProp(contextOrg, PropertyDefinition.PRV_PROP).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
+        PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.PRV_PROP], contextOrg).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
             if(propertyDefinition.tenant?.id == contextOrg.id)
                 fields.myProviderProperties.fields << ["providerProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: true]]
             else

@@ -583,9 +583,9 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
      * @param ownerType the type of property definition, defaulting to {@link PropertyDefinition#ORG_PROP}
      * @return a {@link List} of matching property definitions
      */
-    static List<PropertyDefinition> findAllPublicAndPrivateOrgProp(Org contextOrg, String ownerType = PropertyDefinition.ORG_PROP){
+    static List<PropertyDefinition> findAllPublicAndPrivateOrgProp(Org contextOrg){
         PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr = :ownerType and (pd.tenant is null or pd.tenant = :tenant) order by pd.name_de asc", [
-                        ownerType: ownerType,
+                        ownerType: PropertyDefinition.ORG_PROP,
                         tenant: contextOrg
                     ])
     }
