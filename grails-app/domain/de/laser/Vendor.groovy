@@ -225,10 +225,19 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
             log.error(v.getErrors().getAllErrors().toListString())
             null
         }
+        agency.altnames.each { AlternativeName altName ->
+            if(!v.altnames?.find { AlternativeName altnameNew -> altnameNew.name == altName.name }) {
+                altName.vendor = v
+                altName.org = null
+                altName.save()
+            }
+        }
         agency.contacts.each { Contact c ->
-            c.vendor = v
-            c.org = null
-            c.save()
+            if(!v.contacts?.find { Contact cOld -> cOld.content == c.content }) {
+                c.vendor = v
+                c.org = null
+                c.save()
+            }
         }
         agency.addresses.each { Address a ->
             a.vendor = v
@@ -237,14 +246,11 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         }
         //log.debug("${DocContext.executeUpdate('update DocContext dc set dc.vendor = :vendor, dc.targetOrg = null, dc.org = null where dc.targetOrg = :agency or dc.org = :agency', [vendor: v, agency: agency])} documents updated")
         Identifier.findAllByOrg(agency).each { Identifier id ->
-            id.vendor = v
-            id.org = null
-            id.save()
-        }
-        agency.altnames.each { AlternativeName a ->
-            a.vendor = v
-            a.org = null
-            a.save()
+            if(!Identifier.findByVendorAndValue(v, id.value)) {
+                id.vendor = v
+                id.org = null
+                id.save()
+            }
         }
         /*
         agency.prsLinks.each { PersonRole pr ->
@@ -254,8 +260,11 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         }
         */
         Person.findAllByTenant(agency).each { Person pe ->
-            pe.tenant = null
-            pe.save()
+            if(!Person.executeQuery('select p from Person p join p.roleLinks pr where p.tenant = null and p.isPublic = true and p.last_name = :contactType and :vendor in (pr.vendor)', [vendor: v, contactType: pe.last_name])) {
+                pe.tenant = null
+                pe.save()
+            }
+            else pe.delete()
         }
         Marker.findAllByOrg(agency).each { Marker m ->
             m.ven = v

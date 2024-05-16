@@ -130,15 +130,27 @@ class ProviderService {
             }
             ts.flush()
             Set<PersonRole> providerContacts = PersonRole.executeQuery('select pr from PersonRole pr join pr.org o join o.orgType ot where ot in (:provider)', [provider: [RDStore.OT_PROVIDER, RDStore.OT_LICENSOR]])
+            Set<Long> toDeletePersonRole = []
             providerContacts.each { PersonRole pr ->
                 Provider p = Provider.findByGlobalUID(pr.org.globalUID.replace(Org.class.simpleName.toLowerCase(), Provider.class.simpleName.toLowerCase()))
                 if (!p) {
                     p = Provider.convertFromOrg(pr.org)
                 }
-                pr.provider = p
-                pr.org = null
-                pr.save()
+                boolean existsContact = false
+                if(pr.functionType)
+                    existsContact = PersonRole.findByPrsAndProviderAndFunctionType(pr.prs, p, pr.functionType)
+                else if(pr.positionType)
+                    existsContact = PersonRole.findByPrsAndProviderAndPositionType(pr.prs, p, pr.positionType)
+                else if(pr.responsibilityType)
+                    existsContact = PersonRole.findByPrsAndProviderAndResponsibilityType(pr.prs, p, pr.responsibilityType)
+                if(!existsContact) {
+                    pr.provider = p
+                    pr.org = null
+                    pr.save()
+                }
+                else toDeletePersonRole << pr.id
             }
+            PersonRole.executeUpdate('delete from PersonRole pr where pr.id in (:toDelete)', [toDelete: toDeletePersonRole])
             ts.flush()
             Set<DocContext> docOrgContexts = DocContext.executeQuery('select dc from DocContext dc join dc.org o join o.orgType ot where ot in (:provider)', [provider: [RDStore.OT_PROVIDER, RDStore.OT_LICENSOR]])
             docOrgContexts.each { DocContext dc ->
@@ -218,6 +230,7 @@ class ProviderService {
         }
         Set<Org> providers = Org.executeQuery('select o from Org o join o.orgType ot where ot in (:provider)', [provider: [RDStore.OT_PROVIDER, RDStore.OT_LICENSOR]])
         providers.each { Org provider ->
+            //delete doublet residuals
             OrgRole.executeUpdate('delete from OrgRole oo where oo.org = :provider and oo.roleType not in (:toKeep)', [provider: provider, toKeep: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER, RDStore.OR_LICENSOR, RDStore.OR_AGENCY]])
             Map<String, Object> delResult = deletionService.deleteOrganisation(provider, null, false)
             if (delResult.deletable == false) {

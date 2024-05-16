@@ -2,7 +2,7 @@
 <laser:serviceInjection />
 <g:set var="wekbAPI" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
 <table class="ui compact table">
-    <g:each in="${providerLinks}" var="role">
+    <g:each in="${providerRoles}" var="role">
 
         <g:set var="cssId" value="prsLinksModal-${role.provider.id}" />
             <tr>

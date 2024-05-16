@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ExportClickMeService; de.laser.RefdataValue" %>
+<%@ page import="de.laser.Provider; de.laser.ExportClickMeService; de.laser.RefdataValue" %>
 
 <laser:htmlStart message="menu.my.providers" />
 
@@ -18,7 +18,7 @@
 
         </ui:controlButtons>
 
-    <ui:h1HeaderWithIcon message="menu.my.providers" total="${orgListTotal}" floated="true" />
+    <ui:h1HeaderWithIcon message="menu.my.providers" total="${providerListTotal}" floated="true" />
 
     <ui:messages data="${flash}" />
 
@@ -34,9 +34,9 @@
     </ui:filter>
 
     <div class="la-clear-before">
-        <g:if test="${provList}">
+        <g:if test="${providerList}">
             <laser:render template="/templates/filter/providerFilterTable"
-                      model="[provList: provList,
+                      model="[provList: providerList,
                               tmplShowCheckbox: false,
                               tmplConfigShow: ['lineNumber', 'sortname', 'name', 'altname', 'currentSubscriptions', 'marker', 'isWekbCurated']
                       ]"/>
@@ -51,9 +51,9 @@
         </g:else>
     </div>
 
-    <laser:render template="/templates/copyEmailaddresses" model="[orgList: provList]"/>
+    <laser:render template="/templates/copyEmailaddresses" model="[orgList: providerList, instanceType: Provider.class.name]"/>
 
-    <ui:paginate total="${orgListTotal}" params="${params}" max="${max}" offset="${offset}" />
+    <ui:paginate total="${providerListTotal}" params="${params}" max="${max}" offset="${offset}" />
 
     <ui:debugInfo>
         <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />

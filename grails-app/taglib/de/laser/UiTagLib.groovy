@@ -45,10 +45,10 @@ class UiTagLib {
         }
 
         if (attrs.visibleProviders && attrs.visibleProviders instanceof Collection) {
-            attrs.visibleProviders = attrs.visibleProviders.collect{ it.provider }.join(' – ')
+            attrs.visibleProviders = attrs.visibleProviders.collect{ it.provider.name }.join(' – ')
         }
         if (attrs.visibleVendors && attrs.visibleVendors instanceof Collection) {
-            attrs.visibleVendors = attrs.visibleVendors.collect{ it.vendor }.join(' – ')
+            attrs.visibleVendors = attrs.visibleVendors.collect{ it.vendor.name }.join(' – ')
         }
         if ( (attrs.referenceYear) || (attrs.visibleProviders) || (attrs.visibleVendors) ){
             out << '<div class="la-subPlusYear">'

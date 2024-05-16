@@ -469,7 +469,7 @@
                     <div class="content">
                         <h2 class="ui header">${message(code: 'default.provider.label')}</h2>
                         <laser:render template="/templates/links/providerLinksAsList"
-                                  model="${[roleLinks    : providerRoles,
+                                  model="${[providerRoles: providerRoles,
                                             roleObject   : subscription,
                                             roleRespValue: 'Specific subscription editor',
                                             editmode     : editable,
