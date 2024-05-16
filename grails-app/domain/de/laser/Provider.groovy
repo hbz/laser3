@@ -226,9 +226,11 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
             a.save()
         }
         Identifier.findAllByOrg(provider).each { Identifier id ->
-            id.provider = p
-            id.org = null
-            id.save()
+            if(!Identifier.findByProviderAndValue(p, id.value)) {
+                id.provider = p
+                id.org = null
+                id.save()
+            }
         }
         Platform.findAllByOrg(provider).each { Platform pl ->
             pl.provider = p
