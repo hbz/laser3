@@ -14,14 +14,10 @@ class ProviderQuery extends BaseQuery {
 
         ContextService contextService = BeanStore.getContextService()
 
-        //println 'ProviderQuery.query()'
-        //println params
-
         Map<String, Object> result = getEmptyResult( params.query, params.chart )
 
         def (String prefix, String suffix) = params.query.split('-') // only simply cfg.query
         List<Long> idList = BaseFilter.getCachedFilterIdList(prefix, params)
-//        List<Long> orphanedIdList = BaseFilter.getCachedFilterIdList(prefix + 'Orphaned', params)
 
         //println 'ProviderQuery.query() -> ' + params.query + ' : ' + suffix
 
@@ -36,14 +32,6 @@ class ProviderQuery extends BaseQuery {
                     idList,
                     result
             )
-//            handleGenericAllSignOrphanedQuery(
-//                    params.query,
-//                    'select pro.id, pro.name, 1, false from Provider pro where pro.id in (:idList) order by pro.name',
-//                    'select pro.id from Provider pro where pro.id in (:idList) and pro.name = :d order by pro.id',
-//                    idList,
-//                    orphanedIdList,
-//                    result
-//            )
         }
         else if ( suffix in ['status']) {
 
