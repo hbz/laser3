@@ -70,6 +70,7 @@ class PackageController {
     })
     def index() {
         Map<String, Object> result = [:]
+        result.user = contextService.getUser()
 
         SwissKnife.setPaginationParams(result, params, result.user)
         result.putAll(packageService.getWekbPackages(params.clone()))
