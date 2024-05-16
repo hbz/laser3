@@ -23,7 +23,7 @@ class VendorRole implements ShareableTrait, Comparable<VendorRole> {
         license column: 'vr_license_fk', index: 'vr_license_idx'
         subscription column: 'vr_subscription_fk', index: 'vr_subscription_idx'
         isShared column: 'vr_is_shared'
-        sharedFrom column: 'vr_shared_from_fk'
+        sharedFrom column: 'vr_shared_from_fk',index:'vr_shared_from_idx'
         dateCreated column: 'vr_date_created'
         lastUpdated column: 'vr_last_updated'
     }

@@ -111,7 +111,7 @@ class ClickMeController {
                 result.exportFileName = result.exportFileName ?: message(code: 'license.plural')
                 break
             case ExportClickMeService.PROVIDERS:
-                result.formFields = exportClickMeService.getExportOrgFieldsForUI('provider', result.clickMeConfig)
+                result.formFields = exportClickMeService.getExportProviderFieldsForUI(result.clickMeConfig)
                 result.contactSwitch = true
                 result.exportFileName = result.exportFileName ?: message(code: 'default.ProviderAgency.export.label')
                 break

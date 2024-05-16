@@ -7,9 +7,12 @@ import de.laser.convenience.Marker
 import de.laser.interfaces.DeleteFlag
 import de.laser.interfaces.MarkerSupport
 import de.laser.properties.OrgProperty
+import de.laser.properties.PropertyDefinition
 import de.laser.properties.ProviderProperty
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyInfo
+import de.laser.workflow.WfChecklist
 
 class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFlag, MarkerSupport, Comparable<Provider> {
 
@@ -172,8 +175,11 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
 
     static Provider convertFromOrg(Org provider) {
         Provider p = null
-        if(provider.gokbId)
+        if(provider.gokbId) {
             p = Provider.findByGokbId(provider.gokbId)
+            if(p)
+                p.globalUID = provider.globalUID.replace(Org.class.simpleName.toLowerCase(), Provider.class.simpleName.toLowerCase())
+        }
         if(!p)
             p = Provider.findByGlobalUID(provider.globalUID.replace(Org.class.simpleName.toLowerCase(), Provider.class.simpleName.toLowerCase()))
         if(!p)
@@ -196,6 +202,10 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
         }
         p.retirementDate = provider.retirementDate
         p.dateCreated = provider.dateCreated
+        if(!p.save()) {
+            log.error(p.getErrors().getAllErrors().toListString())
+            null
+        }
         provider.altnames.each { AlternativeName altName ->
             altName.provider = p
             altName.org = null
@@ -211,33 +221,28 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
             a.org = null
             a.save()
         }
-        provider.documents.each { DocContext dc ->
-            dc.provider = p
-            dc.org = null
-            if(!dc.save())
-                log.debug(dc.getErrors().getAllErrors().toListString())
+        Identifier.findAllByOrg(provider).each { Identifier id ->
+            id.provider = p
+            id.org = null
+            id.save()
         }
         Platform.findAllByOrg(provider).each { Platform pl ->
             pl.provider = p
             pl.save()
         }
-        DocContext.findAllByTargetOrg(provider).each { DocContext dc ->
-            dc.provider = p
-            dc.org = null
-            dc.targetOrg = null
-            if(!dc.save())
-                log.debug(dc.getErrors().getAllErrors().toListString())
-        }
+        //log.debug("${DocContext.executeUpdate('update DocContext dc set dc.provider = :providerNew, dc.targetOrg = null, dc.org = null where dc.targetOrg = :provider or dc.org = :provider', [providerNew: p, provider: provider])} documents updated")
         provider.altnames.each { AlternativeName a ->
             a.provider = p
             a.org = null
             a.save()
         }
-        PersonRole.findAllByOrg(provider).each { PersonRole pr ->
+        /*
+        provider.prsLinks.each { PersonRole pr ->
             pr.provider = p
             pr.org = null
             pr.save()
         }
+        */
         Person.findAllByTenant(provider).each { Person pe ->
             pe.tenant = null
             pe.save()
@@ -247,11 +252,19 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
             m.org = null
             m.save()
         }
+        SurveyInfo.findAllByProviderOld(provider).each { SurveyInfo surin ->
+            surin.provider = p
+            surin.providerOld = null
+            surin.save()
+        }
         Task.findAllByOrg(provider).each { Task t ->
             t.provider = p
             t.org = null
             t.save()
         }
+        log.debug("${WfChecklist.executeUpdate('update WfChecklist wf set wf.provider = :providerNew, wf.org = null where wf.org = :provider', [providerNew: p, provider: provider])} workflow checkpoints updated")
+        //those property definitions should not exist actually ...
+        PropertyDefinition.executeUpdate('delete from PropertyDefinition pd where pd.tenant = :provider', [provider: provider])
         OrgProperty.findAllByOwner(provider).each { OrgProperty op ->
             ProviderProperty pp = new ProviderProperty()
             if(op.dateValue)
@@ -272,11 +285,7 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
             pp.lastUpdated = op.lastUpdated
             pp.save()
         }
-        if(!p.save()) {
-            log.error(p.getErrors().getAllErrors().toListString())
-            null
-        }
-        else p
+        p
     }
 
     boolean hasElectronicBilling(String ebB) {

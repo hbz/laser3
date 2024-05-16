@@ -133,6 +133,7 @@ class RDConstants {
     public static final String PLATFORM_STATISTICS_FREQUENCY  = 'platform.statistics.frequency'
     public static final String PLATFORM_STATUS                = 'platform.status'
     public static final String PROVIDER_STATUS                = 'provider.status'
+    public static final String PROVIDER_LINK_TYPE             = 'provider.link.type'
 
     public static final String REGIONS_DE             = 'regions.de'
     public static final String REGIONS_AT             = 'regions.at'

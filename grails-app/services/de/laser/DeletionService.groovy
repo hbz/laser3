@@ -539,6 +539,7 @@ class DeletionService {
         List orgSettings   = OrgSetting.findAllWhere(org: org)
         List userSettings  = UserSetting.findAllWhere(orgValue: org)
 
+        List altnames       = new ArrayList(org.altnames)
         List addresses      = new ArrayList(org.addresses)
         List contacts       = new ArrayList(org.contacts)
         List prsLinks       = new ArrayList(org.prsLinks)
@@ -593,6 +594,7 @@ class DeletionService {
         result.info << ['Einstellungen', orgSettings]
         result.info << ['Nutzereinstellungen', userSettings, FLAG_BLOCKER]
 
+        result.info << ['Alternativnamen', altnames]
         result.info << ['Adressen', addresses]
         result.info << ['Kontaktdaten', contacts]
         result.info << ['Personen', prsLinks, FLAG_BLOCKER]
@@ -689,6 +691,10 @@ class DeletionService {
                         }
                     }
                     orgSettings.each { tmp -> tmp.delete() }
+
+                    // alternative names
+                    org.altnames.clear()
+                    altnames.each{ tmp -> tmp.delete() }
 
                     // addresses
                     org.addresses.clear()

@@ -3,6 +3,7 @@ package de.laser.survey
 import de.laser.CustomerTypeService
 import de.laser.License
 import de.laser.Org
+import de.laser.Provider
 import de.laser.RefdataValue
 import de.laser.annotations.RefdataInfo
 import de.laser.storage.BeanStore
@@ -44,7 +45,9 @@ class SurveyInfo {
 
     License license
 
-    Org provider
+    @Deprecated
+    Org providerOld
+    Provider provider
 
     static hasMany = [
             surveyConfigs: SurveyConfig
@@ -57,6 +60,7 @@ class SurveyInfo {
         comment (nullable:true, blank:true)
         license (nullable:true)
         provider (nullable:true)
+        providerOld (nullable:true)
     }
 
     static transients = ['editable', 'completedforOwner'] // mark read-only accessor methods
@@ -82,7 +86,8 @@ class SurveyInfo {
         isRenewalSent column: 'surin_is_renewal_sent'
 
         license column: 'surin_license'
-        provider column: 'surin_provider'
+        providerOld column: 'surin_provider'
+        provider column: 'surin_provider_fk'
     }
 
     /**

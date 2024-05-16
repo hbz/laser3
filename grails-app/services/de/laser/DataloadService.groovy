@@ -137,6 +137,7 @@ class DataloadService {
      * Currently supported by this implementation are:
      * <ul>
      *     <li>{@link Org}</li>
+     *     <li>{@link Provider}</li>
      *     <li>{@link Vendor}</li>
      *     <li>{@link TitleInstancePackagePlatform}</li>
      *     <li>{@link de.laser.Package}</li>
@@ -173,6 +174,10 @@ class DataloadService {
                 result.guid = org.globalUID ?: ''
 
                 result.name = org.name
+                result.altnames = []
+                org.altnames.each { AlternativeName altname ->
+                    result.altnames << altname.name
+                }
 
                 result.status = org.status?.getMapForES()
                 result.visible = 'Public'
@@ -233,9 +238,11 @@ class DataloadService {
                 result.guid = vendor.globalUID ?: ''
 
                 result.name = vendor.name
+                vendor.altnames.each { AlternativeName altname ->
+                    result.altnames << altname.name
+                }
 
                 result.status = vendor.status.getMapForES()
-                result.visible = 'Public'
                 result.rectype = vendor.getClass().getSimpleName()
 
                 result.sortname = vendor.sortname
@@ -251,6 +258,48 @@ class DataloadService {
 
                 result.dateCreated = vendor.dateCreated
                 result.lastUpdated = vendor.lastUpdated
+
+                result
+            }
+        }
+
+        if (!domainClass || domainClass == Provider.class) {
+
+            _updateES(Provider.class, BULK_SIZE_MEDIUM) { Provider provider ->
+                Map result = [:]
+
+                result._id = provider.globalUID
+                if (!result._id) {
+                    return result
+                }
+
+                result.priority = 30
+                result.dbId = provider.id
+
+                result.gokbId = provider.gokbId
+                result.guid = provider.globalUID ?: ''
+
+                result.name = provider.name
+                provider.altnames.each { AlternativeName altname ->
+                    result.altnames << altname.name
+                }
+
+                result.status = provider.status.getMapForES()
+                result.rectype = provider.getClass().getSimpleName()
+
+                result.sortname = provider.sortname
+
+                result.packages = []
+                provider.invoicingVendors.each { InvoicingVendor iv ->
+                    try {
+                        result.vendors.add([dbId: iv.vendor.id, name: iv.vendor.name])
+                    } catch (Exception e) {
+                        log.error( e.toString() )
+                    }
+                }
+
+                result.dateCreated = provider.dateCreated
+                result.lastUpdated = provider.lastUpdated
 
                 result
             }
@@ -282,6 +331,9 @@ class DataloadService {
                     result.gokbId = tipp.gokbId
                     result.guid = tipp.globalUID ?: ''
                     result.name = tipp.name
+                    tipp.altnames.each { AlternativeName altname ->
+                        result.altnames << altname.name
+                    }
                     result.status = tipp.status?.getMapForES()
                     result.visible = 'Public'
                     result.rectype = tipp.getClass().getSimpleName()
@@ -337,6 +389,9 @@ class DataloadService {
                 result.gokbId = pkg.gokbId
                 result.guid = pkg.globalUID ?: ''
                 result.name = "${pkg.name}"
+                pkg.altnames.each { AlternativeName altname ->
+                    result.altnames << altname.name
+                }
                 result.status = pkg.packageStatus?.getMapForES()
                 result.visible = 'Public'
                 result.rectype = pkg.getClass().getSimpleName()
@@ -390,6 +445,9 @@ class DataloadService {
                 result.gokbId = plat.gokbId
                 result.guid = plat.globalUID ?: ''
                 result.name = plat.name
+                plat.altnames.each { AlternativeName altname ->
+                    result.altnames << altname.name
+                }
                 result.status = plat.status?.getMapForES()
                 result.visible = 'Public'
                 result.rectype = plat.getClass().getSimpleName()
@@ -425,6 +483,9 @@ class DataloadService {
                 result.dbId = lic.id
                 result.guid = lic.globalUID ?: ''
                 result.name = lic.reference
+                lic.altnames.each { AlternativeName altname ->
+                    result.altnames << altname.name
+                }
                 result.visible = 'Private'
                 result.rectype = lic.getClass().getSimpleName()
 
@@ -495,6 +556,9 @@ class DataloadService {
                 result.dbId = sub.id
                 result.guid = sub.globalUID ?: ''
                 result.name = sub.name
+                sub.altnames.each { AlternativeName altname ->
+                    result.altnames << altname.name
+                }
                 result.status = sub.status?.getMapForES()
                 result.visible = 'Private'
                 result.rectype = sub.getClass().getSimpleName()
