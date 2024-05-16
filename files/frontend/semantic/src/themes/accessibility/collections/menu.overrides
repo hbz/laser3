@@ -1,8 +1,9 @@
 /* Disabled */
-.ui.ui.menu .item.disabled {
+.ui.ui.menu .item.disabled[data-position],
+.ui.ui.menu .item.disabled[data-content]{
   pointer-events: auto;
+  cursor: help;
 }
-
 .ui.menu{
   .item {
     &.la-logo-item {
