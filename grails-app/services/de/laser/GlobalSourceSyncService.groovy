@@ -1624,6 +1624,16 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             }
                         }
                     }
+                    if(vendorRecord.identifiers) {
+                        if(vendor.ids) {
+                            Identifier.executeUpdate('delete from Identifier i where i.vendor = :vendor',[vendor: vendor]) //damn those wrestlers ...
+                        }
+                        vendorRecord.identifiers.each { id ->
+                            if(!(id.namespace.toLowerCase() in ['originediturl','uri'])) {
+                                Identifier.construct([namespace: id.namespace, value: id.value, name_de: id.namespaceName, reference: vendor, isUnique: false, nsType: Provider.class.name])
+                            }
+                        }
+                    }
                     List<String> supportedLibrarySystemsB = vendorRecord.supportedLibrarySystems.collect { slsB -> slsB.supportedLibrarySystem },
                                  electronicBillingsB = vendorRecord.electronicBillings.collect { ebB -> ebB.electronicBilling },
                                  invoiceDispatchsB = vendorRecord.invoiceDispatchs.collect { idiB -> idiB.invoiceDispatch },

@@ -27,6 +27,8 @@ class WfChecklist {
     Subscription subscription
     License license
     Org org
+    Provider provider
+    Vendor vendor
 
     Org owner                   // instantiate
     Boolean template = false
@@ -44,6 +46,8 @@ class WfChecklist {
          subscription column: 'wfcl_subscription_fk'
               license column: 'wfcl_license_fk'
                   org column: 'wfcl_org_fk'
+             provider column: 'wfcl_prov_fk'
+               vendor column: 'wfcl_ven_fk'
                 owner column: 'wfcl_owner_fk'
              template column: 'wfcl_is_template'
           dateCreated column: 'wfcl_date_created'
@@ -57,6 +61,8 @@ class WfChecklist {
         subscription     (nullable: true)
         license          (nullable: true)
         org              (nullable: true)
+        provider         (nullable: true)
+        vendor           (nullable: true)
     }
 
     /**
@@ -101,6 +107,20 @@ class WfChecklist {
             info.targetTitle = ms.getMessage('org.institution.label', null, locale) + '/' + ms.getMessage('default.provider.label', null, locale)
             info.targetIcon = 'university'
             info.targetController = 'org'
+        }
+        else if (provider) {
+            info.target = GrailsHibernateUtil.unwrapIfProxy(provider)
+            info.targetName = provider.name
+            info.targetTitle = ms.getMessage('default.provider.label', null, locale)
+            info.targetIcon = 'handshake'
+            info.targetController = 'provider'
+        }
+        else if (vendor) {
+            info.target = GrailsHibernateUtil.unwrapIfProxy(vendor)
+            info.targetName = vendor.name
+            info.targetTitle = ms.getMessage('default.agency.label', null, locale)
+            info.targetIcon = 'shipping fast'
+            info.targetController = 'vendor'
         }
         else if (license) {
             info.target = GrailsHibernateUtil.unwrapIfProxy(license)

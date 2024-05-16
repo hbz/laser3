@@ -1,4 +1,4 @@
-<%@ page import="de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact;" %>
+<%@ page import="de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.VendorLink; de.laser.Contact;" %>
 
 <laser:htmlStart message="${'menu.institutions.vendor.show'}" serviceInjection="true" />
 
@@ -13,7 +13,7 @@
 </ui:h1HeaderWithIcon>
 
 <laser:render template="${customerTypeService.getNavTemplatePath()}" model="${[vendor: vendor, inContextOrg: inContextOrg]}"/>
-<%--<laser:render template="/templates/meta/identifier" model="${[object: vendor, editable: editable]}"/>--%>
+<laser:render template="/templates/meta/identifier" model="${[object: vendor, editable: editable]}"/>
 
 <ui:messages data="${flash}"/>
 <%-- <laser:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" /> --%>
@@ -285,48 +285,36 @@
                 </div>
             </div><!-- .card -->
 
-            %{--
-            <g:if test="${links || subEditor}">
+            <g:if test="${links || editable}">
                 <div class="ui card">
                     <div class="content">
-                        <h2 class="ui header"><g:message code="org.retirementLinking.label"/></h2>
+                        <h2 class="ui header"><g:message code="vendor.retirementLinking.label"/></h2>
                         <g:if test="${links}">
                             <table class="ui three column table">
                                 <g:each in="${links}" var="row">
                                     <%
-                                        String[] linkTypes = RDStore.COMBO_TYPE_FOLLOWS.getI10n('value').split('\\|')
+                                        String[] linkTypes = RDStore.PROVIDER_LINK_FOLLOWS.getI10n('value').split('\\|')
                                         int perspectiveIndex
                                         Org pair
-                                        if(orgInstance == row.fromOrg) {
+                                        if(orgInstance == row.from) {
                                             perspectiveIndex = 0
-                                            pair = row.toOrg
+                                            pair = row.to
                                         }
-                                        else if(orgInstance == row.toOrg) {
+                                        else if(orgInstance == row.to) {
                                             perspectiveIndex = 1
-                                            pair = row.fromOrg
+                                            pair = row.from
                                         }
                                     %>
                                     <g:if test="${pair != null}">
                                         <th scope="row" class="control-label">${linkTypes[perspectiveIndex]}</th>
                                         <td><g:link action="show" id="${pair.id}">${pair.name}</g:link></td>
                                         <td class="right aligned">
-                                        <%--<laser:render template="/templates/links/subLinksModal"
-                                                  model="${[tmplText:message(code:'org.details.editLink'),
-                                                            tmplIcon:'write',
-                                                            tmplCss: 'icon la-selectable-button la-popup-tooltip la-delay',
-                                                            tmplID:'editLink',
-                                                            tmplModalID:"org_edit_link_${row.id}",
-                                                            editmode: editable,
-                                                            context: vendor,
-                                                            linkInstanceType: row.class.name,
-                                                            link: row
-                                                  ]}" />--%>
                                             <g:if test="${subEditor}">
                                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.unlink')}">
                                                     <g:link class="ui negative icon button la-modern-button la-selectable-button js-open-confirm-modal"
-                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
+                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.general")}"
                                                             data-confirm-term-how="unlink"
-                                                            action="unlinkOrg" params="[id: vendor.id, combo: row.id]"
+                                                            action="unlinkProviderVendor" params="[id: vendor.id, combo: row.id]"
                                                             role="button"
                                                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                                                         <i class="unlink icon"></i>
@@ -341,13 +329,13 @@
                         <g:if test="${subEditor}">
                             <div class="ui la-vertical buttons">
                                 <%
-                                    Map<String,Object> model = [tmplText:message(code: 'org.linking.addLink'),
+                                    Map<String,Object> model = [tmplText:message(code: 'vendor.linking.addLink'),
                                                                 tmplID:'addLink',
-                                                                tmplButtonText:message(code: 'org.linking.addLink'),
-                                                                tmplModalID:'org_add_link',
+                                                                tmplButtonText:message(code: 'vendor.linking.addLink'),
+                                                                tmplModalID:'ven_add_link',
                                                                 editmode: editable,
-                                                                linkInstanceType: Combo.class.name,
-                                                                context: orgInstance
+                                                                linkInstanceType: VendorLink.class.name,
+                                                                context: vendor
                                     ]
                                 %>
                                 <laser:render template="/templates/links/subLinksModal"
@@ -357,7 +345,6 @@
                     </div>
                 </div>
             </g:if>
-            --}%
 
             <div class="ui card">
                 <div class="content">

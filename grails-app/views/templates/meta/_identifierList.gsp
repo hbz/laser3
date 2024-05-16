@@ -1,4 +1,4 @@
-<%@ page import="de.laser.remote.ApiSource; de.laser.Identifier; de.laser.Subscription; de.laser.License; de.laser.Org; de.laser.storage.RDStore; de.laser.IdentifierNamespace; de.laser.Package; de.laser.TitleInstancePackagePlatform; de.laser.IssueEntitlement; de.laser.I10nTranslation; de.laser.Platform; de.laser.AuditConfig; de.laser.FormService" %>
+<%@ page import="de.laser.remote.ApiSource; de.laser.Identifier; de.laser.Subscription; de.laser.License; de.laser.Vendor; de.laser.Provider; de.laser.storage.RDStore; de.laser.IdentifierNamespace; de.laser.Package; de.laser.TitleInstancePackagePlatform; de.laser.IssueEntitlement; de.laser.I10nTranslation; de.laser.Platform; de.laser.AuditConfig; de.laser.FormService" %>
 <laser:serviceInjection />
 
 <table class="ui table">
@@ -52,11 +52,17 @@
                             <g:if test="${object instanceof Package}">
                                 <ui:wekbIconLink type="package" gokbId="${object.gokbId}"/>
                             </g:if>
+                            <g:elseif test="${object instanceof Platform}">
+                                <ui:wekbIconLink type="platform" gokbId="${object.gokbId}"/>
+                            </g:elseif>
+                            <g:elseif test="${object instanceof Provider}">
+                                <ui:wekbIconLink type="provider" gokbId="${object.gokbId}"/>
+                            </g:elseif>
                             <g:elseif test="${object instanceof TitleInstancePackagePlatform}">
                                 <ui:wekbIconLink type="tipp" gokbId="${object.gokbId}"/>
                             </g:elseif>
-                            <g:elseif test="${object instanceof Platform}">
-                                <ui:wekbIconLink type="platform" gokbId="${object.gokbId}"/>
+                            <g:elseif test="${object instanceof Vendor}">
+                                <ui:wekbIconLink type="vendor" gokbId="${object.gokbId}"/>
                             </g:elseif>
                         </g:if>
                     </g:else>

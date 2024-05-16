@@ -2863,31 +2863,6 @@ class ExportClickMeService {
                     exportFields.put("participantAddress."+addressType.value, [field: null, label: addressType.getI10n('value')])
                 }
                 break
-            case 'provider':
-                EXPORT_PROVIDER_CONFIG.keySet().each {
-                    EXPORT_PROVIDER_CONFIG.get(it).fields.each {
-                        exportFields.put(it.key, it.value)
-                    }
-                }
-
-                IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_PROVIDER_NS).each {
-                    exportFields.put("providerIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
-                }
-
-                Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx)', contextParams).each { Platform plat ->
-                    exportFields.put("providerCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
-                }
-
-                PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
-                    exportFields.put("providerProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant?.id == contextOrg.id)])
-                }
-                contactTypes.each { RefdataValue contactType ->
-                    exportFields.put("providerContact."+contactType.owner.desc+"."+contactType.value, [field: null, label: contactType.getI10n('value')])
-                }
-                addressTypes.each { RefdataValue addressType ->
-                    exportFields.put("providerAddress."+addressType.value, [field: null, label: addressType.getI10n('value')])
-                }
-                break
         }
 
         exportFields
@@ -2974,35 +2949,6 @@ class ExportClickMeService {
                     fields.participantAddresses.fields.put("participantAddress.${addressType.value}", [field: null, label: addressType.getI10n('value')])
                 }
                 break
-            case 'provider': fields.putAll(EXPORT_PROVIDER_CONFIG)
-                fields.providerIdentifiers.fields.clear()
-                IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_PROVIDER_NS, [sort: 'ns']).each {
-                    fields.providerIdentifiers.fields << ["providerIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
-                }
-                fields.providerIdentifiers.fields << ['provider.uuid':[field: 'globalUID', label: 'Laser-UUID',  message: null]]
-                fields.providerCustomerIdentifiers.fields.clear()
-                Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx) order by plat.name', contextParams).each { Platform plat ->
-                    fields.providerCustomerIdentifiers.fields << ["providerCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
-                }
-                fields.providerProperties.fields.clear()
-                fields.myProviderProperties.fields.clear()
-                PropertyDefinition.findAllPublicAndPrivateOrgProp(contextOrg).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
-                    if(propertyDefinition.tenant?.id == contextOrg.id)
-                        fields.myProviderProperties.fields << ["providerProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: true]]
-                    else
-                        fields.providerProperties.fields << ["providerProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: false]]
-                }
-                fields.providerContacts.fields.clear()
-                fields.providerContacts.subTabs = subTabs
-                fields.providerContacts.subTabActive = subTabActive
-                contactTypes.each { RefdataValue contactType ->
-                    fields.providerContacts.fields.put("providerContact.${contactType.owner.desc}.${contactType.value}",[field: null, label: contactType.getI10n('value')])
-                }
-                fields.providerAddresses.fields.clear()
-                addressTypes.each { RefdataValue addressType ->
-                    fields.providerAddresses.fields.put("providerAddress.${addressType.value}",[field: null, label: addressType.getI10n('value')])
-                }
-                break
             default: fields = [:]
                 break
         }
@@ -3028,6 +2974,9 @@ class ExportClickMeService {
             }
         }
 
+        PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.VEN_PROP], contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
+            exportFields.put("providerProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant?.id == contextOrg.id)])
+        }
         contactTypes.each { RefdataValue contactType ->
             exportFields.put("vendorContact."+contactType.owner.desc+"."+contactType.value, [field: null, label: contactType.getI10n('value')])
         }
@@ -3052,6 +3001,14 @@ class ExportClickMeService {
         List<Map> subTabs = [[view: funcType.desc, label: funcType.getI10n('desc')], [view: posType.desc, label: posType.getI10n('desc')], [view: respType.desc, label: respType.getI10n('desc')]]
         String subTabActive = funcType.desc
         fields.putAll(EXPORT_VENDOR_CONFIG)
+        fields.vendorProperties.fields.clear()
+        fields.myVendorProperties.fields.clear()
+        PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.VEN_PROP], contextOrg).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
+            if(propertyDefinition.tenant?.id == contextOrg.id)
+                fields.myVendorProperties.fields << ["vendorProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: true]]
+            else
+                fields.vendorProperties.fields << ["vendorProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: false]]
+        }
         fields.vendorContacts.fields.clear()
         fields.vendorContacts.subTabs = subTabs
         fields.vendorContacts.subTabActive = subTabActive
@@ -3061,6 +3018,91 @@ class ExportClickMeService {
         fields.vendorAddresses.fields.clear()
         addressTypes.each { RefdataValue addressType ->
             fields.vendorAddresses.fields.put("vendorAddress.${addressType.value}",[field: null, label: addressType.getI10n('value')])
+        }
+
+        fields = getClickMeFields(clickMeConfig, fields)
+
+        fields
+    }
+
+    Map<String, Object> getExportProviderFields() {
+        Org contextOrg = contextService.getOrg()
+        Map<String, Object> exportFields = [:], contextParams = [ctx: contextOrg]
+        String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+        SortedSet<RefdataValue> contactTypes = new TreeSet<RefdataValue>(), addressTypes = new TreeSet<RefdataValue>()
+        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
+        addressTypes.addAll(RefdataCategory.getAllRefdataValues(RDConstants.ADDRESS_TYPE))
+
+        EXPORT_PROVIDER_CONFIG.keySet().each {
+            EXPORT_PROVIDER_CONFIG.get(it).fields.each {
+                exportFields.put(it.key, it.value)
+            }
+        }
+
+
+        IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_PROVIDER_NS).each {
+            exportFields.put("providerIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+        }
+
+        Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx)', contextParams).each { Platform plat ->
+            exportFields.put("providerCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
+        }
+
+        PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.PRV_PROP], contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
+            exportFields.put("providerProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant?.id == contextOrg.id)])
+        }
+        contactTypes.each { RefdataValue contactType ->
+            exportFields.put("providerContact."+contactType.owner.desc+"."+contactType.value, [field: null, label: contactType.getI10n('value')])
+        }
+        addressTypes.each { RefdataValue addressType ->
+            exportFields.put("providerAddress."+addressType.value, [field: null, label: addressType.getI10n('value')])
+        }
+
+        exportFields
+    }
+
+    Map<String, Object> getExportProviderFieldsForUI(ClickMeConfig clickMeConfig = null) {
+        Org contextOrg = contextService.getOrg()
+        Map<String, Object> fields = [:], contextParams = [ctx: contextOrg]
+        String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+        Set<RefdataValue> contactTypes = []
+        SortedSet<RefdataValue> addressTypes = new TreeSet<RefdataValue>()
+        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true) order by pr.functionType.'+ LocaleUtils.getLocalizedAttributeName('value'), [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true) order by pr.positionType.'+ LocaleUtils.getLocalizedAttributeName('value'), [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true) order by pr.responsibilityType.'+ LocaleUtils.getLocalizedAttributeName('value'), [ctx: contextOrg]))
+        addressTypes.addAll(RefdataCategory.getAllRefdataValues(RDConstants.ADDRESS_TYPE))
+        RefdataCategory funcType = RefdataCategory.getByDesc(RDConstants.PERSON_FUNCTION), posType = RefdataCategory.getByDesc(RDConstants.PERSON_POSITION), respType = RefdataCategory.getByDesc(RDConstants.PERSON_RESPONSIBILITY)
+        List<Map> subTabs = [[view: funcType.desc, label: funcType.getI10n('desc')], [view: posType.desc, label: posType.getI10n('desc')], [view: respType.desc, label: respType.getI10n('desc')]]
+        String subTabActive = funcType.desc
+        fields.putAll(EXPORT_PROVIDER_CONFIG)
+        fields.providerIdentifiers.fields.clear()
+        IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_PROVIDER_NS, [sort: 'ns']).each {
+            fields.providerIdentifiers.fields << ["providerIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+        }
+        fields.providerIdentifiers.fields << ['provider.uuid':[field: 'globalUID', label: 'Laser-UUID',  message: null]]
+        fields.providerCustomerIdentifiers.fields.clear()
+        Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx) order by plat.name', contextParams).each { Platform plat ->
+            fields.providerCustomerIdentifiers.fields << ["providerCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
+        }
+        fields.providerProperties.fields.clear()
+        fields.myProviderProperties.fields.clear()
+        PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.PRV_PROP], contextOrg).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
+            if(propertyDefinition.tenant?.id == contextOrg.id)
+                fields.myProviderProperties.fields << ["providerProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: true]]
+            else
+                fields.providerProperties.fields << ["providerProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: false]]
+        }
+        fields.providerContacts.fields.clear()
+        fields.providerContacts.subTabs = subTabs
+        fields.providerContacts.subTabActive = subTabActive
+        contactTypes.each { RefdataValue contactType ->
+            fields.providerContacts.fields.put("providerContact.${contactType.owner.desc}.${contactType.value}",[field: null, label: contactType.getI10n('value')])
+        }
+        fields.providerAddresses.fields.clear()
+        addressTypes.each { RefdataValue addressType ->
+            fields.providerAddresses.fields.put("providerAddress.${addressType.value}",[field: null, label: addressType.getI10n('value')])
         }
 
         fields = getClickMeFields(clickMeConfig, fields)
@@ -4144,18 +4186,6 @@ class ExportClickMeService {
                 sheetTitle = messageSource.getMessage('subscription.details.consortiaMembers.label', null, locale)
                 nameOfClickMeMap = 'EXPORT_ORG_CONFIG'
                 break
-            case 'provider':
-                sheetTitle = messageSource.getMessage('default.ProviderAgency.export.label', null, locale)
-                ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-                Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [componentType: 'Org', max: 10000])
-                if (queryResult) {
-                    List records = queryResult.result
-                    records.each { Map providerRecord ->
-                        wekbRecords.put(providerRecord.uuid, providerRecord)
-                    }
-                }
-                nameOfClickMeMap = 'EXPORT_PROVIDER_CONFIG'
-                break
         }
 
         Map<String, Object> selectedExportFields = [:], configFields = getExportOrgFields(config)
@@ -4222,6 +4252,53 @@ class ExportClickMeService {
         List exportData = []
         result.each { Vendor vendor ->
             _setVendorRow(vendor, selectedExportFields, exportData, format, contactSources)
+        }
+
+        Map sheetData = [:]
+        sheetData[sheetTitle] = [titleRow: titles, columnData: exportData]
+
+        switch(format) {
+            case FORMAT.XLS:
+                return exportService.generateXLSXWorkbook(sheetData)
+            case FORMAT.CSV:
+                return exportService.generateSeparatorTableString(titles, exportData, '|')
+            case FORMAT.TSV:
+                return exportService.generateSeparatorTableString(titles, exportData, '\t')
+            case FORMAT.PDF:
+                //structure: list of maps (each map is the content of a page)
+                return [mainHeader: titles, pages: sheetData.values()]
+        }
+    }
+
+    /**
+     * Exports the given fields from the given cost items
+     * @param result the {@link Provider} set to export
+     * @param selectedFields the fields which should appear in the export
+     * @param format the {@link FORMAT} to be exported
+     * @param contactSources which type of contacts should be taken? (public or private)
+     * @param configMap filter parameters for further queries
+     * @return the output in the desired format
+     */
+    def exportProviders(Set<Provider> result, Map<String, Object> selectedFields, FORMAT format, Set<String> contactSources = []) {
+        Locale locale = LocaleUtils.getCurrentLocale()
+
+        String sheetTitle = messageSource.getMessage('default.provider.export.label', null, locale)
+
+        Map<String, Object> selectedExportFields = [:], configFields = getExportProviderFields()
+
+        configFields.keySet().each { String k ->
+            if (k in selectedFields.keySet() ) {
+                selectedExportFields.put(k, configFields.get(k))
+            }
+        }
+
+        saveClickMeConfig(selectedExportFields, 'EXPORT_PROVIDER_CONFIG')
+
+        List titles = _exportTitles(selectedExportFields, locale, null, null, contactSources, null, format)
+
+        List exportData = []
+        result.each { Provider provider ->
+            _setProviderRow(provider, selectedExportFields, exportData, format, contactSources)
         }
 
         Map sheetData = [:]
@@ -5505,12 +5582,11 @@ class ExportClickMeService {
      * @param result the organisation to export
      * @param selectedFields the fields which should appear
      * @param exportData the list containing the export rows
-     * @param wekbRecords a {@link Map} of provider records coming from we:kb (empty if no provider records are exported)
      * @param format the {@link FORMAT} to be exported
      * @param contactSources which type of contacts should be considered (public or private)?
      * @param configMap filter parameters for further queries
      */
-    private void _setOrgRow(Org result, Map<String, Object> selectedFields, List exportData, Map wekbRecords, FORMAT format, Set<String> contactSources = [], Map<String, Object> configMap = [:]){
+    private void _setOrgRow(Org result, Map<String, Object> selectedFields, List exportData, FORMAT format, Set<String> contactSources = [], Map<String, Object> configMap = [:]){
         List row = []
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         selectedFields.keySet().each { String fieldKey ->
@@ -5585,18 +5661,6 @@ class ExportClickMeService {
                     _setOrgFurtherInformation(result, row, fieldKey, format)
                 }else if (fieldKey.startsWith('participantProperty.') || fieldKey.startsWith('providerProperty.')) {
                     _setOrgFurtherInformation(result, row, fieldKey, format)
-                }
-                else if (fieldKey.split('\\.')[1] in Org.WEKB_PROPERTIES) {
-                    if(result.gokbId != null) {
-                        def fieldValue = wekbRecords.containsKey(result.gokbId) && wekbRecords.get(result.gokbId)[field] != null ? wekbRecords.get(result.gokbId)[field] : ' '
-
-                        if(fieldValue instanceof List)
-                            row.add(createTableCell(format, fieldValue.join(', ').replaceAll('"', '')))
-                        else row.add(createTableCell(format, fieldValue))
-                    }
-                    else {
-                        row.add(createTableCell(format, ' '))
-                    }
                 }
                 else {
                     def fieldValue = field && result[field] != null ? result[field] : ' '

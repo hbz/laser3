@@ -71,7 +71,10 @@ class AlternativeName implements CalculatedLastUpdated, Comparable<AlternativeNa
      */
     @Override
     int compareTo(AlternativeName altName2) {
-        name <=> altName2.name
+        int result = name <=> altName2.name
+        if(!result)
+            result = id <=> altName2.id
+        result
     }
 
     @Override

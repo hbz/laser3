@@ -7,10 +7,12 @@ import de.laser.convenience.Marker
 import de.laser.interfaces.DeleteFlag
 import de.laser.interfaces.MarkerSupport
 import de.laser.properties.OrgProperty
+import de.laser.properties.PropertyDefinition
 import de.laser.properties.VendorProperty
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.workflow.WfChecklist
 import groovy.util.logging.Slf4j
 
 import javax.persistence.Transient
@@ -58,6 +60,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
             packages: 'vendor',
             altnames: 'vendor',
             propertySet: 'owner',
+            ids: 'vendor',
             documents: 'vendor',
             supportedLibrarySystems: 'vendor',
             electronicBillings: 'vendor',
@@ -71,6 +74,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
             packages: PackageVendor,
             altnames: AlternativeName,
             propertySet: VendorProperty,
+            ids: Identifier,
             documents: DocContext,
             supportedLibrarySystems: LibrarySystem,
             electronicBillings: ElectronicBilling,
@@ -193,8 +197,11 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
 
     static Vendor convertFromAgency(Org agency) {
         Vendor v = null
-        if(agency.gokbId)
+        if(agency.gokbId) {
             v = Vendor.findByGokbId(agency.gokbId)
+            if(v)
+                v.globalUID = agency.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase())
+        }
         if(!v)
             v = new Vendor(globalUID: agency.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
         v.name = agency.name
@@ -214,6 +221,10 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
                 break
         }
         v.dateCreated = agency.dateCreated
+        if(!v.save()) {
+            log.error(v.getErrors().getAllErrors().toListString())
+            null
+        }
         agency.contacts.each { Contact c ->
             c.vendor = v
             c.org = null
@@ -224,27 +235,24 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
             a.org = null
             a.save()
         }
-        agency.documents.each { DocContext dc ->
-            dc.vendor = v
-            dc.org = null
-            dc.save()
-        }
-        DocContext.findAllByTargetOrg(agency).each { DocContext dc ->
-            dc.vendor = v
-            dc.org = null
-            dc.targetOrg = null
-            dc.save()
+        //log.debug("${DocContext.executeUpdate('update DocContext dc set dc.vendor = :vendor, dc.targetOrg = null, dc.org = null where dc.targetOrg = :agency or dc.org = :agency', [vendor: v, agency: agency])} documents updated")
+        Identifier.findAllByOrg(agency).each { Identifier id ->
+            id.vendor = v
+            id.org = null
+            id.save()
         }
         agency.altnames.each { AlternativeName a ->
             a.vendor = v
             a.org = null
             a.save()
         }
-        PersonRole.findAllByOrg(agency).each { PersonRole pr ->
+        /*
+        agency.prsLinks.each { PersonRole pr ->
             pr.vendor = v
             pr.org = null
             pr.save()
         }
+        */
         Person.findAllByTenant(agency).each { Person pe ->
             pe.tenant = null
             pe.save()
@@ -259,6 +267,9 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
             t.org = null
             t.save()
         }
+        log.debug("${WfChecklist.executeUpdate('update WfChecklist wf set wf.vendor = :vendor, wf.org = null where wf.org = :agency', [vendor: v, agency: agency])} workflow checkpoints updated")
+        //those property definitions should not exist actually ...
+        PropertyDefinition.executeUpdate('delete from PropertyDefinition pd where pd.tenant = :agency', [agency: agency])
         OrgProperty.findAllByOwner(agency).each { OrgProperty op ->
             VendorProperty vp = new VendorProperty()
             if(op.dateValue)
@@ -279,11 +290,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
             vp.lastUpdated = op.lastUpdated
             vp.save()
         }
-        if(!v.save()) {
-            log.error(v.getErrors().getAllErrors().toListString())
-            null
-        }
-        else v
+        v
     }
 
     /**

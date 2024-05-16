@@ -23,7 +23,7 @@ class ProviderRole implements ShareableTrait, Comparable<ProviderRole> {
         license column: 'pr_license_fk', index: 'pr_license_idx'
         subscription column: 'pr_subscription_fk', index: 'pr_subscription_idx'
         isShared column: 'pr_is_shared'
-        sharedFrom column: 'pr_shared_from_fk'
+        sharedFrom column: 'pr_shared_from_fk',index:'pr_shared_from_idx'
         dateCreated column: 'pr_date_created'
         lastUpdated column: 'pr_last_updated'
     }
