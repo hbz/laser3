@@ -28315,6 +28315,29 @@ body[class*="vendor"] .ui.icon.header .icon.la-object:before {
   content: "\f48b";
 }
 
+body[class*="Provider"] .ui.icon.header .icon.la-object,
+body[class*="provider"] .ui.icon.header .icon.la-object {
+  display: inline-block;
+  background-color: #c5ff62;
+  border-color: #c5ff62;
+}
+
+body[class*="Provider"] .ui.icon.header .icon.la-object:before,
+body[class*="provider"] .ui.icon.header .icon.la-object:before {
+  content: "\f2b5";
+}
+
+body[class*="Provider"] .la-objectIsMine,
+body[class*="provider"] .la-objectIsMine {
+  box-shadow: 0 0 0 0.1em #c5ff62 inset !important;
+  color: #c5ff62;
+}
+
+body[class*="Provider"] .ui.icon.header .icon.la-object:before,
+body[class*="provider"] .ui.icon.header .icon.la-object:before {
+  content: "\f2b5";
+}
+
 .ui.icon.header .icon.la-object-journal {
   display: inline-block;
   background-color: #2185d0;

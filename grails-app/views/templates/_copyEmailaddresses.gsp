@@ -1,5 +1,5 @@
 <!-- _copyEmailAddresses.gsp -->
-<%@ page import="de.laser.PersonRole; de.laser.Contact; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Vendor" %>
+<%@ page import="de.laser.PersonRole; de.laser.Contact; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Provider; de.laser.Vendor" %>
 <laser:serviceInjection />
 
 <g:set var="modalID" value="${modalID ?: 'copyEmailaddresses_ajaxModal'}"/>
@@ -100,6 +100,9 @@
             <g:if test="${instanceType == Vendor.class.name}">
                 let instanceIdList = '&vendorIdList=' + JSPC.app.jsonOrgIdList;
             </g:if>
+            <g:elseif test="${instanceType == Provider.class.name}">
+                let instanceIdList = '&providerIdList=' + JSPC.app.jsonOrgIdList;
+            </g:elseif>
             <g:else>
                 let instanceIdList = '&orgIdList=' + JSPC.app.jsonOrgIdList;
             </g:else>
