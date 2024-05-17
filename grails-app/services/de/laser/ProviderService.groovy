@@ -130,7 +130,7 @@ class ProviderService {
             }
             ts.flush()
             Set<PersonRole> providerContacts = PersonRole.executeQuery('select pr from PersonRole pr join pr.org o join o.orgType ot where ot in (:provider)', [provider: [RDStore.OT_PROVIDER, RDStore.OT_LICENSOR]])
-            Set<Long> toDeletePersonRole = []
+            //Set<Long> toDeletePersonRole = []
             providerContacts.each { PersonRole pr ->
                 Provider p = Provider.findByGlobalUID(pr.org.globalUID.replace(Org.class.simpleName.toLowerCase(), Provider.class.simpleName.toLowerCase()))
                 if (!p) {
@@ -148,9 +148,16 @@ class ProviderService {
                     pr.org = null
                     pr.save()
                 }
-                else toDeletePersonRole << pr.id
+                else {
+                    Person prs = pr.prs
+                    if(prs.tenant == pr.org) {
+                        prs.tenant = null
+                        prs.save()
+                    }
+                    //toDeletePersonRole << pr.id
+                }
             }
-            PersonRole.executeUpdate('delete from PersonRole pr where pr.id in (:toDelete)', [toDelete: toDeletePersonRole])
+            //PersonRole.executeUpdate('delete from PersonRole pr where pr.id in (:toDelete)', [toDelete: toDeletePersonRole])
             ts.flush()
             Set<DocContext> docOrgContexts = DocContext.executeQuery('select dc from DocContext dc join dc.org o join o.orgType ot where ot in (:provider)', [provider: [RDStore.OT_PROVIDER, RDStore.OT_LICENSOR]])
             docOrgContexts.each { DocContext dc ->

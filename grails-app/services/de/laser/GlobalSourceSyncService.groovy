@@ -1383,6 +1383,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             provider.managementOfCredits = providerRecord.managementOfCredits == RDStore.YN_YES.value
             provider.processingOfCompensationPayments = providerRecord.processingOfCompensationPayments == RDStore.YN_YES.value
             provider.individualInvoiceDesign = providerRecord.individualInvoiceDesign == RDStore.YN_YES.value
+            provider.inhouseInvoicing = providerRecord.invoicingYourself == RDStore.YN_YES.value
             if((provider.status == RDStore.PROVIDER_STATUS_CURRENT || !provider.status) && providerRecord.status == RDStore.PROVIDER_STATUS_RETIRED.value) {
                 //value is not implemented in we:kb yet
                 if(providerRecord.retirementDate) {

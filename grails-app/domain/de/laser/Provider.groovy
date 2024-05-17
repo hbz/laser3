@@ -23,6 +23,7 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
     String kbartDownloaderURL
     String metadataDownloaderURL
     String homepage
+    boolean inhouseInvoicing = false
     boolean paperInvoice = false
     boolean managementOfCredits = false
     boolean processingOfCompensationPayments = false
@@ -82,6 +83,7 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
         kbartDownloaderURL column: 'prov_kbart_downloader_url', type: 'text'
         metadataDownloaderURL column: 'prov_metadata_downloader_url', type: 'text'
         homepage column: 'prov_homepage'
+        inhouseInvoicing column: 'prov_inhouse_invoicing'
         paperInvoice column: 'prov_paper_invoice'
         managementOfCredits column: 'prov_management_of_credits'
         processingOfCompensationPayments column: 'prov_processing_of_compensation_payments'
@@ -243,7 +245,6 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
             pr.org = null
             pr.save()
         }
-        */
         Person.findAllByTenant(provider).each { Person pe ->
             //if(!Person.executeQuery('select p from Person p join p.roleLinks pr where p.tenant = null and p.isPublic = true and p.last_name = :contactType and :provider in (pr.provider)', [provider: p, contactType: pe.last_name])) {
                 pe.tenant = null
@@ -251,6 +252,7 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
             //}
             //else pe.delete()
         }
+        */
         Marker.findAllByOrg(provider).each { Marker m ->
             m.prov = p
             m.org = null
