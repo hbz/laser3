@@ -20,6 +20,26 @@ class InfoService {
     FinanceService financeService
     SubscriptionsQueryService subscriptionsQueryService
 
+    static final String PROVIDER_QUERY_1 = '''select pro.id, sub.id, sub.startDate, sub.endDate, sub.referenceYear, sub.name, sub.status.id from ProviderRole pr
+                                    join pr.subscription sub
+                                    join pr.provider pro
+                                    where sub.id in (:subIdList)
+                                    order by pro.sortname, pro.name, sub.name, sub.startDate, sub.endDate, sub.referenceYear asc '''
+
+    // TODO
+    static final String PROVIDER_QUERY_2 = '''select pro.id, sub.id, sub.startDate, sub.endDate, sub.referenceYear, sub.name, sub.status.id from SubscriptionPackage subPkg 
+                                    join subPkg.subscription sub 
+                                    join subPkg.pkg pkg 
+                                    join pkg.provider pro where sub.id in (:subIdList)'''
+
+    // TODO
+    static final String PROVIDER_QUERY_3 = '''select pro.id, sub.id, sub.startDate, sub.endDate, sub.referenceYear, sub.name, sub.status.id from SubscriptionPackage subPkg 
+                                    join subPkg.subscription sub 
+                                    join subPkg.pkg pkg 
+                                    join pkg.nominalPlatform plt 
+                                    join plt.provider pro where sub.id in (:subIdList)'''
+
+
     class Helper {
         static Map listToMap(List<List> list) {
             list.groupBy{ it[0] }.sort{ it -> RefdataValue.get(it.key).getI10n('value') }
@@ -109,22 +129,18 @@ class InfoService {
 
         // --- provider ---
 
-        String providerQuery = '''select por.org.id, sub.id, sub.startDate, sub.endDate, sub.referenceYear, sub.name, sub.status.id from OrgRole por
-                                    join por.sub sub
-                                    where sub.id in (:subIdList)
-                                    and por.roleType in (:porTypes)
-                                    order by por.org.sortname, por.org.name, sub.name, sub.startDate, sub.endDate, sub.referenceYear asc '''
+        // TODO - subscriptionPackage > package > provider
 
         Map providerParams = [
-                subIdList: subStruct.collect { it[1] },
-                porTypes : [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
+                subIdList: subStruct.collect { it[1] }
         ]
 
 //        println providerQuery; println providerParams
 
-        List<List> providerStruct = Org.executeQuery(providerQuery, providerParams) /*.unique()*/
+        List<List> providerStruct = Provider.executeQuery(PROVIDER_QUERY_1, providerParams) /*.unique()*/
+
 //        Map providerMap = Helper.listToMap(providerStruct)
-        Map providerMap = providerStruct.groupBy{ it[0] }.sort{ it -> Org.get(it.key).sortname ?: Org.get(it.key).name }
+        Map providerMap = providerStruct.groupBy{ it[0] }.sort{ it -> Provider.get(it.key).sortname ?: Provider.get(it.key).name }
 
 //        println '\nproviderStruct: ' + providerStruct; println '\nproviderMap: ' + providerMap
 
@@ -268,28 +284,17 @@ class InfoService {
 
         // --- provider ---
 
-//        String providerQuery = '''select sub.status.id, sub.id, sub.startDate, sub.endDate, sub.referenceYear, sub.name, por.org.id from OrgRole por
-//                                    join por.sub sub
-//                                    where sub.id in (:subIdList)
-//                                    and por.roleType in (:porTypes)
-//                                    order by por.org.sortname, por.org.name, sub.name, sub.startDate, sub.endDate asc '''
-//
-        String providerQuery = '''select por.org.id, sub.id, sub.startDate, sub.endDate, sub.referenceYear, sub.name, sub.status.id from OrgRole por
-                                    join por.sub sub
-                                    where sub.id in (:subIdList)
-                                    and por.roleType in (:porTypes)
-                                    order by por.org.sortname, por.org.name, sub.name, sub.startDate, sub.endDate, sub.referenceYear asc '''
+        // TODO - subscriptionPackage > package > provider
 
         Map providerParams = [
-                subIdList: subStruct.collect { it[1] },
-                porTypes : [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
+                subIdList: subStruct.collect { it[1] }
         ]
 
 //        println providerQuery; println providerParams
 
-        List<List> providerStruct = Org.executeQuery(providerQuery, providerParams) /*.unique()*/
+        List<List> providerStruct = Provider.executeQuery(PROVIDER_QUERY_1, providerParams) /*.unique()*/
 //        Map providerMap = Helper.listToMap(providerStruct)
-        Map providerMap = providerStruct.groupBy{ it[0] }.sort{ it -> Org.get(it.key).sortname ?: Org.get(it.key).name }
+        Map providerMap = providerStruct.groupBy{ it[0] }.sort{ it -> Provider.get(it.key).sortname ?: Provider.get(it.key).name }
 
 //        println '\nproviderStruct: ' + providerStruct; println '\nproviderMap: ' + providerMap
 
