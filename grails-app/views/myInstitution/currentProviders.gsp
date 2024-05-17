@@ -18,7 +18,7 @@
 
         </ui:controlButtons>
 
-    <ui:h1HeaderWithIcon message="menu.my.providers" total="${providerListTotal}" floated="true" />
+    <ui:h1HeaderWithIcon message="menu.my.providers" total="${providersTotal}" floated="true" />
 
     <ui:messages data="${flash}" />
 
@@ -53,7 +53,7 @@
 
     <laser:render template="/templates/copyEmailaddresses" model="[orgList: providerList, instanceType: Provider.class.name]"/>
 
-    <ui:paginate total="${providerListTotal}" params="${params}" max="${max}" offset="${offset}" />
+    <ui:paginate total="${providersTotal}" params="${params}" max="${max}" offset="${offset}" />
 
     <ui:debugInfo>
         <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />

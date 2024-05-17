@@ -123,7 +123,7 @@ class VendorService {
             }
             ts.flush()
             Set<PersonRole> agencyContacts = PersonRole.executeQuery('select pr from PersonRole pr join pr.org o join o.orgType ot where ot = :agency', [agency: RDStore.OT_AGENCY])
-            //Set<Long> toDeletePersonRole = []
+            Set<Long> toDeletePersonRole = []
             agencyContacts.each { PersonRole pr ->
                 Vendor v = Vendor.findByGlobalUID(pr.org.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
                 if (!v) {
@@ -142,15 +142,10 @@ class VendorService {
                     pr.save()
                 }
                 else {
-                    Person prs = pr.prs
-                    if(prs.tenant == pr.org) {
-                        prs.tenant = null
-                        prs.save()
-                    }
-                    //toDeletePersonRole << pr.id
+                    toDeletePersonRole << pr.id
                 }
             }
-            //PersonRole.executeUpdate('delete from PersonRole pr where pr.id in (:toDelete)', [toDelete: toDeletePersonRole])
+            PersonRole.executeUpdate('delete from PersonRole pr where pr.id in (:toDelete)', [toDelete: toDeletePersonRole])
             ts.flush()
             Set<DocContext> docOrgContexts = DocContext.executeQuery('select dc from DocContext dc where dc.org.orgType = :agency', [agency: RDStore.OT_AGENCY])
             docOrgContexts.each { DocContext dc ->
