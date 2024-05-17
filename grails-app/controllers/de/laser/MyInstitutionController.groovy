@@ -4713,7 +4713,24 @@ join sub.orgRelations or_sub where
                     if (pdFrom && pdTo) {
                         try {
                             int count = propertyService.replacePropertyDefinitions(pdFrom, pdTo, Boolean.valueOf(params.overwrite), false)
-                            flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [count, oldName, newName]) as String
+                            if(count == 0) {
+                                String instanceType
+                                switch(pdFrom.descr) {
+                                    case PropertyDefinition.LIC_PROP: instanceType = message(code: 'menu.institutions.replace_prop.licenses')
+                                        break
+                                    case PropertyDefinition.PRS_PROP: instanceType = message(code: 'menu.institutions.replace_prop.persons')
+                                        break
+                                    case PropertyDefinition.SUB_PROP: instanceType = message(code: 'menu.institutions.replace_prop.subscriptions')
+                                        break
+                                    case PropertyDefinition.SVY_PROP: instanceType = message(code: 'menu.institutions.replace_prop.surveys')
+                                        break
+                                    default: instanceType = message(code: 'menu.institutions.replace_prop.default')
+                                        break
+                                }
+                                flash.message = message(code: 'menu.institutions.replace_prop.noChanges', args: [instanceType]) as String
+                            }
+                            else
+                                flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [count, oldName, newName]) as String
                         }
                         catch (Exception e) {
                             e.printStackTrace()
