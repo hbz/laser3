@@ -6,7 +6,14 @@
         <g:each in="${cfgQueryList}" var="cfgQuery" status="qi">
             <g:each in="${cfgQuery}" var="field">
                 <div class="field">
-                    <label for="query-chooser-1-${qi}">${BaseConfig.getConfigLabel(field.key)}</label>
+
+                    <g:if test="${cfgKey == 'platform' && field.key == 'provider'}">
+                        <label for="query-chooser-1-${qi}">${BaseConfig.getConfigLabel('platformProvider')}</label> %{-- TODO: fixed label --}%
+                    </g:if>
+                    <g:else>
+                        <label for="query-chooser-1-${qi}">${BaseConfig.getConfigLabel(field.key)}</label>
+                    </g:else>
+
                     <ui:dropdownWithI18nExplanations name="query-chooser"
                                                         id="query-chooser-1-${qi}"
                                                         from="${field.value}"

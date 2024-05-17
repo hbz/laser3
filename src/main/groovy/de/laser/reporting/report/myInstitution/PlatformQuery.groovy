@@ -155,10 +155,11 @@ class PlatformQuery extends BaseQuery {
 //            }
             else if (params.query in ['platform-x-provider']) {
 
-                result.data = Provider.executeQuery(
+                result.data = idList ? Provider.executeQuery(
                         'select pro.id, pro.name, count(*) from Platform plt join plt.provider pro where pro.id in (:providerIdList) and plt.id in (:idList) group by pro.id order by pro.name',
                         [providerIdList: BaseFilter.getCachedFilterIdList('provider', params), idList: idList]
-                )
+                ) : []
+
                 result.data.each { d ->
                     result.dataDetails.add([
                             query : params.query,

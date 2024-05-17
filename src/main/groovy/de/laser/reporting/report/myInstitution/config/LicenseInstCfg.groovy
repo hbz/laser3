@@ -89,9 +89,9 @@ class LicenseInstCfg extends BaseConfig {
                             'depending-licensor'
                     ],
                     fields : [
-                            'country'   : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
-                            'region'    : [ type: BaseConfig.FIELD_TYPE_REFDATA, spec: BaseConfig.FIELD_IS_VIRTUAL ],
-                            'orgType'   : [ type: BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE ]
+//                            'country'   : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
+//                            'region'    : [ type: BaseConfig.FIELD_TYPE_REFDATA, spec: BaseConfig.FIELD_IS_VIRTUAL ],
+//                            'orgType'   : [ type: BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE ]
                     ],
                     filter : [
                             default : []
@@ -120,15 +120,12 @@ class LicenseInstCfg extends BaseConfig {
                             'status' : [ type: BaseConfig.FIELD_TYPE_REFDATA ]
                     ],
                     filter : [
-                            default : []
+                            default : [
+                                    [ 'status' ],
+                            ]
                     ],
                     query : [
-                            default : [
-                                    provider : [
-                                            'provider-status' :   [ 'generic.provider.status' ],
-                                            'provider-*' :        [ 'generic.all' ],
-                                    ]
-                            ]
+                            default : BaseConfig.GENERIC_PROVIDER_QUERY_DEFAULT
                     ]
             ],
 
@@ -144,15 +141,12 @@ class LicenseInstCfg extends BaseConfig {
                             'status' : [ type: BaseConfig.FIELD_TYPE_REFDATA ]
                     ],
                     filter : [
-                            default : []
+                            default : [
+                                    [ 'status' ],
+                            ]
                     ],
                     query : [
-                            default : [
-                                    vendor : [
-                                            'vendor-status' :   [ 'generic.vendor.status' ],
-                                            'vendor-*' :        [ 'generic.all' ],
-                                    ]
-                            ]
+                            default : BaseConfig.GENERIC_VENDOR_QUERY_DEFAULT
                     ]
             ]
     ]

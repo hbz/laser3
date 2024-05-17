@@ -1,14 +1,13 @@
 package de.laser.reporting.report.myInstitution
 
 import de.laser.ContextService
-import de.laser.Org
 import de.laser.Package
 import de.laser.Platform
 import de.laser.Provider
 import de.laser.RefdataValue
-import de.laser.Subscription
 import de.laser.Vendor
 import de.laser.helper.Params
+import de.laser.reporting.report.FilterQueries
 import de.laser.storage.BeanStore
 import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
@@ -37,23 +36,10 @@ class PackageFilter extends BaseFilter {
 
         switch (filterSource) {
             case 'all-pkg':
-                queryParams.packageIdList = Package.executeQuery( 'select pkg.id from Package pkg' )
-//                queryParams.packageIdList = Package.executeQuery( 'select pkg.id from Package pkg where pkg.packageStatus != :pkgStatus',
-//                        [pkgStatus: RDStore.PACKAGE_STATUS_DELETED]
-//                )
+                queryParams.packageIdList = FilterQueries.getAllPackageIdList()
                 break
             case 'my-pkg':
-                List<Long> subIdList = Subscription.executeQuery(
-                        "select s.id from Subscription s join s.orgRelations ro where (ro.roleType in (:roleTypes) and ro.org = :ctx)",
-                        [roleTypes: [ RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS ], ctx: contextService.getOrg()])
-
-                queryParams.packageIdList = Package.executeQuery(
-                        'select distinct subPkg.pkg.id from SubscriptionPackage subPkg where subPkg.subscription.id in (:subIdList)', [subIdList: subIdList]
-                )
-//                queryParams.packageIdList = Package.executeQuery(
-//                        'select distinct subPkg.pkg.id from SubscriptionPackage subPkg where subPkg.subscription.id in (:subIdList) and subPkg.pkg.packageStatus != :pkgStatus',
-//                        [subIdList: subIdList, pkgStatus: RDStore.PACKAGE_STATUS_DELETED]
-//                )
+                queryParams.packageIdList = FilterQueries.getMyPackageIdList()
                 break
         }
 
@@ -197,16 +183,6 @@ class PackageFilter extends BaseFilter {
 
         filterResult
     }
-
-//    static void _handleSubsetOrgFilter(String partKey, Map<String, Object> filterResult) {
-//        String queryBase = 'select distinct (org.id) from OrgRole ro join ro.pkg pkg join ro.org org'
-//        List<String> whereParts = [ 'pkg.id in (:packageIdList)', 'ro.roleType in (:roleTypes)' ]
-//
-//        Map<String, Object> queryParams = [ packageIdList: filterResult.data.packageIdList, roleTypes: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER] ]
-//
-//        String query = queryBase + ' where ' + whereParts.join(' and ')
-//        filterResult.data.put( partKey + 'IdList', queryParams.packageIdList ? Org.executeQuery(query, queryParams) : [] )
-//    }
 
     static void _handleSubsetPlatformFilter(String partKey, Map<String, Object> filterResult) {
         String queryBase = 'select distinct (plt.id) from Package pkg join pkg.nominalPlatform plt'

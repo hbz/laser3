@@ -97,15 +97,25 @@ class SubscriptionConsCfg extends BaseConfig {
                                              chartTemplate       : 'generic',
                                              chartLabels         : []
                                      ],
+                                     'subscription-x-memberSubscription' : [
+                                             detailsTemplate    : 'subscription',
+                                             chartTemplate      : 'generic',
+                                             chartLabels        : []
+                                     ],
+                                     'subscription-x-member' : [
+                                             detailsTemplate    : 'organisation',
+                                             chartTemplate      : 'generic',
+                                             chartLabels        : []
+                                     ],
                                      'subscription-x-provider' : [
                                              detailsTemplate     : 'subscription',
                                              chartTemplate       : 'generic',
                                              chartLabels         : []
                                      ],
                                      'subscription-x-vendor' : [
-                                            detailsTemplate     : 'subscription',
-                                            chartTemplate       : 'generic',
-                                            chartLabels         : []
+                                             detailsTemplate     : 'subscription',
+                                             chartTemplate       : 'generic',
+                                             chartLabels         : []
                                      ],
 //                                     'subscription-x-memberProvider' : [
 //                                             detailsTemplate    : 'subscription',
@@ -118,21 +128,11 @@ class SubscriptionConsCfg extends BaseConfig {
 //                                             chartTemplate      : 'generic',
 //                                             chartLabels        : []
 //                                     ],
-//                                     'subscription-x-platform' : [
-//                                             detailsTemplate     : 'subscription',
-//                                             chartTemplate       : '2axis2values_nonMatches',
-//                                             chartLabels         : [ 'x.platforms.1', 'x.platforms.2' ]
-//                                     ],
-                                     'subscription-x-memberSubscription' : [
-                                             detailsTemplate    : 'subscription',
-                                             chartTemplate      : 'generic',
-                                             chartLabels        : []
+                                     'subscription-x-platform' : [ // TODO
+                                                                   detailsTemplate     : 'subscription',
+                                                                   chartTemplate       : '2axis2values_nonMatches',
+                                                                   chartLabels         : [ 'x.platforms.1', 'x.platforms.2' ]
                                      ],
-                                     'subscription-x-member' : [
-                                             detailsTemplate    : 'organisation',
-                                             chartTemplate      : 'generic',
-                                             chartLabels        : []
-                                     ]
                             ]
                     ]
             ],
@@ -247,15 +247,12 @@ class SubscriptionConsCfg extends BaseConfig {
                             'status' : [ type: BaseConfig.FIELD_TYPE_REFDATA ]
                     ],
                     filter : [
-                            default : []
+                            default : [
+                                    [ 'status' ],
+                            ]
                     ],
                     query : [
-                            default : [
-                                    provider : [
-                                            'provider-status' :   [ 'generic.provider.status' ],
-                                            'provider-*' :        [ 'generic.all' ],
-                                    ]
-                            ]
+                            default : BaseConfig.GENERIC_PROVIDER_QUERY_DEFAULT
                     ]
             ],
 
@@ -271,15 +268,12 @@ class SubscriptionConsCfg extends BaseConfig {
                             'status' : [ type: BaseConfig.FIELD_TYPE_REFDATA ]
                     ],
                     filter : [
-                            default : []
+                            default : [
+                                    [ 'status' ],
+                            ]
                     ],
                     query : [
-                            default : [
-                                    vendor : [
-                                            'vendor-status' :   [ 'generic.vendor.status' ],
-                                            'vendor-*' :        [ 'generic.all' ],
-                                    ]
-                            ]
+                            default : BaseConfig.GENERIC_VENDOR_QUERY_DEFAULT
                     ]
             ]
     ]

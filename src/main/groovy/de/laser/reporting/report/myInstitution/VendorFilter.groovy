@@ -5,6 +5,7 @@ import de.laser.RefdataValue
 import de.laser.Vendor
 import de.laser.annotations.UnstableFeature
 import de.laser.reporting.report.GenericHelper
+import de.laser.reporting.report.FilterQueries
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.storage.BeanStore
@@ -32,10 +33,10 @@ class VendorFilter extends BaseFilter {
 
         switch (filterSource) {
             case 'all-vendor':
-                queryParams.vendorIdList = _getAllVendorIdList()
+                queryParams.vendorIdList = FilterQueries.getAllVendorIdList()
                 break
             case 'my-vendor':
-                queryParams.vendorIdList = _getMyVendorIdList()
+                queryParams.vendorIdList = FilterQueries.getMyVendorIdList()
                 break
         }
 
@@ -135,35 +136,5 @@ class VendorFilter extends BaseFilter {
 //        println 'vendors >> ' + result.vendorIdList.size()
 
         filterResult
-    }
-
-    static List<Long> _getAllVendorIdList() {
-
-        List<Long> idList = Vendor.executeQuery(
-                'select ven.id from Vendor ven'
-//                'select ven.id from Vendor ven where (ven.status is null or ven.status != :vendorStatus)',
-//                [vendorStatus: RDStore.VENDOR_STATUS_DELETED]
-        )
-
-        idList
-    }
-
-    static List<Long> _getMyVendorIdList() { // TODO
-
-        ContextService contextService = BeanStore.getContextService()
-
-        List<Long> idList = Vendor.executeQuery( '''
-            select distinct(vr.vendor.id) from VendorRole vr
-                join vr.subscription sub
-                join sub.orgRelations subOr
-            where (sub = subOr.sub and subOr.org = :org and subOr.roleType in (:subRoleTypes))
-            ''', [
-                org: contextService.getOrg(),
-//                vendorStatus: RDStore.VENDOR_STATUS_DELETED,
-                subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]
-            ]
-        )
-        // and (vr.vendor.status is null or vr.vendor.status != :vendorStatus)
-        idList
     }
 }

@@ -33,21 +33,20 @@ class PackageXCfg extends BaseConfig {
                             'nominalPlatform'           : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PACKAGE_PLATFORM, spec: BaseConfig.FIELD_IS_MULTIPLE ],
                             'provider'                  : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PACKAGE_PROVIDER, spec: BaseConfig.FIELD_IS_MULTIPLE ],
                             'vendor'                    : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PACKAGE_VENDOR, spec: BaseConfig.FIELD_IS_MULTIPLE ],
-//                            'orProvider'                : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PACKAGE_OR_PROVIDER, spec: BaseConfig.FIELD_IS_MULTIPLE ],
                             'scope'                     : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ]
                     ],
                     filter : [
                             default: [
                                     [ 'contentType', 'file', 'packageStatus' ],
-                                    [  /* 'orProvider', */ 'nominalPlatform', 'provider', 'vendor' ],
+                                    [  'nominalPlatform', 'provider', 'vendor' ],
                                     [ 'breakable', 'scope' ],
-                                    [ 'paymentType', 'openAccess']
+                                    [ 'paymentType', 'openAccess' ]
                             ],
                             my: [
                                     [ 'contentType',  'file', 'subscriptionStatus', 'packageStatus' ],
-                                    [ /* 'orProvider', */ 'nominalPlatform', 'provider', 'vendor' ],
+                                    [ 'nominalPlatform', 'provider', 'vendor' ],
                                     [ 'breakable', 'scope' ],
-                                    [ 'paymentType', 'openAccess']
+                                    [ 'paymentType', 'openAccess' ]
                             ]
                     ],
                     query : [
@@ -98,11 +97,11 @@ class PackageXCfg extends BaseConfig {
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
                                     ],
-//                                    'package-x-platformProvider' : [
-//                                            detailsTemplate     : 'package',
-//                                            chartTemplate       : 'generic',
-//                                            chartLabels         : []
-//                                    ],
+                                    'package-x-platformProvider' : [
+                                            detailsTemplate     : 'package',
+                                            chartTemplate       : 'generic',
+                                            chartLabels         : []
+                                    ],
                                     'package-x-curatoryGroup' : [ // ES
                                             detailsTemplate     : 'package',
                                             chartTemplate       : 'generic',
@@ -145,7 +144,7 @@ class PackageXCfg extends BaseConfig {
                     source : [
                             'filter-subset-platform'
                     ],
-                    fields : [ ],
+                    fields : [],
                     filter : [
                             default : []
                     ],
@@ -171,17 +170,12 @@ class PackageXCfg extends BaseConfig {
                     source : [
                             'filter-subset-provider'
                     ],
-                    fields : [ ],
+                    fields : [],
                     filter : [
                             default : []
                     ],
                     query : [
-                            default : [
-                                    provider : [
-                                            'provider-status' :  [ 'generic.provider.status' ],
-                                            'provider-*' :       [ 'generic.all' ]
-                                    ]
-                            ]
+                            default : BaseConfig.GENERIC_PROVIDER_QUERY_DEFAULT
                     ]
             ],
 
@@ -193,17 +187,12 @@ class PackageXCfg extends BaseConfig {
                     source : [
                             'filter-subset-vendor'
                     ],
-                    fields : [ ],
+                    fields : [],
                     filter : [
                             default : []
                     ],
                     query : [
-                            default : [
-                                    vendor : [
-                                            'vendor-status' :           [ 'generic.vendor.status' ],
-                                            'vendor-*' :                [ 'generic.all' ]
-                                    ]
-                            ]
+                            default : BaseConfig.GENERIC_VENDOR_QUERY_DEFAULT
                     ]
             ]
     ]
@@ -219,7 +208,6 @@ class PackageXCfg extends BaseConfig {
             'packageStatus'             : [ dtc: false ],
             'provider'                  : [ dtc: true ],
             'vendor'                    : [ dtc: true ],
-//            'orProvider'                : [ dtc: true  ],
             'nominalPlatform'           : [ dtc: true  ],
             'file'                      : [ dtc: false ],
             '_dtField_currentTitles'    : [ dtc: true  ],    // virtual

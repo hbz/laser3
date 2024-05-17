@@ -36,16 +36,7 @@ class ProviderXCfg extends BaseConfig {
                             ]
                     ],
                     query : [
-                            default : [
-                                    provider : [
-                                            'provider-paperInvoice' :                       [ 'generic.provider.paperInvoice' ],
-                                            'provider-managementOfCredits' :                [ 'generic.provider.managementOfCredits' ],
-                                            'provider-processingOfCompensationPayments' :   [ 'generic.provider.processingOfCompensationPayments' ],
-                                            'provider-individualInvoiceDesign' :            [ 'generic.provider.individualInvoiceDesign' ],
-                                            'provider-status' :                             [ 'generic.provider.status' ],
-                                            'provider-*' :                                  [ 'generic.all' ]
-                                    ]
-                            ]
+                            default : BaseConfig.GENERIC_PROVIDER_QUERY_DEFAULT
                     ],
                     distribution : [
                             default : [
