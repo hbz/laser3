@@ -222,7 +222,7 @@ class ProviderController {
         if(params.containsKey('id')) {
             Provider provider = Provider.get(params.id)
             result.provider = provider
-            result.editable = false //hard set until it is not decided how to deal with current agencies
+            result.editable = provider.gokbId ? false : userService.hasFormalAffiliation_or_ROLEADMIN(result.user, result.institution, 'INST_EDITOR')
             result.subEditable = userService.hasFormalAffiliation_or_ROLEADMIN(result.user, result.institution, 'INST_EDITOR')
             result.isMyProvider = providerService.isMyProvider(provider, result.institution)
             String subscriptionConsortiumFilter = '', licenseConsortiumFilter = ''

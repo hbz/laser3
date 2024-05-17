@@ -179,11 +179,8 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
         Provider p = null
         if(provider.gokbId) {
             p = Provider.findByGokbId(provider.gokbId)
-            if(p) {
+            if(p)
                 p.globalUID = provider.globalUID.replace(Org.class.simpleName.toLowerCase(), Provider.class.simpleName.toLowerCase())
-                PersonRole.executeQuery('delete from PersonRole pr where pr.prs in (select p from Person p where p.tenant = :provider)', [provider: provider])
-                Person.executeQuery('delete from Person p where p.tenant = :provider', [provider: provider])
-            }
         }
         if(!p)
             p = Provider.findByGlobalUID(provider.globalUID.replace(Org.class.simpleName.toLowerCase(), Provider.class.simpleName.toLowerCase()))
@@ -248,14 +245,14 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
             pr.org = null
             pr.save()
         }
-        */
         Person.findAllByTenant(provider).each { Person pe ->
-            //if(!Person.executeQuery('select p from Person p join p.roleLinks pr where p.tenant = null and p.isPublic = true and p.last_name = :contactType and :provider in (pr.provider)', [provider: p, contactType: pe.last_name])) {
+            if(!Person.executeQuery('select p from Person p join p.roleLinks pr where p.tenant = null and p.isPublic = true and p.last_name = :contactType and :provider in (pr.provider)', [provider: p, contactType: pe.last_name])) {
                 pe.tenant = null
                 pe.save()
-            //}
-            //else pe.delete()
+            }
+            pe.delete()
         }
+        */
         Marker.findAllByOrg(provider).each { Marker m ->
             m.prov = p
             m.org = null

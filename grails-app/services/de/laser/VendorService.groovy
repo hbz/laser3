@@ -123,29 +123,19 @@ class VendorService {
             }
             ts.flush()
             Set<PersonRole> agencyContacts = PersonRole.executeQuery('select pr from PersonRole pr join pr.org o join o.orgType ot where ot = :agency', [agency: RDStore.OT_AGENCY])
-            Set<Long> toDeletePersonRole = []
             agencyContacts.each { PersonRole pr ->
                 Vendor v = Vendor.findByGlobalUID(pr.org.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
                 if (!v) {
                     v = Vendor.convertFromAgency(pr.org)
                 }
-                boolean existsContact = false
-                if(pr.functionType)
-                    existsContact = PersonRole.findByPrsAndVendorAndFunctionType(pr.prs, v, pr.functionType)
-                else if(pr.positionType)
-                    existsContact = PersonRole.findByPrsAndVendorAndPositionType(pr.prs, v, pr.positionType)
-                else if(pr.responsibilityType)
-                    existsContact = PersonRole.findByPrsAndVendorAndResponsibilityType(pr.prs, v, pr.responsibilityType)
-                if(!existsContact) {
-                    pr.vendor = v
-                    pr.org = null
-                    pr.save()
+                if(pr.prs.tenant == pr.org) {
+                    pr.prs.tenant = null
+                    pr.prs.save()
                 }
-                else {
-                    toDeletePersonRole << pr.id
-                }
+                pr.vendor = v
+                pr.org = null
+                pr.save()
             }
-            PersonRole.executeUpdate('delete from PersonRole pr where pr.id in (:toDelete)', [toDelete: toDeletePersonRole])
             ts.flush()
             Set<DocContext> docOrgContexts = DocContext.executeQuery('select dc from DocContext dc where dc.org.orgType = :agency', [agency: RDStore.OT_AGENCY])
             docOrgContexts.each { DocContext dc ->

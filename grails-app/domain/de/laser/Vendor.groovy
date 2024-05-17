@@ -199,11 +199,8 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         Vendor v = null
         if(agency.gokbId) {
             v = Vendor.findByGokbId(agency.gokbId)
-            if(v) {
+            if(v)
                 v.globalUID = agency.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase())
-                PersonRole.executeQuery('delete from PersonRole pr where pr.prs in (select p from Person p where p.tenant = :agency)', [agency: agency])
-                Person.executeQuery('delete from Person p where p.tenant = :agency', [agency: agency])
-            }
         }
         if(!v)
             v = new Vendor(globalUID: agency.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
@@ -255,20 +252,21 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
                 id.save()
             }
         }
+        Person.executeUpdate('delete from Person ')
         /*
         agency.prsLinks.each { PersonRole pr ->
             pr.vendor = v
             pr.org = null
             pr.save()
         }
-        */
         Person.findAllByTenant(agency).each { Person pe ->
-            //if(!Person.executeQuery('select p from Person p join p.roleLinks pr where p.tenant = null and p.isPublic = true and p.last_name = :contactType and :vendor in (pr.vendor)', [vendor: v, contactType: pe.last_name])) {
+            if(!Person.executeQuery('select p from Person p join p.roleLinks pr where p.tenant = null and p.isPublic = true and p.last_name = :contactType and :vendor in (pr.vendor)', [vendor: v, contactType: pe.last_name])) {
                 pe.tenant = null
                 pe.save()
-            //}
-            //else pe.delete()
+            }
+            else pe.delete()
         }
+        */
         Marker.findAllByOrg(agency).each { Marker m ->
             m.ven = v
             m.org = null

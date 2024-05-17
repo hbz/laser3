@@ -27,7 +27,7 @@
             <laser:render template="/templates/filter/providerFilter"
                       model="[
                               propList: propList,
-                              tmplConfigShow: [['name', 'property&value'], ['privateContacts', 'isMyX']],
+                              tmplConfigShow: [['name', 'identifier', 'provStatus'], ['inhouseInvoicing', 'electronicBillings', 'invoiceDispatchs', 'invoicingVendors'], ['subStatus', 'subPerpetualAccess'], ['property&value', 'isMyX']],
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>
@@ -46,7 +46,7 @@
                 <br /><strong><g:message code="filter.result.empty.object" args="${[message(code:"default.provider.label")]}"/></strong>
             </g:if>
             <g:else>
-                <br /><strong><g:message code="result.empty.object" args="${[message(code:"default.provider.plural")]}"/></strong>
+                <br /><strong><g:message code="result.empty.object" args="${[message(code:"default.provider.label")]}"/></strong>
             </g:else>
         </g:else>
     </div>

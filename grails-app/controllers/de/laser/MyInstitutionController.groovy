@@ -904,12 +904,38 @@ class MyInstitutionController  {
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        params.subPerpetual = 'on'
         List<String> queryArgs = []
+
+        String providerQuery = 'select p from ProviderRole pr join pr.provider p, OrgRole oo join oo.sub s where pr.subscription = s and oo.org = :contextOrg'
+        queryParams.contextOrg = result.institution
+
+        if(params.containsKey('subStatus')) {
+            providerQuery += ' and (s.status in (:subStatus) '
+            queryParams.subStatus = Params.getRefdataList(params, 'subStatus')
+        }
+        else {
+            providerQuery += ' and (s.status = :subStatus '
+            queryParams.subStatus = RDStore.SUBSCRIPTION_CURRENT
+        }
+
+        if(params.containsKey('subPerpetualAccess')) {
+            boolean withPerpetualAccess = params.subPerpetualAccess == 'on'
+            if(withPerpetualAccess) {
+                if(queryParams.subStatus?.contains(RDStore.SUBSCRIPTION_CURRENT)) {
+                    providerQuery += ' or (s.status = :expired and s.hasPerpetualAccess = true) '
+                    queryParams.expired = RDStore.SUBSCRIPTION_EXPIRED
+                }
+                else providerQuery += ' and s.hasPerpetualAccess = true '
+            }
+            providerQuery += ')' //opened in line 1100 or 1105
+            if(params.subPerpetualAccess == RDStore.YN_NO)
+                providerQuery += ' and s.hasPerpetualAccess = false '
+        }
+        else providerQuery += ')' //opened in line 1100 or 1105
 
         result.filterSet = params.filterSet ? true : false
         if (params.filterPropDef) {
-            Map<String, Object> efq = propertyService.evalFilterQuery(params, fsr.query, 'o', fsr.queryParams)
+            Map<String, Object> efq = propertyService.evalFilterQuery(params, providerQuery, 'o', queryParams)
             queryArgs << efq.query
             queryParams = efq.queryParams as Map<String, Object>
         }
@@ -945,9 +971,16 @@ class MyInstitutionController  {
             params.provStatus = RDStore.PROVIDER_STATUS_CURRENT.id
         }
 
+        if(params.containsKey('inhouseInvoicing')) {
+            boolean inhouseInvoicing = params.inhouseInvoicing == 'on'
+            if(inhouseInvoicing)
+                queryArgs << "p.inhouseInvoicing = true"
+            else queryArgs << "p.inhouseInvoicing = false"
+        }
+
         if(params.containsKey('qp_invoicingVendors')) {
-            queryArgs << "exists (select ls from p.invoicingVendors iv where iv.vendor in (:vendors))"
-            queryParams.put('vendors', Params.getRefdataList(params, 'qp_invoicingVendors'))
+            queryArgs << "exists (select iv from p.invoicingVendors iv where iv.vendor in (:vendors))"
+            queryParams.put('vendors', Params.getLongList(params, 'qp_invoicingVendors'))
         }
 
         if(params.containsKey('qp_electronicBillings')) {
@@ -964,9 +997,8 @@ class MyInstitutionController  {
             queryArgs << "p.gokbId in (:wekbIds)"
             queryParams.wekbIds = result.wekbRecords.keySet()
         }
-        String providerQuery = 'select p from Provider p'
         if(queryArgs) {
-            providerQuery += ' where '+queryArgs.join(' and ')
+            providerQuery += ' and '+queryArgs.join(' and ')
         }
         if(params.containsKey('sort')) {
             providerQuery += " order by ${params.sort} ${params.order ?: 'asc'}, p.name ${params.order ?: 'asc'} "
