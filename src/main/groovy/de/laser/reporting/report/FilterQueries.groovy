@@ -104,7 +104,7 @@ class FilterQueries {
                 [subIdList: subIdList]
         ) : []
         List<Long> platformIdList4 = licIdList ? Platform.executeQuery(
-                'select distinct plt.id from ProviderRole pr join pr.license lic join pr.provider pro where lic.id in (:licIdList)',
+                'select distinct pro.id from ProviderRole pr join pr.license lic join pr.provider pro where lic.id in (:licIdList)',
                 [licIdList: licIdList]
         ) : []
 // providerStatus: RDStore.PROVIDER_STATUS_DELETED,
