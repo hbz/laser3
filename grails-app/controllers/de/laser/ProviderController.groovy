@@ -93,9 +93,16 @@ class ProviderController {
             params.provStatus = RDStore.PROVIDER_STATUS_CURRENT.id
         }
 
+        if(params.containsKey('inhouseInvoicing')) {
+            boolean inhouseInvoicing = params.inhouseInvoicing == 'on'
+            if(inhouseInvoicing)
+                queryArgs << "p.inhouseInvoicing = true"
+            else queryArgs << "p.inhouseInvoicing = false"
+        }
+
         if(params.containsKey('qp_invoicingVendors')) {
-            queryArgs << "exists (select ls from p.invoicingVendors iv where iv.vendor in (:vendors))"
-            queryParams.put('vendors', Params.getRefdataList(params, 'qp_invoicingVendors'))
+            queryArgs << "exists (select iv from p.invoicingVendors iv where iv.vendor in (:vendors))"
+            queryParams.put('vendors', Params.getLongList(params, 'qp_invoicingVendors'))
         }
 
         if(params.containsKey('qp_electronicBillings')) {
