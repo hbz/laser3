@@ -212,7 +212,7 @@
                                                                 costItemSums: costItemSums,
                                                                 subscription: surveyConfig.subscription,
                                                                 tasks: tasks,
-                                                                visibleOrgRelations: visibleOrgRelations]"/>
+                                                                visibleProviders: providerRoles]"/>
                 </g:if>
 
 
@@ -222,7 +222,7 @@
                                                                     costItemSums: costItemSums,
                                                                     subscription: surveyConfig.subscription,
                                                                     tasks: tasks,
-                                                                    visibleOrgRelations: visibleOrgRelations]"/>
+                                                                    visibleProviders: providerRoles]"/>
                 </g:if>
 
             </g:if>

@@ -127,7 +127,7 @@
     <g:render template="/templates/survey/export/subscriptionSurveyPDF" model="[surveyConfig       : surveyConfig,
                                                                                 costItemSums       : costItemSums,
                                                                                 subscription       : subscription,
-                                                                                visibleOrgRelations: visibleOrgRelations,
+                                                                                visibleProviders: providerRoles,
                                                                                 surveyResults      : surveyResults,
                                                                                 institution: institution,
                                                                                 ownerView: ownerView,
@@ -140,7 +140,7 @@
                                                                            costItemSums       : costItemSums,
                                                                            subscription       : surveyConfig.subscription,
                                                                            tasks              : tasks,
-                                                                           visibleOrgRelations: visibleOrgRelations,
+                                                                           visibleProviders: providerRoles,
                                                                            institution: institution,
                                                                            ownerView: ownerView]"/>
 </g:if>
@@ -151,7 +151,7 @@
     <g:render template="/templates/survey/export/subscriptionSurveyPDF" model="[surveyConfig       : surveyConfig,
                                                                                 costItemSums       : costItemSums,
                                                                                 subscription       : subscription,
-                                                                                visibleOrgRelations: visibleOrgRelations,
+                                                                                visibleProviders: providerRoles,
                                                                                 surveyResults      : surveyResults,
                                                                                 institution: institution,
                                                                                 ownerView: ownerView,

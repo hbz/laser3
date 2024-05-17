@@ -30,7 +30,7 @@
     <laser:render template="${customerTypeService.getActionsTemplatePath()}"/>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" visibleOrgRelations="${visibleOrgRelations}" visibleVendors="${visibleVendors}">
+<ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" visibleProviders="${providerRoles}" visibleVendors="${visibleVendors}">
     <laser:render template="iconSubscriptionIsChild"/>
     <ui:xEditable owner="${subscription}" field="name"/>
 </ui:h1HeaderWithIcon>
@@ -469,7 +469,7 @@
                     <div class="content">
                         <h2 class="ui header">${message(code: 'default.provider.label')}</h2>
                         <laser:render template="/templates/links/providerLinksAsList"
-                                  model="${[roleLinks    : providerRoles,
+                                  model="${[providerRoles: providerRoles,
                                             roleObject   : subscription,
                                             roleRespValue: 'Specific subscription editor',
                                             editmode     : editable,

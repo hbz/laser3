@@ -130,15 +130,27 @@ class ProviderService {
             }
             ts.flush()
             Set<PersonRole> providerContacts = PersonRole.executeQuery('select pr from PersonRole pr join pr.org o join o.orgType ot where ot in (:provider)', [provider: [RDStore.OT_PROVIDER, RDStore.OT_LICENSOR]])
+            Set<Long> toDeletePersonRole = []
             providerContacts.each { PersonRole pr ->
                 Provider p = Provider.findByGlobalUID(pr.org.globalUID.replace(Org.class.simpleName.toLowerCase(), Provider.class.simpleName.toLowerCase()))
                 if (!p) {
                     p = Provider.convertFromOrg(pr.org)
                 }
-                pr.provider = p
-                pr.org = null
-                pr.save()
+                boolean existsContact = false
+                if(pr.functionType)
+                    existsContact = PersonRole.findByPrsAndProviderAndFunctionType(pr.prs, p, pr.functionType)
+                else if(pr.positionType)
+                    existsContact = PersonRole.findByPrsAndProviderAndPositionType(pr.prs, p, pr.positionType)
+                else if(pr.responsibilityType)
+                    existsContact = PersonRole.findByPrsAndProviderAndResponsibilityType(pr.prs, p, pr.responsibilityType)
+                if(!existsContact) {
+                    pr.provider = p
+                    pr.org = null
+                    pr.save()
+                }
+                else toDeletePersonRole << pr.id
             }
+            PersonRole.executeUpdate('delete from PersonRole pr where pr.id in (:toDelete)', [toDelete: toDeletePersonRole])
             ts.flush()
             Set<DocContext> docOrgContexts = DocContext.executeQuery('select dc from DocContext dc join dc.org o join o.orgType ot where ot in (:provider)', [provider: [RDStore.OT_PROVIDER, RDStore.OT_LICENSOR]])
             docOrgContexts.each { DocContext dc ->
@@ -173,23 +185,33 @@ class ProviderService {
                     p = Provider.convertFromOrg(or.org)
                 }
                 if (or.sub && !ProviderRole.findByProviderAndSubscription(p, or.sub)) {
-                    ProviderRole pr = new ProviderRole(provider: p, subscription: or.sub, isShared: or.isShared)
-                    if (pr.save()) {
-                        if (or.isShared) {
-                            pr.addShareForTarget_trait(or.sub)
-                            //log.debug("${OrgRole.executeUpdate('delete from OrgRole oorr where oorr.sharedFrom = :sf', [sf: or])} shares deleted")
+                    if (!or.sharedFrom) {
+                        ProviderRole pr = new ProviderRole(provider: p, subscription: or.sub, isShared: or.isShared)
+                        if (pr.save()) {
+                            if(pr.isShared) {
+                                List<Subscription> newTargets = Subscription.findAllByInstanceOf(pr.subscription)
+                                newTargets.each{ Subscription sub ->
+                                    pr.addShareForTarget_trait(sub)
+                                }
+                            }
+                            log.debug("processed: ${pr.provider}:${pr.subscription} ex ${or.org}:${or.sub}")
                         }
-                        log.debug("processed: ${pr.provider}:${pr.subscription} ex ${or.org}:${or.sub}")
-                    } else log.error(pr.errors.getAllErrors().toListString())
+                        else log.error(pr.errors.getAllErrors().toListString())
+                    }
                 } else if (or.lic && !ProviderRole.findByProviderAndLicense(p, or.lic)) {
-                    ProviderRole pr = new ProviderRole(provider: p, license: or.lic, isShared: or.isShared)
-                    if (pr.save()) {
-                        if (or.isShared) {
-                            pr.addShareForTarget_trait(or.lic)
-                            //log.debug("${OrgRole.executeUpdate('delete from OrgRole oorr where oorr.sharedFrom = :sf', [sf: or])} shares deleted")
+                    if (!or.sharedFrom) {
+                        ProviderRole pr = new ProviderRole(provider: p, license: or.lic, isShared: or.isShared)
+                        if (pr.save()) {
+                            if(pr.isShared) {
+                                List<License> newTargets = License.findAllByInstanceOf(pr.license)
+                                newTargets.each{ License lic ->
+                                    pr.addShareForTarget_trait(lic)
+                                }
+                            }
+                            log.debug("processed: ${pr.provider}:${pr.license} ex ${or.org}:${or.lic}")
                         }
-                        log.debug("processed: ${pr.provider}:${pr.license} ex ${or.org}:${or.lic}")
-                    } else log.error(pr.errors.getAllErrors().toListString())
+                        else log.error(pr.errors.getAllErrors().toListString())
+                    }
                 } else if (or.pkg) {
                     Package pkg = or.pkg
                     pkg.provider = p
@@ -208,6 +230,7 @@ class ProviderService {
         }
         Set<Org> providers = Org.executeQuery('select o from Org o join o.orgType ot where ot in (:provider)', [provider: [RDStore.OT_PROVIDER, RDStore.OT_LICENSOR]])
         providers.each { Org provider ->
+            //delete doublet residuals
             OrgRole.executeUpdate('delete from OrgRole oo where oo.org = :provider and oo.roleType not in (:toKeep)', [provider: provider, toKeep: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER, RDStore.OR_LICENSOR, RDStore.OR_AGENCY]])
             Map<String, Object> delResult = deletionService.deleteOrganisation(provider, null, false)
             if (delResult.deletable == false) {

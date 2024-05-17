@@ -207,14 +207,18 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
             null
         }
         provider.altnames.each { AlternativeName altName ->
-            altName.provider = p
-            altName.org = null
-            altName.save()
+            if(!p.altnames?.find { AlternativeName altnameNew -> altnameNew.name == altName.name }) {
+                altName.provider = p
+                altName.org = null
+                altName.save()
+            }
         }
         provider.contacts.each { Contact c ->
-            c.provider = p
-            c.org = null
-            c.save()
+            if(!p.contacts?.find { Contact cOld -> cOld.content == c.content }) {
+                c.provider = p
+                c.org = null
+                c.save()
+            }
         }
         provider.addresses.each { Address a ->
             a.provider = p
@@ -222,20 +226,17 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
             a.save()
         }
         Identifier.findAllByOrg(provider).each { Identifier id ->
-            id.provider = p
-            id.org = null
-            id.save()
+            if(!Identifier.findByProviderAndValue(p, id.value)) {
+                id.provider = p
+                id.org = null
+                id.save()
+            }
         }
         Platform.findAllByOrg(provider).each { Platform pl ->
             pl.provider = p
             pl.save()
         }
         //log.debug("${DocContext.executeUpdate('update DocContext dc set dc.provider = :providerNew, dc.targetOrg = null, dc.org = null where dc.targetOrg = :provider or dc.org = :provider', [providerNew: p, provider: provider])} documents updated")
-        provider.altnames.each { AlternativeName a ->
-            a.provider = p
-            a.org = null
-            a.save()
-        }
         /*
         provider.prsLinks.each { PersonRole pr ->
             pr.provider = p
@@ -244,8 +245,11 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
         }
         */
         Person.findAllByTenant(provider).each { Person pe ->
-            pe.tenant = null
-            pe.save()
+            if(!Person.executeQuery('select p from Person p join p.roleLinks pr where p.tenant = null and p.isPublic = true and p.last_name = :contactType and :provider in (pr.provider)', [provider: p, contactType: pe.last_name])) {
+                pe.tenant = null
+                pe.save()
+            }
+            else pe.delete()
         }
         Marker.findAllByOrg(provider).each { Marker m ->
             m.prov = p

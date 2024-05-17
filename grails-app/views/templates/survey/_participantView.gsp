@@ -170,7 +170,7 @@
                         <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig       : surveyConfig,
                                                                                               costItemSums       : costItemSums,
                                                                                               subscription       : subscription,
-                                                                                              visibleOrgRelations: visibleOrgRelations,
+                                                                                              visibleProviders: providerRoles,
                                                                                               surveyResults      : surveyResults]"/>
 
                     </g:if>
@@ -186,7 +186,7 @@
                         <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig       : surveyConfig,
                                                                                               costItemSums       : costItemSums,
                                                                                               subscription       : subscription,
-                                                                                              visibleOrgRelations: visibleOrgRelations,
+                                                                                              visibleProviders: providerRoles,
                                                                                               surveyResults      : surveyResults]"/>
 
                         <laser:render template="/templates/survey/entitlementSurvey"/>

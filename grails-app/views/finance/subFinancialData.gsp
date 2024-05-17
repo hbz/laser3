@@ -85,7 +85,7 @@
             }
         %>
 
-        <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" type="subscription" visibleOrgRelations="${visibleOrgRelations}">
+        <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" type="subscription" visibleProviders="${providerRoles}">
             <laser:render template="/subscription/iconSubscriptionIsChild"/>
 
             ${message(code:'subscription.details.financials.label')} ${message(code:'default.for')} ${subscription}

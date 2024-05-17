@@ -10,7 +10,7 @@
         </g:if>
     </ui:controlButtons>
 
-    <ui:h1HeaderWithIcon visibleOrgRelations="${visibleOrgRelations}">
+    <ui:h1HeaderWithIcon visibleProviders="${visibleProviders}">
         <ui:xEditable owner="${license}" field="reference" id="reference"/>
     </ui:h1HeaderWithIcon>
     <ui:totalNumber total="${subscriptions.size() ?: 0}"/>

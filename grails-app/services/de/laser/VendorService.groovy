@@ -123,15 +123,27 @@ class VendorService {
             }
             ts.flush()
             Set<PersonRole> agencyContacts = PersonRole.executeQuery('select pr from PersonRole pr join pr.org o join o.orgType ot where ot = :agency', [agency: RDStore.OT_AGENCY])
+            Set<Long> toDeletePersonRole = []
             agencyContacts.each { PersonRole pr ->
-                Provider p = Provider.findByGlobalUID(pr.org.globalUID.replace(Org.class.simpleName.toLowerCase(), Provider.class.simpleName.toLowerCase()))
-                if (!p) {
-                    p = Provider.convertFromOrg(pr.org)
+                Vendor v = Vendor.findByGlobalUID(pr.org.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
+                if (!v) {
+                    v = Vendor.convertFromAgency(pr.org)
                 }
-                pr.provider = p
-                pr.org = null
-                pr.save()
+                boolean existsContact = false
+                if(pr.functionType)
+                    existsContact = PersonRole.findByPrsAndVendorAndFunctionType(pr.prs, v, pr.functionType)
+                else if(pr.positionType)
+                    existsContact = PersonRole.findByPrsAndVendorAndPositionType(pr.prs, v, pr.positionType)
+                else if(pr.responsibilityType)
+                    existsContact = PersonRole.findByPrsAndVendorAndResponsibilityType(pr.prs, v, pr.responsibilityType)
+                if(!existsContact) {
+                    pr.vendor = v
+                    pr.org = null
+                    pr.save()
+                }
+                else toDeletePersonRole << pr.id
             }
+            PersonRole.executeUpdate('delete from PersonRole pr where pr.id in (:toDelete)', [toDelete: toDeletePersonRole])
             ts.flush()
             Set<DocContext> docOrgContexts = DocContext.executeQuery('select dc from DocContext dc where dc.org.orgType = :agency', [agency: RDStore.OT_AGENCY])
             docOrgContexts.each { DocContext dc ->
@@ -174,10 +186,16 @@ class VendorService {
                     if (vr.save()) {
                         if (ar.isShared) {
                             if (ar.sub) {
-                                vr.addShareForTarget_trait(ar.sub)
+                                List<Subscription> newTargets = Subscription.findAllByInstanceOf(vr.subscription)
+                                newTargets.each{ Subscription sub ->
+                                    vr.addShareForTarget_trait(sub)
+                                }
                             }
                             if (ar.lic) {
-                                vr.addShareForTarget_trait(ar.lic)
+                                List<License> newTargets = License.findAllByInstanceOf(vr.license)
+                                newTargets.each{ License lic ->
+                                    vr.addShareForTarget_trait(lic)
+                                }
                             }
                             //log.debug("${OrgRole.executeUpdate('delete from OrgRole oorr where oorr.sharedFrom = :sf', [sf: ar])} shares deleted")
                         }

@@ -44,13 +44,13 @@ class UiTagLib {
             out << '<h1 class="ui icon header la-clear-before la-noMargin-top">'
         }
 
-        if (attrs.visibleOrgRelations && attrs.visibleOrgRelations instanceof Collection) {
-            attrs.visibleOrgRelations = attrs.visibleOrgRelations.findAll{ it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA }.sort{ it.org.sortname }.collect{ it.org }.join(' – ')
+        if (attrs.visibleProviders && attrs.visibleProviders instanceof Collection) {
+            attrs.visibleProviders = attrs.visibleProviders.collect{ it.provider.name }.join(' – ')
         }
         if (attrs.visibleVendors && attrs.visibleVendors instanceof Collection) {
-            attrs.visibleVendors = attrs.visibleVendors.collect{ it.org }.join(' – ')
+            attrs.visibleVendors = attrs.visibleVendors.collect{ it.vendor.name }.join(' – ')
         }
-        if ( (attrs.referenceYear) || (attrs.visibleOrgRelations) || (attrs.visibleVendors) ){
+        if ( (attrs.referenceYear) || (attrs.visibleProviders) || (attrs.visibleVendors) ){
             out << '<div class="la-subPlusYear">'
         }
         if (attrs.type) {
@@ -58,7 +58,7 @@ class UiTagLib {
         } else {
             out << ui.headerIcon()
         }
-        if ( (attrs.referenceYear) || (attrs.visibleOrgRelations) || (attrs.visibleVendors) ) {
+        if ( (attrs.referenceYear) || (attrs.visibleProviders) || (attrs.visibleVendors) ) {
             out << '<div class="la-subPlusYear-texts">'
         }
         if (attrs.text) {
@@ -76,14 +76,14 @@ class UiTagLib {
         if ( body ) {
             out << body()
         }
-        if ( (attrs.referenceYear)|| (attrs.visibleOrgRelations) ) {
+        if ( (attrs.referenceYear)|| (attrs.visibleProviders) ) {
             out << '<span class="la-subPlusYear-year">'
             out << attrs.referenceYear
             if (attrs.referenceYear) {
                 out << ' – '
             }
             out << '<span class="la-orgRelations">'
-            out << attrs.visibleOrgRelations
+            out << attrs.visibleProviders
             out << '</span>'
             out << '</span>'
             out << '</div>'

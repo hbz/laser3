@@ -39,7 +39,7 @@
                 </th>
 
                 <th class="la-smaller-table-head center aligned">Reminder</th>
-                <th colspan="2" class="la-smaller-table-head center aligned">Renewal</th>
+                <th colspan="3" class="la-smaller-table-head center aligned">Renewal</th>
 
                 <th scope="col" rowspan="3" class="center aligned">
                     <span class="la-popup-tooltip la-delay"
@@ -67,6 +67,9 @@
                 <th scope="col" class="la-smaller-table-head">${message(code: 'subscription.reminderSent.table.th')}</th>
                 <th scope="col" class="la-smaller-table-head">${message(code: 'subscription.renewalSent.table.th')}</th>
                 <th scope="col" rowspan="2" class="center aligned two wide">${message(code: 'subscriptionsManagement.documents')}</th>
+                <th scope="col" rowspan="2" class="center aligned two wide">
+                    <g:message code="default.change.label"/>
+                </th>
             </tr>
             <tr>
                 <th scope="col" rowspan="1" class="la-smaller-table-head">${message(code: 'default.endDate.label')}</th>
@@ -291,6 +294,22 @@
                         </g:each>
                     </td>
 
+                    <g:set var="countModificationToCostInformationAfterRenewalDoc" value="${surveyConfig ? surveyService.countModificationToCostInformationAfterRenewalDoc(s) : 0}"/>
+
+                    <td class="${surveyConfig ? countModificationToCostInformationAfterRenewalDoc == 0 ? 'positive' : 'negative' : ''}">
+                        <g:if test="${countModificationToCostInformationAfterRenewalDoc > 0}">
+                            <g:link class="ui label triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
+                                    params="[exportController: 'survey', exportAction: 'renewalEvaluation', exportParams: params, clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION, id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]">
+                                <i class="download icon"></i> ${countModificationToCostInformationAfterRenewalDoc}
+                            </g:link>
+                        </g:if>
+                        <g:else>
+                            <g:if test="${surveyConfig}">
+                                ${countModificationToCostInformationAfterRenewalDoc}
+                            </g:if>
+                        </g:else>
+                    </td>
+
                     <td class="${s.participantTransferWithSurvey ? 'positive' : 'negative'}">
                         ${s.participantTransferWithSurvey ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
                     </td>
@@ -320,34 +339,11 @@
     </div>
 </div>
 
+
+<g:render template="/clickMe/export/js"/>
+
 <laser:script file="${this.getGroovyPageFileName()}">
     docs.init('#subscriptionTransfer-content');
-
-    $('.trigger-modal').on('click', function(e) {
-                e.preventDefault();
-
-                $.ajax({
-                    url: $(this).attr('href')
-                }).done( function (data) {
-                    $('.ui.dimmer.modals > #individuallyRenewalExportModal').remove();
-                    $('#dynamicModalContainer').empty().html(data);
-
-                    $('#dynamicModalContainer .ui.modal').modal({
-                        onVisible: function () {
-                            r2d2.initDynamicUiStuff('#individuallyRenewalExportModal');
-                            r2d2.initDynamicXEditableStuff('#individuallyRenewalExportModal');
-                        },
-                        detachable: true,
-                        autofocus: false,
-                        closable: false,
-                        transition: 'scale',
-                        onApprove : function() {
-                            $(this).find('.ui.form').submit();
-                            return false;
-                        }
-                    }).modal('show');
-                })
-            });
 
     setTimeout(function() {
     tooltip.init('#subscriptionTransfer-content');

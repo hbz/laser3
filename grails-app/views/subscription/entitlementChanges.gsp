@@ -4,7 +4,7 @@
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
-<ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" type="subscription" visibleOrgRelations="${visibleOrgRelations}">
+<ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" type="subscription" visibleProviders="${providerRoles}">
     <laser:render template="iconSubscriptionIsChild"/>
     <ui:xEditable owner="${subscription}" field="name"/>
 </ui:h1HeaderWithIcon>

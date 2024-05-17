@@ -296,20 +296,20 @@
         <h2><g:message code="default.ProviderAgency.singular"/></h2>
 
         <table>
-            <g:each in="${visibleOrgRelations}" var="role">
-                <g:if test="${role.org}">
+            <g:each in="${visibleProviders}" var="role">
+                <g:if test="${role.provider}">
                     <tr>
                         <td>
-                            <g:link controller="organisation" action="show" id="${role.org.id}" absolute="true">${role.org.name}</g:link> <i>${role.roleType.getI10n("value")}</i>
+                            <g:link controller="organisation" action="show" id="${role.provider.id}" absolute="true">${role.provider.name}</g:link> <i>${role.roleType.getI10n("value")}</i>
                         </td>
                     </tr>
-                    <g:if test="${(Person.getPublicByOrgAndFunc(role.org, 'General contact person') ||
-                            Person.getPublicByOrgAndObjectResp(role.org, license, 'Specific license editor') ||
-                            Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', institution) ||
-                            Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, license, 'Specific license editor', institution))}">
+                    <g:if test="${(Person.getPublicByOrgAndFunc(role.provider, 'General contact person') ||
+                            Person.getPublicByOrgAndObjectResp(role.provider, license, 'Specific license editor') ||
+                            Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person', institution) ||
+                            Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, license, 'Specific license editor', institution))}">
                         <%-- public --%>
-                        <g:if test="${ Person.getPublicByOrgAndFunc(role.org, 'General contact person') || Person.getPublicByOrgAndObjectResp(role.org, license, 'Specific license editor')  }">
-                            <g:each in="${Person.getPublicByOrgAndFunc(role.org, 'General contact person')}" var="func">
+                        <g:if test="${ Person.getPublicByOrgAndFunc(role.provider, 'General contact person') || Person.getPublicByOrgAndObjectResp(role.provider, license, 'Specific license editor')  }">
+                            <g:each in="${Person.getPublicByOrgAndFunc(role.provider, 'General contact person')}" var="func">
                                 <tr>
                                     <td>
                                         <i>${message(code:'address.public')}</i>
@@ -318,7 +318,7 @@
                                         ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                     </td>
                                     <td>
-                                        <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.org.id]" absolute="true">${func}</g:link>
+                                        <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
                                     </td>
                                     <td>
                                         <ul>
@@ -329,7 +329,7 @@
                                     </td>
                                 </tr>
                             </g:each>
-                            <g:each in="${Person.getPublicByOrgAndObjectResp(role.org, license, 'Specific license editor')}" var="resp">
+                            <g:each in="${Person.getPublicByOrgAndObjectResp(role.provider, license, 'Specific license editor')}" var="resp">
                                 <tr>
                                     <td>
                                         <i>${message(code:'address.public')}</i>
@@ -338,7 +338,7 @@
                                         ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                     </td>
                                     <td>
-                                        <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.org.id]" absolute="true">${resp}</g:link>
+                                        <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.provider.id]" absolute="true">${resp}</g:link>
                                     </td>
                                     <td>
                                         <ul>
@@ -352,8 +352,8 @@
                         </g:if>
                         <%-- public --%>
                         <%-- private --%>
-                        <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', institution) || Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, license, 'Specific license editor', institution)}">
-                            <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextOrg)}" var="func">
+                        <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person', institution) || Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, license, 'Specific license editor', institution)}">
+                            <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person', contextOrg)}" var="func">
                                 <tr>
                                     <td>
                                         <i>${message(code:'address.private')}</i>
@@ -362,7 +362,7 @@
                                         ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                     </td>
                                     <td>
-                                        <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.org.id]" absolute="true">${func}</g:link>
+                                        <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
                                     </td>
                                     <td>
                                         <ul>
@@ -373,7 +373,7 @@
                                     </td>
                                 </tr>
                             </g:each>
-                            <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, license, 'Specific license editor', institution)}" var="resp">
+                            <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, license, 'Specific license editor', institution)}" var="resp">
                                 <tr>
                                     <td>
                                         <i>${message(code:'address.private')}</i>
@@ -382,7 +382,7 @@
                                         ${RefdataValue.getByValue('Specific license editor').getI10n('value')}
                                     </td>
                                     <td>
-                                        <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.org.id]" absolute="true">${resp}</g:link>
+                                        <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.provider.id]" absolute="true">${resp}</g:link>
                                     </td>
                                     <td>
                                         <ul>

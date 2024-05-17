@@ -27,7 +27,7 @@
             <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
         </ui:controlButtons>
 
-        <ui:h1HeaderWithIcon visibleOrgRelations="${visibleOrgRelations}">
+        <ui:h1HeaderWithIcon visibleProviders="${visibleProviders}">
             <ui:xEditable owner="${license}" field="reference" id="reference"/>
         </ui:h1HeaderWithIcon>
         <g:if test="${editable}">
@@ -205,8 +205,8 @@
                             <div class="ui card">
                                 <div class="content">
                                     <h2 class="ui header">${message(code: 'default.provider.label')}</h2>
-                                    <laser:render template="/templates/links/orgLinksAsList"
-                                              model="${[roleLinks: visibleOrgRelations,
+                                    <laser:render template="/templates/links/providerLinksAsList"
+                                              model="${[roleLinks: visibleProviders,
                                                         roleObject: license,
                                                         roleRespValue: 'Specific license editor',
                                                         editmode: editable,
@@ -214,17 +214,15 @@
                                               ]}" />
 
                                     <div class="ui la-vertical buttons">
-                                        <laser:render template="/templates/links/orgLinksSimpleModal"
+                                        <laser:render template="/templates/links/providerLinksSimpleModal"
                                                   model="${[linkType: license.class.name,
                                                             parent: license.class.name + ':' + license.id,
                                                             property: 'orgRelations',
-                                                            recip_prop: 'lic',
-                                                            tmplRole: RDStore.OR_LICENSOR,
+                                                            recip_prop: 'license',
                                                             tmplEntity: message(code:'license.details.tmplEntity'),
                                                             tmplText: message(code:'license.details.tmplText'),
                                                             tmplButtonText: message(code:'license.details.tmplLinkProviderText'),
                                                             tmplModalID:'osel_add_modal_lizenzgeber',
-                                                            tmplType: RDStore.OT_LICENSOR,
                                                             editmode: editable
                                                   ]}" />
 
