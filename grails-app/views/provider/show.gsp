@@ -149,60 +149,70 @@
                     <h2 class="ui header"><g:message code="vendor.invoicing.header"/></h2>
                     <dl>
                         <dt>
-                            <g:message code="vendor.invoicing.formats.label" />
+                            <g:message code="vendor.invoicing.inhouse.label"/>
                         </dt>
                         <dd>
-                            <ul>
-                                <g:each in="${provider.electronicBillings}" var="row">
-                                    <li>${row.invoicingFormat.getI10n('value')}</li>
-                                </g:each>
-                            </ul>
+                            ${RefdataValue.displayBoolean(provider.inhouseInvoicing)}
                         </dd>
                     </dl>
-                    <dl>
-                        <dt>
-                            <g:message code="vendor.invoicing.dispatch.label" />
-                        </dt>
-                        <dd>
-                            <ul>
-                                <g:each in="${provider.invoiceDispatchs}" var="row">
-                                    <li>${row.invoiceDispatch.getI10n('value')}</li>
-                                </g:each>
-                            </ul>
-                        </dd>
-                    </dl>
-                    <dl>
-                        <dt>
-                            <g:message code="vendor.invoicing.paperInvoice.label" />
-                        </dt>
-                        <dd>
-                            ${RefdataValue.displayBoolean(provider.paperInvoice)}
-                        </dd>
-                    </dl>
-                    <dl>
-                        <dt>
-                            <g:message code="vendor.invoicing.managementOfCredits.label" />
-                        </dt>
-                        <dd>
-                            ${RefdataValue.displayBoolean(provider.managementOfCredits)}
-                        </dd>
-                    </dl>
-                    <dl>
-                        <dt>
-                            <g:message code="vendor.invoicing.compensationPayments.label" />
-                        </dt>
-                        <dd>
-                            ${RefdataValue.displayBoolean(provider.processingOfCompensationPayments)}
-                        </dd>
-                    </dl>
-                    <dl>
-                        <dt>
-                            <g:message code="vendor.invoicing.individualInvoiceDesign.label" />
-                        </dt>
-                        <dd>
-                            ${RefdataValue.displayBoolean(provider.individualInvoiceDesign)}
-                        </dd>
-                    </dl>
+                    <g:if test="${provider.inhouseInvoicing}">
+                        <dl>
+                            <dt>
+                                <g:message code="vendor.invoicing.formats.label" />
+                            </dt>
+                            <dd>
+                                <ul>
+                                    <g:each in="${provider.electronicBillings}" var="row">
+                                        <li>${row.invoicingFormat.getI10n('value')}</li>
+                                    </g:each>
+                                </ul>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>
+                                <g:message code="vendor.invoicing.dispatch.label" />
+                            </dt>
+                            <dd>
+                                <ul>
+                                    <g:each in="${provider.invoiceDispatchs}" var="row">
+                                        <li>${row.invoiceDispatch.getI10n('value')}</li>
+                                    </g:each>
+                                </ul>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>
+                                <g:message code="vendor.invoicing.paperInvoice.label" />
+                            </dt>
+                            <dd>
+                                ${RefdataValue.displayBoolean(provider.paperInvoice)}
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>
+                                <g:message code="vendor.invoicing.managementOfCredits.label" />
+                            </dt>
+                            <dd>
+                                ${RefdataValue.displayBoolean(provider.managementOfCredits)}
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>
+                                <g:message code="vendor.invoicing.compensationPayments.label" />
+                            </dt>
+                            <dd>
+                                ${RefdataValue.displayBoolean(provider.processingOfCompensationPayments)}
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>
+                                <g:message code="vendor.invoicing.individualInvoiceDesign.label" />
+                            </dt>
+                            <dd>
+                                ${RefdataValue.displayBoolean(provider.individualInvoiceDesign)}
+                            </dd>
+                        </dl>
+                    </g:if>
                     <dl>
                         <dt>
                             <g:message code="vendor.invoicing.vendors.label" />

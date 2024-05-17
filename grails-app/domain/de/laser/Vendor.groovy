@@ -258,7 +258,6 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
             pr.org = null
             pr.save()
         }
-        */
         Person.findAllByTenant(agency).each { Person pe ->
             //if(!Person.executeQuery('select p from Person p join p.roleLinks pr where p.tenant = null and p.isPublic = true and p.last_name = :contactType and :vendor in (pr.vendor)', [vendor: v, contactType: pe.last_name])) {
                 pe.tenant = null
@@ -266,6 +265,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
             //}
             //else pe.delete()
         }
+        */
         Marker.findAllByOrg(agency).each { Marker m ->
             m.ven = v
             m.org = null
