@@ -213,6 +213,8 @@ assets {
 
     from '/themes'
     excludes = [
+            // images/*
+            'clips/**',
             // javascripts/*
             'libs/**',
             'modules/**',
