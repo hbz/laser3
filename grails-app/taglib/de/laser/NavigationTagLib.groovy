@@ -305,7 +305,7 @@ class NavigationTagLib {
         Map<Object, Object> filteredAttrs = attrs.findAll{ it ->
             ! (it.key in ['addItemAttributes', 'class'])
         }
-        String css = attrs.class ? (attrs.class != 'item' ? attrs.class + ' item' : attrs.class) : 'item'
+        String css = attrs.class ? (attrs.class != 'item' ? 'item ' + attrs.class  : attrs.class) : 'item'
         filteredAttrs.put('class', css)
 
         if (attrs.addItemAttributes) {
