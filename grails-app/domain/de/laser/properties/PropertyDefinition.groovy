@@ -62,7 +62,6 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     @Transient
     public static final String[] AVAILABLE_CUSTOM_DESCR = [
             PRS_PROP,
-            VEN_PROP,
             SUB_PROP,
             //ORG_PROP, // erms-4798
             //PLA_PROP, // erms-4837
@@ -73,6 +72,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     public static final String[] AVAILABLE_PRIVATE_DESCR = [
             PRS_PROP,
             VEN_PROP,
+            PRV_PROP,
             SUB_PROP,
             ORG_PROP,
             PLA_PROP,

@@ -942,7 +942,24 @@ SELECT * FROM (
                         if (pdFrom && pdTo) {
                             try {
                                 int count = propertyService.replacePropertyDefinitions(pdFrom, pdTo, params.overwrite == 'on', true)
-                                flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [count, oldName, newName]) as String
+                                if(count == 0) {
+                                    String instanceType
+                                    switch(pdFrom.descr) {
+                                        case PropertyDefinition.LIC_PROP: instanceType = message(code: 'menu.institutions.replace_prop.licenses')
+                                            break
+                                        case PropertyDefinition.PRS_PROP: instanceType = message(code: 'menu.institutions.replace_prop.persons')
+                                            break
+                                        case PropertyDefinition.SUB_PROP: instanceType = message(code: 'menu.institutions.replace_prop.subscriptions')
+                                            break
+                                        case PropertyDefinition.SVY_PROP: instanceType = message(code: 'menu.institutions.replace_prop.surveys')
+                                            break
+                                        default: instanceType = message(code: 'menu.institutions.replace_prop.default')
+                                            break
+                                    }
+                                    flash.message = message(code: 'menu.institutions.replace_prop.noChanges', args: [instanceType]) as String
+                                }
+                                else
+                                    flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [count, oldName, newName]) as String
                             }
                             catch (Exception e) {
                                 e.printStackTrace()
@@ -1041,8 +1058,10 @@ SELECT * FROM (
                 if (check) {
                     try {
                         int count = refdataService.replaceRefdataValues(rdvFrom, rdvTo)
-
-                        flash.message = "${count} Vorkommen von ${params.xcgRdvFrom} wurden durch ${params.xcgRdvTo} ersetzt."
+                        if(count == 0)
+                            flash.message = "Es mussten keine Referenzwerte ausgetauscht werden."
+                        else
+                            flash.message = "${count} Vorkommen von ${params.xcgRdvFrom} wurden durch ${params.xcgRdvTo} ersetzt."
                     }
                     catch (Exception e) {
                         log.error( e.toString() )
