@@ -103,7 +103,7 @@
                 <ui:actionsDropdownItem controller="subscription" action="copySubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription), copyObject: true]}" message="myinst.copySubscription" />
             </g:if>
             <g:else>
-                <ui:actionsDropdownItemDisabled controller="subscription" action="copySubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription), copyObject: true]}" message="myinst.copySubscription" />
+                <ui:actionsDropdownItemDisabled message="myinst.copySubscription" />
             </g:else>
 
             <g:if test="${(contextCustomerType == CustomerTypeService.ORG_INST_PRO && !subscription.instanceOf) || customerTypeService.isConsortium( contextCustomerType )}">
@@ -169,8 +169,7 @@
                     <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE] && contextService.getOrg().isCustomerType_Consortium()}">
                 <div class="divider"></div>
                 <g:if test="${hasNext}">
-                    <ui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription"
-                                                       params="${[id: params.id]}" tooltip="${message(code: 'subscription.details.renewals.isAlreadyRenewed')}" message="subscription.details.renewalsConsortium.label"/>
+                    <ui:actionsDropdownItemDisabled tooltip="${message(code: 'subscription.details.renewals.isAlreadyRenewed')}" message="subscription.details.renewalsConsortium.label"/>
                 </g:if>
                 <g:else>
                     <ui:actionsDropdownItem controller="subscription" action="renewSubscription"
@@ -179,8 +178,7 @@
             </g:if>
             <g:if test ="${subscription._getCalculatedType() == CalculatedType.TYPE_LOCAL}">
                 <g:if test ="${hasNext}">
-                    <ui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription"
-                                                       params="${[id: params.id]}" tooltip="${message(code: 'subscription.details.renewals.isAlreadyRenewed')}" message="subscription.details.renewals.label"/>
+                    <ui:actionsDropdownItemDisabled tooltip="${message(code: 'subscription.details.renewals.isAlreadyRenewed')}" message="subscription.details.renewals.label"/>
                 </g:if>
                 <g:else>
                     <ui:actionsDropdownItem controller="subscription" action="renewSubscription"
@@ -195,14 +193,6 @@
                                            params="${[sub:params.id]}" text="${message(code:'createIssueEntitlementsSurvey.label')}" />
                 <div class="divider"></div>
             </g:if>
-            <g:elseif test="${contextService.getOrg().isCustomerType_Consortium() && showConsortiaFunctions && subscription.instanceOf == null }">
-                <ui:actionsDropdownItemDisabled controller="survey" action="addSubtoSubscriptionSurvey" params="${[sub:params.id]}" text="${message(code:'createSubscriptionSurvey.label')}"
-                                                tooltip="${message(code: 'tooltip.onlyFullMembership')}" message="createSubscriptionSurvey.label"/>
-
-                <ui:actionsDropdownItemDisabled controller="survey" action="addSubtoIssueEntitlementsSurvey" params="${[sub:params.id]}" text="${message(code:'createIssueEntitlementsSurvey.label')}"
-                                                tooltip="${message(code: 'tooltip.onlyFullMembership')}" message="createIssueEntitlementsSurvey.label"/>
-                <div class="divider"></div>
-            </g:elseif>
 
             <g:if test="${showConsortiaFunctions || subscription.administrative}">
                 <ui:actionsDropdownItem controller="subscription" action="addMembers" params="${[id:params.id]}" text="${message(code:'subscription.details.addMembers.label',args:menuArgs)}" />

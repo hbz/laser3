@@ -41,15 +41,8 @@
                 </g:if>
 
                 <g:if test="${surveyInfo && (surveyInfo.status.id == RDStore.SURVEY_IN_PROCESSING.id) && !surveyInfo.checkOpenSurvey()}">
-                    <ui:actionsDropdownItemDisabled controller="survey" action="setStatus"
-                                                       params="[id: params.id, newStatus: 'processOpenSurvey']"
-                                                       message="openSurvey.button"
-                                                       tooltip="${message(code: "openSurvey.button.info")}"/>
-
-                    <ui:actionsDropdownItemDisabled data-ui="modal"
-                                                    href="#openSurveyNow"
-                                                       message="openSurveyNow.button"
-                                                       tooltip="${message(code: "openSurveyNow.button.info")}"/>
+                    <ui:actionsDropdownItemDisabled message="openSurvey.button" tooltip="${message(code: "openSurvey.button.info")}"/>
+                    <ui:actionsDropdownItemDisabled message="openSurveyNow.button" tooltip="${message(code: "openSurveyNow.button.info")}"/>
                     <div class="ui divider"></div>
                 </g:if>
 
