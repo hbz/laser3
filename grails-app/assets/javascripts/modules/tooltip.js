@@ -19,9 +19,7 @@ tooltip = {
         $(ctxSel + ' .la-popup-tooltip').each(function() {
             // add aria-label
             $(this).attr('aria-label', $(this).attr('data-content'));
-            $(this).popup({
-                hoverable: true
-            });
+            $(this).popup();
         });
 
         $(ctxSel + ' .ui.toggle.button').each(function() {

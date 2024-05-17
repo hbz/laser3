@@ -160,26 +160,26 @@ body[class*="vendor"] .ui.icon.header .icon.la-object:before {
 }
 
 body[class*="Provider"],
-body[class*="Provider"]
+body[class*="provider"]
 {
   .ui.icon.header .icon.la-object {
     display: inline-block;
     background-color: @provider;
     border-color: @provider;
     &:before {
-      content: "\f48b";
+      content: "\f2b5";
     }
   }
   .la-objectIsMine {
     box-shadow: 0 0 0 0.1em @vendor inset!important;
-    color: @vendor;
+    color: @provider;
   }
 }
 
 
 body[class*="Provider"] .ui.icon.header .icon.la-object:before,
-body[class*="Provider"] .ui.icon.header .icon.la-object:before {
-  content: "\f48b";
+body[class*="provider"] .ui.icon.header .icon.la-object:before {
+  content: "\f2b5";
 }
 
 

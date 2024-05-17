@@ -42,8 +42,7 @@
                 <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE]}">
                     <div class="divider"></div>
                     <g:if test="${hasNext}">
-                        <ui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription"
-                                                        params="${[id: params.id]}" tooltip="${message(code: 'subscription.details.renewals.isAlreadyRenewed')}" message="subscription.details.renewalsConsortium.label"/>
+                        <ui:actionsDropdownItemDisabled tooltip="${message(code: 'subscription.details.renewals.isAlreadyRenewed')}" message="subscription.details.renewalsConsortium.label"/>
                     </g:if>
                     <g:else>
                         <ui:actionsDropdownItem controller="subscription" action="renewSubscription"

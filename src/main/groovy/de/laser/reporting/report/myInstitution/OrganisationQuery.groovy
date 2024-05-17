@@ -15,9 +15,6 @@ class OrganisationQuery extends BaseQuery {
 
         ContextService contextService = BeanStore.getContextService()
 
-        //println 'OrganisationQuery.query()'
-        //println params
-
         Map<String, Object> result = getEmptyResult( params.query, params.chart )
 
         def (String prefix, String suffix) = params.query.split('-') // only simply cfg.query

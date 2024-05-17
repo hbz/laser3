@@ -12,7 +12,7 @@
         <span class="ui ${licenseMap.get(RDStore.LICENSE_CURRENT.id)?.size() ? 'primary' : ''} label"> ${licenseMap.get(RDStore.LICENSE_CURRENT.id)?.size() ?: 0} </span>
     </a>
     <a class="ui item stats-toggle" data-target="stats_provider">
-        <span class=""> ${message(code:'default.provider.label')} </span>
+        <span class=""> ${message(code:'default.provider.label')} (${message(code: 'subscription.plural.current')})</span>
         <span class="ui ${providerMap?.size() ? 'primary' : ''} label"> ${providerMap?.size() ?: 0} </span>
     </a>
     <g:if test="${context == 'consAtInst'}">

@@ -5,6 +5,7 @@ import de.laser.Provider
 import de.laser.RefdataValue
 import de.laser.annotations.UnstableFeature
 import de.laser.reporting.report.GenericHelper
+import de.laser.reporting.report.FilterQueries
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.storage.BeanStore
@@ -32,10 +33,10 @@ class ProviderFilter extends BaseFilter {
 
         switch (filterSource) {
             case 'all-provider':
-                queryParams.providerIdList = _getAllProviderIdList()
+                queryParams.providerIdList = FilterQueries.getAllProviderIdList()
                 break
             case 'my-provider':
-                queryParams.providerIdList = _getMyProviderIdList()
+                queryParams.providerIdList = FilterQueries.getMyProviderIdList()
                 break
         }
 
@@ -123,35 +124,5 @@ class ProviderFilter extends BaseFilter {
 //        println 'providers >> ' + result.providerIdList.size()
 
         filterResult
-    }
-
-    static List<Long> _getAllProviderIdList() {
-
-        List<Long> idList = Provider.executeQuery(
-                'select pro.id from Provider pro',
-//                'select pro.id from Provider pro where (pro.status is null or pro.status != :providerStatus)',
-//                [providerStatus: RDStore.PROVIDER_STATUS_DELETED]
-        )
-
-        idList
-    }
-
-    static List<Long> _getMyProviderIdList() { // TODO TODO TODO
-
-        ContextService contextService = BeanStore.getContextService()
-
-        List<Long> idList = Provider.executeQuery( '''
-            select distinct(pr.provider.id) from ProviderRole pr
-                join pr.subscription sub
-                join sub.orgRelations subOr
-            where (sub = subOr.sub and subOr.org = :org and subOr.roleType in (:subRoleTypes))
-            ''', [
-                org: contextService.getOrg(),
-//                providerStatus: RDStore.PROVIDER_STATUS_DELETED,
-                subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]
-            ]
-        )
-        // and (pr.provider.status is null or pr.provider.status != :providerStatus)
-        idList
     }
 }
