@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5693    17.05.2024  dev     3.4         Andreas Feature     verbesserte Rückmeldung bei Austausch von Merkmalen
+
 5676    14.05.2024  dev     3.4         David   Feature     Marker/Beobachtungsliste: Anbieter
 
 5675    14.05.2024  dev     3.4         David   Feature     We:kb-News: Anbieter
