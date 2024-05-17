@@ -29,6 +29,9 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('isWekbCurated')}">
                 <th>${message(code: 'org.isWekbCurated.label')}</th>
             </g:if>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('currentSubscriptions')}">
+                <th>${message(code: 'org.subscriptions.label')}</th>
+            </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('status')}">
                 <th>${message(code: 'default.status.label')}</th>
             </g:if>
@@ -124,7 +127,7 @@
                     <%
                         //to controller!
                         (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(
-                                [org: org, actionName: actionName, status: RDStore.SUBSCRIPTION_CURRENT.id, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null]
+                                [provider: provider.id, actionName: actionName, status: RDStore.SUBSCRIPTION_CURRENT.id, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null]
                         )
                         List<Subscription> currentSubscriptions = Subscription.executeQuery("select s " + base_qry, qry_params)
                     %>

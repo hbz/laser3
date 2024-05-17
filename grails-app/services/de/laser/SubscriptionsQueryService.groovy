@@ -160,13 +160,13 @@ class SubscriptionsQueryService {
         }
 
         if (params.provider) {
-            base_qry += (" and  exists ( select orgR from OrgRole as orgR where orgR.sub = s and orgR.org.id = :provider) ")
+            base_qry += (" and ( exists ( select pr from ProviderRole as pr where pr.subscription = s and pr.provider.id = :provider) or ( select vr from VendorRole as vr where vr.subscription = s and vr.vendor.id = :vendor) )")
             qry_params.put('provider', (params.provider as Long))
             filterSet = true
         }
 
         if (params.providers && params.providers != "") {
-            base_qry += (" and  exists ( select orgR from OrgRole as orgR where orgR.sub = s and orgR.org.id in (:providers)) ")
+            base_qry += (" and ( exists ( select pr from ProviderRole as pr where pr.subscription = s and pr.provider.id in (:providers)) or ( select vr from VendorRole as vr where vr.subscription = s and vr.vendor.id in (:vendors)) )")
             qry_params.put('providers', Params.getLongList(params, 'providers'))
             filterSet = true
         }
@@ -178,16 +178,18 @@ class SubscriptionsQueryService {
                             " or exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and genfunc_filter_matcher(sp.pkg.name, :name_filter) = true ) " + // filter by pkg
                             " or exists ( select li.sourceLicense from Links li where li.destinationSubscription = s and li.linkType = :linkType and genfunc_filter_matcher(li.sourceLicense.reference, :name_filter) = true ) " + // filter by license
                             " or exists ( select altname.license from AlternativeName altname, Links li where altname.license = li.sourceLicense and li.destinationSubscription = s and li.linkType = :linkType and genfunc_filter_matcher(altname.name, :name_filter) = true ) " + // filter by license altname
-                            " or exists ( select orgR from OrgRole as orgR where orgR.sub = s and" +
-                            "   orgR.roleType in (:subRoleTypes) and ( " +
-                                " genfunc_filter_matcher(orgR.org.name, :name_filter) = true " +
-                                " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true " +
-                            " ) ) " + // filter by Anbieter, Konsortium, Agency
+                            " or exists ( select pr from ProviderRole as pr where pr.subscription = s and ( " +
+                                " genfunc_filter_matcher(pr.provider.name, :name_filter) = true " +
+                                " or genfunc_filter_matcher(pr.provider.sortname, :name_filter) = true " +
+                            " ) " + // filter by Anbieter (Provider)
+                            " or exists ( select vr from VendorRole as vr where vr.subscription = s and ( " +
+                                " genfunc_filter_matcher(vr.vendor.name, :name_filter) = true " +
+                                " or genfunc_filter_matcher(vr.vendor.sortname, :name_filter) = true " +
+                            " ) " + // filter by Lieferant (Vendor ex Agency)
                          " ) "
             )
             qry_params.put('name_filter', params.q)
             qry_params.put('linkType', RDStore.LINKTYPE_LICENSE)
-            qry_params.put('subRoleTypes', [RDStore.OR_AGENCY, RDStore.OR_PROVIDER])
             if(params.orgRole != "Subscription Consortia")
                 qry_params.subRoleTypes.add(RDStore.OR_SUBSCRIPTION_CONSORTIA)
             filterSet = true
