@@ -136,12 +136,19 @@ class ProviderService {
                     p = Provider.convertFromOrg(pr.org)
                 }
                 if(pr.prs.tenant == pr.org) {
-                    pr.prs.tenant = null
-                    pr.prs.save()
+                    List<Contact> contacts = new ArrayList(pr.prs.contacts)
+                    contacts.each { Contact tmp ->
+                        tmp.delete()
+                    }
+                    pr.prs.contacts.clear()
+                    pr.prs.delete()
+                    pr.delete()
                 }
-                pr.provider = p
-                pr.org = null
-                pr.save()
+                else {
+                    pr.provider = p
+                    pr.org = null
+                    pr.save()
+                }
             }
             ts.flush()
             Set<DocContext> docOrgContexts = DocContext.executeQuery('select dc from DocContext dc join dc.org o join o.orgType ot where ot in (:provider)', [provider: [RDStore.OT_PROVIDER, RDStore.OT_LICENSOR]])
@@ -224,6 +231,14 @@ class ProviderService {
         providers.each { Org provider ->
             //delete doublet residuals
             OrgRole.executeUpdate('delete from OrgRole oo where oo.org = :provider and oo.roleType not in (:toKeep)', [provider: provider, toKeep: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER, RDStore.OR_LICENSOR, RDStore.OR_AGENCY]])
+            /*
+            List<Person> oldPersons = Person.executeQuery('select p from Person p where p.tenant = :provider and p.isPublic = true',[provider: provider])
+            oldPersons.each { Person old ->
+                PersonRole.executeUpdate('delete from PersonRole pr where pr.prs = :oldPerson', [oldPerson: old])
+                Contact.executeUpdate('delete from Contact c where c.prs = :oldPerson', [oldPerson: old])
+                Person.executeUpdate('delete from Person p where p = :oldPerson', [oldPerson: old])
+            }
+            */
             Map<String, Object> delResult = deletionService.deleteOrganisation(provider, null, false)
             if (delResult.deletable == false) {
                 log.info("${provider.name}:${provider.id} could not be deleted. Pending: ${delResult.info.findAll { info -> info[1].size() > 0 && info[2] == DeletionService.FLAG_BLOCKER }.toListString()}")

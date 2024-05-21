@@ -252,7 +252,6 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
                 id.save()
             }
         }
-        Person.executeUpdate('delete from Person ')
         /*
         agency.prsLinks.each { PersonRole pr ->
             pr.vendor = v
@@ -267,6 +266,12 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
             else pe.delete()
         }
         */
+        List<Person> oldPersons = Person.executeQuery('select p from Person p where p.tenant = :agency and p.isPublic = true',[agency: agency])
+        oldPersons.each { Person old ->
+            PersonRole.executeUpdate('delete from PersonRole pr where pr.prs = :oldPerson', [oldPerson: old])
+            Contact.executeUpdate('delete from Contact c where c.prs = :oldPerson', [oldPerson: old])
+            Person.executeUpdate('delete from Person p where p = :oldPerson', [oldPerson: old])
+        }
         Marker.findAllByOrg(agency).each { Marker m ->
             m.ven = v
             m.org = null
@@ -281,7 +286,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         //those property definitions should not exist actually ...
         PropertyDefinition.executeUpdate('delete from PropertyDefinition pd where pd.tenant = :agency', [agency: agency])
         OrgProperty.findAllByOwner(agency).each { OrgProperty op ->
-            VendorProperty vp = new VendorProperty()
+            VendorProperty vp = new VendorProperty(owner: v)
             if(op.dateValue)
                 vp.dateValue = op.dateValue
             if(op.decValue)

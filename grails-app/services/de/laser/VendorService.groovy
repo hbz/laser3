@@ -128,10 +128,6 @@ class VendorService {
                 if (!v) {
                     v = Vendor.convertFromAgency(pr.org)
                 }
-                if(pr.prs.tenant == pr.org) {
-                    pr.prs.tenant = null
-                    pr.prs.save()
-                }
                 pr.vendor = v
                 pr.org = null
                 pr.save()
@@ -201,6 +197,7 @@ class VendorService {
                 }
                 ar.delete()
             }
+            ts.flush()
             toDelete.collate(50000).eachWithIndex { subSet, int i ->
                 log.debug("deleting records ${i * 50000}-${(i + 1) * 50000}")
                 OrgRole.executeUpdate('delete from OrgRole ar where ar.sharedFrom.id in (:toDelete)', [toDelete: subSet])
@@ -211,6 +208,12 @@ class VendorService {
         Set<Org> agencies = Org.executeQuery('select o from Org o join o.orgType ot where ot = :agency', [agency: RDStore.OT_AGENCY])
         agencies.each { Org agency ->
             OrgRole.executeUpdate('delete from OrgRole oo where oo.org = :agency and oo.roleType not in (:toKeep)', [agency: agency, toKeep: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER, RDStore.OR_LICENSOR, RDStore.OR_AGENCY]])
+            List<Person> oldPersons = Person.executeQuery('select p from Person p where p.tenant = :agency and p.isPublic = true',[agency: agency])
+            oldPersons.each { Person old ->
+                PersonRole.executeUpdate('delete from PersonRole pr where pr.prs = :oldPerson', [oldPerson: old])
+                Contact.executeUpdate('delete from Contact c where c.prs = :oldPerson', [oldPerson: old])
+                Person.executeUpdate('delete from Person p where p = :oldPerson', [oldPerson: old])
+            }
             Map<String, Object> delResult = deletionService.deleteOrganisation(agency, null, false)
             if(delResult.deletable == false) {
                 log.info("${agency.name}:${agency.id} could not be deleted. Pending: ${delResult.info.findAll{ info -> info[1].size() > 0 && info[2] == DeletionService.FLAG_BLOCKER }.toListString()}")

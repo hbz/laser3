@@ -245,14 +245,11 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
             pr.org = null
             pr.save()
         }
+        */
         Person.findAllByTenant(provider).each { Person pe ->
-            if(!Person.executeQuery('select p from Person p join p.roleLinks pr where p.tenant = null and p.isPublic = true and p.last_name = :contactType and :provider in (pr.provider)', [provider: p, contactType: pe.last_name])) {
-                pe.tenant = null
-                pe.save()
-            }
+
             pe.delete()
         }
-        */
         Marker.findAllByOrg(provider).each { Marker m ->
             m.prov = p
             m.org = null
@@ -272,7 +269,7 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
         //those property definitions should not exist actually ...
         PropertyDefinition.executeUpdate('delete from PropertyDefinition pd where pd.tenant = :provider', [provider: provider])
         OrgProperty.findAllByOwner(provider).each { OrgProperty op ->
-            ProviderProperty pp = new ProviderProperty()
+            ProviderProperty pp = new ProviderProperty(owner: p)
             if(op.dateValue)
                 pp.dateValue = op.dateValue
             if(op.decValue)
