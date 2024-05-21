@@ -53,7 +53,7 @@
                                 ${message(code: 'landingpage.hero.h1')}
                             </h1>
                             <h2 style="padding-bottom: 1rem;">
-                                ${message(code: 'landingpage.hero.h2')}
+                                ${message(code: 'landingpage.hero.h2',args: [message(code: 'Umfragen')]) as String}
                             </h2>
                             <g:link controller="public" action="licensingModel" class="ui massive white  button">
                                 ${message(code: 'landingpage.hero.button.licensingModel')}<i class="right arrow icon"></i>
