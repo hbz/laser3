@@ -7,14 +7,18 @@
         <span class=""> ${message(code: 'subscription.plural.current')} </span>
         <span class="ui ${subscriptionMap.get(RDStore.SUBSCRIPTION_CURRENT.id)?.size() ? 'primary' : ''} label"> ${subscriptionMap.get(RDStore.SUBSCRIPTION_CURRENT.id)?.size() ?: 0} </span>
     </a>
+    <a class="ui item stats-toggle" data-target="stats_provider">
+        <span class="">
+            ${message(code:'default.provider.label')}
+            <i class="grey question circle icon la-popup-tooltip la-delay" data-content="${message(code: 'subscription.plural')}, ${message(code: 'package.plural')}, ${message(code: 'platform.plural')}"></i>
+        </span>
+        <span class="ui ${providerMap?.size() ? 'primary' : ''} label"> ${providerMap?.size() ?: 0} </span>
+    </a>
     <a class="ui item stats-toggle" data-target="stats_license">
         <span class=""> ${message(code: 'license.plural.current')} </span>
         <span class="ui ${licenseMap.get(RDStore.LICENSE_CURRENT.id)?.size() ? 'primary' : ''} label"> ${licenseMap.get(RDStore.LICENSE_CURRENT.id)?.size() ?: 0} </span>
     </a>
-    <a class="ui item stats-toggle" data-target="stats_provider">
-        <span class=""> ${message(code:'default.provider.label')} (${message(code: 'subscription.plural.current')})</span>
-        <span class="ui ${providerMap?.size() ? 'primary' : ''} label"> ${providerMap?.size() ?: 0} </span>
-    </a>
+
     <g:if test="${context == 'consAtInst'}">
         <a class="ui item stats-toggle" data-target="stats_survey">
             <span class=""> Offene Umfragen </span>
