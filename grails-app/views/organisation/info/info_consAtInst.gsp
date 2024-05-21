@@ -240,7 +240,7 @@
                 <div class="chartWrapper" id="cw-provider"></div>
 
                 <g:each in="${providerMap}" var="prov,subList">
-                    <g:set var="provider" value="${Org.get(prov)}" />
+                    <g:set var="provider" value="${Provider.get(prov)}" />
                     <div class="ui tab segment" data-tab="provider-${provider.id}">
 
                         <table class="ui table very compact">
@@ -666,9 +666,9 @@
             provider: {
                 tooltip: JSPC.app.info.chart_config_helper.tooltip,
                 series: [
-                <g:each in="${providerTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ Org.get(it).sortname ?: Org.get(it).name }}" var="provider">
+                <g:each in="${providerTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ Provider.get(it).sortname ?: Provider.get(it).name }}" var="provider">
                     {
-                        name    : '<% print Org.get(provider).name %>',
+                        name    : '<% print Provider.get(provider).name %>',
                         type    : 'bar',
                         stack   : 'total',
 %{--                        areaStyle : {},--}%

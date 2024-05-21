@@ -26,19 +26,16 @@ class InfoService {
                                     where sub.id in (:subIdList)
                                     order by pro.sortname, pro.name, sub.name, sub.startDate, sub.endDate, sub.referenceYear asc '''
 
-    // TODO
     static final String PROVIDER_QUERY_2 = '''select pro.id, sub.id, sub.startDate, sub.endDate, sub.referenceYear, sub.name, sub.status.id from SubscriptionPackage subPkg 
                                     join subPkg.subscription sub 
                                     join subPkg.pkg pkg 
                                     join pkg.provider pro where sub.id in (:subIdList)'''
 
-    // TODO
     static final String PROVIDER_QUERY_3 = '''select pro.id, sub.id, sub.startDate, sub.endDate, sub.referenceYear, sub.name, sub.status.id from SubscriptionPackage subPkg 
                                     join subPkg.subscription sub 
                                     join subPkg.pkg pkg 
                                     join pkg.nominalPlatform plt 
                                     join plt.provider pro where sub.id in (:subIdList)'''
-
 
     class Helper {
         static Map listToMap(List<List> list) {
@@ -129,17 +126,17 @@ class InfoService {
 
         // --- provider ---
 
-        // TODO - subscriptionPackage > package > provider
-
         Map providerParams = [
                 subIdList: subStruct.collect { it[1] }
         ]
 
-//        println providerQuery; println providerParams
-
-        List<List> providerStruct = Provider.executeQuery(PROVIDER_QUERY_1, providerParams) /*.unique()*/
+        List<List> providerStruct1 = Provider.executeQuery(PROVIDER_QUERY_1, providerParams)
+        List<List> providerStruct2 = Provider.executeQuery(PROVIDER_QUERY_2, providerParams)
+        List<List> providerStruct3 = Provider.executeQuery(PROVIDER_QUERY_3, providerParams)
 
 //        Map providerMap = Helper.listToMap(providerStruct)
+        List<List> providerStruct = (providerStruct1 + providerStruct2 + providerStruct3).unique()
+
         Map providerMap = providerStruct.groupBy{ it[0] }.sort{ it -> Provider.get(it.key).sortname ?: Provider.get(it.key).name }
 
 //        println '\nproviderStruct: ' + providerStruct; println '\nproviderMap: ' + providerMap
@@ -284,15 +281,17 @@ class InfoService {
 
         // --- provider ---
 
-        // TODO - subscriptionPackage > package > provider
-
         Map providerParams = [
                 subIdList: subStruct.collect { it[1] }
         ]
 
-//        println providerQuery; println providerParams
+        List<List> providerStruct1 = Provider.executeQuery(PROVIDER_QUERY_1, providerParams)
+        List<List> providerStruct2 = Provider.executeQuery(PROVIDER_QUERY_2, providerParams)
+        List<List> providerStruct3 = Provider.executeQuery(PROVIDER_QUERY_3, providerParams)
 
-        List<List> providerStruct = Provider.executeQuery(PROVIDER_QUERY_1, providerParams) /*.unique()*/
+//        Map providerMap = Helper.listToMap(providerStruct)
+        List<List> providerStruct = (providerStruct1 + providerStruct2 + providerStruct3).unique()
+
 //        Map providerMap = Helper.listToMap(providerStruct)
         Map providerMap = providerStruct.groupBy{ it[0] }.sort{ it -> Provider.get(it.key).sortname ?: Provider.get(it.key).name }
 
