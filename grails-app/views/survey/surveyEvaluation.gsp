@@ -1,5 +1,6 @@
 <%@ page import="de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue; de.laser.storage.RDStore" %>
 <laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyResult.label')})" serviceInjection="true"/>
+<laser:javascript src="echarts.js"/>
 
 <ui:breadcrumbs>
     <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
@@ -76,6 +77,9 @@
 
 </div>
 <div class="ui bottom attached tab segment active">
+
+    <div id="chartWrapper" style="width:100%; min-height:500px"></div>
+
     <g:if test="${surveyConfig.pickAndChoose}">
         <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'finishedDate', 'surveyTitlesCount', 'uploadTitleListDoc', 'surveyProperties', 'commentOnlyForOwner', 'downloadTitleList']}"/>
     </g:if>
@@ -91,4 +95,57 @@
 
 </g:else>
 
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    let chartDom = $('#chartWrapper')[0];
+    let surveyEvChart = echarts.init(chartDom);
+    let option;
+
+    option = {
+        tooltip: {
+                                        trigger: 'axis'
+                                    },
+        title: {
+            text: '<g:message code="surveyInfo.evaluation"/>'
+            },
+         grid: {
+                left: '4%',
+                right: '10%',
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            dataset: {
+            source: [
+            <g:each in="${charts}" var="data">
+                [
+                <g:each in="${data}" var="value">
+                    <%
+                        print '"'
+                        print value
+                        print '",'
+                    %>
+                </g:each>
+                ],
+            </g:each>
+    ]
+  },
+  xAxis: {name: "${g.message(code: 'surveyEvaluation.participants')}"},
+  yAxis: {  name: "${g.message(code: 'surveyProperty.plural.label')}", type: 'category' },
+  series: [
+    {
+      type: 'bar',
+      encode: {
+        x: 'value',
+        y: 'property'
+      },
+      barWidth: '50%'
+    }
+  ]
+};
+surveyEvChart.setOption(option);
+</laser:script>
 <laser:htmlEnd />
