@@ -602,13 +602,11 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     /**
      * Gets the content provider of this subscription
      * @return the {@link Org} linked to this subscription as 'Content Provider'; if several orgs are linked that way, the last one is being returned
+     * @deprecated delivers the first result of {@link #getProviders()}; use {@link #getProviders()} instead because of 1:n relation
      */
-    Org getProvider() {
-        Org result
-        orgRelations.each { OrgRole or ->
-            if ( or.roleType == RDStore.OR_CONTENT_PROVIDER )
-                result = or.org
-            }
+    @Deprecated
+    Provider getProvider() {
+        Provider result = getProviders()[0]
         result
     }
 

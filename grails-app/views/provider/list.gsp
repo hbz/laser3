@@ -49,7 +49,7 @@
             </g:if>
     </ui:controlButtons>
 
-        <ui:h1HeaderWithIcon message="menu.public.all_providers" total="${orgListTotal}" floated="true" />
+        <ui:h1HeaderWithIcon message="menu.public.all_providers" total="${providersTotal}" floated="true" />
 
         <ui:messages data="${flash}" />
 
