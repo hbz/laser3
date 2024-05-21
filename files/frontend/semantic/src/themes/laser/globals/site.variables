@@ -87,14 +87,16 @@
 @o-light-turquoise: #4192B0;
 @o-dark-turquoise: #0D5363;
 @o-brown: #b54800;
+@o-grey-green: #5d7c62;
 
-@subscription     :    @orange; /* hbz-orange */
-@package          :    @violet; /*@violet */
-@title            :    @purple; /* light-blue -  mismatch because semantic ui definition */
-@license          :    #008C25; /* Dark Green */
-@organisation      :   @teal; /* bluegreen */
-@platform      :    @o-yellow;
-@vendor           : @o-brown;
+@subscription       :   @orange; /* hbz-orange */
+@package            :   @violet; /*@violet */
+@title              :   @purple; /* light-blue -  mismatch because semantic ui definition */
+@license            :   #008C25; /* Dark Green */
+@organisation       :   @teal; /* bluegreen */
+@platform           :   @o-yellow;
+@vendor             :   @o-brown;
+@provider           :   @o-grey-green;
 
 /*---  Colors for Site Elements---*/
 

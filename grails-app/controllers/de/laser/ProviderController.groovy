@@ -93,9 +93,16 @@ class ProviderController {
             params.provStatus = RDStore.PROVIDER_STATUS_CURRENT.id
         }
 
+        if(params.containsKey('inhouseInvoicing')) {
+            boolean inhouseInvoicing = params.inhouseInvoicing == 'on'
+            if(inhouseInvoicing)
+                queryArgs << "p.inhouseInvoicing = true"
+            else queryArgs << "p.inhouseInvoicing = false"
+        }
+
         if(params.containsKey('qp_invoicingVendors')) {
-            queryArgs << "exists (select ls from p.invoicingVendors iv where iv.vendor in (:vendors))"
-            queryParams.put('vendors', Params.getRefdataList(params, 'qp_invoicingVendors'))
+            queryArgs << "exists (select iv from p.invoicingVendors iv where iv.vendor in (:vendors))"
+            queryParams.put('vendors', Params.getLongList(params, 'qp_invoicingVendors'))
         }
 
         if(params.containsKey('qp_electronicBillings')) {
@@ -222,7 +229,7 @@ class ProviderController {
         if(params.containsKey('id')) {
             Provider provider = Provider.get(params.id)
             result.provider = provider
-            result.editable = false //hard set until it is not decided how to deal with current agencies
+            result.editable = provider.gokbId ? false : userService.hasFormalAffiliation_or_ROLEADMIN(result.user, result.institution, 'INST_EDITOR')
             result.subEditable = userService.hasFormalAffiliation_or_ROLEADMIN(result.user, result.institution, 'INST_EDITOR')
             result.isMyProvider = providerService.isMyProvider(provider, result.institution)
             String subscriptionConsortiumFilter = '', licenseConsortiumFilter = ''

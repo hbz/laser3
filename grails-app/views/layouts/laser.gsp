@@ -134,7 +134,7 @@
                                     <ui:link addItemAttributes="true" controller="profile" action="dsgvo">${message(code:'privacyNotice')}</ui:link>
 
                                     <div class="divider"></div>
-                                    <ui:link addItemAttributes="true" controller="public" action="licensingModel">${message(code:'menu.user.licensingModel')}</ui:link>
+                                    <ui:link class="la-highlightedMenueItem" addItemAttributes="true" controller="public" action="licensingModel"><i class="smile outline icon"></i>${message(code:'menu.user.licensingModel')}</ui:link>
                                     <div class="divider"></div>
 
                                     <ui:link addItemAttributes="true" controller="logout">${message(code:'menu.user.logout')}</ui:link>

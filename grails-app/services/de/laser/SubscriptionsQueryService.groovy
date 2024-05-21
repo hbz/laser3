@@ -111,6 +111,10 @@ class SubscriptionsQueryService {
 
                 base_qry += "AND ( exists ( select idMatch.id from OrgRole as idMatch where idMatch.sub = s and idMatch.org.globalUID = :identifier ) ) "
             }
+            else if (params.identifier.startsWith('provider:')) {
+
+                base_qry += "AND ( exists ( select idMatch.id from ProviderRole as idMatch where idMatch.subscription = s and idMatch.provider.globalUID = :identifier ) ) "
+            }
             else if (params.identifier.startsWith('vendor:')) {
 
                 base_qry += "AND ( exists ( select idMatch.id from VendorRole as idMatch where idMatch.subscription = s and idMatch.vendor.globalUID = :identifier ) ) "
@@ -160,13 +164,13 @@ class SubscriptionsQueryService {
         }
 
         if (params.provider) {
-            base_qry += (" and ( exists ( select pr from ProviderRole as pr where pr.subscription = s and pr.provider.id = :provider) or ( select vr from VendorRole as vr where vr.subscription = s and vr.vendor.id = :vendor) )")
+            base_qry += (" and ( exists ( select pr from ProviderRole as pr where pr.subscription = s and pr.provider.id = :provider) or exists ( select vr from VendorRole as vr where vr.subscription = s and vr.vendor.id = :provider) )")
             qry_params.put('provider', (params.provider as Long))
             filterSet = true
         }
 
         if (params.providers && params.providers != "") {
-            base_qry += (" and ( exists ( select pr from ProviderRole as pr where pr.subscription = s and pr.provider.id in (:providers)) or ( select vr from VendorRole as vr where vr.subscription = s and vr.vendor.id in (:vendors)) )")
+            base_qry += (" and ( exists ( select pr from ProviderRole as pr where pr.subscription = s and pr.provider.id in (:providers)) or exists ( select vr from VendorRole as vr where vr.subscription = s and vr.vendor.id in (:provider)) )")
             qry_params.put('providers', Params.getLongList(params, 'providers'))
             filterSet = true
         }

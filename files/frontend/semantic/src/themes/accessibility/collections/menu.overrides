@@ -261,3 +261,7 @@
   overflow-x: auto;
   overflow-y: hidden;
 }
+.ui.menu .ui.dropdown .menu>.item.la-highlightedMenueItem {
+  color: @orange!important;
+  font-weight: bold!important;
+}

@@ -246,11 +246,11 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
             pr.save()
         }
         Person.findAllByTenant(provider).each { Person pe ->
-            //if(!Person.executeQuery('select p from Person p join p.roleLinks pr where p.tenant = null and p.isPublic = true and p.last_name = :contactType and :provider in (pr.provider)', [provider: p, contactType: pe.last_name])) {
+            if(!Person.executeQuery('select p from Person p join p.roleLinks pr where p.tenant = null and p.isPublic = true and p.last_name = :contactType and :provider in (pr.provider)', [provider: p, contactType: pe.last_name])) {
                 pe.tenant = null
                 pe.save()
-            //}
-            //else pe.delete()
+            }
+            pe.delete()
         }
         */
         Marker.findAllByOrg(provider).each { Marker m ->

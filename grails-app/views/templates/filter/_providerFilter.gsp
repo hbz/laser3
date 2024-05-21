@@ -150,6 +150,20 @@
                 </div>
             </g:if>
 
+            <g:if test="${field.equalsIgnoreCase('inhouseInvoicing')}">
+                <div class="field">
+                    <div class="inline fields la-filter-inline">
+                        <div class="inline field">
+                            <div class="ui checkbox">
+                                <label for="checkInhouseInvoicing">${message(code: 'vendor.invoicing.inhouse.label')}</label>
+                                <input id="checkInhouseInvoicing" name="inhouseInvoicing" type="checkbox" <g:if test="${params.inhouseInvoicing == "on"}">checked=""</g:if>
+                                       tabindex="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </g:if>
+
             <g:if test="${field.equalsIgnoreCase('electronicBillings')}">
                 <div class="field">
                     <label for="qp_electronicBillings">${message(code: 'vendor.invoicing.formats.label')}</label>
@@ -183,9 +197,9 @@
                     <label for="qp_invoicingVendors">${message(code: 'vendor.invoicing.vendors.label')}</label>
                     <select name="qp_invoicingVendors" id="qp_invoicingVendors" multiple="multiple" class="ui search selection dropdown">
                         <option value="">${message(code:'default.select.choose.label')}</option>
-                        <g:each in="${Vendor.findAll}" var="invoicingVendors">
-                            <option <%=Params.getLongList(params, 'qp_invoiceDispatchs').contains(invoiceDispatch.value) ? 'selected=selected"' : ''%> value="${invoiceDispatch.value}">
-                                ${invoiceDispatch.getI10n("value")}
+                        <g:each in="${InvoicingVendor.executeQuery('select v from InvoicingVendor iv join iv.vendor v order by v.sortname').toSet()}" var="invoicingVendors">
+                            <option <%=Params.getLongList(params, 'qp_invoicingVendors').contains(invoicingVendors.id) ? 'selected=selected"' : ''%> value="${invoicingVendors.id}">
+                                ${invoicingVendors.sortname}
                             </option>
                         </g:each>
                     </select>

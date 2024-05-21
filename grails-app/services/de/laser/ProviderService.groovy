@@ -130,34 +130,19 @@ class ProviderService {
             }
             ts.flush()
             Set<PersonRole> providerContacts = PersonRole.executeQuery('select pr from PersonRole pr join pr.org o join o.orgType ot where ot in (:provider)', [provider: [RDStore.OT_PROVIDER, RDStore.OT_LICENSOR]])
-            //Set<Long> toDeletePersonRole = []
             providerContacts.each { PersonRole pr ->
                 Provider p = Provider.findByGlobalUID(pr.org.globalUID.replace(Org.class.simpleName.toLowerCase(), Provider.class.simpleName.toLowerCase()))
                 if (!p) {
                     p = Provider.convertFromOrg(pr.org)
                 }
-                boolean existsContact = false
-                if(pr.functionType)
-                    existsContact = PersonRole.findByPrsAndProviderAndFunctionType(pr.prs, p, pr.functionType)
-                else if(pr.positionType)
-                    existsContact = PersonRole.findByPrsAndProviderAndPositionType(pr.prs, p, pr.positionType)
-                else if(pr.responsibilityType)
-                    existsContact = PersonRole.findByPrsAndProviderAndResponsibilityType(pr.prs, p, pr.responsibilityType)
-                if(!existsContact) {
-                    pr.provider = p
-                    pr.org = null
-                    pr.save()
+                if(pr.prs.tenant == pr.org) {
+                    pr.prs.tenant = null
+                    pr.prs.save()
                 }
-                else {
-                    Person prs = pr.prs
-                    if(prs.tenant == pr.org) {
-                        prs.tenant = null
-                        prs.save()
-                    }
-                    //toDeletePersonRole << pr.id
-                }
+                pr.provider = p
+                pr.org = null
+                pr.save()
             }
-            //PersonRole.executeUpdate('delete from PersonRole pr where pr.id in (:toDelete)', [toDelete: toDeletePersonRole])
             ts.flush()
             Set<DocContext> docOrgContexts = DocContext.executeQuery('select dc from DocContext dc join dc.org o join o.orgType ot where ot in (:provider)', [provider: [RDStore.OT_PROVIDER, RDStore.OT_LICENSOR]])
             docOrgContexts.each { DocContext dc ->
