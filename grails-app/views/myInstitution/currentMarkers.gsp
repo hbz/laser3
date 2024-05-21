@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.convenience.Marker; de.laser.Org;de.laser.Vendor;de.laser.Package;de.laser.Platform;de.laser.Provider;de.laser.TitleInstancePackagePlatform" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; de.laser.storage.RDStore; de.laser.convenience.Marker; de.laser.Org;de.laser.Vendor;de.laser.Package;de.laser.Platform;de.laser.Provider;de.laser.TitleInstancePackagePlatform" %>
 
 <laser:htmlStart message="menu.my.markers" serviceInjection="true"/>
 
@@ -8,6 +8,8 @@
 
 <ui:h1HeaderWithIcon message="menu.my.markers" type="Marker" floated="true" />
 
+<g:set var="markerTypeList" value="${SpringSecurityUtils.ifAnyGranted('ROLE_YODA') ? [Marker.TYPE.WEKB_CHANGES, Marker.TYPE.TIPP_CHANGES, Marker.TYPE.UNKOWN] : [Marker.TYPE.WEKB_CHANGES]}" />
+
 <ui:filter simple="true">
     <form id="markerFilterForm" class="ui form">
         <div class="two fields">
@@ -16,7 +18,7 @@
                 <g:select class="ui dropdown la-not-clearable" name="filterMarkerType"
                            required="required"
                            noSelection="${['' : message(code:'default.select.choose.label')]}"
-                           from="${[Marker.TYPE.WEKB_CHANGES, Marker.TYPE.TIPP_CHANGES,  Marker.TYPE.UNKOWN]}"
+                           from="${markerTypeList}"
                            value="${markerType.value}"
                            optionValue="${{message(code: 'marker.' + it.value)}}"
                            optionKey="${{it.value}}" />
