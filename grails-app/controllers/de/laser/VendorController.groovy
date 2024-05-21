@@ -163,7 +163,7 @@ class VendorController {
         if(params.containsKey('id')) {
             Vendor vendor = Vendor.get(params.id)
             result.vendor = vendor
-            result.editable = false //hard set until it is not decided how to deal with current agencies
+            result.editable = vendor.gokbId ? false : userService.hasFormalAffiliation_or_ROLEADMIN(result.user, result.institution, 'INST_EDITOR')
             result.subEditable = userService.hasFormalAffiliation_or_ROLEADMIN(result.user, result.institution, 'INST_EDITOR')
             result.isMyVendor = vendorService.isMyVendor(vendor, result.institution)
             result.platforms = vendor.packages.pkg.nominalPlatform.unique()
