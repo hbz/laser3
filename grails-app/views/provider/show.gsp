@@ -324,11 +324,11 @@
                                     </div>
                                     <div class="item">
                                         <strong><g:message code="subscription.plural" /></strong>
-                                        &nbsp;<div class="ui blue circular label">${currentSubscriptionsCount}/${subLinks.size()}</div>
+                                        &nbsp;<div class="ui blue circular label">${subLinks.size()}/${currentSubscriptionsCount}</div>
                                     </div>
                                     <div class="item">
                                         <strong><g:message code="license.plural" /></strong>
-                                        &nbsp;<div class="ui blue circular label">${currentLicensesCount}/${licLinks.size()}</div>
+                                        &nbsp;<div class="ui blue circular label">${licLinks.size()}/${currentLicensesCount}</div>
                                     </div>
                                 </div>
                             </div>
@@ -366,7 +366,7 @@
                                         <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: provider.globalUID, status: RDStore.SUBSCRIPTION_CURRENT.id]">
                                             <div class="content la-space-right">
                                                 <i class="icon filter"></i> <g:message code="subscription.plural.current" />
-                                            &nbsp;<div class="ui blue circular label">${currentSubscriptionsCount}</div>
+                                            &nbsp;<div class="ui blue circular label">${subLinks.size()}</div>
                                             </div>
                                         </g:link>
                                     </div>
@@ -374,7 +374,7 @@
                                         <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: provider.globalUID, status: 'FETCH_ALL']">
                                             <div class="content la-space-right">
                                                 <i class="icon filter"></i> <g:message code="subscription.plural.total" />
-                                            &nbsp;<div class="ui blue circular label">${subLinks.size()}</div>
+                                            &nbsp;<div class="ui blue circular label">${currentSubscriptionsCount}</div>
                                             </div>
                                         </g:link>
                                     </div>
@@ -387,14 +387,14 @@
                                         <div class="content la-space-right">
                                             <g:link controller="myInstitution" action="currentLicenses" params="[licensor: provider.id, status: RDStore.LICENSE_CURRENT.id, subStatus: RDStore.SUBSCRIPTION_CURRENT.id, filterSubmit: 'Filtern']">
                                                 <i class="icon filter"></i> <g:message code="license.plural.current" />
-                                                &nbsp;<div class="ui blue circular label">${currentLicensesCount}</div></g:link>
+                                                &nbsp;<div class="ui blue circular label">${licLinks.size()}</div></g:link>
                                         </div>
                                     </div>
                                     <div class="ui item">
                                         <div class="content la-space-right">
                                             <g:link controller="myInstitution" action="currentLicenses" params="[licensor: provider.id, filterSubmit: 'Filtern']">
                                                 <i class="icon filter"></i> <g:message code="license.plural.total" />
-                                                &nbsp;<div class="ui blue circular label">${licLinks.size()}</div></g:link>
+                                                &nbsp;<div class="ui blue circular label">${currentLicensesCount}</div></g:link>
                                         </div>
                                     </div>
                                 </div>

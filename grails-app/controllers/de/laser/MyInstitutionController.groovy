@@ -1005,7 +1005,7 @@ class MyInstitutionController  {
         }
         else
             providerQuery += " order by p.sortname "
-        List<Provider> providerListTotal = Provider.executeQuery(providerQuery, queryParams)
+        Set<Provider> providerListTotal = Provider.executeQuery(providerQuery, queryParams)
 
         result.wekbRecords = providerService.getWekbProviderRecords(params, result)
 
