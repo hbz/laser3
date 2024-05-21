@@ -49,7 +49,18 @@ class VendorQuery extends BaseQuery {
         }
         else if ( suffix in ['x']) {
 
-            if (params.query in ['vendor-x-property']) {
+            if (params.query in ['vendor-x-identifier']) {
+
+                handleGenericIdentifierXQuery(
+                        params.query,
+                        'select ns.id, ns.ns, count(*) from Vendor v join v.ids ident join ident.ns ns where v.id in (:idList)',
+                        'select v.id from Vendor v join v.ids ident join ident.ns ns where v.id in (:idList)',
+                        'select v.id from Vendor v where v.id in (:idList)', // inversed idList
+                        idList,
+                        result
+                )
+            }
+            else if (params.query in ['vendor-x-property']) {
 
                 handleGenericPropertyXQuery(
                         params.query,

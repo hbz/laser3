@@ -49,7 +49,18 @@ class ProviderQuery extends BaseQuery {
         }
         else if ( suffix in ['x']) {
 
-            if (params.query in ['provider-x-property']) {
+            if (params.query in ['provider-x-identifier']) {
+
+                handleGenericIdentifierXQuery(
+                        params.query,
+                        'select ns.id, ns.ns, count(*) from Provider pro join pro.ids ident join ident.ns ns where pro.id in (:idList)',
+                        'select pro.id from Provider pro join pro.ids ident join ident.ns ns where pro.id in (:idList)',
+                        'select pro.id from Provider pro where pro.id in (:idList)', // inversed idList
+                        idList,
+                        result
+                )
+            }
+            else if (params.query in ['provider-x-property']) {
 
                 handleGenericPropertyXQuery(
                         params.query,

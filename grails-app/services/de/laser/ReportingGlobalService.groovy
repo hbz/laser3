@@ -309,6 +309,12 @@ class ReportingGlobalService {
                     result.labels.chart = [BaseConfig.getLabel('reporting.chart.chartLabel.counterpart.label'), BaseConfig.getLabel('reporting.chart.chartLabel.noCounterpart.label')]
 //                    result.tmpl = TMPL_PATH_CHART + 'generic_signOrphaned'
                 }
+                else if (suffix in ['x']) {
+                    Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_PROVIDER ).base.distribution.getAt('default').getAt(clone.query) as Map
+
+                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getDistributionLabel(BaseConfig.KEY_PROVIDER, 'chartLabel.' + it) }
+                    result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
+                }
             }
             else if (prefix in [ BaseConfig.KEY_SUBSCRIPTION, 'memberSubscription' ]) {
                 result.putAll(SubscriptionQuery.query(clone))
@@ -328,6 +334,12 @@ class ReportingGlobalService {
                 if (suffix in ['*']) {
                     result.labels.chart = [BaseConfig.getLabel('reporting.chart.chartLabel.counterpart.label'), BaseConfig.getLabel('reporting.chart.chartLabel.noCounterpart.label')]
 //                    result.tmpl = TMPL_PATH_CHART + 'generic_signOrphaned'
+                }
+                else if (suffix in ['x']) {
+                    Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_VENDOR ).base.distribution.getAt('default').getAt(clone.query) as Map
+
+                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getDistributionLabel(BaseConfig.KEY_VENDOR, 'chartLabel.' + it) }
+                    result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
                 }
             }
 
