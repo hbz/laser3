@@ -40,6 +40,11 @@ class VendorXCfg extends BaseConfig {
                     ],
                     distribution : [
                             default : [
+                                    'vendor-x-identifier' : [
+                                            detailsTemplate     : 'vendor',
+                                            chartTemplate       : '2axis2values_nonMatches',
+                                            chartLabels         : [ 'base', 'x.identifiers' ]
+                                    ],
                                     'vendor-x-property' : [
                                             detailsTemplate     : 'vendor',
                                             chartTemplate       : '2axis3values',

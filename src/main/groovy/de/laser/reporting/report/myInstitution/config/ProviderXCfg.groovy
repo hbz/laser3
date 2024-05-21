@@ -40,6 +40,11 @@ class ProviderXCfg extends BaseConfig {
                     ],
                     distribution : [
                             default : [
+                                    'provider-x-identifier' : [
+                                            detailsTemplate     : 'provider',
+                                            chartTemplate       : '2axis2values_nonMatches',
+                                            chartLabels         : [ 'base', 'x.identifiers' ]
+                                    ],
                                     'provider-x-property' : [
                                             detailsTemplate     : 'provider',
                                             chartTemplate       : '2axis3values',
