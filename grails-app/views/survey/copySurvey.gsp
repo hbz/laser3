@@ -11,14 +11,13 @@
 </ui:breadcrumbs>
 
 <ui:h1HeaderWithIcon text="${surveyConfig.getConfigNameShort()}" type="Survey" />
+<uiSurvey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="${actionName}"/>
 
 <h2 class="ui header">
     ${message(code: 'copySurvey.label')}:
     <g:link controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]">
         ${surveyConfig.getConfigNameShort()}
-    </g:link>  <div class="ui label survey-${surveyInfo.type.value}">
-    ${surveyInfo.type.getI10n('value')}
-</div>
+    </g:link>
 </h2>
 
 <ui:messages data="${flash}"/>
@@ -461,7 +460,7 @@
                         <g:if test="${!s.instanceOf}">
                             <g:set var="childSubIds" value="${Subscription.executeQuery('select s.id from Subscription s where s.instanceOf = :parent',[parent:s])}"/>
 
-                            <g:set var="editableAll" value="${editable && contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO ) && (surveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL && SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNotNull(s).size() == 0 || surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL)}"/>
+                            <g:set var="editableAll" value="${editable && contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO ) && (surveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL && SurveyConfig.executeQuery('select count(*) from SurveyConfig sc where sc.subscription = :sub and sc.subSurveyUseForTransfer = true', [sub: s])[0] == 0 || surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL)}"/>
                             <tr>
                                 <td>
                                     <g:if test="${editableAll}">
