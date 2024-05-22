@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5697    22.05.2024  dev     3.4         Andreas Feature     deal_id als neuer Nanemsraum aufgenommen
+
+5691    22.05.2024  dev     3.4         Andreas Feature     Vererbbarkeit von Alterntivnamen implementiert
+
 5693    17.05.2024  dev     3.4         Andreas Feature     verbesserte Rückmeldung bei Austausch von Merkmalen
 
 5676    14.05.2024  dev     3.4         David   Feature     Marker/Beobachtungsliste: Anbieter
