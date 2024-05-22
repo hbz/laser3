@@ -6,7 +6,9 @@ import de.laser.reporting.export.myInstitution.LicenseExport
 import de.laser.reporting.export.myInstitution.OrgExport
 import de.laser.reporting.export.myInstitution.PackageExport
 import de.laser.reporting.export.myInstitution.PlatformExport
+import de.laser.reporting.export.myInstitution.ProviderExport
 import de.laser.reporting.export.myInstitution.SubscriptionExport
+import de.laser.reporting.export.myInstitution.VendorExport
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.export.base.BaseExportHelper
@@ -41,8 +43,14 @@ class GlobalExportHelper extends BaseExportHelper {
         else if (tmpl == PlatformExport.KEY) {
             return new PlatformExport( token, selectedFields )
         }
+        else if (tmpl == ProviderExport.KEY) {
+            return new ProviderExport( token, selectedFields )
+        }
         else if (tmpl == SubscriptionExport.KEY) {
             return new SubscriptionExport( token, selectedFields )
+        }
+        else if (tmpl == VendorExport.KEY) {
+            return new VendorExport( token, selectedFields )
         }
     }
 

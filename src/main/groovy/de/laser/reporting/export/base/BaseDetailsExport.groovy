@@ -5,10 +5,14 @@ import de.laser.IdentifierNamespace
 import de.laser.IssueEntitlement
 import de.laser.License
 import de.laser.Org
+import de.laser.Provider
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
+import de.laser.Vendor
+import de.laser.reporting.export.myInstitution.ProviderExport
+import de.laser.reporting.export.myInstitution.VendorExport
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -146,6 +150,9 @@ abstract class BaseDetailsExport {
         else if (key == PlatformExport.KEY) {
             PlatformExport.CONFIG_X
         }
+        else if (key == ProviderExport.KEY) {
+            ProviderExport.CONFIG_X
+        }
         else if (key in [SubscriptionExportLocal.KEY, SubscriptionExportGlobal.KEY]) {
             if (isGlobal(this)) {
                 if (ctxConsortium()) {
@@ -161,6 +168,9 @@ abstract class BaseDetailsExport {
                     SubscriptionExportLocal.CONFIG_ORG_INST
                 }
             }
+        }
+        else if (key == VendorExport.KEY) {
+            VendorExport.CONFIG_X
         }
     }
 
@@ -354,17 +364,23 @@ abstract class BaseDetailsExport {
 
         List<IdentifierNamespace> idnsList = []
 
-        if (cfg.base.meta.class == Org) {
-            idnsList = IdentifierNamespace.executeQuery( 'select idns from IdentifierNamespace idns where idns.nsType = :type', [type: Org.class.name] )
+        if (cfg.base.meta.class == IssueEntitlement) {
+            idnsList = IdentifierNamespace.executeQuery( 'select idns from IdentifierNamespace idns where idns.nsType = :type', [type: TitleInstancePackagePlatform.class.name] )
         }
         else if (cfg.base.meta.class == License) {
             idnsList = IdentifierNamespace.executeQuery( 'select idns from IdentifierNamespace idns where idns.nsType = :type', [type: License.class.name] )
         }
+        else if (cfg.base.meta.class == Org) {
+            idnsList = IdentifierNamespace.executeQuery( 'select idns from IdentifierNamespace idns where idns.nsType = :type', [type: Org.class.name] )
+        }
+        else if (cfg.base.meta.class == Provider) {
+            idnsList = IdentifierNamespace.executeQuery( 'select idns from IdentifierNamespace idns where idns.nsType = :type', [type: Provider.class.name] )
+        }
         else if (cfg.base.meta.class == Subscription) {
             idnsList = IdentifierNamespace.executeQuery( 'select idns from IdentifierNamespace idns where idns.nsType = :type', [type: Subscription.class.name] )
         }
-        else if (cfg.base.meta.class == IssueEntitlement) {
-            idnsList = IdentifierNamespace.executeQuery( 'select idns from IdentifierNamespace idns where idns.nsType = :type', [type: TitleInstancePackagePlatform.class.name] )
+        else if (cfg.base.meta.class == Vendor) {
+            idnsList = IdentifierNamespace.executeQuery( 'select idns from IdentifierNamespace idns where idns.nsType = :type', [type: Vendor.class.name] )
         }
 
         idnsList.collect{ it ->
