@@ -106,7 +106,7 @@ class AlternativeName implements CalculatedLastUpdated, Comparable<AlternativeNa
      * @return the new alternative name, null if no reference object has been specified
      */
     static AlternativeName construct(Map<String, Object> configMap) {
-        if(configMap.license || configMap.org || configMap.pkg || configMap.platform || configMap.provider || configMap.subscription || configMap.tipp) {
+        if(configMap.license || configMap.org || configMap.pkg || configMap.platform || configMap.provider || configMap.subscription || configMap.tipp || configMap.vendor) {
             AlternativeName altName = new AlternativeName(name: configMap.name)
             if(configMap.license)
                 altName.license = configMap.license
@@ -122,6 +122,8 @@ class AlternativeName implements CalculatedLastUpdated, Comparable<AlternativeNa
                 altName.subscription = configMap.subscription
             else if(configMap.tipp)
                 altName.tipp = configMap.tipp
+            else if(configMap.vendor)
+                altName.vendor = configMap.vendor
             if(!altName.save()) {
                 log.error("error on creating alternative name: ${altName.getErrors().getAllErrors().toListString()}")
             }

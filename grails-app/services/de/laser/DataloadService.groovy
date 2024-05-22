@@ -238,6 +238,7 @@ class DataloadService {
                 result.guid = vendor.globalUID ?: ''
 
                 result.name = vendor.name
+                result.altnames = []
                 vendor.altnames.each { AlternativeName altname ->
                     result.altnames << altname.name
                 }
@@ -280,6 +281,7 @@ class DataloadService {
                 result.guid = provider.globalUID ?: ''
 
                 result.name = provider.name
+                result.altnames = []
                 provider.altnames.each { AlternativeName altname ->
                     result.altnames << altname.name
                 }
