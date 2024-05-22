@@ -1541,6 +1541,10 @@ class SurveyControllerService {
 
             result.participants = result.participants.sort { it.org.sortname }
 
+            result.charts = surveyService.generateDataForCharts(result.surveyConfig, result.participants?.org)
+
+            result.participants = result.participants.sort { it.org.sortname }
+
             [result: result, status: STATUS_OK]
         }
     }
