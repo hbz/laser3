@@ -963,7 +963,7 @@ class SurveyController {
 
         String filename = "template_cost_import"
 
-        ArrayList titles = ["WIB-ID", "ISIL", "ROR-ID", "GND-NR"]
+        ArrayList titles = ["WIB-ID", "ISIL", "ROR-ID", "GND-NR", "DEAL-ID"]
         titles.addAll([message(code: 'org.customerIdentifier'),
                        message(code: 'financials.costItemElement'),
                        message(code: 'default.status.label'),
@@ -979,6 +979,7 @@ class SurveyController {
             row.add(surveyOrg.org.getIdentifierByType('ISIL')?.value)
             row.add(surveyOrg.org.getIdentifierByType('ROR ID')?.value)
             row.add(surveyOrg.org.getIdentifierByType('gnd_org_nr')?.value)
+            row.add(surveyOrg.org.getIdentifierByType('deal_id')?.value)
 
             if(ctrlResult.surveyConfig.subscription){
                 row.add(Platform.executeQuery('select ci.value from CustomerIdentifier ci join ci.platform plat where ci.value != null and ci.customer = (:customer) and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription.instanceOf = :subscription)', [customer: surveyOrg.org, subscription: ctrlResult.surveyConfig.subscription]).join(', '))
