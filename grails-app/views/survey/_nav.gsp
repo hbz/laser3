@@ -101,16 +101,35 @@
                            params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${participantsCount}"
                            message="surveyParticipants.label"/>
 
+            <g:if test="${surveyConfig.packageSurvey}">
+                <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyPackages"
+                               params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${surveyPackagesCount}"
+                               message="surveyPackages.label"/>
+             </g:if>
+
             <g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
                 <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyCostItems"
                                params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${surveyCostItemsCount}"
                                message="surveyCostItems.label"/>
             </g:if>
 
+            <g:if test="${surveyConfig.packageSurvey}">
+                <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyCostItemsPackages"
+                               params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${surveyCostItemsPackagesCount}"
+                               message="surveyCostItemsPackages.label"/>
+            </g:if>
+
             <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyEvaluation"
                            params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${evaluationCount}"
                            message="surveyResult.label"
                            class="${(actionName in evalutionsViews) ? "active" : ""}"/>
+
+            <g:if test="${surveyConfig.packageSurvey}">
+                <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyEvaluationPackages"
+                               params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${evaluationCount}"
+                               message="surveyPackagesEvaluation.label"
+                               />
+            </g:if>
 
             <g:if test="${surveyConfig.subSurveyUseForTransfer}">
                 <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="renewalEvaluation"

@@ -4,6 +4,7 @@ package de.laser
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.Params
 import de.laser.storage.PropertyStore
+import de.laser.survey.SurveyConfigProperties
 import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
@@ -612,6 +613,12 @@ class FilterService {
             isFilterSet = true
         }
 
+        if(params.checkPackageSurvey) {
+            query += " and surConfig.packageSurvey = :checkPackageSurvey"
+            queryParams << [checkPackageSurvey: true]
+            isFilterSet = true
+        }
+
         if (params.provider) {
             query += " and exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org = :provider)"
             queryParams << [provider : Org.get(params.provider)]
@@ -760,6 +767,13 @@ class FilterService {
             queryParams << [checkSubSurveyUseForTransfer: true]
             isFilterSet = true
         }
+
+        if(params.checkPackageSurvey) {
+            query += "surConfig.packageSurvey = :checkPackageSurvey"
+            queryParams << [checkPackageSurvey: true]
+            isFilterSet = true
+        }
+
 
         if (params.list('filterSub')) {
             query << " surConfig.subscription.name in (:subs) "

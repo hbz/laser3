@@ -14,6 +14,7 @@
         <g:hiddenField name="surveyOrg" value="${surveyOrg.class.getName()}:${surveyOrg.id}"/>
     </g:if>
 </g:else>
+<g:hiddenField name="selectedPkg" value="${selectedPkg}"/>
 
 <div class="fields la-forms-grid">
     <div class="eight wide field">
@@ -144,6 +145,25 @@
     </fieldset> <!-- 1/2 field |  .la-account-currency -->
 
 </div><!-- three fields -->
+<g:if test="${selectedPkg}">
+    <div class="field ">
+        <div class="one fields la-forms-grid">
+            <fieldset class="sixteen wide field">
+                <div class="field">
+                    <label>${message(code: 'package.label')}</label>
+                    <g:if test="${surveyConfig.surveyPackages}">
+                        <g:select name="newPackage" id="newPackage_${idSuffix}" class="ui dropdown search"
+                                  from="${surveyConfig.surveyPackages}"
+                                  optionValue="${{ it.pkg.name }}"
+                                  optionKey="${{ it.pkg.id }}"
+                                  noSelection="${['': message(code: 'default.select.choose.label')]}"
+                                  value="${selectedPackageID}"/>
+                    </g:if>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+</g:if>
 
 <div class="field ">
     <div class="two fields la-forms-grid">

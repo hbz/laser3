@@ -17,6 +17,7 @@
             <th>${message(code: 'default.count.label')}</th>
             <th>${message(code: 'costItem.costInBillingCurrency.label')}</th>
             <th>${message(code: 'costItem.costInBillingCurrencyAfterTax.label')}</th>
+            <th>${message(code: 'default.selected.label')}</th>
         </tr>
         </thead>
         <tbody>
@@ -36,14 +37,26 @@
             <g:set var="sumCostItems" value="${sumCostItems + ctByCostItemElement.value.size()}"/>
             <tr>
                 <td>${i + 1}</td>
-                <td><g:link controller="survey" action="$actionName"
-                            params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, selectedCostItemElementID: costItemElement.id]}">${costItemElement.getI10n('value')}</g:link></td>
-                <td><g:link controller="survey" action="$actionName"
-                            params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, selectedCostItemElementID: costItemElement.id]}">${ctByCostItemElement.value.size()}</g:link></td>
+                <td>${costItemElement.getI10n('value')}</td>
+                <td>${ctByCostItemElement.value.size()}</td>
                 <td><g:formatNumber number="${sumCostInBillingCurrencyByElement}" minFractionDigits="2"
                                     maxFractionDigits="2" type="number"/></td>
                 <td><g:formatNumber number="${sumCostInBillingCurrencyAfterTaxByElement}" minFractionDigits="2"
                                     maxFractionDigits="2" type="number"/></td>
+                <td>
+                    <g:if test="${selectedCostItemElementID == costItemElement.id.toString()}">
+                        <g:link controller="survey" action="$actionName"
+                                params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, selectedCostItemElementID: costItemElement.id]}">
+                            <i class="check bordered large green icon"></i>
+                        </g:link>
+                    </g:if>
+                    <g:else>
+                        <g:link controller="survey" action="$actionName"
+                                params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, selectedCostItemElementID: costItemElement.id]}">
+                            <i class="close bordered large red icon"></i>
+                        </g:link>
+                    </g:else>
+                </td>
             </tr>
         </g:each>
         </tbody>
@@ -59,6 +72,7 @@
             <g:formatNumber number="${sumCostInBillingCurrencyAfterTax}" minFractionDigits="2"
                             maxFractionDigits="2" type="number"/>
         </td>
+        <td></td>
         </tfoot>
     </table>
 </div>

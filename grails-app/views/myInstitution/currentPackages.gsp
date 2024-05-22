@@ -23,7 +23,7 @@
     <g:if test="${records}">
         <laser:render template="/templates/filter/packageGokbFilterTable"
                       model="[
-                              tmplConfigShow: ['lineNumber', 'name', 'status', 'titleCount', 'provider', 'platform', 'curatoryGroup', 'automaticUpdates', 'lastUpdatesDisplay', 'subscription', 'markPerpetualAccess', 'marker'],
+                              tmplConfigShow: ['lineNumber', 'name', 'status', 'titleCount', 'provider', 'platform', 'curatoryGroup', 'automaticUpdates', 'lastUpdatedDisplay', 'subscription', 'markPerpetualAccess', 'marker'],
                               subscriptionMap: subscriptionMap
                       ]"
         />
