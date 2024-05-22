@@ -3,6 +3,7 @@ package de.laser
 import de.laser.auth.User
 import de.laser.helper.Params
 import de.laser.properties.ProviderProperty
+import de.laser.properties.VendorProperty
 import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -128,12 +129,23 @@ class VendorService {
                 if (!v) {
                     v = Vendor.convertFromAgency(pr.org)
                 }
-                pr.vendor = v
-                pr.org = null
-                pr.save()
+                if(pr.prs.tenant == pr.org) {
+                    List<Contact> contacts = new ArrayList(pr.prs.contacts)
+                    contacts.each { Contact tmp ->
+                        tmp.delete()
+                    }
+                    pr.prs.contacts.clear()
+                    pr.prs.delete()
+                    pr.delete()
+                }
+                else {
+                    pr.vendor = v
+                    pr.org = null
+                    pr.save()
+                }
             }
             ts.flush()
-            Set<DocContext> docOrgContexts = DocContext.executeQuery('select dc from DocContext dc where dc.org.orgType = :agency', [agency: RDStore.OT_AGENCY])
+            Set<DocContext> docOrgContexts = DocContext.executeQuery('select dc from DocContext dc join dc.org o join o.orgType ot where ot = :agency', [agency: RDStore.OT_AGENCY])
             docOrgContexts.each { DocContext dc ->
                 Vendor v = Vendor.findByGlobalUID(dc.org.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
                 if (!v) {
@@ -146,7 +158,7 @@ class VendorService {
                 dc.save()
             }
             ts.flush()
-            Set<DocContext> docTargetOrgContexts = DocContext.executeQuery('select dc from DocContext dc where dc.targetOrg.orgType = :agency', [agency: RDStore.OT_AGENCY])
+            Set<DocContext> docTargetOrgContexts = DocContext.executeQuery('select dc from DocContext dc join dc.targetOrg o join o.orgType ot where ot = :agency', [agency: RDStore.OT_AGENCY])
             docTargetOrgContexts.each { DocContext dc ->
                 Vendor v = Vendor.findByGlobalUID(dc.org.globalUID.replace(Org.class.simpleName.toLowerCase(), Provider.class.simpleName.toLowerCase()))
                 if (!v) {
@@ -245,6 +257,10 @@ class VendorService {
         List docContexts    = new ArrayList(vendor.documents)
         List tasks          = Task.findAllByVendor(vendor)
         List packages       = PackageVendor.findAllByVendor(vendor)
+        List electronicBillings = new ArrayList(vendor.electronicBillings)
+        List invoiceDispatchs = new ArrayList(vendor.invoiceDispatchs)
+        List supportedLibrarySystems = new ArrayList(vendor.supportedLibrarySystems)
+        List electronicDeliveryDelays = new ArrayList(vendor.electronicDeliveryDelays)
 
         List customProperties       = new ArrayList(vendor.propertySet.findAll { it.type.tenant == null })
         List privateProperties      = new ArrayList(vendor.propertySet.findAll { it.type.tenant != null })
@@ -300,7 +316,7 @@ class VendorService {
                             targetClause = 'vr.license = :lic'
                             checkParams.lic = vr.license
                         }
-                        List vendorRoleCheck = OrgRole.executeQuery('select vr from VendorRole vr where vr.provider = :target and '+targetClause, checkParams)
+                        List vendorRoleCheck = OrgRole.executeQuery('select vr from VendorRole vr where vr.vendor = :target and '+targetClause, checkParams)
                         if(!vendorRoleCheck) {
                             vr.vendor = replacement
                             vr.save()
@@ -320,7 +336,7 @@ class VendorService {
 
                     // custom properties
                     vendor.propertySet.clear()
-                    log.debug("${ProviderProperty.executeUpdate('update VendorProperty vp set vp.owner = :target where vp.owner = :source', genericParams)} properties updated")
+                    log.debug("${VendorProperty.executeUpdate('update VendorProperty vp set vp.owner = :target where vp.owner = :source', genericParams)} properties updated")
 
                     // documents
                     vendor.documents.clear()
@@ -343,18 +359,72 @@ class VendorService {
                     log.debug("${ElectronicDeliveryDelayNotification.executeUpdate('update ElectronicDeliveryDelayNotification eddn set eddn.vendor = :target where eddn.vendor = :source', genericParams)} electronic delivery delay notifications updated")
 
                     // persons
-                    log.debug("${Person.executeUpdate('update Person p set p.vendor = :target where p.vendor = :source', genericParams)} persons updated")
+                    List<Person> targetPersons = Person.executeQuery('select pr.prs from PersonRole pr where pr.vendor = :target', [target: replacement])
+                    PersonRole.findAllByVendor(vendor).each { PersonRole pr ->
+                        Person equivalent = targetPersons.find { Person pT -> pT.last_name == pr.prs.last_name && pT.tenant == pT.tenant }
+                        if(!equivalent) {
+                            pr.vendor = replacement
+                            pr.save()
+                        }
+                        else pr.delete()
+                    }
 
                     // tasks
                     log.debug("${Task.executeUpdate('update Task t set t.vendor = :target where t.vendor = :source', genericParams)} tasks updated")
 
                     // platforms
-                    log.debug("${Platform.executeUpdate('update Platform p set p.vendor = :target where p.vendor = :source', genericParams)} platforms updated")
+                    Set<PackageVendor> targetPackages = replacement.packages
+                    vendor.packages.clear()
+                    packages.each { PackageVendor pv ->
+                        if(!targetPackages.find { PackageVendor pvB -> pvB.pkg == pv.pkg }) {
+                            pv.vendor = replacement
+                            pv.save()
+                        }
+                        else pv.delete()
+                    }
 
                     // alternative names
                     vendor.altnames.clear()
                     log.debug("${AlternativeName.executeUpdate('update AlternativeName alt set alt.vendor = :target where alt.vendor = :source', genericParams)} alternative names updated")
                     AlternativeName.construct([name: vendor.name, vendor: replacement])
+
+                    // supported library systems
+                    Set<LibrarySystem> targetLibrarySystems = replacement.supportedLibrarySystems
+                    vendor.supportedLibrarySystems.clear()
+                    supportedLibrarySystems.each { LibrarySystem ls ->
+                        if(!targetLibrarySystems.find { LibrarySystem lsT -> lsT.librarySystem == ls.librarySystem }) {
+                            ls.vendor = replacement
+                            ls.save()
+                        }
+                        else ls.delete()
+                    }
+                    Set<ElectronicDeliveryDelayNotification> targetElectronicDeliveryDelays = replacement.electronicDeliveryDelays
+                    vendor.electronicDeliveryDelays.clear()
+                    electronicDeliveryDelays.each { ElectronicDeliveryDelayNotification eddn ->
+                        if(!targetElectronicDeliveryDelays.find { ElectronicDeliveryDelayNotification eddnT -> eddnT.delayNotification == eddn.delayNotification }) {
+                            eddn.vendor = replacement
+                            eddn.save()
+                        }
+                        else eddn.delete()
+                    }
+                    Set<InvoiceDispatch> targetInvoiceDispatchs = replacement.invoiceDispatchs
+                    vendor.invoiceDispatchs.clear()
+                    invoiceDispatchs.each { InvoiceDispatch idi ->
+                        if(!targetInvoiceDispatchs.find { InvoiceDispatch idiT -> idiT.invoiceDispatch == idi.invoiceDispatch }) {
+                            idi.vendor = replacement
+                            idi.save()
+                        }
+                        else idi.delete()
+                    }
+                    Set<ElectronicBilling> targetElectronicBillings = replacement.electronicBillings
+                    vendor.electronicBillings.clear()
+                    electronicBillings.each { ElectronicBilling eb ->
+                        if(!targetInvoiceDispatchs.find { ElectronicBilling ebT -> ebT.invoicingFormat == eb.invoicingFormat }) {
+                            eb.vendor = replacement
+                            eb.save()
+                        }
+                        else eb.delete()
+                    }
 
                     vendor.delete()
 
@@ -383,10 +453,13 @@ class VendorService {
     }
 
     Set<Platform> getSubscribedPlatforms(Vendor vendor, Org contextOrg) {
+        /*
+        may cause overlaod; for hbz data, the filter must be excluded
         String instanceFilter = ''
         if(contextOrg.isCustomerType_Consortium())
             instanceFilter = 'and s.instanceOf = null'
-        Platform.executeQuery('select pkg.nominalPlatform from PackageVendor pv, VendorRole vr, OrgRole oo join oo.sub s join pv.pkg pkg where pv.vendor = :vendor and pv.vendor = vr.vendor and vr.subscription = s and s.status = :current and oo.org = :contextOrg '+instanceFilter, [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, contextOrg: contextOrg])
+        */
+        Platform.executeQuery('select pkg.nominalPlatform from PackageVendor pv, VendorRole vr, OrgRole oo join oo.sub s join pv.pkg pkg where pv.vendor = :vendor and pv.vendor = vr.vendor and vr.subscription = s and s.status = :current and oo.org = :contextOrg ', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, contextOrg: contextOrg])
     }
 
     Map<String, Object> getResultGenerics(GrailsParameterMap params) {

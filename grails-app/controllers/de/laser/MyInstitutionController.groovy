@@ -1138,16 +1138,18 @@ class MyInstitutionController  {
         ]
 
         result.flagContentGokb = true // vendorService.getWekbVendorRecords()
-        String query = 'select v from VendorRole vr join vr.vendor v, OrgRole oo join oo.sub s where v.gokbId in (:wekbUuids) and vr.subscription = s and oo.org = :contextOrg'
-        Map<String, Object> queryParams = [wekbUuids: result.wekbRecords.keySet(), contextOrg: result.institution]
+        String query = "select v from VendorRole vr join vr.vendor v, OrgRole oo join oo.sub s where vr.subscription = s and oo.org = :contextOrg"
+
+        Map<String, Object> queryParams = [contextOrg: result.institution]
 
         if(params.containsKey('subStatus')) {
             query += ' and (s.status in (:status) '
             queryParams.status = Params.getRefdataList(params, 'subStatus')
         }
-        else {
+        else if(!params.containsKey('filterSet')) {
             query += ' and (s.status = :status '
             queryParams.status = RDStore.SUBSCRIPTION_CURRENT
+            params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id
         }
 
         if(params.containsKey('subPerpetualAccess')) {
@@ -1163,14 +1165,11 @@ class MyInstitutionController  {
             if(params.subPerpetualAccess == RDStore.YN_NO)
                 query += ' and s.hasPerpetualAccess = false '
         }
-        else query += ')' //opened in line 1100 or 1105
+        else if(!params.containsKey('filterSet')) query += ')' //opened in line 1100 or 1105
 
-        String consortiumFilter = ''
-        if(result.showConsortiaFunctions)
-            consortiumFilter = 'and s.instanceOf = null'
 
-        String currentSubQuery = "select vr from OrgRole oo join oo.sub s, VendorRole vr where vr.subscription = s and s.status = :current and oo.org = :contextOrg and vr.vendor.gokbId in (:wekbUuids) ${consortiumFilter} order by s.name, s.startDate desc"
-        Map<String, Object> currentSubParams = [current: RDStore.SUBSCRIPTION_CURRENT, contextOrg: result.institution, wekbUuids: result.wekbRecords.keySet()]
+        String currentSubQuery = "select vr from VendorRole vr, OrgRole oo join oo.sub s where vr.subscription = s and s.status = :current and oo.org = :contextOrg order by s.name, s.startDate desc"
+        Map<String, Object> currentSubParams = [current: RDStore.SUBSCRIPTION_CURRENT, contextOrg: result.institution]
         List<VendorRole> vendorRoleRows = VendorRole.executeQuery(currentSubQuery, currentSubParams)
         result.currentSubscriptions = [:]
         vendorRoleRows.each { VendorRole vr ->

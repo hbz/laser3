@@ -79,9 +79,9 @@ class ProviderController {
         ]
         List<String> queryArgs = []
         result.wekbRecords = providerService.getWekbProviderRecords(params, result)
-        if(params.containsKey('nameContains')) {
+        if(params.containsKey('providerNameContains')) {
             queryArgs << "(genfunc_filter_matcher(p.name, :name) = true or genfunc_filter_matcher(p.sortname, :name) = true)"
-            queryParams.name = params.nameContains
+            queryParams.name = params.providerNameContains
         }
         if(params.containsKey('provStatus')) {
             queryArgs << "p.status in (:status)"

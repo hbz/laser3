@@ -1483,7 +1483,7 @@ class ControlledListService {
     Map getVendors(GrailsParameterMap params) {
         Org institution = contextService.getOrg()
         String consortiumFilter = "", vendorNameFilter = "", qryString
-        Map qryParams = [context: institution]
+        Map qryParams = [:]
         if(institution.isCustomerType_Consortium())
             consortiumFilter = "and sub.instanceOf is null"
         if (params.query) {
@@ -1494,10 +1494,15 @@ class ControlledListService {
             qryString = "select vendor from PackageVendor pv join pv.vendor vendor, SubscriptionPackage sp join sp.pkg pkg where sp.pkg = pv.pkg and sp.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context ${consortiumFilter}) ${vendorNameFilter} group by vendor.id order by vendor.sortname asc"
         }
         else {
-            if(params.displayWekbFlag)
-                qryString = "select new map(concat('${Vendor.class.name}:',vendor.id) as value,case when vendor.gokbId != null then concat(vendor.name,' (we:kb)') else vendor.name as name) from Vendor vendor ${vendorNameFilter} order by vendor.sortname asc"
-            else
+            if(params.displayWekbFlag) {
+                if(vendorNameFilter)
+                    vendorNameFilter = "where ${vendorNameFilter}"
+                qryString = "select new map(concat('${Vendor.class.name}:',vendor.id) as value,case when vendor.gokbId != null then concat(vendor.name,' (we:kb)') else vendor.name end as name) from Vendor vendor ${vendorNameFilter} order by vendor.sortname asc"
+            }
+            else {
+                qryParams.context = institution
                 qryString = "select new map(concat('${Vendor.class.name}:',vendor.id) as value,vendor.name as name) from PackageVendor pv join pv.vendor vendor, SubscriptionPackage sp join sp.pkg pkg where sp.pkg = pv.pkg and sp.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context ${consortiumFilter}) and ${vendorNameFilter} group by vendor.id order by vendor.sortname asc"
+            }
         }
         [results: Vendor.executeQuery(qryString, qryParams)]
     }
