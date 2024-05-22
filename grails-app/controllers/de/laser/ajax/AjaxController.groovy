@@ -1283,6 +1283,19 @@ class AjaxController {
     }
 
     /**
+     * Toggles inheritance of the given alternative name, i.e. passes or retires an alternative name to or from member objects
+     */
+    @Secured(['ROLE_USER'])
+    def toggleAlternativeNameAuditConfig() {
+        def owner = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
+        if(formService.validateToken(params)) {
+            AlternativeName altName  = AlternativeName.get(params.id)
+            subscriptionService.inheritAlternativeName(owner, altName)
+        }
+        redirect(url: request.getHeader('referer'))
+    }
+
+    /**
      * Enables or disables the visibility of a custom property
      * Visibility is important in a context where several institutions may see the property, those are
      * <ul>
