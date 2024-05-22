@@ -142,7 +142,7 @@ class AjaxHtmlController {
                     config.vendor = owner
                 resultObj = AlternativeName.construct(config)
                 if(resultObj) {
-                    render template: '/templates/ajax/newXEditable', model: [wrapper: params.object, ownObj: resultObj, objOID: genericOIDService.getOID(resultObj), field: "name", overwriteEditable: true]
+                    render template: '/templates/ajax/newXEditable', model: [wrapper: params.object, showConsortiaFunctions: contextService.getOrg().isCustomerType_Consortium(), ownObj: resultObj, objOID: genericOIDService.getOID(resultObj), field: "name", overwriteEditable: true]
                 }
                 break
             case "frontend":
